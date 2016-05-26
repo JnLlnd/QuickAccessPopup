@@ -13,6 +13,7 @@ global lDiagModeExit := "~1~ colleted diagnostic information in the file ~2~."
 global lDiagModeIntro := "Send this file to ahk@jeanlalonde.ca with a description of the situation requiring diagnostic."
 global lDiagModeSee := "Do you want to see the diagnostic file?"
 global lDialogActivateAlreadyRunning := "If the application is already running, activate it instead of launching`n(application must be of the exactly same location)" ; new
+global lDialogElevate := "Elevate application with administration privileges" ; new
 global lDialogAdd := "Add"
 global lDialogAddEditFavoriteTitle := "~1~ Favorite: ~4~ - ~2~ ~3~" ; changed
 global lDialogAddFavoriteSelectTitle := "Add Favorite - ~1~ ~2~" ; new
