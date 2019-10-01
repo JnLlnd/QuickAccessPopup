@@ -3750,7 +3750,7 @@ if InStr("WIN_VISTA|WIN_2003|WIN_XP|WIN_2000", A_OSVersion)
 ; if the app runs from a zip file, the script directory is created under the system Temp folder
 if InStr(A_ScriptDir, A_Temp) ; must be positioned after g_strAppNameFile is created
 {
-	Oops(o_L["OopsZipFileError"], g_strAppNameFile)
+	Oops(0, o_L["OopsZipFileError"], g_strAppNameFile)
 	ExitApp
 }
 
@@ -3795,7 +3795,7 @@ if (o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue and !A_IsAdmin)
 if (A_IsAdmin and !o_CommandLineParameters.AA.HasKey("AdminSilent")
 	and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; show alert only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option, except if "/AdminSilent" command-line option is used
-	Oops(o_L["OptionsRunAsAdminAlert"], g_strAppNameText)
+	Oops(0, o_L["OptionsRunAsAdminAlert"], g_strAppNameText)
 if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; add [admin] tag only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
@@ -4253,7 +4253,7 @@ if StrLen(strWorkingFolder)
 }
 else ; This could happen if the working folder registry value exist but is empty. Ask user to re-install QAP and quit.
 {
-	Oops("The Quick Access Popup settings folder could not be found.`n`nPlease, re-install Quick Access Popup.") ; language file is not available yet
+	Oops(0, "The Quick Access Popup settings folder could not be found.`n`nPlease, re-install Quick Access Popup.") ; language file is not available yet
 	ExitApp
 }
 
@@ -4804,7 +4804,7 @@ LoadMenuFromIniWithStatus:
 
 if !FileExist(o_Settings.strIniFile)
 {
-	Oops(o_L["OopsWriteProtectedError"], g_strAppNameText)
+	Oops(0, o_L["OopsWriteProtectedError"], g_strAppNameText)
 	ExitApp
 }
 else
@@ -5085,7 +5085,7 @@ for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 	else
 		ErrorLevel := 0 ; reset value that was changed to 5 when IniRead returned the string "ERROR"
 	if (ErrorLevel)
-		Oops(o_L["DialogInvalidHotkey"], new Triggers.HotkeyParts(strHotkey).Hotkey2Text(), o_QAPfeatures.AA[strCode].strLocalizedName) ; .strLocalizedName OK because Alternative
+		Oops(0, o_L["DialogInvalidHotkey"], new Triggers.HotkeyParts(strHotkey).Hotkey2Text(), o_QAPfeatures.AA[strCode].strLocalizedName) ; .strLocalizedName OK because Alternative
 }
 
 strCode := ""
@@ -5317,7 +5317,7 @@ g_blnTrayIconError := ErrorLevel or g_blnTrayIconError
 Menu, Tray, UseErrorLevel, Off
 
 if (g_blnTrayIconError)
-	Oops(o_L["OopsJLiconsError"], g_strJLiconsVersion)
+	Oops(0, o_L["OopsJLiconsError"], g_strJLiconsVersion)
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
@@ -5579,7 +5579,7 @@ loop, parse, % "Folders|Files", |
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
 		Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-		Oops("SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -5815,7 +5815,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
 		Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-		Oops("SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	}
 	o_MetadataRecordSet.Next(o_MetadataRow)
 	g_strMenuItemsListDrives := o_MetadataRow[1] ; first (and only) field is PopularFoldersMenuData or PopularFilesMenuData
@@ -5894,7 +5894,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 			if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 			{
 				Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-				Oops("SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+				Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 			}
 			o_MetadataRecordSet.Next(o_MetadataRow)
 			g_strMenuItemsListRecent%A_LoopField% := o_MetadataRow[1] ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
@@ -6649,6 +6649,7 @@ return
 ResetQAPSpecialDefaultNames:
 ;------------------------------------------------------------
 
+Gui, 1:+OwnDialogs
 MsgBox, 4, %g_strAppNameText%, % L(o_L["DialogResetQAPSpecialDefaultNames"], g_strLanguageLabel)
 IfMsgBox, Yes
 {
@@ -7286,6 +7287,7 @@ return
 GuiOptionsGroupSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
+Gui, 2:+OwnDialogs
 
 ; === Validation ===
 
@@ -7322,14 +7324,14 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 if (g_intClickedFileManager > 1 and (!blnOptionsPathsOK or !blnTCWinCmdOK))
 {
 	if (g_intClickedFileManager = 4)
-		Oops(o_L["OptionsThirdPartyFileNotFound"], f_drpQAPconnectFileManager, strQAPconnectPath)
+		Oops(2, o_L["OptionsThirdPartyFileNotFound"], f_drpQAPconnectFileManager, strQAPconnectPath)
 	else if (!blnOptionsPathsOK) ; 2 DirectoryOpus or 3 TotalCommander
 		if StrLen(f_strFileManagerPath)
-			Oops(o_L["OptionsThirdPartyFileNotFound"], o_FileManagers.SA[g_intClickedFileManager].AA.strDisplayName, f_strFileManagerPath)
+			Oops(2, o_L["OptionsThirdPartyFileNotFound"], o_FileManagers.SA[g_intClickedFileManager].AA.strDisplayName, f_strFileManagerPath)
 		else
-			Oops(o_L["OptionsThirdPartySelectFile"], o_FileManagers.SA[g_intClickedFileManager].AA.strDisplayName)
+			Oops(2, o_L["OptionsThirdPartySelectFile"], o_FileManagers.SA[g_intClickedFileManager].AA.strDisplayName)
 	if (!blnTCWinCmdOK)
-		Oops(o_L["OptionsTCWinCmd"], f_strTotalCommanderWinCmd)
+		Oops(2, o_L["OptionsTCWinCmd"], f_strTotalCommanderWinCmd)
 	
 	return
 }
@@ -7344,12 +7346,12 @@ if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 	strWorkingFolderPrev := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
 	if (strWorkingFolderNew <> strWorkingFolderPrev and o_Settings.strIniFile <> o_Settings.strIniFileDefault) ; check that the settings file has not been switched
 	{
-		Oops(o_L["DialogMoveSettingsNotDefault"])
+		Oops(2, o_L["DialogMoveSettingsNotDefault"])
 		return
 	}
 	if (strWorkingFolderNew <> strWorkingFolderPrev) and InStr(strWorkingFolderNew, strWorkingFolderPrev . "\") ; check that dest is not under current location (preventing a recursive copy)
 	{
-		Oops(o_L["DialogMoveSettingsUnder"])
+		Oops(2, o_L["DialogMoveSettingsUnder"])
 		return
 	}
 }
@@ -7381,7 +7383,7 @@ if StrLen(f_strAlternativeTrayIcon) ; because f_strAlternativeTrayIcon is option
 	blnOptionsPathsOK := FileExistInPath(strTempLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
 	if (!blnOptionsPathsOK)
 	{
-		Oops(o_L["OopsOptionsPathNotExist"], o_L["OopsOptionsPathTrayIcon"], f_strAlternativeTrayIcon)
+		Oops(2, o_L["OopsOptionsPathNotExist"], o_L["OopsOptionsPathTrayIcon"], f_strAlternativeTrayIcon)
 		return
 	}
 }
@@ -7586,7 +7588,7 @@ f_fltUsageDbMaximumSize := StrReplace(f_fltUsageDbMaximumSize, ",", ".") ;  conv
 if f_fltUsageDbMaximumSize is not Number
 	blnNotANumber := true
 if (blnNotANumber or f_fltUsageDbMaximumSize <= 0)
-	Oops(o_L["OptionsUsageDbMaximumSizeInvalid"], f_fltUsageDbMaximumSize)
+	Oops(2, o_L["OptionsUsageDbMaximumSizeInvalid"], f_fltUsageDbMaximumSize)
 else
 	o_Settings.Database.fltUsageDbMaximumSize.WriteIni(f_fltUsageDbMaximumSize)
 o_Settings.Database.blnUsageDbShowPopularityIndex.WriteIni(f_blnOptionUsageDbEnable ? f_blnUsageDbShowPopularityIndex : false)
@@ -7597,7 +7599,7 @@ if (!blnUseSQLitePrev and g_blnUsageDbEnabled)
 	gosub, UsageDbInit
 if (intUsageDbIntervalSecondsPrev <> o_Settings.Database.intUsageDbIntervalSeconds.IniValue)
 	or (intUsageDbDaysInPopularPrev <> o_Settings.Database.intUsageDbDaysInPopular.IniValue)
-	Oops(o_L["OptionsUsageDbDisabling"], g_strAppNameText)
+	Oops(2, o_L["OptionsUsageDbDisabling"], g_strAppNameText)
 
 ; preprocess these dynamic menus
 Gosub, DynamicMenusPreProcess ; in case the number of items in Frequent and Recent menus was changed in Options
@@ -7626,7 +7628,7 @@ else if (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue = 0)
 blnRunAsAdminPrev := o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue
 o_Settings.LaunchAdvanced.blnRunAsAdmin.WriteIni(f_blnRunAsAdmin)
 if (blnRunAsAdminPrev <> o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
-	Oops(o_L["OptionsRunAsAdminChanged"], g_strAppNameText)
+	Oops(2, o_L["OptionsRunAsAdminChanged"], g_strAppNameText)
 o_Settings.LaunchAdvanced.blnRefreshWindowsAppsListAtStartup.WriteIni(f_blnRefreshWindowsAppsListAtStartup)
 o_Settings.LaunchAdvanced.strAlternativeTrayIcon.WriteIni(f_strAlternativeTrayIcon)
 blnRunAsAdminPrev := ""
@@ -7672,7 +7674,7 @@ if (!g_blnPortableMode) ; Working folder (only for Setup installation)
 				MsgBox, 0, %g_strAppNameText%, % L(o_L["DialogMoveSettingsSuccess"], strWorkingFolderPrev, strWorkingFolderNew, g_strAppNameText)
 			else
 			{
-				Oops(o_L["DialogMoveSettingsFail"])
+				Oops(2, o_L["DialogMoveSettingsFail"])
 				if (o_Settings.SettingsFile.strBackupFolder.IniValue = strWorkingFolderNew) ; reset backup folder
 					o_Settings.SettingsFile.strBackupFolder.WriteIni(strWorkingFolderPrev)
 			}
@@ -7692,7 +7694,7 @@ if (!g_blnPortableMode) ; Working folder (only for Setup installation)
 if (strWorkingFolderPrev <> strWorkingFolderNew and blnSettingsMoveOK)
 	or (blnRefreshedMenusAttachedPrev <> o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
 {
-	Oops(o_L["DialogMoveSettingsReload"], g_strAppNameText)
+	Oops(2, o_L["DialogMoveSettingsReload"], g_strAppNameText)
 	Gosub, ReloadQAP
 }
 
@@ -8435,14 +8437,15 @@ ButtonUsageDbFlushClicked:
 
 Diag(A_ThisLabel, "", "START")
 
+Gui, 2:+OwnDialogs
 MsgBox, 36, %g_strAppNameText%, % o_L["OptionsUsageDbFlushDatabaseConfirm"]
 IfMsgBox, Yes
 {
 	strUsageDbSQL := "DELETE FROM Usage;" ; do not delete zMetadata (and if yes in the future, do not delete record, empty LatestCollected)
 	If !o_UsageDb.Exec(strUsageDbSQL)
-		Oops("SQLite FLUSH Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(2, "SQLite FLUSH Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	else
-		Oops(o_L["OptionsUsageDbFlushDatabaseDone"])
+		Oops(2, o_L["OptionsUsageDbFlushDatabaseDone"])
 }
 
 strUsageDbSQL := ""
@@ -8636,7 +8639,7 @@ if (A_ThisLabel = "EnableExplorerContextMenus")
 			WinMinimize, %g_strOptionsGuiTitle%
 		RunWait, %g_strTempDir%\enable-qap-context-menus.reg, , UseErrorLevel
 		if (ErrorLevel = "ERROR" and A_LastError = 1223) ; error 1223 because user canceled on the Run as admnistrator prompt
-			Oops(o_L["ContextCancelled"])
+			Oops(2, o_L["ContextCancelled"])
 		else
 			o_Settings.MenuPopup.blnExplorerContextMenus.IniValue := true ; enabling succeeded
 		if (blnOptionsGuiWasActive)
@@ -8671,7 +8674,7 @@ else ; DisableExplorerContextMenus
 			WinMinimize, %g_strOptionsGuiTitle%
 		RunWait, *RunAs %g_strTempDir%\disable-qap-context-menus.bat, , UseErrorLevel
 		if (ErrorLevel = "ERROR" and A_LastError = 1223) ; error 1223 because user canceled on the Run as admnistrator prompt
-			Oops(o_L["ContextCancelled"])
+			Oops(2, o_L["ContextCancelled"])
 		else
 			o_Settings.MenuPopup.blnExplorerContextMenus.IniValue := false ; disabling succeeded
 		if (blnOptionsGuiWasActive)
@@ -9034,9 +9037,6 @@ GuiHotkeysHelpClicked:
 ;------------------------------------------------------------
 Gui, 1:+OwnDialogs
 
-; MsgBox, 0, % g_strAppNameText . " - " . o_L["GuiHotkeysHelp"]
-	; , % o_L["GuiHotkeysHelpText"] . "`n`n" . o_L["GuiHotkeysHelpText3"] . "`n`n" . o_L["GuiHotkeysHelpText2"]
-
 g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
@@ -9390,7 +9390,7 @@ Gui, 2:Submit, NoHide
 
 if !StrLen(g_strAddFavoriteType)
 {
-	Oops(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
+	Oops(2, o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 	return
 }
 
@@ -9428,6 +9428,7 @@ AddThisFileFromMsg:
 AddThisFileFromMsgXpress:
 AddThisShortcutFromMsg:
 ;------------------------------------------------------------
+Gui, 1:+OwnDialogs 
 
 if (A_ThisLabel = "AddThisFolder" and g_blnLaunchFromTrayIcon)
 	; returns current or latest file manager window ID and Window class (including dialog boxes), and re-activate the last active file manager window
@@ -9452,13 +9453,11 @@ If !StrLen(g_strNewLocation)
 {
 	if (A_ThisLabel = "AddThisFolder" and g_blnLaunchFromTrayIcon)
 	{
-		Gui, 1:+OwnDialogs 
-		Oops(o_L["OopsAddThisFolderTip"], o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText
+		Oops(1, o_L["OopsAddThisFolderTip"], o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText
 			. " " . o_L["DialogOr"] . " " . o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.AA.strPopupHotkeyText)
 	}
 	else
 	{
-		Gui, 1:+OwnDialogs 
 		MsgBox, 52, % L(o_L["DialogAddFolderManuallyTitle"], g_strAppNameText, g_strAppVersion), % o_L["DialogAddFolderManuallyPrompt"]
 		IfMsgBox, Yes
 		{
@@ -9822,7 +9821,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 
 	if !(g_intOriginalMenuPosition)
 	{
-		Oops(o_L[(strGuiFavoriteLabel = "GuiCopyFavorite" ? "DialogSelectItemOneOrMore" : "DialogSelectItemToEdit")])
+		Oops(1, o_L[(strGuiFavoriteLabel = "GuiCopyFavorite" ? "DialogSelectItemOneOrMore" : "DialogSelectItemToEdit")])
 		g_blnAbortEdit := true
 		return
 	}
@@ -9836,7 +9835,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		g_blnAbortEdit := true
 	else if (strGuiFavoriteLabel = "GuiCopyFavorite" and InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true)) ; menu or group cannot be copied
 	{
-		Oops(o_L["OopsCannotCopyFavorite"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeShortName)
+		Oops(1, o_L["OopsCannotCopyFavorite"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeShortName)
 		g_blnAbortEdit := true
 	}
 	
@@ -10615,7 +10614,7 @@ Gui, 2:Submit, NoHide
 
 if (A_ThisLabel = "RadioButtonExternalMenuClicked" and !blnType3Before and f_radExternalMenuType3)
 {
-	Oops(o_L["OopsExternalReadOnlyAlert"] . "`n`n" . o_L["OopsExternalReadOnlyAlertUsernameAdded"], o_L["DialogExternalWriteAccessUsers"], A_UserName, A_ComputerName)
+	Oops(2,o_L["OopsExternalReadOnlyAlert"] . "`n`n" . o_L["OopsExternalReadOnlyAlertUsernameAdded"], o_L["DialogExternalWriteAccessUsers"], A_UserName, A_ComputerName)
 	if !InStr(f_strExternalWriteAccessUsers, A_UserName)
 		GuiControl, , f_strExternalWriteAccessUsers, % f_strExternalWriteAccessUsers . (StrLen(f_strExternalWriteAccessUsers) ? ";" : "") . A_UserName
 }
@@ -10623,7 +10622,7 @@ if (A_ThisLabel = "RadioButtonExternalMenuClicked" and !blnType3Before and f_rad
 if (A_ThisLabel = "RadioButtonExternalMenuClicked" and ExternalMenuIsReadOnly(f_strFavoriteAppWorkingDir))
 {
 	GuiControl, , f_radExternalMenuType3, % 1
-	Oops(o_L["OopsErrorIniFileReadOnly"] . (StrLen(f_strExternalMenuName) ? "`n`n" . f_strExternalMenuName : "") . (StrLen(f_strExternalWriteAccessMessage) ? "`n`n" . f_strExternalWriteAccessMessage : ""))
+	Oops(2,o_L["OopsErrorIniFileReadOnly"] . (StrLen(f_strExternalMenuName) ? "`n`n" . f_strExternalMenuName : "") . (StrLen(f_strExternalWriteAccessMessage) ? "`n`n" . f_strExternalWriteAccessMessage : ""))
 	return
 }
 
@@ -10717,7 +10716,7 @@ g_intGui1WinID := WinExist("A")
 
 if (LV_GetNext() = 0)
 {
-	Oops(o_L["DialogSelectItemOneOrMore"])
+	Oops(1, o_L["DialogSelectItemOneOrMore"])
 	return
 }
 
@@ -10970,15 +10969,15 @@ Sleep, 200
 
 if (A_ThisLabel <> "ButtonRefreshWindowsAppsListAtStartup")
 {
-	Gui, 2:+OwnDialogs
 	if FileExist(strWindowsAppsListFile)
 	{
 		FileCopy, %strWindowsAppsListFile%, %g_strWindosListAppsCacheFile%, 1
 		GuiControl, , f_drpWindowsAppsList, % "|" . LoadWindowsAppsList(o_EditedFavorite.AA.strFavoriteLocation)
+		Gui, 2:+OwnDialogs
 		MsgBox, 0, %g_strAppNameText%, % o_L["DialogWindowsAppsListSuccess"]
 	}
 	else
-		Oops(o_L["DialogWindowsAppsListError"])
+		Oops(2, o_L["DialogWindowsAppsListError"])
 }
 else
 	if FileExist(strWindowsAppsListFile)
@@ -11016,7 +11015,7 @@ Gui, 2:Submit, NoHide
 if StrLen(f_strFavoriteLocation)
 	GuiControl, , f_strFavoriteShortName, % GetWebPageTitle(f_strFavoriteLocation)
 else
-	Oops(o_L["OopsFirstEnterUrl"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLocationLabel)
+	Oops(2, o_L["OopsFirstEnterUrl"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLocationLabel)
 
 return
 ;------------------------------------------------------------
@@ -11259,17 +11258,19 @@ GuiPickIconDialogNo:
 GuiEditIconDialog:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
-Gui, 2:+OwnDialogs
 
 if InStr("|Document|Application", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(f_strFavoriteLocation)
 {
-	OopsGui2(o_L["PickIconNoLocation"])
+	Oops(2, o_L["PickIconNoLocation"])
 	return
 }
 
 if (A_ThisLabel = "GuiEditIconDialog")
+{
+	Gui, 2:+OwnDialogs
 	; InputBox, outVar, title, prompt, hide, width, height, x, y, font, timeout, %g_strNewFavoriteIconResource%
 	InputBox, strTempNewFavoriteIconResource, % g_strAppNameFile . " - " . o_L["DialogEditIcon"], % o_L["DialogEditIconPrompt"], , 400, 160, , , , , %g_strNewFavoriteIconResource%
+}
 else if (A_ThisLabel = "GuiPickIconDialog")
 	strTempNewFavoriteIconResource := PickIconDialog(g_strNewFavoriteIconResource)
 else if (A_ThisLabel = "GuiPickIconDialogJl")
@@ -11729,6 +11730,7 @@ GetFolderIcon(strFolderLocation)
 SetWindowsFolderIcon:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
+Gui, 2:+OwnDialogs
 
 GuiControlGet, strSetWindowsFolderIconLabel, , f_lblSetWindowsFolderIcon
 blnSet := (strSetWindowsFolderIconLabel = "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>") ; else o_L["DialogWindowsFolderIconRemove"]
@@ -11744,7 +11746,7 @@ if (blnSet)
 {
 	if (blnFolderIsRoot)
 	{
-		Oops(o_L["DialogWindowsFolderIconNoRoot"])
+		Oops(2, o_L["DialogWindowsFolderIconNoRoot"])
 		Gosub, SetWindowsFolderIconCleanup
 		return
 	}
@@ -11955,7 +11957,6 @@ ExternalMenusCatalogueListEvents:
 
 if (A_GuiEvent = "DoubleClick")
 {
-	Gui, 2:+OwnDialogs
 	LV_GetText(strFile, A_EventInfo, 2)
 	strValue := o_Settings.ReadIniValue("MenuName", " ", "Global", strFile)
 	strTitle := o_L["DialogAddFavoriteTabsExternal"] . " - " . strValue
@@ -11968,6 +11969,7 @@ if (A_GuiEvent = "DoubleClick")
 	strValue := o_Settings.ReadIniValue("WriteAccessMessage", " ", "Global", strFile)
 	strMessage .= o_L["DialogExternalWriteAccessMessage"] . ":`n" . (StrLen(strValue) ? strValue : o_L["DialogNone"]) . "`n`n"
 	blnReadOnly := ExternalMenuIsReadOnly(strFile)
+	Gui, 2:+OwnDialogs
 	MsgBox, % (blnReadOnly ? "0" : "4"), %strTitle%, % strMessage . (blnReadOnly ? "" : "`n`n" . o_L["DialogExternalMenuOpen"])
 	IfMsgBox, Yes
 		Run, %strFile%
@@ -12015,7 +12017,10 @@ Loop
 	}
 }
 if (intNbMenusAdded)
+{
+	Gui, 1:+OwnDialogs
 	MsgBox, 0, %g_strAppNameText%, % L((intNbMenusAdded > 1 ? o_L["DialogExternalMenusAdded"] : o_L["DialogExternalMenuAdded"]), intNbMenusAdded)
+}
 
 Gosub, 2GuiClose
 
@@ -12061,13 +12066,12 @@ GuiMoveMultipleFavoritesSave:
 GuiCopyMultipleFavoritesSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
-Gui, 2:+OwnDialogs
 
 blnMove := (A_ThisLabel = "GuiMoveMultipleFavoritesSave")
 
 if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
 {
-	OopsGui2(o_L["OopsCannotCopyMoveToSelf"])
+	Oops(2, o_L["OopsCannotCopyMoveToSelf"])
 	return
 }
 
@@ -12083,13 +12087,14 @@ if (!blnMove) ; multiple copy not supported for menus, external and groups
 			break
 		if o_MenuInGui.SA[intTempMenuPosition].IsContainer()
 		{
+			Gui, 2:+OwnDialogs
 			MsgBox, 4, %g_strAppNameText%, % o_L["CopyFavoritesToMenuOrGroup"]
 			IfMsgBox, Yes
 				break
 			else
 				return
+		}
 	}
-}
 
 g_intOriginalMenuPosition := 0
 intNbFavoritesCopied := 0
@@ -12127,7 +12132,7 @@ Loop
 }
 
 if (intNbFavoritesCopied)
-	Oops(o_L["OopsFavoritesCopied"], intNbFavoritesCopied)
+	Oops(2, o_L["OopsFavoritesCopied"], intNbFavoritesCopied)
 
 gosub, GuiAddFavoriteSaveCleanup ; clean these variables for next multiple move or copy
 
@@ -12150,9 +12155,7 @@ GuiMoveOneFavoriteSave:
 GuiCopyFavoriteSave:
 GuiAddExternalSave:
 ;------------------------------------------------------------
-
 Gui, 2:Submit, NoHide
-Gui, 2:+OwnDialogs
 
 strThisLabel := A_ThisLabel
 g_blnAbortSave := false
@@ -12192,6 +12195,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 			o_EditedFavoriteMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
 		else ; if external settings file does not exist, create empty [Favorites] section
 		{
+			Gui, 2:+OwnDialogs
 			MsgBox, 4, %g_strAppNameText%, % L(o_L["DialogExternalMenuNotExist"], o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath)
 			IfMsgBox, No
 			{
@@ -12577,10 +12581,10 @@ if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
 	{
 		if StrLen(strExpandedNewFavoriteLocation)
-			OopsGui2(o_L["OopsFileNotFound"] . ":`n" . strExpandedNewFavoriteLocation
+			Oops(2, o_L["OopsFileNotFound"] . ":`n" . strExpandedNewFavoriteLocation
 				. (strExpandedNewFavoriteLocation <> strNewFavoriteLocation ? "`n`n" . o_L["OopsFileExpandedFrom"] . ":`n" . strNewFavoriteLocation : ""))
 		else
-			OopsGui2(o_L["OopsFileNotFound"] . ":`n" . strNewFavoriteLocation)
+			Oops(2, o_L["OopsFileNotFound"] . ":`n" . strNewFavoriteLocation)
 		g_blnAbortSave := true
 		return
 	}
@@ -12593,9 +12597,9 @@ if (o_Containers.AA[strDestinationMenu].AA.strMenuType = "Group" and InStr("Menu
 	or (o_Containers.AA[strDestinationMenu].AA.strMenuType = "External" and o_EditedFavorite.AA.strFavoriteType = "External")
 {
 	if (o_Containers.AA[strDestinationMenu].AA.strMenuType = "Group")
-		OopsGui2(o_L["DialogFavoriteNameNotAllowed"], StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", ""))
+		Oops(2, o_L["DialogFavoriteNameNotAllowed"], StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", ""))
 	else
-		OopsGui2(o_L["OopsExternalNotAllowedUnderExternal"])
+		Oops(2, o_L["OopsExternalNotAllowedUnderExternal"])
 	if (strThisLabel = "GuiMoveOneFavoriteSave")
 		g_intOriginalMenuPosition++
 	g_blnAbortSave := true
@@ -12610,7 +12614,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "External") and !InStr("|GuiEditFavori
 	SplitPath, strFavoriteAppWorkingDir, , , , strExternalFilenameNoExt
 	if !StrLen(strExternalFilenameNoExt)
 	{
-		OopsGui2(o_L["DialogFavoriteLocationEmpty"])
+		Oops(2, o_L["DialogFavoriteLocationEmpty"])
 		g_blnAbortSave := true
 		return
 	}
@@ -12623,7 +12627,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "External") and !InStr("|GuiEditFavori
 	}
 	if (f_radExternalMenuType1 + f_radExternalMenuType2 + f_radExternalMenuType3 = 0)
 	{
-		OopsGui2(o_L["OopsExternalSelectType"])
+		Oops(2, o_L["OopsExternalSelectType"])
 		GuiControl, ChooseString, f_intAddFavoriteTab, % " " . o_L["DialogAddFavoriteTabsExternal"] ; space (only) before tab name
 		g_blnExternalLocationChanged := 0 ; reset to 0, important to make sure the external file is created by GuiAddExternalSave
 		g_blnAbortSave := true
@@ -12642,14 +12646,14 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 			strNewFavoriteShortName := o_SpecialFolders.AA[strNewFavoriteLocation].strDefaultName
 		else
 		{
-			OopsGui2(InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["DialogSubmenuNameEmpty"] : o_L["DialogFavoriteNameEmpty"])
+			Oops(2, InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["DialogSubmenuNameEmpty"] : o_L["DialogFavoriteNameEmpty"])
 			g_blnAbortSave := true
 			return
 		}
 
 	if  InStr("|Folder|Document|Application|URL|FTP", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(strNewFavoriteLocation)
 	{
-		OopsGui2(o_L["DialogFavoriteLocationEmpty"])
+		Oops(2, o_L["DialogFavoriteLocationEmpty"])
 		g_blnAbortSave := true
 		return
 	}
@@ -12658,13 +12662,13 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	{
 		if InStr(f_strFavoriteSnippetPrompt, "|")
 		{
-			OopsGui2(o_L["DialogFavoriteSnippetPromptNoPipe"])
+			Oops(2, o_L["DialogFavoriteSnippetPromptNoPipe"])
 			g_blnAbortSave := true
 			return
 		}
 		if !StrLen(strNewFavoriteLocation)
 		{
-			OopsGui2(o_L["DialogFavoriteSnippetEmpty"])
+			Oops(2, o_L["DialogFavoriteSnippetEmpty"])
 			g_blnAbortSave := true
 			return
 		}
@@ -12675,14 +12679,14 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 	if (o_EditedFavorite.AA.strFavoriteType = "FTP" and SubStr(strNewFavoriteLocation, 1, 6) <> "ftp://")
 	{
-		OopsGui2(o_L["OopsFtpLocationProtocol"])
+		Oops(2, o_L["OopsFtpLocationProtocol"])
 		g_blnAbortSave := true
 		return
 	}
 
 	if  InStr("|Special|QAP", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(strNewFavoriteLocation)
 	{
-		OopsGui2(o_L["DialogFavoriteDropdownEmpty"], StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", "")
+		Oops(2, o_L["DialogFavoriteDropdownEmpty"], StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", "")
 			, (o_EditedFavorite.AA.strFavoriteType = "Special" ? o_L["DialogDropDown"] : o_L["DialogTreeView"]))
 		g_blnAbortSave := true
 		return
@@ -12690,20 +12694,20 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 	if InStr("|Menu|Group|External", "|" . o_EditedFavorite.AA.strFavoriteType, true) and InStr(strNewFavoriteShortName, g_strMenuPathSeparator)
 	{
-		OopsGui2(L(o_L["DialogFavoriteNameNoSeparator"], g_strMenuPathSeparator))
+		Oops(2, L(o_L["DialogFavoriteNameNoSeparator"], g_strMenuPathSeparator))
 		g_blnAbortSave := true
 		return
 	}
 
 	if InStr(strNewFavoriteShortName, g_strGroupIndicatorPrefix)
 	{
-		OopsGui2(L(o_L["DialogFavoriteNameNoSeparator"], g_strGroupIndicatorPrefix))
+		Oops(2, L(o_L["DialogFavoriteNameNoSeparator"], g_strGroupIndicatorPrefix))
 		g_blnAbortSave := true
 		return
 	}
 
 	if InStr(strNewFavoriteShortName, "& ") and !InStr(strNewFavoriteShortName, "&&")
-		OopsGui2(o_L["OopsAmpersandInName"])
+		Oops(2, o_L["OopsAmpersandInName"])
 		; do not abort for this
 	
 	if InStr(g_strTypesForTabWindowOptions, "|" . o_EditedFavorite.AA.strFavoriteType) and (strThisLabel <> "GuiAddFavoriteSaveXpress")
@@ -12720,7 +12724,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 		if !ValidateWindowPosition(strNewFavoriteWindowPosition)
 		{
-			OopsGui2(o_L["OopsInvalidWindowPosition"])
+			Oops(2, o_L["OopsInvalidWindowPosition"])
 			g_blnAbortSave := true
 			return
 		}
@@ -12734,19 +12738,19 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 			strFavoriteAppWorkingDir .= ".ini"
 		else if (strExternalSettingsExtension <> "ini")
 		{
-			OopsGui2(o_L["DialogExternalLocationIni"])
+			Oops(2, o_L["DialogExternalLocationIni"])
 			g_blnAbortSave := true
 			return
 		}
 	}
 	
 	if LocationTransformedFromHTTP2UNC(o_EditedFavorite.AA.strFavoriteType, (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
-		OopsGui2(o_L["OopsHttpLocationTransformed"], (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
+		Oops(2, o_L["OopsHttpLocationTransformed"], (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
 		; do not abort
 
 	if (strNewFavoriteLocation = "{TC Directory hotlist}" and !o_FileManagers.SA[3].TotalCommanderWinCmdIniFileExist())
 	{
-		OopsGui2(o_L["OopsInvalidWinCmdIni"])
+		Oops(2, o_L["OopsInvalidWinCmdIni"])
 		g_blnAbortSave := true
 		return
 	}
@@ -12773,9 +12777,9 @@ loop ; loop for duplicate names; if in Add this Folder Express or GuiAddExternal
 			else
 			{
 				if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-					OopsGui2(o_L["DialogFavoriteNameNotNewQAPfeature"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
+					Oops(2, o_L["DialogFavoriteNameNotNewQAPfeature"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
 				else
-					OopsGui2(o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
+					Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
 				if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ; #### not in effect now
 					g_intOriginalMenuPosition++
 				if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
@@ -12797,7 +12801,7 @@ if (strThisLabel = "GuiMoveOneFavoriteSave")
 	if (InStr(strDestinationMenu, strOriginalMenu . g_strMenuPathSeparatorWithSpaces . o_EditedFavorite.AA.strFavoriteName) = 1) ; = 1 to check if equal from start only
 		and !o_EditedFavorite.IsSeparator() ; no risk with separators
 	{
-		OopsGui2(o_L["DialogMenuNotMoveUnderItself"], o_EditedFavorite.AA.strFavoriteName)
+		Oops(2, o_L["DialogMenuNotMoveUnderItself"], o_EditedFavorite.AA.strFavoriteName)
 		g_intOriginalMenuPosition++ ; will be reduced by GuiMoveMultipleFavoritesSave
 		g_blnAbortSave := true
 		return
@@ -12869,6 +12873,7 @@ Gui, 1:ListView, f_lvFavoritesList
 
 if LV_GetCount("Selected") > 1
 {
+	Gui, 1:+OwnDialogs
 	MsgBox, 52, %g_strAppNameText%, % L(o_L["DialogRemoveMultipleFavorites"], LV_GetCount("Selected"))
 	IfMsgBox, No
 		return
@@ -12903,7 +12908,7 @@ else
 
 if !(intItemToRemove)
 {
-	Oops(o_L["DialogSelectItemToRemove"])
+	Oops(1, o_L["DialogSelectItemToRemove"])
 	gosub, GuiRemoveFavoriteCleanup
 	return
 }
@@ -12923,6 +12928,7 @@ blnItemIsMenu := o_MenuInGui.SA[intItemToRemove].IsContainer()
 
 if (blnItemIsMenu)
 {
+	Gui, 1:+OwnDialogs
 	MsgBox, 52, % L(o_L["DialogFavoriteRemoveTitle"], g_strAppNameText)
 		, % L((o_MenuInGui.SA[intItemToRemove].AA.strFavoriteType = "Menu" ? o_L["DialogFavoriteRemovePrompt"]
 			: (o_MenuInGui.SA[intItemToRemove].AA.strFavoriteType = "External" ? o_L["DialogFavoriteRemoveExternalPrompt"]
@@ -13029,7 +13035,7 @@ if !InStr(A_ThisLabel, "One")
 }
 if (g_intSelectedRow = 0)
 {
-	Oops(o_L["DialogSelectItemToMove"])
+	Oops(1, o_L["DialogSelectItemToMove"])
 	return
 }
 if (g_intSelectedRow = (InStr(A_ThisLabel, "Up") ? 1 : LV_GetCount())) ; if first or last item
@@ -13147,7 +13153,7 @@ else
 }
 
 if (blnSeparatorFound)
-	Oops(o_L["OopsSortUpToSeparator"])
+	Oops(1, o_L["OopsSortUpToSeparator"])
 
 intFirstSelectedRow := ""
 objExternalMenu := ""
@@ -13303,6 +13309,7 @@ HotkeysManageListEvents:
 ; 1 Shortcuts -> #|Menu|Favorite Name|Type|Shortcuts|Favorite Location|Object Position (hidden)
 ; 2 Hotstrings -> #|Menu|Favorite Name|Type|Trigger|Options|Favorite Location|Object Position (hidden)
 ;------------------------------------------------------------
+Gui, 2:+OwnDialogs
 
 Gui, 2:ListView, f_lvHotkeysList
 
@@ -13385,7 +13392,7 @@ LV_Delete()
 
 intHotkeysManageListWinID := WinExist("A")
 if not DllCall("LockWindowUpdate", Uint, intHotkeysManageListWinID)
-	Oops("An error occured while locking window display in`n" . L(o_L["DialogHotkeysManageTitle"], g_strAppNameText, g_strAppVersion))
+	Oops(2, "An error occured while locking window display in`n" . L(o_L["DialogHotkeysManageTitle"], g_strAppNameText, g_strAppVersion))
 
 Loop, 2
 {
@@ -13544,7 +13551,7 @@ LoadIconsManageListNext:
 
 intIconsManageListWinID := WinExist("A")
 if not DllCall("LockWindowUpdate", Uint, intIconsManageListWinID)
-	Oops("An error occured while locking window display in`n" . L(o_L["DialogIconsManageTitle"], g_strAppNameText, g_strAppVersion))
+	Oops(2, "An error occured while locking window display in`n" . L(o_L["DialogIconsManageTitle"], g_strAppNameText, g_strAppVersion))
 
 if (A_ThisLabel = "LoadIconsManageListNext")
 	g_intIconsManageStartingRow += g_intIconsManageRows
@@ -14147,13 +14154,13 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	
 	if (SS_strNewShortcut = "LButton")
 	{
-		Oops(o_L["DialogChangeHotkeyMouseCheckLButton"], o_L["DialogShift"], o_L["DialogCtrl"], o_L["DialogAlt"], o_L["DialogWin"])
+		Oops(3, o_L["DialogChangeHotkeyMouseCheckLButton"], o_L["DialogShift"], o_L["DialogCtrl"], o_L["DialogAlt"], o_L["DialogWin"])
 		SS_strNewShortcut := ""
 		return
 	}
 	else if (SS_blnWin or SS_blnAlt or SS_blnCtrl or SS_blnShift) and (SS_strNewShortcut = "None")
 	{
-		Oops(o_L["DialogChangeHotkeyModifierAndNone"])
+		Oops(3, o_L["DialogChangeHotkeyModifierAndNone"])
 		SS_strNewShortcut := ""
 		return
 	}	
@@ -14396,7 +14403,7 @@ if !(g_blnHotstringNeedRestart)
 	and (GetHotstringOptions(o_EditedFavorite.AA.strFavoriteHotstring) <> GetHotstringOptions(g_strNewFavoriteHotstring))
 {
 	g_blnHotstringNeedRestart := true
-	Oops(o_L["DialogChangeHotstringReload"], g_strAppNameText)
+	Oops(2, o_L["DialogChangeHotstringReload"], g_strAppNameText)
 }
 
 ; update favorite object
@@ -14462,7 +14469,7 @@ HotstringValidate(strActualHotstring, strNewHotstring)
 {
 	if StrLen(strNewHotstring) > 40 ; each hotstring abbreviation can be no more than 40 characters long
 	{
-		Oops(o_L["OopsHotstringTriggerTooLong"])
+		Oops(3, o_L["OopsHotstringTriggerTooLong"])
 		return strActualHotstring
 	}
 	else
@@ -15186,7 +15193,7 @@ if StrLen(g_strAlternativeMenu)
 	gosub, LaunchFromAlternativeMenu
 }
 else
-	Oops("QAP feature could not be found...")
+	Oops(0, "QAP feature could not be found...")
 
 OpenAlternativeMenuHotkeyCleanup:
 intOrder := ""
@@ -15451,7 +15458,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 	{
 		saShortcutHotstringLower := StrSplit(o_L["DialogHotkeysManageShortcutHotstringLower"], "|")
 		SplitHotstring(A_ThisHotkey, strOopsTrigger, strHotstringOppsOptionsShort)
-		Oops(o_L["OopsHotkeyObjectNotFound"]
+		Oops(0, o_L["OopsHotkeyObjectNotFound"]
 			, g_strAppNameText
 			, (g_strOpenFavoriteLabel = "OpenFavoriteFromShortcut" ? saShortcutHotstringLower[1] : saShortcutHotstringLower[2])
 			, (g_strOpenFavoriteLabel = "OpenFavoriteFromShortcut" ? A_ThisHotkey : strOopsTrigger))
@@ -15474,7 +15481,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 		}
 		else
 		{
-			Oops(o_L["MenuMenu"] . " """ . o_ThisFavorite.AA.strFavoriteName . """ " . o_L["OopsEmpty"])
+			Oops(0, o_L["MenuMenu"] . " """ . o_ThisFavorite.AA.strFavoriteName . """ " . o_L["OopsEmpty"])
 			o_ThisFavorite := ""
 		}
 	}
@@ -15596,7 +15603,7 @@ GetSpecialFolderLocation(ByRef strHotkeyTypeDetected, ByRef strTargetName, aaIte
 		strLocation := aaSpecialFolder.strTCCommand
 	else
 	{
-		Oops(o_L["OopsCouldNotOpenSpecialFolder"], strTargetName, strLocation)
+		Oops(0, o_L["OopsCouldNotOpenSpecialFolder"], strTargetName, strLocation)
 		strLocation := ""
 	}
 	
@@ -15676,7 +15683,7 @@ return
 GetWinInfo:
 ;------------------------------------------------------------
 
-
+; 4096: System Modal (always on top)
 MsgBox, % 1 + 64 + 4096, % g_strAppNameText . " - " . o_L["MenuGetWinInfo"], % L(o_L["DialogGetWinInfo"], new Triggers.HotkeyParts(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey).Hotkey2Text())
 
 IfMsgBox, OK
@@ -15777,7 +15784,7 @@ if (A_ThisLabel = "CloseComputerGuiGo")
 {
 	if !StrLen(strCloseComputerControlSelected)
 	{
-		Oops(o_L["DialogCloseComputerPrompt"])
+		Oops("CloseComputer", o_L["DialogCloseComputerPrompt"])
 		return
 	}
 	
@@ -16206,7 +16213,7 @@ try
 	ExitApp
 }
 
-Oops(o_L["OopsNotAdmin"], g_strAppNameText)
+Oops(0, o_L["OopsNotAdmin"], g_strAppNameText)
 
 strCurrentCommandLineParameters := ""
 
@@ -16221,7 +16228,7 @@ ShowQAPconnectIniFile:
 if FileExist(g_aaFileManagerQAPconnect.strQAPconnectIniPath)
 	Run, % g_aaFileManagerQAPconnect.strQAPconnectIniPath
 else
-	Oops(o_L["OptionsThirdPartyFileNotFound"], "QAPconnect", g_aaFileManagerQAPconnect.strQAPconnectIniPath)
+	Oops(2, o_L["OptionsThirdPartyFileNotFound"], "QAPconnect", g_aaFileManagerQAPconnect.strQAPconnectIniPath)
 
 return
 ;------------------------------------------------------------
@@ -16292,7 +16299,7 @@ strLatestVersions := Url2Var(strUrlCheck4Update
 if !StrLen(strLatestVersions)
 	if (A_ThisMenuItem = aaHelpL["MenuUpdate"])
 	{
-		Oops(o_L["UpdateError"])
+		Oops(0, o_L["UpdateError"])
 		gosub, Check4UpdateCleanup
 		return ; an error occured during ComObjCreate
 	}
@@ -16309,7 +16316,7 @@ Loop, Parse, strLatestVersions, , 0123456789.| ; strLatestVersions should only c
 	}
 	else
 	{
-		Oops(o_L["UpdateError"]) ; return with an error message
+		Oops(0, o_L["UpdateError"]) ; return with an error message
 		gosub, Check4UpdateCleanup
 		return
 	}
@@ -16559,7 +16566,7 @@ SwitchSettingsDefault:
 
 if SettingsUnsaved()
 {
-	Oops(o_L["ImpExpUnsavedSettings"])
+	Oops(1, o_L["ImpExpUnsavedSettings"])
 	return
 }
 
@@ -16583,7 +16590,7 @@ IniRead, strIniSettingsGlobal, %g_strSwitchSettingsFile%, Global, , %A_Space%
 IniRead, strIniSettingsFavorite1, %g_strSwitchSettingsFile%, Favorites, Favorite1, %A_Space%
 if !StrLen(strIniSettingsGlobal) or !StrLen(strIniSettingsFavorite1)
 {
-	Oops(o_L["DialogSettingsInvalid"], "[Global]", "[Favorites]", g_strSwitchSettingsFile)
+	Oops(1, o_L["DialogSettingsInvalid"], "[Global]", "[Favorites]", g_strSwitchSettingsFile)
 	return
 }
 
@@ -16603,7 +16610,7 @@ ImportExport:
 
 if SettingsUnsaved()
 {
-	Oops(o_L["ImpExpUnsavedSettings"])
+	Oops(1, o_L["ImpExpUnsavedSettings"])
 	return
 }
 
@@ -16698,10 +16705,11 @@ return
 ButtonImpExpGo:
 ;------------------------------------------------------------
 Gui, ImpExp:Submit, NoHide
+Gui, ImpExp:+OwnDialogs
 
 if !StrLen(f_strImpExpFile)
 {
-	Oops(o_L["ImpExpSelectFile"], (f_radImpExpExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))
+	Oops("ImpExp", o_L["ImpExpSelectFile"], (f_radImpExpExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))
 	return
 }
 
@@ -16779,7 +16787,7 @@ if (f_blnImpExpThemes)
 {
 	strThemesList := o_Settings.ReadIniValue("AvailableThemes", "", "Global", g_strImpExpSourceFile) ; ERROR if not found
 	if (strThemesList = "ERROR")
-		Oops(o_L["ImpExpNoThemes"], "AvailableThemes=", "[Global]", g_strImpExpSourceFile)
+		Oops("ImpExp", o_L["ImpExpNoThemes"], "AvailableThemes=", "[Global]", g_strImpExpSourceFile)
 	else
 		Loop, Parse, strThemesList, |
 			WriteIniSection("Gui-" . A_LoopField, "", blnAbort, blnContentTransfered, blnContentIdentical) ; update blnAbort, blnContentTransfered and blnContentIdentical
@@ -16834,7 +16842,7 @@ WriteIniSection(strSectionName, strDescription, ByRef blnAbort, ByRef blnContent
 	if !StrLen(strSourceIniSection)
 	{
 		if StrLen(strDescription)
-			Oops(o_L["ImpExpSectionNotFound"], g_strImpExpSourceFile, strSectionName, strDescription)
+			Oops("ImpExp", o_L["ImpExpSectionNotFound"], g_strImpExpSourceFile, strSectionName, strDescription)
 		return
 	}
 
@@ -16842,6 +16850,7 @@ WriteIniSection(strSectionName, strDescription, ByRef blnAbort, ByRef blnContent
 
 	if StrLen(strDestIniSection) and (strSourceIniSection <> strDestIniSection)
 	{
+		Gui, ImpExp:+OwnDialogs
 		MsgBox, 3, % o_L["ImpExpMenu"] . " - " . g_strAppNameText, % L(o_L["ImpExpReplaceSection"], g_strImpExpDestinationFile, strSectionName, SubStr(strDestIniSection, 1, 200) . (StrLen(strDestIniSection) > 200 ? "`n..." : ""))
 		IfMsgBox, Yes
 			blnReplaceOK := true
@@ -17092,13 +17101,14 @@ strSponsorName := Trim(f_strSponsorName)
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
 	or (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
 {
-	Oops(o_L["GuiDonateCodeInputDonorInvalid"])
+	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
 	return
 }
 
 o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
 o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
 
+Gui, 2:+OwnDialogs
 MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyou"], strSponsorName), 10
 
 Gosub, 2GuiClose
@@ -17255,7 +17265,7 @@ loop, parse, % "dll|def", |
 				FileCopy, %A_ScriptDir%\sqlite3-%str64or32%-bit.%strExtension%, %A_ScriptDir%\sqlite3.%strExtension%, 1 ; overwrite if wrong file exists
 				if (ErrorLevel)
 				{
-					Oops("Exit ~1~ properly before retstarting it with a different bitsize build (32-bit or 64-bit)", g_strAppNameText)
+					Oops(0, "Exit ~1~ properly before retstarting it with a different bitsize build (32-bit or 64-bit)", g_strAppNameText)
 					ExitApp
 				}
 			}
@@ -17271,7 +17281,7 @@ if StrLen(strError)
 {
 	; Diag(A_ThisLabel, "Db SQLite Missing", "STOP", g_blnIniFileCreation) ; force if first launch
 	Diag(A_ThisLabel, "Db SQLite Missing", "STOP")
-	Oops(o_L["OopsUsageDbSQLiteMissing"], strError)
+	Oops(0, o_L["OopsUsageDbSQLiteMissing"], strError)
 	g_blnUsageDbEnabled := false
 	return
 }
@@ -17288,7 +17298,7 @@ if !o_UsageDb.OpenDb(g_strUsageDbFile)
 {
 	; Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
 	Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
-	Oops("SQLite Error OpenDb`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nFile: " . g_strUsageDbFile)
+	Oops(0, "SQLite Error OpenDb`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nFile: " . g_strUsageDbFile)
 	g_blnUsageDbEnabled := false
 	return
 }
@@ -17313,7 +17323,7 @@ if (blnUsageDbIsNew)
 	{
 		; Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
 		Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
-		Oops("SQLite CREATE Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite CREATE Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -17335,7 +17345,7 @@ else ; modifications for previous versions
 	If StrLen(strUsageDbSQL)
 		!o_UsageDb.Exec(strUsageDbSQL)
 		{
-			Oops("SQLite ALTER Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+			Oops(0, "SQLite ALTER Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 			g_blnUsageDbEnabled := false
 			return
 		}
@@ -17349,7 +17359,7 @@ if (intSizeBeforeDelete > intMaximumSizeBytes)
 {
 	strUsageDbSQL := "SELECT id FROM Usage;"
 	If !o_UsageDb.GetTable(strUsageDbSQL, objUsageDbTable)
-		Oops("SQLite GetTable Error`n`nMsg:`t" . o_UsageDb.ErrorMsg . "`nCode:`t" . o_UsageDb.ErrorCode . "`n" . strUsageDbSQL)
+		Oops(0, "SQLite GetTable Error`n`nMsg:`t" . o_UsageDb.ErrorMsg . "`nCode:`t" . o_UsageDb.ErrorCode . "`n" . strUsageDbSQL)
 	
 	fltProportionOfRecordsToDelete := ((intSizeBeforeDelete - intMaximumSizeBytes) / intSizeBeforeDelete)
 	intRecordsToDelete := Round(objUsageDbTable.RowCount * fltProportionOfRecordsToDelete, 0) + Round(objUsageDbTable.RowCount / 10, 0) ;  difference + 10%
@@ -17357,11 +17367,11 @@ if (intSizeBeforeDelete > intMaximumSizeBytes)
 	strUsageDbSQL := "DELETE FROM Usage WHERE id in (SELECT id FROM Usage ORDER BY id LIMIT "
 		. intRecordsToDelete . ");" ; delete 10% latest entries of the database
 	If !o_UsageDb.Exec(strUsageDbSQL)
-		Oops("SQLite DELETE Error`n`nMsg:`t" . o_UsageDb.ErrorMsg . "`nCode:`t" . o_UsageDb.ErrorCode . "`n" . strUsageDbSQL)
+		Oops(0, "SQLite DELETE Error`n`nMsg:`t" . o_UsageDb.ErrorMsg . "`nCode:`t" . o_UsageDb.ErrorCode . "`n" . strUsageDbSQL)
 	
 	strUsageDbSQL := "VACUUM;"
 	If !o_UsageDb.Exec(strUsageDbSQL)
-		Oops("SQLite VACUUM Error`n`nMsg:`t" . o_UsageDb.ErrorMsg . "`nCode:`t" . o_UsageDb.ErrorCode . "`n" . strUsageDbSQL)
+		Oops(0, "SQLite VACUUM Error`n`nMsg:`t" . o_UsageDb.ErrorMsg . "`nCode:`t" . o_UsageDb.ErrorCode . "`n" . strUsageDbSQL)
 }
 
 str64or32 := ""
@@ -17413,7 +17423,7 @@ strUsageDbSQL := "SELECT LatestCollected FROM zMetadata;"
 if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 {
 	Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-	Oops("SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	g_blnUsageDbEnabled := false
 	return
 }
@@ -17484,7 +17494,7 @@ o_UsageDb.Exec("BEGIN TRANSACTION;")
 If (intUsageDbtNbItems) and !o_UsageDb.Exec(strUsageDbSQL)
 {
 	Diag(A_ThisLabel, "SQLite INSERT Recent Items Error: " . strUsageDbSQL, "STOP")
-	Oops("SQLite INSERT Recent Items Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite INSERT Recent Items Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
 	return
@@ -17496,7 +17506,7 @@ strUsageDbSQL := "UPDATE zMetadata SET LatestCollected = '" . strUsageDbLatestCo
 If !o_UsageDb.Exec(strUsageDbSQL)
 {
 	Diag(A_ThisLabel, "SQLite UPDATE LatestCollected zMETADATA Error: " . strUsageDbSQL, "STOP")
-	Oops("SQLite UPDATE LatestCollected zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite UPDATE LatestCollected zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
 	return
@@ -17581,7 +17591,7 @@ loop, parse, % "Folders|Files", |
 	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
 	{
 		Diag(A_ThisLabel, "SQLite QUERY POPULAR MENUS Error", "STOP")
-		Oops("SQLite QUERY POPULAR MENUS Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -17656,7 +17666,7 @@ if StrLen(strDynamicDbSQL) ; if menu does not contain Drives, Popular or Recent 
 	If !o_UsageDb.Exec(strDynamicDbSQL)
 	{
 		Diag(A_ThisLabel, "SQLite UPDATE zMETADATA Error: " . StrReplace(strDynamicDbSQL, "`n", "``n"), "STOP")
-		Oops("SQLite UPDATE Popular zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strDynamicDbSQL)
+		Oops(0, "SQLite UPDATE Popular zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strDynamicDbSQL)
 		return
 	}
 }
@@ -17742,7 +17752,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
 	{
 		Diag(A_ThisLabel, "SQLite QUERY Build menu Error", "STOP")
-		Oops("SQLite QUERY Build menu Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY Build menu Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		return
 	}
 	objDuplicatesFinder := Object()
@@ -18016,6 +18026,7 @@ SettingsNotSavedReturn()
 		return true
 		
 	SetTimer, SettingsNotSavedChangeButtonNames, 50
+	Gui, 1:+OwnDialogs
 	MsgBox, 3, % L(o_L["DialogSettingsNotSavedTitle"], g_strAppNameText), % o_L["DialogSettingsNotSavedPrompt"]
 	IfMsgBox, No ; Settings
 	{
@@ -18110,6 +18121,7 @@ if (A_GuiEvent = "DoubleClick")
 	LV_GetText(strWindowID, A_EventInfo, 2)
 	WinGetTitle, strWindowTitle, ahk_id %strWindowID%
 	WinGet, strWindowProcessPath, ProcessPath, ahk_id %strWindowID%
+	Gui, ListApps:+OwnDialogs
 	MsgBox, 3, % o_L["MenuListApplications"], % strWindowTitle . "`n" . strWindowProcessPath . "`n`n" . o_L["DialogListApplicationYesNo"]
 	IfMsgBox, Yes
 		WinActivate, ahk_id %strWindowID%
@@ -18320,9 +18332,9 @@ GetSelectedLocation(strClass, strWinId)
 	}
 	; no reliable technique to retrieve the active item in dialog boxes and Total Commander
 	else if WindowIsTotalCommander(strClass)
-		Oops(o_L["OopsSelectedItemTotalCommander"])
+		Oops(0, o_L["OopsSelectedItemTotalCommander"])
 	else if WindowIsDialog(strClass, strWinId)
-		Oops(o_L["OopsSelectedItemDialogBoxes"])
+		Oops(0, o_L["OopsSelectedItemDialogBoxes"])
 
     return strFirstItem
 }
@@ -18347,20 +18359,13 @@ L(strMessage, objVariables*)
 
 
 ;------------------------------------------------
-Oops(strMessage, objVariables*)
+Oops(varOwner, strMessage, objVariables*)
+; varOwner can be a number or a string
 ;------------------------------------------------
 {
-	Gui, 1:+OwnDialogs
-	MsgBox, 48, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*)
-}
-;------------------------------------------------
-
-
-;------------------------------------------------
-OopsGui2(strMessage, objVariables*)
-;------------------------------------------------
-{
-	Gui, 2:+OwnDialogs
+	if (!varOwner)
+		varOwner := 1
+	Gui, %varOwner%:+OwnDialogs
 	MsgBox, 48, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*)
 }
 ;------------------------------------------------
@@ -20413,7 +20418,7 @@ SetRegistry(strValue, strKeyName, strValueName)
 {
 	RegWrite, REG_SZ, %strKeyName%, %strValueName%, %strValue%
 	if (ErrorLevel)
-		Oops("An error occurred while writing the registry key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName)
+		Oops(0, "An error occurred while writing the registry key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName)
 }
 ;---------------------------------------------------------
 
@@ -20427,7 +20432,7 @@ RemoveRegistry(strKeyName, strValueName)
 	
 	RegDelete, %strKeyName%, %strValueName%
 	if (ErrorLevel)
-		Oops("An error occurreed while removing the registre key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName)	
+		Oops(0, "An error occurreed while removing the registre key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName)	
 }
 ;---------------------------------------------------------
 
@@ -20477,6 +20482,7 @@ FolderExistOrCreate(strFolder)
 	blnOK := FileExistInPath(strTempLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
 	if (!blnOK)
 	{
+		Gui, 2:+OwnDialogs
 		MsgBox, 36, %g_strAppNameText%, % L(o_L["DialogOptionsPathNotExist"], strFolder)
 		IfMsgBox, Yes
 		{
@@ -21146,7 +21152,7 @@ class Triggers.MouseButtons
 				if HasShortcut(this.P_strAhkHotkey)
 					Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
 				if (ErrorLevel)
-					Oops(o_L["DialogInvalidHotkey"], this.AA.strPopupHotkeyText, this.AA.strPopupHotkeyLocalizedName)
+					Oops(0, o_L["DialogInvalidHotkey"], this.AA.strPopupHotkeyText, this.AA.strPopupHotkeyLocalizedName)
 			}
 			;-------------------------------------------------
 		}
@@ -21462,9 +21468,9 @@ TODO
 			else
 			{
 				if (value = 4) ; QAPconnect
-					Oops(o_L["OopsWrongThirdPartyPathQAPconnect"], this.SA[4].AA.strQAPconnectFileManager, this.SA[4].AA.strFileManagerPath, "QAPconnect.ini", L(o_L["MenuEditIniFile"], "QAPconnect.ini"), o_L["OptionsThirdParty"])
+					Oops(0, o_L["OopsWrongThirdPartyPathQAPconnect"], this.SA[4].AA.strQAPconnectFileManager, this.SA[4].AA.strFileManagerPath, "QAPconnect.ini", L(o_L["MenuEditIniFile"], "QAPconnect.ini"), o_L["OptionsThirdParty"])
 				else ; 2 DirectoryOpus or 3 TotalCommander
-					Oops(o_L["OopsWrongThirdPartyPath"], this.SA[value].AA.strDisplayName, this.SA[value].AA.strFileManagerPath, o_L["OptionsThirdParty"])
+					Oops(0, o_L["OopsWrongThirdPartyPath"], this.SA[value].AA.strDisplayName, this.SA[value].AA.strFileManagerPath, o_L["OptionsThirdParty"])
 				this._intActiveFileManager := 1 ; fall back to Window Explorer
 			}
 			return this._intActiveFileManager
@@ -23477,7 +23483,7 @@ class Container
 			if this.AA.oParentMenu.FavoriteIsUnderExternalMenu(o_ExternalMenu)
 			{
 				this.AA.blnMenuExternalLoaded := false ; true if the external menu was loaded, false if not loaded (or not an external menu)
-				Oops(o_L["OopsExternalUnderExternalError"], o_ExternalMenu.AA.strMenuPath)
+				Oops(0, o_L["OopsExternalUnderExternalError"], o_ExternalMenu.AA.strMenuPath)
 				return, "EOM" ; end of menu because of known error (external settings file unavailable) - error is noted in .MenuExternalLoaded false - external menu will be empty
 			}
 			if !FileExist(s_strIniFile)
@@ -23520,7 +23526,7 @@ class Container
 				if (blnRefreshExternal) ; reset the main ini file
 					s_strIniFile := o_Settings.strIniFile
 				
-				Oops(o_L["OopsErrorReadingIniFile"] . "`n`n" . s_strIniFile . "`nFavorite" . s_intIniLineLoad . "=")
+				Oops(0, o_L["OopsErrorReadingIniFile"] . "`n`n" . s_strIniFile . "`nFavorite" . s_intIniLineLoad . "=")
 				if (this.AA.strMenuType = "External")
 				{
 					this.AA.blnMenuExternalLoaded := false
@@ -23879,7 +23885,7 @@ class Container
 				; enable shortcut
 				Hotkey, % aaThisFavorite.strFavoriteShortcut, OpenFavoriteFromShortcut, On UseErrorLevel
 				if (ErrorLevel)
-					Oops(o_L["DialogInvalidHotkeyFavorite"], aaThisFavorite.strFavoriteShortcut
+					Oops(0, o_L["DialogInvalidHotkeyFavorite"], aaThisFavorite.strFavoriteShortcut
 						, (StrLen(aaThisFavorite.strFavoriteName) ? aaThisFavorite.strFavoriteName
 							: o_QAPfeatures.AA[aaThisFavorite.strFavoriteLocation].LocalizedName) ; if empty probably because it is a QAP feature name
 						, aaThisFavorite.strFavoriteLocation)
@@ -24116,7 +24122,7 @@ class Container
 		
 		if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 		{
-			Oops(o_L["OopsMaxLiveFolder"], o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+			Oops(0, o_L["OopsMaxLiveFolder"], o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 			return
 		}
 		
@@ -24538,7 +24544,7 @@ class Container
 		{
 			strWriteAccessMessage := o_Settings.ReadIniValue("WriteAccessMessage", " ", "Global", this.AA.strMenuExternalSettingsPath) ; empty if not found
 			strExternalMenuName := o_Settings.ReadIniValue("MenuName", " ", "Global", this.AA.strMenuExternalSettingsPath) ; empty if not found
-			Oops(o_L["OopsErrorIniFileReadOnly"] . (StrLen(strExternalMenuName) ? "`n`n" . o_L["DialogExternalMenuName"] . ":`n" . strExternalMenuName : "")
+			Oops(0, o_L["OopsErrorIniFileReadOnly"] . (StrLen(strExternalMenuName) ? "`n`n" . o_L["DialogExternalMenuName"] . ":`n" . strExternalMenuName : "")
 				. (StrLen(strWriteAccessMessage) ? "`n`n" . o_L["DialogExternalWriteAccessMessage"] . ":`n" . strWriteAccessMessage : ""))
 			return false
 		}
@@ -24550,13 +24556,13 @@ class Container
 			else
 			{
 				; ... reserved by another user, return false
-				Oops(o_L["OopsMenuExternalReservedBy"], (intMenuExternalType = 2 ? o_L["OopsMenuExternalCollaborative"] : o_L["OopsMenuExternalCentralized"]), strMenuExternalReservedBy)
+				Oops(0, o_L["OopsMenuExternalReservedBy"], (intMenuExternalType = 2 ? o_L["OopsMenuExternalCollaborative"] : o_L["OopsMenuExternalCentralized"]), strMenuExternalReservedBy)
 				return false
 			}
 		else if (intMenuExternalType = 2 and ExternalMenuFolderIsReadOnly(this.AA.strMenuExternalSettingsPath))
 		; user cannot write to collaborative external ini file, could not lock it, return false
 		{
-			Oops(o_L["OopsExternalFileWriteErrorCollaborative"])
+			Oops(0, o_L["OopsExternalFileWriteErrorCollaborative"])
 			return false
 		}
 
@@ -24568,7 +24574,7 @@ class Container
 			if (this.AA.strMenuPath = o_MenuInGui.AA.strMenuPath)
 			; this menu is in gui - inform user that his change cannot be saved and reload menu in gui
 			{
-				Oops(o_L["OopsErrorIniFileModified"])
+				Oops(0, o_L["OopsErrorIniFileModified"])
 				Gosub, LoadMenuInGui ; will ExternalMenuReloadAndRebuild
 				return false
 			}
@@ -24584,7 +24590,7 @@ class Container
 		
 		if (intMenuExternalType = 1 and StrLen(strMenuExternalReservedBy) and strMenuExternalReservedBy <> A_ComputerName . " (" . A_UserName . ")")
 			; personal menu is changed on another system - only inform user, lock overwriting is allowed
-			Oops(o_L["OopsMenuExternalPersonalChangedBy"], strMenuExternalReservedBy)
+			Oops(0, o_L["OopsMenuExternalPersonalChangedBy"], strMenuExternalReservedBy)
 		
 		if (blnLockItForMe)
 		; lock external menu for this user (do it only when saving changes to the menu, not when checking before opening the add/edit favorite dialog box)
@@ -25275,7 +25281,7 @@ class Container
 								{
 									try pExplorer.Navigate2(this.aaTemp.strFullLocation)
 									catch, objErr
-										Oops(o_L["NavigateSpecialError"], this.aaTemp.strFullLocation)
+										Oops(0, o_L["NavigateSpecialError"], this.aaTemp.strFullLocation)
 								}
 								else
 								{
@@ -25283,7 +25289,7 @@ class Container
 									catch, objErr
 										; Note: If an error occurs in Navigate, the error message is given by Navigate itself and this script does not
 										; receive an error notification. From my experience, the following line would never be executed.
-										Oops(o_L["NavigateFileError"], this.aaTemp.strFullLocation)
+										Oops(0, o_L["NavigateFileError"], this.aaTemp.strFullLocation)
 								}
 							}
 						}
@@ -25422,7 +25428,7 @@ class Container
 				else ; Unknown
 				{
 					; avoid an error message if target app name is unknown
-					Oops(o_L["OopsUnknownTargetAppName"])
+					Oops(0, o_L["OopsUnknownTargetAppName"])
 					return false
 				}
 			}
@@ -25618,7 +25624,7 @@ class Container
 				}
 				else ; Unknown
 					; avoid an error message if target app name is unknown
-					Oops(o_L["OopsUnknownTargetAppName"])
+					Oops(0, o_L["OopsUnknownTargetAppName"])
 			}
 			return true
 		}
@@ -25888,7 +25894,7 @@ class Container
 			if (ErrorLevel = "ERROR")
 			{
 				if (A_LastError <> 1223)
-					Oops(o_L["OopsUnknownTargetAppName"])
+					Oops(0, o_L["OopsUnknownTargetAppName"])
 				; else no error message - error 1223 because user canceled on the Run as admnistrator prompt
 			}
 			else if (this.aaTemp.saFavoriteWindowPosition[1] and intPid and o_Settings.Execution.blnTryWindowPosition.IniValue)
@@ -25940,7 +25946,7 @@ class Container
 		{
 			Run, % this.aaTemp.strFullLocation, , UseErrorLevel, intPid
 			if (ErrorLevel = "ERROR")
-				Oops(o_L["OopsUnknownTargetAppName"])
+				Oops(0, o_L["OopsUnknownTargetAppName"])
 			else
 				; intPid may not be set for some doc types; could help if document is launch with a FavoriteLaunchWith
 				if (this.aaTemp.saFavoriteWindowPosition[1] and intPid and o_Settings.Execution.blnTryWindowPosition.IniValue)
@@ -26388,7 +26394,7 @@ class Container
 				If !o_UsageDb.Exec(strUsageDbSQL)
 				{
 					Diag(A_ThisFunc, "SQLite INSERT ACTION Error: " . strUsageDbSQL, "STOP")
-					Oops("SQLite INSERT ACTION Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+					Oops(0, "SQLite INSERT ACTION Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 					g_blnUsageDbEnabled := false
 					return
 				}	
@@ -26413,7 +26419,7 @@ class Container
 				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(item.AA.strFavoriteLocation) . "' COLLATE NOCASE;"
 			if !o_UsageDb.Query(strGetUsageDbSQL, o_RecordSet)
 			{
-				Oops("Message: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
+				Oops(0, "Message: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
 				g_blnUsageDbEnabled := false
 				return
 			}
