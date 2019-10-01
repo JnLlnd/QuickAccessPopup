@@ -5697,7 +5697,7 @@ else
 			saOneLine := StrSplit(A_LoopField, "`t") ; saOneLine[1] = path or URL, saOneLine[2] = favorite type, saOneLine[3] = icon (file,index or icon code)
 			strFavoriteLocationSwap := saOneLine[1]
 			saOneLine[1] := saOneLine[2] ; favorite type
-			saOneLine[2] := strFavoriteLocationSwap ; name
+			saOneLine[2] := StringLeftDotDotDot(strFavoriteLocationSwap, 250) ; name, names of menus and menu items can be up to 260 characters long (250 for safety)
 			saOneLine[4] := saOneLine[3] ; icon
 			saOneLine[3] := strFavoriteLocationSwap ; location
 			saMenuItemsTable.Push(saOneLine)
@@ -9105,7 +9105,8 @@ GuiDropFilesHelpClicked:
 Gui, 1:+OwnDialogs
 
 MsgBox, 0, % g_strAppNameText . " - " . StrReplace(o_L["GuiDropFilesHelp"], "&&", "&")
-	, % L(o_L["GuiDropFilesIncentive"], g_strAppNameText, o_L["DialogFolderLabel"], o_L["DialogFileLabel"], o_L["DialogApplicationLabel"]) . "`n`n" . o_L["GuiDropFilesIncentive2"]
+	, % L(StrReplace(o_L["GuiDropFilesIncentive"], "&&", "&")
+		, g_strAppNameText, o_L["DialogFolderLabel"], o_L["DialogFileLabel"], o_L["DialogApplicationLabel"]) . "`n`n" . o_L["GuiDropFilesIncentive2"]
 
 return
 ;------------------------------------------------------------
