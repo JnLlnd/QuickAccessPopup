@@ -5303,8 +5303,10 @@ Menu, Tray, NoStandard
 o_Settings.ReadIniOption("LaunchAdvanced", "strAlternativeTrayIcon", "AlternativeTrayIcon", " ", "AdvancedLaunch", "f_strAlternativeTrayIcon|f_lblAlternativeTrayIcon|f_btnAlternativeTrayIcon") ; empty if not found
 
 Menu, Tray, UseErrorLevel ; will be turned off at the end of SetTrayMenuIcon
-if StrLen(o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue) and FileExist(o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue)
-	Menu, Tray, Icon, % o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue, 1, 1 ; last 1 to freeze icon during pause or suspend
+arrAlternativeTrayIcon := StrSplit(o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue, ",") ; 1 file, 2 index
+strTempAlternativeTrayIconLocation := arrAlternativeTrayIcon[1]
+if StrLen(arrAlternativeTrayIcon[1]) and FileExistInPath(strTempAlternativeTrayIconLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
+	Menu, Tray, Icon, %strTempAlternativeTrayIconLocation%, % arrAlternativeTrayIcon[2], 1 ; last 1 to freeze icon during pause or suspend
 else
 	if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 		; 56 is iconQAPadminBeta and 55 is iconQAPadmin, last 1 to freeze icon during pause or suspend
@@ -5326,6 +5328,8 @@ Menu, Tray, Standard
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
+arrAlternativeTrayIcon := ""
+strTempAlternativeTrayIconLocation := ""
 g_blnTrayIconError := ""
 
 return
@@ -7158,7 +7162,7 @@ Gui, 2:Add, Edit, x+10 yp h20 w65 vf_fltUsageDbMaximumSize gGuiOptionsGroupChang
 Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnUsageDbFlush gButtonUsageDbFlushClicked hidden, % o_L["OptionsUsageDbFlushDatabase"]
 
 ; UsageDbShowPopularityIndex
-Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+5 vf_blnUsageDbShowPopularityIndex gGuiOptionsGroupChanged hidden, % o_L["OptionsUsageDbShowPopularityIndex"]
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 vf_blnUsageDbShowPopularityIndex gGuiOptionsGroupChanged hidden, % o_L["OptionsUsageDbShowPopularityIndex"]
 GuiControl, , f_blnUsageDbShowPopularityIndex, % o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue = true
 
 Gui, 2:Font, s8 w700
@@ -7188,7 +7192,7 @@ Gui, 2:Add, Text, yp x+10 vf_lblRefreshQAPMenuIntervalSec Disabled hidden, % o_L
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intRefreshQAPMenuIntervalSecEdit
 
 ; RefreshQAPMenuDebugBeep
-Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+15 w300 vf_blnRefreshQAPMenuDebugBeep Disabled gGuiOptionsGroupChanged hidden, % o_L["OptionsRefreshQAPMenuDebugBeep"]
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w300 vf_blnRefreshQAPMenuDebugBeep Disabled gGuiOptionsGroupChanged hidden, % o_L["OptionsRefreshQAPMenuDebugBeep"]
 GuiControl, , f_blnRefreshQAPMenuDebugBeep, % (o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.IniValue = true)
 gosub, RefreshQAPMenuEnableClickedInit
 
@@ -7379,8 +7383,8 @@ if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 
 if StrLen(f_strAlternativeTrayIcon) ; because f_strAlternativeTrayIcon is optional
 {
-	strTempLocation := f_strAlternativeTrayIcon
-	blnOptionsPathsOK := FileExistInPath(strTempLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
+	saTempLocation := StrSplit(f_strAlternativeTrayIcon, ",") ; 1 file, 2 index
+	blnOptionsPathsOK := FileExistInPath(saTempLocation[1]) ; value returned by FileExistInPath is not kept in object saTempLocation[1] but it is not needed here
 	if (!blnOptionsPathsOK)
 	{
 		Oops(2, o_L["OopsOptionsPathNotExist"], o_L["OopsOptionsPathTrayIcon"], f_strAlternativeTrayIcon)
@@ -7390,6 +7394,7 @@ if StrLen(f_strAlternativeTrayIcon) ; because f_strAlternativeTrayIcon is option
 
 blnOptionsPathsOK := ""
 strTempLocation := ""
+saTempLocation := ""
 
 ; from here, we know that we have valid paths in Options
 
@@ -8389,7 +8394,10 @@ else ; (A_ThisLabel = "ButtonAlternativeTrayIcon")
 	strDefault := o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue
 }
 
-FileSelectFile, strNewLocation, 3, %strDefault%, % o_L["DialogAddFolderSelect"]
+if (A_ThisLabel = "ButtonAlternativeTrayIcon")
+	strNewLocation := PickIconDialog(strDefault)
+else
+	FileSelectFile, strNewLocation, 3, %strDefault%, % o_L["DialogAddFolderSelect"]
 
 if !(StrLen(strNewLocation))
 	return
@@ -19196,7 +19204,7 @@ FileExistInPath(ByRef strFile)
 {
 	strFile := EnvVars(strFile) ; expand environment variables like %APPDATA% or %USERPROFILE%, and user variables like {DropBox}
 	if (!StrLen(strFile) or InStr(strFile, "://") or SubStr(strFile, 1, 1) = "{") ; this is not a file - caution some URLs in WhereIs cause an infinite loop
-		return, False
+		return false
 	
 	if !InStr(strFile, "\") ; if no path in filename
 		strFile := WhereIs(strFile) ; search if file exists in path env variable or registry app paths
@@ -19331,8 +19339,8 @@ ExpandUserVariables(str)
         if StrLen(A_LoopField)
         {
             saUserVariable := StrSplit(A_LoopField, "=")
-            if (SubStr(arrUserVariable[1], 1, 1) = "{" and SubStr(arrUserVariable[1], StrLen(arrUserVariable[1]), 1) = "}")
-                str := StrReplace(str, arrUserVariable[1], arrUserVariable[2])
+            if (SubStr(saUserVariable[1], 1, 1) = "{" and SubStr(saUserVariable[1], StrLen(saUserVariable[1]), 1) = "}")
+                str := StrReplace(str, saUserVariable[1], saUserVariable[2])
         }
 	
     return str
