@@ -7072,12 +7072,12 @@ Gui, 2:Add, Button, x%g_intGroupItemsTab3X% yp vf_btnQAPconnectEdit gShowQAPconn
 Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedInit hidden, % o_L["OptionsRefreshQAPconnectList"] ; ActiveFileManagerClickedInit will refresh the dropdown list
 
 ; TotalCommanderWinCmd
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd hidden ; gGuiOptionsGroupChanged
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
-Gui, 2:Add, Checkbox, yp x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusLayoutsName"])
+Gui, 2:Add, Checkbox, yp-5 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusLayoutsName"])
 GuiControl, , f_blnFileManagerDirectoryOpusShowLayouts, % (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts = true)
 
 Gosub, ActiveFileManagerClickedInit
@@ -7341,8 +7341,9 @@ if (g_intClickedFileManager > 1 and (!blnOptionsPathsOK or !blnTCWinCmdOK))
 }
 
 ; Expand Temp, Backup and Settings folders
-strTempFolderNew := EnvVars(f_strQAPTempFolderParentPath) ; save unexpanded to ini file
-strBackupFolderNew := EnvVars(f_strBackupFolder) ; save unexpanded to ini file
+; use temporary variables to save f_var unexpanded to ini file
+strTempFolderNew := (StrLen(f_strQAPTempFolderParentPath) ? PathCombine(A_WorkingDir, EnvVars(f_strQAPTempFolderParentPath)) : A_WorkingDir)
+strBackupFolderNew := (StrLen(f_strBackupFolder) ? PathCombine(A_WorkingDir, EnvVars(f_strBackupFolder)) : A_WorkingDir)
 
 if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 {
@@ -7421,11 +7422,10 @@ o_Settings.Launch.blnDisplayTrayTip.WriteIni(f_blnDisplayTrayTip)
 o_Settings.Launch.blnCheck4Update.WriteIni(f_blnCheck4Update)
 o_Settings.MenuPopup.blnChangeFolderInDialog.WriteIni(f_blnChangeFolderInDialog)
 
-o_Settings.SettingsFile.strBackupFolder.WriteIni(f_strBackupFolder) ; save unexpanded to ini file
+o_Settings.SettingsFile.strBackupFolder.WriteIni(StrLen(f_strBackupFolder) ? f_strBackupFolder : A_WorkingDir) ; save unexpanded to ini file, use Settings folder if empty
 
 strQAPTempFolderParentPrev := o_Settings.Launch.strQAPTempFolderParent.IniValue
-if StrLen(strTempFolderNew)
-	o_Settings.Launch.strQAPTempFolderParent.WriteIni(f_strQAPTempFolderParentPath) ; save unexpanded to ini file
+o_Settings.Launch.strQAPTempFolderParent.WriteIni(StrLen(f_strQAPTempFolderParentPath) ? f_strQAPTempFolderParentPath : A_WorkingDir) ; save unexpanded to ini file, use Settings folder if empty
 
 ; === SettingsWindow ===
 
@@ -7972,6 +7972,9 @@ else ; f_radActiveFileManager1
 	strHelpUrl := "https://www.quickaccesspopup.com/how-does-qap-work-on-multi-monitor-systems/"
 }
 
+if (f_radActiveFileManager1 or f_radActiveFileManager4) ; these file managers does not support tabs
+	GuiControl, , f_blnFileManagerUseTabs, 0
+
 GuiControl, , f_lnkFileManagerHelp, % L(o_L["OptionsThirdPartySelectedHelp"], o_FileManagers.SA[g_intClickedFileManager].AA.strDisplayName, strHelpUrl, o_L["GuiHelp"])
 if !(f_radActiveFileManager1) ; DirectoryOpus, TotalCommander or QAPconnect
 {
@@ -7999,6 +8002,9 @@ if !(f_radActiveFileManager1) ; DirectoryOpus, TotalCommander or QAPconnect
 	if (f_radActiveFileManager3) ; TotalCommander
 		GuiControl, , f_strTotalCommanderWinCmd, % g_aaFileManagerTotalCommander.strTCIniFile
 }
+
+if (A_ThisLabel <> "ActiveFileManagerClickedGroupButton")
+	Gosub, % StrReplace(A_ThisLabel, "ActiveFileManager", "FileManagerNavigate") ; ActiveFileManagerClickedInit -> FileManagerNavigateClickedInit
 
 strHelpUrl := ""
 strQAPconnectFileManagersList := ""
@@ -8442,6 +8448,12 @@ return
 ;------------------------------------------------------------
 ButtonUsageDbFlushClicked:
 ;------------------------------------------------------------
+
+if !FileExist(g_strUsageDbFile)
+{
+	Oops(2, "Database file not found:`n~1~", g_strUsageDbFile)
+	return
+}
 
 Diag(A_ThisLabel, "", "START")
 
