@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.0.4 (2019-10-03)
+- fix bug when expanding user variables
+- fix bug when refreshing the Clipboard menu and the Windows Clipboard contains an URL longer than 260 chars (Windows menus limit)
+- fix bug supporting "file,index" icon format for alternative tray icon; support relative path, system and user variables in alternative icon path; use pick icon dialog box to select alternative tray icon
+- fix bug supporting relative path, system and user variables in temporary and backup folders
+- fix error message if trying to flush the database when its file does not exist
+- fix various typo errors in Options, File Managers tab, and in other dialog boxes
+- make sure every message box and input box cannot be dismissed other than by clicking its OK or Cancel buttons
+ 
 Version: 10.0.3 (2019-09-29)
 - fix bug introduced in v10.0.1 when a submenu contains a disabled item or a column break, the next item being offset
 - fix issue preventing situation where Special folders names would be empty (for example when favorites are imported from another system)
@@ -3539,7 +3548,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.0.3
+;@Ahk2Exe-SetVersion 10.0.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3644,7 +3653,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.0.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.0.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
