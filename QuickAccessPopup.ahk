@@ -10821,6 +10821,7 @@ ButtonChangeFavoriteHotstring:
 Gui, 2:Submit, NoHide
 
 g_strNewFavoriteHotstring := SelectHotstring(g_strNewFavoriteHotstring, f_strFavoriteShortName, o_EditedFavorite.AA.strFavoriteType, f_strFavoriteLocation)
+; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger or existing hotstring if cancelled
 
 SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
 
@@ -14257,8 +14258,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	if !(P_blnDefaultOptions)
 	{
 		Gui, Font, s8 w700
-		Gui, Add, Text, x+5 yp w300 section, % (P_blnDefaultOptions ? o_L["DialogChangeHotstringDefaultOptionsPrompt"]
-			: P_strFavoriteName . (StrLen(P_strFavoriteType) ? " (" . P_strFavoriteType . ")" : ""))
+		Gui, Add, Text, x+5 yp w300 section, % P_strFavoriteName . (StrLen(P_strFavoriteType) ? " (" . P_strFavoriteType . ")" : "")
 		Gui, Font
 	}
 	
@@ -14368,6 +14368,9 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	;------------------------------------------------------------
 	
 	; called here if user click Cancel, called also directlry if user hit Escape
+
+	SH_strNewHotstring := P_strActualHotstring
+	g_blnChangeHotstringInProgress := false
 	Gosub, 3GuiEscape
   
 	return
