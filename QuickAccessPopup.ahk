@@ -32,7 +32,9 @@ HISTORY
 =======
 
 Version: 10.0.5 (2019-10-06)
-- 
+- fix bug when changing an hotstring from the "Manage Hotstrings" window and hitting cancel
+- debug Settings folder when "/Working:" command-line parameter is used in Easy Setup mode
+- for Easy Setup users, in Options, General tab, disable the "Settings Folder" control and display an error message if the parameter "/Working:" was used to change the Settings Folder
  
 Version: 10.0.4 (2019-10-03)
 - fix bug when expanding user variables
