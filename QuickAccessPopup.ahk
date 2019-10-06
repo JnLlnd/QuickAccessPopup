@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.0.5 (2019-10-06)
+- 
+ 
 Version: 10.0.4 (2019-10-03)
 - fix bug when expanding user variables
 - fix bug when refreshing the Clipboard menu and the Windows Clipboard contains an URL longer than 260 chars (Windows menus limit)
@@ -3548,7 +3551,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.0.4
+;@Ahk2Exe-SetVersion 10.0.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3653,7 +3656,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.0.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.0.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -4136,10 +4139,7 @@ SetQAPWorkingDirectory:
 ; current user registry Run key. It has precedence on the Working Folder value in settings file.
 
 if StrLen(o_CommandLineParameters.AA["Working"])
-{
 	SetWorkingDir, % o_CommandLineParameters.AA["Working"]
-	; ###_V(A_ThisLabel . " - /Working: parameter", A_WorkingDir)
-}
 
 ; DETECT INSTALL MODE
 
@@ -4156,8 +4156,8 @@ g_blnPortableMode := !FileExist(A_ScriptDir . "\_do_not_remove_or_rename.txt")
 ; For example, if the "Run at startup" is enabled with QAP in portable mode, a shortcut is created in the user's
 ; startup folder with "Start In" set to the current A_WorkingDir.
 
-if (g_blnPortableMode)
-	return ; keep current A_WorkingDir
+if (g_blnPortableMode or StrLen(o_CommandLineParameters.AA["Working"]))
+	return ; keep current A_WorkingDir or /Working: folder
 
 ; FIRST LAUNCH IN SETUP MODE
 
@@ -4687,7 +4687,8 @@ if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersio
 o_Settings.ReadIniOption("Launch", "blnDefaultMenuBuilt", "DefaultMenuBuilt", 0) ; blnDefaultMenuBuilt
 if !(o_Settings.Launch.blnDefaultMenuBuilt.IniValue)
  	Gosub, AddToIniDefaultMenu ; modify the ini file Favorites section before reading it
-o_Settings.ReadIniOption("SettingsFile", "strBackupFolder", "BackupFolder", A_WorkingDir, "General", "f_lblBackupFolder|f_strBackupFolder|f_btnBackupFolder|f_lblWorkingFolder|f_strWorkingFolder|f_btnWorkingFolder")
+o_Settings.ReadIniOption("SettingsFile", "strBackupFolder", "BackupFolder", A_WorkingDir, "General"
+	, "f_lblBackupFolder|f_strBackupFolder|f_btnBackupFolder|f_lblWorkingFolder|f_strWorkingFolder|f_btnWorkingFolder|f_lblWorkingFolderDisabled")
 
 ; ---------------------
 ; Load favorites
@@ -6779,8 +6780,12 @@ Gui, 2:Add, Link, yp x+1 gCheck4UpdateNow vf_lnkCheck4Update hidden, % "(<a>" . 
 if (!g_blnPortableMode)
 {
 	Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% w105 vf_lblWorkingFolder hidden, % o_L["OptionsWorkingFolder"] . ":"
-	Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strWorkingFolder hidden ; gLabel after GuiControl that changes the value below
-	Gui, 2:Add, Button, x+5 yp w100 gButtonWorkingFolder vf_btnWorkingFolder hidden, % o_L["DialogBrowseButton"]
+	Gui, 2:Add, Edit, % "yp x" . g_intGroupItemsTab3X . " w300 h20 vf_strWorkingFolder hidden "
+		. (StrLen(o_CommandLineParameters.AA["Working"]) ? "disabled" : "") ; gLabel after GuiControl that changes the value below
+	Gui, 2:Add, Button, % "x+5 yp w100 gButtonWorkingFolder vf_btnWorkingFolder hidden " 
+		. (StrLen(o_CommandLineParameters.AA["Working"]) ? "disabled" : ""), % o_L["DialogBrowseButton"]
+	if StrLen(o_CommandLineParameters.AA["Working"])
+		Gui, 2:Add, Text, y+2 x%g_intGroupItemsTab3X% w400 vf_lblWorkingFolderDisabled hidden, % o_L["OopsWorkingFolderDisabled"]
 	GuiControl, 2:, f_strWorkingFolder, % GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
 	GuiControl, 2:+gGuiOptionsGroupChanged, f_strWorkingFolder
 }
