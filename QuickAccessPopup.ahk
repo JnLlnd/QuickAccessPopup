@@ -4559,8 +4559,8 @@ Gosub, LoadIniAlternativeMenuFeaturesHotkeys ; load from ini file and enable Alt
 ; Load Options
 
 ; Group General
-o_Settings.ReadIniOption("Launch", "blnRunAtStartup", "", , "General", "f_blnOptionsRunAtStartup") ; blnRunAtStartup is not used but strGuiControls is
-o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "ChangeFolderInDialog", 0, "General", "f_blnChangeFolderInDialog") ; g_blnChangeFolderInDialog
+o_Settings.ReadIniOption("Launch", "blnRunAtStartup", "", , "General", "f_lblOptionsRunAtStartup|f_blnOptionsRunAtStartup") ; blnRunAtStartup is not used but strGuiControls is
+o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "ChangeFolderInDialog", 0, "General", "f_lblChangeFolderInDialog|f_blnChangeFolderInDialog") ; g_blnChangeFolderInDialog
 if (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue)
 	o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "UnderstandChangeFoldersInDialogRisk", 0) ; keep same ini instance but replace value if false
 o_Settings.ReadIniOption("Launch", "blnDisplayTrayTip", "DisplayTrayTip", 1, "General", "f_blnDisplayTrayTip") ; g_blnDisplayTrayTip
@@ -5434,6 +5434,7 @@ saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiAddFavoriteSelectType", aaFavoriteL["DialogAdd"] . g_strEllipse . "`tCtrl+N", "", "iconNoIcon"])
 saMenuItemsTable.Push(["SettingsCtrlE", aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
+; to avoid conflicts with the Search text box, do not use shortcuts Del or Ctrl+C, use Ctrl+R (Remove) and Ctrl+Y (Copy)
 saMenuItemsTable.Push(["SettingsCtrlR", aaFavoriteL["GuiRemoveFavorite"] . "`tCtrl+R", "", "iconNoIcon"])
 saMenuItemsTable.Push(["SettingsCtrlY", aaFavoriteL["DialogCopy"] . g_strEllipse . "`tCtrl+Y", "", "iconNoIcon"])
 saMenuItemsTable.Push(["SettingsCtrlM", aaFavoriteL["GuiMove"] . g_strEllipse . "`tCtrl+M", "", "iconNoIcon"])
@@ -6749,7 +6750,8 @@ Gosub, GuiOptionsHeader
 ; === General ===
 
 ; ChangeFolderInDialog
-Gui, 2:Add, CheckBox, y%intGroupItemsY% x%g_intGroupItemsTab3X% w400 vf_blnChangeFolderInDialog gChangeFoldersInDialogClicked hidden, % o_L["OptionsChangeFolderInDialog"]
+Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w105 vf_lblChangeFolderInDialog hidden, % o_L["DialogDialogBoxes"]
+Gui, 2:Add, CheckBox, yp x%g_intGroupItemsTab3X% w400 vf_blnChangeFolderInDialog gChangeFoldersInDialogClicked hidden, % o_L["OptionsChangeFolderInDialog"]
 GuiControl, , f_blnChangeFolderInDialog, % (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue = true)
 
 ; LanguageCode
@@ -6763,7 +6765,8 @@ Gui, 2:Add, DropDownList, yp x%g_intGroupItemsTab3X% w200 vf_drpTheme gGuiOption
 GuiControl, ChooseString, f_drpTheme, % o_Settings.Launch.strTheme.IniValue
 
 ; RunAtStartup
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnOptionsRunAtStartup gGuiOptionsGroupChanged hidden, % o_L["OptionsRunAtStartup"]
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w105 vf_lblOptionsRunAtStartup hidden, % o_L["MenuStartup"]
+Gui, 2:Add, CheckBox, yp x%g_intGroupItemsTab3X% vf_blnOptionsRunAtStartup gGuiOptionsGroupChanged hidden, % o_L["OptionsRunAtStartup"]
 if (g_blnPortableMode) ; get value from existence of startup file shortcut
 	GuiControl, , f_blnOptionsRunAtStartup, % (FileExist(A_Startup . "\" . g_strAppNameFile . ".lnk") ? 1 : 0)
 else ; setup mode, get value form current user registry
@@ -12933,7 +12936,7 @@ GuiRemoveOneFavorite:
 blnFavoriteFromSearch := StrLen(GetFavoritesListFilter())
 if (blnFavoriteFromSearch)
 {
-	o_MenuInGui := GetMenuForGuiFiltered(intItemToRemove)
+	oMenuInGuiCandidate := GetMenuForGuiFiltered(intItemToRemove)
 	gosub, OpenMenuFromGuiSearch ; open the parent menu of found selected favorite
 	gosub, GuiFavoritesListFilterEmpty ; must be after we opened the menu
 }
