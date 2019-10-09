@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.0.6 (2019-10-??)
+- 
+ 
 Version: 10.0.5 (2019-10-06)
 - fix bug when changing an hotstring from the "Manage Hotstrings" window and hitting cancel
 - debug Settings folder when "/Working:" command-line parameter is used in Easy Setup mode
@@ -3553,7 +3556,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.0.5
+;@Ahk2Exe-SetVersion 10.0.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3658,7 +3661,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.0.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.0.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -13835,6 +13838,9 @@ GuiControl, Disable, f_btnGuiSaveAndStayFavorites
 Gui, Font, s6 ; set a new default
 GuiControl, Disable, f_btnGuiCancel
 
+GuiControl, Enable, f_btnGuiCancel
+GuiControl, , f_btnGuiCancel, % aaSettingsL["GuiClose"]
+
 ; disable File save menu commands
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSave"] . "`tCtrl+S"
 Menu, menuBarFile, Disable, % L(aaMenuFileL["GuiSaveAndClose"], g_strAppNameText)
@@ -13845,18 +13851,6 @@ ToolTip ; clear tooltip after refresh
 if (A_ThisLabel = "GuiSaveAndReloadQAP") or (g_blnHotstringNeedRestart)
 	Gosub, ReloadQAP
 
-; was for g_objHotkeysByNameLocation
-; clean-up unused hotkeys if favorites were deleted
-; for strThisNameLocation, strThisHotkey in g_objHotkeysByNameLocation
-	; if RecursiveHotkeyNotNeeded(strThisNameLocation, g_objMainMenu)
-	; {
-		; g_objHotkeysByNameLocation.Remove(strThisNameLocation)
-		; Hotkey, %strThisHotkey%, , Off, UseErrorLevel ; do nothing if error (probably because default hotkey not supported by keyboard)
-	; }
-; Gosub, DisablePreviousLocationHotkeys ; disable hotkeys found in ini file before updating the ini file
-; Gosub, SaveLocationHotkeysToIni ; save location hotkeys to ini file from g_objHotkeysByNameLocation
-; Gosub, EnableLocationHotkeys ; enable location hotkeys from g_objHotkeysByNameLocation
-
 Gosub, ExternalMenusRelease ; release reserved external menus
 Gosub, LoadMenuFromIniWithStatus ; load favorites to menu object
 if (A_ThisLabel = "GuiSaveAndStayFavorites") ; update object of menu in gui
@@ -13864,8 +13858,6 @@ if (A_ThisLabel = "GuiSaveAndStayFavorites") ; update object of menu in gui
 
 Gosub, BuildMainMenuWithStatus ; only here we load hotkeys, when user save favorites
 
-GuiControl, Enable, f_btnGuiCancel
-GuiControl, , f_btnGuiCancel, % aaSettingsL["GuiClose"]
 g_blnMenuReady := true
 
 if (A_ThisLabel = "GuiSaveAndStayFavorites")
@@ -25144,10 +25136,14 @@ class Container
 				blnOpenOK := true
 			}
 			; MENU
-			else if InStr("Menu|External", this.AA.strFavoriteType, true)
+			else if (InStr("Menu|External", this.AA.strFavoriteType, true)
+				or this.AA.oSubMenu.AA.blnIsLiveMenu)
 			{
 				Gosub, SetMenuPosition
-				Menu, % o_L["MainMenuName"] . " " . this.aaTemp.strFullLocation, Show, %g_intMenuPosX%, %g_intMenuPosY%
+				if (this.AA.oSubMenu.AA.blnIsLiveMenu)
+					Menu, % this.AA.oSubMenu.AA.strMenuPath, Show, %g_intMenuPosX%, %g_intMenuPosY%
+				else
+					Menu, % o_L["MainMenuName"] . " " . this.aaTemp.strFullLocation, Show, %g_intMenuPosX%, %g_intMenuPosY%
 				blnOpenOK := true
 			}
 			; WINDOWS APPS
