@@ -10503,7 +10503,7 @@ Gui, 2:Add, Checkbox, % "x20 y50 section vf_blnUseDefaultWindowPosition gCheckbo
 Gui, 2:Add, Text, % "y+20 x20 section vf_lblWindowPositionState " . (saNewFavoriteWindowPosition[1] ? "" : "hidden"), % o_L["DialogState"]
 
 Gui, 2:Add, Radio, % "y+10 x20 vf_lblWindowPositionMinMax1 gRadioButtonWindowPositionMinMaxClicked" 
-	. (saNewFavoriteWindowPosition[1] ? "" : " hidden") . (saNewFavoriteWindowPosition[2] ? " checked" : ""), % o_L["DialogNormal"]
+	. (saNewFavoriteWindowPosition[1] ? "" : " hidden") . (!saNewFavoriteWindowPosition[2] ? " checked" : ""), % o_L["DialogNormal"]
 Gui, 2:Add, Radio, % "y+10 x20 vf_lblWindowPositionMinMax2 gRadioButtonWindowPositionMinMaxClicked"
 	. (saNewFavoriteWindowPosition[1] ? "" : " hidden") . (saNewFavoriteWindowPosition[2] = 1 ? " checked" : ""), % o_L["DialogMaximized"]
 Gui, 2:Add, Radio, % "y+10 x20 vf_lblWindowPositionMinMax3 gRadioButtonWindowPositionMinMaxClicked"
@@ -12866,6 +12866,12 @@ ValidateWindowPosition(strPosition)
 	if !(saPosition[1]) or (saPosition[2] <> 0) ; no position to validate
 		return true
 	
+	strPositionsExist := ""
+	loop, 4
+		strPositionsExist .= saPosition[A_Index + 2] ; concat values for 3, 4, 5 and 6
+	if !StrLen(strPositionsExist) ; no position is accepted, keeping default window position
+		return true
+		
 	if saPosition[3] is not integer
 		blnOK := false
 	else if saPosition[4] is not integer
@@ -25135,7 +25141,7 @@ class Container
 				this.OpenGroup()
 				blnOpenOK := true
 			}
-			; MENU
+			; MENU or LIVE FOLDER
 			else if (InStr("Menu|External", this.AA.strFavoriteType, true)
 				or this.AA.oSubMenu.AA.blnIsLiveMenu)
 			{
