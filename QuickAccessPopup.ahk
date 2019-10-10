@@ -3736,7 +3736,7 @@ global g_intNewWindowOffset := -1 ; to offset multiple Explorer windows position
 global g_strLastConfiguration ; last screen configuration updated by GetScreenConfiguration
 
 global g_saDialogListApplicationsDropdown := StrSplit(o_L["DialogListApplicationsDropdown"], "|") ; "List All||Current Windows menu|Running Applications|Close All Windows menu"
-g_saDialogListApplicationsDropdown.RemoveAt(2) ; 1) List All 2) Current Windows menu 3) Running Applications 4) Close All Windows menu"
+g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) List All 2) Current Windows menu 3) Running Applications 4) Close All Windows menu"
 
 ;---------------------------------
 ; Used in OpenFavorite
