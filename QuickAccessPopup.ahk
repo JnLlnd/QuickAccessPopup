@@ -8317,7 +8317,7 @@ RefreshedMenusAttachedClicked:
 
 Gosub, GuiOptionsGroupChanged
 
-Oops(o_L["OptionsRefreshedMenusAttachedInfo"], o_L["MenuRecentFolders"], o_L["MenuRecentFiles"]
+Oops(2, o_L["OptionsRefreshedMenusAttachedInfo"], o_L["MenuRecentFolders"], o_L["MenuRecentFiles"]
 	, o_L["MenuPopularMenusFolders"], o_L["MenuPopularMenusFiles"], o_L["MenuDrives"])
 
 return
@@ -10573,7 +10573,7 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 	Gui, 2:Add, Button, x+10 yp vf_btnFavoriteLaunchWith gButtonSelectLaunchWith, % o_L["DialogBrowseButton"]
 }
 
-if !InStr("Group|Snippet|QAP", o_EditedFavorite.AA.strFavoriteType, true)
+if !InStr("Group|Snippet|QAP|Folder", o_EditedFavorite.AA.strFavoriteType, true)
 {
 	Gui, 2:Add, Text, y+20 x20 w400  vf_lblFavoriteArguments, % o_L["DialogArgumentsLabel"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteArguments gFavoriteArgumentChanged, % o_EditedFavorite.AA.strFavoriteArguments
@@ -14495,7 +14495,7 @@ ShortcutIfAvailable(strShortcut, strFavoriteName)
 
 	if StrLen(strExistingName)
 	{
-		Oops(o_L["OopsHotkeyAlreadyUsed"], new Triggers.HotkeyParts(strShortcut).Hotkey2Text(), strExistingName, strFavoriteName)
+		Oops(2, o_L["OopsHotkeyAlreadyUsed"], new Triggers.HotkeyParts(strShortcut).Hotkey2Text(), strExistingName, strFavoriteName)
 		return ""
 	}
 	else
