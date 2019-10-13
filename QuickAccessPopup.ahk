@@ -31,8 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.0.6 (2019-10-??)
-- 
+Version: 10.0.6 (2019-10-13)
+- for better backward compatibility, in folder "Live Folder Options" tab of favorite folder, replace "Show Icons" and "Show File extension items" with "Hide Icons" and "Hide File extension" and make these default values OFF (this could require adjustments for users who edited Live Folders favorites with releases between v10.0.1 and v10.0.5)
+- when saving an application favorite having parameters,turn the "activate if running" option off if it is also enabled (this two options could not be active altogether)
+- stop displaying the Parameters text box for type Folder (this parameter had no effect in this type of favorite)
+- fix bug in Folder favorite Windows Options, select Normal state by default
+- when validating positions, accept empty values dot the positions values (X, Y, W and H) and open the window at its default position
+- fix bug when opening a LiveFolder menu using a shortcut or hotstring
+- fix bug when reloading QAP after an hotstring option was changed
+- fix bug when removing a favorite from a search result list
+- add some labels in Options, General tab for better clarity
  
 Version: 10.0.5 (2019-10-06)
 - fix bug when changing an hotstring from the "Manage Hotstrings" window and hitting cancel
