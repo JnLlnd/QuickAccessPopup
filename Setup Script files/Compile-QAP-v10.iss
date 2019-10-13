@@ -25,10 +25,10 @@
 
 [CustomMessages]
 PaypalCredit=(Paypal account or credit cards)
-HelpMePayExpenses=&HELP me pay EXPENSES for making QAP%nUS $
+HelpMePayExpenses=&HELP me pay EXPENSES for making QAP%nSee all SPONSORING options
+US=US $
 Euros=Euros €
 CDN=CDN $
-Monthly=MONTHLY donations:%nisn't QAP worth a coffee per month?
 dutch.PaypalCredit=(Paypal of creditcards)
 dutch.HelpMePayExpenses=&Help me om de uitgaven te betalen om QAP%nte ontwikkelen in US $
 dutch.Euros=Of in Euro’s €
@@ -93,7 +93,7 @@ Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
 ; Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 
 [Dirs]
-; repository for files to be copied to "{userappdata}\{#MyAppName}" at first QAP execution with quickaccesspopup.ini and _temp subfolder
+; repository for files to be copied to "{userdocs}\\{#MyAppName}" (was "{userappdata}\{#MyAppName}" pre-v10) at first QAP execution with quickaccesspopup.ini and _temp subfolder
 Name: "{commonappdata}\{#MyAppName}" 
 
 [Files]
@@ -205,10 +205,11 @@ Root: HKLM; Subkey: "Software\Classes\lnkfile\shell\Import Shortcut to Quick Acc
 [Run]
 Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{commonappdata}\{#MyAppName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: waituntilidle postinstall skipifsilent
 ; Filename: "{app}\ImportFPsettings.exe"; WorkingDir: "{commonappdata}\{#MyAppName}"; Parameters: "/calledfromsetup"; Tasks: importfpsettings; Flags: runhidden waituntilterminated
-Filename: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TE8TR28QKM3Z8"; Description: "{cm:HelpMePayExpenses} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
+Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec; Check: ExecuteSponsoringTask()
+Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec unchecked; Check: NotExecuteSponsoringTask()
+Filename: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TE8TR28QKM3Z8"; Description: "{cm:US} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
 Filename: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y9VVGCBNJK5DQ"; Description: "{cm:Euros} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
 Filename: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DV4E4DYVWC5GC"; Description: "{cm:CDN} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
-Filename: "http://www.quickaccesspopup.com/why-support-freeware/"; Description: "{cm:Monthly}"; Flags: postinstall shellexec unchecked
 
 [Tasks]
 
@@ -281,4 +282,41 @@ begin
   // setup Explorer context menus if ExplorerContextMenus is 1 (or is not found) for both userappdata and commonappdata
   // (in other words, do not setup context menus if either of these files include ExplorerContextMenus with value "0")
   Result := (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant('{userappdata}\{#MyAppName}\{#MyAppNameNoSpace}.ini')) = '1') and (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant('{commonappdata}\{#MyAppName}\{#MyAppNameNoSpace}.ini')) = '1');
+end;
+
+function ExecuteSponsoringTask(): Boolean;
+var
+  WorkingFolder: String;
+  Donor: String;
+  DonorCode: String;
+begin
+  // function RegQueryStringValue(const RootKey: Integer; const SubKeyName, ValueName: String; var ResultStr: String): Boolean;
+  if RegQueryStringValue(HKEY_CURRENT_USER, ExpandConstant('Software\Jean Lalonde\{#MyAppName}'), 'WorkingFolder', WorkingFolder) then
+  begin
+    // WorkingFolder key found, user is upgrading
+    // function GetIniString(const Section, Key, Default, Filename: String): String;
+    Donor := GetIniString('Global', 'Donor', 'ERROR', ExpandConstant(WorkingFolder + '\{#MyAppNameNoSpace}.ini'))
+    DonorCode := GetIniString('Global', 'DonorCode', 'ERROR', ExpandConstant(WorkingFolder + '\{#MyAppNameNoSpace}.ini'))
+    // MsgBox('WorkingFolder: ' + WorkingFolder + ' / Donor: ' + Donor + ' / DonorCode: ' + DonorCode, mbInformation, MB_OK)
+    if (Donor <> 'ERROR') or (DonorCode <> 'ERROR') then
+    begin
+      // user is a sponsor, task disabled
+      Result := False;
+    end
+    else
+    begin
+      // user is not a sponsor, task enabled
+      Result := True;
+     end
+  end
+  else
+  begin
+    // WorkingFolder not found, this is a first installation, task disabled
+    Result := False;
+  end;
+end;
+
+function NotExecuteSponsoringTask(): Boolean;
+begin
+  Result := Not ExecuteSponsoringTask();
 end;
