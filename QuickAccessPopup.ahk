@@ -3984,7 +3984,7 @@ Hotkey, If
 
 ; Diag("SetTimer:UsageDbCollectMenuData", o_Settings.Database.intUsageDbIntervalSeconds.IniValue)
 if (g_blnUsageDbEnabled)
-	SetTimer, UsageDbCollectMenuData, % (o_Settings.Database.intUsageDbIntervalSeconds.IniValue * 1000), -100 ; delay before repeating UsageDbCollectMenuData / priority -100 (not sure?)
+	SetTimer, UsageDbCollectMenuData, % (o_Settings.Database.intUsageDbIntervalSeconds.IniValue * 1000), -50 ; delay before repeating UsageDbCollectMenuData / priority -50 (not sure?)
 
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
