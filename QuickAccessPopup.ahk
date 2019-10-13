@@ -12343,7 +12343,11 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnRadioSendModeMacro . ";" . f_strFavoriteSnippetPrompt . ";" . f_blnProcessEOLTab . ";" . f_blnFixedFont . ";" . f_intFontSize
 	else
 	{
-		o_EditedFavorite.AA.strFavoriteLaunchWith := f_strFavoriteLaunchWith
+		if (o_EditedFavorite.AA.strFavoriteType = "Application" and o_EditedFavorite.AA.strFavoriteLaunchWith = "1" and StrLen(o_EditedFavorite.AA.strFavoriteArguments))
+			; if application favorite has arguments, turn off "activate existing instance"
+			o_EditedFavorite.AA.strFavoriteLaunchWith := ""
+		else
+			o_EditedFavorite.AA.strFavoriteLaunchWith := f_strFavoriteLaunchWith
 		o_EditedFavorite.AA.blnFavoriteElevate := f_blnFavoriteElevate
 	}
 }
