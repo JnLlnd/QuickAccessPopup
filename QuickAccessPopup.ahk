@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.1 (2019-10-14)
+- see release notes for v10.0.1 to 10.1.6
+
 Version: 10.0.6 (2019-10-13)
 - for better backward compatibility, in folder "Live Folder Options" tab of favorite folder, replace "Show Icons" and "Show File extension items" with "Hide Icons" and "Hide File extension" and make these default values OFF (this could require adjustments for users who edited Live Folders favorites with releases between v10.0.1 and v10.0.5)
 - when saving an application favorite having parameters,turn the "activate if running" option off if it is also enabled (this two options could not be active altogether)
@@ -148,6 +151,11 @@ Version BETA: 9.9.2.14 (2019-08-25)
 - hide the "Move" button when in search results (but keep the "Copy" button)
 - swap the "Copy" and "Move" buttons (to avoid having an empty space when in search result)
 - remove forgotten debugging dialog box when saving a favorite
+
+Version: 9.5.3 (2019-08-24)
+- when in search result, hide the "Move" button (this command is not supported from search result)
+- swap "Copy" and "Move" buttons (to avoid having an empty space when in search result)
+- when loading favorites, if a Special Folder name is empty (probably after having used v10 before reverting to v9), use the Special Folder default name (working on v10, I realized that this change was required to ensure full forward/backward compatibility if reverting to QAP v9.5.3 after having used QAP v10)
 
 Version BETA: 9.9.2.13 (2019-08-23)
  
@@ -3564,7 +3572,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.0.6
+;@Ahk2Exe-SetVersion 10.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3669,7 +3677,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.0.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
