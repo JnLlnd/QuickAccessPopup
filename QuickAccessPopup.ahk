@@ -4585,7 +4585,7 @@ if (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue)
 o_Settings.ReadIniOption("Launch", "blnDisplayTrayTip", "DisplayTrayTip", 1, "General", "f_blnDisplayTrayTip") ; g_blnDisplayTrayTip
 o_Settings.ReadIniOption("Launch", "blnCheck4Update", "Check4Update", (g_blnPortableMode ? 0 : 1), "General", "f_blnCheck4Update|f_lnkCheck4Update") ; g_blnCheck4Update ; enable by default only in setup install mode
 o_Settings.ReadIniOption("Launch", "strTheme", "Theme", "Windows", "General", "f_drpTheme|f_lblTheme") ; g_strTheme
-if !StrLen(o_Settings.Launch.strTheme.IniValue) ; in case value is found but empty
+if !StrLen(o_Settings.Launch.strTheme.IniValue) or (o_Settings.Launch.strTheme.IniValue = "ERROR") ; in case value is found but empty or has been saved as "ERROR"
 	o_Settings.Launch.strTheme.IniValue := "Windows"
 global g_blnUseColors := (o_Settings.Launch.strTheme.IniValue <> "Windows")
 o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableThemes") ; g_strAvailableThemes
