@@ -4609,7 +4609,7 @@ o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniVal
 o_Settings.ReadIniOption("Menu", "intHotkeyReminders", "HotkeyReminders", 3, "MenuAppearance", "f_lblHotkeyReminders|f_radHotkeyReminders1|f_radHotkeyReminders2|f_radHotkeyReminders3") ; g_intHotkeyReminders
 o_Settings.ReadIniOption("Menu", "blnHotkeyRemindersRightAlign", "HotkeyRemindersRightAlign", 1, "MenuAppearance", "f_blnHotkeyRemindersRightAlign")
 o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcuts", "DisplayMenuShortcuts", 0, "MenuAppearance", "f_blnDisplayNumericShortcuts") ; g_blnDisplayNumericShortcuts
-o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMenuShortcutsFromOne", 1, "MenuAppearance", "f_blnDisplayNumericShortcutsFromOne") ; g_blnDisplayNumericShortcutsFromOne
+o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMenuShortcutsFromOne", 0, "MenuAppearance", "f_blnDisplayNumericShortcutsFromOne") ; g_blnDisplayNumericShortcutsFromOne
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
 o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus
