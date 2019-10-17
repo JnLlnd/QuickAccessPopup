@@ -17,6 +17,12 @@ See RECEIVE_QAPMESSENGER function in QuickAccessPopup.ahk for details.
 HISTORY
 =======
 
+Version: 1.4 (2019-10-17)
+- get the user's language from settings file in working directory following changes in v10
+  - for Easy Setup: get the value from Windows registry key WorkingFolder
+  - for portable installation: get it from ini file in script directory
+- alternative settings file option is not supported (at worst, QAPmessenger will default to EN)
+
 Version: 1.3 (2018-09-30)
 - save script as UTF-8 (with BOM) to support foreign language charsets
 - insert language variables in main script
@@ -62,7 +68,7 @@ Version: 0.1 beta (2016-04-25)
 
 ;@Ahk2Exe-SetName QAP Messenger
 ;@Ahk2Exe-SetDescription Send messages to Quick Access Popup
-;@Ahk2Exe-SetVersion 1.3
+;@Ahk2Exe-SetVersion 1.4
 ;@Ahk2Exe-SetOrigFilename QAPmessenger.exe
 
 
@@ -77,7 +83,7 @@ ListLines, Off
 
 g_strAppNameText := "Quick Access Popup Messenger"
 g_strAppNameFile := "QAPmessenger"
-g_strAppVersion := "1.3"
+g_strAppVersion := "1.4"
 g_strAppVersionBranch := "prod"
 g_strAppVersionLong := "v" . g_strAppVersion . (g_strAppVersionBranch <> "prod" ? " " . g_strAppVersionBranch : "")
 g_stTargetAppTitle := "Quick Access Popup ahk_class JeanLalonde.ca"
@@ -318,15 +324,17 @@ SetQAPWorkingDirectory:
 if !FileExist(A_ScriptDir . "\_do_not_remove_or_rename.txt")
 {
 	g_blnPortableMode := true ; set this variable for use later during init
+	SetWorkingDir, %A_ScriptDir% ; do not support alternative settings files, always use value in scriptdir (at worst, default to EN)
 	return
 }
-else
-	g_blnPortableMode := false ; set this variable for use later during init
 
-if (A_WorkingDir = A_ScriptDir) and FileExist(A_WorkingDir . "\_do_not_remove_or_rename.txt")
-	SetWorkingDir, %A_AppDataCommon%\Quick Access Popup
+g_blnPortableMode := false ; set this variable for use later during init
 
-SetWorkingDir, %A_AppData%\Quick Access Popup
+strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\Quick Access Popup", "WorkingFolder")
+if !StrLen(strWorkingFolder)
+	strWorkingFolder := A_AppData . "\Quick Access Popup"
+
+SetWorkingDir, %strWorkingFolder%
 
 return
 ;-----------------------------------------------------------
@@ -352,5 +360,16 @@ Diag(strName, strData)
 	until !ErrorLevel or (A_Index > 50) ; after 1 second (20ms x 50), we have a problem
 }
 ;------------------------------------------------
+
+
+;---------------------------------------------------------
+GetRegistry(strKeyName, strValueName)
+;---------------------------------------------------------
+{
+	RegRead, strValue, %strKeyName%, %strValueName%
+	
+	return strValue
+}
+;---------------------------------------------------------
 
 
