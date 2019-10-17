@@ -3754,6 +3754,9 @@ global g_strLastConfiguration ; last screen configuration updated by GetScreenCo
 global g_saDialogListApplicationsDropdown := StrSplit(o_L["DialogListApplicationsDropdown"], "|") ; "List All||Current Windows menu|Running Applications|Close All Windows menu"
 g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) List All 2) Current Windows menu 3) Running Applications 4) Close All Windows menu"
 
+global g_strNewLocation ; used in various places when adding a favorite
+global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
+
 ;---------------------------------
 ; Used in OpenFavorite
 global g_blnAlternativeMenu
@@ -14848,28 +14851,28 @@ if (g_blnGetWinInfo)
 
 SetWaitCursor(true)
 
-g_blnAlternativeMenu := (A_ThisLabel = "LaunchFromAlternativeMenu")
-g_blnLaunchFromTrayIcon := (A_ThisLabel = "LaunchFromTrayIcon") ; make sure it is initialized true or false
+g_blnAlternativeMenu := (g_strMenuTriggerLabel = "LaunchFromAlternativeMenu")
+g_blnLaunchFromTrayIcon := (g_strMenuTriggerLabel = "LaunchFromTrayIcon") ; make sure it is initialized true or false
 
 Gosub, SetMenuPosition
 
 if !(g_blnAlternativeMenu)
 	g_strAlternativeMenu := "" ; delete from previous call to Alternative key, else keep what was set in OpenAlternativeMenu
 
-if (A_ThisLabel = "LaunchFromTrayIcon")
+if (g_strMenuTriggerLabel = "LaunchFromTrayIcon")
 {
 	g_strTargetWinId := "" ; never use target window when launched from the tray icon
 	g_strTargetClass := "" ;  re-init for safety
 	g_strHotkeyTypeDetected := "Launch" ; never navigate when launched from the tray icon
 }
-else if (A_ThisLabel = "LaunchFromAlternativeMenu")
+else if (g_strMenuTriggerLabel = "LaunchFromAlternativeMenu")
 	g_strHotkeyTypeDetected := "Alternative"
-else if InStr(A_ThisLabel, "FromMsg")
-	g_strHotkeyTypeDetected := (InStr(A_ThisLabel, "Navigate") ? "Navigate" : "Launch")
+else if InStr(g_strMenuTriggerLabel, "FromMsg")
+	g_strHotkeyTypeDetected := (InStr(g_strMenuTriggerLabel, "Navigate") ? "Navigate" : "Launch")
 else
-	g_strHotkeyTypeDetected := SubStr(A_ThisLabel, 1, InStr(A_ThisLabel, "Hotkey") - 1) ; "Navigate" or "Launch"
+	g_strHotkeyTypeDetected := SubStr(g_strMenuTriggerLabel, 1, InStr(g_strMenuTriggerLabel, "Hotkey") - 1) ; "Navigate" or "Launch"
 
-if InStr(A_ThisLabel, "Mouse")
+if InStr(g_strMenuTriggerLabel, "Mouse")
 	and (WindowIsExplorer(g_strTargetClass) or WindowIsDirectoryOpus(g_strTargetClass) or WindowIsQAPconnect(g_strTargetWinId)
 		or (WindowIsTotalCommander(g_strTargetClass) and g_strHotkeyTypeDetected = "Navigate"))
 	
@@ -14895,11 +14898,16 @@ if (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
 }
 ToolTip ; clear tooltip after refresh
 
-Diag(A_ThisLabel, "", "STOP-SHOW") ; must be before Menu Show
+Diag(g_strMenuTriggerLabel, "", "STOP-SHOW") ; must be before Menu Show
 SetWaitCursor(false) 
 
-; o_FileManagers.CopyClassStructure() ; ####
-Menu, % o_L["MainMenuName"], Show, %g_intMenuPosX%, %g_intMenuPosY% ; at mouse pointer if option 1, 20x20 offset of active window if option 2 and fix location if option 3
+if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see LaunchFromMsg)
+	g_strShowMenu := o_L["MainMenuName"]
+
+; o_FileManagers.CopyClassStructure() ; #### used in dev to copy class structure to clipboard
+Menu, %g_strShowMenu%, Show, %g_intMenuPosX%, %g_intMenuPosY% ; at mouse pointer if option 1, 20x20 offset of active window if option 2 and fix location if option 3
+
+g_strShowMenu := ""
 
 return
 ;------------------------------------------------------------
@@ -20765,9 +20773,10 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		Gosub, NavigateFromMsg
 
 	else if (saData[1] = "ShowMenuLaunch")
-
+	{
+		g_strShowMenu := o_L["MainMenuName"] . " " . saData[2]
 		Gosub, LaunchFromMsg
-
+	}
 	else if (saData[1] = "ShowMenuAlternative")
 
 		Gosub, AlternativeHotkeyKeyboard
