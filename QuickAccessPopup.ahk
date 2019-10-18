@@ -31,8 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.1.1 (2019-10-18)
+- when loading the settings, add protection against invalid theme value
+- get the default values for new Live Folders options (hide icons, hide extensions, show hidden files and show system files) from user's preferences in Windows registry
+- revert the default value for the option "Start Numeric Menus Shortcuts at 1 instead of 0" to the default value in v9
+- QAPmessenger update v1.4 ready: adapt language selection based on changes in settings files location in QAP v10
+ 
 Version: 10.1 (2019-10-14)
-- see release notes for v10.0.1 to 10.1.6
+- see release notes for v10.0.1 to 10.0.6
 
 Version: 10.0.6 (2019-10-13)
 - for better backward compatibility, in folder "Live Folder Options" tab of favorite folder, replace "Show Icons" and "Show File extension items" with "Hide Icons" and "Hide File extension" and make these default values OFF (this could require adjustments for users who edited Live Folders favorites with releases between v10.0.1 and v10.0.5)
@@ -3572,7 +3578,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.1
+;@Ahk2Exe-SetVersion 10.1.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3677,7 +3683,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
