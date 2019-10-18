@@ -10050,6 +10050,14 @@ else ; add favorite
 		g_strNewFavoriteIconResource := GetFolderIcon(o_EditedFavorite.AA.strFavoriteLocation)
 		o_EditedFavorite.AA.strFavoriteIconResource := g_strNewFavoriteIconResource
 	}
+	
+	if (o_EditedFavorite.AA.strFavoriteType = "Folder") ; get default values for live folders options from user's registry
+	{
+		o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "HideIcons")
+		o_EditedFavorite.AA.blnFavoriteFolderLiveHideExtensions := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "HideFileExt")
+		o_EditedFavorite.AA.blnFavoriteFolderLiveShowHidden := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "Hidden")
+		o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ShowSuperHidden")
+	}
 
 	o_EditedFavorite.AA.strFavoriteDateCreated := A_NowUTC
 	o_EditedFavorite.AA.strFavoriteDateModified := o_EditedFavorite.AA.strFavoriteDateCreated
