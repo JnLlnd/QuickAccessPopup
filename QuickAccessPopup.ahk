@@ -19185,6 +19185,15 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	if (strSelectedLocation <> -1)
 		strExpanded := ExpandPlaceholdersForThis(strExpanded, strSelectedLocation, "SEL_")
 	
+	while InStr(strExpanded, "{Now:") ; not case sensitive, expand {Now:format} and {Now:format UTC}
+	; see https://www.autohotkey.com/docs/commands/FormatTime.htm
+	; examples: {Now:yyyy-MM-dd} -> 2019-10-16 / {Now:dddd hh:mm} -> Wednesday 14:06 / {Now:MMMM d, yyyy h:mm tt} -> October 16, 2019 2:06 PM
+	{
+		strFormat := RegExReplace(StrSplit(strExpanded, "{Now:")[2], "(}.*)") ; display the part after "{Now:" and remove "}" and after
+		blnUTC := InStr(strFormat, " UTC")
+		FormatTime, strNow, % (blnUTC ? A_NowUTC : A_Now), % StrReplace(strFormat, " UTC") ; remove UTC if it is used
+		strExpanded := RegExReplace(strExpanded, "i)\{Now:(.*?)}", strNow, , 1) ; replace only first occurence
+	}
 
 	if (strCurrentLocation = o_L["DialogArgumentsPlaceholdersCurrentExample"]) ; this is for an example only
 	{
@@ -19194,11 +19203,13 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	else
 	{
 		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
+		
 		while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
 		{
-			strInputPrompt := StrReplace(StrSplit(strExpanded, "{Input:")[2], "}") ; diaplay the part after "{Input:" and remove "}"
-			; strInputPrompt := StrReplace(strInputPrompt, "}")
-			InputBox, strInputContent, % L("~1~ - Input parameter", g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
+			strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
+			InputBox, strInputContent, % L(o_L["DialogInputParameter"], g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
+			if (ErrorLevel) ; user clicked Cancel, delete typed text if any (execution cannot be cancelled however)
+				strInputContent := ""
 			strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
 		}
 	}
@@ -19214,12 +19225,11 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 
 
 ;------------------------------------------------------------
-ExpandPlaceholdersForThis(strArguments, strThisLocation, strPrefix := "")
+ExpandPlaceholdersForThis(strExpanded, strThisLocation, strPrefix := "")
 ;------------------------------------------------------------
 {
 	SplitPath, strThisLocation, strOutFileName, strOutDir, strOutExtension, strOutNameNoExt, strOutDrive
 	
-	strExpanded := strArguments
 	strExpanded := StrReplace(strExpanded, "{" . strPrefix . "LOC}", strThisLocation) ; default replace all occurences
 	strExpanded := StrReplace(strExpanded, "{" . strPrefix . "NAME}", strOutFileName)
 	strExpanded := StrReplace(strExpanded, "{" . strPrefix . "DIR}", strOutDir)
