@@ -10290,9 +10290,13 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 	Gui, 2:Add, Link, x20 y+15 w500, % L(o_L["DialogFavoriteExternalHelpWeb"], "https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/")
 }
 
-Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
-	. " vf_blnFavoriteDisabled " . (o_EditedFavorite.AA.blnFavoriteDisabled ? "checked" : "")
-	, % (blnIsGroupMember ? o_L["DialogFavoriteDisabledGroupMember"] : o_L["DialogFavoriteDisabled"])
+; favorite enabled+visible (0), disabled+hidden (1), disabled (2) or hidden in menu (3), can be a submenu then all subitems are disabled/hidden (14)
+Gui, 2:Add, Checkbox, % "x15 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
+	. " vf_blnFavoriteDisabled " . (o_EditedFavorite.AA.intFavoriteDisabled = 1 or o_EditedFavorite.AA.intFavoriteDisabled = 2 ? "checked" : "")
+	, % (blnIsGroupMember ? o_L["DialogFavoriteDisabledGroupMember"] : o_L["DialogFavoriteDisabled"]) . o_EditedFavorite.AA.intFavoriteDisabled
+if !(blnIsGroupMember)
+	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteHidden " . (o_EditedFavorite.AA.intFavoriteDisabled = 1 or o_EditedFavorite.AA.intFavoriteDisabled = 3 ? "checked" : "")
+		, % o_L["DialogFavoriteHidden"] . o_EditedFavorite.AA.intFavoriteDisabled
 
 saNewFavoriteWindowPosition := ""
 intTreeViewHeight := ""
@@ -12340,7 +12344,16 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	
 	o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments
 	o_EditedFavorite.AA.strFavoriteAppWorkingDir := strFavoriteAppWorkingDir
-	o_EditedFavorite.AA.blnFavoriteDisabled := f_blnFavoriteDisabled
+	
+	; favorite enabled+visible (0), disabled+hidden (1), disabled (2) or hidden in menu (3), can be a submenu then all subitems are disabled/hidden (14)
+	if (f_blnFavoriteDisabled and f_blnFavoriteHidden)
+		o_EditedFavorite.AA.intFavoriteDisabled := 1
+	else if (f_blnFavoriteDisabled)
+		o_EditedFavorite.AA.intFavoriteDisabled := 2
+	else if (f_blnFavoriteHidden)
+		o_EditedFavorite.AA.intFavoriteDisabled := 3
+	else
+		o_EditedFavorite.AA.intFavoriteDisabled := 0
 	
 	o_EditedFavorite.AA.intFavoriteFolderLiveLevels := (f_blnFavoriteFolderLive ? f_intFavoriteFolderLiveLevels : "")
 	o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveHideIcons : "")
@@ -23510,7 +23523,7 @@ class Container
 			; saFavorite:
 			; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir,
 			; 7 strFavoriteWindowPosition, (X strFavoriteHotkey), 8 strFavoriteLaunchWith, 9 strFavoriteLoginName, 10 strFavoritePassword,
-			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 blnFavoriteDisabled, 15 intFavoriteFolderLiveLevels,
+			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 intFavoriteDisabled, 15 intFavoriteFolderLiveLevels,
 			; 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude, 19 strFavoriteFolderLiveExtensions,
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
@@ -23926,11 +23939,9 @@ class Container
 		{
 			aaThisFavorite := this.SA[A_Index].AA
 			
-			if (aaThisFavorite.blnFavoriteDisabled)
-				continue
+			; if (aaThisFavorite.intFavoriteDisabled) ; #####
+				; continue
 				
-			intMenuItemsCount++ ; for objMenuColumnBreak
-			
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
 			
@@ -23943,15 +23954,21 @@ class Container
 				; if QAP feature attach menu option was changed when saving options
 				aaThisFavorite.strFavoriteName := o_QAPfeatures.AA[aaThisFavorite.strFavoriteLocation].strLocalizedName
 			
-			strMenuItemLabel := aaThisFavorite.strFavoriteName
-			if (StrLen(strMenuItemLabel) and !blnMenuShortcutAlreadyInserted)
-				strMenuItemLabel := this.MenuNameWithNumericShortcut(strMenuItemLabel, true) ; true for blnUseAmpersandPlaceholder
-			
-			if (aaThisFavorite.strFavoriteType = "Group")
-				strMenuItemLabel .= " " . g_strGroupIndicatorPrefix . aaThisFavorite.oSubmenu.SA.MaxIndex() . g_strGroupIndicatorSuffix
-			
-			if StrLen(aaThisFavorite.strFavoriteShortcut) or StrLen(aaThisFavorite.strFavoriteHotstring)
-				strMenuItemLabel .= MenuNameReminder(aaThisFavorite.strFavoriteShortcut, GetHotstringTrigger(aaThisFavorite.strFavoriteHotstring))
+			; favorite enabled+visible (0), disabled+hidden (1), disabled (2) or hidden in menu (3), can be a submenu then all subitems are disabled/hidden (14)
+			if !(aaThisFavorite.intFavoriteDisabled = 1 or aaThisFavorite.intFavoriteDisabled = 3) ; not hidden
+			{
+				intMenuItemsCount++ ; for objMenuColumnBreak
+				
+				strMenuItemLabel := aaThisFavorite.strFavoriteName
+				if (StrLen(strMenuItemLabel) and !blnMenuShortcutAlreadyInserted)
+					strMenuItemLabel := this.MenuNameWithNumericShortcut(strMenuItemLabel, true) ; true for blnUseAmpersandPlaceholder
+				
+				if (aaThisFavorite.strFavoriteType = "Group")
+					strMenuItemLabel .= " " . g_strGroupIndicatorPrefix . aaThisFavorite.oSubmenu.SA.MaxIndex() . g_strGroupIndicatorSuffix
+				
+				if StrLen(aaThisFavorite.strFavoriteShortcut) or StrLen(aaThisFavorite.strFavoriteHotstring)
+					strMenuItemLabel .= MenuNameReminder(aaThisFavorite.strFavoriteShortcut, GetHotstringTrigger(aaThisFavorite.strFavoriteHotstring))
+			}
 			
 			if StrLen(aaThisFavorite.strFavoriteShortcut)
 			{
@@ -24080,7 +24097,10 @@ class Container
 				Clipboard := ScriptInfo("ListLines")
 			}
 			*/
-			this.AddMenuIcon(strMenuItemLabel, strMenuItemAction, strMenuItemIcon, intMenuItemStatus, blnFlagNextItemHasColumnBreak)
+			; favorite enabled+visible (0), disabled+hidden (1), disabled (2) or hidden in menu (3), can be a submenu then all subitems are disabled/hidden (14)
+			if !(aaThisFavorite.intFavoriteDisabled = 1 or aaThisFavorite.intFavoriteDisabled = 3) ; not hidden
+				this.AddMenuIcon(strMenuItemLabel, strMenuItemAction, strMenuItemIcon, intMenuItemStatus, blnFlagNextItemHasColumnBreak)
+			
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
@@ -24734,7 +24754,7 @@ class Container
 			strIniLine .= oItem.AA.strFavoriteGroupSettings . "|" ; 11
 			strIniLine .= oItem.AA.blnFavoriteFtpEncoding . "|" ; 12
 			strIniLine .= oItem.AA.blnFavoriteElevate . "|" ; 13
-			strIniLine .= oItem.AA.blnFavoriteDisabled . "|" ; 14
+			strIniLine .= oItem.AA.intFavoriteDisabled . "|" ; 14
 			strIniLine .= oItem.AA.intFavoriteFolderLiveLevels . "|" ; 15
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveDocuments . "|" ; 16
 			strIniLine .= oItem.AA.intFavoriteFolderLiveColumns . "|" ; 17
@@ -24946,7 +24966,7 @@ class Container
 				break
 			else if (this.SA[A_Index].AA.strFavoriteType = "K")
 				intHiddenItems++
-			else if (this.SA[A_Index].AA.blnFavoriteDisabled)
+			else if (this.SA[A_Index].AA.intFavoriteDisabled) ; #####
 				intHiddenItems++
 		}
 		
@@ -24981,7 +25001,7 @@ class Container
 			; saFavorite:
 			; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir,
 			; 7 strFavoriteWindowPosition, (X strFavoriteHotkey), 8 strFavoriteLaunchWith, 9 strFavoriteLoginName, 10 strFavoritePassword,
-			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 blnFavoriteDisabled,
+			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 intFavoriteDisabled,
 			; 15 intFavoriteFolderLiveLevels, 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude,
 			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
@@ -25026,7 +25046,8 @@ class Container
 			this.InsertItemValue("strFavoriteGroupSettings", saFavorite[11]) ; coma separated values for group restore settings or external menu starting line
 			this.InsertItemValue("blnFavoriteFtpEncoding", saFavorite[12]) ; encoding of FTP username and password, 0 do not encode, 1 encode
 			this.InsertItemValue("blnFavoriteElevate", saFavorite[13]) ; elevate application, 0 do not elevate, 1 elevate
-			this.InsertItemValue("blnFavoriteDisabled", saFavorite[14]) ; favorite disabled, not shown in menu, can be a submenu then all subitems are skipped
+			; ##### if before vX.X disabled 1 -> 3
+			this.InsertItemValue("intFavoriteDisabled", saFavorite[14]) ; favorite disabled (1), hidden in menu (2) or disabled+hidden (3)
 			this.InsertItemValue("intFavoriteFolderLiveLevels", saFavorite[15]) ; number of subfolders to include in submenu(s), 0 if not a live folder
 			this.InsertItemValue("blnFavoriteFolderLiveDocuments", saFavorite[16]) ; also include documents in live folder
 			this.InsertItemValue("intFavoriteFolderLiveColumns", saFavorite[17]) ; number of items per columns in live folder menus
@@ -25793,7 +25814,7 @@ class Container
 			intFolderItemsCount := 0
 			for intMemberNumber, o_GroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
 			{
-				if !(o_GroupMember.AA.blnFavoriteDisabled)
+				if !(o_GroupMember.AA.intFavoriteDisabled) ; #####
 				{
 					If InStr("Folder|Special|FTP", o_GroupMember.AA.strFavoriteType)
 						intFolderItemsCount++ ; do it that way because first member could be other than a folder
@@ -26300,7 +26321,7 @@ class Container
 				strType := o_L["DialogFavoriteFolderLiveType"]
 			else
 				strType := o_Favorites.GetFavoriteTypeObject(this.AA.strFavoriteType).strFavoriteTypeShortName
-			if (this.AA.blnFavoriteDisabled)
+			if (this.AA.intFavoriteDisabled) ; #####
 				strType := BetweenParenthesis(strType)
 			
 			return strType
