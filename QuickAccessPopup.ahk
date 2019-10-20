@@ -11235,7 +11235,8 @@ FavoriteArgumentChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-strCommand := (RegExMatch(f_strFavoriteArguments, "i){[a-z_]*}") ? "Show" : "Hide") ; "i){[a-z]*}" case insensitive, between {}, zero, one or more a-z
+strCommand := (RegExMatch(f_strFavoriteArguments, "i){[a-z_]*}") or RegExMatch(f_strFavoriteArguments, "i){Input:")
+	? "Show" : "Hide") ; "i){[a-z]*}" case insensitive, between {}, zero, one or more a-z
 
 GuiControl, %strCommand%, f_PlaceholdersCheckLabel
 GuiControl, %strCommand%, f_strPlaceholdersCheck 
@@ -12661,7 +12662,8 @@ if (!g_intNewItemPos)
 
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
-	and !RegExMatch(strNewFavoriteLocation, "i){(|CUR_|SEL_)(LOC|NAME|DIR|EXT|NOEXT|DRIVE|Clipboard)}") ; case insensitive
+	and !(RegExMatch(strNewFavoriteLocation, "i){(|CUR_|SEL_)(LOC|NAME|DIR|EXT|NOEXT|DRIVE|Clipboard)}") ; case insensitive
+		or RegExMatch(strNewFavoriteLocation, "i)({Input:)"))
 {
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
@@ -19172,11 +19174,14 @@ ComUnHTML(html)
 
 ;------------------------------------------------------------
 ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLocation)
-; strOriginal: string to be expanded
-; strLocation: {LOC} (full location), {NAME} (file name), {DIR} (directory), {EXT} (extension), {NOEXT} (file name without extension) or {DRIVE} (drive)
-; strCurrentLocation: same with prefix "CUR_" like {CUR_LOC} (full current location in file manager), {CUR_NAME} (current file name), etc.
-; strSelectedLocation: same with prefix "SEL_" like {SEL_LOC} (full location of selected item in file manager), {SEL_NAME} (selected file name), etc.
-; Do not process strCurrentLocation or strSelectedLocation if = -1
+; Location replacements:
+;   strOriginal: string to be expanded
+;   strLocation: {LOC} (full location), {NAME} (file name), {DIR} (directory), {EXT} (extension), {NOEXT} (file name without extension) or {DRIVE} (drive)
+;   strCurrentLocation: same with prefix "CUR_" like {CUR_LOC} (full current location in file manager), {CUR_NAME} (current file name), etc.
+;   strSelectedLocation: same with prefix "SEL_" like {SEL_LOC} (full location of selected item in file manager), {SEL_NAME} (selected file name), etc.
+;   Do not process strCurrentLocation or strSelectedLocation if = -1
+;
+; This function also process {Clipboard}, {Input:prompt} and user variables.
 ;------------------------------------------------------------
 {
 	; protect escaped open curly brackets `{
@@ -19187,7 +19192,35 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		strExpanded := ExpandPlaceholdersForThis(strExpanded, strCurrentLocation, "CUR_")
 	if (strSelectedLocation <> -1)
 		strExpanded := ExpandPlaceholdersForThis(strExpanded, strSelectedLocation, "SEL_")
-	strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard)
+	
+	while InStr(strExpanded, "{Now:") ; not case sensitive, expand {Now:format} and {Now:format UTC}
+	; see https://www.autohotkey.com/docs/commands/FormatTime.htm
+	; examples: {Now:yyyy-MM-dd} -> 2019-10-16 / {Now:dddd hh:mm} -> Wednesday 14:06 / {Now:MMMM d, yyyy h:mm tt} -> October 16, 2019 2:06 PM
+	{
+		strFormat := RegExReplace(StrSplit(strExpanded, "{Now:")[2], "(}.*)") ; display the part after "{Now:" and remove "}" and after
+		blnUTC := InStr(strFormat, " UTC")
+		FormatTime, strNow, % (blnUTC ? A_NowUTC : A_Now), % StrReplace(strFormat, " UTC") ; remove UTC if it is used
+		strExpanded := RegExReplace(strExpanded, "i)\{Now:(.*?)}", strNow, , 1) ; replace only first occurence
+	}
+
+	if (strCurrentLocation = o_L["DialogArgumentsPlaceholdersCurrentExample"]) ; this is for an example only
+	{
+		strExpanded := StrReplace(strExpanded, "{Clipboard}", o_L["MenuClipboard"])
+		strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", o_L["DialogInputExample"]) ; replace all occurences
+	}
+	else
+	{
+		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
+		
+		while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
+		{
+			strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
+			InputBox, strInputContent, % L(o_L["DialogInputParameter"], g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
+			if (ErrorLevel) ; user clicked Cancel, delete typed text if any (execution cannot be cancelled however)
+				strInputContent := ""
+			strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
+		}
+	}
 
 	strExpanded := ExpandUserVariables(strExpanded)
 
@@ -19200,12 +19233,11 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 
 
 ;------------------------------------------------------------
-ExpandPlaceholdersForThis(strArguments, strThisLocation, strPrefix := "")
+ExpandPlaceholdersForThis(strExpanded, strThisLocation, strPrefix := "")
 ;------------------------------------------------------------
 {
 	SplitPath, strThisLocation, strOutFileName, strOutDir, strOutExtension, strOutNameNoExt, strOutDrive
 	
-	strExpanded := strArguments
 	strExpanded := StrReplace(strExpanded, "{" . strPrefix . "LOC}", strThisLocation) ; default replace all occurences
 	strExpanded := StrReplace(strExpanded, "{" . strPrefix . "NAME}", strOutFileName)
 	strExpanded := StrReplace(strExpanded, "{" . strPrefix . "DIR}", strOutDir)
@@ -25108,7 +25140,7 @@ class Container
 			
 			; EXPAND PLACEHOLDERS in location
 			; for favorite's location {LOC}, {DIR}, {NAME}, etc, current location {CUR_LOC}, {CUR_NAME}, {CUR_...}, etc,
-			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc and current content of clipboard {Clipboard}
+			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc, current content of clipboard {Clipboard} and {Input} box
 			; for favorite's location, favorite's parameter, application favorite's start in directory, snippet's content
 			this.aaTemp.strLocationWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteLocation, ""
 				, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
