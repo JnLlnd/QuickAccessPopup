@@ -10317,9 +10317,15 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 	Gui, 2:Add, Link, x20 y+15 w500, % L(o_L["DialogFavoriteExternalHelpWeb"], "https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/")
 }
 
-Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
-	. " vf_blnFavoriteDisabled " . (o_EditedFavorite.AA.blnFavoriteDisabled ? "checked" : "")
+; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
+Gui, 2:Add, Checkbox, % "x15 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
+	. " vf_blnFavoriteDisabled gCheckboxDisabledClicked " . (o_EditedFavorite.AA.intFavoriteDisabled = 1 ? "checked" : "")
 	, % (blnIsGroupMember ? o_L["DialogFavoriteDisabledGroupMember"] : o_L["DialogFavoriteDisabled"])
+if !(blnIsGroupMember)
+	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteHidden " . (o_EditedFavorite.AA.intFavoriteDisabled ? "checked" : "")
+		, % o_L["DialogFavoriteHidden"]
+
+gosub, CheckboxDisabledClickedInit
 
 saNewFavoriteWindowPosition := ""
 intTreeViewHeight := ""
@@ -11461,6 +11467,20 @@ return
 
 
 ;------------------------------------------------------------
+CheckboxDisabledClicked:
+CheckboxDisabledClickedInit:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+GuiControl, % (f_blnFavoriteDisabled ? "Disable" : "Enable"), f_blnFavoriteHidden
+if (A_ThisLabel <> "CheckboxDisabledClickedInit")
+	GuiControl, , f_blnFavoriteHidden, % (f_blnFavoriteDisabled)
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 CheckboxFolderLiveClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
@@ -12368,7 +12388,14 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	
 	o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments
 	o_EditedFavorite.AA.strFavoriteAppWorkingDir := strFavoriteAppWorkingDir
-	o_EditedFavorite.AA.blnFavoriteDisabled := f_blnFavoriteDisabled
+	
+	; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
+	if (f_blnFavoriteDisabled)
+		o_EditedFavorite.AA.intFavoriteDisabled := 1
+	else if (f_blnFavoriteHidden)
+		o_EditedFavorite.AA.intFavoriteDisabled := -1
+	else
+		o_EditedFavorite.AA.intFavoriteDisabled := 0
 	
 	o_EditedFavorite.AA.intFavoriteFolderLiveLevels := (f_blnFavoriteFolderLive ? f_intFavoriteFolderLiveLevels : "")
 	o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveHideIcons : "")
@@ -23575,7 +23602,7 @@ class Container
 			; saFavorite:
 			; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir,
 			; 7 strFavoriteWindowPosition, (X strFavoriteHotkey), 8 strFavoriteLaunchWith, 9 strFavoriteLoginName, 10 strFavoritePassword,
-			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 blnFavoriteDisabled, 15 intFavoriteFolderLiveLevels,
+			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 intFavoriteDisabled, 15 intFavoriteFolderLiveLevels,
 			; 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude, 19 strFavoriteFolderLiveExtensions,
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
@@ -23991,11 +24018,9 @@ class Container
 		{
 			aaThisFavorite := this.SA[A_Index].AA
 			
-			if (aaThisFavorite.blnFavoriteDisabled)
+			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden (-1)
 				continue
 				
-			intMenuItemsCount++ ; for objMenuColumnBreak
-			
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
 			
@@ -24008,8 +24033,11 @@ class Container
 				; if QAP feature attach menu option was changed when saving options
 				aaThisFavorite.strFavoriteName := o_QAPfeatures.AA[aaThisFavorite.strFavoriteLocation].strLocalizedName
 			
+			if (aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
+				intMenuItemsCount++ ; for objMenuColumnBreak
+			
 			strMenuItemLabel := aaThisFavorite.strFavoriteName
-			if (StrLen(strMenuItemLabel) and !blnMenuShortcutAlreadyInserted)
+			if (StrLen(strMenuItemLabel) and !blnMenuShortcutAlreadyInserted and (aaThisFavorite.intFavoriteDisabled <> -1)) ; if not hidden
 				strMenuItemLabel := this.MenuNameWithNumericShortcut(strMenuItemLabel, true) ; true for blnUseAmpersandPlaceholder
 			
 			if (aaThisFavorite.strFavoriteType = "Group")
@@ -24053,7 +24081,7 @@ class Container
 				
 				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted) ; RECURSIVE - build the submenu first
 				
-				if (g_blnUseColors)
+				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
 				
 				strMenuItemAction := ":" . aaThisFavorite.oSubMenu.AA.strMenuPath
@@ -24145,7 +24173,10 @@ class Container
 				Clipboard := ScriptInfo("ListLines")
 			}
 			*/
-			this.AddMenuIcon(strMenuItemLabel, strMenuItemAction, strMenuItemIcon, intMenuItemStatus, blnFlagNextItemHasColumnBreak)
+			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
+			if (aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
+				this.AddMenuIcon(strMenuItemLabel, strMenuItemAction, strMenuItemIcon, intMenuItemStatus, blnFlagNextItemHasColumnBreak)
+			
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
@@ -24799,7 +24830,7 @@ class Container
 			strIniLine .= oItem.AA.strFavoriteGroupSettings . "|" ; 11
 			strIniLine .= oItem.AA.blnFavoriteFtpEncoding . "|" ; 12
 			strIniLine .= oItem.AA.blnFavoriteElevate . "|" ; 13
-			strIniLine .= oItem.AA.blnFavoriteDisabled . "|" ; 14
+			strIniLine .= oItem.AA.intFavoriteDisabled . "|" ; 14
 			strIniLine .= oItem.AA.intFavoriteFolderLiveLevels . "|" ; 15
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveDocuments . "|" ; 16
 			strIniLine .= oItem.AA.intFavoriteFolderLiveColumns . "|" ; 17
@@ -25011,7 +25042,7 @@ class Container
 				break
 			else if (this.SA[A_Index].AA.strFavoriteType = "K")
 				intHiddenItems++
-			else if (this.SA[A_Index].AA.blnFavoriteDisabled)
+			else if (this.SA[A_Index].AA.intFavoriteDisabled <> 0) ; if disabled (1) or hidden (-1)
 				intHiddenItems++
 		}
 		
@@ -25046,7 +25077,7 @@ class Container
 			; saFavorite:
 			; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir,
 			; 7 strFavoriteWindowPosition, (X strFavoriteHotkey), 8 strFavoriteLaunchWith, 9 strFavoriteLoginName, 10 strFavoritePassword,
-			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 blnFavoriteDisabled,
+			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 intFavoriteDisabled,
 			; 15 intFavoriteFolderLiveLevels, 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude,
 			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
@@ -25091,7 +25122,7 @@ class Container
 			this.InsertItemValue("strFavoriteGroupSettings", saFavorite[11]) ; coma separated values for group restore settings or external menu starting line
 			this.InsertItemValue("blnFavoriteFtpEncoding", saFavorite[12]) ; encoding of FTP username and password, 0 do not encode, 1 encode
 			this.InsertItemValue("blnFavoriteElevate", saFavorite[13]) ; elevate application, 0 do not elevate, 1 elevate
-			this.InsertItemValue("blnFavoriteDisabled", saFavorite[14]) ; favorite disabled, not shown in menu, can be a submenu then all subitems are skipped
+			this.InsertItemValue("intFavoriteDisabled", saFavorite[14]) ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
 			this.InsertItemValue("intFavoriteFolderLiveLevels", saFavorite[15]) ; number of subfolders to include in submenu(s), 0 if not a live folder
 			this.InsertItemValue("blnFavoriteFolderLiveDocuments", saFavorite[16]) ; also include documents in live folder
 			this.InsertItemValue("intFavoriteFolderLiveColumns", saFavorite[17]) ; number of items per columns in live folder menus
@@ -25858,7 +25889,7 @@ class Container
 			intFolderItemsCount := 0
 			for intMemberNumber, o_GroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
 			{
-				if !(o_GroupMember.AA.blnFavoriteDisabled)
+				if !(o_GroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
 				{
 					If InStr("Folder|Special|FTP", o_GroupMember.AA.strFavoriteType)
 						intFolderItemsCount++ ; do it that way because first member could be other than a folder
@@ -26365,8 +26396,10 @@ class Container
 				strType := o_L["DialogFavoriteFolderLiveType"]
 			else
 				strType := o_Favorites.GetFavoriteTypeObject(this.AA.strFavoriteType).strFavoriteTypeShortName
-			if (this.AA.blnFavoriteDisabled)
+			if (this.AA.intFavoriteDisabled = 1)
 				strType := BetweenParenthesis(strType)
+			else if (this.AA.intFavoriteDisabled = -1)
+				strType := 	return "[" . strType . "]"
 			
 			return strType
 		}
