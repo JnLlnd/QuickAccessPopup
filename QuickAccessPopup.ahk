@@ -31,6 +31,22 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.1.9.1 (2019-10-18)
+ 
+Add/Edit Favorite
+- add an option in "Basic Settings" tab to hide favorites from menu but keep their shortcuts/hotstrings active
+ 
+Placeholders
+- new placeholder {Input:prompt} asking user input when favorite is launched (can be used in Snippets or file paths)
+- add placeholder {Now:format} with format based on AHK date-time formats (https://www.autohotkey.com/docs/commands/FormatTime.htm)
+- in "Add/Edit Favorite" dialog box example for the {Clipboard} placeholder, expand the example with the fix string "Clipboard" instead of the actual Clipboard content
+ 
+QAPmessenger
+- when using QAPmessenger to open the menu with 1st parameter LaunchFromMsg, support a 2nd parameter to indicate what menu to show ("Main" menu by default)
+ 
+Options
+- replace the simple mouse trigger exclusion list with an option to make this list an applications blacklist (as actual, default value) or an applications whitelist (block the mouse trigger in all applications windows except those in the list)
+
 Version: 10.1.1 (2019-10-18)
 - when loading the settings, add protection against invalid theme value
 - get the default values for new Live Folders options (hide icons, hide extensions, show hidden files and show system files) from user's preferences in Windows registry
@@ -3578,7 +3594,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.1.1
+;@Ahk2Exe-SetVersion 10.1.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3683,8 +3699,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.1.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
