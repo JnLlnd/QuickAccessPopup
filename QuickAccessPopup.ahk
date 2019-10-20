@@ -34,18 +34,18 @@ HISTORY
 Version BETA: 10.1.9.1 (2019-10-18)
  
 Add/Edit Favorite
-- add an option in "Basic Settings" tab to hide favorites from menu but keep their shortcuts/hotstrings active
+- add an option in "Basic Settings" tab to hide favorites from menu but keep their shortcuts/hotstrings active (submenu supported)
  
 Placeholders
-- new placeholder {Input:prompt} asking user input when favorite is launched (can be used in Snippets or file paths)
-- add placeholder {Now:format} with format based on AHK date-time formats (https://www.autohotkey.com/docs/commands/FormatTime.htm)
+- new placeholder {Input:prompt} asking user an input when the favorite is launched (can be used in Snippets or file paths)
+- add placeholder {Now:format} with format based on AHK date-time formats (https://www.autohotkey.com/docs/commands/FormatTime.htm) (can be used in Snippets or file paths)
 - in "Add/Edit Favorite" dialog box example for the {Clipboard} placeholder, expand the example with the fix string "Clipboard" instead of the actual Clipboard content
  
 QAPmessenger
 - when using QAPmessenger to open the menu with 1st parameter LaunchFromMsg, support a 2nd parameter to indicate what menu to show ("Main" menu by default)
  
 Options
-- replace the simple mouse trigger exclusion list with an option to make this list an applications blacklist (as actual, default value) or an applications whitelist (block the mouse trigger in all applications windows except those in the list)
+- in "Options, Popup Menu", replace the simple mouse trigger exclusion list with an option to make this list an applications blacklist (as actual, default value) or an applications whitelist (block the mouse trigger in all applications windows except those in the list)
 
 Version: 10.1.1 (2019-10-18)
 - when loading the settings, add protection against invalid theme value
