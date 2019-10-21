@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.1.9.2 (2019-10-21)
+- fix bug related to hidden items introduced in v10.1.9.2
+
 Version BETA: 10.1.9.1 (2019-10-18)
  
 Add/Edit Favorite
@@ -3594,7 +3597,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.1.9.1
+;@Ahk2Exe-SetVersion 10.1.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3699,7 +3702,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.1.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.1.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -25042,7 +25045,9 @@ class Container
 				break
 			else if (this.SA[A_Index].AA.strFavoriteType = "K")
 				intHiddenItems++
-			else if (this.SA[A_Index].AA.intFavoriteDisabled <> 0) ; if disabled (1) or hidden (-1)
+			else if (this.SA[A_Index].AA.intFavoriteDisabled = 1 ; if disabled (1)
+				or this.SA[A_Index].AA.intFavoriteDisabled = -1) ; or hidden (-1)
+				; (do not use <> 0 because null <> 0 -> infinite loop)
 				intHiddenItems++
 		}
 		
