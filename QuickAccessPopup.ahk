@@ -31,8 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.1.9.3 (2019-10-21)
+- remove old and introduce new debugging code
+
 Version BETA: 10.1.9.2 (2019-10-21)
-- fix bug related to hidden items introduced in v10.1.9.2
+- fix bug related to hidden items introduced in v10.1.9.1
 
 Version BETA: 10.1.9.1 (2019-10-18)
  
@@ -3597,7 +3600,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.1.9.2
+;@Ahk2Exe-SetVersion 10.1.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3702,7 +3705,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.1.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.1.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -3867,12 +3870,13 @@ strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentB
 ; not sure it is required to have a physical file with .html extension - but keep it as is by safety
 g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.html")
 
+; Init diag mode
+if (o_Settings.Launch.blnDiagMode.IniValue)
+	Gosub, InitDiagMode
+
 ; Build main menus
 Gosub, BuildMainMenu
 Gosub, BuildAlternativeMenu
-
-if (o_Settings.Launch.blnDiagMode.IniValue)
-	Gosub, InitDiagMode
 
 ; Build menu used in Settings Gui
 Gosub, BuildGuiMenuBar ; must be before BuildMainMenu
@@ -5336,7 +5340,7 @@ if IsObject(o_UsageDb) ; use IsObject instead of g_blnUsageDbEnabled in case it 
 
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
-	MsgBox, % 52 + 256 , %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
+	MsgBox, % 4 + 48 + 256 + 4096, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
 	IfMsgBox, Yes
 		Run, %g_strDiagFile%
 }
@@ -6465,7 +6469,7 @@ if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{DOpus Favorites}")
 	; we don't have this QAP features in at least one menu
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 If o_FileManagers.SA[2].DirectoryOpusFavoritesFileExist() ; Directory Opus favorites file exists
 {
@@ -6492,7 +6496,7 @@ else
 
 oNewItem := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -6564,6 +6568,7 @@ Menu, % o_L["MainMenuName"], Add
 Menu, % o_L["MainMenuName"], DeleteAll
 if (g_blnUseColors)
 	Menu, % o_L["MainMenuName"], Color, %g_strMenuBackgroundColor%
+Diag(A_ThisLabel, "menu name", o_L["MainMenuName"])
 
 ; disable (turn off) existing hotstrings in g_dicItemsByHotstring (if any) before updating them
 gosub, DisableHotstrings
@@ -6665,7 +6670,7 @@ if (SettingsUnsaved() or !g_blnMenuReady ; these two required
 	or g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress) ; these two by safety (required?)
 	return
 
-Diag(A_ThisLabel, "", "START-REFRESH")
+; Diag(A_ThisLabel, "", "START-REFRESH")
 
 if (o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.IniValue)
 	SoundBeep, 330
@@ -6705,7 +6710,7 @@ if (o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.IniValue)
 if (A_ThisLabel <> "RefreshQAPMenuScheduled")
 	Gosub, LoadMenuInGui
 
-Diag(A_ThisLabel, "", "STOP-REFRESH")
+; Diag(A_ThisLabel, "", "STOP-REFRESH")
 return
 ;------------------------------------------------------------
 
@@ -8529,7 +8534,7 @@ if !FileExist(g_strUsageDbFile)
 	return
 }
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 Gui, 2:+OwnDialogs
 MsgBox, 36, %g_strAppNameText%, % o_L["OptionsUsageDbFlushDatabaseConfirm"]
@@ -8544,7 +8549,7 @@ IfMsgBox, Yes
 
 strUsageDbSQL := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -11033,7 +11038,7 @@ ButtonRefreshWindowsAppsList:
 ButtonRefreshWindowsAppsListAtStartup:
 ;------------------------------------------------------------
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 strPsScriptFile := ".\CollectWindowsAppsList.ps1" ; must start with ".\", start PowerShell in g_strTempDir
 ; changed in v9.0.9.11 strPsScriptPathFile := g_strTempDir . "\" . strPsScriptFile
@@ -11097,7 +11102,7 @@ strPsScriptFile := ""
 strPsScriptPathFile := ""
 strWindowsAppsListFile := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -14909,9 +14914,9 @@ if SettingsUnsaved()
 if (!g_blnMenuReady or g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress)
 	return
 
-Diag(A_ThisLabel, "", "START-SHOW")
-
 g_strMenuTriggerLabel := A_ThisLabel
+
+Diag(g_strMenuTriggerLabel, "", "START-SHOW")
 
 if (g_blnGetWinInfo)
 {
@@ -14968,11 +14973,13 @@ if (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
 }
 ToolTip ; clear tooltip after refresh
 
-Diag(g_strMenuTriggerLabel, "", "STOP-SHOW") ; must be before Menu Show
-SetWaitCursor(false) 
-
 if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see LaunchFromMsg)
 	g_strShowMenu := o_L["MainMenuName"]
+
+Diag(g_strMenuTriggerLabel, "menu name", g_strShowMenu)
+Diag(g_strMenuTriggerLabel, "", "STOP-SHOW") ; must be before Menu Show
+
+SetWaitCursor(false) 
 
 ; o_FileManagers.CopyClassStructure() ; #### used in dev to copy class structure to clipboard
 Menu, %g_strShowMenu%, Show, %g_intMenuPosX%, %g_intMenuPosY% ; at mouse pointer if option 1, 20x20 offset of active window if option 2 and fix location if option 3
@@ -17381,7 +17388,7 @@ UsageDbInit:
 ;------------------------------------------------------------
 
 ; Diag(A_ThisLabel, "", "START", g_blnIniFileCreation) ; force if first launch
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 strError := ""
 ; In portable mode, the two files sqlite.dll and sqlite.def are distributed in the zip file in their 32-bit (sqlite-32-bit.dll) and 64-bit (sqlite-64bit.dll) versions.
@@ -17419,7 +17426,7 @@ loop, parse, % "dll|def", |
 if StrLen(strError)
 {
 	; Diag(A_ThisLabel, "Db SQLite Missing", "STOP", g_blnIniFileCreation) ; force if first launch
-	Diag(A_ThisLabel, "Db SQLite Missing", "STOP")
+	; Diag(A_ThisLabel, "Db SQLite Missing", "STOP")
 	Oops(0, o_L["OopsUsageDbSQLiteMissing"], strError)
 	g_blnUsageDbEnabled := false
 	return
@@ -17436,7 +17443,7 @@ blnUsageDbIsNew := !FileExist(g_strUsageDbFile)
 if !o_UsageDb.OpenDb(g_strUsageDbFile)
 {
 	; Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
-	Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
+	; Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
 	Oops(0, "SQLite Error OpenDb`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nFile: " . g_strUsageDbFile)
 	g_blnUsageDbEnabled := false
 	return
@@ -17461,7 +17468,7 @@ if (blnUsageDbIsNew)
 	If !o_UsageDb.Exec(strUsageDbSQL)
 	{
 		; Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
-		Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
+		; Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
 		Oops(0, "SQLite CREATE Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		g_blnUsageDbEnabled := false
 		return
@@ -17527,7 +17534,7 @@ intSizeSQLiteRequired := ""
 objUsageDbTable := ""
 
 ; Diag(A_ThisLabel, "", "STOP", g_blnIniFileCreation) ; force if first launch
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -17539,11 +17546,11 @@ UsageDbCollectMenuData:
 if !(g_blnUsageDbEnabled)
 {
 	SetTimer, UsageDbCollectMenuData, Off
-	Diag(A_ThisLabel . ":g_blnUsageDbEnabled" , g_blnUsageDbEnabled, "")
+	; Diag(A_ThisLabel . ":g_blnUsageDbEnabled" , g_blnUsageDbEnabled, "")
 	return
 }
 
-Diag(A_ThisLabel, "", "START-COLLECT")
+; Diag(A_ThisLabel, "", "START-COLLECT")
 RegRead, strUsageDbRecentsFolder, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, Recent
 
 strUsageDbItemsList := ""
@@ -17551,7 +17558,7 @@ Loop, Files, %strUsageDbRecentsFolder%\*.*
 	strUsageDbItemsList .= A_LoopFileTimeModified . "`t" . A_LoopFileFullPath . "`n"
 Sort, strUsageDbItemsList, R
 ; Diag(A_ThisLabel . ":strUsageDbItemsList", StrReplace(StringLeftDotDotDot(strUsageDbItemsList, 500), "`n", "|"))
-Diag(A_ThisLabel . ":strUsageDbItemsList (after)", "", "ELAPSED")
+; Diag(A_ThisLabel . ":strUsageDbItemsList (after)", "", "ELAPSED")
 
 if (g_blnUsageDbDebug or o_Settings.Launch.blnDiagMode.IniValue)
 	strUsageDbReport := ""
@@ -17561,7 +17568,7 @@ intUsageDbtNbItems := 0
 strUsageDbSQL := "SELECT LatestCollected FROM zMetadata;"
 if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 {
-	Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
+	; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
 	Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	g_blnUsageDbEnabled := false
 	return
@@ -17621,10 +17628,10 @@ Loop, parse, strUsageDbItemsList, `n
 	}
 }
 strUsageDbSQL := SubStr(strUsageDbSQL, 1, StrLen(strUsageDbSQL) - 2) ; remove last ",`n"
-Diag(A_ThisLabel . ":strUsageDbPreviousLatestCollected (after)", strUsageDbPreviousLatestCollected, "ELAPSED")
+; Diag(A_ThisLabel . ":strUsageDbPreviousLatestCollected (after)", strUsageDbPreviousLatestCollected, "ELAPSED")
 ; Diag(A_ThisLabel . ":strUsageDbShortcutDateTime (last)", strUsageDbShortcutDateTime)
 ; Diag(A_ThisLabel . ":strUsageDbSQL (last)", StringLeftDotDotDot(strUsageDbSQL, 1000))
-Diag(A_ThisLabel . ":intUsageDbtNbItems", intUsageDbtNbItems, "ELAPSED")
+; Diag(A_ThisLabel . ":intUsageDbtNbItems", intUsageDbtNbItems, "ELAPSED")
 
 if (g_blnUsageDbDebug)
 	ToolTip, % StringLeftDotDotDot(strUsageDbSQL, 5000)
@@ -17632,7 +17639,7 @@ if (g_blnUsageDbDebug)
 o_UsageDb.Exec("BEGIN TRANSACTION;")
 If (intUsageDbtNbItems) and !o_UsageDb.Exec(strUsageDbSQL)
 {
-	Diag(A_ThisLabel, "SQLite INSERT Recent Items Error: " . strUsageDbSQL, "STOP")
+	; Diag(A_ThisLabel, "SQLite INSERT Recent Items Error: " . strUsageDbSQL, "STOP")
 	Oops(0, "SQLite INSERT Recent Items Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
@@ -17644,7 +17651,7 @@ strUsageDbPreviousLatestCollected := strUsageDbLatestCollected
 strUsageDbSQL := "UPDATE zMetadata SET LatestCollected = '" . strUsageDbLatestCollected . "';"
 If !o_UsageDb.Exec(strUsageDbSQL)
 {
-	Diag(A_ThisLabel, "SQLite UPDATE LatestCollected zMETADATA Error: " . strUsageDbSQL, "STOP")
+	; Diag(A_ThisLabel, "SQLite UPDATE LatestCollected zMETADATA Error: " . strUsageDbSQL, "STOP")
 	Oops(0, "SQLite UPDATE LatestCollected zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
@@ -17683,7 +17690,7 @@ strUsageDbTargetDateTime := ""
 strUsageDbTargetExtension := ""
 strUsageDbPreviousLatestCollected := ""
 
-Diag(A_ThisLabel, "", "STOP-COLLECT")
+; Diag(A_ThisLabel, "", "STOP-COLLECT")
 
 return
 ;------------------------------------------------------------
@@ -17696,12 +17703,12 @@ DynamicMenusPreProcess:
 if !(g_blnUsageDbEnabled)
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 strDynamicDbSQL := ""
 loop, parse, % "Folders|Files", |
 {
-	Diag(A_ThisLabel . ":StartPopular", A_Loopfield, "ELAPSED")
+	; Diag(A_ThisLabel . ":StartPopular", A_Loopfield, "ELAPSED")
 	strFoldersOrFiles := A_Loopfield
 	strMenuItemsList%strFoldersOrFiles% := "" ; menu name|menu item name|label|icon
 
@@ -17729,12 +17736,12 @@ loop, parse, % "Folders|Files", |
 		. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
 	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
 	{
-		Diag(A_ThisLabel, "SQLite QUERY POPULAR MENUS Error", "STOP")
+		; Diag(A_ThisLabel, "SQLite QUERY POPULAR MENUS Error", "STOP")
 		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		g_blnUsageDbEnabled := false
 		return
 	}
-	Diag(A_ThisLabel . ":After SQLiteQuery", o_RecordSet.HasRows, "ELAPSED")
+	; Diag(A_ThisLabel . ":After SQLiteQuery", o_RecordSet.HasRows, "ELAPSED")
 
 	intPopularItemsCount := 0
 	Loop
@@ -17743,7 +17750,7 @@ loop, parse, % "Folders|Files", |
 			break
 		strPath := o_Row[1]
 		strTargetNb := o_Row[2]
-		Diag(A_ThisLabel . ":Processing Start", strPath . " " . strTargetType, "ELAPSED")
+		; Diag(A_ThisLabel . ":Processing Start", strPath . " " . strTargetType, "ELAPSED")
 		; RecentFileExistInPath to check if on an offline server
 		
 		if (strTargetNb <= 1) ; skip if not enough frequent
@@ -17763,7 +17770,7 @@ loop, parse, % "Folders|Files", |
 			strIcon := (strFoldersOrFiles = "Folders" ? "iconFolder" : "iconDocuments")
 		strMenuItemsList%strFoldersOrFiles% .= strFoldersOrFilesMenuNameLocalized . "|" . strMenuItemName
 			. (strFoldersOrFiles = "Folders" ? "|Folder|" : "|Document|") . strIcon . "`n"
-		Diag(A_ThisLabel . ":Processing Stop", intPopularItemsCount, "ELAPSED")
+		; Diag(A_ThisLabel . ":Processing Stop", intPopularItemsCount, "ELAPSED")
 		if (intPopularItemsCount >= o_Settings.Menu.intRecentFoldersMax.IniValue)
 			break ; Folders or Files menus is complete
 	}
@@ -17773,7 +17780,7 @@ loop, parse, % "Folders|Files", |
 
 	if StrLen(strMenuItemsList%strFoldersOrFiles%)
 		strDynamicDbSQL .= "Popular" . strFoldersOrFiles .  "MenuData = '" . EscapeQuote(strMenuItemsList%strFoldersOrFiles%) "', " ; PopularFoldersMenuData and PopularFilesMenuData
-	Diag(A_ThisLabel . ":FinishPopular", A_Loopfield, "ELAPSED")
+	; Diag(A_ThisLabel . ":FinishPopular", A_Loopfield, "ELAPSED")
 }
 ; Diag(A_ThisLabel . ":pre-strDynamicDbSQL", StrReplace(strDynamicDbSQL, "`n", "``n"))
 
@@ -17782,19 +17789,19 @@ if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Drives}")) ; we have this QAP fe
 	gosub, GetDrivesMenuListPreprocess ; update g_strMenuItemsListDrives
 	strDynamicDbSQL .= "DrivesMenuData = '" . EscapeQuote(g_strMenuItemsListDrives) . "', "
 }
-Diag(A_ThisLabel . ":After GetDrivesMenuListPreprocess", intPopularItemsCount, "ELAPSED")
+; Diag(A_ThisLabel . ":After GetDrivesMenuListPreprocess", intPopularItemsCount, "ELAPSED")
 ; Diag(A_ThisLabel . ":g_strMenuItemsListDrives", StrReplace(g_strMenuItemsListDrives, "`n", "``n"))
 
-Diag(A_ThisLabel . ":StartRecent", A_Loopfield, "ELAPSED")
+; Diag(A_ThisLabel . ":StartRecent", A_Loopfield, "ELAPSED")
 if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Recent Folders}") or o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Recent Files}")) ; we have one of these QAP features in at least one menu
 {
 	gosub, GetMenusListRecentItemsPreprocess ; update g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
 	strDynamicDbSQL .= "RecentFoldersMenuData = '" . EscapeQuote(g_strMenuItemsListRecentFolders) . "', "
 	strDynamicDbSQL .= "RecentFilesMenuData = '" . EscapeQuote(g_strMenuItemsListRecentFiles) . "', "
 }
-Diag(A_ThisLabel . ":FinishProcessing", A_Loopfield, "ELAPSED")
-Diag(A_ThisLabel . ":g_strMenuItemsListRecentFolders", StrReplace(g_strMenuItemsListRecentFolders, "`n", "``n"), "ELAPSED")
-Diag(A_ThisLabel . ":g_strMenuItemsListRecentFiles", StrReplace(g_strMenuItemsListRecentFiles, "`n", "``n"), "ELAPSED")
+; Diag(A_ThisLabel . ":FinishProcessing", A_Loopfield, "ELAPSED")
+; Diag(A_ThisLabel . ":g_strMenuItemsListRecentFolders", StrReplace(g_strMenuItemsListRecentFolders, "`n", "``n"), "ELAPSED")
+; Diag(A_ThisLabel . ":g_strMenuItemsListRecentFiles", StrReplace(g_strMenuItemsListRecentFiles, "`n", "``n"), "ELAPSED")
 
 if StrLen(strDynamicDbSQL) ; if menu does not contain Drives, Popular or Recent menus, strDynamicDbSQL is empty
 {
@@ -17804,12 +17811,12 @@ if StrLen(strDynamicDbSQL) ; if menu does not contain Drives, Popular or Recent 
 
 	If !o_UsageDb.Exec(strDynamicDbSQL)
 	{
-		Diag(A_ThisLabel, "SQLite UPDATE zMETADATA Error: " . StrReplace(strDynamicDbSQL, "`n", "``n"), "STOP")
+		; Diag(A_ThisLabel, "SQLite UPDATE zMETADATA Error: " . StrReplace(strDynamicDbSQL, "`n", "``n"), "STOP")
 		Oops(0, "SQLite UPDATE Popular zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strDynamicDbSQL)
 		return
 	}
 }
-Diag(A_ThisLabel . ":FinishRecent", A_Loopfield, "ELAPSED")
+; Diag(A_ThisLabel . ":FinishRecent", A_Loopfield, "ELAPSED")
 
 strPath := ""
 strMenuItemName := ""
@@ -17822,7 +17829,7 @@ strMenuItemsList := ""
 strDynamicDbSQL := ""
 g_strMenuItemsListDrives := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -17831,7 +17838,7 @@ return
 GetDrivesMenuListPreprocess:
 GetDrivesMenuListRefresh:
 ;------------------------------------------------------------
-Diag(A_ThisLabel, "", "ELAPSED")
+; Diag(A_ThisLabel, "", "ELAPSED")
 
 g_strMenuItemsListDrives := "" ; menu name|menu item name|label|icon
 
@@ -17875,7 +17882,7 @@ intFreeSpace := ""
 strDriveLabel := ""
 strDriveType := ""
 
-Diag(A_ThisLabel, "", "ELAPSED")
+; Diag(A_ThisLabel, "", "ELAPSED")
 return
 ;------------------------------------------------------------
 
@@ -17890,7 +17897,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	strUsageDbSQL := "SELECT TargetPath, TargetType FROM Usage WHERE (TargetType='Folder' OR TargetType='File') ORDER BY CollectDateTime DESC;"
 	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
 	{
-		Diag(A_ThisLabel, "SQLite QUERY Build menu Error", "STOP")
+		; Diag(A_ThisLabel, "SQLite QUERY Build menu Error", "STOP")
 		Oops(0, "SQLite QUERY Build menu Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		return
 	}
@@ -17905,7 +17912,7 @@ else ; gather recent items the old way, directly from Windows
 	Sort, strShortcutsItemsList, R
 	; a `n ends the last line of the list
 }
-Diag(A_ThisLabel . ":AfterSelect", A_Loopfield, "ELAPSED")
+; Diag(A_ThisLabel . ":AfterSelect", A_Loopfield, "ELAPSED")
 
 ; loop data source
 
@@ -17925,7 +17932,7 @@ Loop
 		strTargetType := o_Row[2]
 		if (objDuplicatesFinder.HasKey(strTargetPath))
 		{
-			Diag(A_ThisLabel . ":Skip Duplicate", strTargetPath . " " . strTargetType, "ELAPSED")
+			; Diag(A_ThisLabel . ":Skip Duplicate", strTargetPath . " " . strTargetType, "ELAPSED")
 			continue
 		}
 		else ; new item
@@ -17951,7 +17958,7 @@ Loop
 		; RecentLocationIsDocument to check if on an offline server
 		strTargetType := (RecentLocationIsDocument(strTargetPath, A_ThisLabel) ? "File" : "Folder")
 	}
-	Diag(A_ThisLabel . ":ProcessingStart", strTargetPath . " " . strTargetType, "ELAPSED")
+	; Diag(A_ThisLabel . ":ProcessingStart", strTargetPath . " " . strTargetType, "ELAPSED")
 
 	strMenuName := strTargetPath
 	strIcon := (strTargetType = "Folder" ? GetFolderIcon(strTargetPath) : GetIcon4Location(strTargetPath))
@@ -17959,14 +17966,14 @@ Loop
 	{
 		g_strMenuItemsListRecentFolders .= o_L["MenuRecentFolders"] . "|" . strMenuName . "|Folder|" . strIcon . "`n"
 		intRecentFoldersCount++
-		Diag(A_ThisLabel . ":ProcessingFinish-Folder", intRecentFoldersCount, "ELAPSED")
+		; Diag(A_ThisLabel . ":ProcessingFinish-Folder", intRecentFoldersCount, "ELAPSED")
 	}
 	; do not "else"
 	if (strTargetType = "File") and (intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue)
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
 		intRecentFilesCount++
-		Diag(A_ThisLabel . ":ProcessingFinish-File", intRecentFoldersCount, "ELAPSED")
+		; Diag(A_ThisLabel . ":ProcessingFinish-File", intRecentFoldersCount, "ELAPSED")
 	}
 
 	if (intRecentFoldersCount >= o_Settings.Menu.intRecentFoldersMax.IniValue) and (intRecentFilesCount >= o_Settings.Menu.intRecentFoldersMax.IniValue)
@@ -18327,7 +18334,7 @@ DetectCloudUserVariables:
 ;------------------------------------------------------------
 
 ; Diag(A_ThisLabel, "", "START", g_blnIniFileCreation) ; force if first launch
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 o_Settings.UserVariables.strUserVariablesList.IniValue := ""
 
@@ -18394,7 +18401,7 @@ objGoogleDriveRow := ""
 strICloudDrive := ""
 
 ; Diag(A_ThisLabel, "", "STOP", g_blnIniFileCreation) ; force if first launch
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -18833,7 +18840,7 @@ RecentLocationIsDocument(strLocation, strSource)
 	if (SubStr(strLocation, 1, 2) = "\\")
 	{
 		blnOffline := ServerIsOffline(strLocation)
-		Diag(A_ThisFunc . " check if server is offline, if yes use extension from: " . strSource, strLocation . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
+		; Diag(A_ThisFunc . " check if server is offline, if yes use extension from: " . strSource, strLocation . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
 		if (blnOffline)
 			; if server is offline, we must assume that if there is an extension, it is a file (could be misleading for foler like "\\server\path.ext")
 			return StrLen(GetFileExtension(strLocation)) 
@@ -19347,7 +19354,7 @@ RecentFileExistInPath(ByRef strFile, strSource)
 	if (SubStr(strFile, 1, 2) = "\\")
 	{
 		blnOffline := ServerIsOffline(strFile)
-		Diag(A_ThisFunc . " check if server is offline from: " . strSource, strFile . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
+		; Diag(A_ThisFunc . " check if server is offline from: " . strSource, strFile . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
 		if (blnOffline)
 			return false
 	}
@@ -19392,7 +19399,7 @@ RecentFileExist(strPath, strSource)
 	if (SubStr(strPath, 1, 2) = "\\")
 	{
 		blnOffline := ServerIsOffline(strPath)
-		Diag(A_ThisFunc . " check if server is offline from: " . strSource, strPath . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
+		; Diag(A_ThisFunc . " check if server is offline from: " . strSource, strPath . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
 		if (blnOffline)
 			return false
 	}
@@ -20197,7 +20204,7 @@ RecentGetUsageDbTargetFileInfo(strPath, ByRef strAttributes, ByRef strType, ByRe
 	; if on network, if server is offline, return data based on path only
 	{
 		blnOffline := ServerIsOffline(strPath)
-		Diag(A_ThisFunc . " based on extension or dummy data from: " . strSource, strPath . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
+		; Diag(A_ThisFunc . " based on extension or dummy data from: " . strSource, strPath . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
 		if (blnOffline)
 		{
 			strAttributes := "???" ; do not leave empty - file will be processed and added to database
@@ -20243,11 +20250,11 @@ GetUsageDbTargetFileInfo(strPath, ByRef strAttributes, ByRef strType, ByRef strD
 		strType := ""
 		strDateTime := ""
 	}
-	Diag(A_ThisFunc, strPath . " | "
-		. strAttributes . " | "
-		. strType . " | "
-		. strDateTime . " | "
-		. "", "ELAPSED")
+	; Diag(A_ThisFunc, strPath . " | "
+		; . strAttributes . " | "
+		; . strType . " | "
+		; . strDateTime . " | "
+		; . "", "ELAPSED")
 }
 ;------------------------------------------------------------
 
@@ -24964,7 +24971,7 @@ class Container
 	UpdateUsageDbFrequency()
 	;---------------------------------------------------------
 	{
-		Diag(A_ThisFunc, "", "START")
+		; Diag(A_ThisFunc, "", "START")
 
 		for intKey, oItem in this.SA
 			if StrLen(oItem.AA.strFavoriteLocation) ; exclude separators
@@ -24979,7 +24986,7 @@ class Container
 			ToolTip
 		}
 		
-		Diag(A_ThisFunc, "", "STOP")
+		; Diag(A_ThisFunc, "", "STOP")
 	}
 	;---------------------------------------------------------
 	
@@ -26489,7 +26496,7 @@ class Container
 			if !(g_blnUsageDbEnabled)
 				return
 			
-			Diag(A_ThisFunc, "", "START")
+			; Diag(A_ThisFunc, "", "START")
 			
 			strUsageMenuDateTime := A_Now
 			strUsageDbMenuPath :=  A_ThisMenu ; remember this could be older value if favorite was launched by an hotkey
@@ -26575,7 +26582,7 @@ class Container
 				
 				If !o_UsageDb.Exec(strUsageDbSQL)
 				{
-					Diag(A_ThisFunc, "SQLite INSERT ACTION Error: " . strUsageDbSQL, "STOP")
+					; Diag(A_ThisFunc, "SQLite INSERT ACTION Error: " . strUsageDbSQL, "STOP")
 					Oops(0, "SQLite INSERT ACTION Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 					g_blnUsageDbEnabled := false
 					return
@@ -26587,7 +26594,7 @@ class Container
 				}
 			}
 			
-			Diag(A_ThisFunc, "", "STOP")
+			; Diag(A_ThisFunc, "", "STOP")
 		}
 		;---------------------------------------------------------
 		
