@@ -4641,8 +4641,13 @@ o_Settings.ReadIniOption("MenuIcons", "strIconReplacementList", "IconReplacement
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
 ; Group MenuAppearance
-o_Settings.ReadIniOption("Menu", "intHotkeyReminders", "HotkeyReminders", 3, "MenuAppearance", "f_lblHotkeyReminders|f_radHotkeyReminders1|f_radHotkeyReminders2|f_radHotkeyReminders3") ; g_intHotkeyReminders
-o_Settings.ReadIniOption("Menu", "blnHotkeyRemindersRightAlign", "HotkeyRemindersRightAlign", 1, "MenuAppearance", "f_blnHotkeyRemindersRightAlign")
+o_Settings.ReadIniOption("Menu", "intHotkeyRemindersShortcuts", "HotkeyReminders" ; keep this name (not "HotkeyRemindersShortcuts" for backward compatibility)
+	, 3, "MenuAppearance", "f_lblHotkeyRemindersShortcuts|f_radHotkeyRemindersShortcuts1|f_radHotkeyRemindersShortcuts2|f_radHotkeyRemindersShortcuts3") ; g_intHotkeyReminders
+o_Settings.ReadIniOption("Menu", "blnHotkeyRemindersRightAlignShortcuts", "HotkeyRemindersRightAlign" ; keep this name (not "HotkeyRemindersRightAlignShortcuts" for backward compatibility)
+	, 1, "MenuAppearance", "f_blnHotkeyRemindersRightAlignShortcuts")
+o_Settings.ReadIniOption("Menu", "intHotkeyRemindersHotstrings", "HotkeyRemindersHotstrings", 3, "MenuAppearance"
+	, "f_lblHotkeyRemindersHotstrings|f_radHotkeyRemindersHotstrings1|f_radHotkeyRemindersHotstrings2|f_radHotkeyRemindersHotstrings3")
+o_Settings.ReadIniOption("Menu", "blnHotkeyRemindersRightAlignHotstrings", "HotkeyRemindersRightAlignHotstrings", 1, "MenuAppearance", "f_blnHotkeyRemindersRightAlignHotstrings")
 o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcuts", "DisplayMenuShortcuts", 0, "MenuAppearance", "f_blnDisplayNumericShortcuts") ; g_blnDisplayNumericShortcuts
 o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMenuShortcutsFromOne", 0, "MenuAppearance", "f_blnDisplayNumericShortcutsFromOne") ; g_blnDisplayNumericShortcutsFromOne
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
@@ -6936,15 +6941,33 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 
 ; === MenuAppearance ===
 
-; HotkeyReminders
-Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w500 hidden vf_lblHotkeyReminders, % o_L["OptionsHotkeyRemindersPrompt"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w500 hidden vf_radHotkeyReminders1 Group gHotkeyRemindersClicked " . (o_Settings.Menu.intHotkeyReminders.IniValue = 1 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersNo"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w500 hidden vf_radHotkeyReminders2 gHotkeyRemindersClicked " . (o_Settings.Menu.intHotkeyReminders.IniValue = 2 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersShort"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w500 hidden vf_radHotkeyReminders3 gHotkeyRemindersClicked " . (o_Settings.Menu.intHotkeyReminders.IniValue = 3 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersFull"]
+; HotkeyRemindersShortcuts (col 1)
+Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w230 hidden vf_lblHotkeyRemindersShortcuts, % o_L["OptionsHotkeyRemindersPromptShortcuts"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radHotkeyRemindersShortcuts1 Group gHotkeyRemindersClicked "
+	. (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue = 1 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersNo"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radHotkeyRemindersShortcuts2 gHotkeyRemindersClicked "
+	. (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue = 2 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersShort"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radHotkeyRemindersShortcuts3 gHotkeyRemindersClicked "
+	. (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue = 3 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersFull"]
 
-; HotkeyRemindersRightAlign
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab2X% w500 hidden vf_blnHotkeyRemindersRightAlign gGuiOptionsGroupChanged, % o_L["HotkeyRemindersRightAlign"]
-GuiControl, , f_blnHotkeyRemindersRightAlign, % (o_Settings.Menu.blnHotkeyRemindersRightAlign.IniValue = true)
+; HotkeyRemindersRightAlignShortcuts
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab2X% w230 hidden vf_blnHotkeyRemindersRightAlignShortcuts gGuiOptionsGroupChanged, % o_L["HotkeyRemindersRightAlign"]
+GuiControl, , f_blnHotkeyRemindersRightAlignShortcuts, % (o_Settings.Menu.blnHotkeyRemindersRightAlignShortcuts.IniValue = true)
+
+; HotkeyRemindersHotstrings (col 2)
+Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsTab4X% w300 hidden vf_lblHotkeyRemindersHotstrings, % o_L["OptionsHotkeyRemindersPromptHotstrings"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X . " w300 hidden vf_radHotkeyRemindersHotstrings1 Group gHotkeyRemindersClicked "
+	. (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue = 1 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersNo"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X . " w300 hidden vf_radHotkeyRemindersHotstrings2 gHotkeyRemindersClicked "
+	. (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue = 2 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersShort"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X . " w300 hidden vf_radHotkeyRemindersHotstrings3 gHotkeyRemindersClicked "
+	. (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue = 3 ? "Checked" : ""), % o_L["OptionsHotkeyRemindersFull"]
+
+; HotkeyRemindersRightAlignHotstrings
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab5X% w300 hidden vf_blnHotkeyRemindersRightAlignHotstrings gGuiOptionsGroupChanged, % o_L["HotkeyRemindersRightAlign"]
+GuiControl, , f_blnHotkeyRemindersRightAlignHotstrings, % (o_Settings.Menu.blnHotkeyRemindersRightAlignHotstrings.IniValue = true)
+
+Gosub, HotkeyRemindersClickedInit ; update for Shortcuts and Hotstrings
 
 ; DisplayMenuShortcuts
 Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% w500 vf_blnDisplayNumericShortcuts gDisplayMenuShortcutsClicked hidden, % o_L["OptionsDisplayMenuShortcuts"]
@@ -7049,7 +7072,7 @@ for intThisIndex, objThisPopupHotkey in o_PopupHotkeys.SA ; could also use o_Set
 	Gui, 2:Add, Text, % "Section x" . g_intGroupItemsX + 260 . " y+5 w280 h23 center 0x1000 vf_lblHotkeyText" . intThisIndex . " gButtonOptionsChangeShortcut" . intThisIndex . " hidden"
 		, % objThisPopupHotkey.AA.strPopupHotkeyTextShort
 	Gui, 2:Font
-	Gui, 2:Add, Button, yp x%g_intGroupItemsTab5X% vf_btnChangeShortcut%intThisIndex% gButtonOptionsChangeShortcut%intThisIndex% hidden, % o_L["OptionsChangeHotkey"]
+	Gui, 2:Add, Button, yp x%g_intGroupItemsTab6X% vf_btnChangeShortcut%intThisIndex% gButtonOptionsChangeShortcut%intThisIndex% hidden, % o_L["OptionsChangeHotkey"]
 	Gui, 2:Font, s8 w500
 	Gui, 2:Add, Link, x%g_intGroupItemsX% ys w240 gOptionsTitlesDescriptionClicked hidden vf_lnkChangeShortcut%intThisIndex%, % objThisPopupHotkey.AA.strPopupHotkeyLocalizedDescription
 }
@@ -7534,15 +7557,24 @@ o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniVal
 
 ; === MenuAppearance ===
 
-if (f_radHotkeyReminders1)
-	o_Settings.Menu.intHotkeyReminders.IniValue := 1
-else if (f_radHotkeyReminders2)
-	o_Settings.Menu.intHotkeyReminders.IniValue := 2
-else
-	o_Settings.Menu.intHotkeyReminders.IniValue := 3
-o_Settings.Menu.intHotkeyReminders.WriteIni("", true) ; value already updated
+if (f_radHotkeyRemindersShortcuts1)
+	o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue := 1
+else if (f_radHotkeyRemindersShortcuts2)
+	o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue := 2
+else ; f_radHotkeyRemindersShortcuts3
+	o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue := 3
+o_Settings.Menu.intHotkeyRemindersShortcuts.WriteIni("", true) ; value already updated
+o_Settings.Menu.blnHotkeyRemindersRightAlignShortcuts.WriteIni(f_blnHotkeyRemindersRightAlignShortcuts)
 
-o_Settings.Menu.blnHotkeyRemindersRightAlign.WriteIni(f_blnHotkeyRemindersRightAlign)
+if (f_radHotkeyRemindersHotstrings1)
+	o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue := 1
+else if (f_radHotkeyRemindersHotstrings2)
+	o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue := 2
+else ; f_radHotkeyRemindersHotstrings3
+	o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue := 3
+o_Settings.Menu.intHotkeyRemindersHotstrings.WriteIni("", true) ; value already updated
+o_Settings.Menu.blnHotkeyRemindersRightAlignHotstrings.WriteIni(f_blnHotkeyRemindersRightAlignHotstrings)
+
 o_Settings.Menu.blnDisplayNumericShortcuts.WriteIni(f_blnDisplayNumericShortcuts)
 o_Settings.Menu.blnDisplayNumericShortcutsFromOne.WriteIni(f_blnDisplayNumericShortcutsFromOne)
 o_Settings.Menu.intRecentFoldersMax.WriteIni(f_intRecentFoldersMax)
@@ -7894,7 +7926,8 @@ g_intGroupItemsTab1X := g_intGroupItemsX + 10
 g_intGroupItemsTab2X := g_intGroupItemsX + 20
 g_intGroupItemsTab3X := g_intGroupItemsX + 120
 g_intGroupItemsTab4X := g_intGroupItemsX + 240
-g_intGroupItemsTab5X := g_intGroupItemsX + 550
+g_intGroupItemsTab5X := g_intGroupItemsX + 250
+g_intGroupItemsTab6X := g_intGroupItemsX + 550
 intGroupItemsY := 40 ; Y position of first item of a group
 
 Gui, 2:Font, s10 w700, Verdana
@@ -8401,12 +8434,15 @@ return
 
 ;------------------------------------------------------------
 HotkeyRemindersClicked:
+HotkeyRemindersClickedInit:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-Gosub, GuiOptionsGroupChanged
+if (A_ThisLabel <> "HotkeyRemindersClickedInit")
+	Gosub, GuiOptionsGroupChanged
 
-GuiControl, % (f_radHotkeyReminders1 ? "Disable" : "Enable"), f_blnHotkeyRemindersRightAlign
+GuiControl, % (f_radHotkeyRemindersShortcuts1 ? "Disable" : "Enable"), f_blnHotkeyRemindersRightAlignShortcuts
+GuiControl, % (f_radHotkeyRemindersHotstrings1 ? "Disable" : "Enable"), f_blnHotkeyRemindersRightAlignHotstrings
 
 return
 ;------------------------------------------------------------
@@ -13445,7 +13481,7 @@ Gui, 2:Tab
 
 Gui, 2:Add, Checkbox, vf_blnSeeAllFavorites gCheckboxSeeAllFavoritesClicked, % o_L["DialogHotkeysManageListSeeAllFavorites"]
 Gui, 2:Add, Checkbox, x+50 yp vf_blnSeeShortHotkeyNames gCheckboxSeeShortHotkeyNames, % o_L["DialogHotkeysManageListSeeShortHotkeyNames"]
-GuiControl, , f_blnSeeShortHotkeyNames, % (o_Settings.Menu.intHotkeyReminders.IniValue = 2) ; 1 = no name, 2 = short names, 3 = full name
+GuiControl, , f_blnSeeShortHotkeyNames, % (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue = 2) ; 1 = no name, 2 = short names, 3 = full name
 
 Gosub, HotkeysManageListLoad
 
@@ -15315,14 +15351,15 @@ OpenAlternativeMenu:
 ;------------------------------------------------------------
  
 g_strAlternativeMenu := A_ThisMenuItem
+
 if (o_Settings.Menu.blnDisplayNumericShortcuts.IniValue)
 	g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 4) ; remove "&1 " from menu item
-if (o_Settings.Menu.intHotkeyReminders.IniValue > 1)
-	if (o_Settings.Menu.blnHotkeyRemindersRightAlign.IniValue) and InStr(g_strAlternativeMenu, "`t")
-		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, "`t")) ; and remove hotkey reminder from tab
+
+if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) ; Alternative menu items don't have hostrings
+	if (o_Settings.Menu.blnHotkeyRemindersRightAlignShortcuts.IniValue) and InStr(g_strAlternativeMenu, "`t")
+		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, "`t")) ; remove shortcut reminder from tab
 	else if InStr(g_strAlternativeMenu, " (")
-		; InStr 0 param to search from the end, allowing the name to include " ("
-		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, " (", , 0) - 1) ; and remove hotkey reminder from " ("
+		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, " (") - 1) ; or remove shortcut reminder from " ("
 
 gosub, OpenAlternativeMenuTrayTip
 gosub, LaunchFromAlternativeMenu
@@ -18905,22 +18942,30 @@ GetDeepestMenuPath(strPath)
 MenuNameReminder(strHotkey, strHotstring := "")
 ;------------------------------------------------------------
 {
-	if (o_Settings.Menu.intHotkeyReminders.IniValue > 1) and StrLen(strHotkey . strHotstring)
-	{
-		if StrLen(strHotkey)
-			strReminderText := (o_Settings.Menu.intHotkeyReminders.IniValue = 2 ? strHotkey : new Triggers.HotkeyParts(strHotkey).Hotkey2Text(true))
-		if StrLen(strHotkey) and StrLen(strHotstring)
-			strReminderText .= " / "
-		if StrLen(strHotstring)
-			strReminderText .= (o_Settings.Menu.intHotkeyReminders.IniValue = 2 ? o_L["DialogHotstringIndicator"] : strHotstring)
-		
-		if (o_Settings.Menu.blnHotkeyRemindersRightAlign.IniValue)
-			return "`t" . strReminderText
+	if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) and StrLen(strHotkey)
+		strHotkeyReminder := (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue = 2 ? strHotkey : new Triggers.HotkeyParts(strHotkey).Hotkey2Text(true))
+	
+	if (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue > 1) and StrLen(strHotstring)
+		strHotstringReminder := (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue = 2 ? o_L["DialogHotstringIndicator"] : strHotstring)
+	
+	if StrLen(strHotkeyReminder)
+		if (o_Settings.Menu.blnHotkeyRemindersRightAlignShortcuts.IniValue)
+			strTab := strHotkeyReminder
 		else
-			return " " . BetweenParenthesis(strReminderText)
-	}
-	else
-		return ""
+			strParen := strHotkeyReminder
+	
+	if StrLen(strHotstringReminder)
+		if (o_Settings.Menu.blnHotkeyRemindersRightAlignHotstrings.IniValue)
+			strTab := (StrLen(strTab) ? strTab . " / " : "") . strHotstringReminder
+		else
+			strParen := (StrLen(strParen) ? strParen . " / " : "") . strHotstringReminder
+
+	if StrLen(strParen)
+		strParen := " " . BetweenParenthesis(strParen)
+	if StrLen(strTab)
+		strTab := "`t" . strTab
+	
+	return strParen . strTab
 }
 ;------------------------------------------------------------
 
@@ -21360,7 +21405,7 @@ class Triggers.MouseButtons
 	;---------------------------------------------------------
 	{
 		;---------------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
