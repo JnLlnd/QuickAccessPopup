@@ -10482,8 +10482,11 @@ if !(blnIsGroupMember)
 	Gui, 2:Add, Link, x+20 yp gGuiPickIconDialogNo, % "<a>" . o_L["DialogSelectIconNo"] . "</a>"
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
 		Gui, 2:Add, Link, x270 yp w240 vf_lblSetWindowsFolderIcon gSetWindowsFolderIcon, % "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>"
-	Gui, 2:Add, Link, x20 ys+74 w240 gGuiEditIconDialog, % "<a>" . o_L["DialogEditIcon"] . "</a>"
-	Gui, 2:Add, Link, x20 ys+91 w240 gGuiPickIconDialogJL vf_lblSelectIconJL, % "<a>" . o_L["DialogSelectIconJL"] . "</a>"
+	Gui, 2:Add, Link, x+20 yp w240 gGuiEditIconDialog, % "<a>" . o_L["DialogEditIcon"] . "</a>"
+	Gui, 2:Add, Text, x20 ys+74 vf_lblSelectIconSelectIn, % o_L["DialogSelectIconJL"]
+	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogJL vf_lblSelectIconJL, % "<a>JLicons.dll</a>"
+	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogShell vf_lblSelectIconShell, % "<a>Shell32.dll</a>"
+	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogImageRes vf_lblSelectIconImageRes, % "<a>ImageRes.dll</a>"
 
 	if (o_EditedFavorite.AA.strFavoriteType <> "Text")
 	{
@@ -11373,6 +11376,8 @@ return
 ;------------------------------------------------------------
 GuiPickIconDialog:
 GuiPickIconDialogJL:
+GuiPickIconDialogShell:
+GuiPickIconDialogImageRes:
 GuiPickIconDialogNo:
 GuiEditIconDialog:
 ;------------------------------------------------------------
@@ -11394,6 +11399,10 @@ else if (A_ThisLabel = "GuiPickIconDialog")
 	strTempNewFavoriteIconResource := PickIconDialog(g_strNewFavoriteIconResource)
 else if (A_ThisLabel = "GuiPickIconDialogJl")
 	strTempNewFavoriteIconResource := PickIconDialog(o_JLicons.strFileLocation)
+else if (A_ThisLabel = "GuiPickIconDialogShell")
+	strTempNewFavoriteIconResource := PickIconDialog(A_WinDir . "\System32\shell32.dll")
+else if (A_ThisLabel = "GuiPickIconDialogImageRes")
+	strTempNewFavoriteIconResource := PickIconDialog(A_WinDir . "\System32\imageres.dll")
 else if (A_ThisLabel = "GuiPickIconDialogNo")
 	strTempNewFavoriteIconResource := "iconNoIcon"
 g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
@@ -11442,7 +11451,10 @@ ParseIconResource(g_strNewFavoriteIconResource, strThisIconFile, intThisIconInde
 strExpandedIconFile := EnvVars(strThisIconFile)
 GuiControl, , f_picIcon, *icon%intThisIconIndex% %strExpandedIconFile%
 GuiControl, % (g_strNewFavoriteIconResource <> g_strDefaultIconResource ? "Show" : "Hide"), f_lblRemoveIcon
-GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconJL
+; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconSelectIn
+; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconJL
+; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconShell
+; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconImageRes
 
 strThisFolder := (o_EditedFavorite.AA.strFavoriteType = "Folder" and StrLen(f_strFavoriteLocation) ? PathCombine(A_WorkingDir, EnvVars(f_strFavoriteLocation)) : "")
 blnThisDesktopIniExist := (StrLen(strThisFolder) ? FileExist(strThisFolder . "\desktop.ini") : false)
