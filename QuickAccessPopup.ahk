@@ -18931,27 +18931,27 @@ MenuNameReminder(strHotkey, strHotstring := "")
 ;------------------------------------------------------------
 {
 	if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) and StrLen(strHotkey)
-		strHotkey := (o_Settings.Menu.intHotkeyRemindersShortcut.IniValue = 2 ? strHotkey : new Triggers.HotkeyParts(strHotkey).Hotkey2Text(true))
+		strHotkeyReminder := (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue = 2 ? strHotkey : new Triggers.HotkeyParts(strHotkey).Hotkey2Text(true))
 	
 	if (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue > 1) and StrLen(strHotstring)
-		strHostring := (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue = 2 ? o_L["DialogHotstringIndicator"] : strHostring)
+		strHotstringReminder := (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue = 2 ? o_L["DialogHotstringIndicator"] : strHotstring)
 	
-	if StrLen(strHotkey)
+	if StrLen(strHotkeyReminder)
 		if (o_Settings.Menu.blnHotkeyRemindersRightAlignShortcuts.IniValue)
-			strTab := strHotkey
+			strTab := strHotkeyReminder
 		else
-			strParen := strHotkey
+			strParen := strHotkeyReminder
 	
-	if StrLen(strHostring)
+	if StrLen(strHotstringReminder)
 		if (o_Settings.Menu.blnHotkeyRemindersRightAlignHotstrings.IniValue)
-			strTab := (StrLen(strTab) ? strTab . " / " : "") . strHostring
+			strTab := (StrLen(strTab) ? strTab . " / " : "") . strHotstringReminder
 		else
-			strParen := (StrLen(strParen) ? strParen . " / " : "") . strHostring
+			strParen := (StrLen(strParen) ? strParen . " / " : "") . strHotstringReminder
 
 	if StrLen(strParen)
-		strParen := BetweenParenthesis(strParen)
+		strParen := " " . BetweenParenthesis(strParen)
 	if StrLen(strTab)
-		strParen := "`t" . strParen
+		strTab := "`t" . strTab
 	
 	return strParen . strTab
 }
@@ -21391,7 +21391,7 @@ class Triggers.MouseButtons
 	;---------------------------------------------------------
 	{
 		;---------------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
