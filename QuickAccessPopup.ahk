@@ -19897,11 +19897,13 @@ GetCurrentUrlAcc(strClass)
 	global nWindow
 	global accAddressBar
 	
+	DetectHiddenWindows, Off
 	If (nWindow != WinExist("ahk_class " strClass)) ; reuses accAddressBar if it's the same window
 	{
 		nWindow := WinExist("ahk_class " strClass)
 		accAddressBar := GetAddressBar(GetCurrentUrlAccObjectFromWindow(nWindow))
 	}
+	DetectHiddenWindows, On ; revert to app default
 	Try sURL := accAddressBar.accValue(0)
 		If (sURL == "")
 		{
