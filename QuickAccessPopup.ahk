@@ -31,6 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.1.9.5 (2019-10-23)
+ 
+Options, Menu Appearance
+- add distinct options for hotstrings reminders (do not display, abbreviated or complete)
+- distinct options for shortcut and hotstrings to display reminders on the left side (between parenthesis after the name) or to align them to the right side of the menu
+ 
+Add/Edit Favorite
+- fix bug in "Add Active Folder or Web page" command making adding web pages more reliable
+- in "Menu Options" tab, add links to select icons from Window files Shell32.dll and ImageRes.dll
+
 Version BETA: 10.1.9.4 (2019-10-22)
 - fix bug when using QAPmessenger to open the menu with 1st parameter LaunchFromMsg
 
@@ -3603,7 +3613,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.1.9.4
+;@Ahk2Exe-SetVersion 10.1.9.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3708,7 +3718,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.1.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.1.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
