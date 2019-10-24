@@ -10524,12 +10524,12 @@ if !(blnIsGroupMember)
 	Gui, 2:Add, Text, x20 y+20 gGuiPickIconDialog section, % o_L["DialogIcon"]
 	Gui, 2:Add, Picture, x20 y+5 w32 h32 vf_picIcon gGuiPickIconDialog
 	Gui, 2:Add, Text, x+5 yp vf_lblRemoveIcon gGuiRemoveIcon, X
-	Gui, 2:Add, Link, x20 ys+57 gGuiPickIconDialog, % "<a>" . o_L["DialogSelectIcon"] . "</a>"
-	Gui, 2:Add, Link, x+20 yp gGuiPickIconDialogNo, % "<a>" . o_L["DialogSelectIconNo"] . "</a>"
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
 		Gui, 2:Add, Link, x270 yp w240 vf_lblSetWindowsFolderIcon gSetWindowsFolderIcon, % "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>"
-	Gui, 2:Add, Link, x+20 yp w240 gGuiEditIconDialog, % "<a>" . o_L["DialogEditIcon"] . "</a>"
-	Gui, 2:Add, Text, x20 ys+74 vf_lblSelectIconSelectIn, % o_L["DialogSelectIconJL"]
+	Gui, 2:Add, Link, x20 ys+57 gGuiPickIconDialog, % "<a>" . o_L["DialogSelectIcon"] . "</a>"
+	Gui, 2:Add, Link, x+20 yp gGuiPickIconDialogNo, % "<a>" . o_L["DialogSelectIconNo"] . "</a>"
+	Gui, 2:Add, Link, x+20 yp gGuiEditIconDialog, % "<a>" . o_L["DialogEditIcon"] . "</a>"
+    Gui, 2:Add, Text, x20 ys+74 gGuiPickIconDialogJL, % o_L["DialogSelectIconJL"]
 	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogJL vf_lblSelectIconJL, % "<a>JLicons.dll</a>"
 	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogShell vf_lblSelectIconShell, % "<a>Shell32.dll</a>"
 	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogImageRes vf_lblSelectIconImageRes, % "<a>ImageRes.dll</a>"
@@ -11975,14 +11975,14 @@ if (blnDesktopIniExist)
 if (blnSet)
 {
 	FileSetAttrib, +R, %strFolder%, 2 ; make sure folder is read-only to display icon (was system in previous doc)
- 
+
 	; From: https://msdn.microsoft.com/en-us/library/cc144102.aspx
 	ParseIconResource(g_strNewFavoriteIconResource, strIconFile, intIconIndex)
 	strIconFile := StrReplace(strIconFile, strFolder . "\") ; remove current folder from resource path to make it movable with the folder
 	intIconIndex := (intIconIndex >= 0 ? intIconIndex - 1 : intIconIndex) ; adjust index for positive index only (not for negative index)
-	IniWrite %strIconFile%`,%intIconIndex%, %strFolderDesktopIni%, .ShellClassInfo, IconResource
+	IniWrite, % strIconFile . "," . intIconIndex, %strFolderDesktopIni%, .ShellClassInfo, IconResource
 	; ConfirmFileOp -> Set this entry to 0 to avoid a "You Are Deleting a System Folder" warning when deleting or moving the folder.
-	IniWrite 0, %strFolderDesktopIni%, .ShellClassInfo, ConfirmFileOp
+	IniWrite, 0, %strFolderDesktopIni%, .ShellClassInfo, ConfirmFileOp
 
 	if !(blnDesktopIniExist) ; the file is new
 		FileSetAttrib, +H+S, %strFolderDesktopIni% ; make it system and hidden
