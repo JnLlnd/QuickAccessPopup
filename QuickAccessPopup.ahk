@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.1.9.6 (2019-10-26)
+- fix display bug in "Add Favorite", "Menu Options" tab when displaying the "Set Windows folder icon" link
+- add a delay to allow the "Add This Folder or Web page" command to work when adding a folder in Windows Explorer, when called from a QAP menu that was triggered by the QAPmessenger "ShowMenuLaunch" command
+- when using QAPmessenger to open the menu with 1st parameter ShowMenuNavigate, support a 2nd parameter to indicate what menu to show ("Main" menu by default)
+
 Version BETA: 10.1.9.5 (2019-10-23)
  
 Options, Menu Appearance
@@ -42,7 +47,7 @@ Add/Edit Favorite
 - in "Menu Options" tab, add links to select icons from Window files Shell32.dll and ImageRes.dll
 
 Version BETA: 10.1.9.4 (2019-10-22)
-- fix bug when using QAPmessenger to open the menu with 1st parameter LaunchFromMsg
+- fix bug when using QAPmessenger to open the menu with 1st parameter ShowMenuLaunch
 
 Version BETA: 10.1.9.3 (2019-10-21)
 - remove old and introduce new debugging code
@@ -61,7 +66,7 @@ Placeholders
 - in "Add/Edit Favorite" dialog box example for the {Clipboard} placeholder, expand the example with the fix string "Clipboard" instead of the actual Clipboard content
  
 QAPmessenger
-- when using QAPmessenger to open the menu with 1st parameter LaunchFromMsg, support a 2nd parameter to indicate what menu to show ("Main" menu by default)
+- when using QAPmessenger to open the menu with 1st parameter ShowMenuLaunch, support a 2nd parameter to indicate what menu to show ("Main" menu by default)
  
 Options
 - in "Options, Popup Menu", replace the simple mouse trigger exclusion list with an option to make this list an applications blacklist (as actual, default value) or an applications whitelist (block the mouse trigger in all applications windows except those in the list)
@@ -3613,7 +3618,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.1.9.5
+;@Ahk2Exe-SetVersion 10.1.9.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3718,7 +3723,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.1.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.1.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -15034,7 +15039,7 @@ if (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
 }
 ToolTip ; clear tooltip after refresh
 
-if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see LaunchFromMsg)
+if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see NavigateFromMsg and LaunchFromMsg)
 	g_strShowMenu := o_L["MainMenuName"]
 
 Diag(g_strMenuTriggerLabel, "menu name", g_strShowMenu)
@@ -18136,13 +18141,20 @@ GetCurrentLocation(strClass, strWinID)
 			}
 			else if WindowIsExplorer(strClass)
 			{
-				; Gets the active IE or Explorer window
-				for pExplorer in ComObjCreate("Shell.Application").Windows
-					if (pExplorer.HWND = strWinID)
+				intTries := 10
+				Loop, %intTries%
+				{
+					; Gets the active IE or Explorer window
+					for pExplorer in ComObjCreate("Shell.Application").Windows
 					{
-						strLocation :=  ProcessLocationURL(UriDecode(pExplorer.LocationURL))
-						Break
+						if (pExplorer.HWND = strWinID)
+						{
+							strLocation :=  ProcessLocationURL(UriDecode(pExplorer.LocationURL))
+							Break, 2 ; exit for loop and loop intTries
+						}
 					}
+					sleep, 1000 ; an error occured in ComObjCreate (probably error 8001 010D), wait 1 sec and retry for up to 10 times 
+				}
 			}
 			else ; dialog boxes
 			{
@@ -20948,9 +20960,10 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		Gosub, AddThisShortcutFromMsg
 	}
 	else if (saData[1] = "ShowMenuNavigate")
-
+	{
+		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
 		Gosub, NavigateFromMsg
-
+	}
 	else if (saData[1] = "ShowMenuLaunch")
 	{
 		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
@@ -25376,6 +25389,7 @@ class Container
 			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction", strOpenFavoriteLabel)
 				and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
+				###str := A_ThisFunc . "`n"
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
 				blnOpenOK := true
 			}
