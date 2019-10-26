@@ -42,6 +42,9 @@ ECHO Remove previous version and executable files from zip file
 7z d -bso0 "%QAPZIPFILE%.zip" QAP-v*.txt QuickAccessPopup-??-bit.exe
 ECHO Add new version and executable files to zip file
 7z a -bso0 "%QAPZIPFILE%.zip" QAP-v%QAPVERSIONFILE%.txt QuickAccessPopup-??-bit.exe
+ECHO Check if ZIP file is good
+IF EXIST "*.tmp*" ECHO Erreur dans le fichier ZIP...
+IF EXIST "*.tmp*" GOTO:finish
 IF [%QAPBETAPROD%] == [] GOTO:messages
 ECHO Copy %QAPZIPFILE%.zip to %QAPZIPFILEVERSION%.zip
 COPY %QAPZIPFILE%.zip %QAPZIPFILEVERSION%.zip
