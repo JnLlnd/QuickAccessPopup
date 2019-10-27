@@ -31,6 +31,28 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.2 (2019-10-27)
+ 
+Add/Edit Favorite
+- in "Basic Settings" tab, add an option to hide favorites from menu but keep their shortcuts/hotstrings active
+- in "Menu Options" tab, add links to select icons from Window files Shell32.dll and ImageRes.dll
+ 
+Placeholders
+- two new placeholders that can be used in Snippets or favorites file paths
+  - {Input:prompt} asking user an input when the favorite is launched 
+  - {Now:format} with format based on AHK date-time formats (https://www.autohotkey.com/docs/commands/FormatTime.htm) (can be used in Snippets or file paths)
+ 
+QAPmessenger
+- when using QAPmessenger to open the menu with parameters ShowMenuLaunch or ShowMenuNavigate, support a 2nd parameter to indicate what menu to show ("Main" menu by default)
+ 
+Options
+- in "Popup Menu" tab, replace the simple mouse trigger exclusion list with an option to make this list a "blacklist" (as actual, default value) or a "whitelist" (block the mouse trigger in all applications windows except those in the list)
+- in "Menu Appearance" tab, add distinct options for hotstrings reminders (do not display, abbreviated or complete), and options to display shortcut and hotstrings reminders distinctly on the left side (between parenthesis after the name) or to align them to the right side of the menu
+ 
+Bug fixes
+- fix bug in "Add Active Folder or Web page" command making adding web pages more reliable
+- fix bug when calling a submenu by its hotkey and when the menu name starts with "Main" (or its translation in other languages)
+
 Version BETA: 10.1.9.6 (2019-10-26)
 - fix display bug in "Add Favorite", "Menu Options" tab when displaying the "Set Windows folder icon" link
 - add a delay to allow the "Add This Folder or Web page" command to work when adding a folder in Windows Explorer, when called from a QAP menu that was triggered by the QAPmessenger "ShowMenuLaunch" command
@@ -3618,7 +3640,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.1.9.6
+;@Ahk2Exe-SetVersion 10.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3723,8 +3745,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.1.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
@@ -17310,6 +17332,15 @@ Gui, 2:Submit, NoHide
 strDonorCode := Trim(f_strDonorCode)
 strSponsorName := Trim(f_strSponsorName)
 
+Diag(A_ThisLabel, "strDonorCode", strDonorCode)
+Diag(A_ThisLabel, "strSponsorName", strSponsorName)
+Diag(A_ThisLabel, "StrLen()", StrLen(strDonorCode))
+Diag(A_ThisLabel, "RegExMatch()", RegExMatch(strDonorCode, "[^A-Z^0-9]"))
+Diag(A_ThisLabel, "MD5() name", MD5(StrLower(strSponsorName)))
+Diag(A_ThisLabel, "g_strEscapePipe", g_strEscapePipe)
+Diag(A_ThisLabel, "MD5(g_strEscapePipe)", MD5(g_strEscapePipe))
+Diag(A_ThisLabel, "MD5() name+extra", MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe))
+Diag(A_ThisLabel, "MD5() name+extra+substr", SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
 ; Donor code must contain only numbers and capital letters and be 8 digits
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
 	or (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
