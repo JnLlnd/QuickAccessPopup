@@ -23625,7 +23625,7 @@ class Container
 		if (oParentMenu)
 		{
 			; path from main menu to the current submenus, delimited with " > " (see constant g_strMenuPathSeparator), example: "Main > Sub1 > Sub1.1"
-			if SubStr(strContainerName, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"] ; strContainerName is already fully formed (when creating a backup or restore)
+			if SubStr(strContainerName, 1, StrLen(o_L["MainMenuName"] . " >")) = o_L["MainMenuName"] . " >" ; strContainerName is already fully formed (when creating a backup or restore)
 				this.AA.strMenuPath := strContainerName
 			else
 				this.AA.strMenuPath := oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . strContainerName
