@@ -34,22 +34,22 @@ HISTORY
 Version: 10.2 (2019-10-27)
  
 Add/Edit Favorite
-- in "Basic Settings" tab, add an option to hide favorites from menu but keep their shortcuts/hotstrings active
+- in "Basic Settings" tab, add the option "Hide this favorite" to hide a favorite from menu but keep its shortcut/hotstring active
 - in "Menu Options" tab, add links to select icons from Window files Shell32.dll and ImageRes.dll
  
 Placeholders
 - two new placeholders that can be used in Snippets or favorites file paths
   - {Input:prompt} asking user an input when the favorite is launched 
-  - {Now:format} with format based on AHK date-time formats (https://www.autohotkey.com/docs/commands/FormatTime.htm) (can be used in Snippets or file paths)
+  - {Now:format} with format based on AHK date-time formats
 (see: https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/)
  
 QAPmessenger
-- when using QAPmessenger to open the menu with parameters ShowMenuLaunch or ShowMenuNavigate, support a 2nd parameter (between double-quotes) to indicate what menu to show ("Main" menu by default)
+- when using QAPmessenger to open the QAP menu with parameters ShowMenuLaunch or ShowMenuNavigate, support a 2nd parameter (between double-quotes) to indicate what menu to show ("Main" menu by default)
 (see https://www.quickaccesspopup.com/can-i-display-the-qap-menu-from-the-command-line-or-from-a-batch-file/)
  
 Options
 - in "Popup Menu" tab, replace the simple mouse trigger exclusion list with an option to make this list a "blacklist" (as actual, default value) or a "whitelist" (block the mouse trigger in all applications windows except those in the list)
-- in "Menu Appearance" tab, add distinct options for hotstrings reminders (do not display, abbreviated or complete), and options to display shortcut and hotstrings reminders distinctly on the left side (between parenthesis after the name) or to align them to the right side of the menu
+- in "Menu Appearance" tab, add distinct options for hotstrings reminders (do not display, display abbreviated or complete), and options to display shortcut and hotstrings reminders distinctly on the left side (between parenthesis after the name) or to align them to the right side of the menu
 (see https://www.quickaccesspopup.com/what-are-the-essential-global-options-to-know/)
  
 Bug fixes
