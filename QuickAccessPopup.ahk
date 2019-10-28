@@ -41,13 +41,16 @@ Placeholders
 - two new placeholders that can be used in Snippets or favorites file paths
   - {Input:prompt} asking user an input when the favorite is launched 
   - {Now:format} with format based on AHK date-time formats (https://www.autohotkey.com/docs/commands/FormatTime.htm) (can be used in Snippets or file paths)
+(see: https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/)
  
 QAPmessenger
-- when using QAPmessenger to open the menu with parameters ShowMenuLaunch or ShowMenuNavigate, support a 2nd parameter to indicate what menu to show ("Main" menu by default)
+- when using QAPmessenger to open the menu with parameters ShowMenuLaunch or ShowMenuNavigate, support a 2nd parameter (between double-quotes) to indicate what menu to show ("Main" menu by default)
+(see https://www.quickaccesspopup.com/can-i-display-the-qap-menu-from-the-command-line-or-from-a-batch-file/)
  
 Options
 - in "Popup Menu" tab, replace the simple mouse trigger exclusion list with an option to make this list a "blacklist" (as actual, default value) or a "whitelist" (block the mouse trigger in all applications windows except those in the list)
 - in "Menu Appearance" tab, add distinct options for hotstrings reminders (do not display, abbreviated or complete), and options to display shortcut and hotstrings reminders distinctly on the left side (between parenthesis after the name) or to align them to the right side of the menu
+(see https://www.quickaccesspopup.com/what-are-the-essential-global-options-to-know/)
  
 Bug fixes
 - fix bug in "Add Active Folder or Web page" command making adding web pages more reliable
@@ -19386,14 +19389,15 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	{
 		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
-		while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
-		{
-			strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
-			InputBox, strInputContent, % L(o_L["DialogInputParameter"], g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
-			if (ErrorLevel) ; user clicked Cancel, delete typed text if any (execution cannot be cancelled however)
-				strInputContent := ""
-			strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
-		}
+		if !(g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"]) ; avoid {Input:prompt} when editing a favorite
+			while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
+			{
+				strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
+				InputBox, strInputContent, % L(o_L["DialogInputParameter"], g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
+				if (ErrorLevel) ; user clicked Cancel, delete typed text if any (execution cannot be cancelled however)
+					strInputContent := ""
+				strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
+			}
 	}
 
 	strExpanded := ExpandUserVariables(strExpanded)
@@ -25324,8 +25328,9 @@ class Container
 			
 			; EXPAND PLACEHOLDERS in location
 			; for favorite's location {LOC}, {DIR}, {NAME}, etc, current location {CUR_LOC}, {CUR_NAME}, {CUR_...}, etc,
-			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc, current content of clipboard {Clipboard} and {Input} box
-			; for favorite's location, favorite's parameter, application favorite's start in directory, snippet's content
+			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc, current content of clipboard {Clipboard},
+			; user {Input:prompt} and current time {Now:format} for favorite's location, favorite's parameter,
+			; application favorite's start in directory, snippet's content
 			this.aaTemp.strLocationWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteLocation, ""
 				, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
 				, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
