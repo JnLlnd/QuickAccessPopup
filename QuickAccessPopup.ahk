@@ -4717,11 +4717,7 @@ o_Settings.ReadIniOption("MenuPopup", "blnAlternativeMenuShowNotification", "Alt
 
 ; Group Filemanagers
 ; load ini values when init instance of FileManagers (must be after init of o_JLicons)
-global o_FileManagers := new FileManagers
-global g_aaFileManagerExplorer := o_FileManagers.SA[1].AA
-global g_aaFileManagerDirectoryOpus := o_FileManagers.SA[2].AA
-global g_aaFileManagerTotalCommander := o_FileManagers.SA[3].AA
-global g_aaFileManagerQAPconnect := o_FileManagers.SA[4].AA
+Gosub, LoadFileManagers ; init o_FileManagers and 4 file managers objects g_aaFileManager...
 
 ; Group Snippets
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultProcessEOLTab", "SnippetDefaultProcessEOLTab", 1, "Snippets", "f_lblSnippetDefaultIntro|f_blnSnippetDefaultProcessEOLTab") ; g_blnSnippetDefaultProcessEOLTab
@@ -4818,6 +4814,20 @@ strFileEncoding := ""
 strIniFileContent := ""
 strGuiTitle := ""
 strMenuDynamicMenus := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+LoadFileManagers:
+;------------------------------------------------------------
+
+global o_FileManagers := new FileManagers
+global g_aaFileManagerExplorer := o_FileManagers.SA[1].AA
+global g_aaFileManagerDirectoryOpus := o_FileManagers.SA[2].AA
+global g_aaFileManagerTotalCommander := o_FileManagers.SA[3].AA
+global g_aaFileManagerQAPconnect := o_FileManagers.SA[4].AA
 
 return
 ;------------------------------------------------------------
@@ -7722,7 +7732,7 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 }
 
 ; Re-init class for FileManagers, reloading ini values
-o_FileManagers := new FileManagers ; declared global earlier
+Gosub, LoadFileManagers ; init o_FileManagers and 4 file managers objects g_aaFileManager...
 strClickedFileManagerSystemName := ""
 
 ; === Snippets ===
@@ -21696,7 +21706,7 @@ TODO
 ;-------------------------------------------------------------
 {
 	;---------------------------------------------------------
-	__Call(function, parameters*)
+	###__Call(function, parameters*)
 	; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 	{
 		funcRef := Func(funcName := this.__class "." function)
@@ -21806,7 +21816,7 @@ TODO
 		AA := Object() ; associative array
 		
 		;---------------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
@@ -21833,7 +21843,7 @@ TODO
 	;---------------------------------------------------------
 	{
 		;-----------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
@@ -21862,7 +21872,7 @@ TODO
 	;---------------------------------------------------------
 	{
 		;-----------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
@@ -21957,7 +21967,7 @@ TODO
 	;---------------------------------------------------------
 	{
 		;-----------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
@@ -22050,7 +22060,7 @@ TODO
 	;---------------------------------------------------------
 	{
 		;-----------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
