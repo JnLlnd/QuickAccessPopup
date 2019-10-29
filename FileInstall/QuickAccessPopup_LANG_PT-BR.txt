@@ -260,7 +260,6 @@ lDialogInvalidHotkeyFavorite	Com o layout atual do seu teclado, a tecla de atalh
 lDialogKeyboard	Teclado
 lDialogLaunchWith	Iniciar com este aplicativo
 lDialogListApplicationLabel	Listar aplicativos para:
-lDialogListApplicationsDropdown	Listar Todos||Alternar Menu|Aplicativos em Execução|Fechar Aplicativos
 lDialogListApplicationYesNo	[Sim] para Ativar ou [Não] para Fechar esta Janela?
 lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla Menu
@@ -298,7 +297,6 @@ lDialogRemoveMultipleFavorites	Deseja realmente remover favoritos do ~1~ ou subm
 lDialogResetQAPSpecialDefaultNames	Este comando redefine todos os favoritos das Pastas Especiais e Recursos do QAP no seu menus para seu nome padrão em "~1~".`n`nContinuar?
 lDialogSearch	Pesquisar
 lDialogSelectIcon	Selecione o ícone
-lDialogSelectIconJL	Selecione em JLicons.dll
 lDialogSelectIconNo	Sem ícone
 lDialogSelectItemOneOrMore	Por favor, selecione pelo menos um item.
 lDialogSelectItemToEdit	Por favor, selecione o item para editar.
@@ -695,10 +693,6 @@ lOptionsDisplayIcons	Exibir Ícones do Menu
 lOptionsDisplayMenuShortcuts	Exibir Atalhos Numéricos de Menu
 lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos de Menu Numérico em 1 (ao invés de 0)
 lOptionsEnableExternalMenusCatalogue	Habilitar o Catálogo de Menus Compartilhados
-lOptionsExclusionMouseList	Exclusões de Botões do Mouse do QAP
-lOptionsExclusionMouseListDescription	Lista de exclusões para disparador do Mouse [~1~]
-lOptionsExclusionMouseListDetail1	Para bloquear o menu pelo botão do mouse do QAP [~1~] em um aplicativo, entre qualquer parte do título da janela do aplicativo. Você pode entrar múltiplas exclusões, uma por linha. Por exemplo, para excluir o Chrome e Word, entre as seguintes duas linhas na lista de exclusão:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	A tecla de atalho do QAP será desativada nestes aplicativos e o clique [~1~] será enviado para a janela de destino se o QAP não estiver em execução. Você também pode excluir janelas pelo nome da sua classe ou nome do processo (nome do arquivo EXE). Prefixe o título ou classe com * (asterisco) para excluir também caixas de diálogo de aplicativos. Você pode encontrar ajuda e suporte deste recurso no <a href="~2~">site do QAP</a>.
 lOptionsExplorerContextMenus	Habilitar menus de contexto do Windows Explorer
 lOptionsFileManagerNavigateCurrent	a janela ~1~ atual
 lOptionsFileManagerNavigateCurrentTab	a aba ~1~ atual
@@ -710,7 +704,6 @@ lOptionsFtpEncoding	Criptografar usuário e senha FTP (recomendado)
 lOptionsFtpEncodingTC	Criptografar usuário e senha FTP (não recomendado para o Total Commander)
 lOptionsGeneral	Geral
 lOptionsGuiTitle	Opções - ~1~ ~2~
-lOptionsHotkeyRemindersFull	Exibir atalho e string de substituição completos
 lOptionsHotkeyRemindersNo	Não exibir
 lOptionsHotkeyRemindersPrompt	Lembretes de atalho e string de substituição no menu:
 lOptionsHotkeyRemindersShort	Exibir abreviado

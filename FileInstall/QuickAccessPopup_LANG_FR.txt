@@ -7,7 +7,7 @@ lAboutUserComputerName	Utilisateur: ~1~`nOrdinateur: ~2~
 lAlternativeMenuTrayTipCopyLocation	Choisissez le favori à copier
 lAlternativeMenuTrayTipEditFavorite	Choisissez le favori à modifier
 lAlternativeMenuTrayTipNewWindow	Choisissez le dossier à ouvrir dans une nouvelle fenêtre
-lAlternativeMenuTrayTipOpenContaining	Choisissez le document. l'application ou le dossier favori dont vous voulez ouvrir le dossier parent
+lAlternativeMenuTrayTipOpenContaining	Choisissez le document, l'application ou le dossier favori dont vous voulez ouvrir le dossier parent
 lAlternativeMenuTrayTipRunAs	Sélectionnez l'application à exécuter en tant qu'administrateur
 lContextAddFile	Ajouter ce fichier au menu Quick Access Popup
 lContextAddFileXpress	Ajouter ce fichier au menu Quick Access Popup (Express)
@@ -260,7 +260,6 @@ lDialogInvalidHotkeyFavorite	Avec votre configuration actuelle de clavier, la to
 lDialogKeyboard	Clavier
 lDialogLaunchWith	Lancer avec cette application
 lDialogListApplicationLabel	Liste des applications pour:
-lDialogListApplicationsDropdown	Tout||Menu Fenêtres ouvertes|Applications actives|Fermer des applications
 lDialogListApplicationYesNo	[Oui] pour Activer ou [Non] pour fermer cette fenêtre?
 lDialogMaximized	Maximisée
 lDialogMenuKey	Touche Menu
@@ -298,7 +297,6 @@ lDialogRemoveMultipleFavorites	Voulez-vous vraiement supprimer ~1~ favoris ou so
 lDialogResetQAPSpecialDefaultNames	Cette commande va réinitialiser tous les noms des Dossiers spéciaux et des Fonctionnalités QAP dans votre menu à leur nom par défaut en "~1~".`n`nContinuer?
 lDialogSearch	Rechercher
 lDialogSelectIcon	Sélectionnez l'icône
-lDialogSelectIconJL	Sélectionner dans JLicons.dll
 lDialogSelectIconNo	Pas d'icône
 lDialogSelectItemOneOrMore	Veuillez sélectionner au moins un item.
 lDialogSelectItemToEdit	Veuillez sélectionner l'item à modifier.
@@ -694,10 +692,6 @@ lOptionsDisplayIcons	Afficher les icônes des menus
 lOptionsDisplayMenuShortcuts	Afficher les raccourcis numériques
 lOptionsDisplayMenuShortcutsFromOne	Commencer les raccourcis numériques à 1 (au lieu de 0)
 lOptionsEnableExternalMenusCatalogue	Activer le Catalogue des menus partagés
-lOptionsExclusionMouseList	Liste d'exclusions pour le bouton de la souris du menu QAP
-lOptionsExclusionMouseListDescription	Liste d'exclusions pour le bouton de souris [~1~]
-lOptionsExclusionMouseListDetail1	Pour bloquer le bouton de souris [~1~] du menu QAP dans une application, tapez n'importe quelle partie du titre de la fenêtre de l'application . Vous pouvez entrer plusieurs exclusions, une par ligne. Par exemple, pour exclure Chrome et Word, entrez ces deux lignes dans la liste d'exclusion:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	Le bouton de souris du menu QAP sera inactif dans ces applications et le clic sur [~1~] sera traité par l'application visée comme si QAP ne roulait pas. Vous pouvez aussi exclure des fenêtres par leur nom de classe ou leur nom de processus. Ajoutez un astérisque (*) au début du titre ou de la classe pour aussi exclure les boîtes de dialogue de l'application. Vous trouvez de l'aide et du soutien sur cette fonction <a href="~2~">sur le site web de QAP</a>.
 lOptionsExplorerContextMenus	Activer les menus contextuels de Windows Explorer
 lOptionsFileManagerNavigateCurrent	la fenêtre actuelle de ~1~
 lOptionsFileManagerNavigateCurrentTab	l'onglet actuel de ~1~
@@ -709,7 +703,6 @@ lOptionsFtpEncoding	Encoder le code d'utilisateur et le mot de passe FTP (recomm
 lOptionsFtpEncodingTC	Encoder le code d'utilisateur et le mot de passe FTP (déconseillé aux utilisateurs de Total Commander)
 lOptionsGeneral	Général
 lOptionsGuiTitle	Options - ~1~ ~2~
-lOptionsHotkeyRemindersFull	Afficher les rappels complets
 lOptionsHotkeyRemindersNo	Ne pas afficher
 lOptionsHotkeyRemindersPrompt	Rappels des raccourcis et des chaînes de substitution dans les menus:
 lOptionsHotkeyRemindersShort	Afficher les rappels abrégés

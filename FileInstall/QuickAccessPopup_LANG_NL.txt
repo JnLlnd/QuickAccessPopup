@@ -260,7 +260,6 @@ lDialogInvalidHotkeyFavorite	Met de huidige toetsenbordindeling kan de sneltoets
 lDialogKeyboard	Toetsenbord
 lDialogLaunchWith	Starten met deze applicatie
 lDialogListApplicationLabel	Applicatielijst voor:
-lDialogListApplicationsDropdown	Alle weergeven||Schakel Menu|Draaiende Applicatie's|Sluit Applicatie's
 lDialogListApplicationYesNo	[Ja] om te activeren of [Nee] om dit venster te sluiten?
 lDialogMaximized	Maximaliseren
 lDialogMenuKey	Menu toets
@@ -298,7 +297,6 @@ lDialogRemoveMultipleFavorites	Wilt u ~1~ favoriet of submenu verwijderen?
 lDialogResetQAPSpecialDefaultNames	Met deze opdracht worden alle favorieten in de "speciale mappen" en de QAP-functies teruggezet naar de standaardnamen in "~1~".`n`nWil je doorgaan?
 lDialogSearch	Zoeken
 lDialogSelectIcon	Selecteer pictogram
-lDialogSelectIconJL	Selecteer in JLicons.dll
 lDialogSelectIconNo	Geen pictogrammen
 lDialogSelectItemOneOrMore	Selecteer tenminste één item.
 lDialogSelectItemToEdit	Selecteer het te bewerken item alstublieft.
@@ -694,10 +692,6 @@ lOptionsDisplayIcons	Pictogrammen weergeven in het menu
 lOptionsDisplayMenuShortcuts	Numerieke snelkoppelingen in het menu weergeven
 lOptionsDisplayMenuShortcutsFromOne	Start numerieke menusnelkoppelingen vanaf 1 (i.p.v. 0)
 lOptionsEnableExternalMenusCatalogue	Functie "Openbaar Menu" activeren
-lOptionsExclusionMouseList	Uitsluitingslijst voor QAP-Muisknoppen
-lOptionsExclusionMouseListDescription	Uitsluitlijst voor muistoets: [~1~].
-lOptionsExclusionMouseListDetail1	Om de QAP-muistoets [~1~] uit te schakelen in een applicatie, kunt u de titel van het venster invoeren van de desbetreffende applicatie.`nMeerdere uitsluitsels zijn mogelijk (1 per regel).`nOm bijvoorbeeld Chrome en Word uit te sluiten kunt u het volgende invoeren:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	De QAP-muistoets zal uitgeschakeld zijn in de uitgesloten applicaties en de ~1~-toets zal direct beschikbaar zijn in het venster zonder tussenkomst van QAP.`nOok bestaat de mogelijkheid om uitsluitsels te maken op basis van klasse of procesnaam (.exe extensie) van het venster. Gebruik de titel of klasse met een * (asterisk) om applicatievensters uit te sluiten. Meer hulp kan gevonden worden op <a href="~2~">onze website</a>.
 lOptionsExplorerContextMenus	Windows Explorer context menu's inschakelen
 lOptionsFileManagerNavigateCurrent	het huidige ~1~ venster
 lOptionsFileManagerNavigateCurrentTab	de huidige ~1~ tab
@@ -709,7 +703,6 @@ lOptionsFtpEncoding	Versleutel FTP gebruikernaam en wachtwoord (aangeraden)
 lOptionsFtpEncodingTC	Versleutel FTP gebruikernaam en wachtwoord (niet aangeraden voor Total Commander)
 lOptionsGeneral	Algemeen
 lOptionsGuiTitle	Instellingen - ~1~ ~2~
-lOptionsHotkeyRemindersFull	Complete sneltoetsen en hotstrings weergeven
 lOptionsHotkeyRemindersNo	Niet weergeven
 lOptionsHotkeyRemindersPrompt	Sneltoetsen weergeven in het menu:
 lOptionsHotkeyRemindersShort	Afkortingen weergeven

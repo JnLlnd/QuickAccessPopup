@@ -260,7 +260,6 @@ lDialogInvalidHotkeyFavorite	Com a sua actual configuração do teclado, a tecla d
 lDialogKeyboard	Teclado
 lDialogLaunchWith	Abrir com esta aplicação
 lDialogListApplicationLabel	Listar aplicações para:
-lDialogListApplicationsDropdown	Listar Todas||Menu de Troca|Em execução|Encerradas
 lDialogListApplicationYesNo	[Sim] para Activar ou [Não] para Fechar esta janela?
 lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla de Menu
@@ -298,7 +297,6 @@ lDialogRemoveMultipleFavorites	Deseja mesmo remover ~1~ favoritos ou submenus?
 lDialogResetQAPSpecialDefaultNames	Este comando irá redefinir para o nome padrão todas as Pastas Especiais e Favoritos QAP no seu menu em "~1~".`n`nContinuar?
 lDialogSearch	Procurar
 lDialogSelectIcon	Seleccionar ícone
-lDialogSelectIconJL	Seleccionar em JLicons.dll
 lDialogSelectIconNo	Sem ícone
 lDialogSelectItemOneOrMore	Por favor, seleccione pelo menos um item.
 lDialogSelectItemToEdit	Por favor, seleccione o item para editar.
@@ -695,10 +693,6 @@ lOptionsDisplayIcons	Exibir Ícones do Menu
 lOptionsDisplayMenuShortcuts	Exibir Atalhos Numéricos do Menu
 lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos do Menu NumÃ©rico em 1 (em vez de 0)
 lOptionsEnableExternalMenusCatalogue	Activar Catálogo de Menus Partilhados
-lOptionsExclusionMouseList	Exclusões do Botão do Rato do QAP
-lOptionsExclusionMouseListDescription	Lista de Exclusões para desencadeador do Rato [~1~]
-lOptionsExclusionMouseListDetail1	Para bloquear o botão do rato de menu QAP [~1~] numa aplicação, introduza qualquer parte to título da janela da aplicação. Pode introduzir várias exclusões, uma por linha. Por exemplo, para excluir o Chrome e o Word, introduza as duas seguintes linhas na lista de exclusões:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	A combinação do QAP será desactivada nestas aplicações e o clique [~1~] será enviado para a janela alvo como se o QAP não estivesse a ser executado. Pode também excluir janelas pelo nome da sua classe ou processo (nome do ficheiro EXE. Insira * (asterisco) antes do título ou classe para também excluir caixas de diálogo de programas. Pode encontrar ajuda para esta função <a href="~2~">no site do QAP</a>.
 lOptionsExplorerContextMenus	Activar os menus de contexto do Explorador do Windows
 lOptionsFileManagerNavigateCurrent	a actual janela do ~1~
 lOptionsFileManagerNavigateCurrentTab	o actual separador ~1~
@@ -710,7 +704,6 @@ lOptionsFtpEncoding	Codificar utilizador e palavra-passe FTP (recomendado)
 lOptionsFtpEncodingTC	Codificar utilizador e palavra-passe FTP (não recomendado para o Total Commander)
 lOptionsGeneral	Geral
 lOptionsGuiTitle	Opções - ~1~ ~2~
-lOptionsHotkeyRemindersFull	Exibir nome completo da combinação e cadeia de substituição
 lOptionsHotkeyRemindersNo	Não exibir
 lOptionsHotkeyRemindersPrompt	Lembretes de Combinação e cadeia de substituição no menu:
 lOptionsHotkeyRemindersShort	Exibir nomes abreviados
