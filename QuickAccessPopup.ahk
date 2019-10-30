@@ -4647,7 +4647,7 @@ else
 	}
 }
 
-Gosub, LoadIniAlternativeMenuFeaturesHotkeys ; load from ini file and enable Alternative menu features hotkeys
+Gosub, LoadIniAlternativeMenuFeaturesHotkeysAndModifiers ; load from ini file and enable Alternative menu features hotkeys and modifiers
 
 ; ---------------------
 ; Load Options
@@ -5178,8 +5178,8 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 
 
 ;-----------------------------------------------------------
-LoadIniAlternativeMenuFeaturesHotkeys:
-; load and enable Alternative menu features hotkeys
+LoadIniAlternativeMenuFeaturesHotkeysAndModifiers:
+; load and enable Alternative menu features hotkeys and modifiers
 ; called at launch by LoadIniFile and after saving options by GuiOptionsGroupSave
 ;-----------------------------------------------------------
 
@@ -5195,9 +5195,8 @@ for strCode, objThisQAPFeature in o_QAPfeatures.AA
 ; Load QAP Alternative Menu hotkeys
 for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 {
-	strHotkey := o_Settings.ReadIniOption("MenuPopup", "str" . strCode, strCode, "", "PopupHotkeysAlternative"
-		, "f_lblAlternativeHotkeyName" . intOrder . "|f_lblAlternativeHotkeyText" . intOrder . "|f_btnChangeAlternativeHotkey" . intOrder
-		, "AlternativeMenuHotkeys")
+	strHotkey := o_Settings.ReadIniOption("MenuPopup", "strHotkey" . strCode, strCode, "", "PopupHotkeysAlternative"
+		, "f_lblAlternativeHotkeyName" . intOrder . "|f_lblAlternativeHotkeyText" . intOrder, "AlternativeMenuHotkeys")
 
 	if (strHotkey <> "ERROR")
 	{
@@ -5208,11 +5207,16 @@ for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 		ErrorLevel := 0 ; reset value that was changed to 5 when IniRead returned the string "ERROR"
 	if (ErrorLevel)
 		Oops(0, o_L["DialogInvalidHotkey"], new Triggers.HotkeyParts(strHotkey).Hotkey2Text(), o_QAPfeatures.AA[strCode].strLocalizedName) ; .strLocalizedName OK because Alternative
+
+	strModifiers := o_Settings.ReadIniOption("MenuPopup", "strModifiers" . strCode, strCode, "", "PopupHotkeysAlternative"
+		, "f_lblAlternativeModifiers" . intOrder . "|f_strAlternativeModifiers" . intOrder, "AlternativeMenuModifiers")
+	o_QAPfeatures.AA[strCode].strCurrentModifiers := strModifiers
 }
 
 strCode := ""
 objThisQAPFeature := ""
 strHotkey := ""
+strModifiers := ""
 intOrder := ""
 
 return
@@ -7122,7 +7126,7 @@ for intThisIndex, objThisPopupHotkey in o_PopupHotkeys.SA ; could also use o_Set
 	Gui, 2:Add, Text, % "Section x" . g_intGroupItemsX + 260 . " y+5 w280 h23 center 0x1000 vf_lblHotkeyText" . intThisIndex . " gButtonOptionsChangeShortcut" . intThisIndex . " hidden"
 		, % objThisPopupHotkey.AA.strPopupHotkeyTextShort
 	Gui, 2:Font
-	Gui, 2:Add, Button, yp x%g_intGroupItemsTab6X% vf_btnChangeShortcut%intThisIndex% gButtonOptionsChangeShortcut%intThisIndex% hidden, % o_L["OptionsChangeHotkey"]
+	Gui, 2:Add, Button, yp x%g_intGroupItemsTab7X% vf_btnChangeShortcut%intThisIndex% gButtonOptionsChangeShortcut%intThisIndex% hidden, % o_L["OptionsChangeHotkey"]
 	Gui, 2:Font, s8 w500
 	Gui, 2:Add, Link, x%g_intGroupItemsX% ys w240 gOptionsTitlesDescriptionClicked hidden vf_lnkChangeShortcut%intThisIndex%, % objThisPopupHotkey.AA.strPopupHotkeyLocalizedDescription
 }
@@ -7155,14 +7159,23 @@ Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w590 center hidden vf_lb
 
 for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 {
+	if Mod(A_Index, 2) ; right column, use A_Index, not intOrder
+		intHotkeysAlternativeX := g_intGroupItemsX
+	else
+		intHotkeysAlternativeX := g_intGroupItemsTab6X
+	
 	Gui, 2:Font, s8 w700
-	Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 w240 hidden vf_lblAlternativeHotkeyName%intOrder%, % o_QAPfeatures.AA[strAlternativeCode].strLocalizedName ; .strLocalizedName OK because Alternative
+	Gui, 2:Add, Text, % "section x" . intHotkeysAlternativeX . " y" . (A_Index = 1 ? "+10" : (Mod(A_Index, 2) ? "+20" : "s")) . " w240 hidden vf_lblAlternativeHotkeyName" . intOrder
+		, % o_QAPfeatures.AA[strAlternativeCode].strLocalizedName ; .strLocalizedName OK because Alternative
 	Gui, 2:Font, s9 w500, Courier New
-	Gui, 2:Add, Text, x+10 yp w280 h20 center 0x1000 vf_lblAlternativeHotkeyText%intOrder% gButtonOptionsChangeAlternativeHotkey hidden
+	Gui, 2:Add, Text, xs y+5 w280 h20 center 0x1000 vf_lblAlternativeHotkeyText%intOrder% gButtonOptionsChangeAlternativeHotkey hidden
 		, % new Triggers.HotkeyParts(o_QAPfeatures.AA[strAlternativeCode].strCurrentHotkey).Hotkey2Text(true)
 	Gui, 2:Font
-	Gui, 2:Add, Button, yp x+10 vf_btnChangeAlternativeHotkey%intOrder% gButtonOptionsChangeAlternativeHotkey hidden, % o_L["OptionsChangeHotkey"]
+	Gui, 2:Add, Text, y+5 xs vf_lblAlternativeModifiers%intOrder% hidden, % o_L["OptionsAlternativeModifiers"] . ":"
+	Gui, 2:Add, DropDownList, yp x+5 w140 vf_strAlternativeModifiers%intOrder% gGuiOptionsGroupChanged hidden
+		, % o_QAPfeatures.GetAlternativeMenuModifiersDropdownList(o_QAPfeatures.AA[strAlternativeCode].strCurrentModifiers)
 }
+intHotkeysAlternativeX := ""
 
 ; AlternativeMenuShowNotification
 Gui, 2:Add, CheckBox, y+30 x%g_intGroupItemsX% vf_blnAlternativeMenuShowNotification gGuiOptionsGroupChanged hidden, % o_L["OptionsAlternativeMenuShowNotification"]
@@ -7548,9 +7561,23 @@ if StrLen(f_strAlternativeTrayIcon) ; because f_strAlternativeTrayIcon is option
 	}
 }
 
+; validate no duplicate Alternative Menu modifiers
+strNewModifiers := ""
+for intOrder, strThisAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
+{
+	; update value used in current session
+	if InStr(strNewModifiers, "|" . o_QAPfeatures.aaQAPFeaturesAlternativeMenuModifiersCodeByText[f_strAlternativeModifiers%intOrder%] . "|")
+	{
+		Oops(2, o_L["OopsAlternativeMenuModifiersDuplicates"], f_strAlternativeModifiers%intOrder%)
+		return
+	}
+	strNewModifiers .=  "|" . o_QAPfeatures.aaQAPFeaturesAlternativeMenuModifiersCodeByText[f_strAlternativeModifiers%intOrder%] . "|"
+}
+
 blnOptionsPathsOK := ""
 strTempLocation := ""
 saTempLocation := ""
+strNewModifiers := ""
 
 ; from here, we know that we have valid paths in Options
 
@@ -7682,9 +7709,18 @@ intThisIndex := ""
 IniDelete, % o_Settings.strIniFile, AlternativeMenuHotkeys
 for strThisAlternativeCode, strNewShortcut in o_QAPfeatures.aaQAPFeaturesNewShortcuts
 	if HasShortcut(strNewShortcut)
-		o_Settings.MenuPopup["str" . strThisAlternativeCode].WriteIni(strNewShortcut)
+		o_Settings.MenuPopup["strHotkey" . strThisAlternativeCode].WriteIni(strNewShortcut)
 
-Gosub, LoadIniAlternativeMenuFeaturesHotkeys ; reload from ini file
+IniDelete, % o_Settings.strIniFile, AlternativeMenuReminders
+for intOrder, strThisAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
+{
+	; update value used in current session
+	o_QAPfeatures.AA[strThisAlternativeCode].strCurrentModifiers := o_QAPfeatures.aaQAPFeaturesAlternativeMenuModifiersCodeByText[f_strAlternativeModifiers%intOrder%]
+	; save value to ini file
+	o_Settings.MenuPopup["strModifiers" . strThisAlternativeCode].WriteIni(o_QAPfeatures.AA[strThisAlternativeCode].strCurrentModifiers)
+}
+
+Gosub, LoadIniAlternativeMenuFeaturesHotkeysAndModifiers ; reload from ini file
 Gosub, BuildAlternativeMenu
 o_Settings.MenuPopup.blnAlternativeMenuShowNotification.WriteIni(f_blnAlternativeMenuShowNotification)
 
@@ -7978,7 +8014,8 @@ g_intGroupItemsTab2X := g_intGroupItemsX + 20
 g_intGroupItemsTab3X := g_intGroupItemsX + 120
 g_intGroupItemsTab4X := g_intGroupItemsX + 240
 g_intGroupItemsTab5X := g_intGroupItemsX + 250
-g_intGroupItemsTab6X := g_intGroupItemsX + 550
+g_intGroupItemsTab6X := g_intGroupItemsX + 300
+g_intGroupItemsTab7X := g_intGroupItemsX + 550
 intGroupItemsY := 40 ; Y position of first item of a group
 
 Gui, 2:Font, s10 w700, Verdana
@@ -8336,7 +8373,6 @@ ButtonOptionsChangeAlternativeHotkey:
 Gui, 2:Submit, NoHide
 
 intAlternativeOrder := StrReplace(A_GuiControl, "f_lblAlternativeHotkeyText")
-intAlternativeOrder := StrReplace(intAlternativeOrder, "f_btnChangeAlternativeHotkey")
 
 strThisAlternativeCode := o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[intAlternativeOrder]
 objThisAlternative := o_QAPfeatures.AA[strThisAlternativeCode]
@@ -15642,15 +15678,13 @@ if (g_blnShowChangeFolderInDialogAlert and InStr("Folder|Special", o_ThisFavorit
 }
 
 ; process Alternative features keyboard modifiers
-/*
-MenuAlternativeNewWindow              LShift
-MenuAlternativeEditFavorite           LShift + LControl
-MenuCopyLocation                      LControl
-AlternativeMenuTrayTipOpenContaining  RShift
-AlternativeMenuTrayTipRunAs           RShift + RControl
-AlternativeMenuTrayTipEditFavorite    RControl
+; 1 MenuAlternativeNewWindow              <+   LShift
+; 2 MenuAlternativeEditFavorite           <+<^ LShift + LControl
+; 3 MenuCopyLocation                      <^   LControl
+; 4 MenuAlternativeRunAs                  >+>^ RShift + RControl
+; 5 MenuAlternativeOpenContainingCurrent  >+   RControl
+; 6 MenuAlternativeOpenContainingNew      >^   RShift
 
-*/
 if (blnLShiftPressed or blnLControlPressed)
 {
 	g_blnAlternativeMenu := true
@@ -22571,7 +22605,7 @@ class QAPfeatures
 ;-------------------------------------------------------------
 {
 	;---------------------------------------------------------
-	__Call(function, parameters*)
+	###__Call(function, parameters*)
 	; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 	{
 		funcRef := Func(funcName := this.__class "." function)
@@ -22590,6 +22624,9 @@ class QAPfeatures
 	aaQAPfeaturesInMenus := Object() ; associative array, index of QAP features actualy present in menu, populated outside the class
 	aaQAPFeaturesNewShortcuts := Object() ; associative array, populated outside the class
 	aaQAPFeaturesCategories := Object() ; associative array
+	aaQAPFeaturesAlternativeMenuModifiersTextByCode := Object() ; associative array
+	aaQAPFeaturesAlternativeMenuModifiersCodeByText := Object() ; associative array
+	strMenuModificersNames := "" ; for Atlernative menu modifiers dropdown list
 	
 	;---------------------------------------------------------
 	__New()
@@ -22778,6 +22815,31 @@ class QAPfeatures
 		saQAPFeaturesCategoriesDisplayNames := StrSplit(o_L["DialogQAPFeatureCategoriesNames"], "|")
 		Loop, % saQAPFeaturesCategoriesSystemName.Length()
 			this.aaQAPFeaturesCategories[saQAPFeaturesCategoriesSystemName[A_Index]] := saQAPFeaturesCategoriesDisplayNames[A_Index]
+		
+		;-----------------------
+		; QAP Features Alternative Menu modifiers
+		
+		strMenuModificersCodes := "<+|<+<^|<^|>+|>+>^|>^"
+		this.strMenuModificersNames := o_L["DialogShiftLeft"] . "|" . o_L["DialogShiftLeft"] . " + " . o_L["DialogCtrlLeft"] . "|" . o_L["DialogCtrlLeft"]
+			. "|" . o_L["DialogShiftRight"] . "|" . o_L["DialogShiftRight"] . " + " . o_L["DialogCtrlRight"] . "|" . o_L["DialogCtrlRight"]
+		
+		saMenuModificersNames := StrSplit(this.strMenuModificersNames, "|")
+		loop, Parse, % strMenuModificersCodes, "|"
+		{
+			this.aaQAPFeaturesAlternativeMenuModifiersTextByCode[A_LoopField] := saMenuModificersNames[A_Index]
+			this.aaQAPFeaturesAlternativeMenuModifiersCodeByText[saMenuModificersNames[A_Index]] := A_LoopField
+		}
+	}
+	;---------------------------------------------------------
+	
+	;---------------------------------------------------------
+	GetAlternativeMenuModifiersDropdownList(strCurrentModifiers)
+	;---------------------------------------------------------
+	{
+		; in this.strMenuModificersNames replace the | after the current modifier with ||
+		strList := StrReplace("|" . this.strMenuModificersNames . "|", "|" . this.aaQAPFeaturesAlternativeMenuModifiersTextByCode[strCurrentModifiers] . "|"
+			, "|" . this.aaQAPFeaturesAlternativeMenuModifiersTextByCode[strCurrentModifiers] . "||")
+		return SubStr(strList, 2) ; remove first |
 	}
 	;---------------------------------------------------------
 
