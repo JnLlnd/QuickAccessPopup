@@ -260,7 +260,6 @@ lDialogInvalidHotkeyFavorite	Con il tuo attuale layout di tastiera di sistema, n
 lDialogKeyboard	Tastiera
 lDialogLaunchWith	Esegui con questa applicazione
 lDialogListApplicationLabel	Elenca applicazioni per:
-lDialogListApplicationsDropdown	Elenca tutto||Cambia Menù|Applicazioni in esecuzione|Chiudi Applicazioni
 lDialogListApplicationYesNo	[Si] per Attivare o [No] per Chiudere questa finestra?
 lDialogMaximized	Massimizzata
 lDialogMenuKey	Tasto del Menú
@@ -298,7 +297,6 @@ lDialogRemoveMultipleFavorites	Vuoi davvero eliminare ~1~ preferiti / sottomenù?
 lDialogResetQAPSpecialDefaultNames	Questo comando resetta tutte le Cartelle Speciali e Caratteristiche di QAP preferite nel tuo menù al loro nome di default in "~1~".`n`nContinuare?
 lDialogSearch	Cerca
 lDialogSelectIcon	Seleziona icona
-lDialogSelectIconJL	Seleziona da JLicons.dll
 lDialogSelectIconNo	Senza icone
 lDialogSelectItemOneOrMore	Per favore seleziona almeno una voce.
 lDialogSelectItemToEdit	Per favore, seleziona la voce da modificare.
@@ -695,10 +693,6 @@ lOptionsDisplayIcons	Mostra Icone nel Menù
 lOptionsDisplayMenuShortcuts	Mostra scorciatoie numeriche nei Menù
 lOptionsDisplayMenuShortcutsFromOne	Comincia le Scorciatoie Numeriche del Menù da 1 (invece di 0)
 lOptionsEnableExternalMenusCatalogue	Abilita il Catalogo del Menù Condiviso
-lOptionsExclusionMouseList	Exclusioni per il tasto del mouse di QAP
-lOptionsExclusionMouseListDescription	Lista delle esclusioni per l'apertura del menù tramite Mouse [~1~]
-lOptionsExclusionMouseListDetail1	Per impedire l'apertura del menù di QAP col mouse [~1~] in una applicazione, inserisci anche parzialmente l'intestazione della finestra dell'applicazione . Puoi introdurre più di una esclusione, una per linea. Per esempio, per escludere Chrome e MS Word, inserisci le seguenti due linee nella lista delle esclusioni:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	La combinazione per aprire QAP sarà disabilitata in queste applicazioni e il click [~1~] sarà inviato alla finestra indicata come se QAP non fosse in esecuzione. Puoi anche escludere finestre usando il nome della loro classe o del loro processo (nome del file EXE). Usa * (asterisco) come prefisso per il titolo o la classe per escludere anche le caselle di dialogo dell'applicazione. Puoi trovare aiuto e supporto per questa funzionalità qui <a href="~2~">sul sito web QAP</a>.
 lOptionsExplorerContextMenus	Abilita i menù contestuali di WIndows Explorer
 lOptionsFileManagerNavigateCurrent	la finestra attuale ~1~
 lOptionsFileManagerNavigateCurrentTab	il tab ~1~ corrente
@@ -710,7 +704,6 @@ lOptionsFtpEncoding	Codifica nome utente e password FTP (consigliato)
 lOptionsFtpEncodingTC	Codifica nome utente e password FTP (non consigliato per Total Commander)
 lOptionsGeneral	Generale
 lOptionsGuiTitle	Opzioni - ~1~ ~2~
-lOptionsHotkeyRemindersFull	Mostra nomi completi e sequenze di sostituzione complete
 lOptionsHotkeyRemindersNo	Non mostrare
 lOptionsHotkeyRemindersPrompt	Promemoria delle combinazioni di tasti e sequenze di sostituzione nel menù:
 lOptionsHotkeyRemindersShort	Visualizza abbreviati

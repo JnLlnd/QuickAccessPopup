@@ -253,7 +253,6 @@ lDialogInvalidHotkeyFavorite	Con la disposición actual del teclado del sistema, 
 lDialogKeyboard	Teclado
 lDialogLaunchWith	Lanzar con esta aplicación
 lDialogListApplicationLabel	Lista de aplicaciones para:
-lDialogListApplicationsDropdown	Listar Todo||Menú de Switch|Ejecutar Aplicaciones|Cerrar Aplicaciones
 lDialogListApplicationYesNo	[Sí] para Activar o [No] para Cerrar esta ventana?
 lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla de menú
@@ -283,7 +282,6 @@ lDialogRefresh	Actualizar
 lDialogRemoveMultipleFavorites	Realmente quiere suprimir ~1~ favoritos o sub-menús?
 lDialogSearch	Búsqueda
 lDialogSelectIcon	Selecionar icono
-lDialogSelectIconJL	Seleccionar en JLicons.dll
 lDialogSelectIconNo	Sin icono
 lDialogSelectItemToEdit	Por favor seleccione la parte a editar.
 lDialogSelectItemToMove	Por favor, Seleccione la opción para mover.
@@ -609,10 +607,6 @@ lOptionsDisplayIcons	Mostrar los iconos del menú
 lOptionsDisplayMenuShortcuts	Mostrar atajos numéricos
 lOptionsDisplayMenuShortcutsFromOne	Iniciar los Accesos Directos del Menú Numérico en 1 (en lugar de 0)
 lOptionsEnableExternalMenusCatalogue	Activar el Catálogo de los menús compartidos
-lOptionsExclusionMouseList	QAP Exclusiones del Botón del Ratón
-lOptionsExclusionMouseListDescription	Lista de Exclusiones de ratón del disparador [~1~]
-lOptionsExclusionMouseListDetail1	Para bloquear el botón de menú QAP ratón [~1~] en una aplicación, entrar en cualquier parte del título de la ventana de la aplicación. Puede introducir múltiples exclusiones, uno por línea. Por ejemplo, para excluir Chrome y Word, escriba las dos líneas siguientes en la lista de exclusión: `n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	La tecla de acceso directo QAP se desactivará en estas aplicaciones y el [~1~] click se enviará a la ventana de destino como si QAP no estuviera ejecutándose. También puede excluir ventanas por su nombre de clase o nombre de proceso (nombre de archivo EXE). Prefija el título o la clase con * (asterisco) para excluir también los cuadros de diálogo de la aplicación. Puede encontrar ayuda y soporte para esta función <a href="~2~">en el sitio web de QAP</a>.
 lOptionsExplorerContextMenus	Activar Menús Contextuales
 lOptionsFileManagerNavigateCurrent	la actual ~1~ ventana
 lOptionsFileManagerNavigateCurrentTab	activa ~1~ pestaña
@@ -622,7 +616,6 @@ lOptionsFileManagerNavigateNewTab	una nueva ~1~ pestaña
 lOptionsFtpEncoding	Codificar Nombre de usuario y contraseña FTP (recomendado)
 lOptionsFtpEncodingTC	Codificar Nombre de usuario y contraseña FTP (no recommendado para Total Commander)
 lOptionsGuiTitle	Opciones - ~1~ ~2~
-lOptionsHotkeyRemindersFull	Mostrar Completa tecla de acceso directo y cadena activa
 lOptionsHotkeyRemindersNo	No mostrar
 lOptionsHotkeyRemindersPrompt	Avisos en el menú de Acceso Directo y Cadena Activa:
 lOptionsHotkeyRemindersShort	Mostrar abreviados

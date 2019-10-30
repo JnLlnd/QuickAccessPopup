@@ -7,7 +7,7 @@ lAboutUserComputerName	Utilisateur: ~1~`nOrdinateur: ~2~
 lAlternativeMenuTrayTipCopyLocation	Choisissez le favori à copier
 lAlternativeMenuTrayTipEditFavorite	Choisissez le favori à modifier
 lAlternativeMenuTrayTipNewWindow	Choisissez le dossier à ouvrir dans une nouvelle fenêtre
-lAlternativeMenuTrayTipOpenContaining	Choisissez le document. l'application ou le dossier favori dont vous voulez ouvrir le dossier parent
+lAlternativeMenuTrayTipOpenContaining	Choisissez le document, l'application ou le dossier favori dont vous voulez ouvrir le dossier parent
 lAlternativeMenuTrayTipRunAs	Sélectionnez l'application à exécuter en tant qu'administrateur
 lContextAddFile	Ajouter ce fichier au menu Quick Access Popup
 lContextAddFileXpress	Ajouter ce fichier au menu Quick Access Popup (Express)
@@ -33,7 +33,7 @@ lCopyFavoritesToMenuOrGroup	Les menus et les groupes ne peuvent pas être copiés.
 lCopyLocationCopiedToClipboard	Emplacement copié dans le Presse-papiers
 lDiagModeCaution	~1~ roule en mode de diagnostique.`n`nDes renseignements à propos de l'exécution de cette application seront colligées dans le fichier:`n~2~`n`nAucune information ne sera transmise sans votre consentement.`n`nVoulez-vous rester en mode diagnostique?
 lDiagModeExit	~1~ a colligé des renseignements à des fins de diagnostique dans le fichier ~2~.
-lDiagModeIntro	Envoyez ce fichier à ahk@jeanlalonde.ca avec une description de la situation nécessitant un diasnostique.
+lDiagModeIntro	Envoyez ce fichier à support@quickaccesspopup.com avec une description de la situation nécessitant un diasnostique.
 lDiagModeSee	Voulez-vous consulter le fichier de diagnostique?
 lDialogActivateAlreadyRunning	Si l'application est déjà lancée, l'activer au lieu de la relancer`n(l'application doit avoir exactement le même emplacement)
 lDialogAdd	Ajouter
@@ -109,6 +109,7 @@ lDialogCopyFavoritesTitle	Copier des favoris - ~1~ ~2~
 lDialogCtrl	Contrôle
 lDialogCtrlShort	Ctrl
 lDialogDescending	Descendant
+lDialogDialogBoxes	Boîtes de dialogue
 lDialogDropDown	liste déroulante
 lDialogEdit	Modifier
 lDialogEditIcon	Modifier la ressources de l'icône
@@ -153,9 +154,16 @@ lDialogFavoriteFolderLiveColumns	Nombre d'items par colonne (0 pour pas de colon
 lDialogFavoriteFolderLiveDocuments	Inclure les documents
 lDialogFavoriteFolderLiveExclude	Exclure
 lDialogFavoriteFolderLiveExtensions	ces extensions (separées par des espaces, par exemple "bak bk")
+lDialogFavoriteFolderLiveHideExtensions	Extension de fichiers
+lDialogFavoriteFolderLiveHideIcons	Icônes
+lDialogFavoriteFolderLiveHideInMenu	Masquer dans les menus
 lDialogFavoriteFolderLiveInclude	Inclure
 lDialogFavoriteFolderLiveLevels	Nombre de niveaux de sous-dossiers à inclure dans le Dossier actif
+lDialogFavoriteFolderLiveShowHidden	Masqué
+lDialogFavoriteFolderLiveShowItems	Afficher les items
+lDialogFavoriteFolderLiveShowSystem	Système
 lDialogFavoriteFolderLiveType	Dossier actif
+lDialogFavoriteHidden	Masquer ce favori
 lDialogFavoriteLaunchWithDoesNotExistTitle	L'exécutable "Lancer avec cette application" n'existe pas - ~1~
 lDialogFavoriteLocationEmpty	L'emplacement est vide. Veuillez indiquer l'emplacement du dossier.
 lDialogFavoriteMenuPosition	Insérer le nouveau favori avant cet item
@@ -255,12 +263,14 @@ lDialogIconsManageParentMenu	Menu contenant ce favori
 lDialogIconsManagePrevious	Précédant
 lDialogIconsManageSetDefaultIcon	Icône par défaut
 lDialogIconsManageTitle	Gérer les icônes - ~1~ ~2~
+lDialogInputExample	Exemple de saisie
+lDialogInputParameter	Saisie du paramètre - ~1~
 lDialogInvalidHotkey	Avec votre configuration actuelle de clavier, la touche de raccourci "~1~" ne peut être utilisée comme un déclencheur pour le menu popup.`n`nVeuillez ouvrir la fenêtre "Personnaliser" dans la zone de notification et cliquez sur "Options". Dans cette boîte de dialogue, choisissez une autre touche de raccourci pour "~2~".
 lDialogInvalidHotkeyFavorite	Avec votre configuration actuelle de clavier, la touche de raccourci "~1~" ne peut être utilisée pour ce favori.`n`nVeuillez choisir une autre touche de raccourci pour le favori "~2~" et l'emplacement "~3~".
 lDialogKeyboard	Clavier
 lDialogLaunchWith	Lancer avec cette application
 lDialogListApplicationLabel	Liste des applications pour:
-lDialogListApplicationsDropdown	Tout||Menu Fenêtres ouvertes|Applications actives|Fermer des applications
+lDialogListApplicationsDropdown	Tout||Menu Fenêtres ouvertes|Applications actives|Fermer des fenêtres
 lDialogListApplicationYesNo	[Oui] pour Activer ou [Non] pour fermer cette fenêtre?
 lDialogMaximized	Maximisée
 lDialogMenuKey	Touche Menu
@@ -273,6 +283,7 @@ lDialogMouseButtonsTextShort	Bouton Gauche|Bouton Milieu|Bouton Droite|Bouton Sp
 lDialogMoveFavoritesTitle	Déplacer des favori - ~1~ ~2~
 lDialogMoveFavoriteTitle	Déplacer le favori - ~1~ ~2~
 lDialogMoveSettingsFail	Une erreur s'est produite lors de la copie des paramètres.`n`nLe déplacement des paramètres a été annulé.
+lDialogMoveSettingsNotDefault	Vous ne pouvez pas déplacer le dossier des paramètres pendant qu'un fichier de paramètre alternatif est activé.`n`nVeuillez relancer les paramètres par défaut et essayez de nouveau.
 lDialogMoveSettingsReload	~1~ doit être redémarré...
 lDialogMoveSettingsSuccess	Le dossier des paramètres a été copié avec succès.`n`nAncien emplacement:`n~1~`n`nNouvel emplacement: `n~2~`n`nLes fichiers dans l'ancien emplacement n'ont pas été effacés. Supprimez-les à votre convenance après avoir quitté ~3~.
 lDialogMoveSettingsUnder	Vous ne pouvez pas déplacer l'emplacement des paramètres sous leur emplacement actuel. Choisissez une autre destination.
@@ -297,8 +308,8 @@ lDialogRefresh	Actualiser
 lDialogRemoveMultipleFavorites	Voulez-vous vraiement supprimer ~1~ favoris ou sous-menus?
 lDialogResetQAPSpecialDefaultNames	Cette commande va réinitialiser tous les noms des Dossiers spéciaux et des Fonctionnalités QAP dans votre menu à leur nom par défaut en "~1~".`n`nContinuer?
 lDialogSearch	Rechercher
-lDialogSelectIcon	Sélectionnez l'icône
-lDialogSelectIconJL	Sélectionner dans JLicons.dll
+lDialogSelectIcon	Changer l'icône
+lDialogSelectIconJL	Sélectionner dans:
 lDialogSelectIconNo	Pas d'icône
 lDialogSelectItemOneOrMore	Veuillez sélectionner au moins un item.
 lDialogSelectItemToEdit	Veuillez sélectionner l'item à modifier.
@@ -412,7 +423,7 @@ lGuiGroupSaveRestoreOption	Lors de la restauration des dossiers du groupe:
 lGuiGroupSaveRestoreWith	Restaurer les dossier avec:
 lGuiHelp	Aide
 lGuiHelpDescription	Afficher la fenêtre d'aide.
-lGuiHotkeysHelp	Aide sur les raccourcis des favoris
+lGuiHotkeysHelp	Aide sur les raccourcis de la fenêtre Personnaliser
 lGuiHotkeysOpenParentMenu	Ouvrir le dossier parent
 lGuiHotkeysOpenSubmenuOrEditFavorite	Ouvrir le sous-menu ou modifier le favori
 lGuiHotkeysSelectContiguousItems	Sélectionner des items contigus
@@ -560,7 +571,7 @@ lMenuMySpecialMenu	Mes Dossiers spéciaux
 lMenuMyVideo	Mes vidéos
 lMenuMyWindowsAppsMenu	Mes Applis Windows
 lMenuNoCurrentFolder	Aucun dossier ouvert actuellement…
-lMenuOpenWorkingDirectory	Ouvrir le dossier de travail de QAP
+lMenuOpenWorkingDirectory	Ouvrir le dossier des paramètres de QAP
 lMenuOptions	Options
 lMenuPictures	Images
 lMenuPopularFiles	Fichiers
@@ -634,6 +645,7 @@ lOopsExternalNotAllowedUnderExternal	On ne peut ajouter un menu partagé à l'inté
 lOopsExternalReadOnlyAlert	Les menus partagés de type "Centralisé" ne peuvent être modifiés can only be edited par les utilisateur(s) identifiés dans la zone "~1~" (ou en ouvrant le fichier ini sur le disque partagé avec un éditeur de texte).`n`nVotre nom d'utilisateur est: "~2~".`nVotre ordinateur est: "~3~".
 lOopsExternalReadOnlyAlertUsernameAdded	Votre nom d'utilisateur a été ajouté automatiquement dans la liste "Utilisateurs avec les droits d'écriture pour ce menu".
 lOopsExternalSelectType	Veuillez sélectionner le type de menu partagé dans l'onglet "Menu partagé".
+lOopsExternalUnderExternalError	Ce menu partagé inclut un autre menu partagé:`n~1~`n`nLes menus partagés ne peuvent inclure d'autres menus partagés. Veuillez retirer le menu partagé enfant qui s'y trouve.
 lOopsFavoritesCopied	~1~ favoris copiés.
 lOopsFileExpandedFrom	Étendu à partir de
 lOopsFileNotFound	Cet emplacement n'existe pas
@@ -662,6 +674,7 @@ lOopsSortUpToSeparator	Tri effectué jusqu'au premier séparateur.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	Une erreur s'est produite pendant l'ouverture de ce favori. Veuillez essayer à nouveau...
 lOopsUsageDbSQLiteMissing	Fichier ressource SQLite absent:`n`n~1~`nImpossible de construire les menus des items fréquemment utilisés.
+lOopsWorkingFolderDisabled	Vous ne pouvez pas changer le dossier des paramètres pendant que le paramètre de ligne de commande "/Working:" est utilisé.
 lOopsWriteProtectedError	Il semble que ~1~ a été lancé depuis un dossier en ÉCRITURE SEULEMENT où il est impossible de créer le fichier de configuration "~1~.ini".`n`nDéplacez le fichier .EXE de ~1~ dans un dossier RÉGULIER de votre choix, puis exécutez l'application à nouveau depuis ce dossier.`n`n~1~ va être fermé.
 lOopsWrongThirdPartyPath	Chemin ou nom de fichier incorrect pour ~1~:`n~2~.`n`nVérifiez le fichier .exe sélectionné pour ~1~ dans les "Options", onglet "~3~".
 lOopsWrongThirdPartyPathQAPconnect	Fichier de l'application invalide dans QAPconnect`n~1~:`n~2~.`n`nVérifiez les valeurs pour [~1~] dans ~3~. Utilisez le bouton "~4~" dans "Options", onglet "~5~".
@@ -694,10 +707,11 @@ lOptionsDisplayIcons	Afficher les icônes des menus
 lOptionsDisplayMenuShortcuts	Afficher les raccourcis numériques
 lOptionsDisplayMenuShortcutsFromOne	Commencer les raccourcis numériques à 1 (au lieu de 0)
 lOptionsEnableExternalMenusCatalogue	Activer le Catalogue des menus partagés
-lOptionsExclusionMouseList	Liste d'exclusions pour le bouton de la souris du menu QAP
-lOptionsExclusionMouseListDescription	Liste d'exclusions pour le bouton de souris [~1~]
-lOptionsExclusionMouseListDetail1	Pour bloquer le bouton de souris [~1~] du menu QAP dans une application, tapez n'importe quelle partie du titre de la fenêtre de l'application . Vous pouvez entrer plusieurs exclusions, une par ligne. Par exemple, pour exclure Chrome et Word, entrez ces deux lignes dans la liste d'exclusion:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	Le bouton de souris du menu QAP sera inactif dans ces applications et le clic sur [~1~] sera traité par l'application visée comme si QAP ne roulait pas. Vous pouvez aussi exclure des fenêtres par leur nom de classe ou leur nom de processus. Ajoutez un astérisque (*) au début du titre ou de la classe pour aussi exclure les boîtes de dialogue de l'application. Vous trouvez de l'aide et du soutien sur cette fonction <a href="~2~">sur le site web de QAP</a>.
+lOptionsExclusionMouseList	Liste noire
+lOptionsExclusionMouseListDescription	Liste noire pour le bouton de souris [~1~]
+lOptionsExclusionMouseListDetail1	Sélectionnez si le bouton de la souris sera utilisable dans toutes les fenêtres d'applications sauf exceptions (liste noire) ou seulement dans certaines applications (liste blanche). Pour ajouter une application, tapez n'importe quelle partie du titre de sa fenêtre. Vous pouvez entrer plusieurs applications, une par ligne. Par exemple, pour exclure Chrome et Word, choisissez Liste noire et entrez ces deux lignes dans la liste:`n`nGoogle Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail2	Lorsque le déclencheur du menu n'est pas permis dans une application, le clic sur [~1~] sera traité par l'application visée comme si QAP ne roulait pas. Vous pouvez aussi ajouter des fenêtres d'applications par leur nom de classe ou leur nom de processus. Ajoutez un astérisque (*) au début du titre ou de la classe pour aussi exclure (liste noire seulement) les boîtes de dialogue de l'application. Plus d'<a href="~2~">aide</a>.
+lOptionsExclusionMouseListWhitelist	Liste blanche
 lOptionsExplorerContextMenus	Activer les menus contextuels de Windows Explorer
 lOptionsFileManagerNavigateCurrent	la fenêtre actuelle de ~1~
 lOptionsFileManagerNavigateCurrentTab	l'onglet actuel de ~1~
@@ -709,9 +723,11 @@ lOptionsFtpEncoding	Encoder le code d'utilisateur et le mot de passe FTP (recomm
 lOptionsFtpEncodingTC	Encoder le code d'utilisateur et le mot de passe FTP (déconseillé aux utilisateurs de Total Commander)
 lOptionsGeneral	Général
 lOptionsGuiTitle	Options - ~1~ ~2~
-lOptionsHotkeyRemindersFull	Afficher les rappels complets
+lOptionsHotkeyRemindersFull	Afficher le texte complet
 lOptionsHotkeyRemindersNo	Ne pas afficher
 lOptionsHotkeyRemindersPrompt	Rappels des raccourcis et des chaînes de substitution dans les menus:
+lOptionsHotkeyRemindersPromptHotstrings	Rappels des chaînes de substitution dans les menus:
+lOptionsHotkeyRemindersPromptShortcuts	Rappels des raccourcis dans les menus:
 lOptionsHotkeyRemindersShort	Afficher les rappels abrégés
 lOptionsHotstringsDefault	Options par défaut des chaînes de substitution
 lOptionsHotstringsDefaultSelect	Sélectionner
@@ -768,6 +784,10 @@ lOptionsSelectWorkingFolder	Enregistrer les paramètres dans quel dossier?
 lOptionsSendToConsoleWithAlt	Utiliser les codes ASCII (ALT+0nnn) lors des changements de dossier dans la fenêtre Commandes de Windows (CMD)
 lOptionsSettingsStartup	Ouvrir la fenêtre "Personnaliser" lors du démarrage
 lOptionsSettingsWindow	Fenêtre Personnaliser
+lOptionsShowQAPmenu	Afficher le menu QAP (Fichier, Favori, etc.):
+lOptionsShowQAPmenuBoth	aux deux endroits
+lOptionsShowQAPmenuCustomize	au dessus de la fenêtre Personnaliser
+lOptionsShowQAPmenuSystem	dans le menu Système (zone de notification)
 lOptionsSnippets	Fragments et Chaînes de substitution
 lOptionsSnippetsHelp	Valeurs par défaut pour les fragments de texte (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Exclusions pour le menu Fenêtres ouvertes
@@ -796,7 +816,7 @@ lOptionsUsageDbIntervalSeconds	Intervalle de collecte et d'actualisation (en sec
 lOptionsUsageDbMaximumSize	Taille maximale de la base de données (en MO):
 lOptionsUsageDbMaximumSizeInvalid	La taille maximale de la base de données n'est pas un nombre valide: ~1~
 lOptionsUsageDbShowPopularityIndex	Afficher l'index de fréquence dans la fenêtre "Personnaliser" et dans les menus
-lOptionsUsageDbStatement	Les données de la base de données de ~1~ sont collectées uniquement dans le but de vous présenter des menus reflétant l'utilisation de votre ordinateur personnel. Ces données résident uniquement sur votre ordinateur et AUCUNE information n'est transmise à un serveur distant.
+lOptionsUsageDbStatement	Les données de la base de données de ~1~ sont collectées uniquement dans le but de vous présenter des menus reflétant l'utilisation de votre ordinateur personnel. Ces données résident uniquement sur votre ordinateur et AUCUNE information de cette base de données n'est transmise à un serveur distant.
 lOptionsUsageDbStatementTitle	Déclaration sur la confidentialité
 lOptionsUserVariables	Variables de l'utilisateur
 lOptionsUserVariablesList	Variables de l'utilisateur
