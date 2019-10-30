@@ -7267,6 +7267,7 @@ Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gG
 GuiControl, , f_blnOptionsSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
 ; HotstringsDefaultOptions
+strNewHotstringsDefaultOptions := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue ; to keep value when options are saved if the hotstrings options are not changed
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% hidden vf_lblSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefault"]
 Gui, 2:Font
@@ -14445,7 +14446,6 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	SplitHotstring(P_strActualHotstring, SH_strFavoriteHotstringTrigger, SH_strFavoriteHotstringOptionsShort)
 	if !StrLen(P_strActualHotstring) ; if new hotstring, use default options
 		SH_strFavoriteHotstringOptionsShort := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue
-	; ###_V("P_strActualHotstring", P_strActualHotstring, SH_strFavoriteHotstringTrigger, SH_strFavoriteHotstringOptionsShort)
 
 	g_intGui2WinID := WinExist("A")
 
