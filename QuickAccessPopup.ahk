@@ -15582,13 +15582,17 @@ g_strNewWindowId := "" ; start fresh for any new favorite to open, used to posit
 ; avoid conflict with hotkeys and avoid editing menu items not in favorites list
 if InStr("OpenFavorite|OpenFavoriteFromLastAction", g_strOpenFavoriteLabel)
 {
-	blnShiftPressed := GetKeyState("Shift")
-	blnControlPressed := GetKeyState("Control")
+	blnLShiftPressed := GetKeyState("LShift")
+	blnLControlPressed := GetKeyState("LControl")
+	blnRShiftPressed := GetKeyState("RShift")
+	blnRControlPressed := GetKeyState("RControl")
 }
 else
 {
-	blnShiftPressed := false
-	blnControlPressed := false
+	blnLShiftPressed := false
+	blnLControlPressed := false
+	blnRShiftPressed := false
+	blnRControlPressed := false
 }
 
 if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
@@ -15628,16 +15632,25 @@ if (g_blnShowChangeFolderInDialogAlert and InStr("Folder|Special", o_ThisFavorit
 }
 
 ; process Alternative features keyboard modifiers
-if (blnShiftPressed or blnControlPressed)
+/*
+MenuAlternativeNewWindow              LShift
+MenuAlternativeEditFavorite           LShift + LControl
+MenuCopyLocation                      LControl
+AlternativeMenuTrayTipOpenContaining  RShift
+AlternativeMenuTrayTipRunAs           RShift + RControl
+AlternativeMenuTrayTipEditFavorite    RControl
+
+*/
+if (blnLShiftPressed or blnLControlPressed)
 {
 	g_blnAlternativeMenu := true
 	g_strHotkeyTypeDetected := "Alternative"
 	
-	if (blnShiftPressed and blnControlPressed) ; as if user selected o_L["MenuAlternativeEditFavorite"] in Alternative menu
+	if (blnLShiftPressed and blnLControlPressed) ; as if user selected o_L["MenuAlternativeEditFavorite"] in Alternative menu
 		g_strAlternativeMenu := o_L["MenuAlternativeEditFavorite"]
-	else if (blnShiftPressed) ; as if user selected o_L["MenuAlternativeNewWindow"] in Alternative menu
+	else if (blnLShiftPressed) ; as if user selected o_L["MenuAlternativeNewWindow"] in Alternative menu
 		g_strAlternativeMenu := o_L["MenuAlternativeNewWindow"]
-	else ; blnControlPressed as if user selected o_L["MenuCopyLocation"] in Alternative menu
+	else ; blnLControlPressed as if user selected o_L["MenuCopyLocation"] in Alternative menu
 		g_strAlternativeMenu := o_L["MenuCopyLocation"]
 }
 
@@ -15672,8 +15685,8 @@ OpenFavoriteCleanup:
 o_ThisFavorite := ""
 g_blnAlternativeMenu := ""
 g_strAlternativeMenu := ""
-blnShiftPressed := ""
-blnControlPressed := ""
+blnLShiftPressed := ""
+blnLControlPressed := ""
 g_blnLaunchFromTrayIcon := ""
 
 return
