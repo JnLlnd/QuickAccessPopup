@@ -5816,7 +5816,7 @@ if !StrLen(strContentsInClipboard)
 }
 else
 {
-	Sort, strContentsInClipboard
+	Sort, strContentsInClipboard, CL ; CL for Case insensitive sort based on the current user's locale
 
 	Loop, parse, strContentsInClipboard, `n
 		if StrLen(A_LoopField)
@@ -10455,7 +10455,7 @@ for strItemCode, oItem in % (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.AA 
 	else ; LoadTreeviewSpecial
 		if StrLen(oItem.strDefaultName) ; to skip class object non-special folders items
 			strItemsNameCodeCategories .= oItem.strDefaultName . "|" . strItemCode . "|" . StrReplace(oItem.strCategories, "|", "~") . "`n"
-Sort, strItemsNameCodeCategories
+Sort, strItemsNameCodeCategories, CL ; CL for Case insensitive sort based on the current user's locale
 
 for strCategory, strCategoryLabel in aaCategories
 {
@@ -24360,7 +24360,7 @@ class Container
 			}
 		}
 		
-		Sort, strFolders, % (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order
+		Sort, strFolders, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 		
 		; scan files in live folder
 		strFiles := ""
@@ -24437,7 +24437,7 @@ class Container
 			return
 		}
 		
-		Sort, strFiles, % (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order
+		Sort, strFiles, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 		
 		strContent := strSelfFolder . (StrLen(strFolders . strFiles) ? "`tX`n" : "")  . strFolders . (StrLen(strFolders) and StrLen(strFiles) ? "`tX`n" : "") . strFiles
 		
