@@ -3643,7 +3643,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2
+;@Ahk2Exe-SetVersion 10.2.0.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3748,8 +3748,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.2.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
@@ -5398,7 +5398,7 @@ if IsObject(o_UsageDb) ; use IsObject instead of g_blnUsageDbEnabled in case it 
 
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
-	MsgBox, % 4 + 48 + 256 + 4096, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
+	MsgBox, % 52 + 256, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
 	IfMsgBox, Yes
 		Run, %g_strDiagFile%
 }
@@ -25336,6 +25336,20 @@ class Container
 			this.aaTemp.strTargetWinId := strTargetWinId
 			this.aaTemp.strHotkeyTypeDetected := strHotkeyTypeDetected
 			
+			; disable features for Explorer that do not work when the folder is launched from a menu open with QAPmessenger
+			if (strMenuTriggerLabel = "LaunchFromMsg")
+			{
+				this.aaTemp.saFavoriteWindowPosition := StrSplit("0", ",") ; make this.aaTemp.saFavoriteWindowPosition[1] false
+				this.aaTemp.blnOpenFavoritesOnActiveMonitor := false
+			}
+			else
+			{
+				; Boolean,MinMax,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (7)
+				; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay (default 200 ms),
+				this.aaTemp.saFavoriteWindowPosition := StrSplit(this.AA.strFavoriteWindowPosition, ",")
+				this.aaTemp.blnOpenFavoritesOnActiveMonitor := g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor
+			}
+			
 			; EXPAND PLACEHOLDERS in location
 			; for favorite's location {LOC}, {DIR}, {NAME}, etc, current location {CUR_LOC}, {CUR_NAME}, {CUR_...}, etc,
 			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc, current content of clipboard {Clipboard},
@@ -25476,15 +25490,12 @@ class Container
 			else if this.FileExistIfMust()
 			{
 				; WINDOW POSITION PREPARATION
-				; Boolean,MinMax,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (7)
-				; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay (default 200 ms),
-				this.aaTemp.saFavoriteWindowPosition := StrSplit(this.AA.strFavoriteWindowPosition, ",") ; reset simple array for all favorites, replace g_arrFavoriteWindowPosition
 				; DOpus or TC: L Left / R Right / Explorer or TC: Monitor 1 / Monitor 2...; for example: "1,0,100,50,640,480,200" or "0,,,,,,,L"
 				if StrLen(this.aaTemp.strTargetAppName) and InStr("Explorer|TotalCommander", this.aaTemp.strTargetAppName) ; if we need to position the new Explorer or Total Commander window on the active monitor
 				{
 					SysGet, intNbMonitors, MonitorCount
 					this.aaTemp.intNbMonitors := intNbMonitors
-					if (g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor and this.aaTemp.intNbMonitors > 1)
+					if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and this.aaTemp.intNbMonitors > 1)
 						GetPositionFromMouseOrKeyboard(this.aaTemp.strMenuTriggerLabel, A_ThisHotkey, this.aaTemp.intMonitorReferencePositionX, this.aaTemp.intMonitorReferencePositionY)
 				}
 				
@@ -25504,7 +25515,7 @@ class Container
 			if (blnOpenOK)
 			{
 				; SET WINDOW POSITION
-				if (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor) ;  we need to position window
+				if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ;  we need to position window
 					and (InStr("Explorer|TotalCommander", this.aaTemp.strTargetAppName) or o_Settings.Execution.blnTryWindowPosition.IniValue)
 					
 					; we can access new Explorer or Total Commander windows, or try with other apps
@@ -25757,7 +25768,7 @@ class Container
 				; updates g_strNewWindowId with new Explorer window ID
 				if (this.aaTemp.strTargetAppName = "Explorer")
 				{
-					if (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
 						; get new window ID
 						; when run -> pid? if not scan Explorer ids
@@ -25765,12 +25776,12 @@ class Container
 						strExplorerIDsBefore := this.aaTemp.strExplorerIDs ;  save the list before launching this new Explorer
 					}
 					
-					if (StrLen(this.AA.FavoriteArguments)
-						or (g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
-						or this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					if ((g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
+						or this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 						; This technique creates a new Explorer instance at every call unless the current location is already an active Explorer window (as of Win 10).
 						; It is preferred to "Run, %this.aaTemp.strFullLocation%" because it gives better result getting the new Explorer window ID required to move the window.
-						Run, % "Explorer """ . this.aaTemp.strFullLocation . """", , % (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor ? "Hide" : "")
+						; Avoid when menu was open from QAPmessenger because collecting Explorer IDs instances because does not work (reason unknown)
+						Run, % "Explorer """ . this.aaTemp.strFullLocation . """", , % (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor ? "Hide" : "")
 					else
 					{
 						; When moving the window is not required and there is no parameter, this technique is preferred because, if call multiple times, it uses the
@@ -25779,8 +25790,9 @@ class Container
 						g_strNewWindowId := ""
 					}
 					
-					if (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
+						; Diag(A_ThisFunc . " Before Loop SetExplorersIDs", "strExplorerIDsBefore", strExplorerIDsBefore)
 						Loop
 						{
 							if (A_Index > 20)
@@ -25791,6 +25803,7 @@ class Container
 								
 							Sleep, % (this.aaTemp.saFavoriteWindowPosition[1] ? this.aaTemp.saFavoriteWindowPosition[7] : 400) ; 400 ms if opening window on the active monitor
 							this.SetExplorersIDs() ;  refresh the list of existing Explorer windows this.aaTemp.strExplorerIDs
+							; Diag(A_ThisFunc . " Loop SetExplorersIDs", "this.aaTemp.strExplorerIDs " . A_Index, this.aaTemp.strExplorerIDs)
 							Loop, Parse, % this.aaTemp.strExplorerIDs, |
 								if !InStr(strExplorerIDsBefore, A_LoopField . "|")
 								{
@@ -25801,7 +25814,8 @@ class Container
 								Break ; we have a new window
 						}
 					}
-					if !StrLen(g_strNewWindowId) and (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					; Diag(A_ThisFunc, "g_strNewWindowId", g_strNewWindowId)
+					if !StrLen(g_strNewWindowId) and (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					; we will not be able to move the window, just show it now
 					{
 						Sleep, 100
@@ -25961,10 +25975,13 @@ class Container
 				try strType := pExplorer.Type ; Gets the type name of the contained document object. "Document HTML" for IE windows. Should be empty for file Explorer windows.
 				strWindowID := ""
 				try strWindowID := pExplorer.HWND ; Try to get the handle of the window. Some ghost Explorer in the ComObjCreate may return an empty handle
+				; strDebug .= strType . "/" . strWindowID . "|"
 				if !StrLen(strType) and StrLen(strWindowID) ; strType must be empty and strWindowID must not be empty
 					this.aaTemp.strExplorerIDs .= pExplorer.HWND . "|"
 			}
 			ObjRelease(pExplorerWindows) ; free memory used by the object
+			; Diag(A_ThisFunc, "strDebug", strDebug)
+			; Diag(A_ThisFunc, "this.aaTemp.strExplorerIDs", this.aaTemp.strExplorerIDs)
 		}
 		;---------------------------------------------------------
 		
@@ -25975,7 +25992,7 @@ class Container
 			if !StrLen(g_strNewWindowId) ; we can't access the new window
 				return
 			
-			if (this.aaTemp.saFavoriteWindowPosition[1]) ; this has precedence on g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor
+			if (this.aaTemp.saFavoriteWindowPosition[1]) ; this has precedence on this.aaTemp.blnOpenFavoritesOnActiveMonitor
 			{
 				Sleep, % this.aaTemp.saFavoriteWindowPosition[7] * (this.aaTemp.blnFirstFolderOfGroup ? 2 : 1)
 				
@@ -26003,7 +26020,7 @@ class Container
 					Sleep, % this.aaTemp.saFavoriteWindowPosition[7]
 				}
 			}
-			else if (g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor and (this.aaTemp.intNbMonitors > 1) and (this.aaTemp.strTargetAppName = "Explorer") and (this.aaTemp.strHotkeyTypeDetected = "Launch"))
+			else if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and (this.aaTemp.intNbMonitors > 1) and (this.aaTemp.strTargetAppName = "Explorer") and (this.aaTemp.strHotkeyTypeDetected = "Launch"))
 				and GetWindowPositionOnActiveMonitor(g_strNewWindowId, intMonitorReferencePositionX, intMonitorReferencePositionY, intNewWindowX, intNewWindowY)
 			{
 				; offset multiple Explorer windows positioned at center of screen (from -100/-100 to +80/+80
