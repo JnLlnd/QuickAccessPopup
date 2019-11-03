@@ -5210,14 +5210,26 @@ for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 
 	strModifiers := o_Settings.ReadIniOption("MenuPopup", "strModifiers" . strCode, strCode, "", "PopupHotkeysAlternative"
 		, "f_lblAlternativeModifiers" . intOrder . "|f_strAlternativeModifiers" . intOrder, "AlternativeMenuModifiers")
-	o_QAPfeatures.AA[strCode].strCurrentModifiers := strModifiers
+	if (strModifiers <> "ERROR")
+	{
+		o_QAPfeatures.AA[strCode].strCurrentModifiers := strModifiers
+		strUsedModifiers .= "|" . strModifiers . "|" ; track to avoid duplicates when assigning default modifiers below
+	}
 }
+
+; Update QAP Alternative Menu with menu modifiers
+for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
+	; if modifier empty (including not "None") and not used by custom modifier, assigne default modifier
+	if !StrLen(o_QAPfeatures.AA[strCode].strCurrentModifiers) and !InStr(strUsedModifiers, o_QAPfeatures.AA[strCode].strDefaultShortcut)
+		; for Alternative Menu QAP features, .strDefaultShortcut contains the default strModifiers
+		o_QAPfeatures.AA[strCode].strCurrentModifiers := o_QAPfeatures.AA[strCode].strDefaultShortcut
 
 strCode := ""
 objThisQAPFeature := ""
 strHotkey := ""
 strModifiers := ""
 intOrder := ""
+strUsedModifiers := ""
 
 return
 ;------------------------------------------------------------
@@ -22632,8 +22644,9 @@ class QAPfeatures
 	__New()
 	;---------------------------------------------------------
 	{
-		; AddQAPFeatureObject(strQAPFeatureCode, strThisDefaultName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories
-		; 	, strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut, strHelpUrl)
+		; AddQAPFeatureObject(strQAPFeatureCode, strThisLocalizedName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories
+		; , strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut
+		; , strHelpUrl, strRefreshCommand := "")
 		
 		this.AddQAPFeatureObject("Clipboard",				o_L["MenuClipboard"],				o_L["MenuClipboard"],			"ClipboardMenuShortcut",				"2-DynamicMenus"
 			, o_L["MenuClipboardDescription"], 0, "iconClipboard", "+^v"
@@ -22794,19 +22807,19 @@ class QAPfeatures
 					, L(o_L["MenuAddFavoriteOfTypeDescription"], o_Favorites.s_SA[A_Index].strFavoriteTypeLocationLabelNoAmpersand), 0, "iconAddFavorite", ""
 					, "what-should-i-know-about-quick-access-popup-before-starting")
 
-		; Alternative Menu features
+		; Alternative Menu features (strDefaultShortcut contains the default strModifiers)
 		this.AddQAPFeatureObject("Open in New Window",		o_L["MenuAlternativeNewWindow"],				"", "", ""
-			, "", 1, "iconFolder", "", "")
+			, "", 1, "iconFolder", "<+", "")
 		this.AddQAPFeatureObject("Edit Favorite",			o_L["MenuAlternativeEditFavorite"],			"", "", ""
-			, "", 3, "iconEditFavorite", "", "")
+			, "", 3, "iconEditFavorite", "<+<^", "")
 		this.AddQAPFeatureObject("Copy Favorite Location",	o_L["MenuCopyLocation"],						"", "", ""
-			, "", 5, "iconClipboard", "", "")
+			, "", 5, "iconClipboard", "<^", "")
 		this.AddQAPFeatureObject("Run As Administrator",	o_L["MenuAlternativeRunAs"],					"", "", ""
-			, "", 7, "iconUAClogo", "", "")
+			, "", 7, "iconUAClogo", ">+>^", "")
 		this.AddQAPFeatureObject("Open Containing Current",	o_L["MenuAlternativeOpenContainingCurrent"],	"", "", ""
-			, "", 9, "iconSpecialFolders", "", "")
+			, "", 9, "iconSpecialFolders", ">+", "")
 		this.AddQAPFeatureObject("Open Containing New",		o_L["MenuAlternativeOpenContainingNew"],		"", "", ""
-			, "", 10, "iconSpecialFolders", "", "")
+			, "", 10, "iconSpecialFolders", ">^", "")
 
 		;-----------------------
 		; QAP Features categories
@@ -22913,7 +22926,7 @@ class QAPfeatures
 		aaOneQAPFeature.strQAPFeatureDescription := strQAPFeatureDescription
 		aaOneQAPFeature.strQAPFeatureURL := strHelpUrl
 		aaOneQAPFeature.intQAPFeatureAlternativeOrder := intQAPFeatureAlternativeOrder
-		aaOneQAPFeature.strDefaultShortcut := strDefaultShortcut
+		aaOneQAPFeature.strDefaultShortcut := strDefaultShortcut ; for Alternative Menu QAP features, the shortcut default contains the default strModifiers
 		
 		this.AA["{" . strQAPFeatureCode . "}"] := aaOneQAPFeature
 		this.aaQAPFeaturesCodeByDefaultName[strThisLocalizedName] := "{" . strQAPFeatureCode . "}"
@@ -23399,7 +23412,7 @@ TODO
 		
 		;-----------------------------------------------------
 		WriteIni(varNewValue := "", blnDoNotSave := false)
-		; update the IniValue if a value is provides and write it to ini file (Global section of the main ini file only)
+		; update the IniValue if a value is provided and write it to ini file (Global section of the main ini file only)
 		;-----------------------------------------------------
 		{
 			if !(blnDoNotSave)
