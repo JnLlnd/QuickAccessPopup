@@ -7578,7 +7578,8 @@ strNewModifiers := ""
 for intOrder, strThisAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 {
 	; update value used in current session
-	if InStr(strNewModifiers, "|" . o_QAPfeatures.aaQAPFeaturesAlternativeMenuModifiersCodeByText[f_strAlternativeModifiers%intOrder%] . "|")
+	if (f_strAlternativeModifiers%intOrder% <> o_L["DialogNone"])
+		and InStr(strNewModifiers, "|" . o_QAPfeatures.aaQAPFeaturesAlternativeMenuModifiersCodeByText[f_strAlternativeModifiers%intOrder%] . "|")
 	{
 		Oops(2, o_L["OopsAlternativeMenuModifiersDuplicates"], f_strAlternativeModifiers%intOrder%)
 		return
@@ -22832,8 +22833,8 @@ class QAPfeatures
 		;-----------------------
 		; QAP Features Alternative Menu modifiers
 		
-		strMenuModificersCodes := "<+|<+<^|<^|>+|>+>^|>^"
-		this.strMenuModificersNames := o_L["DialogShiftLeft"] . "|" . o_L["DialogShiftLeft"] . " + " . o_L["DialogCtrlLeft"] . "|" . o_L["DialogCtrlLeft"]
+		strMenuModificersCodes := "None|<+|<+<^|<^|>+|>+>^|>^"
+		this.strMenuModificersNames := o_L["DialogNone"] . "|" .  o_L["DialogShiftLeft"] . "|" . o_L["DialogShiftLeft"] . " + " . o_L["DialogCtrlLeft"] . "|" . o_L["DialogCtrlLeft"]
 			. "|" . o_L["DialogShiftRight"] . "|" . o_L["DialogShiftRight"] . " + " . o_L["DialogCtrlRight"] . "|" . o_L["DialogCtrlRight"]
 		
 		saMenuModificersNames := StrSplit(this.strMenuModificersNames, "|")
