@@ -15638,21 +15638,7 @@ if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress)
 g_strOpenFavoriteLabel := A_ThisLabel
 g_strNewWindowId := "" ; start fresh for any new favorite to open, used to position Explorer and Total Commander windows only
 
-; avoid conflict with hotkeys and avoid editing menu items not in favorites list
-if InStr("OpenFavorite|OpenFavoriteFromLastAction", g_strOpenFavoriteLabel)
-{
-	blnLShiftPressed := GetKeyState("LShift")
-	blnLControlPressed := GetKeyState("LControl")
-	blnRShiftPressed := GetKeyState("RShift")
-	blnRControlPressed := GetKeyState("RControl")
-}
-else
-{
-	blnLShiftPressed := false
-	blnLControlPressed := false
-	blnRShiftPressed := false
-	blnRControlPressed := false
-}
+gosub, GetAlternativeMenuModifier
 
 if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
 {
@@ -15690,26 +15676,7 @@ if (g_blnShowChangeFolderInDialogAlert and InStr("Folder|Special", o_ThisFavorit
 		IniWrite, 1, % o_Settings.strIniFile, Global, ChangeFolderInDialogAlertRead
 }
 
-; process Alternative features keyboard modifiers
-; 1 MenuAlternativeNewWindow              <+   LShift
-; 2 MenuAlternativeEditFavorite           <+<^ LShift + LControl
-; 3 MenuCopyLocation                      <^   LControl
-; 4 MenuAlternativeRunAs                  >+>^ RShift + RControl
-; 5 MenuAlternativeOpenContainingCurrent  >+   RControl
-; 6 MenuAlternativeOpenContainingNew      >^   RShift
-
-if (blnLShiftPressed or blnLControlPressed)
-{
-	g_blnAlternativeMenu := true
-	g_strHotkeyTypeDetected := "Alternative"
-	
-	if (blnLShiftPressed and blnLControlPressed) ; as if user selected o_L["MenuAlternativeEditFavorite"] in Alternative menu
-		g_strAlternativeMenu := o_L["MenuAlternativeEditFavorite"]
-	else if (blnLShiftPressed) ; as if user selected o_L["MenuAlternativeNewWindow"] in Alternative menu
-		g_strAlternativeMenu := o_L["MenuAlternativeNewWindow"]
-	else ; blnLControlPressed as if user selected o_L["MenuCopyLocation"] in Alternative menu
-		g_strAlternativeMenu := o_L["MenuCopyLocation"]
-}
+gosub, ProcessAlternativeMenuModifier
 
 ; collect last actions
 if !(g_blnAlternativeMenu) ; do not collect Alternative menu features
@@ -15745,6 +15712,38 @@ g_strAlternativeMenu := ""
 blnLShiftPressed := ""
 blnLControlPressed := ""
 g_blnLaunchFromTrayIcon := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetAlternativeMenuModifier:
+;------------------------------------------------------------
+
+; avoid conflict with hotkeys and avoid editing menu items not in favorites list
+if InStr("OpenFavorite|OpenFavoriteFromLastAction", g_strOpenFavoriteLabel)
+	strAlternativeMenuModifier := (GetKeyState("LShift") ? "<+" : "")
+		. (GetKeyState("LControl") ? "<^" : "")
+		. (GetKeyState("RShift") ? ">+" : "")
+		. (GetKeyState("RControl") ? ">^" : "")
+else
+	strAlternativeMenuModifier := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ProcessAlternativeMenuModifier:
+;------------------------------------------------------------
+
+if !StrLen(strAlternativeMenuModifier)
+	return
+
+g_blnAlternativeMenu := true
+g_strHotkeyTypeDetected := "Alternative"
+g_strAlternativeMenu := o_QAPfeatures.aaQAPfeaturesMenuNamesByModifierCodes[strAlternativeMenuModifier]
 
 return
 ;------------------------------------------------------------
@@ -22639,6 +22638,7 @@ class QAPfeatures
 	aaQAPFeaturesCategories := Object() ; associative array
 	aaQAPFeaturesAlternativeMenuModifiersTextByCode := Object() ; associative array
 	aaQAPFeaturesAlternativeMenuModifiersCodeByText := Object() ; associative array
+	aaQAPfeaturesMenuNamesByModifierCodes := Object()
 	strMenuModificersNames := "" ; for Atlernative menu modifiers dropdown list
 	
 	;---------------------------------------------------------
@@ -22843,6 +22843,21 @@ class QAPfeatures
 			this.aaQAPFeaturesAlternativeMenuModifiersTextByCode[A_LoopField] := saMenuModificersNames[A_Index]
 			this.aaQAPFeaturesAlternativeMenuModifiersCodeByText[saMenuModificersNames[A_Index]] := A_LoopField
 		}
+		
+		; process Alternative features keyboard modifiers
+		; 1 MenuAlternativeNewWindow              <+   LShift
+		; 2 MenuAlternativeEditFavorite           <+<^ LShift + LControl
+		; 3 MenuCopyLocation                      <^   LControl
+		; 4 MenuAlternativeRunAs                  >+>^ RShift + RControl
+		; 5 MenuAlternativeOpenContainingCurrent  >+   RControl
+		; 6 MenuAlternativeOpenContainingNew      >^   RShift
+		this.aaQAPfeaturesMenuNamesByModifierCodes["<+"] := o_L["MenuAlternativeNewWindow"]
+		this.aaQAPfeaturesMenuNamesByModifierCodes["<+<^"] := o_L["MenuAlternativeEditFavorite"]
+		this.aaQAPfeaturesMenuNamesByModifierCodes["<^"] := o_L["MenuCopyLocation"]
+		this.aaQAPfeaturesMenuNamesByModifierCodes[">+>^"] := o_L["MenuAlternativeRunAs"]
+		this.aaQAPfeaturesMenuNamesByModifierCodes[">+"] := o_L["MenuAlternativeOpenContainingCurrent"]
+		this.aaQAPfeaturesMenuNamesByModifierCodes[">^"] := o_L["MenuAlternativeOpenContainingNew"]
+		
 	}
 	;---------------------------------------------------------
 	
