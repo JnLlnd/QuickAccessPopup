@@ -3915,7 +3915,10 @@ g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.
 
 ; Init diag mode
 if (o_Settings.Launch.blnDiagMode.IniValue)
+{
 	Gosub, InitDiagMode
+	Diag("Launch", "###strDiag", ###strDiag)
+}
 
 ; Build main menus
 Gosub, BuildMainMenu
@@ -4244,6 +4247,7 @@ if StrLen(o_CommandLineParameters.AA["Working"])
 ; - else we are in Portable mode.
 
 g_blnPortableMode := !FileExist(A_ScriptDir . "\_do_not_remove_or_rename.txt")
+###strDiag .= "g_blnPortableMode: " . g_blnPortableMode . "`n"
 
 ; IF PORTABLE MODE
 
@@ -4317,6 +4321,7 @@ if (A_WorkingDir = A_AppDataCommon . "\" . g_strAppNameText) ; this is first lau
 		{
 			; This is first run after re-install or QAP was launched from the Start menu shortcut. The working folder registry value exists.
 			strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+			###strDiag .= "strWorkingFolder (first launch key exists): " . strWorkingFolder . "`n"
 			; ###_V(A_ThisLabel . " - setup mode, first run after RE-install or launched from Start menu, get working folder registry key"
 				; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 		}
@@ -4327,6 +4332,7 @@ else ; NOT first launch
 	; Set working folder by reading the working folder in the registry key:
 	; "HKEY_CURRENT_USER\Software\Jean Lalonde\Quick Access Popup\WorkingFolder".
 	strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	###strDiag .= "strWorkingFolder (not first launch): " . strWorkingFolder . "`n"
 	; ###_V(A_ThisLabel . " - setup mode, not first run after install, get working folder registry key"
 		; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 }
@@ -4363,6 +4369,7 @@ else ; This could happen if the working folder registry value exist but is empty
 }
 
 strWorkingFolder := ""
+###strDiag .= "A_WorkingDir: " . A_WorkingDir . "`n"
 
 return
 ;-----------------------------------------------------------
@@ -6902,7 +6909,14 @@ if (!g_blnPortableMode)
 		. (StrLen(o_CommandLineParameters.AA["Working"]) ? "disabled" : ""), % o_L["DialogBrowseButton"]
 	if StrLen(o_CommandLineParameters.AA["Working"])
 		Gui, 2:Add, Text, y+2 x%g_intGroupItemsTab3X% w400 vf_lblWorkingFolderDisabled hidden, % o_L["OopsWorkingFolderDisabled"]
-	GuiControl, 2:, f_strWorkingFolder, % GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	strWorkingFolderDebug := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	Diag(A_ThisLabel, "strWorkingFolderDebug", strWorkingFolderDebug)
+	if !StrLen(strWorkingFolderDebug) ; in case GetRegistry returns nothing (re: bug reported by Toastman 2019-11-04)
+	{
+		strWorkingFolderDebug := A_WorkingDir
+		Diag(A_ThisLabel, "strWorkingFolderDebug filled with A_WorkingDir", strWorkingFolderDebug)
+	}
+	GuiControl, 2:, f_strWorkingFolder, %strWorkingFolderDebug%
 	GuiControl, 2:+gGuiOptionsGroupChanged, f_strWorkingFolder
 }
 
@@ -7504,6 +7518,12 @@ if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 {
 	strWorkingFolderNew := EnvVars(f_strWorkingFolder) ; do not PathCombine, save expanded to registry
 	strWorkingFolderPrev := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	Diag(A_ThisLabel, "strWorkingFolderPrev", strWorkingFolderPrev)
+	if !StrLen(strWorkingFolderPrev) ; in case GetRegistry returns nothing (re: bug reported by Toastman 2019-11-04)
+	{
+		strWorkingFolderPrev := A_WorkingDir
+		Diag(A_ThisLabel, "strWorkingFolderPrev filled with A_WorkingDir", strWorkingFolderPrev)
+	}
 	if (strWorkingFolderNew <> strWorkingFolderPrev and o_Settings.strIniFile <> o_Settings.strIniFileDefault) ; check that the settings file has not been switched
 	{
 		Oops(2, o_L["DialogMoveSettingsNotDefault"])
