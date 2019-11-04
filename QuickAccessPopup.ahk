@@ -7516,9 +7516,9 @@ if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 	}
 }
 
-if (!g_blnPortableMode and !FolderExistOrCreate(strWorkingFolderNew)) ; Working folder (only for Setup installation)
-	or !FolderExistOrCreate(strBackupFolderNew) ; Backup folder
-	or !FolderExistOrCreate(strTempFolderNew) ; Temp folder
+if (!g_blnPortableMode and !FolderExistOrCreate(strWorkingFolderNew, o_L["OptionsWorkingFolder"])) ; Working folder (only for Setup installation)
+	or !FolderExistOrCreate(strBackupFolderNew, o_L["OptionsBackupFolder"]) ; Backup folder
+	or !FolderExistOrCreate(strTempFolderNew, o_L["OptionsQAPTempFolder"]) ; Temp folder
 	return
 
 if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
@@ -20780,19 +20780,25 @@ ToggleRunAtStartup(blnForce := -1)
 
 
 ;------------------------------------------------------------
-FolderExistOrCreate(strFolder)
+FolderExistOrCreate(strFolder, strLabel)
 ;------------------------------------------------------------
 {
+	if !StrLen(strFolder)
+	{
+		Oops(2, o_L["DialogFavoriteLocationEmpty"] . "`n`n" . strLabel)
+		return
+	}
+	
 	strTempLocation := strFolder
 	blnOK := FileExistInPath(strTempLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
 	if (!blnOK)
 	{
 		Gui, 2:+OwnDialogs
-		MsgBox, 36, %g_strAppNameText%, % L(o_L["DialogOptionsPathNotExist"], strFolder)
+		MsgBox, 36, %g_strAppNameText%, % L(o_L["DialogOptionsPathNotExist"], strLabel . "`n" . strFolder)
 		IfMsgBox, Yes
 		{
 			FileCreateDir, %strFolder%
-			blnOK := FolderExistOrCreate(strFolder) ; recursive
+			blnOK := FolderExistOrCreate(strFolder, strLabel) ; recursive
 		}
 	}
 	return blnOK
