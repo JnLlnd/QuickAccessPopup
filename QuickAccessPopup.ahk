@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.2.1 (2019-11-04)
+- fix bug in sponsor name code verification on system with some int'l Windows configuration (new sponsor codes will require this version v10.2.1 or more recent)
+- sort Live folders menus, Clipboard menus and Edit Favorite treeviews using user's locale setting to sort correctly int'l characters (for example sorting "é" or "É" with "e")
+- when a folder is launched from a menu open with QAPmessenger (new feature in v10.2), disable features for Explorer requiring to set window position that do not work in this situation
+- fix bug hotstrings default options being lost after saving options
+- fix bug to update file manager configuration after a new selection is saved in Options
+- improve error handling if a folder is not found when saving options and add diagnostic code in case the Settings Folder value cannot be read from registry (Setup installation only)
+- language updates for German, French, Italian, Portuguese and Korean; removed untranlsated languages bits for other languages
+
 Version: 10.2 (2019-10-27)
  
 Add/Edit Favorite
@@ -3643,7 +3652,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2.0.9.1
+;@Ahk2Exe-SetVersion 10.2.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3748,8 +3757,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
