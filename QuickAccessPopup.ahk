@@ -4868,7 +4868,7 @@ ProcessSponsorName:
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
 	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
-else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting 2019-10-30
+else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
 	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
 	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibility for donors before 2019-06-27
 ; donor code matching the sponsor name
@@ -17360,7 +17360,7 @@ Diag(A_ThisLabel, "MD5() name+!", MD5(g_strSponsorHash . StrLower(strSponsorName
 Diag(A_ThisLabel, "MD5() name+!+substr", SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8))
 ; Donor code must contain only numbers and capital letters and be 8 digits
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
-	or ((strDonorCode <> SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting 2019-10-30
+	or ((strDonorCode <> SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
 		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
 		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . strSponsorName . g_strEscapePipe, true), 13, 8))) ; for backward compatibility for donors before 2019-06-27
 {
