@@ -9818,13 +9818,13 @@ if (strGuiFavoriteLabel = "GuiAddFavorite")
 strGuiTitle := L(o_L["DialogAddEditFavoriteTitle"]
 	, (InStr(strGuiFavoriteLabel, "GuiEditFavorite") ? o_L["DialogEdit"] : (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_L["DialogCopy"] : o_L["DialogAdd"]))
 	, g_strAppNameText, g_strAppVersion, o_EditedFavorite.AA.strFavoriteType)
-Gui, 2:New, +Resize -MaximizeBox +MinSize560x505 +MaxSizex505 +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:New, +Resize -MaximizeBox +MinSize560x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
-intTabHeight := 440
+intTabHeight := 490
 g_strTabsList := BuildTabsList(o_EditedFavorite.AA.strFavoriteType)
 Gui, 2:Add, Tab2, % "vf_intAddFavoriteTab w520 h" . intTabHeight . " gGuiAddFavoriteTabChanged AltSubmit", %g_strTabsList%
 intTabNumber := 0
@@ -9857,7 +9857,7 @@ aaL := o_L.InsertAmpersand(false, "DialogAdd", "DialogOK", "GuiCancel", "DialogC
 
 Gui, 2:Tab
 
-intButtonsY := 460
+intButtonsY := 510
 
 ; see same if/else conditions in TreeViewQAPChanged and TreeViewSpecialChanged to save favorite when event DoubleClick
 if InStr(strGuiFavoriteLabel, "GuiEditFavorite")
@@ -10416,7 +10416,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
-Gui, 2:Add, Checkbox, % "x15 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
+Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
 	. " vf_blnFavoriteDisabled gCheckboxDisabledClicked " . (o_EditedFavorite.AA.intFavoriteDisabled = 1 ? "checked" : "")
 	, % (blnIsGroupMember ? o_L["DialogFavoriteDisabledGroupMember"] : o_L["DialogFavoriteDisabled"])
 if !(blnIsGroupMember)
