@@ -3787,6 +3787,7 @@ global g_strGroupIndicatorPrefix := Chr(171) ; group item indicator, not allolow
 global g_strGroupIndicatorSuffix := Chr(187) ; displayed in Settings with g_strGroupIndicatorPrefix, and with number of items in menus, allowed in item names
 global g_intListW := "" ; Gui width captured by GuiSize and used to adjust columns in fav list
 global g_strEscapePipe := "Ð¡þ€" ; used to escape pipe in ini file, should not be in item names or location but not checked
+global g_strSponsorHash := "!" ; used to hash the sponsor name
 global g_strAmpersandPlaceholder := "$?%" ; used as temporary marker for numeric shortcuts in menu item names
 global g_strEllipse := "…" ; "..."
 
@@ -4867,8 +4868,9 @@ ProcessSponsorName:
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
 	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
-else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case starting 2019-06-27
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibiity for donors in 201905-201906
+else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibility for donors before 2019-06-27
 ; donor code matching the sponsor name
 {
 	g_SponsoredMessage := L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue)
@@ -17354,9 +17356,13 @@ Diag(A_ThisLabel, "g_strEscapePipe", g_strEscapePipe)
 Diag(A_ThisLabel, "MD5(g_strEscapePipe)", MD5(g_strEscapePipe))
 Diag(A_ThisLabel, "MD5() name+extra", MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe))
 Diag(A_ThisLabel, "MD5() name+extra+substr", SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
+Diag(A_ThisLabel, "MD5() name+!", MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash))
+Diag(A_ThisLabel, "MD5() name+!+substr", SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8))
 ; Donor code must contain only numbers and capital letters and be 8 digits
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
-	or (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
+	or ((strDonorCode <> SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
+		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
+		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . strSponsorName . g_strEscapePipe, true), 13, 8))) ; for backward compatibility for donors before 2019-06-27
 {
 	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
 	return
