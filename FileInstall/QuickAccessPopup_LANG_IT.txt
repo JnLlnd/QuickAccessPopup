@@ -33,7 +33,7 @@ lCopyFavoritesToMenuOrGroup	Menú e gruppi non possono essere copiati.`n`nVuoi pr
 lCopyLocationCopiedToClipboard	Percorso o URL copiato negli Appunti
 lDiagModeCaution	~1~ è in esecuzione in modalità diagnostica.`n`nLe informazioni sull'applicazione in esecuzione saranno raccolte nel file:`n~2~`n`nNulla verrà trasmesso senza il tuo consenso.`n`nVuoi mantenere attiva la modalità diagnostica?
 lDiagModeExit	~1~ ha raccolto le informazioni per il debug nel file ~2~.
-lDiagModeIntro	Invia questo file a: ahk@jeanlalonde.ca con una descrizione della situazione da diagnosticare.
+lDiagModeIntro	Invia questo file a: support@quickaccesspopup.com con una descrizione della situazione da diagnosticare.
 lDiagModeSee	Vuoi visualizzare il file con le informazioni per il debug?
 lDialogActivateAlreadyRunning	Se l'applicazione è già in esecuzione, viene resa attiva invece di eseguirla`n(se la destinazione è identica)
 lDialogAdd	Aggiungi
@@ -109,6 +109,7 @@ lDialogCopyFavoritesTitle	Copia Preferiti - ~1~ ~2~
 lDialogCtrl	Control
 lDialogCtrlShort	Ctrl
 lDialogDescending	Discendente
+lDialogDialogBoxes	Caselle di dialogo
 lDialogDropDown	a discesa
 lDialogEdit	Modifica
 lDialogEditIcon	Modifica l'icona della risorsa
@@ -153,9 +154,16 @@ lDialogFavoriteFolderLiveColumns	Numero di oggetti per colonna (0 per non usare 
 lDialogFavoriteFolderLiveDocuments	Includi documenti
 lDialogFavoriteFolderLiveExclude	Escludi
 lDialogFavoriteFolderLiveExtensions	queste estensioni (separa le estensioni con spazi, per esempio "bak bk")
+lDialogFavoriteFolderLiveHideExtensions	Estensioni di file
+lDialogFavoriteFolderLiveHideIcons	Icone
+lDialogFavoriteFolderLiveHideInMenu	Nascondi nei menù
 lDialogFavoriteFolderLiveInclude	Includi
 lDialogFavoriteFolderLiveLevels	Numero di livelli di sottocartelle da includere nel menù della Cartella Live
+lDialogFavoriteFolderLiveShowHidden	Nascosto
+lDialogFavoriteFolderLiveShowItems	Mostra elementi
+lDialogFavoriteFolderLiveShowSystem	Sistema
 lDialogFavoriteFolderLiveType	Cartella Live
+lDialogFavoriteHidden	Nascondi questo preferito
 lDialogFavoriteLaunchWithDoesNotExistTitle	Applicazione con cui effettuare l'esecuzione non esistente - ~1~
 lDialogFavoriteLocationEmpty	La destinazione è vuota. Si prega di riprovare: scegli una destinazione non vuota.
 lDialogFavoriteMenuPosition	Inserisci il Preferito prima di questo elemento
@@ -255,11 +263,14 @@ lDialogIconsManageParentMenu	Menù superiore del Preferito
 lDialogIconsManagePrevious	Precedente
 lDialogIconsManageSetDefaultIcon	Assegna l'icona di default
 lDialogIconsManageTitle	Gestione Icone - ~1~ ~2~
+lDialogInputExample	Esempio di input
+lDialogInputParameter	Parametro di input - ~1~
 lDialogInvalidHotkey	Con il tuo attuale layout di tastiera di sistema, non è stato possibile usare la combinazione "~1~" per aprire il popup menù (errore: tasto scelto non valido).`n`nPer favore, apri la finestra "Personalizzare ~2~" dal menù dell'icona nell'area notifiche e clicca: "Opzioni". In questa casella di dialogo, scegli un altro shortcut per "~3~".
 lDialogInvalidHotkeyFavorite	Con il tuo attuale layout di tastiera di sistema, non è stato possibile usare la combinazione "~1~" per aprire questo preferito (errore: nome del tasto scelto non valido).`n`nPer favore, scegli un altra scorciatoia per il Preferito"~2~" e la destinazione "~3~".
 lDialogKeyboard	Tastiera
 lDialogLaunchWith	Esegui con questa applicazione
 lDialogListApplicationLabel	Elenca applicazioni per:
+lDialogListApplicationsDropdown	Elenca tutto||Menù Finestre Correnti|Applicazioni in esecuzione|Chiudi Applicazioni
 lDialogListApplicationYesNo	[Si] per Attivare o [No] per Chiudere questa finestra?
 lDialogMaximized	Massimizzata
 lDialogMenuKey	Tasto del Menú
@@ -272,6 +283,7 @@ lDialogMouseButtonsTextShort	Mouse SX|Rotella Mouse|Mouse DX|Mouse Speciale 1|Mo
 lDialogMoveFavoritesTitle	Sposta i Preferiti - ~1~ ~2~
 lDialogMoveFavoriteTitle	Sposta il Preferito - ~1~ ~2~
 lDialogMoveSettingsFail	Un errore si è verificato copiando la cartella Impostazioni.`n`nLo spostamento della cartella Impostazioni è stato annullato.
+lDialogMoveSettingsNotDefault	Non è possibile spostare la Cartella Impostazioni quando è stato caricato un file di impostazioni alternativo.`n`nPertanto è necessario ricaricare il file di impostazioni di default ed effettuare di nuovo lo spostamento.
 lDialogMoveSettingsReload	~1~ deve essere riavviato...
 lDialogMoveSettingsSuccess	File Impostazioni copiati con successo.`n`nVecchia cartella:`n~1~`n`nNuova cartella: `n~2~`n`nI file nella vecchia cartella non sono stati cancellati. Eliminali se/quando vuoi dopo aver chiuso ~3~.
 lDialogMoveSettingsUnder	Non puoi spostare la cartella Impostazioni in se stessa. Scegli un'altra destinazione.
@@ -296,7 +308,8 @@ lDialogRefresh	Aggiorna
 lDialogRemoveMultipleFavorites	Vuoi davvero eliminare ~1~ preferiti / sottomenù?
 lDialogResetQAPSpecialDefaultNames	Questo comando resetta tutte le Cartelle Speciali e Caratteristiche di QAP preferite nel tuo menù al loro nome di default in "~1~".`n`nContinuare?
 lDialogSearch	Cerca
-lDialogSelectIcon	Seleziona icona
+lDialogSelectIcon	Cambia icona
+lDialogSelectIconJL	Seleziona da:
 lDialogSelectIconNo	Senza icone
 lDialogSelectItemOneOrMore	Per favore seleziona almeno una voce.
 lDialogSelectItemToEdit	Per favore, seleziona la voce da modificare.
@@ -410,7 +423,7 @@ lGuiGroupSaveRestoreOption	Nel ripristinare delle cartelle in questo gruppo:
 lGuiGroupSaveRestoreWith	Ripristina le cartelle con:
 lGuiHelp	Aiuto
 lGuiHelpDescription	Mostra la finestra di "Aiuto" di QAP breve.
-lGuiHotkeysHelp	Organizzazione Preferiti (scorciatoie)
+lGuiHotkeysHelp	Aiuto Personalizzazione delle scorciatoie per le finestre
 lGuiHotkeysOpenParentMenu	Apri il menù superiore
 lGuiHotkeysOpenSubmenuOrEditFavorite	Apri sottomenù o modifica preferito
 lGuiHotkeysSelectContiguousItems	Seleziona elementi contigui
@@ -558,7 +571,7 @@ lMenuMySpecialMenu	Cartelle Speciali
 lMenuMyVideo	Video
 lMenuMyWindowsAppsMenu	Le Mie App Windows
 lMenuNoCurrentFolder	Nessuna cartella attualmente aperta...
-lMenuOpenWorkingDirectory	Apri la directory di lavoro di QAP
+lMenuOpenWorkingDirectory	Apri la directory delle Impostazioni di QAP
 lMenuOptions	Opzioni
 lMenuPictures	Immagini
 lMenuPopularFiles	File
@@ -633,6 +646,7 @@ lOopsExternalNotAllowedUnderExternal	Non sono permessi Menù condivisi all'intern
 lOopsExternalReadOnlyAlert	Menù condivisi di tipo "Centralizzato" possono essere modificati soltanto da utente(i) nel campo "~1~" (o aprendo il file ini sul disco condiviso usando un editor di testo).`n`nIl tuo nome utente è: "~2~".`nIl nome del tuo computer è: "~3~".
 lOopsExternalReadOnlyAlertUsernameAdded	Il tuo nome utente è stato automaticamente aggiunto all'elenco di "Utenti con accesso in scrittura".
 lOopsExternalSelectType	Per favore scegli il tipo di menù condiviso nel tab "Menù condiviso".
+lOopsExternalUnderExternalError	Il menù condiviso seguente include un menù condiviso:`n~1~`n`nI menù condivisi non possono includere sottomenù condivisi. Pertanto è necessario modificare tale menù condiviso per portare fuori il sottomenù in esso incluso.
 lOopsFavoritesCopied	~1~ preferiti copiati.
 lOopsFileExpandedFrom	Espanso da
 lOopsFileNotFound	Questa destinazione non esiste
@@ -661,6 +675,7 @@ lOopsSortUpToSeparator	Ordinamento eseguito fino al primo separatore.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	C'è stato un errore cercando di aprire questo preferito. Per favore, prova di nuovo...
 lOopsUsageDbSQLiteMissing	File di risorsa SQLite mancanti:`n`n~1~`nNon è stato possibile costruire i menù di file/cartelle Frequenti.
+lOopsWorkingFolderDisabled	Non è possibile cambiare la Cartella Impostazioni quando viene usato il parametro "/Working:" in un comando di linea.
 lOopsWriteProtectedError	Sembra che ~1~ sia eseguito da una cartella PROTETTA-IN-SCRITTURA perchè non è stato possibile creare il file di configurazione "~1~.ini".`n`nSposta il file ~1~ .EXE in una cartella NON-PROTETTA di tua scelta e ri-eseguilo da quest'ultima.`n`n~1~ verrà chiuso.
 lOopsWrongThirdPartyPath	Nome del file o percorso sbagliato per ~1~:`n~2~.`n`nControlla il file .exe selezionato per ~1~ nelle "Opzioni", tab "~3~".
 lOopsWrongThirdPartyPathQAPconnect	Wrong percorso o nome del file per l'applicazione di QAPconnect`n~1~:`n~2~.`n`nControlla i valori per [~1~] in ~3~. Clicca su "~4~" in "Opzioni", tab "~5~".
@@ -693,6 +708,11 @@ lOptionsDisplayIcons	Mostra Icone nel Menù
 lOptionsDisplayMenuShortcuts	Mostra scorciatoie numeriche nei Menù
 lOptionsDisplayMenuShortcutsFromOne	Comincia le Scorciatoie Numeriche del Menù da 1 (invece di 0)
 lOptionsEnableExternalMenusCatalogue	Abilita il Catalogo del Menù Condiviso
+lOptionsExclusionMouseList	Lista Exclusioni
+lOptionsExclusionMouseListDescription	Attivatore [~1~] per l'apertura tramite mouse della Lista delle esclusioni o dei valori permessi
+lOptionsExclusionMouseListDetail1	Seleziona la scelta per usare il mouse su qualunque finestra di applicazione con eccezioni (in blacklist) oppure per consentirlo soltanto su alcune applicazioni specificate (in whitelist). Per aggiungere un'applicazione alla lista, inserisci una parte qualsiasi del suo titolo di finestra. Puoi inserire applicazioni multiple, una per linea. Per esempio, per escludere Chrome e MS Word, inserisci le seguenti due linee nella lista delle esclusioni:`n`nGoogle Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail2	Quando la combinazione per aprire la lista tramite mouse è disabilitata per una data (finestra di)applicazione, il click [~1~] sarà inviato alla finestra destinazione come se QAP non fosse in esecuzione. Puoi anche aggiungere finestre usando il nome della loro classe o del loro processo (nome del file EXE). Usa * (asterisco) come prefisso per il titolo o la classe per escludere anche le caselle di dialogo dell'applicazione (solo per blacklist). Altro <a href="~2~">aiuto</a>.
+lOptionsExclusionMouseListWhitelist	Lista appl. consentite (Whitelist)
 lOptionsExplorerContextMenus	Abilita i menù contestuali di WIndows Explorer
 lOptionsFileManagerNavigateCurrent	la finestra attuale ~1~
 lOptionsFileManagerNavigateCurrentTab	il tab ~1~ corrente
@@ -704,8 +724,11 @@ lOptionsFtpEncoding	Codifica nome utente e password FTP (consigliato)
 lOptionsFtpEncodingTC	Codifica nome utente e password FTP (non consigliato per Total Commander)
 lOptionsGeneral	Generale
 lOptionsGuiTitle	Opzioni - ~1~ ~2~
+lOptionsHotkeyRemindersFull	Mostra testo completo
 lOptionsHotkeyRemindersNo	Non mostrare
 lOptionsHotkeyRemindersPrompt	Promemoria delle combinazioni di tasti e sequenze di sostituzione nel menù:
+lOptionsHotkeyRemindersPromptHotstrings	Promemoria di sequenze di sostituzione nel menù:
+lOptionsHotkeyRemindersPromptShortcuts	Promemoria delle scorciatoie nel menù:
 lOptionsHotkeyRemindersShort	Visualizza abbreviati
 lOptionsHotstringsDefault	Opzioni predefinite delle Sequenze di sostituzione
 lOptionsHotstringsDefaultSelect	Seleziona
@@ -762,6 +785,10 @@ lOptionsSelectWorkingFolder	Salva Impostazioni in quale cartella?
 lOptionsSendToConsoleWithAlt	Usa codici ASCII (ALT+0nnn) per cambiare cartella dalla Linea di Comando (CMD)
 lOptionsSettingsStartup	Apri la Finestra "Personalizzare" all'avvio
 lOptionsSettingsWindow	Finestra "Personalizzare"
+lOptionsShowQAPmenu	Mostra menù QAP (File, Preferito, ecc.):
+lOptionsShowQAPmenuBoth	in entrambe le posizioni
+lOptionsShowQAPmenuCustomize	at Parte superiore della finestra Personalizza
+lOptionsShowQAPmenuSystem	nel menù Sistema (area notifiche)
 lOptionsSnippets	Frammenti di testo e stringhe di sostituzione
 lOptionsSnippetsHelp	Impostazioni predefinite per gli Snippet (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Lista corrente delle Finestre escluse
@@ -790,7 +817,7 @@ lOptionsUsageDbIntervalSeconds	Intervallo di Raccolta e di Aggiornamento (second
 lOptionsUsageDbMaximumSize	Dimensione massima del database (in MB):
 lOptionsUsageDbMaximumSizeInvalid	La dimensione massima del database non è un numero valido: ~1~
 lOptionsUsageDbShowPopularityIndex	Mostra l'indice di frequenza nella finestra "Personalizzare" e nei menù
-lOptionsUsageDbStatement	I dati nel database ~1~ vengono raccolti e memorizzati localmente, esclusivamente allo scopo di costruire i menù dinamici e migliorare le prestazioni. Tali dati risiedono SOLTANTO nel tuo computer e NESSUNA informazione viene mai trasmessa da ~1~ ad un server remoto.
+lOptionsUsageDbStatement	I dati nel database ~1~ vengono raccolti e memorizzati localmente, esclusivamente allo scopo di costruire i menù dinamici e migliorare le prestazioni. Tali dati risiedono SOLTANTO nel tuo computer e NESSUNA informazione da tale database viene mai trasmessa da ~1~ ad un server remoto.
 lOptionsUsageDbStatementTitle	Dichiarazione Privacy
 lOptionsUserVariables	Variabili Utente
 lOptionsUserVariablesList	Variabili Utente

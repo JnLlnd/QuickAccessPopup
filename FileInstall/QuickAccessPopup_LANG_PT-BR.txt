@@ -33,7 +33,7 @@ lCopyFavoritesToMenuOrGroup	Menus e grupos não podem ser copiados.`n`nDeseja con
 lCopyLocationCopiedToClipboard	Caminho ou URL copiada para a Área de Transferência
 lDiagModeCaution	O ~1~ está sendo executado no modo de diagnóstico.`n`nSerão coletadas informações sobre a execução do aplicativo para o arquivo:`n~2~`n`nNada será enviado sem o seu consentimento.`n`nDeseja manter o modo de diagnóstico ATIVADO?
 lDiagModeExit	O ~1~ coletou informações de diagnóstico para o arquivo ~2~.
-lDiagModeIntro	Envie este arquivo para ahk@jeanlalonde.ca com uma descrição da situação que exige diagnóstico.
+lDiagModeIntro	Envie este arquivo para support@quickaccesspopup.com com uma descrição da situação que exige diagnóstico.
 lDiagModeSee	Deseja ver o arquivo de diagnóstico?
 lDialogActivateAlreadyRunning	Se o aplicativo já está em execução, ative-o em vez de iniciá-lo`n(o aplicativo deve estar exatamente no mesmo local)
 lDialogAdd	Adicionar
@@ -109,6 +109,7 @@ lDialogCopyFavoritesTitle	Copiar Favoritos - ~1~ ~2~
 lDialogCtrl	Controle
 lDialogCtrlShort	Ctrl
 lDialogDescending	Descendente
+lDialogDialogBoxes	Caixas de diálogo
 lDialogDropDown	suspenso
 lDialogEdit	Editar
 lDialogEditIcon	Editar ícone
@@ -153,9 +154,16 @@ lDialogFavoriteFolderLiveColumns	Número de itens por coluna (0 para sem quebra d
 lDialogFavoriteFolderLiveDocuments	Incluir documentos
 lDialogFavoriteFolderLiveExclude	Excluir
 lDialogFavoriteFolderLiveExtensions	estas extensões (separe as extensões com espaços, por exemplo: "bak bk")
+lDialogFavoriteFolderLiveHideExtensions	Extensões de arquivos
+lDialogFavoriteFolderLiveHideIcons	Ícones
+lDialogFavoriteFolderLiveHideInMenu	Ocultar nos menus
 lDialogFavoriteFolderLiveInclude	Incluir
 lDialogFavoriteFolderLiveLevels	Número de níveis de subpastas para incluir no menu da Pasta Ativa
+lDialogFavoriteFolderLiveShowHidden	Oculto
+lDialogFavoriteFolderLiveShowItems	Exibir itens
+lDialogFavoriteFolderLiveShowSystem	Sistema
 lDialogFavoriteFolderLiveType	Pasta Ativa
+lDialogFavoriteHidden	Ocultar este favorito
 lDialogFavoriteLaunchWithDoesNotExistTitle	Iniciar com o aplicativo não existe - ~1~
 lDialogFavoriteLocationEmpty	O local está vazio. Por favor, escolha um local.
 lDialogFavoriteMenuPosition	Inserir o favorito antes deste item
@@ -255,11 +263,14 @@ lDialogIconsManageParentMenu	Menu principal do favorito
 lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir ícone padrão
 lDialogIconsManageTitle	Gerenciar Ícones - ~1~ ~2~
+lDialogInputExample	Input Exemplo
+lDialogInputParameter	Parâmetro de entrada - ~1~
 lDialogInvalidHotkey	Com o layout de teclado atual do sistema, a tecla de atalho "~1~" não pode ser usada como disparador para o menu popup (erro 'não é uma tecla válida').`n`nPor favor, abra a janela "Personalizar" pelo menu da Área de Notificação e clique em "Opções". Nesta caixa de diálogo, escolha outro atalho para "~2~".
 lDialogInvalidHotkeyFavorite	Com o layout atual do seu teclado, a tecla de atalho "~1~" não pode ser usada como disparador para este favorito (erro de nome inválido de tecla).`n`nPor favor, escolha outro atalho para o favorito "~2~" e local "~3~".
 lDialogKeyboard	Teclado
 lDialogLaunchWith	Iniciar com este aplicativo
 lDialogListApplicationLabel	Listar aplicativos para:
+lDialogListApplicationsDropdown	Listar Todos|Menu Atual do Windows|Aplicativos em Execução|Fechar Aplicativos
 lDialogListApplicationYesNo	[Sim] para Ativar ou [Não] para Fechar esta Janela?
 lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla Menu
@@ -272,6 +283,7 @@ lDialogMouseButtonsTextShort	Mouse Esquerdo|Mouse Meio|Mouse Direito|Mouse Espec
 lDialogMoveFavoritesTitle	Mover Favoritos - ~1~ ~2~
 lDialogMoveFavoriteTitle	Mover Favorito - ~1~ ~2~
 lDialogMoveSettingsFail	Ocorreu um erro ao copiar a pasta de configurações.`n`nMover pasta de configurações cancelado.
+lDialogMoveSettingsNotDefault	VocÃª nÃ£o pode mover a Pasta ConfiguraÃ§Ãµes quando um arquivo de configuraÃ§Ãµes alternativo estÃ¡ carregado.`n`nPor favor, recarregue o arquivo de configuraÃ§Ãµes padrÃ£o e tente novamente.
 lDialogMoveSettingsReload	O ~1~ precisa ser reiniciado...
 lDialogMoveSettingsSuccess	Arquivos de configuração copiados com sucesso.`n`nPasta antiga:`n~1~`n`nNova pasta: `n~2~`n`nOs arquivos na pasta antiga não foram excluídos. Exclua-os quando quiser após fechar o ~3~.
 lDialogMoveSettingsUnder	Você não pode mover a pasta de configurações para ela mesma. Escolha outro destino.
@@ -296,7 +308,8 @@ lDialogRefresh	Atualizar
 lDialogRemoveMultipleFavorites	Deseja realmente remover favoritos do ~1~ ou submenus?
 lDialogResetQAPSpecialDefaultNames	Este comando redefine todos os favoritos das Pastas Especiais e Recursos do QAP no seu menus para seu nome padrão em "~1~".`n`nContinuar?
 lDialogSearch	Pesquisar
-lDialogSelectIcon	Selecione o ícone
+lDialogSelectIcon	Alterar ícone
+lDialogSelectIconJL	Selecionar em:
 lDialogSelectIconNo	Sem ícone
 lDialogSelectItemOneOrMore	Por favor, selecione pelo menos um item.
 lDialogSelectItemToEdit	Por favor, selecione o item para editar.
@@ -410,7 +423,7 @@ lGuiGroupSaveRestoreOption	Ao restaurar pastas neste grupo:
 lGuiGroupSaveRestoreWith	Restaurar pastas com:
 lGuiHelp	Ajuda
 lGuiHelpDescription	Exibe a janela de "Ajuda" curta do QAP.
-lGuiHotkeysHelp	Ajuda de Atalhos para Favoritos
+lGuiHotkeysHelp	Ajuda para Personalizar Atalhos de Janela
 lGuiHotkeysOpenParentMenu	Abrir menu pai
 lGuiHotkeysOpenSubmenuOrEditFavorite	Abrir submenu ou editar favorito
 lGuiHotkeysSelectContiguousItems	Selecionar itens contíguos
@@ -558,7 +571,7 @@ lMenuMySpecialMenu	Minhas Pastas Especiais
 lMenuMyVideo	Meus Vídeos
 lMenuMyWindowsAppsMenu	Meus Aplicativos do Windows
 lMenuNoCurrentFolder	Nenhuma pasta aberta atualmente...
-lMenuOpenWorkingDirectory	Abrir pasta de trabalho do QAP
+lMenuOpenWorkingDirectory	Abrir Pasta de Configurações do QAP
 lMenuOptions	Opções
 lMenuPictures	Imagens
 lMenuPopularFiles	Arquivos
@@ -633,6 +646,7 @@ lOopsExternalNotAllowedUnderExternal	Menus compartilhados não são permitidos den
 lOopsExternalReadOnlyAlert	Menus compartilhados do tipo "Centralizado" somente podem ser editados pelo(s) usuário(s) no campo "~1~" (ou abrindo o arquivo ini no disco compartilhado usando um editor de texto).`n`nSeu nome de usuário é: "~2~".`nO nome do computador é: "~3~".
 lOopsExternalReadOnlyAlertUsernameAdded	Seu nome de usuário foi adicionado automaticamente à lista de "Usuários com acesso de escrita".
 lOopsExternalSelectType	Por favor, selecione o tipo de menu Compartilhado na aba "Menu compartilhado".
+lOopsExternalUnderExternalError	O seguinte menu compartilhado inclui um menu compartilhado:`n~1~`n`nMenus compartilhados nÃ£o podem incluir submenus compartilhados. Por favor, edite este menu compartilhado para remover o seu submenu compartilhado.
 lOopsFavoritesCopied	~1~ favoritos copiados.
 lOopsFileExpandedFrom	Expandido de
 lOopsFileNotFound	Este local não existe
@@ -661,6 +675,7 @@ lOopsSortUpToSeparator	ClassificaÃ§Ã£o feita atÃ© o primeiro separador.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	Ocorreu um erro ao tentar abrir este favorito. Por favor, tente novamente...
 lOopsUsageDbSQLiteMissing	Arquivos de recursos SQLite faltando:`n`n~1~`nNão foi possível criar os menus de Itens Frequentes.
+lOopsWorkingFolderDisabled	Você não pode alterar a Pasta de ConfiguraçõesYou quando o parâmetro "/Working:" da linha de comando está sendo usado.
 lOopsWriteProtectedError	Parece que o ~1~ está sendo executado de uma pasta PROTEGIDA CONTRA GRAVAÇÃO onde o arquivo de configuração "~1~.ini" não pode ser criado.`n`nMova o arquivo EXE do ~1~ para uma pasta REGULAR de sua escolha e execute-o novamente desta pasta.`n`nO ~1~ irá fechar.
 lOopsWrongThirdPartyPath	Caminho ou nome de arquivo incorreto para ~1~:`n~2~.`n`nVerifique o arquivo EXE selecionado para ~1~ em "Opções", aba "~3~".
 lOopsWrongThirdPartyPathQAPconnect	Caminho ou nome de arquivo incorreto para aplicativo QAPconnect`n~1~:`n~2~.`n`nVerifique os valores para [~1~] em ~3~. Use o botão "~4~" em "Opções", aba "~5~".
@@ -693,6 +708,11 @@ lOptionsDisplayIcons	Exibir Ícones do Menu
 lOptionsDisplayMenuShortcuts	Exibir Atalhos Numéricos de Menu
 lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos de Menu Numérico em 1 (ao invés de 0)
 lOptionsEnableExternalMenusCatalogue	Habilitar o Catálogo de Menus Compartilhados
+lOptionsExclusionMouseList	Lista Negra
+lOptionsExclusionMouseListDescription	Lista Negra ou Branca do disparador do Mouse [~1~]
+lOptionsExclusionMouseListDetail1	Selecione se o botão do mouse pode ser usado em qualquer janela de aplicativo com exceções (lista negra) ou somente em alguns aplicativos (lista branca). Para adicionar um aplicativo à lista, entre qualquer parte do título de sua janela. Você pode entrar múltiplos aplicativos, um por linha. Por exemplo, para entrar o Chrome ou Word, entre as seguintes duas linhas:`n`Google Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail2	Quando o disparador do menu não é permitido em um aplicativo, o clique {~1~} é enviado para a janela de destino, como se o QAP não estivesse em execução. Você também pode adicionar aplicativos pelo nome da sua classe ou nome do processo (nome do arquivo EXE). Prefixe o título ou classe com * (asterisco) para excluir também caixas de diálogo de aplicativos (somente lista negra). Mais <a href="~2~">ajuda</a>.
+lOptionsExclusionMouseListWhitelist	Lista Branca
 lOptionsExplorerContextMenus	Habilitar menus de contexto do Windows Explorer
 lOptionsFileManagerNavigateCurrent	a janela ~1~ atual
 lOptionsFileManagerNavigateCurrentTab	a aba ~1~ atual
@@ -704,8 +724,11 @@ lOptionsFtpEncoding	Criptografar usuário e senha FTP (recomendado)
 lOptionsFtpEncodingTC	Criptografar usuário e senha FTP (não recomendado para o Total Commander)
 lOptionsGeneral	Geral
 lOptionsGuiTitle	Opções - ~1~ ~2~
+lOptionsHotkeyRemindersFull	Exibir texto completo
 lOptionsHotkeyRemindersNo	Não exibir
 lOptionsHotkeyRemindersPrompt	Lembretes de atalho e string de substituição no menu:
+lOptionsHotkeyRemindersPromptHotstrings	Lembretes de strings de substituição no menu:
+lOptionsHotkeyRemindersPromptShortcuts	Lembretes de atalho no menu:
 lOptionsHotkeyRemindersShort	Exibir abreviado
 lOptionsHotstringsDefault	Opções padrão de strings de substituição
 lOptionsHotstringsDefaultSelect	Selecionar
@@ -762,6 +785,10 @@ lOptionsSelectWorkingFolder	Salvar Configurações em qual pasta?
 lOptionsSendToConsoleWithAlt	Usar códigos ASCII (ALT+0nnn) ao alterar pasta na Linha de Comando do Windows (CMD)
 lOptionsSettingsStartup	Abrir janela "Personalizar" ao Inicializar
 lOptionsSettingsWindow	Janela Personalizar
+lOptionsShowQAPmenu	Exibir menu do QAP (Arquivo, Favorito, etc.):
+lOptionsShowQAPmenuBoth	em ambas as localizações
+lOptionsShowQAPmenuCustomize	no topo da janela Personalizar
+lOptionsShowQAPmenuSystem	no menu do Sistema (Área de Notificação)
 lOptionsSnippets	Recortes e Substituições
 lOptionsSnippetsHelp	Padrões de recortes (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Exclusões Atuais de Janelas
@@ -790,7 +817,7 @@ lOptionsUsageDbIntervalSeconds	Intervalo de coleta e atualização (segundos):
 lOptionsUsageDbMaximumSize	Tamanho máximo do banco de dados (em MB):
 lOptionsUsageDbMaximumSizeInvalid	O tamanho máximo do banco de dados não é um número válido: ~1~
 lOptionsUsageDbShowPopularityIndex	Exibir índice de popularidade na janela "Personalizar" e menus
-lOptionsUsageDbStatement	Os dados do banco de dados de ~1~ são coletados e armazenados localmente, exclusivamente para criar menus dinâmicos e aumentar o desempenho. Esses dados residem APENAS no seu sistema e NENHUMA informação é transmitida pelo ~1~ para um servidor remoto.
+lOptionsUsageDbStatement	Os dados do banco de dados do ~1~ são coletados e armazenados localmente, exclusivamente para criar menus dinâmicos e aumentar o desempenho. Esses dados residem APENAS no seu sistema e NENHUMA informação deste banco de dados é transmitida pelo ~1~ para um servidor remoto.
 lOptionsUsageDbStatementTitle	Declaração de Privacidade
 lOptionsUserVariables	Variáveis do Usuário
 lOptionsUserVariablesList	Variáveis do Usuário

@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.2.1 (2019-11-04)
+- fix bug in sponsor name code verification on system with some int'l Windows configuration (new sponsor codes will require this version v10.2.1 or more recent)
+- sort Live folders menus, Clipboard menus and Edit Favorite treeviews using user's locale setting to sort correctly int'l characters (for example sorting "é" or "É" with "e")
+- when a folder is launched from a menu open with QAPmessenger (new feature in v10.2), disable features for Explorer requiring to set window position that do not work in this situation
+- fix bug hotstrings default options being lost after saving options
+- fix bug to update file manager configuration after a new selection is saved in Options
+- improve error handling if a folder is not found when saving options and add diagnostic code in case the Settings Folder value cannot be read from registry (Setup installation only)
+- language updates for German, French, Italian, Portuguese and Korean; removed untranlsated languages bits for other languages
+
 Version: 10.2 (2019-10-27)
  
 Add/Edit Favorite
@@ -3643,7 +3652,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2
+;@Ahk2Exe-SetVersion 10.2.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3748,7 +3757,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -3787,6 +3796,7 @@ global g_strGroupIndicatorPrefix := Chr(171) ; group item indicator, not allolow
 global g_strGroupIndicatorSuffix := Chr(187) ; displayed in Settings with g_strGroupIndicatorPrefix, and with number of items in menus, allowed in item names
 global g_intListW := "" ; Gui width captured by GuiSize and used to adjust columns in fav list
 global g_strEscapePipe := "Ð¡þ€" ; used to escape pipe in ini file, should not be in item names or location but not checked
+global g_strSponsorHash := "!" ; used to hash the sponsor name
 global g_strAmpersandPlaceholder := "$?%" ; used as temporary marker for numeric shortcuts in menu item names
 global g_strEllipse := "…" ; "..."
 
@@ -3915,7 +3925,10 @@ g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.
 
 ; Init diag mode
 if (o_Settings.Launch.blnDiagMode.IniValue)
+{
 	Gosub, InitDiagMode
+	Diag("Launch", "###strDiag", ###strDiag)
+}
 
 ; Build main menus
 Gosub, BuildMainMenu
@@ -4244,6 +4257,7 @@ if StrLen(o_CommandLineParameters.AA["Working"])
 ; - else we are in Portable mode.
 
 g_blnPortableMode := !FileExist(A_ScriptDir . "\_do_not_remove_or_rename.txt")
+###strDiag .= "g_blnPortableMode: " . g_blnPortableMode . "`n"
 
 ; IF PORTABLE MODE
 
@@ -4317,6 +4331,7 @@ if (A_WorkingDir = A_AppDataCommon . "\" . g_strAppNameText) ; this is first lau
 		{
 			; This is first run after re-install or QAP was launched from the Start menu shortcut. The working folder registry value exists.
 			strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+			###strDiag .= "strWorkingFolder (first launch key exists): " . strWorkingFolder . "`n"
 			; ###_V(A_ThisLabel . " - setup mode, first run after RE-install or launched from Start menu, get working folder registry key"
 				; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 		}
@@ -4327,6 +4342,7 @@ else ; NOT first launch
 	; Set working folder by reading the working folder in the registry key:
 	; "HKEY_CURRENT_USER\Software\Jean Lalonde\Quick Access Popup\WorkingFolder".
 	strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	###strDiag .= "strWorkingFolder (not first launch): " . strWorkingFolder . "`n"
 	; ###_V(A_ThisLabel . " - setup mode, not first run after install, get working folder registry key"
 		; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 }
@@ -4363,6 +4379,7 @@ else ; This could happen if the working folder registry value exist but is empty
 }
 
 strWorkingFolder := ""
+###strDiag .= "A_WorkingDir: " . A_WorkingDir . "`n"
 
 return
 ;-----------------------------------------------------------
@@ -4867,8 +4884,9 @@ ProcessSponsorName:
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
 	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
-else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case starting 2019-06-27
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibiity for donors in 201905-201906
+else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibility for donors before 2019-06-27
 ; donor code matching the sponsor name
 {
 	g_SponsoredMessage := L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue)
@@ -5414,7 +5432,7 @@ if IsObject(o_UsageDb) ; use IsObject instead of g_blnUsageDbEnabled in case it 
 
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
-	MsgBox, % 4 + 48 + 256 + 4096, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
+	MsgBox, % 52 + 256, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
 	IfMsgBox, Yes
 		Run, %g_strDiagFile%
 }
@@ -5832,7 +5850,7 @@ if !StrLen(strContentsInClipboard)
 }
 else
 {
-	Sort, strContentsInClipboard
+	Sort, strContentsInClipboard, CL ; CL for Case insensitive sort based on the current user's locale
 
 	Loop, parse, strContentsInClipboard, `n
 		if StrLen(A_LoopField)
@@ -6918,7 +6936,14 @@ if (!g_blnPortableMode)
 		. (StrLen(o_CommandLineParameters.AA["Working"]) ? "disabled" : ""), % o_L["DialogBrowseButton"]
 	if StrLen(o_CommandLineParameters.AA["Working"])
 		Gui, 2:Add, Text, y+2 x%g_intGroupItemsTab3X% w400 vf_lblWorkingFolderDisabled hidden, % o_L["OopsWorkingFolderDisabled"]
-	GuiControl, 2:, f_strWorkingFolder, % GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	strWorkingFolderDebug := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	Diag(A_ThisLabel, "strWorkingFolderDebug", strWorkingFolderDebug)
+	if !StrLen(strWorkingFolderDebug) ; in case GetRegistry returns nothing (re: bug reported by Toastman 2019-11-04)
+	{
+		strWorkingFolderDebug := A_WorkingDir
+		Diag(A_ThisLabel, "strWorkingFolderDebug filled with A_WorkingDir", strWorkingFolderDebug)
+	}
+	GuiControl, 2:, f_strWorkingFolder, %strWorkingFolderDebug%
 	GuiControl, 2:+gGuiOptionsGroupChanged, f_strWorkingFolder
 }
 
@@ -7529,6 +7554,12 @@ if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 {
 	strWorkingFolderNew := EnvVars(f_strWorkingFolder) ; do not PathCombine, save expanded to registry
 	strWorkingFolderPrev := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
+	Diag(A_ThisLabel, "strWorkingFolderPrev", strWorkingFolderPrev)
+	if !StrLen(strWorkingFolderPrev) ; in case GetRegistry returns nothing (re: bug reported by Toastman 2019-11-04)
+	{
+		strWorkingFolderPrev := A_WorkingDir
+		Diag(A_ThisLabel, "strWorkingFolderPrev filled with A_WorkingDir", strWorkingFolderPrev)
+	}
 	if (strWorkingFolderNew <> strWorkingFolderPrev and o_Settings.strIniFile <> o_Settings.strIniFileDefault) ; check that the settings file has not been switched
 	{
 		Oops(2, o_L["DialogMoveSettingsNotDefault"])
@@ -7541,9 +7572,9 @@ if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 	}
 }
 
-if (!g_blnPortableMode and !FolderExistOrCreate(strWorkingFolderNew)) ; Working folder (only for Setup installation)
-	or !FolderExistOrCreate(strBackupFolderNew) ; Backup folder
-	or !FolderExistOrCreate(strTempFolderNew) ; Temp folder
+if (!g_blnPortableMode and !FolderExistOrCreate(strWorkingFolderNew, o_L["OptionsWorkingFolder"])) ; Working folder (only for Setup installation)
+	or !FolderExistOrCreate(strBackupFolderNew, o_L["OptionsBackupFolder"]) ; Backup folder
+	or !FolderExistOrCreate(strTempFolderNew, o_L["OptionsQAPTempFolder"]) ; Temp folder
 	return
 
 if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
@@ -9867,13 +9898,13 @@ if (strGuiFavoriteLabel = "GuiAddFavorite")
 strGuiTitle := L(o_L["DialogAddEditFavoriteTitle"]
 	, (InStr(strGuiFavoriteLabel, "GuiEditFavorite") ? o_L["DialogEdit"] : (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_L["DialogCopy"] : o_L["DialogAdd"]))
 	, g_strAppNameText, g_strAppVersion, o_EditedFavorite.AA.strFavoriteType)
-Gui, 2:New, +Resize -MaximizeBox +MinSize560x505 +MaxSizex505 +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:New, +Resize -MaximizeBox +MinSize560x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
-intTabHeight := 440
+intTabHeight := 490
 g_strTabsList := BuildTabsList(o_EditedFavorite.AA.strFavoriteType)
 Gui, 2:Add, Tab2, % "vf_intAddFavoriteTab w520 h" . intTabHeight . " gGuiAddFavoriteTabChanged AltSubmit", %g_strTabsList%
 intTabNumber := 0
@@ -9906,7 +9937,7 @@ aaL := o_L.InsertAmpersand(false, "DialogAdd", "DialogOK", "GuiCancel", "DialogC
 
 Gui, 2:Tab
 
-intButtonsY := 460
+intButtonsY := 510
 
 ; see same if/else conditions in TreeViewQAPChanged and TreeViewSpecialChanged to save favorite when event DoubleClick
 if InStr(strGuiFavoriteLabel, "GuiEditFavorite")
@@ -10465,7 +10496,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
-Gui, 2:Add, Checkbox, % "x15 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
+Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
 	. " vf_blnFavoriteDisabled gCheckboxDisabledClicked " . (o_EditedFavorite.AA.intFavoriteDisabled = 1 ? "checked" : "")
 	, % (blnIsGroupMember ? o_L["DialogFavoriteDisabledGroupMember"] : o_L["DialogFavoriteDisabled"])
 if !(blnIsGroupMember)
@@ -10504,7 +10535,7 @@ for strItemCode, oItem in % (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.AA 
 	else ; LoadTreeviewSpecial
 		if StrLen(oItem.strDefaultName) ; to skip class object non-special folders items
 			strItemsNameCodeCategories .= oItem.strDefaultName . "|" . strItemCode . "|" . StrReplace(oItem.strCategories, "|", "~") . "`n"
-Sort, strItemsNameCodeCategories
+Sort, strItemsNameCodeCategories, CL ; CL for Case insensitive sort based on the current user's locale
 
 for strCategory, strCategoryLabel in aaCategories
 {
@@ -17413,9 +17444,13 @@ Diag(A_ThisLabel, "g_strEscapePipe", g_strEscapePipe)
 Diag(A_ThisLabel, "MD5(g_strEscapePipe)", MD5(g_strEscapePipe))
 Diag(A_ThisLabel, "MD5() name+extra", MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe))
 Diag(A_ThisLabel, "MD5() name+extra+substr", SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
+Diag(A_ThisLabel, "MD5() name+!", MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash))
+Diag(A_ThisLabel, "MD5() name+!+substr", SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8))
 ; Donor code must contain only numbers and capital letters and be 8 digits
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
-	or (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
+	or ((strDonorCode <> SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
+		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
+		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . strSponsorName . g_strEscapePipe, true), 13, 8))) ; for backward compatibility for donors before 2019-06-27
 {
 	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
 	return
@@ -20839,19 +20874,25 @@ ToggleRunAtStartup(blnForce := -1)
 
 
 ;------------------------------------------------------------
-FolderExistOrCreate(strFolder)
+FolderExistOrCreate(strFolder, strLabel)
 ;------------------------------------------------------------
 {
+	if !StrLen(strFolder)
+	{
+		Oops(2, o_L["DialogFavoriteLocationEmpty"] . "`n`n" . strLabel)
+		return
+	}
+	
 	strTempLocation := strFolder
 	blnOK := FileExistInPath(strTempLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
 	if (!blnOK)
 	{
 		Gui, 2:+OwnDialogs
-		MsgBox, 36, %g_strAppNameText%, % L(o_L["DialogOptionsPathNotExist"], strFolder)
+		MsgBox, 36, %g_strAppNameText%, % L(o_L["DialogOptionsPathNotExist"], strLabel . "`n" . strFolder)
 		IfMsgBox, Yes
 		{
 			FileCreateDir, %strFolder%
-			blnOK := FolderExistOrCreate(strFolder) ; recursive
+			blnOK := FolderExistOrCreate(strFolder, strLabel) ; recursive
 		}
 	}
 	return blnOK
@@ -24464,7 +24505,7 @@ class Container
 			}
 		}
 		
-		Sort, strFolders, % (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order
+		Sort, strFolders, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 		
 		; scan files in live folder
 		strFiles := ""
@@ -24541,7 +24582,7 @@ class Container
 			return
 		}
 		
-		Sort, strFiles, % (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order
+		Sort, strFiles, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 		
 		strContent := strSelfFolder . (StrLen(strFolders . strFiles) ? "`tX`n" : "")  . strFolders . (StrLen(strFolders) and StrLen(strFiles) ? "`tX`n" : "") . strFiles
 		
@@ -25440,6 +25481,20 @@ class Container
 			this.aaTemp.strTargetWinId := strTargetWinId
 			this.aaTemp.strHotkeyTypeDetected := strHotkeyTypeDetected
 			
+			; disable features for Explorer that do not work when the folder is launched from a menu open with QAPmessenger
+			if (strMenuTriggerLabel = "LaunchFromMsg")
+			{
+				this.aaTemp.saFavoriteWindowPosition := StrSplit("0", ",") ; make this.aaTemp.saFavoriteWindowPosition[1] false
+				this.aaTemp.blnOpenFavoritesOnActiveMonitor := false
+			}
+			else
+			{
+				; Boolean,MinMax,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (7)
+				; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay (default 200 ms),
+				this.aaTemp.saFavoriteWindowPosition := StrSplit(this.AA.strFavoriteWindowPosition, ",")
+				this.aaTemp.blnOpenFavoritesOnActiveMonitor := g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor
+			}
+			
 			; EXPAND PLACEHOLDERS in location
 			; for favorite's location {LOC}, {DIR}, {NAME}, etc, current location {CUR_LOC}, {CUR_NAME}, {CUR_...}, etc,
 			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc, current content of clipboard {Clipboard},
@@ -25580,15 +25635,12 @@ class Container
 			else if this.FileExistIfMust()
 			{
 				; WINDOW POSITION PREPARATION
-				; Boolean,MinMax,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (7)
-				; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay (default 200 ms),
-				this.aaTemp.saFavoriteWindowPosition := StrSplit(this.AA.strFavoriteWindowPosition, ",") ; reset simple array for all favorites, replace g_arrFavoriteWindowPosition
 				; DOpus or TC: L Left / R Right / Explorer or TC: Monitor 1 / Monitor 2...; for example: "1,0,100,50,640,480,200" or "0,,,,,,,L"
 				if StrLen(this.aaTemp.strTargetAppName) and InStr("Explorer|TotalCommander", this.aaTemp.strTargetAppName) ; if we need to position the new Explorer or Total Commander window on the active monitor
 				{
 					SysGet, intNbMonitors, MonitorCount
 					this.aaTemp.intNbMonitors := intNbMonitors
-					if (g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor and this.aaTemp.intNbMonitors > 1)
+					if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and this.aaTemp.intNbMonitors > 1)
 						GetPositionFromMouseOrKeyboard(this.aaTemp.strMenuTriggerLabel, A_ThisHotkey, this.aaTemp.intMonitorReferencePositionX, this.aaTemp.intMonitorReferencePositionY)
 				}
 				
@@ -25608,7 +25660,7 @@ class Container
 			if (blnOpenOK)
 			{
 				; SET WINDOW POSITION
-				if (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor) ;  we need to position window
+				if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ;  we need to position window
 					and (InStr("Explorer|TotalCommander", this.aaTemp.strTargetAppName) or o_Settings.Execution.blnTryWindowPosition.IniValue)
 					
 					; we can access new Explorer or Total Commander windows, or try with other apps
@@ -25861,7 +25913,7 @@ class Container
 				; updates g_strNewWindowId with new Explorer window ID
 				if (this.aaTemp.strTargetAppName = "Explorer")
 				{
-					if (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
 						; get new window ID
 						; when run -> pid? if not scan Explorer ids
@@ -25869,12 +25921,12 @@ class Container
 						strExplorerIDsBefore := this.aaTemp.strExplorerIDs ;  save the list before launching this new Explorer
 					}
 					
-					if (StrLen(this.AA.FavoriteArguments)
-						or (g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
-						or this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					if ((g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
+						or this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 						; This technique creates a new Explorer instance at every call unless the current location is already an active Explorer window (as of Win 10).
 						; It is preferred to "Run, %this.aaTemp.strFullLocation%" because it gives better result getting the new Explorer window ID required to move the window.
-						Run, % "Explorer """ . this.aaTemp.strFullLocation . """", , % (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor ? "Hide" : "")
+						; Avoid when menu was open from QAPmessenger because collecting Explorer IDs instances because does not work (reason unknown)
+						Run, % "Explorer """ . this.aaTemp.strFullLocation . """", , % (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor ? "Hide" : "")
 					else
 					{
 						; When moving the window is not required and there is no parameter, this technique is preferred because, if call multiple times, it uses the
@@ -25883,8 +25935,9 @@ class Container
 						g_strNewWindowId := ""
 					}
 					
-					if (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
+						; Diag(A_ThisFunc . " Before Loop SetExplorersIDs", "strExplorerIDsBefore", strExplorerIDsBefore)
 						Loop
 						{
 							if (A_Index > 20)
@@ -25895,6 +25948,7 @@ class Container
 								
 							Sleep, % (this.aaTemp.saFavoriteWindowPosition[1] ? this.aaTemp.saFavoriteWindowPosition[7] : 400) ; 400 ms if opening window on the active monitor
 							this.SetExplorersIDs() ;  refresh the list of existing Explorer windows this.aaTemp.strExplorerIDs
+							; Diag(A_ThisFunc . " Loop SetExplorersIDs", "this.aaTemp.strExplorerIDs " . A_Index, this.aaTemp.strExplorerIDs)
 							Loop, Parse, % this.aaTemp.strExplorerIDs, |
 								if !InStr(strExplorerIDsBefore, A_LoopField . "|")
 								{
@@ -25905,7 +25959,8 @@ class Container
 								Break ; we have a new window
 						}
 					}
-					if !StrLen(g_strNewWindowId) and (this.aaTemp.saFavoriteWindowPosition[1] or g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor)
+					; Diag(A_ThisFunc, "g_strNewWindowId", g_strNewWindowId)
+					if !StrLen(g_strNewWindowId) and (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					; we will not be able to move the window, just show it now
 					{
 						Sleep, 100
@@ -26065,10 +26120,13 @@ class Container
 				try strType := pExplorer.Type ; Gets the type name of the contained document object. "Document HTML" for IE windows. Should be empty for file Explorer windows.
 				strWindowID := ""
 				try strWindowID := pExplorer.HWND ; Try to get the handle of the window. Some ghost Explorer in the ComObjCreate may return an empty handle
+				; strDebug .= strType . "/" . strWindowID . "|"
 				if !StrLen(strType) and StrLen(strWindowID) ; strType must be empty and strWindowID must not be empty
 					this.aaTemp.strExplorerIDs .= pExplorer.HWND . "|"
 			}
 			ObjRelease(pExplorerWindows) ; free memory used by the object
+			; Diag(A_ThisFunc, "strDebug", strDebug)
+			; Diag(A_ThisFunc, "this.aaTemp.strExplorerIDs", this.aaTemp.strExplorerIDs)
 		}
 		;---------------------------------------------------------
 		
@@ -26079,7 +26137,7 @@ class Container
 			if !StrLen(g_strNewWindowId) ; we can't access the new window
 				return
 			
-			if (this.aaTemp.saFavoriteWindowPosition[1]) ; this has precedence on g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor
+			if (this.aaTemp.saFavoriteWindowPosition[1]) ; this has precedence on this.aaTemp.blnOpenFavoritesOnActiveMonitor
 			{
 				Sleep, % this.aaTemp.saFavoriteWindowPosition[7] * (this.aaTemp.blnFirstFolderOfGroup ? 2 : 1)
 				
@@ -26107,7 +26165,7 @@ class Container
 					Sleep, % this.aaTemp.saFavoriteWindowPosition[7]
 				}
 			}
-			else if (g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor and (this.aaTemp.intNbMonitors > 1) and (this.aaTemp.strTargetAppName = "Explorer") and (this.aaTemp.strHotkeyTypeDetected = "Launch"))
+			else if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and (this.aaTemp.intNbMonitors > 1) and (this.aaTemp.strTargetAppName = "Explorer") and (this.aaTemp.strHotkeyTypeDetected = "Launch"))
 				and GetWindowPositionOnActiveMonitor(g_strNewWindowId, intMonitorReferencePositionX, intMonitorReferencePositionY, intNewWindowX, intNewWindowY)
 			{
 				; offset multiple Explorer windows positioned at center of screen (from -100/-100 to +80/+80
