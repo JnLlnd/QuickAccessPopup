@@ -24044,7 +24044,7 @@ class Container
 			
 			if (blnItemIsMenu)
 			{
-				oNewSubMenu := new Container("Menu", xmlItemAttributes.label, this, true) ; last parameter for blnDoubleAmpersands
+				oNewSubMenu := new Container("Menu", xmlItemAttributes.label, this, "init", true) ; last parameter for blnDoubleAmpersands
 				oNewSubMenu.LoadDirectoryOpusFavoritesFromXML(xmlItem.xml) ; RECURSIVE
 			}
 			
