@@ -25526,7 +25526,7 @@ class Container
 				if InStr("Folder|Document|Application", this.AA.strFavoriteType)
 					and (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"] or g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingNew"])
 					
-					this.AlternativeOpenContainer()
+					this.AlternativeOpenContainer(strOpenFavoriteLabel, strTargetWinId)
 					
 				else if (g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"] and A_ThisMenu <> o_L["MenuLastActions"])
 					
@@ -25675,9 +25675,9 @@ class Container
 			}
 		}
 		;---------------------------------------------------------
-		
+
 		;---------------------------------------------------------
-		AlternativeOpenContainer()
+		AlternativeOpenContainer(strOpenFavoriteLabel, strTargetWinId)
 		;---------------------------------------------------------
 		{
 			SplitPath, % this.aaTemp.strLocationWithPlaceholders, , strContainingFolder
@@ -25685,18 +25685,22 @@ class Container
 			saContainingItem := ["Folder", "Containing Folder", strContainingFolder]
 			oContainingFolderItem := new Container.Item(saContainingItem)
 			oContainingFolderItem.AA.blnFavoritePseudo := true
-			oContainingFolderItem.aaTemp := Object()
-			oContainingFolderItem.aaTemp.strFullLocation := strContainingFolder
-			oContainingFolderItem.aaTemp.strTargetWinId := this.aaTemp.strTargetWinId
+			
+			; substitute Alternative hotkey and trigger label with corresponding regular hotkey and label
 			if (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"])
 				and CanNavigate((A_ThisHotkey = o_PopupHotkeyAlternativeHotkeyMouse.P_strAhkHotkey ? o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey
 					: o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.P_strAhkHotkey))
-				; substitude Alternative hotkey with corresponding regular hotkey
-				oContainingFolderItem.aaTemp.strHotkeyTypeDetected := "Navigate"
+			{
+				strMenuTriggerLabel := "NavigateHotkeyMouse"
+				strHotkeyTypeDetected := "Navigate"
+			}
 			else
-				oContainingFolderItem.aaTemp.strHotkeyTypeDetected := "Launch"
-			if oContainingFolderItem.SetTargetName() ; sets old g_strTargetAppName, can change aaTemp.strHotkeyTypeDetected to "Launch", can empty aaTemp.strTargetWinId if Desktop
-				oContainingFolderItem.OpenFolder()
+			{
+				strMenuTriggerLabel := "LaunchHotkeyMouse"
+				strHotkeyTypeDetected := "Launch"
+			}
+			
+			oContainingFolderItem.OpenFavorite(strMenuTriggerLabel, strOpenFavoriteLabel, strTargetWinId, strHotkeyTypeDetected)
 		}
 		;---------------------------------------------------------
 		
