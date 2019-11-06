@@ -738,7 +738,7 @@ lOptionsIconSize	Dimensione delle icone
 lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto lo spazio disponibile)
 lOptionsIconsRetrieveInFrequentMenus	Carica le icone nel fare l'aggiornamento delle Cartelle frequenti e Menù file frequenti (evitare quando alcuni file sono spesso offline)
 lOptionsLanguage	Lingua
-lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean
+lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
 lOptionsMenuAppearance	Aspetto dei Menù

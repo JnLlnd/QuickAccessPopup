@@ -714,7 +714,7 @@ lOptionsIconSize	Pictogramgrootte
 lOptionsIconsManageRows	Beheer de pictogramvenster-regels (0 voor maximaal beschikbare ruimte)
 lOptionsIconsRetrieveInFrequentMenus	Pictogrammen ophalen bij het vernieuwen van Frequente mappen en Frequente bestands-menu's (vermijd deze functie zodra bestanden geregeld offline zijn)
 lOptionsLanguage	Taal
-lOptionsLanguageLabels	Engels|Frans|Duits|Spaans|Braziliaans Portugees|Italiaans|Portugees|Nederlands|Korean
+lOptionsLanguageLabels	Engels|Frans|Duits|Spaans|Braziliaans Portugees|Italiaans|Portugees|Nederlands|Korean|Simplified Chinese
 lOptionsMenuActiveWindow	Linksboven van het actieve venster
 lOptionsMenuAdvanced	Geavanceerde Menuopties
 lOptionsMenuAppearance	Menuweergave

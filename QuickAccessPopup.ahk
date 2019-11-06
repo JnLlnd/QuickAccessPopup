@@ -4402,7 +4402,7 @@ FileInstall, FileInstall\QuickAccessPopup_LANG_PT-BR.txt, %g_strTempDir%\QuickAc
 FileInstall, FileInstall\QuickAccessPopup_LANG_IT.txt, %g_strTempDir%\QuickAccessPopup_LANG_IT.txt, 1
 ; FileInstall, FileInstall\QuickAccessPopup_LANG_ZH-TW.txt, %g_strTempDir%\QuickAccessPopup_LANG_ZH-TW.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_PT.txt, %g_strTempDir%\QuickAccessPopup_LANG_PT.txt, 1
-; FileInstall, FileInstall\QuickAccessPopup_LANG_ZH-CN.txt, %g_strTempDir%\QuickAccessPopup_LANG_ZH-CN.txt, 1
+FileInstall, FileInstall\QuickAccessPopup_LANG_ZH-CN.txt, %g_strTempDir%\QuickAccessPopup_LANG_ZH-CN.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_NL.txt, %g_strTempDir%\QuickAccessPopup_LANG_NL.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_KO.txt, %g_strTempDir%\QuickAccessPopup_LANG_KO.txt, 1
 
@@ -4454,7 +4454,7 @@ InitLanguageArrays:
 
 ; ----------------------
 ; OPTIONS
-g_objOptionsLanguageCodes := StrSplit("EN|FR|DE|ES|PT-BR|IT|PT|NL|KO", "|") ;  g_arrOptionsLanguageCodes
+g_objOptionsLanguageCodes := StrSplit("EN|FR|DE|ES|PT-BR|IT|PT|NL|KO|ZH-CN", "|") ;  g_arrOptionsLanguageCodes
 g_objOptionsLanguageLabels := StrSplit(o_L["OptionsLanguageLabels"], "|") ; g_arrOptionsLanguageLabels
 loop, % g_objOptionsLanguageCodes.Length()
 	if (g_objOptionsLanguageCodes[A_Index] = o_Settings.Launch.strLanguageCode.IniValue)

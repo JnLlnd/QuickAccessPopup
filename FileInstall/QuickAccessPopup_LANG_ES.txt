@@ -626,7 +626,7 @@ lOptionsIconReplacementListInstructions	Introducir reemplazos de iconos QAP, uno
 lOptionsIconSize	Tamaño de iconos del menú
 lOptionsIconsManageRows	Gestión de filas Iconos de la ventana`n(0 para máximo disponible) 
 lOptionsLanguage	Idioma
-lOptionsLanguageLabels	Inglés|Francés|Alemán|Español|Portugués brasileño|Italiano|Portugués|Holandés|Korean
+lOptionsLanguageLabels	Inglés|Francés|Alemán|Español|Portugués brasileño|Italiano|Portugués|Holandés|Korean|Simplified Chinese
 lOptionsMenuActiveWindow	En la ventana activa
 lOptionsMenuFixPosition	En una posición fija
 lOptionsMenuNearMouse	Cerca del puntero del ratón

@@ -737,7 +737,7 @@ lOptionsIconSize	Taille des icônes de menu
 lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 pour le maximum possible)
 lOptionsIconsRetrieveInFrequentMenus	Récupérer les icônes lors de l'actualisation des menus "Dossiers fréquemment utilisés" et "Fichiers fréquemment utilisés" (à éviter si certains disques sont hors-ligne)
 lOptionsLanguage	Langue
-lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen
+lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié
 lOptionsMenuActiveWindow	Dans la fenêtre active
 lOptionsMenuAdvanced	Options de menu avancées
 lOptionsMenuAppearance	Apparence du menu

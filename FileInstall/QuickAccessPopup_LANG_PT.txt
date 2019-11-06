@@ -738,7 +738,7 @@ lOptionsIconSize	Tamanho dos ícones do menu
 lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponível)
 lOptionsIconsRetrieveInFrequentMenus	Recuperar ícones ao actualizar menus de pastas e ficheiros Frequentes (evitar se alguns ficheiros estiverem frequentemente offline)
 lOptionsLanguage	Idioma
-lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean
+lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela activa
 lOptionsMenuAdvanced	Oções Avançadas de Menus
 lOptionsMenuAppearance	Aspecto dos Menus
