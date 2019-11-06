@@ -25523,7 +25523,7 @@ class Container
 			; ALTERNATIVE
 			if (this.aaTemp.strHotkeyTypeDetected = "Alternative")
 			{
-				if InStr("Folder|Document|Application", this.AA.strFavoriteType)
+				if InStr("Folder|Document|Application|Special", this.AA.strFavoriteType)
 					and (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"] or g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingNew"])
 					
 					this.AlternativeOpenContainer(strOpenFavoriteLabel, strTargetWinId)
@@ -25544,6 +25544,9 @@ class Container
 				}
 				else if (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"]) and (this.AA.strFavoriteType = "Group")
 					; cannot open group in new window
+					blnOpenOK := false
+				else if (g_strAlternativeMenu = o_L["MenuAlternativeRunAs"]) and (this.AA.strFavoriteType <> "Application")
+					; can only open application as administrator
 					blnOpenOK := false
 				
 				if (g_strAlternativeMenu <> o_L["MenuAlternativeRunAs"]) ; will be launched under APPLICATION below, else this is finished
@@ -25681,7 +25684,11 @@ class Container
 		;---------------------------------------------------------
 		{
 			SplitPath, % this.aaTemp.strLocationWithPlaceholders, , strContainingFolder
-			strContainingFolder .= "\"
+			if StrLen(strContainingFolder)
+				strContainingFolder .= "\"
+			else
+				return ; this is probably a Special folder with CLSID (not with a regular folder path)
+			
 			saContainingItem := ["Folder", "Containing Folder", strContainingFolder]
 			oContainingFolderItem := new Container.Item(saContainingItem)
 			oContainingFolderItem.AA.blnFavoritePseudo := true
@@ -26204,6 +26211,8 @@ class Container
 					If InStr("Folder|Special|FTP", o_GroupMember.AA.strFavoriteType)
 						intFolderItemsCount++ ; do it that way because first member could be other than a folder
 					o_GroupMember.aaTemp.blnFirstFolderOfGroup := (intFolderItemsCount = 1) ; was g_blnFirstFolderOfGroup
+					
+					g_strNewWindowId := "" ; start fresh for next group member if it is another Folder
 					
 					Sleep, % o_GroupMember.AA.intGroupRestoringDelay + 200 ; add 200 ms as minimal default delay
 					o_GroupMember.OpenFavorite(this.aaTemp.strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel
