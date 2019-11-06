@@ -25521,35 +25521,50 @@ class Container
 			}
 			
 			; ALTERNATIVE
+			blnAlternativeMenuTypeNotSupported := false
 			if (this.aaTemp.strHotkeyTypeDetected = "Alternative")
 			{
-				if InStr("Folder|Document|Application|Special", this.AA.strFavoriteType)
-					and (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"] or g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingNew"])
-					
-					this.AlternativeOpenContainer(strOpenFavoriteLabel, strTargetWinId)
-					
+				if (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"] or g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingNew"])
+				{
+					if InStr("Folder|Document|Application|Special", this.AA.strFavoriteType)
+						this.AlternativeOpenContainer()
+					else
+						blnAlternativeMenuTypeNotSupported := true
+				}	
+				else if (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
+				{
+					if !InStr("Folder|Document|Application|Special", this.AA.strFavoriteType)
+						blnAlternativeMenuTypeNotSupported := true
+				}	
 				else if (g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"] and A_ThisMenu <> o_L["MenuLastActions"])
-					
+				{
 					this.AlternativeEditFavorite()
-					
+				}	
 				else if (g_strAlternativeMenu = o_L["MenuCopyLocation"]) ; EnvVars expanded
 				{
-					if !InStr("Group|QAP", this.AA.strFavoriteType) ; for these types, there is no path to copy
+					if InStr("Group|QAP|Text", this.AA.strFavoriteType)
+						blnAlternativeMenuTypeNotSupported := true
+					else
 					{
 						Clipboard := this.aaTemp.strLocationWithPlaceholders
 						TrayTip, %g_strAppNameText%, % o_L["CopyLocationCopiedToClipboard"], , 17 ; 1 info icon + 16 no sound
 						Sleep, 20 ; tip from Lexikos for Windows 10 "Just sleep for any amount of time after each call to TrayTip" (http://ahkscript.org/boards/viewtopic.php?p=50389&sid=29b33964c05f6a937794f88b6ac924c0#p50389)
-						blnOpenOK := true
 					}
 				}
-				else if (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"]) and (this.AA.strFavoriteType = "Group")
-					; cannot open group in new window
-					blnOpenOK := false
-				else if (g_strAlternativeMenu = o_L["MenuAlternativeRunAs"]) and (this.AA.strFavoriteType <> "Application")
-					; can only open application as administrator
-					blnOpenOK := false
+				else if (g_strAlternativeMenu = o_L["MenuAlternativeRunAs"])
+				{
+					if (this.AA.strFavoriteType <> "Application")
+						blnAlternativeMenuTypeNotSupported := true
+				}
 				
-				if (g_strAlternativeMenu <> o_L["MenuAlternativeRunAs"]) ; will be launched under APPLICATION below, else this is finished
+				if (blnAlternativeMenuTypeNotSupported)
+				{
+					Oops(1, o_L["OopsAlternativeNotSupported"], g_strAlternativeMenu, o_Favorites.GetFavoriteTypeObject(this.AA.strFavoriteType).strFavoriteTypeLocationLabelNoAmpersand)
+					return
+				}
+				
+				; Log and Return except for Run As that be launched and collected under APPLICATION below
+				if (g_strAlternativeMenu <> o_L["MenuAlternativeRunAs"])
 				{
 					; LOG ACTION
 					this.CollectUsageDb() ; was UsageDbCollectMenu:
