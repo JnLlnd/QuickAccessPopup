@@ -3927,7 +3927,8 @@ g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
 	Gosub, InitDiagMode
-	Diag("Launch", "###strDiag", ###strDiag)
+	Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
+	strLaunchSettingsFolderDiag := ""
 }
 
 ; Build main menus
@@ -4257,7 +4258,7 @@ if StrLen(o_CommandLineParameters.AA["Working"])
 ; - else we are in Portable mode.
 
 g_blnPortableMode := !FileExist(A_ScriptDir . "\_do_not_remove_or_rename.txt")
-###strDiag .= "g_blnPortableMode: " . g_blnPortableMode . "`n"
+strLaunchSettingsFolderDiag .= "g_blnPortableMode: " . g_blnPortableMode . "`n"
 
 ; IF PORTABLE MODE
 
@@ -4292,6 +4293,7 @@ if (A_WorkingDir = A_AppDataCommon . "\" . g_strAppNameText) ; this is first lau
 		SetRegistry(strWorkingFolder, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
 		; ###_V(A_ThisLabel . " - setup mode, first run after install, keep pre-v10 working folder, set working folder registry key"
 			; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
+		strLaunchSettingsFolderDiag .= "strWorkingFolder (first v10 install key does not exist): " . strWorkingFolder . "`n"
 		
 		; If pre-v10 autostart option is enabled, create the Run registry key and remove the old startup file shortcut.
 		if FileExist(A_Startup . "\" . g_strAppNameFile . ".lnk")
@@ -4326,12 +4328,13 @@ if (A_WorkingDir = A_AppDataCommon . "\" . g_strAppNameText) ; this is first lau
 			SetRegistry(strWorkingFolder, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
 			; ###_V(A_ThisLabel . " - setup mode, first run after FIRST install, created (probably) working folder under A_MyDocuments and set working folder registry key"
 				; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
+			strLaunchSettingsFolderDiag .= "strWorkingFolder (first install key does not exist): " . strWorkingFolder . "`n"
 		}
 		else
 		{
 			; This is first run after re-install or QAP was launched from the Start menu shortcut. The working folder registry value exists.
 			strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
-			###strDiag .= "strWorkingFolder (first launch key exists): " . strWorkingFolder . "`n"
+			strLaunchSettingsFolderDiag .= "strWorkingFolder (first launch after re-install key exists): " . strWorkingFolder . "`n"
 			; ###_V(A_ThisLabel . " - setup mode, first run after RE-install or launched from Start menu, get working folder registry key"
 				; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 		}
@@ -4342,7 +4345,7 @@ else ; NOT first launch
 	; Set working folder by reading the working folder in the registry key:
 	; "HKEY_CURRENT_USER\Software\Jean Lalonde\Quick Access Popup\WorkingFolder".
 	strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
-	###strDiag .= "strWorkingFolder (not first launch): " . strWorkingFolder . "`n"
+	strLaunchSettingsFolderDiag .= "strWorkingFolder (not first launch): " . strWorkingFolder . "`n"
 	; ###_V(A_ThisLabel . " - setup mode, not first run after install, get working folder registry key"
 		; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 }
@@ -4379,7 +4382,7 @@ else ; This could happen if the working folder registry value exist but is empty
 }
 
 strWorkingFolder := ""
-###strDiag .= "A_WorkingDir: " . A_WorkingDir . "`n"
+strLaunchSettingsFolderDiag .= "A_WorkingDir: " . A_WorkingDir . "`n"
 
 return
 ;-----------------------------------------------------------
