@@ -5535,14 +5535,15 @@ loop, Parse, % "Main|File|Favorite|Tools|Options|MoreOptions|Help", "|"
 ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource
 
 aaMenuFileL := o_L.InsertAmpersand(true, "GuiSave", "GuiSaveAndClose", "GuiCancel", "GuiClose", "MenuOpenWorkingDirectory"
-	, "MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly, "MenuSwitchSettings", "MenuSwitchSettingsDefault", "ImpExpMenu"
-	, "MenuReload@" . g_strAppNameText, "MenuExitApp@" . g_strAppNameText)
+	, "MenuOpenBackupDirectory", "MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly, "MenuSwitchSettings", "MenuSwitchSettingsDefault"
+	, "ImpExpMenu", "MenuReload@" . g_strAppNameText, "MenuExitApp@" . g_strAppNameText)
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SettingsCtrlS", aaMenuFileL["GuiSave"] . "`tCtrl+S", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiSaveAndCloseFavorites", aaMenuFileL["GuiSaveAndClose"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SettingsEsc", aaMenuFileL["GuiClose"] . "`tEsc", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["OpenWorkingDirectory", aaMenuFileL["MenuOpenWorkingDirectory"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["OpenBackupDirectory", aaMenuFileL["MenuOpenBackupDirectory"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["ShowSettingsIniFile", aaMenuFileL["MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SwitchSettings", aaMenuFileL["MenuSwitchSettings"] . g_strEllipse, "", "iconNoIcon"])
@@ -15614,6 +15615,7 @@ OpenReopenCurrentFolder:
 OpenReopenInNewWindow:
 OpenFavoriteFromHotstring:
 OpenWorkingDirectory:
+OpenBackupDirectory:
 OpenSwitchFolderOrApp:
 ;------------------------------------------------------------
 
@@ -15807,10 +15809,13 @@ else if InStr("OpenReopenCurrentFolder|OpenReopenInNewWindow|", g_strOpenFavorit
 	global o_ThisFavorite := new Container.Item(["Folder", strCurrentLocation, strCurrentLocation])
 	o_ThisFavorite.AA.blnFavoritePseudo := true
 }
-else if (g_strOpenFavoriteLabel = "OpenWorkingDirectory")
+else if (g_strOpenFavoriteLabel = "OpenWorkingDirectory" or g_strOpenFavoriteLabel = "OpenBackupDirectory")
 {
 	; ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir,
-	global o_ThisFavorite := new Container.Item(["Folder", o_L["MenuOpenWorkingDirectory"], A_WorkingDir])
+	if (g_strOpenFavoriteLabel = "OpenWorkingDirectory")
+		global o_ThisFavorite := new Container.Item(["Folder", o_L["MenuOpenWorkingDirectory"], A_WorkingDir])
+	else
+		global o_ThisFavorite := new Container.Item(["Folder", o_L["MenuOpenBackupDirectory"], o_Settings.SettingsFile.strBackupFolder.IniValue])
 	o_ThisFavorite.AA.blnFavoritePseudo := true ; this is not a real favorite, it could not be edited if not found
 	g_strHotkeyTypeDetected := "Launch"
 }
