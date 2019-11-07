@@ -4887,9 +4887,9 @@ ProcessSponsorName:
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
 	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
-else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibility for donors before 2019-06-27
+else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5Utf8(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5Utf8(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5Utf8(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibility for donors before 2019-06-27
 ; donor code matching the sponsor name
 {
 	g_SponsoredMessage := L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue)
@@ -17393,9 +17393,9 @@ strSponsorName := Trim(f_strSponsorName)
 
 ; Donor code must contain only numbers and capital letters and be 8 digits
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
-	or ((strDonorCode <> SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
-		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
-		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . strSponsorName . g_strEscapePipe, true), 13, 8))) ; for backward compatibility for donors before 2019-06-27
+	or ((strDonorCode <> SubStr(MD5Utf8(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
+		and (strDonorCode <> SubStr(MD5Utf8(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
+		and (strDonorCode <> SubStr(MD5Utf8(g_strEscapePipe . strSponsorName . g_strEscapePipe, true), 13, 8))) ; for backward compatibility for donors before 2019-06-27
 {
 	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
 	return
@@ -20734,6 +20734,85 @@ MD5(str, blnCase := false)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+MD5Utf8(string, encoding := "utf-8")
+; based on bcrypt_md5() from jNizM (https://www.autohotkey.com/boards/viewtopic.php?t=23413 / https://github.com/jNizM/AHK_CNG/tree/master/src/hash/func)
+; used starting v10.2.3 (or 10.3?) 2019-11-07
+;------------------------------------------------------------
+{
+    static BCRYPT_MD5_ALGORITHM := "MD5"
+    static BCRYPT_OBJECT_LENGTH := "ObjectLength"
+    static BCRYPT_HASH_LENGTH   := "HashDigestLength"
+
+	try
+	{
+		; loads the specified module into the address space of the calling process
+		if !(hBCRYPT := DllCall("LoadLibrary", "str", "bcrypt.dll", "ptr"))
+			throw Exception("Failed to load bcrypt.dll", -1)
+
+		; open an algorithm handle
+		if (NT_STATUS := DllCall("bcrypt\BCryptOpenAlgorithmProvider", "ptr*", hAlg, "ptr", &BCRYPT_MD5_ALGORITHM, "ptr", 0, "uint", 0) != 0)
+			throw Exception("BCryptOpenAlgorithmProvider: " NT_STATUS, -1)
+
+		; calculate the size of the buffer to hold the hash object
+		if (NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "ptr", hAlg, "ptr", &BCRYPT_OBJECT_LENGTH, "uint*", cbHashObject, "uint", 4, "uint*", cbData, "uint", 0) != 0)
+			throw Exception("BCryptGetProperty: " NT_STATUS, -1)
+
+		; allocate the hash object
+		VarSetCapacity(pbHashObject, cbHashObject, 0)
+		;	throw Exception("Memory allocation failed", -1)
+
+		; calculate the length of the hash
+		if (NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "ptr", hAlg, "ptr", &BCRYPT_HASH_LENGTH, "uint*", cbHash, "uint", 4, "uint*", cbData, "uint", 0) != 0)
+			throw Exception("BCryptGetProperty: " NT_STATUS, -1)
+
+		; allocate the hash buffer
+		VarSetCapacity(pbHash, cbHash, 0)
+		;	throw Exception("Memory allocation failed", -1)
+
+		; create a hash
+		if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlg, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", 0, "uint", 0, "uint", 0) != 0)
+			throw Exception("BCryptCreateHash: " NT_STATUS, -1)
+
+		; hash some data
+		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbInput := StrPut(string, &pbInput, encoding) - 1
+		; if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
+			; throw Exception("BCryptHashData: " NT_STATUS, -1)
+
+		; close the hash
+		if (NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "ptr", hHash, "ptr", &pbHash, "uint", cbHash, "uint", 0) != 0)
+			throw Exception("BCryptFinishHash: " NT_STATUS, -1)
+
+		loop % cbHash
+			hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "uchar"))
+	}
+	catch exception
+	{
+		; represents errors that occur during application execution
+		throw Exception
+	}
+	finally
+	{
+		; cleaning up resources
+		if (pbInput)
+			VarSetCapacity(pbInput, 0)
+		if (hHash)
+			DllCall("bcrypt\BCryptDestroyHash", "ptr", hHash)
+		if (pbHash)
+			VarSetCapacity(pbHash, 0)
+		if (pbHashObject)
+			VarSetCapacity(pbHashObject, 0)
+		if (hAlg)
+			DllCall("bcrypt\BCryptCloseAlgorithmProvider", "ptr", hAlg, "uint", 0)
+		if (hBCRYPT)
+			DllCall("FreeLibrary", "ptr", hBCRYPT)
+	}
+
+	return hash
+}
+;------------------------------------------------------------
+
+
 ;---------------------------------------------------------
 RegistryExist(strKeyName, strValueName)
 ;---------------------------------------------------------
@@ -21069,7 +21148,6 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	return 1
 }
 ;------------------------------------------------------------
-
 
 
 ;========================================================================================================================
