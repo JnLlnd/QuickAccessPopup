@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.2.9.1 (2019-11-??)
+
 Version: 10.2.1 (2019-11-04)
 - fix bug in sponsor name code verification on system with some int'l Windows configuration (new sponsor codes will require this version v10.2.1 or more recent)
 - sort Live folders menus, Clipboard menus and Edit Favorite treeviews using user's locale setting to sort correctly int'l characters (for example sorting "é" or "É" with "e")
@@ -3652,7 +3654,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2.1
+;@Ahk2Exe-SetVersion 10.2.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3757,8 +3759,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.2.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
@@ -17392,6 +17394,12 @@ strSponsorName := Trim(f_strSponsorName)
 ; Diag(A_ThisLabel, "MD5() name+!+substr", SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8))
 
 ; Donor code must contain only numbers and capital letters and be 8 digits
+###_V(A_ThisFunc, MD5Utf8("XXX")
+	, StrLower(strSponsorName)
+	, MD5Utf8(StrLower(strSponsorName))
+	, g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash
+	, MD5Utf8(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash)
+	, SubStr(MD5Utf8(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash), 13, 8))
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
 	or ((strDonorCode <> SubStr(MD5Utf8(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
 		and (strDonorCode <> SubStr(MD5Utf8(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
