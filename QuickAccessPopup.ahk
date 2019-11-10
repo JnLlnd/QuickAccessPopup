@@ -4886,12 +4886,16 @@ return
 ProcessSponsorName:
 ;------------------------------------------------------------
 
+; Clipboard := bcrypt_md5("a")
+Clipboard := md5("a")
+###_D(Clipboard)
+
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
 	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
-else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5Utf8(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5Utf8(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5Utf8(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibility for donors before 2019-06-27
+else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(bcrypt_md5(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(bcrypt_md5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe), 13, 8)) ; lower case 2019-06-27..2019-10-30
+	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(bcrypt_md5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe), 13, 8)) ; for backward compatibility for donors before 2019-06-27
 ; donor code matching the sponsor name
 {
 	g_SponsoredMessage := L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue)
@@ -17394,16 +17398,16 @@ strSponsorName := Trim(f_strSponsorName)
 ; Diag(A_ThisLabel, "MD5() name+!+substr", SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8))
 
 ; Donor code must contain only numbers and capital letters and be 8 digits
-###_V(A_ThisFunc, MD5Utf8("XXX")
+###_V(A_ThisFunc
 	, StrLower(strSponsorName)
-	, MD5Utf8(StrLower(strSponsorName))
+	, bcrypt_md5(StrLower(strSponsorName))
 	, g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash
-	, MD5Utf8(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash)
-	, SubStr(MD5Utf8(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash), 13, 8))
+	, bcrypt_md5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash)
+	, SubStr(bcrypt_md5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash), 13, 8))
 if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
-	or ((strDonorCode <> SubStr(MD5Utf8(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
-		and (strDonorCode <> SubStr(MD5Utf8(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
-		and (strDonorCode <> SubStr(MD5Utf8(g_strEscapePipe . strSponsorName . g_strEscapePipe, true), 13, 8))) ; for backward compatibility for donors before 2019-06-27
+	or ((strDonorCode <> SubStr(bcrypt_md5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
+		and (strDonorCode <> SubStr(bcrypt_md5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe), 13, 8)) ; lower case 2019-06-27..2019-10-30
+		and (strDonorCode <> SubStr(bcrypt_md5(g_strEscapePipe . strSponsorName . g_strEscapePipe), 13, 8))) ; for backward compatibility for donors before 2019-06-27
 {
 	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
 	return
@@ -20743,9 +20747,9 @@ MD5(str, blnCase := false)
 
 
 ;------------------------------------------------------------
-MD5Utf8(string, encoding := "utf-8")
-; based on bcrypt_md5() from jNizM (https://www.autohotkey.com/boards/viewtopic.php?t=23413 / https://github.com/jNizM/AHK_CNG/tree/master/src/hash/func)
-; used starting v10.2.3 (or 10.3?) 2019-11-07
+bcrypt_md5(string, encoding := "utf-8")
+; from jNizM (https://www.autohotkey.com/boards/viewtopic.php?t=23413 / https://github.com/jNizM/AHK_CNG/blob/master/src/hash/func/bcrypt_md5.ahk)
+; used starting v10.2.3 (or 10.3?) 2019-11-07 (to be verified / confirmed)
 ;------------------------------------------------------------
 {
     static BCRYPT_MD5_ALGORITHM := "MD5"
@@ -20784,8 +20788,8 @@ MD5Utf8(string, encoding := "utf-8")
 
 		; hash some data
 		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbInput := StrPut(string, &pbInput, encoding) - 1
-		; if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
-			; throw Exception("BCryptHashData: " NT_STATUS, -1)
+		if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
+			throw Exception("BCryptHashData: " NT_STATUS, -1)
 
 		; close the hash
 		if (NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "ptr", hHash, "ptr", &pbHash, "uint", cbHash, "uint", 0) != 0)
@@ -20818,7 +20822,7 @@ MD5Utf8(string, encoding := "utf-8")
 
 	return hash
 }
-;------------------------------------------------------------
+;---------------------------------------------------------
 
 
 ;---------------------------------------------------------
