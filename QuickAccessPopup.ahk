@@ -31,7 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.2.9.1 (2019-11-??)
+Version: 10.2.2 (2019-11-11)
+- add menu item "Open QAP Settings Backup Folder" to the "File" menu
+- fix bug when opening folders from DOpus favorites submenus
+- support UTF-8 characters in Sponsor Name
+- reintroduce Simplified Chinese language (ZH-CN), thanks to ilaoyao
+- Korean language update
 
 Version: 10.2.1 (2019-11-04)
 - fix bug in sponsor name code verification on system with some int'l Windows configuration (new sponsor codes will require this version v10.2.1 or more recent)
@@ -3654,7 +3659,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2.9.1
+;@Ahk2Exe-SetVersion 10.2.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3759,8 +3764,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.2.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
