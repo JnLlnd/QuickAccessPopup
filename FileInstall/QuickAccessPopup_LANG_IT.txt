@@ -1,5 +1,5 @@
 lAboutText1	~1~ ~2~ (~3~ bit)
-lAboutText2	~1~ è stato scritto da Jean Lalonde usando il linguaggio di programmazione`n<a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTraduzione in Italiano: Riccardo Leone`nTraduzione in Tedesco: Edgar "Fast Edi" Hoffmann`nTraduzione in Francese: Jean Lalonde`nTraduzione in Spagnolo: kiketrucker`nTraduzione in Portoghese: Luis Neves`nDutch translation: Ric Roggeveen`nTraduzione in Portoghese (BR): Igor Ruckert`nTraduzione in Cinese Tradizionale e Semplificato: Jess Yang`nKorean translation: Maeng Bong Kyun`nEnglish proof checking: (help welcomed)`n`nIcone realizzate da: <a href="http://www.visualpharm.com">Visual Pharm</a>`nProgramma di installazione: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> di jrsoftware.org`nAutoHotkey_L v~2~ (sorgenti): <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
+lAboutText2	~1~ è stato scritto da Jean Lalonde usando il linguaggio di programmazione`n<a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTraduzione in Italiano: Riccardo Leone`nTraduzione in Tedesco: Edgar "Fast Edi" Hoffmann`nTraduzione in Francese: Jean Lalonde`nTraduzione in Spagnolo: kiketrucker`nTraduzione in Portoghese: Luis Neves`nDutch translation: Ric Roggeveen`nTraduzione in Portoghese (BR): Igor Ruckert`nTraduzione in Cinese Semplificato: ilaoyao`nKorean translation: Maeng Bong Kyun`nEnglish proof checking: (help welcomed)`n`nIcone realizzate da: <a href="http://www.visualpharm.com">Visual Pharm</a>`nProgramma di installazione: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> di jrsoftware.org`nAutoHotkey_L v~2~ (sorgenti): <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Supporto:  <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	Crediti - ~1~ ~2~
@@ -738,7 +738,7 @@ lOptionsIconSize	Dimensione delle icone
 lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto lo spazio disponibile)
 lOptionsIconsRetrieveInFrequentMenus	Carica le icone nel fare l'aggiornamento delle Cartelle frequenti e Menù file frequenti (evitare quando alcuni file sono spesso offline)
 lOptionsLanguage	Lingua
-lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean
+lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
 lOptionsMenuAppearance	Aspetto dei Menù

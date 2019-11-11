@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.2.2 (2019-11-11)
+- add menu item "Open QAP Settings Backup Folder" to the "File" menu
+- fix bug when opening folders from DOpus favorites submenus
+- support UTF-8 characters in Sponsor Name
+- reintroduce Simplified Chinese language (ZH-CN), thanks to ilaoyao
+- Korean language update
+
 Version: 10.2.1 (2019-11-04)
 - fix bug in sponsor name code verification on system with some int'l Windows configuration (new sponsor codes will require this version v10.2.1 or more recent)
 - sort Live folders menus, Clipboard menus and Edit Favorite treeviews using user's locale setting to sort correctly int'l characters (for example sorting "é" or "É" with "e")
@@ -3652,7 +3659,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2.1
+;@Ahk2Exe-SetVersion 10.2.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3757,7 +3764,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.2.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -3927,7 +3934,8 @@ g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
 	Gosub, InitDiagMode
-	Diag("Launch", "###strDiag", ###strDiag)
+	Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
+	strLaunchSettingsFolderDiag := ""
 }
 
 ; Build main menus
@@ -4257,7 +4265,7 @@ if StrLen(o_CommandLineParameters.AA["Working"])
 ; - else we are in Portable mode.
 
 g_blnPortableMode := !FileExist(A_ScriptDir . "\_do_not_remove_or_rename.txt")
-###strDiag .= "g_blnPortableMode: " . g_blnPortableMode . "`n"
+strLaunchSettingsFolderDiag .= "g_blnPortableMode: " . g_blnPortableMode . "`n"
 
 ; IF PORTABLE MODE
 
@@ -4292,6 +4300,7 @@ if (A_WorkingDir = A_AppDataCommon . "\" . g_strAppNameText) ; this is first lau
 		SetRegistry(strWorkingFolder, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
 		; ###_V(A_ThisLabel . " - setup mode, first run after install, keep pre-v10 working folder, set working folder registry key"
 			; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
+		strLaunchSettingsFolderDiag .= "strWorkingFolder (first v10 install key does not exist): " . strWorkingFolder . "`n"
 		
 		; If pre-v10 autostart option is enabled, create the Run registry key and remove the old startup file shortcut.
 		if FileExist(A_Startup . "\" . g_strAppNameFile . ".lnk")
@@ -4326,12 +4335,13 @@ if (A_WorkingDir = A_AppDataCommon . "\" . g_strAppNameText) ; this is first lau
 			SetRegistry(strWorkingFolder, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
 			; ###_V(A_ThisLabel . " - setup mode, first run after FIRST install, created (probably) working folder under A_MyDocuments and set working folder registry key"
 				; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
+			strLaunchSettingsFolderDiag .= "strWorkingFolder (first install key does not exist): " . strWorkingFolder . "`n"
 		}
 		else
 		{
 			; This is first run after re-install or QAP was launched from the Start menu shortcut. The working folder registry value exists.
 			strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
-			###strDiag .= "strWorkingFolder (first launch key exists): " . strWorkingFolder . "`n"
+			strLaunchSettingsFolderDiag .= "strWorkingFolder (first launch after re-install key exists): " . strWorkingFolder . "`n"
 			; ###_V(A_ThisLabel . " - setup mode, first run after RE-install or launched from Start menu, get working folder registry key"
 				; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 		}
@@ -4342,7 +4352,7 @@ else ; NOT first launch
 	; Set working folder by reading the working folder in the registry key:
 	; "HKEY_CURRENT_USER\Software\Jean Lalonde\Quick Access Popup\WorkingFolder".
 	strWorkingFolder := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
-	###strDiag .= "strWorkingFolder (not first launch): " . strWorkingFolder . "`n"
+	strLaunchSettingsFolderDiag .= "strWorkingFolder (not first launch): " . strWorkingFolder . "`n"
 	; ###_V(A_ThisLabel . " - setup mode, not first run after install, get working folder registry key"
 		; , "*WorkingFolder registry key", GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder"))
 }
@@ -4379,7 +4389,7 @@ else ; This could happen if the working folder registry value exist but is empty
 }
 
 strWorkingFolder := ""
-###strDiag .= "A_WorkingDir: " . A_WorkingDir . "`n"
+strLaunchSettingsFolderDiag .= "A_WorkingDir: " . A_WorkingDir . "`n"
 
 return
 ;-----------------------------------------------------------
@@ -4402,7 +4412,7 @@ FileInstall, FileInstall\QuickAccessPopup_LANG_PT-BR.txt, %g_strTempDir%\QuickAc
 FileInstall, FileInstall\QuickAccessPopup_LANG_IT.txt, %g_strTempDir%\QuickAccessPopup_LANG_IT.txt, 1
 ; FileInstall, FileInstall\QuickAccessPopup_LANG_ZH-TW.txt, %g_strTempDir%\QuickAccessPopup_LANG_ZH-TW.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_PT.txt, %g_strTempDir%\QuickAccessPopup_LANG_PT.txt, 1
-; FileInstall, FileInstall\QuickAccessPopup_LANG_ZH-CN.txt, %g_strTempDir%\QuickAccessPopup_LANG_ZH-CN.txt, 1
+FileInstall, FileInstall\QuickAccessPopup_LANG_ZH-CN.txt, %g_strTempDir%\QuickAccessPopup_LANG_ZH-CN.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_NL.txt, %g_strTempDir%\QuickAccessPopup_LANG_NL.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_KO.txt, %g_strTempDir%\QuickAccessPopup_LANG_KO.txt, 1
 
@@ -4454,7 +4464,7 @@ InitLanguageArrays:
 
 ; ----------------------
 ; OPTIONS
-g_objOptionsLanguageCodes := StrSplit("EN|FR|DE|ES|PT-BR|IT|PT|NL|KO", "|") ;  g_arrOptionsLanguageCodes
+g_objOptionsLanguageCodes := StrSplit("EN|FR|DE|ES|PT-BR|IT|PT|NL|KO|ZH-CN", "|") ;  g_arrOptionsLanguageCodes
 g_objOptionsLanguageLabels := StrSplit(o_L["OptionsLanguageLabels"], "|") ; g_arrOptionsLanguageLabels
 loop, % g_objOptionsLanguageCodes.Length()
 	if (g_objOptionsLanguageCodes[A_Index] = o_Settings.Launch.strLanguageCode.IniValue)
@@ -4884,10 +4894,8 @@ ProcessSponsorName:
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
 	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
-else if (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strSponsorHash . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05?)
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . StrLower(o_Settings.Launch.strSponsorName.IniValue) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
-	or (o_Settings.Launch.blnDonorCode.IniValue = SubStr(MD5(g_strEscapePipe . o_Settings.Launch.strSponsorName.IniValue . g_strEscapePipe, true), 13, 8)) ; for backward compatibility for donors before 2019-06-27
-; donor code matching the sponsor name
+else if SponsorNameOK(o_Settings.Launch.strSponsorName.IniValue, o_Settings.Launch.blnDonorCode.IniValue)
+; donor code matches MD5 of sponsor name
 {
 	g_SponsoredMessage := L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue)
 	o_Settings.Launch.blnDonorCode.IniValue := 1 ; boolean value used later
@@ -4896,7 +4904,7 @@ else
 ; no donor code or donor code not matching the sponsor name
 {
 	g_SponsoredMessage := "<a id=""none"">" . o_L["SponsoredNone"] . "</a>"
-	o_Settings.Launch.blnDonorCode.IniValue := 0
+	o_Settings.Launch.blnDonorCode.IniValue := 0 ; boolean value used later
 }
 g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
 
@@ -5548,14 +5556,15 @@ loop, Parse, % "Main|File|Favorite|Tools|Options|MoreOptions|Help", "|"
 ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource
 
 aaMenuFileL := o_L.InsertAmpersand(true, "GuiSave", "GuiSaveAndClose", "GuiCancel", "GuiClose", "MenuOpenWorkingDirectory"
-	, "MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly, "MenuSwitchSettings", "MenuSwitchSettingsDefault", "ImpExpMenu"
-	, "MenuReload@" . g_strAppNameText, "MenuExitApp@" . g_strAppNameText)
+	, "MenuOpenBackupDirectory", "MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly, "MenuSwitchSettings", "MenuSwitchSettingsDefault"
+	, "ImpExpMenu", "MenuReload@" . g_strAppNameText, "MenuExitApp@" . g_strAppNameText)
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SettingsCtrlS", aaMenuFileL["GuiSave"] . "`tCtrl+S", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiSaveAndCloseFavorites", aaMenuFileL["GuiSaveAndClose"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SettingsEsc", aaMenuFileL["GuiClose"] . "`tEsc", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["OpenWorkingDirectory", aaMenuFileL["MenuOpenWorkingDirectory"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["OpenBackupDirectory", aaMenuFileL["MenuOpenBackupDirectory"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["ShowSettingsIniFile", aaMenuFileL["MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SwitchSettings", aaMenuFileL["MenuSwitchSettings"] . g_strEllipse, "", "iconNoIcon"])
@@ -15660,6 +15669,7 @@ OpenReopenCurrentFolder:
 OpenReopenInNewWindow:
 OpenFavoriteFromHotstring:
 OpenWorkingDirectory:
+OpenBackupDirectory:
 OpenSwitchFolderOrApp:
 ;------------------------------------------------------------
 
@@ -15863,10 +15873,13 @@ else if InStr("OpenReopenCurrentFolder|OpenReopenInNewWindow|", g_strOpenFavorit
 	global o_ThisFavorite := new Container.Item(["Folder", strCurrentLocation, strCurrentLocation])
 	o_ThisFavorite.AA.blnFavoritePseudo := true
 }
-else if (g_strOpenFavoriteLabel = "OpenWorkingDirectory")
+else if (g_strOpenFavoriteLabel = "OpenWorkingDirectory" or g_strOpenFavoriteLabel = "OpenBackupDirectory")
 {
 	; ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir,
-	global o_ThisFavorite := new Container.Item(["Folder", o_L["MenuOpenWorkingDirectory"], A_WorkingDir])
+	if (g_strOpenFavoriteLabel = "OpenWorkingDirectory")
+		global o_ThisFavorite := new Container.Item(["Folder", o_L["MenuOpenWorkingDirectory"], A_WorkingDir])
+	else
+		global o_ThisFavorite := new Container.Item(["Folder", o_L["MenuOpenBackupDirectory"], o_Settings.SettingsFile.strBackupFolder.IniValue])
 	o_ThisFavorite.AA.blnFavoritePseudo := true ; this is not a real favorite, it could not be edited if not found
 	g_strHotkeyTypeDetected := "Launch"
 }
@@ -17435,22 +17448,11 @@ Gui, 2:Submit, NoHide
 strDonorCode := Trim(f_strDonorCode)
 strSponsorName := Trim(f_strSponsorName)
 
-Diag(A_ThisLabel, "strDonorCode", strDonorCode)
-Diag(A_ThisLabel, "strSponsorName", strSponsorName)
-Diag(A_ThisLabel, "StrLen()", StrLen(strDonorCode))
-Diag(A_ThisLabel, "RegExMatch()", RegExMatch(strDonorCode, "[^A-Z^0-9]"))
-Diag(A_ThisLabel, "MD5() name", MD5(StrLower(strSponsorName)))
-Diag(A_ThisLabel, "g_strEscapePipe", g_strEscapePipe)
-Diag(A_ThisLabel, "MD5(g_strEscapePipe)", MD5(g_strEscapePipe))
-Diag(A_ThisLabel, "MD5() name+extra", MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe))
-Diag(A_ThisLabel, "MD5() name+extra+substr", SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8))
-Diag(A_ThisLabel, "MD5() name+!", MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash))
-Diag(A_ThisLabel, "MD5() name+!+substr", SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8))
 ; Donor code must contain only numbers and capital letters and be 8 digits
-if (StrLen(strDonorCode) <> 8 or RegExMatch(strDonorCode, "[^A-Z^0-9]")) ; [^A-Z^0-9] any digit not in A-Z and not in 0-9
-	or ((strDonorCode <> SubStr(MD5(g_strSponsorHash . StrLower(strSponsorName) . g_strSponsorHash, true), 13, 8)) ; with g_strSponsorHash starting v10.2.1 (2019-11-05)
-		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . StrLower(strSponsorName) . g_strEscapePipe, true), 13, 8)) ; lower case 2019-06-27..2019-10-30
-		and (strDonorCode <> SubStr(MD5(g_strEscapePipe . strSponsorName . g_strEscapePipe, true), 13, 8))) ; for backward compatibility for donors before 2019-06-27
+if !StrLen(strSponsorName) ; sponsor name must not be empty
+	or StrLen(strDonorCode) <> 8 ; donor code must be 8 characters
+	or RegExMatch(strDonorCode, "[^A-Z^0-9]") ; donor code must be made only of digits in ranges A-Z and 0-9
+	or !SponsorNameOK(strSponsorName, strDonorCode) ; and donor code must match MD5 of sponsor name
 {
 	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
 	return
@@ -20773,6 +20775,74 @@ GetIconForClassId(strClassId)
 
 
 ;------------------------------------------------------------
+SponsorNameOK(strSponsorName, strDonorCode)
+;------------------------------------------------------------
+{
+	strSponsorNameLower := StrLower(strSponsorName)
+	
+	return Exclamation_bcrypt_md5(strSponsorNameLower) = strDonorCode ; supports UTF-8, case change, no pipe bug, used starting 2019-11-?? v10.2.?
+		or Exclamation_MD5(strSponsorNameLower) = strDonorCode ; avoid pipe bug but not UTF-8, used from 2019-11-04 to 2019-11-10 (pink in XL)
+		or PipeLower_MD5(strSponsorNameLower) = strDonorCode ; has pipe bug, not UTF-8, but allow case change, used from 2019-06-27 to 2019-11-03 (green in XL)
+		or PipeNoLower_MD5(strSponsorName) = strDonorCode ; has pipe bug, no UTF-8 and does not allow case change, used before 2019-06-27 (orange in XL)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+Exclamation_bcrypt_md5(strSponsorName)
+;------------------------------------------------------------
+{
+	return SubStrMD5(bcrypt_md5(g_strSponsorHash . Trim4MD5(strSponsorName) . g_strSponsorHash))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+Exclamation_MD5(strSponsorName)
+;------------------------------------------------------------
+{
+	return SubStrMD5(MD5(g_strSponsorHash . Trim4MD5(strSponsorName) . g_strSponsorHash))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+PipeLower_MD5(strSponsorName)
+;------------------------------------------------------------
+{
+	return SubStrMD5(MD5(g_strEscapePipe . Trim4MD5(strSponsorName) . g_strEscapePipe))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+PipeNoLower_MD5(strSponsorName)
+;------------------------------------------------------------
+{
+	return SubStrMD5(MD5(g_strEscapePipe . Trim4MD5(strSponsorName) . g_strEscapePipe))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+Trim4MD5(str)
+;------------------------------------------------------------
+{
+	return Trim(str, " `t" . chr(160)) ; trim invisible characters space, tab and non-breakable space
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SubStrMD5(str)
+;------------------------------------------------------------
+{
+	return StrUpper(SubStr(str, 13, 8))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 MD5(str, blnCase := false)
 ; by SKAN | rewritten by jNizM (https://www.autohotkey.com/boards/viewtopic.php?f=76&t=14927&p=75925&hilit=MD5sum#p75944)
 ;------------------------------------------------------------
@@ -20785,6 +20855,84 @@ MD5(str, blnCase := false)
 	loop % MD5_DIGEST_LENGTH
 		o .= Format("{:02" (blnCase ? "X" : "x") "}", NumGet(MD5_CTX, 87 + A_Index, "UChar"))
 	return o, DllCall("FreeLibrary", "Ptr", hModule)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+bcrypt_md5(string, encoding := "utf-8")
+; from jNizM (https://www.autohotkey.com/boards/viewtopic.php?t=23413 / https://github.com/jNizM/AHK_CNG/tree/master/src/hash/func)
+;------------------------------------------------------------
+{
+    static BCRYPT_MD5_ALGORITHM := "MD5"
+    static BCRYPT_OBJECT_LENGTH := "ObjectLength"
+    static BCRYPT_HASH_LENGTH   := "HashDigestLength"
+
+	try
+	{
+		; loads the specified module into the address space of the calling process
+		if !(hBCRYPT := DllCall("LoadLibrary", "str", "bcrypt.dll", "ptr"))
+			throw Exception("Failed to load bcrypt.dll", -1)
+		
+		; open an algorithm handle
+		if (NT_STATUS := DllCall("bcrypt\BCryptOpenAlgorithmProvider", "ptr*", hAlg, "ptr", &BCRYPT_MD5_ALGORITHM, "ptr", 0, "uint", 0) != 0)
+			throw Exception("BCryptOpenAlgorithmProvider: " NT_STATUS, -1)
+		
+		; calculate the size of the buffer to hold the hash object
+		if (NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "ptr", hAlg, "ptr", &BCRYPT_OBJECT_LENGTH, "uint*", cbHashObject, "uint", 4, "uint*", cbData, "uint", 0) != 0)
+			throw Exception("BCryptGetProperty: " NT_STATUS, -1)
+		
+		; allocate the hash object
+		VarSetCapacity(pbHashObject, cbHashObject, 0)
+		;	throw Exception("Memory allocation failed", -1)
+		
+		; calculate the length of the hash
+		if (NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "ptr", hAlg, "ptr", &BCRYPT_HASH_LENGTH, "uint*", cbHash, "uint", 4, "uint*", cbData, "uint", 0) != 0)
+			throw Exception("BCryptGetProperty: " NT_STATUS, -1)
+		
+		; allocate the hash buffer
+		VarSetCapacity(pbHash, cbHash, 0)
+		;	throw Exception("Memory allocation failed", -1)
+		
+		; create a hash
+		if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlg, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", 0, "uint", 0, "uint", 0) != 0)
+			throw Exception("BCryptCreateHash: " NT_STATUS, -1)
+		
+		; hash some data
+		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbInput := StrPut(string, &pbInput, encoding) - 1
+		if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
+			throw Exception("BCryptHashData: " NT_STATUS, -1)
+		
+		; close the hash
+		if (NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "ptr", hHash, "ptr", &pbHash, "uint", cbHash, "uint", 0) != 0)
+			throw Exception("BCryptFinishHash: " NT_STATUS, -1)
+		
+		loop % cbHash
+			hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "uchar"))
+	}
+	catch exception
+	{
+		; represents errors that occur during application execution
+		throw Exception
+	}
+	finally
+	{
+		; cleaning up resources
+		if (pbInput)
+			VarSetCapacity(pbInput, 0)
+		if (hHash)
+			DllCall("bcrypt\BCryptDestroyHash", "ptr", hHash)
+		if (pbHash)
+			VarSetCapacity(pbHash, 0)
+		if (pbHashObject)
+			VarSetCapacity(pbHashObject, 0)
+		if (hAlg)
+			DllCall("bcrypt\BCryptCloseAlgorithmProvider", "ptr", hAlg, "uint", 0)
+		if (hBCRYPT)
+			DllCall("FreeLibrary", "ptr", hBCRYPT)
+	}
+
+	return hash
 }
 ;------------------------------------------------------------
 
@@ -21124,7 +21272,6 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	return 1
 }
 ;------------------------------------------------------------
-
 
 
 ;========================================================================================================================
@@ -24148,7 +24295,7 @@ class Container
 			
 			if (blnItemIsMenu)
 			{
-				oNewSubMenu := new Container("Menu", xmlItemAttributes.label, this, true) ; last parameter for blnDoubleAmpersands
+				oNewSubMenu := new Container("Menu", xmlItemAttributes.label, this, "init", true) ; last parameter for blnDoubleAmpersands
 				oNewSubMenu.LoadDirectoryOpusFavoritesFromXML(xmlItem.xml) ; RECURSIVE
 			}
 			
