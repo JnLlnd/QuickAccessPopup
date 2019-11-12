@@ -16348,6 +16348,16 @@ return
 
 
 ;------------------------------------------------------------
+WindowsAlwaysOnTop:
+;------------------------------------------------------------
+
+Winset, AlwaysOnTop, Toggle, ahk_id %g_strTargetWinId%
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 DoNothing:
 ;------------------------------------------------------------
 
@@ -22874,8 +22884,11 @@ class QAPfeatures
 			, o_L["MenuListApplicationsDescription"], 0, "iconDesktop", "", "")
 		this.AddQAPFeatureObject("Donor Code Input", 		o_L["GuiDonateCodeInput"] . g_strEllipse,	"", "GuiDonateCodeInput",					"7-QAPManagement"
 			, o_L["GuiDonateCodeInputDescription"], 0, "iconDonate", "", "sponsoring")
+		this.AddQAPFeatureObject("Window Always on Top",	o_L["MenuWindowAlwaysonTop"],				"", "WindowsAlwaysOnTop",					"1-Featured~4-WindowManagement"
+			, o_L["MenuWindowAlwaysonTopDescription"], 0, "iconDesktop", ""
+			, "can-i-make-the-active-window-always-on-top")
 
-		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",					"1-Featured~5.1-CloseComputer"
+		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",			"1-Featured~5.1-CloseComputer"
 			, o_L["DialogCloseComputerControlDescription"], 0, "iconExit", ""
 			, "can-i-control-how-my-computer-is-closed-with-qap")
 		strQAPFeatureName := StrReplace(o_L["DialogCloseComputerShutdown"], "&")
