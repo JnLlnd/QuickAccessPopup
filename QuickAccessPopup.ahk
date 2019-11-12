@@ -22372,52 +22372,139 @@ class SpecialFolders
 	; - Total Commander commands: cm_OpenDesktop (2121), cm_OpenDrives (2122), cm_OpenControls (2123), cm_OpenFonts (2124), cm_OpenNetwork (2125), cm_OpenPrinters (2126), cm_OpenRecycled (2127)
 	; - DOpus see http://resource.dopus.com/viewtopic.php?f=3&t=23691
 
+	; DOpus alias list
+	; admintools	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Administrative Tools
+	; altstartup	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+	; appdata	C:\Users\Jean\AppData\Roaming
+	; buttons	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Buttons
+	; common	C:\Users\Public
+	; commonadmintools	C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Administrative Tools
+	; commonaltstartup	C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp
+	; commonappdata	C:\ProgramData
+	; commondesktopdir	C:\Users\Public\Desktop
+	; commondocuments	C:\Users\Public\Documents
+	; commonfavorites	C:\Users\Jean\Favorites
+	; commonfiles	C:\Program Files\Common Files
+	; commonfilesx86	C:\Program Files (x86)\Common Files
+	; commonprogramfiles	C:\Program Files\Common Files
+	; commonprogramfilesx86	C:\Program Files (x86)\Common Files
+	; commonprograms	C:\ProgramData\Microsoft\Windows\Start Menu\Programs
+	; commonstartmenu	C:\ProgramData\Microsoft\Windows\Start Menu
+	; commonstartup	C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp
+	; commontemplates	C:\ProgramData\Microsoft\Windows\Templates
+	; controls	/controls
+	; cookies	C:\Users\Jean\AppData\Local\Microsoft\Windows\INetCookies
+	; default	E:\Dropbox\AutoHotkey\QuickAccessPopup\Language
+	; defaultright	E:\Dropbox\AutoHotkey\QuickAccessPopup\Build-v8
+	; desktop	C:\Users\Jean\Desktop
+	; desktopdir	C:\Users\Jean\Desktop
+	; dopusdata	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus
+	; dopusglobaldata	C:\ProgramData\GPSoftware\Directory Opus
+	; dopuslocaldata	C:\Users\Jean\AppData\Local\GPSoftware\Directory Opus
+	; downloads	C:\Users\Jean\Downloads
+	; dropbox	E:\Dropbox
+	; favorites	C:\Users\Jean\Favorites
+	; fonts	C:\Windows\Fonts
+	; history	C:\Users\Jean\AppData\Local\Microsoft\Windows\History
+	; home	C:\Program Files\GPSoftware\Directory Opus
+	; homeroot	C:\
+	; hostdocuments	C:\Users\Jean\Documents
+	; hostmusic	C:\Users\Jean\Music
+	; hostpictures	C:\Users\Jean\Pictures
+	; hostvideos	C:\Users\Jean\Videos
+	; iconsets	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Icons
+	; iconsetsglobal	C:\ProgramData\GPSoftware\Directory Opus\Icons
+	; internetcache	C:\Users\Jean\AppData\Local\Microsoft\Windows\INetCache
+	; last	E:\Dropbox\AutoHotkey\QuickAccessPopup\Language
+	; lastright	E:\Dropbox\AutoHotkey\QuickAccessPopup\Build-v8
+	; libraries	lib://
+	; localappdata	C:\Users\Jean\AppData\Local
+	; mycomputer	/mycomputer
+	; mydocuments	C:\Users\Jean\Documents
+	; mymusic	C:\Users\Jean\Music
+	; mypictures	C:\Users\Jean\Pictures
+	; myvideos	C:\Users\Jean\Videos
+	; nethood	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Network Shortcuts
+	; network	/network
+	; onedrive	E:\OneDrive
+	; printers	/printers
+	; printhood	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Printer Shortcuts
+	; profile	C:\Users\Jean
+	; programfiles	C:\Program Files
+	; programfilesx86	C:\Program Files (x86)
+	; programs	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
+	; quickaccess	/quickaccess
+	; recent	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Recent
+	; scripts	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Script AddIns
+	; sendto	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\SendTo
+	; skydrive	E:\OneDrive
+	; start	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu
+	; startup	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+	; system	C:\Windows\System32
+	; systemx86	C:\Windows\SysWOW64
+	; temp	C:\Users\Jean\AppData\Local\Temp
+	; templates	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Templates
+	; themes	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Themes
+	; trash	/trash
+	; windows	C:\Windows
+
 	;---------------------------------------------------------
 	{
 		;---------------------
 		; CLSID giving localized name and icon, with valid Shell Command
-
+		
 		this.AddSpecialFolderObject("{D20EA4E1-3957-11d2-A40B-0C5020524153}", "Common Administrative Tools", -1, "", "commonadmintools", ""
+		; OK
 			, "Administrative Tools", "" ; Outils d’administration
 			, "CLS", "CLS", "NEW", "NEW", "DOA", "NEW", "NEW"
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("{20D04FE0-3AEA-1069-A2D8-08002B30309D}", "MyComputerFolder", 17, "", "mycomputer", 2122
+		; OK
 			, "Computer", "" ; Ordinateur
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "TCC", "NEW" ; for 1,2,3 CLS works, 7 OK for FPc but CLS does not work with DoubleCommander
 			, "1-Basic~5-Hardware")
 		this.AddSpecialFolderObject("{21EC2020-3AEA-1069-A2DD-08002B30309D}", "ControlPanelFolder", 3, "", "controls", 2123
+		; OK DOpus opens external window
 			, "Control Panel (Icons view)", "" ; Tous les Panneaux de configuration
-			, "SCT", "SCT", "NEW", "NEW", "NEW", "CLS", "NEW"
+			, "SCT", "SCT", "NEW", "NEW", "DOA", "CLS", "NEW"
 			, "1-Basic~5-Hardware")
 		this.AddSpecialFolderObject("{450D8FBA-AD25-11D0-98A8-0800361B1103}", "Personal", 5, "A_MyDocuments", "mydocuments", ""
+		; OK
 			, "Documents", "" ; Mes documents
 			, "SCT", "SCT", "AHK", "AHK", "DOA", "AHK", "AHK"
 			, "1-Basic~4-Contents")
 		this.AddSpecialFolderObject("{ED228FDF-9EA8-4870-83b1-96b02CFE0D52}", "Games", -1, "", "", ""
+		; not working in my Win 10
 			, "Games Explorer", "" ; Jeux
 			, "SCT", "SCT", "NEW", "NEW", "NEW", "CLS", "NEW"
 			, "4-Contents")
 		this.AddSpecialFolderObject("{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}", "HomeGroupFolder", -1, "", "", ""
+		; OK DOpus opens external window
 			, "HomeGroup", "" ; Groupe résidentiel
 			, "SCT", "SCT", "SCT", "NEW", "NEW", "CLS", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{031E4825-7B94-4dc3-B131-E946B44C8DD5}", "Libraries", -1, "", "libraries", ""
+		; OK
 			, "Libraries", "" ; Bibliothèque
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "CLS", "NEW"
 			, "2-Power User~4-Contents")
 		this.AddSpecialFolderObject("{7007ACC7-3202-11D1-AAD2-00805FC1270E}", "ConnectionsFolder", -1, "", "", ""
+		; OK DOpus opens external window
 			, "Network Connections", "" ; Connexions réseau
 			, "SCT", "SCT", "NEW", "NEW", "NEW", "CLS", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", "NetworkPlacesFolder", 18, "", "network", 2125
+		; OK but empty lister in DOpus
 			, "Network", "" ; Réseau
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "TCC", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{2227A280-3AEA-1069-A2DE-08002B30309D}", "PrintersFolder", -1, "", "printers", 2126
+		; OK DOpus opens external window
 			, "Printers and Faxes", "" ; Imprimantes
 			, "SCT", "SCT", "NEW", "NEW", "DOA", "TCC", "NEW"
 			, "1-Basic~5-Hardware")
 		this.AddSpecialFolderObject("{645FF040-5081-101B-9F08-00AA002F954E}", "RecycleBinFolder", 0, "", "trash", 2127
+		; #####
 			, "Recycle Bin", "" ; Corbeille
 			, "SCT", "SCT", "NEW", "NEW", "DOA", "TCC", "NEW"
 			, "1-Basic")
@@ -22433,10 +22520,10 @@ class SpecialFolders
 			, o_L["MenuFonts"], "iconFonts"
 			, "SCT", "SCT", "NEW", "NEW", "DOA", "TCC", "NEW"
 			, "3-Sysadmin")
-
+		
 		;---------------------
 		; CLSID giving localized name and icon, no valid Shell Command, must be open in a new Explorer using CLSID - to be tested with DOpus, TC and FPc
-
+		
 		this.AddSpecialFolderObject("{B98A2BEA-7D42-4558-8BD1-832F41BAC6FD}", "", -1, "", "", ""
 			, "Backup and Restore", "" ; Sauvegarder et restaurer
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
@@ -22479,10 +22566,10 @@ class SpecialFolders
 			, "System", "" ; Système
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "3-Sysadmin~5-Hardware")
-
+		
 		;---------------------
 		; Path from registry (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
-
+		
 		RegRead, strException, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, {374DE290-123F-4565-9164-39C4925E467B}
 		this.strDownloadPath := strException
 		this.AddSpecialFolderObject(strException, "", -1, "", "downloads", ""
@@ -22510,10 +22597,10 @@ class SpecialFolders
 			, o_L["MenuPictures"], "iconPictures"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
 			, "1-Basic~4-Contents")
-
+		
 		;---------------------
 		; Path under %APPDATA% (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
-
+		
 		this.AddSpecialFolderObject("%APPDATA%\Microsoft\Windows\Start Menu", "", -1, "A_StartMenu", "start", ""
 			, o_L["MenuStartMenu"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
@@ -22548,10 +22635,10 @@ class SpecialFolders
 			, o_L["MenuSystemCertificates"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
 			, "3-Sysadmin")
-
+		
 		;---------------------
 		; Path under other environment variables (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
-
+		
 		this.AddSpecialFolderObject("%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu", "", -1, "A_StartMenuCommon", "commonstartmenu", ""
 			, o_L["MenuCommonStartMenu"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
@@ -22585,20 +22672,20 @@ class SpecialFolders
 			, o_L["MenuPublicLibraries"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
 			, "3-Sysadmin")
-
+		
 		;---------------------
 		; Path under the Users folder (no CLSID, localized name and icon provided), no Shell Command
-
+		
 		strPathUsername := StrReplace(A_AppData, "\AppData\Roaming")
 		strPathUsers := StrReplace(strPathUsername, "\" . A_UserName)
 		this.AddSpecialFolderObject(strPathUsers . "\Public", "Public", -1, "", "common", ""
 			, "Public Folder", "" ; Public
 			, "SCT", "SCT", "SCT", "CLS", "DOA", "CLS", "CLS"
 			, "3-Sysadmin")
-
+		
 		;---------------------
 		; Path using AHK constants (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
-
+		
 		this.AddSpecialFolderObject(A_Desktop, "", 0, "A_Desktop", "desktop", 2121
 			, o_L["MenuDesktop"], "iconDesktop"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "TCC", "CLS"
@@ -22622,7 +22709,7 @@ class SpecialFolders
 			
 		;-----------------------
 		; Special Folders categories
-
+		
 		saSpecialFoldersCategoriesSystemName := StrSplit("1-Basic|2-Power User|3-Sysadmin|4-Contents|5-Hardware", "|")
 		saSpecialFoldersCategoriesDisplayNames := StrSplit(o_L["DialogSpecialFoldersCategoriesNames"], "|")
 		Loop, % saSpecialFoldersCategoriesSystemName.Length()
