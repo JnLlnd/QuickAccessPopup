@@ -22454,44 +22454,38 @@ class SpecialFolders
 		; CLSID giving localized name and icon, with valid Shell Command
 		
 		this.AddSpecialFolderObject("{D20EA4E1-3957-11d2-A40B-0C5020524153}", "Common Administrative Tools", -1, "", "commonadmintools", ""
-		; OK
 			, "Administrative Tools", "" ; Outils d’administration
 			, "CLS", "CLS", "NEW", "NEW", "DOA", "NEW", "NEW"
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("{20D04FE0-3AEA-1069-A2D8-08002B30309D}", "MyComputerFolder", 17, "", "mycomputer", 2122
-		; OK
 			, "Computer", "" ; Ordinateur
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "TCC", "NEW" ; for 1,2,3 CLS works, 7 OK for FPc but CLS does not work with DoubleCommander
 			, "1-Basic~5-Hardware")
 		this.AddSpecialFolderObject("{21EC2020-3AEA-1069-A2DD-08002B30309D}", "ControlPanelFolder", 3, "", "controls", 2123
 		; OK DOpus opens external window
 			, "Control Panel (Icons view)", "" ; Tous les Panneaux de configuration
-			, "SCT", "SCT", "NEW", "NEW", "DOA", "CLS", "NEW"
+			, "SCT", "SCT", "NEW", "NEW", "NEW", "CLS", "NEW"
 			, "1-Basic~5-Hardware")
 		this.AddSpecialFolderObject("{450D8FBA-AD25-11D0-98A8-0800361B1103}", "Personal", 5, "A_MyDocuments", "mydocuments", ""
-		; OK
 			, "Documents", "" ; Mes documents
 			, "SCT", "SCT", "AHK", "AHK", "DOA", "AHK", "AHK"
 			, "1-Basic~4-Contents")
 		this.AddSpecialFolderObject("{ED228FDF-9EA8-4870-83b1-96b02CFE0D52}", "Games", -1, "", "", ""
 		; not working in my Win 10
-			, "Games Explorer", "" ; Jeux
+			, "Games Explorer", "" ; Jeux (Games Explorer)
 			, "SCT", "SCT", "NEW", "NEW", "NEW", "CLS", "NEW"
 			, "4-Contents")
 		this.AddSpecialFolderObject("{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}", "HomeGroupFolder", -1, "", "", ""
-		; OK DOpus opens external window
 			, "HomeGroup", "" ; Groupe résidentiel
-			, "SCT", "SCT", "SCT", "NEW", "NEW", "CLS", "NEW"
+			, "SCT", "SCT", "SCT", "NEW", "CLS", "CLS", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{031E4825-7B94-4dc3-B131-E946B44C8DD5}", "Libraries", -1, "", "libraries", ""
-		; OK
 			, "Libraries", "" ; Bibliothèque
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "CLS", "NEW"
 			, "2-Power User~4-Contents")
 		this.AddSpecialFolderObject("{7007ACC7-3202-11D1-AAD2-00805FC1270E}", "ConnectionsFolder", -1, "", "", ""
-		; OK DOpus opens external window
 			, "Network Connections", "" ; Connexions réseau
-			, "SCT", "SCT", "NEW", "NEW", "NEW", "CLS", "NEW"
+			, "SCT", "SCT", "NEW", "NEW", "CLS", "CLS", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", "NetworkPlacesFolder", 18, "", "network", 2125
 		; OK but empty lister in DOpus
@@ -22499,12 +22493,10 @@ class SpecialFolders
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "TCC", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{2227A280-3AEA-1069-A2DE-08002B30309D}", "PrintersFolder", -1, "", "printers", 2126
-		; OK DOpus opens external window
 			, "Printers and Faxes", "" ; Imprimantes
-			, "SCT", "SCT", "NEW", "NEW", "DOA", "TCC", "NEW"
+			, "SCT", "SCT", "NEW", "NEW", "CLS", "TCC", "NEW"
 			, "1-Basic~5-Hardware")
 		this.AddSpecialFolderObject("{645FF040-5081-101B-9F08-00AA002F954E}", "RecycleBinFolder", 0, "", "trash", 2127
-		; #####
 			, "Recycle Bin", "" ; Corbeille
 			, "SCT", "SCT", "NEW", "NEW", "DOA", "TCC", "NEW"
 			, "1-Basic")
@@ -22514,7 +22506,7 @@ class SpecialFolders
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("{1f3427c8-5c10-4210-aa03-2ee45287d668}", "User Pinned", -1, "", "", ""
 			, o_L["MenuUserPinned"], "" ; Epinglé par l'utilisateur
-			, "SCT", "SCT", "SCT", "NEW", "NEW", "NEW", "NEW"
+			, "SCT", "SCT", "SCT", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User")
 		this.AddSpecialFolderObject("{BD84B380-8CA2-1069-AB1D-08000948534}", "Fonts", -1, "", "fonts", 2124
 			, o_L["MenuFonts"], "iconFonts"
@@ -22522,15 +22514,16 @@ class SpecialFolders
 			, "3-Sysadmin")
 		
 		;---------------------
-		; CLSID giving localized name and icon, no valid Shell Command, must be open in a new Explorer using CLSID - to be tested with DOpus, TC and FPc
+		; CLSID giving localized name and icon, no valid Shell Command, must be open in a new Explorer using CLSID (except some with DOpus & CLS) - to be tested with TC and QAPconnect
 		
 		this.AddSpecialFolderObject("{B98A2BEA-7D42-4558-8BD1-832F41BAC6FD}", "", -1, "", "", ""
+		; OK DOpus opens external window
 			, "Backup and Restore", "" ; Sauvegarder et restaurer
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("{ED7BA470-8E54-465E-825C-99712043E01C}", "", -1, "", "", ""
 			, "Control Panel (All Tasks)", "" ; Toutes les tâches
-			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
+			, "CLS", "CLS", "NEW", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User~5-Hardware")
 		this.AddSpecialFolderObject("{323CA680-C24D-4099-B94D-446DD2D7249E}", "", -1, "", "favorites", ""
 			, "Favorites", "" ; Favoris (<> Favorites (Internet))
@@ -22542,6 +22535,7 @@ class SpecialFolders
 				, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 				, "4-Contents")
 		this.AddSpecialFolderObject("{6DFD7C5C-2451-11d3-A299-00C04F8EF6AF}", "", -1, "", "", ""
+		; OK DOpus opens external window
 			, "Folder Options", "" ; Options des dossiers
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "2-Power User")
@@ -22552,17 +22546,18 @@ class SpecialFolders
 				, "2-Power User")
 		this.AddSpecialFolderObject("{35786D3C-B075-49b9-88DD-029876E11C01}", "", -1, "", "", ""
 			, "Portable Devices", "" ; Appareils mobiles
-			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
+			, "CLS", "CLS", "NEW", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User~5-Hardware")
 		this.AddSpecialFolderObject("{22877a6d-37a1-461a-91b0-dbda5aaebc99}", "", -1, "", "", ""
 			, "Recent Places", "" ; Emplacements récents
-			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
+			, "CLS", "CLS", "NEW", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User~4-Contents")
 		this.AddSpecialFolderObject("{3080F90D-D7AD-11D9-BD98-0000947B0257}", "", -1, "", "", ""
 			, "Show Desktop", "" ; Afficher le Bureau
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "2-Power User")
 		this.AddSpecialFolderObject("{BB06C0E4-D293-4f75-8A90-CB05B6477EEE}", "", -1, "", "", ""
+		; OK DOpus opens external window
 			, "System", "" ; Système
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "3-Sysadmin~5-Hardware")
@@ -22637,7 +22632,7 @@ class SpecialFolders
 			, "3-Sysadmin")
 		
 		;---------------------
-		; Path under other environment variables (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
+		; Path under other environment variables (no CLSID), localized name and icon provided, no Shell Command - to be tested with TC and QAPconnect
 		
 		this.AddSpecialFolderObject("%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu", "", -1, "A_StartMenuCommon", "commonstartmenu", ""
 			, o_L["MenuCommonStartMenu"], "iconFolder"
