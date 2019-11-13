@@ -13172,6 +13172,7 @@ if LV_GetCount("Selected") > 1
 Loop
 	Gosub, GuiRemoveOneFavorite
 until !LV_GetNext()
+LV_Modify(LV_GetNext(, "F"), "Select") ; select the row having the focus after the last remove
 
 return
 ;------------------------------------------------------------
