@@ -25971,12 +25971,11 @@ class Container
 						; Avoid when menu was open from QAPmessenger because collecting Explorer IDs instances because does not work (reason unknown)
 						Run, % "Explorer """ . this.aaTemp.strFullLocation . """", , % (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor ? "Hide" : "")
 					else
-					{
 						; When moving the window is not required and there is no parameter, this technique is preferred because, if call multiple times, it uses the
 						; same Explorer instance created by QAP.
 						Run, % this.aaTemp.strFullLocation
-						g_strNewWindowId := ""
-					}
+					
+					g_strNewWindowId := ""
 					
 					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
