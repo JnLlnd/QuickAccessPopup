@@ -25684,7 +25684,11 @@ class Container
 					SysGet, intNbMonitors, MonitorCount
 					this.aaTemp.intNbMonitors := intNbMonitors
 					if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and this.aaTemp.intNbMonitors > 1)
-						GetPositionFromMouseOrKeyboard(this.aaTemp.strMenuTriggerLabel, A_ThisHotkey, this.aaTemp.intMonitorReferencePositionX, this.aaTemp.intMonitorReferencePositionY)
+					{
+						GetPositionFromMouseOrKeyboard(this.aaTemp.strMenuTriggerLabel, A_ThisHotkey, intMonitorReferencePositionX, intMonitorReferencePositionY)
+						this.aaTemp.intMonitorReferencePositionX := intMonitorReferencePositionX
+						this.aaTemp.intMonitorReferencePositionY := intMonitorReferencePositionY
+					}
 				}
 				
 				; APPLICATION
@@ -26209,7 +26213,7 @@ class Container
 				}
 			}
 			else if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and (this.aaTemp.intNbMonitors > 1) and (this.aaTemp.strTargetAppName = "Explorer") and (this.aaTemp.strHotkeyTypeDetected = "Launch"))
-				and GetWindowPositionOnActiveMonitor(g_strNewWindowId, intMonitorReferencePositionX, intMonitorReferencePositionY, intNewWindowX, intNewWindowY)
+				and GetWindowPositionOnActiveMonitor(g_strNewWindowId, this.aaTemp.intMonitorReferencePositionX, this.aaTemp.intMonitorReferencePositionY, intNewWindowX, intNewWindowY)
 			{
 				; offset multiple Explorer windows positioned at center of screen (from -100/-100 to +80/+80
 				g_intNewWindowOffset := Mod(g_intNewWindowOffset + 1, 9) ; value 0..8
