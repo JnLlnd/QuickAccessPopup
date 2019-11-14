@@ -9479,6 +9479,39 @@ return
 
 
 ;------------------------------------------------------------
+GuiAddSnippetAndHotstring:
+;------------------------------------------------------------
+
+Gosub, GuiShowFromAddSnippetAndHotstring
+
+g_intGui1WinID := WinExist("A")
+Gui, 1:Submit, NoHide
+
+strGuiTitle := L(o_L["GuiAddSnippetAndHotstringTitle"], g_strAppNameText, g_strAppVersion)
+Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:+Owner1
+Gui, 2:+OwnDialogs
+if (g_blnUseColors)
+	Gui, 2:Color, %g_strGuiWindowColor%
+
+Gui, 2:Add, Text, x10 y10 w1000, ###
+
+; ...
+
+aaL := o_L.InsertAmpersand(false, "DialogAdd", "GuiCancel") 
+
+Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiAddSnippetAndHotstringSave default, % aaL["DialogAdd"]
+Gui, 2:Add, Button, yp vf_btnAddSnippetAndHotstringCancel gGuiAddSnippetAndHotstringCancel, % aaL["GuiCancel"]
+Gui, 2:Add, Text, x10, %A_Space%
+
+GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAddSnippetAndHotstringAdd", "f_btnAddSnippetAndHotstringCancel")
+Gosub, ShowGui2AndDisableGui1
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GuiAddFavoriteFromQAPFeatureFolder:
 GuiAddFavoriteFromQAPFeatureDocument:
 GuiAddFavoriteFromQAPFeatureApplication:
@@ -11845,6 +11878,7 @@ return
 
 ;------------------------------------------------------------
 GuiAddFavoriteCancel:
+GuiAddSnippetAndHotstringCancel:
 ;------------------------------------------------------------
 
 Gosub, GuiAddFavoriteFlush
@@ -11890,6 +11924,7 @@ GuiShowFromAddThisFolder:
 GuiShowFromHotkeysManage:
 GuiShowFromIconsManage:
 GuiShowFromExternalCatalogue:
+GuiShowFromAddSnippetAndHotstring:
 GuiShowNeverCalled:
 ;------------------------------------------------------------
 
@@ -12426,6 +12461,7 @@ GuiCopyOneFavoriteSave:
 GuiMoveOneFavoriteSave:
 GuiCopyFavoriteSave:
 GuiAddExternalSave:
+GuiAddSnippetAndHotstringSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -22773,6 +22809,8 @@ class QAPfeatures
 		; AddQAPFeatureObject(strQAPFeatureCode, strThisDefaultName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories
 		; 	, strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut, strHelpUrl)
 		
+		; Dynamic menus features
+		
 		this.AddQAPFeatureObject("Clipboard",				o_L["MenuClipboard"],				o_L["MenuClipboard"],			"ClipboardMenuShortcut",				"2-DynamicMenus"
 			, o_L["MenuClipboardDescription"], 0, "iconClipboard", "+^v"
 			, "what-is-in-the-clipboard-menu", "RefreshClipboardMenu")
@@ -22791,9 +22829,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("DOpus Favorites",			o_L["DOpusMenuName"],				o_L["DOpusMenuName"],			"DirectoryOpusFavoritesMenuShortcut", 	"2-DynamicMenus"
 			, o_L["DOpusMenuNameDescription"], 0, "DirectoryOpus", ""
 			, "how-to-i-enable-directory-opus-support-in-quick-access-popup", "RefreshDirectoryOpusFavorites")
-
+		
 		; Command features
-
+		
 		this.AddQAPFeatureObject("About",					o_L["GuiAbout"],							"", "GuiAbout",								"7-QAPManagement"
 			, o_L["GuiAboutDescription"], 0, "iconAbout", "", "")
 		this.AddQAPFeatureObject("Add Favorite",			o_L["MenuAddFavorite"] . g_strEllipse,		"", "GuiAddFavoriteFromQAPFeature",			"3-QAPMenuEditing"
@@ -22812,7 +22850,7 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Hotkeys",					o_L["DialogShortcuts"],						"", "GuiHotkeysManageFromQAPFeature",		"3-QAPMenuEditing"
 			, o_L["DialogShortcutsDescription"], 0, "iconHotkeys", ""
 			, "can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts")
-		this.AddQAPFeatureObject("Hotstrings",				o_L["DialogHotstrings"],					"", "GuiHotkeysManageHotstringsFromQAPFeature",	"1-Featured~3-QAPMenuEditing"
+		this.AddQAPFeatureObject("Hotstrings",				o_L["DialogHotstrings"],					"", "GuiHotkeysManageHotstringsFromQAPFeature",	"3-QAPMenuEditing"
 			, o_L["DialogHotstringsDescription"], 0, "iconHotkeys", ""
 			, "what-are-hotstrings")
 		this.AddQAPFeatureObject("Icons",					o_L["DialogIconsManage"],					"", "GuiIconsManageFromQAPFeature",			"3-QAPMenuEditing"
@@ -22874,7 +22912,11 @@ class QAPfeatures
 			, o_L["MenuListApplicationsDescription"], 0, "iconDesktop", "", "")
 		this.AddQAPFeatureObject("Donor Code Input", 		o_L["GuiDonateCodeInput"] . g_strEllipse,	"", "GuiDonateCodeInput",					"7-QAPManagement"
 			, o_L["GuiDonateCodeInputDescription"], 0, "iconDonate", "", "sponsoring")
-
+		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiAddSnippetAndHotstring"] . g_strEllipse, "", "GuiAddSnippetAndHotstring",		"1-Featured~3-QAPMenuEditing"
+			, o_L["GuiAddSnippetAndHotstringDescription"], 0, "iconDonate", "", "sponsoring")
+		
+		; Close computer various command features
+		
 		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",					"1-Featured~5.1-CloseComputer"
 			, o_L["DialogCloseComputerControlDescription"], 0, "iconExit", ""
 			, "can-i-control-how-my-computer-is-closed-with-qap")
@@ -22914,16 +22956,11 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Start Screen Saver", 		strQAPFeatureName, 							"", "StartScreenSaverComputer",				"5.1-CloseComputer"
 			, o_L["DialogCloseComputerStartScreenSaverDescription"], 0, "iconDesktop", ""
 			, "can-i-control-how-my-computer-is-closed-with-qap")
-
-		; New for v9.x
-		; this.AddQAPFeatureObject("Exclusions Mouse", 			o_L["Menu"],					"", "command",				"1-Featured~7-QAPManagement"
-			; , o_L["MenuDescription"], 0, "icon", ""
-			; , "can-i-block-the-qap-menu-hotkeys-if-they-interfere-with-one-of-my-other-apps")
-		; this.AddQAPFeatureObject("Exclusions Keyboard", 			o_L["Menu"],					"", "command",				"1-Featured~7-QAPManagement"
-			; , o_L["MenuDescription"], 0, "icon", "", "")
-
+		
 		this.AddAttachedOrDetachedQAPFeatureObject() ; features that could be updated in case blnRefreshedMenusAttached menu was changed
-
+		
+		; Add favorite command features
+		
 		Loop, % o_Favorites.s_SA.Length()
 			if StrLen(o_Favorites.s_SA[A_Index].strFavoriteTypeLocationLabelNoAmpersand)
 				this.AddQAPFeatureObject("Add Favorite - " . o_Favorites.s_SA[A_Index].strFavoriteTypeSystemName, o_L["MenuAddFavorite"]
@@ -22931,8 +22968,9 @@ class QAPfeatures
 					, "", "GuiAddFavoriteFromQAPFeature" . o_Favorites.s_SA[A_Index].strFavoriteTypeSystemName, "3.1-AddFavoriteOfType"
 					, L(o_L["MenuAddFavoriteOfTypeDescription"], o_Favorites.s_SA[A_Index].strFavoriteTypeLocationLabelNoAmpersand), 0, "iconAddFavorite", ""
 					, "what-should-i-know-about-quick-access-popup-before-starting")
-
+		
 		; Alternative Menu features
+		
 		this.AddQAPFeatureObject("Open in New Window",		o_L["MenuAlternativeNewWindow"],				"", "", ""
 			, "", 1, "iconFolder", "", "")
 		this.AddQAPFeatureObject("Edit Favorite",			o_L["MenuAlternativeEditFavorite"],			"", "", ""
