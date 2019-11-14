@@ -20602,11 +20602,11 @@ GetWindowPositionOnActiveMonitor(strWindowId, intActivePositionX, intActivePosit
 		intWindowX := arrThisMonitorLeft + (((arrThisMonitorRight - arrThisMonitorLeft) - intWindowWidth) / 2)
 		intWindowY := arrThisMonitorTop + (((arrThisMonitorBottom - arrThisMonitorTop) - intWindowHeight) / 2)
 		
-		; ###_V(A_ThisFunc . " True", strWindowId, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
+		; ###_V(A_ThisFunc . " True", strWindowId, intActivePositionX, intActivePositionY, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
 		return true
 	}
-	
-	; ###_V(A_ThisFunc . " False", strWindowId, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
+
+	; ###_V(A_ThisFunc . " False", strWindowId, intActivePositionX, intActivePositionY, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
 	return false
 }
 ;------------------------------------------------------------
@@ -26218,6 +26218,7 @@ class Container
 				g_intNewWindowOffset := Mod(g_intNewWindowOffset + 1, 9) ; value 0..8
 				intNewWindowX := intNewWindowX + ((g_intNewWindowOffset - 4) * 20) ; value (-4 * 20)..(+4 * 20)
 				intNewWindowY := intNewWindowy + ((g_intNewWindowOffset - 4) * 20)
+				; ###_V(A_ThisFunc, g_intNewWindowOffset, intNewWindowX, intNewWindowY)
 				
 				WinMove, %g_strNewWindowId%, , %intNewWindowX%, %intNewWindowY%
 				Sleep, 100
