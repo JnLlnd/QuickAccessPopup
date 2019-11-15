@@ -11113,7 +11113,7 @@ for intIndex, o_Item in saThisMenu
 		Continue
 	else if (o_Item.AA.strFavoriteType = "X")
 		strDropdownParentMenuItems .= g_strGuiMenuSeparator . g_strGuiMenuSeparator . "|"
-	else if (o_Item.AA.FavoriteType = "K")
+	else if (o_Item.AA.strFavoriteType = "K")
 		strDropdownParentMenuItems .= g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine . "|"
 	else
 		strDropdownParentMenuItems .= o_Item.AA.strFavoriteName . "|"
