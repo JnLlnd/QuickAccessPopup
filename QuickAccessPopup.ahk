@@ -9479,7 +9479,7 @@ return
 
 
 ;------------------------------------------------------------
-GuiAddSnippetAndHotstring:
+GuiQuickAddSnippet:
 ;------------------------------------------------------------
 
 Gosub, GuiShowFromAddSnippetAndHotstring
@@ -9487,21 +9487,29 @@ Gosub, GuiShowFromAddSnippetAndHotstring
 g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
-strGuiTitle := L(o_L["GuiAddSnippetAndHotstringTitle"], g_strAppNameText, g_strAppVersion)
+strGuiTitle := L(o_L["GuiQuickAddSnippetTitle"], g_strAppNameText, g_strAppVersion)
 Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
-Gui, 2:Add, Text, x10 y10 w1000, ###
+Gui, 2:Add, Text, x10 y10 vf_ShortNameLabel, % o_L["DialogFavoriteShortNameLabel"] . " *"
+Gui, 2:Add, Edit, x20 y+10 Limit250 vf_strFavoriteShortName h21 w400, Default Name from Clipboard
+Gui, 2:Add, Text, x20 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
+Gui, 2:Add, Edit, x20 y+10 vf_strFavoriteLocation w500 r5 t8, Default Content from Clipboard
 
-; ...
+g_strNewFavoriteHotstring := ":*:default#" ; ##### use default hotstring options
+SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
+Gui, 2:Add, Text, x20 y+20, % o_L["DialogHotstringTriggerOptions"]
+Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring, default#
+Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotstring, % o_L["OptionsChangeHotkey"]
+Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring, % GetHotstringOptionsLong("*")
 
 aaL := o_L.InsertAmpersand(false, "DialogAdd", "GuiCancel") 
-
-Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiAddSnippetAndHotstringSave default, % aaL["DialogAdd"]
-Gui, 2:Add, Button, yp vf_btnAddSnippetAndHotstringCancel gGuiAddSnippetAndHotstringCancel, % aaL["GuiCancel"]
+Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiQuickAddSnippetSave default, % aaL["DialogAdd"]
+Gui, 2:Add, Button, yp vf_btnAddSnippetAndHotstringCancel gGuiQuickAddSnippetCancel, % aaL["GuiCancel"]
 Gui, 2:Add, Text, x10, %A_Space%
 
 GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAddSnippetAndHotstringAdd", "f_btnAddSnippetAndHotstringCancel")
@@ -11878,7 +11886,7 @@ return
 
 ;------------------------------------------------------------
 GuiAddFavoriteCancel:
-GuiAddSnippetAndHotstringCancel:
+GuiQuickAddSnippetCancel:
 ;------------------------------------------------------------
 
 Gosub, GuiAddFavoriteFlush
@@ -12461,7 +12469,7 @@ GuiCopyOneFavoriteSave:
 GuiMoveOneFavoriteSave:
 GuiCopyFavoriteSave:
 GuiAddExternalSave:
-GuiAddSnippetAndHotstringSave:
+GuiQuickAddSnippetSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -12583,20 +12591,20 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	else
 		o_EditedFavorite.AA.intFavoriteDisabled := 0
 	
-	o_EditedFavorite.AA.intFavoriteFolderLiveLevels := (f_blnFavoriteFolderLive ? f_intFavoriteFolderLiveLevels : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveHideIcons : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveHideExtensions := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveHideExtensions : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveShowHidden := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveShowHidden : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveShowSystem : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveDocuments := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveDocuments : "")
-	o_EditedFavorite.AA.intFavoriteFolderLiveColumns := (f_blnFavoriteFolderLive ? (f_intFavoriteFolderLiveColumns = 0 ? "" : f_intFavoriteFolderLiveColumns) : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude := (f_blnFavoriteFolderLive ? f_radFavoriteFolderLiveInclude : "")
-	o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := (f_blnFavoriteFolderLive ? f_strFavoriteFolderLiveExtensions : "")
-
 	o_EditedFavorite.AA.strFavoriteSoundLocation := strNewFavoriteSoundLocation
 
 	if (f_blnFavoriteFolderLive)
 	{
+		o_EditedFavorite.AA.intFavoriteFolderLiveLevels := f_intFavoriteFolderLiveLevels
+		o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := f_blnFavoriteFolderLiveHideIcons
+		o_EditedFavorite.AA.blnFavoriteFolderLiveHideExtensions := f_blnFavoriteFolderLiveHideExtensions
+		o_EditedFavorite.AA.blnFavoriteFolderLiveShowHidden := f_blnFavoriteFolderLiveShowHidden
+		o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem := f_blnFavoriteFolderLiveShowSystem
+		o_EditedFavorite.AA.blnFavoriteFolderLiveDocuments := f_blnFavoriteFolderLiveDocuments
+		o_EditedFavorite.AA.intFavoriteFolderLiveColumns := (f_intFavoriteFolderLiveColumns = 0 ? "" : f_intFavoriteFolderLiveColumns)
+		o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude := f_radFavoriteFolderLiveInclude
+		o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := f_strFavoriteFolderLiveExtensions
+		
 		strLoopCriteria := 0
 		loop
 			if (f_radLiveFolderSort%A_Index%)
@@ -12814,9 +12822,16 @@ GuiAddFavoriteSaveValidate:
 
 ; validate original and destination menus values
 
+if (strThisLabel = "GuiQuickAddSnippetSave")
+{
+	o_EditedFavorite := new Container.Item([]) ; declared global earlier
+	o_EditedFavorite.AA.strFavoriteType := "Snippet"
+	g_strSnippetFormat := "display"
+}
+
 if InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave", "|" . strThisLabel)
 	strOriginalMenu := o_MenuInGui.AA.strMenuPath
-else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|
+else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|GuiQuickAddSnippetSave
 {
 	strOriginalMenu := "" ; no change required in original menu
 	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; but keep original menu position for multiple copy
@@ -12857,8 +12872,11 @@ else
 	strFavoriteAppWorkingDir := f_strFavoriteAppWorkingDir
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
 	
-	; f_drpParentMenu and f_drpParentMenuItems have same field name in 2 gui: GuiAddFavorite and GuiMoveMultipleFavoritesToMenu
-	strDestinationMenu := f_drpParentMenu
+	if (strThisLabel = "GuiQuickAddSnippetSave")
+		strDestinationMenu := "Main" ; ##### make it an option
+	else
+		; f_drpParentMenu and f_drpParentMenuItems have same field name in 2 gui: GuiAddFavorite and GuiMoveMultipleFavoritesToMenu
+		strDestinationMenu := f_drpParentMenu
 
 	; if gui was closed from Live Folder Options tab (without changing tab), update Live folder icon
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder" and f_blnFavoriteFolderLive
@@ -13065,6 +13083,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	}
 	
 	if LocationTransformedFromHTTP2UNC(o_EditedFavorite.AA.strFavoriteType, (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
+		and (o_EditedFavorite.AA.strFavoriteType <> "Snippet")
 		Oops(2, o_L["OopsHttpLocationTransformed"], (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
 		; do not abort
 
@@ -22912,8 +22931,8 @@ class QAPfeatures
 			, o_L["MenuListApplicationsDescription"], 0, "iconDesktop", "", "")
 		this.AddQAPFeatureObject("Donor Code Input", 		o_L["GuiDonateCodeInput"] . g_strEllipse,	"", "GuiDonateCodeInput",					"7-QAPManagement"
 			, o_L["GuiDonateCodeInputDescription"], 0, "iconDonate", "", "sponsoring")
-		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiAddSnippetAndHotstring"] . g_strEllipse, "", "GuiAddSnippetAndHotstring",		"1-Featured~3-QAPMenuEditing"
-			, o_L["GuiAddSnippetAndHotstringDescription"], 0, "iconDonate", "", "sponsoring")
+		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiQuickAddSnippet"] . g_strEllipse, "", "GuiQuickAddSnippet",					"1-Featured~3-QAPMenuEditing"
+			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", "", "sponsoring")
 		
 		; Close computer various command features
 		
