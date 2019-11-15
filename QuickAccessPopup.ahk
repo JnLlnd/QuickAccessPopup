@@ -9494,18 +9494,20 @@ Gui, 2:+OwnDialogs
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
-Gui, 2:Add, Text, x10 y10 vf_ShortNameLabel, % o_L["DialogFavoriteShortNameLabel"] . " *"
-Gui, 2:Add, Edit, x20 y+10 Limit250 vf_strFavoriteShortName h21 w400, Default Name from Clipboard
-Gui, 2:Add, Text, x20 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
-Gui, 2:Add, Edit, x20 y+10 vf_strFavoriteLocation w500 r5 t8, Default Content from Clipboard
+strClipboardCleaned := RegExReplace(Clipboard, "i)[^ a-z0-9]", "") ; keep only letters, digits and space
 
-g_strNewFavoriteHotstring := ":*:default#" ; ##### use default hotstring options
+Gui, 2:Add, Text, x10 y10 vf_ShortNameLabel, % o_L["DialogFavoriteShortNameLabel"] . " *"
+Gui, 2:Add, Edit, x20 y+10 Limit250 vf_strFavoriteShortName h21 w400, % SubStr(strClipboardCleaned, 1, 20) . (StrLen(strClipboardCleaned) > 20 ? "..." : "")
+Gui, 2:Add, Text, x20 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
+Gui, 2:Add, Edit, x20 y+10 vf_strFavoriteLocation w500 r12 t8, % SubStr(Clipboard, 1, 32000)
+
+g_strNewFavoriteHotstring := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue . SubStr(strClipboardCleaned, 1, 5) . "#"
 SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
 Gui, 2:Add, Text, x20 y+20, % o_L["DialogHotstringTriggerOptions"]
 Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
-Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring, default#
+Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring, %g_strNewFavoriteHotstringTrigger%
 Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotstring, % o_L["OptionsChangeHotkey"]
-Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring, % GetHotstringOptionsLong("*")
+Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring, % GetHotstringOptionsLong(g_strNewFavoriteHotstringOptionsShort)
 
 aaL := o_L.InsertAmpersand(false, "DialogAdd", "GuiCancel") 
 Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiQuickAddSnippetSave default, % aaL["DialogAdd"]
@@ -9514,6 +9516,8 @@ Gui, 2:Add, Text, x10, %A_Space%
 
 GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAddSnippetAndHotstringAdd", "f_btnAddSnippetAndHotstringCancel")
 Gosub, ShowGui2AndDisableGui1
+
+strClipboardCleaned := ""
 
 return
 ;------------------------------------------------------------
