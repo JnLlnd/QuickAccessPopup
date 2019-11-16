@@ -4804,14 +4804,17 @@ Gosub, ProcessSponsorName
 
 o_Settings.ReadIniOption("Launch", "strUserBanner", "UserBanner", " ") ; g_strUserBanner
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
-if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue)
+if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
  	Gosub, AddToIniDynamicDefaultMenu ; modify the ini file Favorites section before reading it
-o_Settings.ReadIniOption("Launch", "blnDefaultWindowsAppsMenuBuilt", "DefaultWindowsAppsMenuBuilt", 0) ; blnDefaultWindowsAppsMenuBuilt
-if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersion() = "WIN_10")
- 	Gosub, AddToIniWindowsAppsDefaultMenu ; modify the ini file Favorites section before reading it
 o_Settings.ReadIniOption("Launch", "blnDefaultMenuBuilt", "DefaultMenuBuilt", 0) ; blnDefaultMenuBuilt
 if !(o_Settings.Launch.blnDefaultMenuBuilt.IniValue)
  	Gosub, AddToIniDefaultMenu ; modify the ini file Favorites section before reading it
+o_Settings.ReadIniOption("Launch", "blnSnippetsDefaultMenuBuilt", "SnippetsDefaultMenuBuilt", 0)
+if !(o_Settings.Launch.blnSnippetsDefaultMenuBuilt.IniValue)
+ 	Gosub, AddToIniSnippetsDefaultMenu ; modify the ini file Favorites section before reading it
+o_Settings.ReadIniOption("Launch", "blnDefaultWindowsAppsMenuBuilt", "DefaultWindowsAppsMenuBuilt", 0) ; blnDefaultWindowsAppsMenuBuilt
+if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersion() = "WIN_10")
+ 	Gosub, AddToIniWindowsAppsDefaultMenu ; modify the ini file Favorites section before reading it
 o_Settings.ReadIniOption("SettingsFile", "strBackupFolder", "BackupFolder", A_WorkingDir, "General"
 	, "f_lblBackupFolder|f_strBackupFolder|f_btnBackupFolder|f_lblWorkingFolder|f_strWorkingFolder|f_btnWorkingFolder|f_lblWorkingFolderDisabled")
 
@@ -5017,6 +5020,34 @@ return
 
 
 ;------------------------------------------------------------
+AddToIniSnippetsDefaultMenu:
+;------------------------------------------------------------
+
+g_strAddThisMenuName := o_L["MenuMySnippetsMenu"]
+Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if g_strAddThisMenuName menu name exists
+g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main menu marker
+
+AddToIniOneDefaultMenu("", "", "X")
+AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
+
+AddToIniOneDefaultMenu("{Add Snippet and Hotstring}", "", "QAP", true)
+AddToIniOneDefaultMenu("", "", "X")
+; AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "")
+AddToIniOneDefaultMenu(L(o_L["GuiQuickAddSnippetExample"], """#snippet#"""), o_L["GuiQuickAddSnippetExampleName"], "Snippet", false, "", ":*:#snippet#")
+AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
+
+AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
+
+IniWrite, 1, % o_Settings.strIniFile, Global, SnippetsDefaultMenuBuilt
+
+g_intNextFavoriteNumber := ""
+g_strAddThisMenuName := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 AddToIniDefaultMenu:
 ;------------------------------------------------------------
 
@@ -5156,7 +5187,7 @@ return
 
 
 ;------------------------------------------------------------
-AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "")
+AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "", strCustomHotstring := "")
 ;------------------------------------------------------------
 {
 	global g_intNextFavoriteNumber
@@ -5181,20 +5212,24 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 			strIconResource := "iconDesktop"
 		else
 			strIconResource := o_QAPfeatures.AA[strLocation].strDefaultIcon
-
+		
 		if !StrLen(strName)
 			if (strFavoriteType = "Special")
 				strName := o_SpecialFolders.AA[strLocation].strDefaultName
 			else ; QAP or WindowsApp
 				strName := o_QAPfeatures.AA[strLocation].strDefaultName
-
+		
 		if (g_blnIniFileCreation) ; do not add shortcut if not creation of ini file at first launch
 			if StrLen(strCustomShortcut)
 				strShortcut := strCustomShortcut
 			else if (blnAddShortcut)
 				strShortcut := o_QAPfeatures.AA[strLocation].strDefaultShortcut
-
-		strNewIniLine := strFavoriteType . "|" . strName . "|" . strLocation . "|" . strIconResource . "||||||||||||||||" . strShortcut
+		
+		if StrLen(strCustomHotstring)
+		{
+		}
+		
+		strNewIniLine := strFavoriteType . "|" . strName . "|" . strLocation . "|" . strIconResource . "||||||||||||||||" . strShortcut . "|" . strCustomHotstring
 	}
 	
 	IniWrite, %strNewIniLine%, % o_Settings.strIniFile, Favorites, Favorite%g_intNextFavoriteNumber%
@@ -9501,13 +9536,11 @@ Gui, 2:Add, Edit, x20 y+10 Limit250 vf_strFavoriteShortName h21 w400, % SubStr(s
 Gui, 2:Add, Text, x20 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
 Gui, 2:Add, Edit, x20 y+10 vf_strFavoriteLocation w500 r12 t8, % SubStr(Clipboard, 1, 32000)
 
-g_strNewFavoriteHotstring := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue . SubStr(strClipboardCleaned, 1, 5) . "#"
-SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
 Gui, 2:Add, Text, x20 y+20, % o_L["DialogHotstringTriggerOptions"]
 Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
-Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring, %g_strNewFavoriteHotstringTrigger%
+Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring
 Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotstring, % o_L["OptionsChangeHotkey"]
-Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring, % GetHotstringOptionsLong(g_strNewFavoriteHotstringOptionsShort)
+Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring
 
 aaL := o_L.InsertAmpersand(false, "DialogAdd", "GuiCancel") 
 Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiQuickAddSnippetSave default, % aaL["DialogAdd"]
@@ -25479,6 +25512,7 @@ class Container
 			if (saFavorite[1] = "QAP")
 			{
 				if !StrLen(saFavorite[2]) ; if empty, get QAP feature's name in current language
+					or RegExMatch(saFavorite[2], "\* Unknown QAP feature \* [0-9]* \*") ; QAP unknown in a previous release - check if it is known in this release
 					saFavorite[2] := o_QAPfeatures.aaQAPFeaturesDefaultNameByCode[saFavorite[3]]
 				if !StrLen(saFavorite[2]) ; if QAP feature is unknown
 					; by default RandomBetween returns an integer between 0 and 2147483647 to generate a random file number and variable number
