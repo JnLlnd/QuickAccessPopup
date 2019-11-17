@@ -4751,6 +4751,7 @@ o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultProcessEOLTab", "SnippetD
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultFixedFont", "SnippetDefaultFixedFont", 0, "Snippets", "f_blnSnippetDefaultFixedFont") ; g_blnSnippetDefaultFixedFont
 o_Settings.ReadIniOption("Snippets", "intSnippetDefaultFontSize", "SnippetDefaultFontSize", 10, "Snippets", "f_lblSnippetDefaultFontSize|f_intSnippetDefaultFontSizeEdit|f_intSnippetDefaultFontSize") ; g_intSnippetDefaultFontSize
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultMacro", "SnippetDefaultMacro", 0, "Snippets", "f_blnSnippetDefaultMacro") ; g_blnSnippetDefaultMacro
+o_Settings.ReadIniOption("Snippets", "strQuickAddSnippetSubmenu", "QuickAddSnippetSubmenu", o_L["MainMenuName"], "Snippets", "f_lblQuickAddSnippetFolder|f_drpQuickAddSnippetSubmenu")
 o_Settings.ReadIniOption("Hotstrings", "strHotstringsDefaultOptions", "HotstringsDefaultOptions", " ", "Snippets"
 	, "f_lblSelectHotstringDefaultOptions|f_btnSelectHotstringDefaultOptions") ; g_strHotstringsDefaultOptions
 
@@ -4804,14 +4805,17 @@ Gosub, ProcessSponsorName
 
 o_Settings.ReadIniOption("Launch", "strUserBanner", "UserBanner", " ") ; g_strUserBanner
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
-if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue)
+if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
  	Gosub, AddToIniDynamicDefaultMenu ; modify the ini file Favorites section before reading it
-o_Settings.ReadIniOption("Launch", "blnDefaultWindowsAppsMenuBuilt", "DefaultWindowsAppsMenuBuilt", 0) ; blnDefaultWindowsAppsMenuBuilt
-if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersion() = "WIN_10")
- 	Gosub, AddToIniWindowsAppsDefaultMenu ; modify the ini file Favorites section before reading it
 o_Settings.ReadIniOption("Launch", "blnDefaultMenuBuilt", "DefaultMenuBuilt", 0) ; blnDefaultMenuBuilt
 if !(o_Settings.Launch.blnDefaultMenuBuilt.IniValue)
  	Gosub, AddToIniDefaultMenu ; modify the ini file Favorites section before reading it
+o_Settings.ReadIniOption("Launch", "blnSnippetsDefaultMenuBuilt", "SnippetsDefaultMenuBuilt", 0)
+if !(o_Settings.Launch.blnSnippetsDefaultMenuBuilt.IniValue)
+ 	Gosub, AddToIniSnippetsDefaultMenu ; modify the ini file Favorites section before reading it
+o_Settings.ReadIniOption("Launch", "blnDefaultWindowsAppsMenuBuilt", "DefaultWindowsAppsMenuBuilt", 0) ; blnDefaultWindowsAppsMenuBuilt
+if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersion() = "WIN_10")
+ 	Gosub, AddToIniWindowsAppsDefaultMenu ; modify the ini file Favorites section before reading it
 o_Settings.ReadIniOption("SettingsFile", "strBackupFolder", "BackupFolder", A_WorkingDir, "General"
 	, "f_lblBackupFolder|f_strBackupFolder|f_btnBackupFolder|f_lblWorkingFolder|f_strWorkingFolder|f_btnWorkingFolder|f_lblWorkingFolderDisabled")
 
@@ -5017,6 +5021,35 @@ return
 
 
 ;------------------------------------------------------------
+AddToIniSnippetsDefaultMenu:
+;------------------------------------------------------------
+
+g_strAddThisMenuName := o_L["MenuMySnippetsMenu"]
+Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if g_strAddThisMenuName menu name exists
+g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main menu marker
+
+AddToIniOneDefaultMenu("", "", "X")
+AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
+
+AddToIniOneDefaultMenu("{Add Snippet and Hotstring}", "", "QAP", true)
+AddToIniOneDefaultMenu("", "", "X")
+; AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "")
+AddToIniOneDefaultMenu(L(o_L["GuiQuickAddSnippetExample"], """#snippet#"""), o_L["GuiQuickAddSnippetExampleName"], "Snippet", false, "", ":*:#snippet#")
+AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
+
+AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
+
+IniWrite, 1, % o_Settings.strIniFile, Global, SnippetsDefaultMenuBuilt
+o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"] . " " . g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance)
+
+g_intNextFavoriteNumber := ""
+g_strAddThisMenuName := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 AddToIniDefaultMenu:
 ;------------------------------------------------------------
 
@@ -5156,7 +5189,7 @@ return
 
 
 ;------------------------------------------------------------
-AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "")
+AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "", strCustomHotstring := "")
 ;------------------------------------------------------------
 {
 	global g_intNextFavoriteNumber
@@ -5181,20 +5214,24 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 			strIconResource := "iconDesktop"
 		else
 			strIconResource := o_QAPfeatures.AA[strLocation].strDefaultIcon
-
+		
 		if !StrLen(strName)
 			if (strFavoriteType = "Special")
 				strName := o_SpecialFolders.AA[strLocation].strDefaultName
 			else ; QAP or WindowsApp
 				strName := o_QAPfeatures.AA[strLocation].strDefaultName
-
+		
 		if (g_blnIniFileCreation) ; do not add shortcut if not creation of ini file at first launch
 			if StrLen(strCustomShortcut)
 				strShortcut := strCustomShortcut
 			else if (blnAddShortcut)
 				strShortcut := o_QAPfeatures.AA[strLocation].strDefaultShortcut
-
-		strNewIniLine := strFavoriteType . "|" . strName . "|" . strLocation . "|" . strIconResource . "||||||||||||||||" . strShortcut
+		
+		if StrLen(strCustomHotstring)
+		{
+		}
+		
+		strNewIniLine := strFavoriteType . "|" . strName . "|" . strLocation . "|" . strIconResource . "||||||||||||||||" . strShortcut . "|" . strCustomHotstring
 	}
 	
 	IniWrite, %strNewIniLine%, % o_Settings.strIniFile, Favorites, Favorite%g_intNextFavoriteNumber%
@@ -7325,6 +7362,11 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_intSnippetDefaultFontSizeEdit
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gGuiOptionsGroupChanged hidden, % o_L["DialogFavoriteSnippetSendModeMacro"]
 GuiControl, , f_blnOptionsSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
+; QuickAddSnippetSubmenu
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblQuickAddSnippetFolder hidden, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddSnippet"]) . ":"
+Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w500 vf_drpQuickAddSnippetSubmenu gGuiOptionsGroupChanged hidden
+	, % o_MainMenu.BuildMenuListDropDown(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue, "", true) . "|" ; exclude read-only external menus
+
 ; HotstringsDefaultOptions
 strNewHotstringsDefaultOptions := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue ; to keep value when options are saved if the hotstrings options are not changed
 Gui, 2:Font, s8 w700
@@ -7332,7 +7374,7 @@ Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% hidden vf_lblSelectHotstringDefaultOp
 Gui, 2:Font
 Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% gSelectHotstringDefaultOptions hidden vf_btnSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefaultSelect"]
 
-GuiControlGet, arrPos, Pos, f_blnSnippetDefaultMacro
+GuiControlGet, arrPos, Pos, f_btnSelectHotstringDefaultOptions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -7831,6 +7873,8 @@ o_Settings.Snippets.blnSnippetDefaultProcessEOLTab.WriteIni(f_blnSnippetDefaultP
 o_Settings.Snippets.blnSnippetDefaultFixedFont.WriteIni(f_blnSnippetDefaultFixedFont)
 o_Settings.Snippets.intSnippetDefaultFontSize.WriteIni(f_intSnippetDefaultFontSizeEdit)
 o_Settings.Snippets.blnSnippetDefaultMacro.WriteIni(f_blnSnippetDefaultMacro)
+o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(f_drpQuickAddSnippetSubmenu)
+o_Settings.Hotstrings.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
 
 ; === UserVariables ===
 
@@ -7897,7 +7941,6 @@ blnRunAsAdminPrev := ""
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
-o_Settings.Hotstrings.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
@@ -9528,6 +9571,55 @@ return
 
 
 ;------------------------------------------------------------
+GuiQuickAddSnippet:
+;------------------------------------------------------------
+
+Gosub, GuiShowFromAddSnippetAndHotstring
+
+g_intGui1WinID := WinExist("A")
+Gui, 1:Submit, NoHide
+
+strGuiTitle := L(o_L["GuiQuickAddSnippetTitle"], g_strAppNameText, g_strAppVersion)
+Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:+Owner1
+Gui, 2:+OwnDialogs
+if (g_blnUseColors)
+	Gui, 2:Color, %g_strGuiWindowColor%
+
+strClipboardCleaned := RegExReplace(Clipboard, "i)[^ a-z0-9]", "") ; keep only letters, digits and space
+
+Gui, 2:Add, Text, x10 y10 vf_ShortNameLabel, % o_L["DialogFavoriteShortNameLabel"] . " *"
+Gui, 2:Add, Edit, x10 y+10 Limit250 vf_strFavoriteShortName h21 w400, % SubStr(strClipboardCleaned, 1, 20) . (StrLen(strClipboardCleaned) > 20 ? "..." : "")
+
+Gui, 2:Add, Text, x10 y+10, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddNewSnippet"]) . ":"
+Gui, 2:Add, DropDownList, y+5 10 w500 vf_drpQuickAddSnippetSubmenu
+	, % o_MainMenu.BuildMenuListDropDown(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue, "", true) . "|" ; exclude read-only external menus
+
+Gui, 2:Add, Text, x10 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
+Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-snippets/"">" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Edit, x10 y+5 vf_strFavoriteLocation w500 r12 t8, % SubStr(Clipboard, 1, 32000)
+
+Gui, 2:Add, Text, x10 y+20, % o_L["DialogHotstringTriggerOptions"]
+Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Text, x10 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring
+Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotstring, % o_L["OptionsChangeHotkey"]
+Gui, 2:Add, Text, x10 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring
+
+aaL := o_L.InsertAmpersand(false, "DialogAdd", "GuiCancel") 
+Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiQuickAddSnippetSave default, % aaL["DialogAdd"]
+Gui, 2:Add, Button, yp vf_btnAddSnippetAndHotstringCancel gGuiQuickAddSnippetCancel, % aaL["GuiCancel"]
+Gui, 2:Add, Text, x10, %A_Space%
+
+GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAddSnippetAndHotstringAdd", "f_btnAddSnippetAndHotstringCancel")
+Gosub, ShowGui2AndDisableGui1
+
+strClipboardCleaned := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GuiAddFavoriteFromQAPFeatureFolder:
 GuiAddFavoriteFromQAPFeatureDocument:
 GuiAddFavoriteFromQAPFeatureApplication:
@@ -10326,7 +10418,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 Gui, 2:Add, Text, % "x20 y+10 vf_ShortNameLabel", % (o_EditedFavorite.AA.strFavoriteType = "Text" ? o_Favorites.GetFavoriteTypeObject("Text").strFavoriteTypeLocationLabel : o_L["DialogFavoriteShortNameLabel"]) . " *"
 
 Gui, 2:Add, Edit
-	, % "x20 y+10 Limit250 vf_strFavoriteShortName h21 w" . 400 - (o_EditedFavorite.AA.strFavoriteType = "Menu" ? 50 : 0)
+	, % "x20 y+5 Limit250 vf_strFavoriteShortName h21 w" . 400 - (o_EditedFavorite.AA.strFavoriteType = "Menu" ? 50 : 0)
 	, % o_EditedFavorite.AA.strFavoriteName
 
 if (InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true) and InStr(strGuiFavoriteLabel, "GuiEditFavorite"))
@@ -10368,7 +10460,7 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 			; GuiControl, Move, f_btnEnlarge, % "x" . arrPosEnlargeX + intMoveRight
 		}
 		
-		Gui, 2:Add, Edit, % "x20 y+10 vf_strFavoriteLocation "
+		Gui, 2:Add, Edit, % "x20 y+5 vf_strFavoriteLocation "
 			. (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "w500 r5 t8" : "gEditFavoriteLocationChanged w400 h20")
 			, % o_EditedFavorite.AA.strFavoriteLocation ; do not process snippet according to f_blnProcessEOLTab here
 		if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
@@ -11162,7 +11254,7 @@ for intIndex, o_Item in saThisMenu
 		Continue
 	else if (o_Item.AA.strFavoriteType = "X")
 		strDropdownParentMenuItems .= g_strGuiMenuSeparator . g_strGuiMenuSeparator . "|"
-	else if (o_Item.AA.FavoriteType = "K")
+	else if (o_Item.AA.strFavoriteType = "K")
 		strDropdownParentMenuItems .= g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine . "|"
 	else
 		strDropdownParentMenuItems .= o_Item.AA.strFavoriteName . "|"
@@ -11894,6 +11986,7 @@ return
 
 ;------------------------------------------------------------
 GuiAddFavoriteCancel:
+GuiQuickAddSnippetCancel:
 ;------------------------------------------------------------
 
 Gosub, GuiAddFavoriteFlush
@@ -11939,6 +12032,7 @@ GuiShowFromAddThisFolder:
 GuiShowFromHotkeysManage:
 GuiShowFromIconsManage:
 GuiShowFromExternalCatalogue:
+GuiShowFromAddSnippetAndHotstring:
 GuiShowNeverCalled:
 ;------------------------------------------------------------
 
@@ -12475,6 +12569,7 @@ GuiCopyOneFavoriteSave:
 GuiMoveOneFavoriteSave:
 GuiCopyFavoriteSave:
 GuiAddExternalSave:
+GuiQuickAddSnippetSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -12596,20 +12691,20 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	else
 		o_EditedFavorite.AA.intFavoriteDisabled := 0
 	
-	o_EditedFavorite.AA.intFavoriteFolderLiveLevels := (f_blnFavoriteFolderLive ? f_intFavoriteFolderLiveLevels : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveHideIcons : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveHideExtensions := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveHideExtensions : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveShowHidden := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveShowHidden : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveShowSystem : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveDocuments := (f_blnFavoriteFolderLive ? f_blnFavoriteFolderLiveDocuments : "")
-	o_EditedFavorite.AA.intFavoriteFolderLiveColumns := (f_blnFavoriteFolderLive ? (f_intFavoriteFolderLiveColumns = 0 ? "" : f_intFavoriteFolderLiveColumns) : "")
-	o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude := (f_blnFavoriteFolderLive ? f_radFavoriteFolderLiveInclude : "")
-	o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := (f_blnFavoriteFolderLive ? f_strFavoriteFolderLiveExtensions : "")
-
 	o_EditedFavorite.AA.strFavoriteSoundLocation := strNewFavoriteSoundLocation
 
 	if (f_blnFavoriteFolderLive)
 	{
+		o_EditedFavorite.AA.intFavoriteFolderLiveLevels := f_intFavoriteFolderLiveLevels
+		o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := f_blnFavoriteFolderLiveHideIcons
+		o_EditedFavorite.AA.blnFavoriteFolderLiveHideExtensions := f_blnFavoriteFolderLiveHideExtensions
+		o_EditedFavorite.AA.blnFavoriteFolderLiveShowHidden := f_blnFavoriteFolderLiveShowHidden
+		o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem := f_blnFavoriteFolderLiveShowSystem
+		o_EditedFavorite.AA.blnFavoriteFolderLiveDocuments := f_blnFavoriteFolderLiveDocuments
+		o_EditedFavorite.AA.intFavoriteFolderLiveColumns := (f_intFavoriteFolderLiveColumns = 0 ? "" : f_intFavoriteFolderLiveColumns)
+		o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude := f_radFavoriteFolderLiveInclude
+		o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := f_strFavoriteFolderLiveExtensions
+		
 		strLoopCriteria := 0
 		loop
 			if (f_radLiveFolderSort%A_Index%)
@@ -12827,9 +12922,16 @@ GuiAddFavoriteSaveValidate:
 
 ; validate original and destination menus values
 
+if (strThisLabel = "GuiQuickAddSnippetSave")
+{
+	o_EditedFavorite := new Container.Item([]) ; declared global earlier
+	o_EditedFavorite.AA.strFavoriteType := "Snippet"
+	g_strSnippetFormat := "display"
+}
+
 if InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave", "|" . strThisLabel)
 	strOriginalMenu := o_MenuInGui.AA.strMenuPath
-else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|
+else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|GuiQuickAddSnippetSave
 {
 	strOriginalMenu := "" ; no change required in original menu
 	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; but keep original menu position for multiple copy
@@ -12870,8 +12972,16 @@ else
 	strFavoriteAppWorkingDir := f_strFavoriteAppWorkingDir
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
 	
-	; f_drpParentMenu and f_drpParentMenuItems have same field name in 2 gui: GuiAddFavorite and GuiMoveMultipleFavoritesToMenu
-	strDestinationMenu := f_drpParentMenu
+	if (strThisLabel = "GuiQuickAddSnippetSave")
+	{
+		; check if default Snippet Quick Add submenu exists
+		if !o_Containers.AA.HasKey(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue)
+			o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"])
+		strDestinationMenu := o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue
+	}
+	else
+		; f_drpParentMenu and f_drpParentMenuItems have same field name in 2 gui: GuiAddFavorite and GuiMoveMultipleFavoritesToMenu
+		strDestinationMenu := f_drpParentMenu
 
 	; if gui was closed from Live Folder Options tab (without changing tab), update Live folder icon
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder" and f_blnFavoriteFolderLive
@@ -13078,6 +13188,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	}
 	
 	if LocationTransformedFromHTTP2UNC(o_EditedFavorite.AA.strFavoriteType, (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
+		and (o_EditedFavorite.AA.strFavoriteType <> "Snippet")
 		Oops(2, o_L["OopsHttpLocationTransformed"], (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
 		; do not abort
 
@@ -22947,6 +23058,8 @@ class QAPfeatures
 		; , strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut
 		; , strHelpUrl, strRefreshCommand := "")
 		
+		; Dynamic menus features
+		
 		this.AddQAPFeatureObject("Clipboard",				o_L["MenuClipboard"],				o_L["MenuClipboard"],			"ClipboardMenuShortcut",				"2-DynamicMenus"
 			, o_L["MenuClipboardDescription"], 0, "iconClipboard", "+^v"
 			, "what-is-in-the-clipboard-menu", "RefreshClipboardMenu")
@@ -22965,9 +23078,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("DOpus Favorites",			o_L["DOpusMenuName"],				o_L["DOpusMenuName"],			"DirectoryOpusFavoritesMenuShortcut", 	"2-DynamicMenus"
 			, o_L["DOpusMenuNameDescription"], 0, "DirectoryOpus", ""
 			, "how-to-i-enable-directory-opus-support-in-quick-access-popup", "RefreshDirectoryOpusFavorites")
-
+		
 		; Command features
-
+		
 		this.AddQAPFeatureObject("About",					o_L["GuiAbout"],							"", "GuiAbout",								"7-QAPManagement"
 			, o_L["GuiAboutDescription"], 0, "iconAbout", "", "")
 		this.AddQAPFeatureObject("Add Favorite",			o_L["MenuAddFavorite"] . g_strEllipse,		"", "GuiAddFavoriteFromQAPFeature",			"3-QAPMenuEditing"
@@ -22986,7 +23099,7 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Hotkeys",					o_L["DialogShortcuts"],						"", "GuiHotkeysManageFromQAPFeature",		"3-QAPMenuEditing"
 			, o_L["DialogShortcutsDescription"], 0, "iconHotkeys", ""
 			, "can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts")
-		this.AddQAPFeatureObject("Hotstrings",				o_L["DialogHotstrings"],					"", "GuiHotkeysManageHotstringsFromQAPFeature",	"1-Featured~3-QAPMenuEditing"
+		this.AddQAPFeatureObject("Hotstrings",				o_L["DialogHotstrings"],					"", "GuiHotkeysManageHotstringsFromQAPFeature",	"3-QAPMenuEditing"
 			, o_L["DialogHotstringsDescription"], 0, "iconHotkeys", ""
 			, "what-are-hotstrings")
 		this.AddQAPFeatureObject("Icons",					o_L["DialogIconsManage"],					"", "GuiIconsManageFromQAPFeature",			"3-QAPMenuEditing"
@@ -23051,7 +23164,11 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Window Always on Top",	o_L["MenuWindowAlwaysonTop"],				"", "WindowsAlwaysOnTop",					"1-Featured~4-WindowManagement"
 			, o_L["MenuWindowAlwaysonTopDescription"], 0, "iconDesktop", ""
 			, "can-i-make-the-active-window-always-on-top")
+		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiQuickAddSnippet"] . g_strEllipse, "", "GuiQuickAddSnippet",					"1-Featured~3-QAPMenuEditing"
+			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", "", "sponsoring")
 
+		; Close computer various command features
+		
 		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",			"1-Featured~5.1-CloseComputer"
 			, o_L["DialogCloseComputerControlDescription"], 0, "iconExit", ""
 			, "can-i-control-how-my-computer-is-closed-with-qap")
@@ -23091,16 +23208,11 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Start Screen Saver", 		strQAPFeatureName, 							"", "StartScreenSaverComputer",				"5.1-CloseComputer"
 			, o_L["DialogCloseComputerStartScreenSaverDescription"], 0, "iconDesktop", ""
 			, "can-i-control-how-my-computer-is-closed-with-qap")
-
-		; New for v9.x
-		; this.AddQAPFeatureObject("Exclusions Mouse", 			o_L["Menu"],					"", "command",				"1-Featured~7-QAPManagement"
-			; , o_L["MenuDescription"], 0, "icon", ""
-			; , "can-i-block-the-qap-menu-hotkeys-if-they-interfere-with-one-of-my-other-apps")
-		; this.AddQAPFeatureObject("Exclusions Keyboard", 			o_L["Menu"],					"", "command",				"1-Featured~7-QAPManagement"
-			; , o_L["MenuDescription"], 0, "icon", "", "")
-
+		
 		this.AddAttachedOrDetachedQAPFeatureObject() ; features that could be updated in case blnRefreshedMenusAttached menu was changed
-
+		
+		; Add favorite command features
+		
 		Loop, % o_Favorites.s_SA.Length()
 			if StrLen(o_Favorites.s_SA[A_Index].strFavoriteTypeLocationLabelNoAmpersand)
 				this.AddQAPFeatureObject("Add Favorite - " . o_Favorites.s_SA[A_Index].strFavoriteTypeSystemName, o_L["MenuAddFavorite"]
@@ -23108,8 +23220,9 @@ class QAPfeatures
 					, "", "GuiAddFavoriteFromQAPFeature" . o_Favorites.s_SA[A_Index].strFavoriteTypeSystemName, "3.1-AddFavoriteOfType"
 					, L(o_L["MenuAddFavoriteOfTypeDescription"], o_Favorites.s_SA[A_Index].strFavoriteTypeLocationLabelNoAmpersand), 0, "iconAddFavorite", ""
 					, "what-should-i-know-about-quick-access-popup-before-starting")
-
-		; Alternative Menu features (strDefaultShortcut contains the default strModifier)
+		
+		; Alternative Menu features
+		
 		this.AddQAPFeatureObject("Open in New Window",		o_L["MenuAlternativeNewWindow"],				"", "", ""
 			, "", 1, "iconFolder", "<+", "")
 		this.AddQAPFeatureObject("Edit Favorite",			o_L["MenuAlternativeEditFavorite"],			"", "", ""
@@ -24023,7 +24136,7 @@ class Containers
 	AA := Object() ; replace g_objMenusIndex, associative array of menus path used in Gui menu dropdown list and to access the menu object for a given menu path
 	
 	;---------------------------------------------------------
-	__Call(function, parameters*)
+	###__Call(function, parameters*)
 	; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 	{
 		funcRef := Func(funcName := this.__class "." function)
@@ -25635,6 +25748,7 @@ class Container
 			if (saFavorite[1] = "QAP")
 			{
 				if !StrLen(saFavorite[2]) ; if empty, get QAP feature's name in current language
+					or RegExMatch(saFavorite[2], "\* Unknown QAP feature \* [0-9]* \*") ; QAP unknown in a previous release - check if it is known in this release
 					saFavorite[2] := o_QAPfeatures.aaQAPFeaturesDefaultNameByCode[saFavorite[3]]
 				if !StrLen(saFavorite[2]) ; if QAP feature is unknown
 					; by default RandomBetween returns an integer between 0 and 2147483647 to generate a random file number and variable number
