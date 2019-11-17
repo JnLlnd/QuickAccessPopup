@@ -7344,7 +7344,7 @@ Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w600 hidden vf_lnkUserVa
 	. " (<a href=""https://www.quickaccesspopup.com/can-i-create-custom-user-variables-and-use-them-in-file-paths-or-snippets/"">" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w600 hidden vf_lnkUserVariablesList, % o_L["OptionsUserVariablesListInstructions"]
-Gui, 2:Add, Edit, x%g_intGroupItemsX% y+10 w600 hidden r5 vf_strUserVariablesList gGuiOptionsGroupChanged
+Gui, 2:Add, Edit, x%g_intGroupItemsX% y+10 w600 hidden r20 vf_strUserVariablesList gGuiOptionsGroupChanged
 	, % (StrLen(o_Settings.UserVariables.strUserVariablesList.IniValue)
 	? StrReplace(Trim(o_Settings.UserVariables.strUserVariablesList.IniValue), "|", "`n") : "{MyVariable}=MyContent")
 
@@ -10775,10 +10775,10 @@ Gui, 2:Add, Text, % "ys+40 xs vf_lblWindowPositionY " . (saNewFavoriteWindowPosi
 Gui, 2:Add, Text, % "ys+60 xs vf_lblWindowPositionW " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % o_L["DialogWindowPositionW"]
 Gui, 2:Add, Text, % "ys+80 xs vf_lblWindowPositionH " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % o_L["DialogWindowPositionH"]
 
-Gui, 2:Add, Edit, % "ys+20 xs+72 w36 h17 vf_intWindowPositionX center limit5 " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[3]
-Gui, 2:Add, Edit, % "ys+40 xs+72 w36 h17 vf_intWindowPositionY center limit5 " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[4]
-Gui, 2:Add, Edit, % "ys+60 xs+72 w36 h17 vf_intWindowPositionW center number limit5 " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[5]
-Gui, 2:Add, Edit, % "ys+80 xs+72 w36 h17 vf_intWindowPositionH center number limit5 " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[6]
+Gui, 2:Add, Edit, % "ys+20 xs+72 w50 h17 vf_intWindowPositionX center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[3]
+Gui, 2:Add, Edit, % "ys+40 xs+72 w50 h17 vf_intWindowPositionY center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[4]
+Gui, 2:Add, Edit, % "ys+60 xs+72 w50 h17 vf_intWindowPositionW center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[5]
+Gui, 2:Add, Edit, % "ys+80 xs+72 w50 h17 vf_intWindowPositionH center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[6]
 
 saNewFavoriteWindowPosition := ""
 
@@ -20689,11 +20689,11 @@ GetWindowPositionOnActiveMonitor(strWindowId, intActivePositionX, intActivePosit
 		intWindowX := arrThisMonitorLeft + (((arrThisMonitorRight - arrThisMonitorLeft) - intWindowWidth) / 2)
 		intWindowY := arrThisMonitorTop + (((arrThisMonitorBottom - arrThisMonitorTop) - intWindowHeight) / 2)
 		
-		; ###_V(A_ThisFunc . " True", strWindowId, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
+		; ###_V(A_ThisFunc . " True", strWindowId, intActivePositionX, intActivePositionY, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
 		return true
 	}
-	
-	; ###_V(A_ThisFunc . " False", strWindowId, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
+
+	; ###_V(A_ThisFunc . " False", strWindowId, intActivePositionX, intActivePositionY, intNbMonitors, intActiveMonitorForWindow, intActiveMonitorForPosition, "", intActivePositionX, intActivePositionY, "ByRef", intWindowX, intWindowY)
 	return false
 }
 ;------------------------------------------------------------
@@ -25919,7 +25919,11 @@ class Container
 					SysGet, intNbMonitors, MonitorCount
 					this.aaTemp.intNbMonitors := intNbMonitors
 					if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and this.aaTemp.intNbMonitors > 1)
-						GetPositionFromMouseOrKeyboard(this.aaTemp.strMenuTriggerLabel, A_ThisHotkey, this.aaTemp.intMonitorReferencePositionX, this.aaTemp.intMonitorReferencePositionY)
+					{
+						GetPositionFromMouseOrKeyboard(this.aaTemp.strMenuTriggerLabel, A_ThisHotkey, intMonitorReferencePositionX, intMonitorReferencePositionY)
+						this.aaTemp.intMonitorReferencePositionX := intMonitorReferencePositionX
+						this.aaTemp.intMonitorReferencePositionY := intMonitorReferencePositionY
+					}
 				}
 				
 				; APPLICATION
@@ -26214,12 +26218,11 @@ class Container
 						; Avoid when menu was open from QAPmessenger because collecting Explorer IDs instances because does not work (reason unknown)
 						Run, % "Explorer """ . this.aaTemp.strFullLocation . """", , % (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor ? "Hide" : "")
 					else
-					{
 						; When moving the window is not required and there is no parameter, this technique is preferred because, if call multiple times, it uses the
 						; same Explorer instance created by QAP.
 						Run, % this.aaTemp.strFullLocation
-						g_strNewWindowId := ""
-					}
+					
+					g_strNewWindowId := ""
 					
 					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
@@ -26443,21 +26446,22 @@ class Container
 				{
 					; see WinRestore doc PostMessage, 0x112, 0xF120,,, %g_strNewWindowId% ; 0x112 = WM_SYSCOMMAND, 0xF120 = SC_RESTORE
 					WinMove, %g_strNewWindowId%,
-						, % this.aaTemp.saFavoriteWindowPosition[3] ; left
-						, % this.aaTemp.saFavoriteWindowPosition[4] ; top
-						, % this.aaTemp.saFavoriteWindowPosition[5] ; width
-						, % this.aaTemp.saFavoriteWindowPosition[6] ; height
+						, % EnvVars(this.aaTemp.saFavoriteWindowPosition[3]) ; left
+						, % EnvVars(this.aaTemp.saFavoriteWindowPosition[4]) ; top
+						, % EnvVars(this.aaTemp.saFavoriteWindowPosition[5]) ; width
+						, % EnvVars(this.aaTemp.saFavoriteWindowPosition[6]) ; height
 					WinRestore, %g_strNewWindowId%
 					Sleep, % this.aaTemp.saFavoriteWindowPosition[7]
 				}
 			}
 			else if (this.aaTemp.blnOpenFavoritesOnActiveMonitor and (this.aaTemp.intNbMonitors > 1) and (this.aaTemp.strTargetAppName = "Explorer") and (this.aaTemp.strHotkeyTypeDetected = "Launch"))
-				and GetWindowPositionOnActiveMonitor(g_strNewWindowId, intMonitorReferencePositionX, intMonitorReferencePositionY, intNewWindowX, intNewWindowY)
+				and GetWindowPositionOnActiveMonitor(g_strNewWindowId, this.aaTemp.intMonitorReferencePositionX, this.aaTemp.intMonitorReferencePositionY, intNewWindowX, intNewWindowY)
 			{
 				; offset multiple Explorer windows positioned at center of screen (from -100/-100 to +80/+80
 				g_intNewWindowOffset := Mod(g_intNewWindowOffset + 1, 9) ; value 0..8
 				intNewWindowX := intNewWindowX + ((g_intNewWindowOffset - 4) * 20) ; value (-4 * 20)..(+4 * 20)
 				intNewWindowY := intNewWindowy + ((g_intNewWindowOffset - 4) * 20)
+				; ###_V(A_ThisFunc, g_intNewWindowOffset, intNewWindowX, intNewWindowY)
 				
 				WinMove, %g_strNewWindowId%, , %intNewWindowX%, %intNewWindowY%
 				Sleep, 100
