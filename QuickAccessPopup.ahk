@@ -4751,6 +4751,7 @@ o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultProcessEOLTab", "SnippetD
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultFixedFont", "SnippetDefaultFixedFont", 0, "Snippets", "f_blnSnippetDefaultFixedFont") ; g_blnSnippetDefaultFixedFont
 o_Settings.ReadIniOption("Snippets", "intSnippetDefaultFontSize", "SnippetDefaultFontSize", 10, "Snippets", "f_lblSnippetDefaultFontSize|f_intSnippetDefaultFontSizeEdit|f_intSnippetDefaultFontSize") ; g_intSnippetDefaultFontSize
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultMacro", "SnippetDefaultMacro", 0, "Snippets", "f_blnSnippetDefaultMacro") ; g_blnSnippetDefaultMacro
+o_Settings.ReadIniOption("Snippets", "strQuickAddSnippetSubmenu", "QuickAddSnippetSubmenu", o_L["MainMenuName"], "Snippets", "f_lblQuickAddSnippetFolder|f_drpQuickAddSnippetSubmenu")
 o_Settings.ReadIniOption("Hotstrings", "strHotstringsDefaultOptions", "HotstringsDefaultOptions", " ", "Snippets"
 	, "f_lblSelectHotstringDefaultOptions|f_btnSelectHotstringDefaultOptions") ; g_strHotstringsDefaultOptions
 
@@ -5039,6 +5040,7 @@ AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
 
 IniWrite, 1, % o_Settings.strIniFile, Global, SnippetsDefaultMenuBuilt
+o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"] . " " . g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance)
 
 g_intNextFavoriteNumber := ""
 g_strAddThisMenuName := ""
@@ -7335,6 +7337,11 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_intSnippetDefaultFontSizeEdit
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gGuiOptionsGroupChanged hidden, % o_L["DialogFavoriteSnippetSendModeMacro"]
 GuiControl, , f_blnOptionsSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
+; QuickAddSnippetSubmenu
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblQuickAddSnippetFolder hidden, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddSnippet"]) . ":"
+Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w500 vf_drpQuickAddSnippetSubmenu gGuiOptionsGroupChanged hidden
+	, % o_MainMenu.BuildMenuListDropDown(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue, "", true) . "|" ; exclude read-only external menus
+
 ; HotstringsDefaultOptions
 strNewHotstringsDefaultOptions := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue ; to keep value when options are saved if the hotstrings options are not changed
 Gui, 2:Font, s8 w700
@@ -7342,7 +7349,7 @@ Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% hidden vf_lblSelectHotstringDefaultOp
 Gui, 2:Font
 Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% gSelectHotstringDefaultOptions hidden vf_btnSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefaultSelect"]
 
-GuiControlGet, arrPos, Pos, f_blnSnippetDefaultMacro
+GuiControlGet, arrPos, Pos, f_btnSelectHotstringDefaultOptions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -7817,6 +7824,8 @@ o_Settings.Snippets.blnSnippetDefaultProcessEOLTab.WriteIni(f_blnSnippetDefaultP
 o_Settings.Snippets.blnSnippetDefaultFixedFont.WriteIni(f_blnSnippetDefaultFixedFont)
 o_Settings.Snippets.intSnippetDefaultFontSize.WriteIni(f_intSnippetDefaultFontSizeEdit)
 o_Settings.Snippets.blnSnippetDefaultMacro.WriteIni(f_blnSnippetDefaultMacro)
+o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(f_drpQuickAddSnippetSubmenu)
+o_Settings.Hotstrings.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
 
 ; === UserVariables ===
 
@@ -7883,7 +7892,6 @@ blnRunAsAdminPrev := ""
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
-o_Settings.Hotstrings.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
@@ -9532,15 +9540,21 @@ if (g_blnUseColors)
 strClipboardCleaned := RegExReplace(Clipboard, "i)[^ a-z0-9]", "") ; keep only letters, digits and space
 
 Gui, 2:Add, Text, x10 y10 vf_ShortNameLabel, % o_L["DialogFavoriteShortNameLabel"] . " *"
-Gui, 2:Add, Edit, x20 y+10 Limit250 vf_strFavoriteShortName h21 w400, % SubStr(strClipboardCleaned, 1, 20) . (StrLen(strClipboardCleaned) > 20 ? "..." : "")
-Gui, 2:Add, Text, x20 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
-Gui, 2:Add, Edit, x20 y+10 vf_strFavoriteLocation w500 r12 t8, % SubStr(Clipboard, 1, 32000)
+Gui, 2:Add, Edit, x10 y+10 Limit250 vf_strFavoriteShortName h21 w400, % SubStr(strClipboardCleaned, 1, 20) . (StrLen(strClipboardCleaned) > 20 ? "..." : "")
 
-Gui, 2:Add, Text, x20 y+20, % o_L["DialogHotstringTriggerOptions"]
+Gui, 2:Add, Text, x10 y+10, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddNewSnippet"]) . ":"
+Gui, 2:Add, DropDownList, y+5 10 w500 vf_drpQuickAddSnippetSubmenu
+	, % o_MainMenu.BuildMenuListDropDown(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue, "", true) . "|" ; exclude read-only external menus
+
+Gui, 2:Add, Text, x10 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
+Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-snippets/"">" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Edit, x10 y+5 vf_strFavoriteLocation w500 r12 t8, % SubStr(Clipboard, 1, 32000)
+
+Gui, 2:Add, Text, x10 y+20, % o_L["DialogHotstringTriggerOptions"]
 Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
-Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring
+Gui, 2:Add, Text, x10 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring
 Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotstring, % o_L["OptionsChangeHotkey"]
-Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring
+Gui, 2:Add, Text, x10 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring
 
 aaL := o_L.InsertAmpersand(false, "DialogAdd", "GuiCancel") 
 Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiQuickAddSnippetSave default, % aaL["DialogAdd"]
@@ -10355,7 +10369,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 Gui, 2:Add, Text, % "x20 y+10 vf_ShortNameLabel", % (o_EditedFavorite.AA.strFavoriteType = "Text" ? o_Favorites.GetFavoriteTypeObject("Text").strFavoriteTypeLocationLabel : o_L["DialogFavoriteShortNameLabel"]) . " *"
 
 Gui, 2:Add, Edit
-	, % "x20 y+10 Limit250 vf_strFavoriteShortName h21 w" . 400 - (o_EditedFavorite.AA.strFavoriteType = "Menu" ? 50 : 0)
+	, % "x20 y+5 Limit250 vf_strFavoriteShortName h21 w" . 400 - (o_EditedFavorite.AA.strFavoriteType = "Menu" ? 50 : 0)
 	, % o_EditedFavorite.AA.strFavoriteName
 
 if (InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true) and InStr(strGuiFavoriteLabel, "GuiEditFavorite"))
@@ -10397,7 +10411,7 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 			; GuiControl, Move, f_btnEnlarge, % "x" . arrPosEnlargeX + intMoveRight
 		}
 		
-		Gui, 2:Add, Edit, % "x20 y+10 vf_strFavoriteLocation "
+		Gui, 2:Add, Edit, % "x20 y+5 vf_strFavoriteLocation "
 			. (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "w500 r5 t8" : "gEditFavoriteLocationChanged w400 h20")
 			, % o_EditedFavorite.AA.strFavoriteLocation ; do not process snippet according to f_blnProcessEOLTab here
 		if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
@@ -12910,7 +12924,12 @@ else
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
 	
 	if (strThisLabel = "GuiQuickAddSnippetSave")
-		strDestinationMenu := "Main" ; ##### make it an option
+	{
+		; check if default Snippet Quick Add submenu exists
+		if !o_Containers.AA.HasKey(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue)
+			o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"])
+		strDestinationMenu := o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue
+	}
 	else
 		; f_drpParentMenu and f_drpParentMenuItems have same field name in 2 gui: GuiAddFavorite and GuiMoveMultipleFavoritesToMenu
 		strDestinationMenu := f_drpParentMenu
@@ -23900,7 +23919,7 @@ class Containers
 	AA := Object() ; replace g_objMenusIndex, associative array of menus path used in Gui menu dropdown list and to access the menu object for a given menu path
 	
 	;---------------------------------------------------------
-	__Call(function, parameters*)
+	###__Call(function, parameters*)
 	; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 	{
 		funcRef := Func(funcName := this.__class "." function)
