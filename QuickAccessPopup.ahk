@@ -17440,6 +17440,11 @@ Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Button, x175 y+20 gGuiDonateCodeInputSave vf_btnDonateCodeInputSave, % aaL["GuiSave"]
 Gui, 2:Add, Button, x175 yp g2GuiClose vf_btnDonateCodeInputCancel, % aaL["DialogCancelButton"]
 GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnDonateCodeInputSave", "f_btnDonateCodeInputCancel")
+if (o_Settings.Launch.blnDonorCode.IniValue)
+{
+	Gui, 2:Add, Link, y+15 gGuiDonateCodeInputRemove vf_lnkSponsorRemove, % "<a>" . o_L["SponsorRemove"] . "</a>"
+	GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_lnkSponsorRemove")
+}
 Gui, 2:Add, Text
 
 GuiControl, Focus, btnDonateDefault
@@ -17453,27 +17458,39 @@ return
 
 ;------------------------------------------------------------
 GuiDonateCodeInputSave:
+GuiDonateCodeInputRemove:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
-
-strDonorCode := Trim(f_strDonorCode)
-strSponsorName := Trim(f_strSponsorName)
-
-; Donor code must contain only numbers and capital letters and be 8 digits
-if !StrLen(strSponsorName) ; sponsor name must not be empty
-	or StrLen(strDonorCode) <> 8 ; donor code must be 8 characters
-	or RegExMatch(strDonorCode, "[^A-Z^0-9]") ; donor code must be made only of digits in ranges A-Z and 0-9
-	or !SponsorNameOK(strSponsorName, strDonorCode) ; and donor code must match MD5 of sponsor name
-{
-	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
-	return
-}
-
-o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
-o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
-
 Gui, 2:+OwnDialogs
-MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyou"], strSponsorName), 10
+
+if (A_ThisLabel = "GuiDonateCodeInputSave")
+{
+	strDonorCode := Trim(f_strDonorCode)
+	strSponsorName := Trim(f_strSponsorName)
+
+	; Donor code must contain only numbers and capital letters and be 8 digits
+	if !StrLen(strSponsorName) ; sponsor name must not be empty
+		or StrLen(strDonorCode) <> 8 ; donor code must be 8 characters
+		or RegExMatch(strDonorCode, "[^A-Z^0-9]") ; donor code must be made only of digits in ranges A-Z and 0-9
+		or !SponsorNameOK(strSponsorName, strDonorCode) ; and donor code must match MD5 of sponsor name
+	{
+		Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
+		return
+	}
+
+	o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
+	o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
+
+	MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyou"], strSponsorName), 10
+}
+else
+{
+	IniDelete, % o_Settings.strIniFile, Global, DonorCode
+	IniDelete, % o_Settings.strIniFile, Global, SponsorName
+	o_Settings.Launch.blnDonorCode.IniValue := 0
+	
+	MsgBox, 0, %g_strAppNameText%, % L(o_L["SponsorRemoved"], strSponsorName), 10
+}
 
 Gosub, 2GuiClose
 Gosub, BuildGui
