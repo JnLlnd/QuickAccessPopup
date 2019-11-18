@@ -852,6 +852,7 @@ this["SponsoredUpdate"] := "Please, update your donor code (no new donation requ
 this["TCMenuName"] := "TC Directory hotlist"
 this["TCMenuNameDescription"] := "For Total Commander (TC) users, display a dynamic menu built with the favorites added to the TC Hotlist as found in the file wincdm.ini.`n`nSet the wincdm.ini file location in ""Options"", ""File Managers"" tab. If TC was selected when you installed QAP, the Directory Hotlist has been automatically added to your menu."
 this["TCWinCmdLocation"] := "WinCmd.ini location"
+this["ToolTipAlwaysOnTop"] := """Always on Top"" turned OFF for window:`n~1~"
 this["ToolTipBuilding"] := "Building menu...."
 this["ToolTipLoading"] := "Loading favorites...."
 this["ToolTipRetrievingWebPageTitle"] := "Retrieving web page title...."

@@ -15819,13 +15819,9 @@ g_strNewWindowId := "" ; start fresh for any new favorite to open, used to posit
 gosub, GetAlternativeMenuModifier
 
 if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
-{
 	if SettingsUnsaved()
 		if SettingsNotSavedReturn()
 			return
-
-	g_strTargetWinId := "" ; forget value from previous open favorite
-}
 
 if (A_ThisLabel <> "OpenFavoriteFromLastAction") ; we already have o_ThisFavorite from RepeatLastAction
 	gosub, OpenFavoriteGetFavoriteObject ; define o_ThisFavorite
@@ -15980,7 +15976,8 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 		g_strHotkeyTypeDetected := "Navigate"
 	else if CanLaunch(A_ThisHotkey)
 	{
-		g_strTargetWinId := "" ; never use target window when launched from hotkey
+		if InStr("|Folder|Special|FTP", "|" . o_ThisFavorite.AA.strFavoriteType)
+			g_strTargetWinId := "" ; if folder, never use target window when launched from hotkey, used for QAP Feature Window Always on Top
 		g_strHotkeyTypeDetected := "Launch"
 	}
 	else
@@ -16547,7 +16544,14 @@ return
 WindowsAlwaysOnTop:
 ;------------------------------------------------------------
 
-Winset, AlwaysOnTop, Toggle, ahk_id %g_strTargetWinId%
+WinSet, AlwaysOnTop, Toggle, ahk_id %g_strTargetWinId%
+
+WinGet, intExStyle, ExStyle, ahk_id %g_strTargetWinId%
+if !(intExStyle & 0x8) ; 0x8 is WS_EX_TOPMOST
+{
+	ToolTip, % L(o_L["ToolTipAlwaysOnTop"], g_strTargetWinTitle)
+	SetTimer, RemoveToolTip, 2500 ; will remove tooltip
+}
 
 return
 ;------------------------------------------------------------
