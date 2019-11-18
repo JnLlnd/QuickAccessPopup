@@ -31,6 +31,31 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.2.9.1 (2019-11-17)
+ 
+Snippet Quick Add
+- new QAP Feature "Snippet Quick Add" displaying a dialog box where you can create a snippet and its hotstring in one step, with the content of the Windows Clipboard used to suggest default values for the name and content of the new snippet
+- to promote the use of snippets, a new menu "My Snippets" is added to your menu with the "Snippet Quick Add" feature and an example of snippet including an hotstring (you can move or remove this menu in the "Customize" window)
+- you can add the "Snippet Quick Add" feature to a menu by selecting "Add Favorite", choose the type "QAP Feature", section "QAP Menu Editing" and select "Snippet Quick Add"
+- in "Options", section "Snippets and Hotstrings", you can set the default submenu for snippets added with the "Snippet Quick Add" dialog box
+ 
+Configurable hotkeys for Alternative menus features
+- redesign the section "Alternative Menu Hotkeys" of the "Options" dialog box allowing to assign various keyboard hotkeys for Alternative menu features
+- the Alternative menu features are: "Open in new window", "Edit a Favorite", "Copy a Favorite's Path or URL", "Run as administrator", "Open the Containing Folder in a New Window" and "Open the Containing Folder in the Current Window"
+- available hotkeys are: Left + Shift, Left + Control, Left + Shift + Control, Right + Shift, Right + Control and Right + Shift + Control
+- to use these hotkeys, open the main QAP menu and, before clicking a favorite, press one of the six hotkeys combination to activate its associated feature
+- improve Alternative menu QAP feature "Open the Containing Folder...", including support for Special folders
+- display error message when an Alternative menu feature is not supported for a given favorite type
+ 
+Bug fixes
+- open some Special folders in Directory opus lister instead of in an external window
+- fix various bugs when opening a group of folders, when adding a favorite after deleting multiple favorites and when positioning Explorer window on active monitor
+ 
+Various improvements
+- new QAP feature "Window Always on Top" that toggle the always on top property of the selected window (you can add this feature to a menu by selecting "Add Favorite", choose the type "QAP Feature", section "Window Management" and select "Window Always on Top")
+- in the "Enter your donor code" dialog box, add a link to remove am existing sponsor code if it was entered by error
+- in "Edit Favorite" dialog box for "Folder" favorites, "Windows Options" tab, support user variables "{uservariable}" and environement variables for Explorer window position values (Left, Top, Width and Height)
+
 Version: 10.2.2 (2019-11-11)
 - add menu item "Open QAP Settings Backup Folder" to the "File" menu
 - fix bug when opening folders from DOpus favorites submenus
@@ -3659,7 +3684,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2.2
+;@Ahk2Exe-SetVersion 10.2.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3764,8 +3789,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.2.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
@@ -20919,7 +20944,7 @@ SponsorNameOK(strSponsorName, strDonorCode)
 {
 	strSponsorNameLower := StrLower(strSponsorName)
 	
-	return Exclamation_bcrypt_md5(strSponsorNameLower) = strDonorCode ; supports UTF-8, case change, no pipe bug, used starting 2019-11-?? v10.2.?
+	return Exclamation_bcrypt_md5(strSponsorNameLower) = strDonorCode ; supports UTF-8, case change, no pipe bug, used starting 2019-11-11 (v10.2.2)
 		or Exclamation_MD5(strSponsorNameLower) = strDonorCode ; avoid pipe bug but not UTF-8, used from 2019-11-04 to 2019-11-10 (pink in XL)
 		or PipeLower_MD5(strSponsorNameLower) = strDonorCode ; has pipe bug, not UTF-8, but allow case change, used from 2019-06-27 to 2019-11-03 (green in XL)
 		or PipeNoLower_MD5(strSponsorName) = strDonorCode ; has pipe bug, no UTF-8 and does not allow case change, used before 2019-06-27 (orange in XL)
@@ -22569,82 +22594,6 @@ class SpecialFolders
 	; NOTES
 	; - Total Commander commands: cm_OpenDesktop (2121), cm_OpenDrives (2122), cm_OpenControls (2123), cm_OpenFonts (2124), cm_OpenNetwork (2125), cm_OpenPrinters (2126), cm_OpenRecycled (2127)
 	; - DOpus see http://resource.dopus.com/viewtopic.php?f=3&t=23691
-
-	; DOpus alias list
-	; admintools	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Administrative Tools
-	; altstartup	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
-	; appdata	C:\Users\Jean\AppData\Roaming
-	; buttons	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Buttons
-	; common	C:\Users\Public
-	; commonadmintools	C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Administrative Tools
-	; commonaltstartup	C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp
-	; commonappdata	C:\ProgramData
-	; commondesktopdir	C:\Users\Public\Desktop
-	; commondocuments	C:\Users\Public\Documents
-	; commonfavorites	C:\Users\Jean\Favorites
-	; commonfiles	C:\Program Files\Common Files
-	; commonfilesx86	C:\Program Files (x86)\Common Files
-	; commonprogramfiles	C:\Program Files\Common Files
-	; commonprogramfilesx86	C:\Program Files (x86)\Common Files
-	; commonprograms	C:\ProgramData\Microsoft\Windows\Start Menu\Programs
-	; commonstartmenu	C:\ProgramData\Microsoft\Windows\Start Menu
-	; commonstartup	C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp
-	; commontemplates	C:\ProgramData\Microsoft\Windows\Templates
-	; controls	/controls
-	; cookies	C:\Users\Jean\AppData\Local\Microsoft\Windows\INetCookies
-	; default	E:\Dropbox\AutoHotkey\QuickAccessPopup\Language
-	; defaultright	E:\Dropbox\AutoHotkey\QuickAccessPopup\Build-v8
-	; desktop	C:\Users\Jean\Desktop
-	; desktopdir	C:\Users\Jean\Desktop
-	; dopusdata	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus
-	; dopusglobaldata	C:\ProgramData\GPSoftware\Directory Opus
-	; dopuslocaldata	C:\Users\Jean\AppData\Local\GPSoftware\Directory Opus
-	; downloads	C:\Users\Jean\Downloads
-	; dropbox	E:\Dropbox
-	; favorites	C:\Users\Jean\Favorites
-	; fonts	C:\Windows\Fonts
-	; history	C:\Users\Jean\AppData\Local\Microsoft\Windows\History
-	; home	C:\Program Files\GPSoftware\Directory Opus
-	; homeroot	C:\
-	; hostdocuments	C:\Users\Jean\Documents
-	; hostmusic	C:\Users\Jean\Music
-	; hostpictures	C:\Users\Jean\Pictures
-	; hostvideos	C:\Users\Jean\Videos
-	; iconsets	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Icons
-	; iconsetsglobal	C:\ProgramData\GPSoftware\Directory Opus\Icons
-	; internetcache	C:\Users\Jean\AppData\Local\Microsoft\Windows\INetCache
-	; last	E:\Dropbox\AutoHotkey\QuickAccessPopup\Language
-	; lastright	E:\Dropbox\AutoHotkey\QuickAccessPopup\Build-v8
-	; libraries	lib://
-	; localappdata	C:\Users\Jean\AppData\Local
-	; mycomputer	/mycomputer
-	; mydocuments	C:\Users\Jean\Documents
-	; mymusic	C:\Users\Jean\Music
-	; mypictures	C:\Users\Jean\Pictures
-	; myvideos	C:\Users\Jean\Videos
-	; nethood	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Network Shortcuts
-	; network	/network
-	; onedrive	E:\OneDrive
-	; printers	/printers
-	; printhood	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Printer Shortcuts
-	; profile	C:\Users\Jean
-	; programfiles	C:\Program Files
-	; programfilesx86	C:\Program Files (x86)
-	; programs	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
-	; quickaccess	/quickaccess
-	; recent	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Recent
-	; scripts	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Script AddIns
-	; sendto	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\SendTo
-	; skydrive	E:\OneDrive
-	; start	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu
-	; startup	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
-	; system	C:\Windows\System32
-	; systemx86	C:\Windows\SysWOW64
-	; temp	C:\Users\Jean\AppData\Local\Temp
-	; templates	C:\Users\Jean\AppData\Roaming\Microsoft\Windows\Templates
-	; themes	C:\Users\Jean\AppData\Roaming\GPSoftware\Directory Opus\Themes
-	; trash	/trash
-	; windows	C:\Windows
 
 	;---------------------------------------------------------
 	{
