@@ -10426,6 +10426,10 @@ return
 GuiFavoriteTabBasic:
 ;------------------------------------------------------------
 
+blnFolderInAGroupWithSide := InStr("Folder|Special|FTP", o_EditedFavorite.AA.strFavoriteType) ; when adding folders or FTP sites
+	and (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; in Directory Opus or TotalCommander
+	and (blnIsGroupMember) ; in a group
+	
 Gui, 2:Tab, % ++intTabNumber
 
 Gui, 2:Font, w700
@@ -10555,7 +10559,7 @@ else ; "Special", "QAP" or "WindowsApp"
 	{
 		g_blnFirstInitDone := false
 		GuiControlGet, arrPosLocationLabel, Pos, f_lblLocation
-		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 43 ; 43 = space required below)
+		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 43 - (blnFolderInAGroupWithSide ? 23 : 0) ; -43 space normally required below, -23 if folder in group member with a side
 			
 		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 			Gui, 2:Add, Link, x+5 yp w200 vf_tvQAPFeatureURL
@@ -10598,14 +10602,12 @@ if (o_EditedFavorite.AA.strFavoriteType = "Group")
 	}
 }
 
-if InStr("Folder|Special|FTP", o_EditedFavorite.AA.strFavoriteType) ; when adding folders or FTP sites
-	and (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; in Directory Opus or TotalCommander
-	and (blnIsGroupMember) ; in a group
+if (blnFolderInAGroupWithSide) ; folder in a group with side
 {
 	; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay, RestoreSide/Monitor; for example: "0,,,,,,,L"
 	saNewFavoriteWindowPosition := StrSplit(g_strNewFavoriteWindowPosition, ",")
 	
-	Gui, 2:Add, Text, x20 y+20, % L(o_L["GuiGroupRestoreSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
+	Gui, 2:Add, Text, x20 y+10, % L(o_L["GuiGroupRestoreSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
 	Gui, 2:Add, Radio, % "x+10 yp vf_intRadioGroupRestoreSide " . (saNewFavoriteWindowPosition[8] <> "R" ? "checked" : ""), % o_L["DialogWindowPositionLeft"] ; if "L" or ""
 	Gui, 2:Add, Radio, % "x+10 yp " . (saNewFavoriteWindowPosition[8] = "R" ? "checked" : ""), % o_L["DialogWindowPositionRight"]
 }
@@ -10636,6 +10638,7 @@ intTreeViewHeight := ""
 intTreeViewWidth := ""
 strWindowsAppsDropdownList := ""
 blnIsCustomWindowsApp := ""
+blnFolderInAGroupWithSide := ""
 
 return
 ;------------------------------------------------------------
