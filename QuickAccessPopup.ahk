@@ -7846,7 +7846,6 @@ for intOrder, strThisAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCo
 }
 
 Gosub, LoadIniAlternativeMenuFeaturesHotkeysAndModifiers ; reload from ini file
-Gosub, BuildAlternativeMenu
 o_Settings.MenuPopup.blnAlternativeMenuShowNotification.WriteIni(f_blnAlternativeMenuShowNotification)
 
 strThisAlternativeCode := ""
@@ -8081,6 +8080,7 @@ for strMenuName, oContainer in o_Containers.AA
 }
 
 Gosub, BuildMainMenuWithStatus
+Gosub, BuildAlternativeMenu
 Gosub, BuildGuiMenuBar
 
 Gosub, BuildTrayMenuRefresh
@@ -14400,7 +14400,7 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 		Gui, Add, Link, y+5 xs w200 gShortcutInvisibleKeysClicked, % L(o_L["DialogHotkeyInvisibleKeys"], "Space", "Tab", "Enter", "Esc", "Menu")
 
 	Gui, Add, Button, % "x10 y" . SS_arrTopY + 100 . " vf_btnNoneShortcut gSelectNoneShortcutClicked", % SS_aaL["DialogNone"]
-	if StrLen(P_strDefaultShortcut)
+	if StrLen(P_strDefaultShortcut) and (P_strFavoriteType <> "Alternative")
 	{
 		Gui, Add, Button, % "x10 y" . SS_arrTopY + 100 . " vf_btnResetShortcut gButtonResetShortcut", % SS_aaL["GuiResetDefault"]
 		GuiCenterButtons(SS_strGuiTitle, 10, 5, 20, "f_btnNoneShortcut", "f_btnResetShortcut")
@@ -21739,7 +21739,7 @@ class Triggers.MouseButtons
 	;---------------------------------------------------------
 	{
 		;---------------------------------------------------------
-		__Call(function, parameters*)
+		###__Call(function, parameters*)
 		; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 		{
 			funcRef := Func(funcName := this.__class "." function)
@@ -21824,7 +21824,7 @@ class Triggers.MouseButtons
 		;-----------------------------------------------------
 		{
 			;---------------------------------------------------------
-			__Call(function, parameters*)
+			###__Call(function, parameters*)
 			; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 			{
 				funcRef := Func(funcName := this.__class "." function)
