@@ -107,6 +107,8 @@ lDialogContinue	Poursuivre
 lDialogCopy	Copier
 lDialogCopyFavoritesTitle	Copier des favoris - ~1~ ~2~
 lDialogCtrl	Contrôle
+lDialogCtrlLeft	Ctrl Gauche
+lDialogCtrlRight	Ctrl Droite
 lDialogCtrlShort	Ctrl
 lDialogDescending	Descendant
 lDialogDialogBoxes	Boîtes de dialogue
@@ -319,6 +321,8 @@ lDialogSettingsInvalid	Fichier de configuration invalide.`n`nVeuillez vous assur
 lDialogSettingsNotSavedPrompt	Des changements dans la fenêtre "Personnaliser" n'ont pas été enregistrés. Ces changements doivent être enregistrés ou annulés afin de permettre l'exécution de l'action demandée.`n`nVoulez-vous:`n- "Enregistrer": enregistrer vos changements et exécuter l'action demandée`n- "Personnaliser": annuler l'action demandée et afficher la fenêtre "Personnaliser"`n- "Annuler": seulement annuler l'action demandée?
 lDialogSettingsNotSavedTitle	~1~ - Paramètres pas enregistrés
 lDialogShift	Maj
+lDialogShiftLeft	Maj Gauche
+lDialogShiftRight	Maj Droite
 lDialogShiftShort	Maj
 lDialogShortcut	Raccourci
 lDialogShortcuts	Raccourcis
@@ -438,6 +442,12 @@ lGuiOptions	Options
 lGuiOptionsDescription	Afficher la fenêtre "Options" qui permet d'adapter QAP à vos préférences.
 lGuiPassword	Mot de passe
 lGuiPasswordNotEncripted	Note: Le mot de passe ne sera PAS encrypté lorsqu'il sera transmis sur Internet.
+lGuiQuickAddNewSnippet	ce nouveau fragment
+lGuiQuickAddSnippet	Ajout rapide Fragment
+lGuiQuickAddSnippetDescription	Ajouter rapidement un favori de type Fragment de texte et sa chaîne de substitution dans une même boîte de dialogue. Si le Presse-papiers de Windows contient du texte, celui-ci est utilisé pour les valeurs par défaut du fragment. Utilisez la boîte de dialogue "Modifier un favori" pour modifier d'autres options.
+lGuiQuickAddSnippetExample	Tapez ~1~ dans un éditeur de texte pour substituer le texte du fragment.
+lGuiQuickAddSnippetExampleName	Exemple de Fragment de texte
+lGuiQuickAddSnippetTitle	Fragment de texte Ajout rapide - ~1~ ~2~
 lGuiRemoveFavorite	Supprimer
 lGuiResetDefault	Restaurer le raccourci par défaut
 lGuiSave	Enregistrer
@@ -567,10 +577,12 @@ lMenuListApplicationsDescription	Affiche les titres, processus et autres proprié
 lMenuMenu	Menu
 lMenuMyMusic	Ma musique
 lMenuMyQAPMenu	Mes Fonctions QAP
+lMenuMySnippetsMenu	Mes Fragments de texte
 lMenuMySpecialMenu	Mes Dossiers spéciaux
 lMenuMyVideo	Mes vidéos
 lMenuMyWindowsAppsMenu	Mes Applis Windows
 lMenuNoCurrentFolder	Aucun dossier ouvert actuellement…
+lMenuOpenBackupDirectory	Ouvrir le dossier des copies de sécurité des paramètres
 lMenuOpenWorkingDirectory	Ouvrir le dossier des paramètres de QAP
 lMenuOptions	Options
 lMenuPictures	Images
@@ -620,6 +632,8 @@ lMenuUpdate	Vérifier la mise à jour
 lMenuUpdateDescription	Vérifier sur le site web de Quick Access Popup si une nouvelle version est disponible.
 lMenuUserFolder	Dossier de l'utilisateur
 lMenuUserPinned	Epinglé par l'utilisateur
+lMenuWindowAlwaysonTop	Fenêtre toujours visible
+lMenuWindowAlwaysonTopDescription	Alterne la propriété "Fenêtre toujours visible" d'une fenêtre
 lMessengerCloseQAPSettings	Une fenêtre de paramètres est ouverte dans ~1~, peut-être avec des changements non enregistrés.`n`nVeuillez fermer les fenêtres de paramètres avant d'utiliser ce menu contextuel.
 lMessengerDoNotRun	N'exécutez pas ~1~ directement. Vous pouvez:`n`n- faire un clic-droite sur l'icône d'un fichier ou d'un dossier dans l'Explorateur pour l'ajouter au menu`n- clic-droite dans le fond d'une fenêtre de l'Explorateur pour ajouter le dossier affiché`n- clic-droite sur le fond du Bureau pour afficher le menu.`n`nAssurez-vous que ~2~ est lancé avant d'utiliser ses menus contextuels. Voir la case à cocher "Menus contextuels" dans la fenêtre "Options" de ~2~.
 lMessengerError	Une erreur s'est produite.`n`nAssurez-vous que ~1~ est lancé avant d'utiliser ses menus contextuels.
@@ -627,6 +641,7 @@ lMessengerHelp	Recherchez "Messenger" sur www.QuickAccessPopup.com pour de l'aid
 lNavigateFileError	Une erreur s'est produite lors de l'ouverture du dossier:`n~1~.
 lNavigateSpecialError	Une erreur s'est produite lors de l'ouverture du dossier spécial #~1~.
 lOopsAddThisFolderTip	Pour de meilleurs résultats avec la commande "Ajouter le dossier actif ou la page web active":`n`n1) Activez la fenêtre ~1~ contenant le dossier ou la page à ajouter au menu.`n2) Ouvrez le menu popup avec ~2~.`n3) Choisissez "Ajouter le dossier actif ou la page web active" et enregistrez votre nouveau favori.
+lOopsAlternativeMenuModifiersDuplicates	La touche ou la combinaison de touches "~1~" est utilisée deux fois.`n`nVeuillez vous assurer que chaque combinaison n'est utilisée qu'une seule fois.
 lOopsAmpersandInName	L'esperluette "&" dans les noms de menus de Windows est utilisée pour définir des raccourcis clavier. Pour afficher une esperluette dans un nom de menu, entrez "&&". `n`nPour plus d'informations, recherchez "ampersand" dans la FAQ du site Web de QAP.
 lOopsCannotCopyFavorite	Les favoris de type "~1~" ne peuvent pas être copiés.
 lOopsCannotCopyMoveToSelf	Vous ne pouvez pas déplacer ou copier un favori dans son menu d'origine. Veuillez choisir un menu de destination.
@@ -688,6 +703,7 @@ lOptionsAdvancedOther	Options avancées diverses
 lOptionsAlternativeMenuFeatures	Menu Alternatif
 lOptionsAlternativeMenuFeaturesIntro	Choisisez les raccourcis des fonctionnalités du menu Alternatif.
 lOptionsAlternativeMenuShowNotification	Afficher la notification lorsque le Menu Alternatif est utilisé
+lOptionsAlternativeModifiers	Touches spéciales
 lOptionsAlternativeTrayIcon	Icône de remplacement (fichier,index)
 lOptionsBackupFolder	Dossier pour les copies de sécurité
 lOptionsCataloguePath	Dossier racine du catalogue
@@ -762,6 +778,7 @@ lOptionsPopupHotkeyTitles	Bouton de souris du menu Quick Access Popup|Raccourci 
 lOptionsPopupHotkeyTitlesSub	Ce bouton de la souris affiche le menu n'importe où  (sauf dans les  <a>applications exclues</a>) et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce raccourci clavier affiche le menu n'importe où  et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce bouton de la souris affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où (sans exception).|Ce raccourci clavier affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où.
 lOptionsPopupMenu	Menu Popup
 lOptionsQAPTempFolder	Dossier temporaire
+lOptionsQuickAddSnippetSubmenu	Sousmenu pour ~1~
 lOptionsRecentFolders	Nombre d'items récents dans le menu
 lOptionsRecentFoldersPrompt	Items récents et fréquemment utilisés
 lOptionsRefreshedMenusAttached	Attacher les menus dynamiques au menu de QAP
@@ -829,9 +846,12 @@ lReloadPrompt	Changement de ~1~ enregistré: ~2~. Voulez-vous relancer ~3~ en ~2~
 lSponsoredName	Ce logiciel est parrainé par ~1~
 lSponsoredNone	Veuillez cliquer ici pour parrainer ce logiciel
 lSponsoredUpdate	Veuillez mettre à jour votre code de donateur (pas besoin d'un nouveau don)
+lSponsorRemove	Retirer le code de parrainage
+lSponsorRemoved	Code de parrainage retiré.
 lTCMenuName	TC Directory Hotlist
 lTCMenuNameDescription	Pour les utilisateurs de Total Commander (TC), afficher un menu dynamique présentant les favoris ajoutés à la "TC Hotlist" enregistrés dans le fichier wincdm.ini.`n`nSpécifiez l'emplacement du fichier wincdm.ini de TC dans les "Options", onglet "Gestionnaires". Si TC a été sélectionné lorsque vous avez installé QAP, le menu "TC Directory Hotlist" a automatiquement été ajouté à votre menu.
 lTCWinCmdLocation	Emplacement de WinCmd.ini
+lToolTipAlwaysOnTop	Propriété "Fenêtre toujours visible" désactivée pour la fenêtre:`n~1~
 lToolTipBuilding	Préparation du menu...
 lToolTipLoading	Chargement des favoris...
 lToolTipRetrievingWebPageTitle	Récupération du titre de la page web...
