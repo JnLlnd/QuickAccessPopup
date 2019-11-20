@@ -642,6 +642,7 @@ lNavigateFileError	Une erreur s'est produite lors de l'ouverture du dossier:`n~1
 lNavigateSpecialError	Une erreur s'est produite lors de l'ouverture du dossier spécial #~1~.
 lOopsAddThisFolderTip	Pour de meilleurs résultats avec la commande "Ajouter le dossier actif ou la page web active":`n`n1) Activez la fenêtre ~1~ contenant le dossier ou la page à ajouter au menu.`n2) Ouvrez le menu popup avec ~2~.`n3) Choisissez "Ajouter le dossier actif ou la page web active" et enregistrez votre nouveau favori.
 lOopsAlternativeMenuModifiersDuplicates	La touche ou la combinaison de touches "~1~" est utilisée deux fois.`n`nVeuillez vous assurer que chaque combinaison n'est utilisée qu'une seule fois.
+lOopsAlternativeNotSupported	La commande du menu Alternatif "~1~" n'est pas disponible pour le type de favori "~2~".
 lOopsAmpersandInName	L'esperluette "&" dans les noms de menus de Windows est utilisée pour définir des raccourcis clavier. Pour afficher une esperluette dans un nom de menu, entrez "&&". `n`nPour plus d'informations, recherchez "ampersand" dans la FAQ du site Web de QAP.
 lOopsCannotCopyFavorite	Les favoris de type "~1~" ne peuvent pas être copiés.
 lOopsCannotCopyMoveToSelf	Vous ne pouvez pas déplacer ou copier un favori dans son menu d'origine. Veuillez choisir un menu de destination.
