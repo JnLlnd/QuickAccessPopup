@@ -107,6 +107,8 @@ lDialogContinue	Continuar
 lDialogCopy	Copiar
 lDialogCopyFavoritesTitle	Copiar Favoritos - ~1~ ~2~
 lDialogCtrl	Controlo
+lDialogCtrlLeft	Ctrl Esquerda
+lDialogCtrlRight	Ctrl Direita
 lDialogCtrlShort	Ctrl
 lDialogDescending	Descendente
 lDialogDialogBoxes	Caixas de di·logo
@@ -319,6 +321,8 @@ lDialogSettingsInvalid	Ficheiro de DefiniÁıes inv·lido.`n`nCertifique-se que o f
 lDialogSettingsNotSavedPrompt	A janela "Personalizar" est· aberta com alteraÁıes n„o guardadas. Essas alteraÁıes devem ser guardadas ou canceladas antes de executar acÁ„o seleccionada.`n`nDeseja:`n- "Guardar": guardar as alteraÁıes e executar a acÁ„o seleccionada`n- "Personalizar": cancelar a acÁ„o seleccionada e voltar ‡ janela "Personalizar"`n- "Cancelar": cancelar a acÁ„o seleccionada?
 lDialogSettingsNotSavedTitle	~1~ - DefiniÁıes n„o guardadas
 lDialogShift	Shift
+lDialogShiftLeft	Shift Esquerda
+lDialogShiftRight	Shift Direita
 lDialogShiftShort	Shift
 lDialogShortcut	Atalho
 lDialogShortcuts	Teclas de Atalho
@@ -438,6 +442,12 @@ lGuiOptions	OpÁıes
 lGuiOptionsDescription	Exibe a caixa de di·logo "OpÁıes" permitindo fazer o QAP trabalhar ‡ sua maneira.
 lGuiPassword	Palavra-passe
 lGuiPasswordNotEncripted	Nota: a palavra-passe N√O ser· encriptada ao ser enviada para a Internet.
+lGuiQuickAddNewSnippet	este novo snippet
+lGuiQuickAddSnippet	Adi√ß√£o R√°pida de Snippets
+lGuiQuickAddSnippetDescription	Crie rapidamente um favorito Snippet e o seu desencadeador da cadeia na mesma caixa de di√°logo. Se a √Årea de Transfer√™ncias do Windows contiver texto, ele ser√° usado como valor padr√£o. Use a caixa de di√°logo normal "Editar Favorito" para definir op√ß√µes mais avan√ßadas.
+lGuiQuickAddSnippetExample	Digite ~1~ num editor de texto para expandi-lo.
+lGuiQuickAddSnippetExampleName	Exemplo de Snippet
+lGuiQuickAddSnippetTitle	Adi√ß√£o R√°pida de Snippets - ~1~ ~2~
 lGuiRemoveFavorite	Remover
 lGuiResetDefault	Repor tecla de atalho padr„o
 lGuiSave	Guardar
@@ -567,10 +577,12 @@ lMenuListApplicationsDescription	Listar tÌtulo, caminho do process0 e outras pro
 lMenuMenu	Menu
 lMenuMyMusic	A Minha M˙sica
 lMenuMyQAPMenu	O Meu QAP B·sico
+lMenuMySnippetsMenu	Os meus Snippets
 lMenuMySpecialMenu	As Minhas Pastas Especiais
 lMenuMyVideo	Os Meus VÌdeos
 lMenuMyWindowsAppsMenu	As minhas Apps Windows
 lMenuNoCurrentFolder	N„o h· pastas abertas actualmente...
+lMenuOpenBackupDirectory	Abrir a Pasta de Seguran√ßas das Defini√ß√µes QAP
 lMenuOpenWorkingDirectory	Abrir pasta de definiÁıes QAP
 lMenuOptions	Op√ß√µes
 lMenuPictures	Imagens
@@ -621,6 +633,8 @@ lMenuUpdate	Procurar actualizaÁıes
 lMenuUpdateDescription	Verifica se existe uma nova vers„o disponÌvel na p·gina oficial do Quick Access Popup.
 lMenuUserFolder	Pasta do Utilizador
 lMenuUserPinned	Fixado pelo Utilizador
+lMenuWindowAlwaysonTop	Janela sempre vis√≠vel
+lMenuWindowAlwaysonTopDescription	Define a propriedade da actual janela "Sempre vis√≠vel" ligada ou desligada (alterna)
 lMessengerCloseQAPSettings	… aberta uma janela em ~1~, possivelmente com alteraÁıes n„o guardadas.`n`nPor favor, feche as janelas de definiÁıes antes, usando este menu de contexto.
 lMessengerDoNotRun	N„o execute o ~1~ directamente. Pode:`n`n- clicar com o bot„o direito do rato num Ìcone de ficheiro ou pasta no Explorador para adicion·-los ao menu`n- clicar com o bot„o direito do rato no fundo da janela do Explorador para adicionar a pasta actual`n- clicar com o bot„o direito do rato no fundo do Ambiente de Trabalho para fazer emergir o menu.`n`nCertifique-se que o ~2~ est· aberto antes de usar os seus menus de contexto. Ver caixa de selecÁ„o "Menus de Contexto" na janela "OpÁıes" do ~2~.
 lMessengerError	Ocorreu um erro.`n`nCertifique-se de que o ~1~ est· em execuÁ„o antes de usar os seus menus de contexto.
@@ -628,6 +642,8 @@ lMessengerHelp	Procure o "Messenger" em www.QuickAccessPopup.com para ajuda.
 lNavigateFileError	Ocorreu um erro ao abrir a pasta:`n~1~.
 lNavigateSpecialError	Ocorreu um erro ao abrir a pasta especial #~1~.
 lOopsAddThisFolderTip	Para melhores resultados com o comando "Adicionar Pasta Activa ou p·gina Web":`n`n1) Active a janela ~1~ contendo a pasta ou ligaÁ„o a adicionar ao seu menu.`n2) Abra o menu emergente usando ~2~.`n3) Seleccione "Adicionar Pasta Activa ou p·gina Web" e guarde o seu novo favorito.
+lOopsAlternativeMenuModifiersDuplicates	O Modificador "~1~" do Menu Alternativo √© usado duas vezes.`n`nPor favor, certifique-se que cada modificador √© usado apenas uma vez.
+lOopsAlternativeNotSupported	O comando do Menu Alternativo "~1~" n√£o √© suportado para favoritos do tipo "~2~".
 lOopsAmpersandInName	O s√≠mbolo "&" √© utilizado para definir teclas de atalho nos menus do Windows. Para exibir o s√≠mbolo num nome de menu, digite "&&".`n`nPara mais informa√ß√£o, procure por "ampersand" nas FAQ na p√°gina do QAP.
 lOopsCannotCopyFavorite	N„o È possÌvel copiar favoritos do tipo "~1~".
 lOopsCannotCopyMoveToSelf	N„o pode mover ou copiar favoritos para a sua localizaÁ„o actual. Por favor, seleccione outro destino.
@@ -689,6 +705,7 @@ lOptionsAdvancedOther	OpÁıes AvanÁadas Diversas
 lOptionsAlternativeMenuFeatures	Teclas de Atalho do Menu Alternativo
 lOptionsAlternativeMenuFeaturesIntro	Gerir os atalhos que ir„o dar acesso ‡s funÁıes do menu Alternativo.
 lOptionsAlternativeMenuShowNotification	Exibir NotificaÁ„o quando usar o Menu Alternativo
+lOptionsAlternativeModifiers	Modificadores
 lOptionsAlternativeTrayIcon	SubstituiÁ„o do Ìcone da ·rea de notificaÁ„o do QAP (ficheiro,Ìndice)
 lOptionsBackupFolder	Ficheiro de definiÁıes da pasta cÛpia de seguranÁa
 lOptionsCataloguePath	Cat·logo pasta raiz
@@ -763,6 +780,7 @@ lOptionsPopupHotkeyTitles	Quick Access Popup Bot„o do rato|Quick Access Popup At
 lOptionsPopupHotkeyTitlesSub	Este bot„o do rato mostra o menu em toda a parte (excepto nas <a>aplicaÁıes excluÌdas</a>) e abre os seus favoritos ou navega para a sua pasta.|Esta tecla de atalho mostra o menu em toda a parte e abre os seus favoritos ou navega para a sua pasta.|Este bot„o do rato exibe um menu aternativo disponibilizando diversas funÁıes. Este menu pode ser aberto em toda a parte (sem excepÁıes).|Esta tecla de atalho exibe um menu aternativo disponibilizando diversas funÁıes. Este menu pode ser aberto em toda a parte.
 lOptionsPopupMenu	Menu Emergente
 lOptionsQAPTempFolder	Pasta Tempor·ria
+lOptionsQuickAddSnippetSubmenu	Sub-menu para ~1~
 lOptionsRecentFolders	N˙mero de itens em menus
 lOptionsRecentFoldersPrompt	Itens Recentes e Menus Frequentes:
 lOptionsRefreshedMenusAttached	Anexar todos os menus din√¢micos ao menu principal do QAP
@@ -830,9 +848,12 @@ lReloadPrompt	~1~ alterado para ~2~. Deseja recarregar ~3~ em ~2~ agora? As alte
 lSponsoredName	Este software È gentilmente patrocinado por ~1~
 lSponsoredNone	Por favor, clique aqui para patrocinar este software
 lSponsoredUpdate	Por favor, actualize o seu cÛdigo de doador (n„o È necess·ria nova doaÁ„o)
+lSponsorRemove	Removee c√≥digo de patrocinador
+lSponsorRemoved	O c√≥digo de patrocinador foi removido
 lTCMenuName	Lista de Pasta Favoritas do TC
 lTCMenuNameDescription	Para os utilizadores do Total Commander (TC), exibe um menu din‚mico construÌdo com os favoritos adicionados ‡ Hotlist do TC como encontrado no ficheiro wincdm.ini.`n`nDefina a localizaÁ„o do ficheiro wincdm.ini em "OpÁıes", no separador "Gest„o de Ficheiros". Se o TC estava seleccionado quando instalou o QAP, a pasta Hotlist foi adicionada automaticamente ao seu menu.
 lTCWinCmdLocation	LocalizaÁ„o do WinCmd.ini
+lToolTipAlwaysOnTop	"Sempre vis√≠vel" DESLIGADO para a janela:`n~1~
 lToolTipBuilding	A construir o menu...
 lToolTipLoading	A carregar favoritos...
 lToolTipRetrievingWebPageTitle	A recuperar tÌtulo da p·gina web...
