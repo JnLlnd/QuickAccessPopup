@@ -107,6 +107,8 @@ lDialogContinue	Continua
 lDialogCopy	Copia
 lDialogCopyFavoritesTitle	Copia Preferiti - ~1~ ~2~
 lDialogCtrl	Control
+lDialogCtrlLeft	Ctrl Sx
+lDialogCtrlRight	Ctrl Dx
 lDialogCtrlShort	Ctrl
 lDialogDescending	Discendente
 lDialogDialogBoxes	Caselle di dialogo
@@ -319,6 +321,8 @@ lDialogSettingsInvalid	File delle Impostazioni invalido.`n`nAssicurati che il fi
 lDialogSettingsNotSavedPrompt	La finestra "Personalizzare" è aperta con modifiche non ancora salvate. Questi cambiamenti devono essere salvati o annullate prima di eseguire l'azione richiesta.`n`nVuoi:`n- "Salvare": salva le modifiche e procedi con l'azione richiesta`n- "Personalizzare": annulla l'azione richiesta e torna alla finestra "Personalizzare"`n- "Annulla": preferisci semplicemente annullare l'azione richiesta?
 lDialogSettingsNotSavedTitle	~1~ - Impostazioni non salvate
 lDialogShift	Shift
+lDialogShiftLeft	Shift Sx
+lDialogShiftRight	Shift Dx
 lDialogShiftShort	Shift
 lDialogShortcut	Scorciatoia
 lDialogShortcuts	Scorciatoie
@@ -438,6 +442,12 @@ lGuiOptions	Opzioni
 lGuiOptionsDescription	Visualizza la casella di dialogo "Opzioni" per consentire a QAP di comportarsi come preferisci.
 lGuiPassword	Password
 lGuiPasswordNotEncripted	Nota: la password non verrà criptata prima di inviarla in Internet.
+lGuiQuickAddNewSnippet	questo nuovo frammento testuale
+lGuiQuickAddSnippet	Aggiungi frammento testuale (veloce)
+lGuiQuickAddSnippetDescription	Crea velocemente un Preferito di un frammento testuale e l'attivatore della sua stringa di sostituzione dalla stessa casella di dialogo. Se gli Appunti di contengono testo, verrà usato come valore predefinito. Usa la normale casella di dialogo "Modifica Preferito" per impostare impostazioni più avanzate.
+lGuiQuickAddSnippetExample	Digita ~1~ in un editor di testo per farlo espandere.
+lGuiQuickAddSnippetExampleName	Esempio di frammento testuale (Snippet)
+lGuiQuickAddSnippetTitle	Aggiunta veloce di frammenti di testo (Snippet) - ~1~ ~2~
 lGuiRemoveFavorite	Elimina
 lGuiResetDefault	Ripristina hotkey predefinito
 lGuiSave	Salva
@@ -567,10 +577,12 @@ lMenuListApplicationsDescription	Titolo Lista, percorso del processo ed altre pr
 lMenuMenu	Menù
 lMenuMyMusic	Musica
 lMenuMyQAPMenu	Strumenti di QAP
+lMenuMySnippetsMenu	I miei Frammenti Testuali (Snippets)
 lMenuMySpecialMenu	Cartelle Speciali
 lMenuMyVideo	Video
 lMenuMyWindowsAppsMenu	Le Mie App Windows
 lMenuNoCurrentFolder	Nessuna cartella attualmente aperta...
+lMenuOpenBackupDirectory	Apri la Cartella di Backup delle Impostazioni di QAP
 lMenuOpenWorkingDirectory	Apri la directory delle Impostazioni di QAP
 lMenuOptions	Opzioni
 lMenuPictures	Immagini
@@ -621,6 +633,8 @@ lMenuUpdate	Cerca aggiornamenti
 lMenuUpdateDescription	Controlla sul sito web di Quick Access Popup se è disponibile una nuova versione.
 lMenuUserFolder	Cartella Utente
 lMenuUserPinned	Collegamenti evidenziati dall'utente
+lMenuWindowAlwaysonTop	Finestra Sempre in Primo Piano
+lMenuWindowAlwaysonTopDescription	Imposta la proprietà "Sempre in Primo Piano" per la finestra corrente (commutatore acceso/spento)
 lMessengerCloseQAPSettings	Una finestra delle Impostazioni è aperta in ~1~, eventualmente con modifiche non salvate.`n`nSi consiglia di chiudere le finestre di impostazioni prima di usare questo menù contestuale.
 lMessengerDoNotRun	Non eseguire ~1~ direttamente. Puoi in alternativa:`n`n- fare un click-destro su un'icona di file/cartella in Explorer per aggiungerli al menù`n- click-destro in una finestra di Explorer (ossia sul suo sfondo) per aggiungere tale cartella`n- click-destro sullo sfondo del Desktop per aprire il menù a popup.`n`nAssicurati che ~2~ sia in esecuzione prima di usare i suoi menù contestuali. Vedere la casella di spunta  "Menù contestuali" nella finestra "Opzioni" ~2~.
 lMessengerError	Si è verificato un errore.`n`nAssicurati che ~1~ sia in esecuzione prima di usare i suoi menù contestuali.
@@ -628,6 +642,8 @@ lMessengerHelp	Cerca "Messenger" su www.QuickAccessPopup.com per aiuto.
 lNavigateFileError	C'è stato un errore nell'aprire la cartella:`n~1~.
 lNavigateSpecialError	C'è stato un errore nell'aprire la cartella speciale #~1~.
 lOopsAddThisFolderTip	Per ottenere un risultato migliore dal comando "Aggiungi Cartella Attiva o Pagina Web":`n`n1) Attiva la finestra ~1~ contenente la cartella o link da aggiungere al menù.`n2) Apri il menù popup usando ~2~.`n3) Seleziona "Aggiungi Cartella Attiva o Pagina web" e salva il nuovo Preferito.
+lOopsAlternativeMenuModifiersDuplicates	Il Modificatore "~1~" del Menù alternativo è stato usato due volte.`n`nAssicurati che ciascun modificatore venga usato soltanto una volta.
+lOopsAlternativeNotSupported	Il comando "~1~" del menù Alternativo non è supportato per preferiti di tipo "~2~".
 lOopsAmpersandInName	L'ampersand "&" viene riservato per assegnare scorciatoie da tastiera nei nomi dei menù di Windows. Per visualizzare un ampersand nel nome di un menù, inseriscilo così: "&&".`n`nPer maggiori informazioni, cerca "ampersand" nelle FAQ del sito web di QAP.
 lOopsCannotCopyFavorite	Preferiti di tipo "~1~" non possono essere copiati.
 lOopsCannotCopyMoveToSelf	Non puoi spostare o copiare preferiti nella loro attuale collocazione. Per favore, seleziona una destinazione differente.
@@ -689,6 +705,7 @@ lOptionsAdvancedOther	Opzioni Avanzate varie
 lOptionsAlternativeMenuFeatures	Combinazioni di tasti per il Menù Alternativo
 lOptionsAlternativeMenuFeaturesIntro	Gestisci le scorciatoie che lanciano le funzionalità del Menù Alternativo.
 lOptionsAlternativeMenuShowNotification	Mostra una notifica quando si sta usando il Menù Alternativo
+lOptionsAlternativeModifiers	Modificatori
 lOptionsAlternativeTrayIcon	Sostituzione icona in area notifiche di QAP (file, indice)
 lOptionsBackupFolder	Cartella di backup del file delle Impostazioni principali
 lOptionsCataloguePath	Cartella radice del catalogo
@@ -763,6 +780,7 @@ lOptionsPopupHotkeyTitles	Tasto del Mouse di Quick Access Popup|Scorciatoia da t
 lOptionsPopupHotkeyTitlesSub	Questo tasto del mouse visualizza il menù popup ovunque (tranne che su <a>excluded applications</a>) e apre direttamente il Preferito o la cartella scelta.|Questo tasto apre il menù popup ovunque e apre direttamente il Preferito o la cartella scelta.|Questo tasto del mouse apre un menù alternativo che contiene varie funzioni. Tale menù può essere aperto ovunque (senza eccezioni).|Questo tasto apre un menù alternativo con varie funzioni. Tale menù può essere aperto ovunque.
 lOptionsPopupMenu	Menù Popup
 lOptionsQAPTempFolder	Cartella Temporanea
+lOptionsQuickAddSnippetSubmenu	Sottomenù per ~1~
 lOptionsRecentFolders	Numero di oggetti nei Menù
 lOptionsRecentFoldersPrompt	Menù di file/cartelle Recenti e Frequenti:
 lOptionsRefreshedMenusAttached	Aggiungi tutti i menù dinamici al menù principale di QAP
@@ -830,9 +848,12 @@ lReloadPrompt	~1~ cambiato in ~2~. Vuoi ricaricare ~3~ in ~2~ ora? Le modifiche 
 lSponsoredName	Questo programma è gentilmente sostenuto da ~1~
 lSponsoredNone	Per favore, clicca qui per sostenere questo programma
 lSponsoredUpdate	Per favore, aggiorna il tuo codice sostenitore (non è richiesta una nuova offerta)
+lSponsorRemove	Rimuovi il codice sponsor
+lSponsorRemoved	Codice Sponsor rimosso
 lTCMenuName	Hotlist Cartelle di TC
 lTCMenuNameDescription	Per gli utenti di Total Commander (TC), visualizza un menù dinamico costruito con i preferiti aggiunti alla lista-cartelle di TC, che viene riportata nel, e richiamata dal, file wincdm.ini.`n`nImposta la posizione del file wincdm.ini nelle "Opzioni", tab "File Manager". Se era stato selezionato TC al momento dell'installazione di QAP, la lista-Cartelle è stata aggiunta automaticamente al tuo menù.
 lTCWinCmdLocation	posizione di WinCmd.ini
+lToolTipAlwaysOnTop	"Sempre in Primo Piano" disattivato per la finestra:`n~1~
 lToolTipBuilding	Sto costruendo il menu...
 lToolTipLoading	Sto caricando i Preferiti...
 lToolTipRetrievingWebPageTitle	Sto recuperando il titolo della pagina web...
