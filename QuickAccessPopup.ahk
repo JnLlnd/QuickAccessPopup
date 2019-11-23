@@ -31,6 +31,35 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.3 (2019-11-24)
+ 
+Snippet Quick Add
+- new QAP Feature "Snippet Quick Add" displaying a dialog box where you can create a snippet and its hotstring in one step, with the content of the Windows Clipboard used to suggest default values for the name and content of the new snippet
+- you can add the "Snippet Quick Add" feature to a menu by selecting "Add Favorite", choose the type "QAP Feature", section "QAP Menu Editing" and select "Snippet Quick Add"
+- in "Options", section "Snippets and Hotstrings", you can set the default submenu where the snippets added with the "Snippet Quick Add" dialog box are stored
+- to promote the use of snippets, a new menu "My Snippets" is added to your menu with the "Snippet Quick Add" feature and an example of snippet including an hotstring (you can move or remove this menu in the "Customize" window)
+ 
+Configurable hotkeys for Alternative menus features
+- redesign the section "Alternative Menu Hotkeys" of the "Options" dialog box allowing to assign various keyboard hotkeys for Alternative menu features ("Open in new window", "Edit a Favorite", "Copy a Favorite's Path or URL", "Run as administrator", "Open the Containing Folder in a New Window" and "Open the Containing Folder in the Current Window")
+- available hotkeys are: Left + Shift, Left + Control, Left + Shift + Control, Right + Shift, Right + Control and Right + Shift + Control
+- to use these hotkeys, open the main QAP menu and, before clicking a favorite, press one of the six hotkeys combination to activate its associated feature
+- improved Alternative menu QAP feature "Open the Containing Folder...", including support for Special folders
+- an error message is displayed when an Alternative menu feature is not supported for a given favorite type
+ 
+Various improvements
+- new QAP feature "Window Always on Top" that toggle the always on top property of the selected window (you can add this feature to a menu by selecting "Add Favorite", choose the type "QAP Feature", section "Window Management" and select "Window Always on Top")
+- a tooltip message is displayed when the "Always on Top" property is turned OFF for a window
+- in the "Enter your donor code" dialog box, add a link to remove an existing sponsor code if it was entered by error
+- in "Edit Favorite" dialog box for "Folder" favorites, in "Windows Options" tab, support user variables "{...}" and environement variables "%...%" for Explorer window position Left, Top, Width and Height values
+ 
+Bug fixes
+- now open some Special folders in Directory opus lister instead of an external window
+- fix a bug breaking the Alternative menu when saving any change in the "Options" dialog box
+- fix various bugs when opening a group of folders, when adding a favorite after deleting multiple favorites and when positioning Explorer window on active monitor
+ 
+Language updates
+- 
+
 Version BETA: 10.2.9.3 (2019-11-20)
 - fix a bug breaking the Alternative menu when any change in the "Options" dialog box are saved
 - stop showing the irrelevent button "Reset default hotkey" when selecting an hotkey for an Alternative menu features
@@ -3693,7 +3722,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.2.9.3
+;@Ahk2Exe-SetVersion 10.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3798,8 +3827,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.2.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
