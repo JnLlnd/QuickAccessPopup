@@ -58,7 +58,7 @@ Bug fixes
 - fix various bugs when opening a group of folders, when adding a favorite after deleting multiple favorites and when positioning Explorer window on active monitor
  
 Language updates
-- 
+- French, German, Korean, Portuguese, Brazilian-Portuguese and Italian language update for v10.3
 
 Version BETA: 10.2.9.3 (2019-11-20)
 - fix a bug breaking the Alternative menu when any change in the "Options" dialog box are saved
