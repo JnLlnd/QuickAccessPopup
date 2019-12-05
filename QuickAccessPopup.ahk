@@ -11314,7 +11314,7 @@ Gui, 2:Submit, NoHide
 saThisMenu := o_Containers.AA[f_drpParentMenu].SA
 
 for intIndex, o_Item in saThisMenu
-	if (o_EditedFavorite.AA.strFavoriteName = o_Item.AA.strFavoriteName)
+	if (o_EditedFavorite.AA.strFavoriteName = o_Item.AA.strFavoriteName and o_EditedFavorite.AA.strFavoriteType = o_Item.AA.strFavoriteType) ; to cover items of diff types with empty name
 			and (o_MenuInGui.AA.strMenuPath = o_Containers.AA[f_drpParentMenu].AA.strMenuPath ; skip edited item itself
 			and !InStr(strGuiFavoriteLabel, "Copy")) ; and that we are not copying a favorite
 		Continue
@@ -16210,7 +16210,7 @@ GetWinInfo:
 ;------------------------------------------------------------
 
 ; 4096: System Modal (always on top)
-MsgBox, % 1 + 64 + 4096, % g_strAppNameText . " - " . o_L["MenuGetWinInfo"], % L(o_L["DialogGetWinInfo"], new Triggers.HotkeyParts(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey).Hotkey2Text())
+MsgBox, % 1 + 4096, % g_strAppNameText . " - " . o_L["MenuGetWinInfo"], % L(o_L["DialogGetWinInfo"], new Triggers.HotkeyParts(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey).Hotkey2Text())
 
 IfMsgBox, OK
 	g_blnGetWinInfo := true
