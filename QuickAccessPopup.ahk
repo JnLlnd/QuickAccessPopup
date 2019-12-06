@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.3.1 (2019-12-??)
+ 
 Version: 10.3 (2019-11-24)
  
 Snippet Quick Add
@@ -3722,7 +3724,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3
+;@Ahk2Exe-SetVersion 10.3.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3827,7 +3829,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -10160,6 +10162,13 @@ if (o_EditedFavorite.AA.strFavoriteName = o_L["ToolTipRetrievingWebPageTitle"])
 	GuiControl, Enable, f_strFavoriteShortName
 }
 
+if (SubStr(o_EditedFavorite.AA.strFavoriteName, 1, 3) = "::{")
+; favorite name is a CLSID (for example from context menu add this folder for a control panel item)
+{
+	o_EditedFavorite.AA.strFavoriteName := GetLocalizedNameForClassId(SubStr(o_EditedFavorite.AA.strFavoriteName, 3))
+	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
+}
+
 
 GuiAddFavoriteCleanup:
 blnIsGroupMember := ""
@@ -13084,7 +13093,7 @@ if (!g_intNewItemPos)
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
 	and !(RegExMatch(strNewFavoriteLocation, "i){(|CUR_|SEL_)(LOC|NAME|DIR|EXT|NOEXT|DRIVE|Clipboard)}") ; case insensitive
-		or RegExMatch(strNewFavoriteLocation, "i)({Input:)"))
+		or RegExMatch(strNewFavoriteLocation, "i)({Input:)") or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
 {
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
@@ -20953,6 +20962,8 @@ GetLocalizedNameForClassId(strClassId)
 	; was StringRight, strDllFile, saLocalizedString[1], % StrLen(saLocalizedString[1]) - intDllNameStart
 	strDllFile := SubStr(saLocalizedString[1], intDllNameStart + 1)
 	strDllIndex := saLocalizedString[2]
+	if InStr(strDllIndex, "#") ; for example in "@%SystemRoot%\System32\usercpl.dll,-1#immutable1")
+		strDllIndex := SubStr(strDllIndex, 1, InStr(strDllIndex, "#") - 1) ; strip from "#"
 	strTranslatedName := TranslateMUI(strDllFile, Abs(strDllIndex))
 
 	return strTranslatedName
@@ -26943,6 +26954,7 @@ class Container
 				else
 					if InStr("Folder|Document|Application", this.AA.strFavoriteType) ; not for URL, Special Folder and others
 						and !LocationIsHTTP(this.AA.strFavoriteLocation) ; except if the folder location is on a server (like WebDAV)
+						and !(SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{")
 					{
 						; placeholders are already expanded but neet to expand other variables
 						; make the location absolute based on the current working directory
@@ -26997,8 +27009,8 @@ class Container
 					; except if the location is a TC Hotlist folder managed by a file system plugin (like VirtualPanel)
 				and !(SubStr(this.aaTemp.strLocationWithPlaceholders, 1, 1) = "?" and this.aaTemp.strOpenFavoriteLabel = "OpenDOpusFavorite")
 					; except if the location is a DOpus Favorite special folder identified with <pidl>
-				and (this.aaTemp.strOpenFavoriteLabel <> "OpenDOpusLayout")
-					; except if the location is a DOpus Layout (with format "layout_name_or_sub/sub/name")
+				and (this.aaTemp.strOpenFavoriteLabel <> "OpenDOpusLayout") ; except if the location is a DOpus Layout (with format "layout_name_or_sub/sub/name")
+				and !(SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{") ; except is location is a CLSID (for example, some control panel items)
 			{
 				strTemp := this.aaTemp.strLocationWithPlaceholders ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 				if !FileExistInPath(strTemp) ; return g_strLocationWithPlaceholders with expanded relative path and envvars, also search in PATH
