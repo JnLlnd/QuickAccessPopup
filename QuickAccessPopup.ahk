@@ -19207,8 +19207,11 @@ GetIcon4Location(strLocation)
 	else if !StrLen(strRegistryIconResource) ; empty result, try reading the open command
 	{
 		RegRead, strRegistryIconResource, HKEY_CLASSES_ROOT, %strHKeyClassRoot%\shell\open\command
-		strRegistryIconResource := StrReplace(strRegistryIconResource, " ""%1""") ; remove " %1"
-		return StrReplace(strRegistryIconResource, """") ; remove double-cuotes
+		; check for 3rd " to see if strRegistryIconResource is formated like "path\file.exe" "%1" with possibly something before or
+		; after "%1" like in ChromeHTML example "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" -- "%1"
+		if InStr(strRegistryIconResource, """", false, 1, 3)
+			strRegistryIconResource := SubStr(strRegistryIconResource, 1, InStr(strRegistryIconResource, """", false, 1, 2)) ; strip after 2nd "
+		return StrReplace(strRegistryIconResource, """") ; remove double-quotes
 	}
 	else if !StrLen(strRegistryIconResource) ; empty result
 		return "iconUnknown"
