@@ -12778,6 +12778,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		until (strLoopCriteria > 0)
 		o_EditedFavorite.AA.strFavoriteFolderLiveSort := (f_radLiveFolderSortA ? "A" : "D") . strLoopCriteria
 	}
+	else
+		o_EditedFavorite.AA.intFavoriteFolderLiveLevels := 0
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 		; 1 macro (boolean) true: send snippet to current application using macro mode / else paste as raw text
