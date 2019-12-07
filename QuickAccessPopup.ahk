@@ -26904,6 +26904,12 @@ class Container
 					else
 						this.aaTemp.strTargetAppName := "Explorer"
 					
+			if (SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{") ; always open CLSIDs (for example, control panels items) in new window with Explorer
+			{
+				this.aaTemp.strHotkeyTypeDetected := "Launch"
+				this.aaTemp.strTargetAppName := "Explorer"
+			}
+			
 			return (this.aaTemp.strTargetAppName <> "Unknown")
 		}
 		;---------------------------------------------------------
