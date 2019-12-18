@@ -9304,8 +9304,8 @@ Gui, 1:ListView, f_lvFavoritesListSearch
 LV_Delete()
 o_SearchResult.LoadInGui()
 
-LV_Modify((o_SearchResult.AA.intCurrentLastPosition ? o_SearchResult.AA.intCurrentLastPosition : 1), "Select Focus") ; ##### o_SearchResult.AA.intCurrentLastPosition ?
-o_SearchResult.AA.intCurrentLastPosition := ""
+LV_Modify((o_SearchResult.AA.intLastSearchPosition ? o_SearchResult.AA.intLastSearchPosition : 1), "Select Focus") ; ##### o_SearchResult.AA.intLastSearchPosition ?
+o_SearchResult.AA.intLastSearchPosition := ""
 Gosub, AdjustColumnsWidth
 
 return
@@ -9596,7 +9596,7 @@ GuiControl, %strShowHideCommand%, f_lvFavoritesListSearch
 if (A_ThisLabel = "GuiFavoritesListFilterShowOpen") ; must be before changing default listview
 {
 	; g_saSubmenuStackPrev.Push(o_MenuInGui.AA.strMenuPath) ; push the current menu to the left arrow stack
-	o_MenuInGui.AA.intLastPosition := LV_GetNext("Focused")
+	o_MenuInGui.AA.intMenuLastPosition := LV_GetNext("Focused")
 	g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
 	###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: Search", g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
@@ -11980,7 +11980,7 @@ OpenMenuFromGuiHotkey:
 OpenMenuFromGuiSearch:
 ;------------------------------------------------------------
 
-intCurrentLastPosition := 0
+intMenuLastPosition := 0
 
 if (A_ThisLabel = "GuiMenusListChanged")
 {
@@ -11997,23 +11997,33 @@ if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 {
 	; pop last menu and the focus position left/right arrow stack and remove it from stack
 	oPopMenu := (A_ThisLabel = "GuiGotoMenuPrev" ? g_saSubmenuStackPrev.Pop() : g_saSubmenuStackNext.Pop())
-	intCurrentLastPosition := oPopMenu.AA.intLastPosition
+	intMenuLastPosition := oPopMenu.AA.intMenuLastPosition
 	
 	; push current menu/search to left/right arrow stack
-	oPushMenu := o_MenuInGui
-	oPushMenu.AA.intLastPosition := LV_GetNext("Focused")
+	oPushMenu := (SearchIsVisible() ? o_SearchResult.Backup() : o_MenuInGui)
+	oPushMenu.AA.intMenuLastPosition := LV_GetNext("Focused")
 
 	if (A_ThisLabel = "GuiGotoMenuPrev")
 	{
 		g_saSubmenuStackNext.Push(oPushMenu)
-		###_O2(A_ThisLabel . "`n`nPop: " . oPopMenu.AA.strMenuPath . "`nPush: " . StrReplace(oPushMenu.AA.strMenuPath, g_strEscapePipe, "|") . "`nInGui: " . oPopMenu.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
+		###_O2(A_ThisLabel . "`n`nPop: " . oPopMenu.AA.strMenuPath . "`nPush: " . oPushMenu.AA.strMenuPath . "`nInGui: " . oPopMenu.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	}
-	else
+	else ; GuiGotoMenuNext
 	{
 		g_saSubmenuStackPrev.Push(oPushMenu)
-		###_O2(A_ThisLabel . "`n`nPop: " . StrReplace(oPopMenu.AA.strMenuPath, g_strEscapePipe, "|") . "`nPush: " . StrReplace(oPushMenu.AA.strMenuPath, g_strEscapePipe, "|") . "`nInGui: " . oPopMenu.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
+		###_O2(A_ThisLabel . "`n`nPop: " . StrReplace(oPopMenu.AA.strMenuPath, g_strEscapePipe, "|") . "`nPush: " . oPushMenu.AA.strMenuPath . "`nInGui: " . oPopMenu.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	}
 	
+	if (oPopMenu.AA.strMenuType = "Search") ; we have a search result
+	{
+		o_SearchResult := oPopMenu
+		o_MenuInGui := o_SearchResult.AA.oStartingMenu
+		o_SearchResult.AA.intLastSearchPosition := intMenuLastPosition ; to restore position after favorite is saved or cancelled
+		
+		Gosub, RestoreSearchResult
+		return
+	}
+	; else this is a regular menu
 	o_MenuInGui := oPopMenu
 }
 else
@@ -12022,7 +12032,12 @@ else
 		oMenuInGuiCandidate := o_Containers.AA[strNewDropdownMenu]
 	else if (A_ThisLabel = "GuiGotoMenuUp")
 		oMenuInGuiCandidate := o_MenuInGui.AA.oParentMenu
-	else if (A_ThisLabel = "OpenMenuFromEditForm") or (A_ThisLabel = "OpenMenuFromGuiHotkey")
+	else if (A_ThisLabel = "OpenMenuFromGuiHotkey")
+		if SearchIsVisible()
+			oMenuInGuiCandidate := o_SearchResult.SA[g_intOriginalMenuPosition].AA.oSubMenu
+		else
+			oMenuInGuiCandidate := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.oSubMenu
+	else if (A_ThisLabel = "OpenMenuFromEditForm")
 		oMenuInGuiCandidate := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.oSubMenu
 	; else "OpenMenuFromGuiSearch", we already have oMenuInGuiCandidate
 
@@ -12031,13 +12046,23 @@ else
 		gosub, GuiMenusListChangedCleanup
 		return
 	}
+	; else continue
+	
+	if SearchIsVisible()
+	{
+		oPushMenu := o_SearchResult.Backup()
+		oPushMenu.AA.intLastSearchPosition := LV_GetNext("Focused")
+		g_saSubmenuStackPrevious.Push(oPushMenu) ; push the current search result to the left arrow stack
+		###_O2(A_ThisLabel . "`n`nPush: " . oPushMenu.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrevious, g_saSubmenuStackNext)
+	}
 	else
 	{
 		o_MenuInGui.AA.intLastPostion := LV_GetNext("Focused")
-		g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
-		###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
-		o_MenuInGui := oMenuInGuiCandidate
+		g_saSubmenuStackPrevious.Push(o_MenuInGui) ; push the current menu to the left arrow stack
+		###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrevious, g_saSubmenuStackNext)
 	}
+	
+	o_MenuInGui := oMenuInGuiCandidate
 }
 
 Gosub, GuiFavoritesListFilterHide
@@ -12048,23 +12073,38 @@ if (A_ThisLabel = "OpenMenuFromGuiSearch")
 else
 	Gosub, LoadMenuInGui
 
-if (intCurrentLastPosition) ; we went to a previous menu
+if (intMenuLastPosition) ; we went to a previous menu
 {
 	LV_Modify(0, "-Select")
-	LV_Modify(intCurrentLastPosition, "Select Focus Vis")
+	LV_Modify(intMenuLastPosition, "Select Focus Vis")
 }
 
 if (A_ThisLabel = "GuiMenusListChanged") ; keep focus on dropdown list
 	GuiControl, Focus, f_lvFavoritesList
 
 GuiMenusListChangedCleanup:
-intCurrentLastPosition := ""
+intMenuLastPosition := ""
 strNewDropdownMenu := ""
 strWriteAccessMessage := ""
-strExternalMenuName := ""
 oMenuInGuiCandidate := ""
 oPopMenu := ""
 oPushMenu := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+RestoreSearchResult:
+;------------------------------------------------------------
+
+Gui, 1:ListView, f_lvFavoritesListSearch
+
+GuiControl, , f_blnFavoritesListFilterExtended, % (o_SearchResult.AA.blnFavoritesListFilterExtended = 1)
+GuiControl, , f_strFavoritesListFilter, % o_SearchResult.AA.strMenuPath ; triggers FavoritesListFilterChanged
+
+Gosub, GuiFavoritesListFilterShow
+GuiControl, 1:Focus, f_lvFavoritesListSearch ; focus filtered list instead of the filter edit control
 
 return
 ;------------------------------------------------------------
@@ -12875,7 +12915,7 @@ if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview 
 else if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 ; only if saving only one favorite, load destination menu to gui and select new/edited item
 {
-	o_MenuInGui.AA.intLastPosition := g_intOriginalMenuPosition
+	o_MenuInGui.AA.intMenuLastPosition := g_intOriginalMenuPosition
 	g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
 	
 	o_MenuInGui := o_Containers.AA[strDestinationMenu]
