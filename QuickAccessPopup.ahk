@@ -4906,7 +4906,6 @@ global g_strMenuBackgroundColor := o_Settings.ReadIniValue("MenuBackgroundColor"
 
 global o_Containers := new Containers() ; replace g_objMenusIndex index of menus path used in Gui menu dropdown list and to access the menu object for a given menu path
 global o_MainMenu := new Container("Menu", o_L["MainMenuName"]) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
-global o_SearchResult := new Container("Search", o_L["GuiSearchResultTitle"], "", "nomenu")
 
 Gosub, LoadMenuFromIni
 
@@ -9291,21 +9290,21 @@ FavoritesListFilterChanged:
 Gui, 1:Submit, NoHide
 
 GuiControlGet, strFilter, 1:, f_strFavoritesListFilter
-o_SearchResult.AA.strMenuPath := Trim(strFilter)
-o_SearchResult.AA.blnFavoritesListFilterExtended := f_blnFavoritesListFilterExtended
-o_SearchResult.AA.oStartingMenu := o_MenuInGui
+o_MenuInGui.AA.strMenuPath := Trim(strFilter)
+o_MenuInGui.AA.blnFavoritesListFilterExtended := f_blnFavoritesListFilterExtended
 
-o_SearchResult.SA := Object() ; flush content of previous search
+o_MenuInGui.SA := Object() ; flush content of previous search
 
-if StrLen(o_SearchResult.AA.strMenuPath)
-	o_SearchResult.LoadSearchResult() ; populate search result object starting at menu currently in gui
+if StrLen(o_MenuInGui.AA.strMenuPath)
+	o_MenuInGui.AA.oStartingMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
 
+Gui, 1:Default
 Gui, 1:ListView, f_lvFavoritesListSearch
 LV_Delete()
-o_SearchResult.LoadInGui()
+o_MenuInGui.LoadInGui()
 
-LV_Modify((o_SearchResult.AA.intLastSearchPosition ? o_SearchResult.AA.intLastSearchPosition : 1), "Select Focus") ; ##### o_SearchResult.AA.intLastSearchPosition ?
-o_SearchResult.AA.intLastSearchPosition := ""
+LV_Modify((o_MenuInGui.AA.intLastSearchPosition ? o_MenuInGui.AA.intLastSearchPosition : 1), "Select Focus")
+o_MenuInGui.AA.intLastSearchPosition := ""
 Gosub, AdjustColumnsWidth
 
 return
@@ -9595,12 +9594,14 @@ GuiControl, %strShowHideCommand%, f_lvFavoritesListSearch
 
 if (A_ThisLabel = "GuiFavoritesListFilterShowOpen") ; must be before changing default listview
 {
-	; g_saSubmenuStackPrev.Push(o_MenuInGui.AA.strMenuPath) ; push the current menu to the left arrow stack
 	o_MenuInGui.AA.intMenuLastPosition := LV_GetNext("Focused")
 	g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
-	###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: Search", g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
-	o_SearchResult.AA.oStartingMenu := o_MenuInGui
+	oSearchResult := new Container("Search", o_L["GuiSearchResultTitle"], "", "nomenu")
+	; set current menu object as search starting menu and swap search result object with current menu object
+	oSearchResult.AA.oStartingMenu := o_MenuInGui
+	o_MenuInGui := oSearchResult
+	; ###_O2(A_ThisLabel . "`n`nPush: " . g_saSubmenuStackPrev[g_saSubmenuStackPrev.MaxIndex()].AA.strMenuPath . "`nPop: (none)`nInGui: " . o_MenuInGui.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 }
 
 if (blnSearchVisible) ; make search result visible
@@ -9626,6 +9627,7 @@ oMenuPop := ""
 strMenuPush := ""
 intPosition := ""
 blnSearchVisible := ""
+oSearchResult := ""
 
 return
 ;------------------------------------------------------------
@@ -10212,43 +10214,11 @@ GuiFavoriteInit:
 ; when edit favorite, keep original values in o_EditedFavorite
 ; when add favorite, put initial or default values in o_EditedFavorite and update them when gui save
 
-strFilterContent := GetFavoritesListFilter()
-
-if StrLen(strFilterContent)
-	oMenuInGuiCandidate := GetMenuForGuiFiltered(g_intOriginalMenuPosition)
-
-if oMenuInGuiCandidate.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock()
-; this favorite could not be added or edited because it is in an external menu locked by another user,
-; or because external settings file is in a read-only folder, or because external files was modified 
-; by another user since it was loaded in QAP by this user
-{
-	g_blnAbortEdit := true
-	return
-}
-
-if StrLen(strFilterContent)
-{
-	gosub, OpenMenuFromGuiSearch ; open the parent menu of found selected favorite and put oMenuInGuiCandidate in o_MenuInGui
-	gosub, GuiFavoritesListFilterEmpty ; must be after we opened the menu
-
-	if (o_MenuInGui.SA[g_intOriginalMenuPosition].IsContainer() and g_blnOpenFromDoubleClick)
-	{
-		gosub, OpenMenuFromGuiHotkey ; load the selected found menu in gui
-		g_blnOpenFromDoubleClick := false ; reset value
-		g_blnAbortEdit := true
-		return
-	}
-}
-
-o_EditedFavorite := new Container.Item([]) ; declared global earlier
 g_strDefaultIconResource := ""
 g_strNewFavoriteIconResource := ""
 
-blnIsGroupMember := (o_MenuInGui.AA.strMenuType = "Group")
-
 if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 {
-	Gui, 1:ListView, f_lvFavoritesList
 	g_intOriginalMenuPosition := LV_GetNext()
 
 	if !(g_intOriginalMenuPosition)
@@ -10258,7 +10228,17 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		return
 	}
 	
-	if (strGuiFavoriteLabel = "GuiCopyFavorite")
+	if SearchIsVisible()
+	{
+		o_MenuInGui.AA.intSearchPositionBeforeEdit := g_intOriginalMenuPosition ; to restore position after favorite is saved or canceled
+		o_MenuInGuiBackup := o_MenuInGui ; to be restored after saving or cancelling the gui edit
+		
+		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intPositionInMenu ; switching g_intOriginalMenuPosition to position in search resutl item original menu
+		o_MenuInGui := o_MenuInGui.SA[o_MenuInGui.AA.intSearchPositionBeforeEdit].AA.oParentMenu ; giving temporary access to original menu of search result item
+		
+		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].Backup() : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
+	}
+	else if (strGuiFavoriteLabel = "GuiCopyFavorite")
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition].Backup()
 	else
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
@@ -10293,6 +10273,8 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 }
 else ; add favorite
 {
+	o_EditedFavorite := new Container.Item([]) ; declared global earlier
+	
 	strOriginalExtension := GetFileExtension(g_strNewLocation)
 	if (strGuiFavoriteLabel = "GuiAddShortcutFromMsg" or strOriginalExtension = "lnk")
 	{
@@ -10436,7 +10418,7 @@ else ; add favorite
 	o_EditedFavorite.AA.strFavoriteDateModified := o_EditedFavorite.AA.strFavoriteDateCreated
 }
 
-; Gosub, GuiFavoriteIconDefault DO NOT INIT DEFAULT ICON HERE BECAUSE WE NEED f_strFavoriteLocation TO BE SET BEFORE WHEN CREATING THE 1ST TAB
+blnIsGroupMember := (o_MenuInGui.AA.strMenuType = "Group")
 
 intX := ""
 intY := ""
@@ -11957,8 +11939,6 @@ return
 HotkeyEnterMenuOrFavorite:
 ;------------------------------------------------------------
 
-Gui, 1:ListView, f_lvFavoritesList
-
 g_intOriginalMenuPosition := LV_GetNext()
 
 if o_MenuInGui.SA[g_intOriginalMenuPosition].IsContainer()
@@ -12000,7 +11980,7 @@ if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 	intMenuLastPosition := oPopMenu.AA.intMenuLastPosition
 	
 	; push current menu/search to left/right arrow stack
-	oPushMenu := (SearchIsVisible() ? o_SearchResult.Backup() : o_MenuInGui)
+	oPushMenu := (SearchIsVisible() ? o_MenuInGui.Backup(true) : o_MenuInGui)
 	oPushMenu.AA.intMenuLastPosition := LV_GetNext("Focused")
 
 	if (A_ThisLabel = "GuiGotoMenuPrev")
@@ -12016,9 +11996,8 @@ if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 	
 	if (oPopMenu.AA.strMenuType = "Search") ; we have a search result
 	{
-		o_SearchResult := oPopMenu
-		o_MenuInGui := o_SearchResult.AA.oStartingMenu
-		o_SearchResult.AA.intLastSearchPosition := intMenuLastPosition ; to restore position after favorite is saved or cancelled
+		o_MenuInGui := oPopMenu
+		o_MenuInGui.AA.intLastSearchPosition := intMenuLastPosition ; to restore position after favorite is saved or cancelled
 		
 		Gosub, RestoreSearchResult
 		return
@@ -12033,10 +12012,7 @@ else
 	else if (A_ThisLabel = "GuiGotoMenuUp")
 		oMenuInGuiCandidate := o_MenuInGui.AA.oParentMenu
 	else if (A_ThisLabel = "OpenMenuFromGuiHotkey")
-		if SearchIsVisible()
-			oMenuInGuiCandidate := o_SearchResult.SA[g_intOriginalMenuPosition].AA.oSubMenu
-		else
-			oMenuInGuiCandidate := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.oSubMenu
+		oMenuInGuiCandidate := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.oSubMenu
 	else if (A_ThisLabel = "OpenMenuFromEditForm")
 		oMenuInGuiCandidate := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.oSubMenu
 	; else "OpenMenuFromGuiSearch", we already have oMenuInGuiCandidate
@@ -12048,19 +12024,9 @@ else
 	}
 	; else continue
 	
-	if SearchIsVisible()
-	{
-		oPushMenu := o_SearchResult.Backup()
-		oPushMenu.AA.intLastSearchPosition := LV_GetNext("Focused")
-		g_saSubmenuStackPrevious.Push(oPushMenu) ; push the current search result to the left arrow stack
-		###_O2(A_ThisLabel . "`n`nPush: " . oPushMenu.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrevious, g_saSubmenuStackNext)
-	}
-	else
-	{
-		o_MenuInGui.AA.intLastPostion := LV_GetNext("Focused")
-		g_saSubmenuStackPrevious.Push(o_MenuInGui) ; push the current menu to the left arrow stack
-		###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrevious, g_saSubmenuStackNext)
-	}
+	o_MenuInGui.AA.intLastPostion := LV_GetNext("Focused")
+	g_saSubmenuStackPrev.Push(SearchIsVisible() ? o_MenuInGui.Backup(true) : o_MenuInGui) ; push the current menu (or a backup of the search result object - true for AA only) to the left arrow stack
+	###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
 	o_MenuInGui := oMenuInGuiCandidate
 }
@@ -12100,8 +12066,8 @@ RestoreSearchResult:
 
 Gui, 1:ListView, f_lvFavoritesListSearch
 
-GuiControl, , f_blnFavoritesListFilterExtended, % (o_SearchResult.AA.blnFavoritesListFilterExtended = 1)
-GuiControl, , f_strFavoritesListFilter, % o_SearchResult.AA.strMenuPath ; triggers FavoritesListFilterChanged
+GuiControl, , f_blnFavoritesListFilterExtended, % (o_MenuInGui.AA.blnFavoritesListFilterExtended = 1)
+GuiControl, , f_strFavoritesListFilter, % o_MenuInGui.AA.strMenuPath ; triggers FavoritesListFilterChanged
 
 Gosub, GuiFavoritesListFilterShow
 GuiControl, 1:Focus, f_lvFavoritesListSearch ; focus filtered list instead of the filter edit control
@@ -12875,59 +12841,13 @@ if (strThisLabel <> "GuiAddExternalSave")
 else ; GuiAddExternalSave
 	g_blnExternalMenusAdded := true
 
-Gui, 1:Default
-GuiControl, 1:Focus, f_lvFavoritesList
-Gui, 1:ListView, f_lvFavoritesList
-
-if (strOriginalMenu = o_MenuInGui.AA.strMenuPath) ; remove original from Listview if original in Gui (can be replaced with modified)
-	LV_Delete(g_intOriginalMenuPosition)
-
-if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview if destination in Gui (can replace original deleted)
+if SearchIsVisible()
 {
-	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
-		LV_Modify(0, "-Select")
-	if (o_EditedFavorite.AA.strFavoriteType = "Menu")
-		strThisLocation := g_strMenuPathSeparator
-	else if (o_EditedFavorite.AA.strFavoriteType = "External")
-		strThisLocation := (ExternalMenuIsReadOnly(strFavoriteAppWorkingDir) ? o_L["DialogReadOnly"] . " " : "")
-			. g_strMenuPathSeparator . g_strMenuPathSeparator . " " . strFavoriteAppWorkingDir
-	else if (o_EditedFavorite.AA.strFavoriteType = "Group")
-		strThisLocation := g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix
-	else if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-		strThisLocation := o_EditedFavorite.AA.strFavoriteName
-	else
-		strThisLocation := o_EditedFavorite.AA.strFavoriteLocation
-
-	strThisType := o_EditedFavorite.GetItemTypeLabelForList()
-	strThisHotkey := new Triggers.HotkeyParts(o_EditedFavorite.AA.strFavoriteShortcut).Hotkey2Text(true)
-	if StrLen(o_EditedFavorite.AA.strFavoriteHotstring)
-		strThisHotkey .= " " . BetweenParenthesis(GetHotstringTrigger(o_EditedFavorite.AA.strFavoriteHotstring))
-
-	; GuiCopyOneFavoriteSave condition to protect selected items in multiple copy to same folder
-	if (g_intNewItemPos)
-		LV_Insert(g_intNewItemPos, (strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus" : ""), o_EditedFavorite.AA.strFavoriteName, strThisType, strThisHotkey, strThisLocation)
-	else
-		LV_Add((strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus" : ""), o_EditedFavorite.AA.strFavoriteName, strThisType, strThisHotkey, strThisLocation)
-	
-	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
-		LV_Modify(LV_GetNext(), "Vis")
+	Gosub, FavoritesListFilterChanged
+	LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus")
 }
-else if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
-; only if saving only one favorite, load destination menu to gui and select new/edited item
-{
-	o_MenuInGui.AA.intMenuLastPosition := g_intOriginalMenuPosition
-	g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
-	
-	o_MenuInGui := o_Containers.AA[strDestinationMenu]
-	Gosub, LoadMenuInGui
-	
-	LV_Modify(0, "-Select")
-	LV_Modify(g_intNewItemPos, "Select Focus")
-	Gosub, UpdatePreviousAndUpPictures
-}
-
-GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|" ; required if submenu was added
-Gosub, AdjustColumnsWidth
+else
+	Gosub, GuiAddFavoriteSaveUpdateListView
 
 Gosub, EnableSaveAndCancel
 
@@ -13034,6 +12954,69 @@ objExternalMenu := ""
 strItemSelectedName := ""
 strGuiFavoriteLabel := ""
 strQAPFeatureSelectedLocalizedName := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiAddFavoriteSaveUpdateListView:
+;------------------------------------------------------------
+
+; required
+Gui, 1:Default
+Gui, 1:ListView, f_lvFavoritesList
+
+if (strOriginalMenu = o_MenuInGui.AA.strMenuPath) ; remove original from Listview if original in Gui (can be replaced with modified)
+	LV_Delete(g_intOriginalMenuPosition)
+
+if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview if destination in Gui (can replace original deleted)
+{
+	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
+		LV_Modify(0, "-Select")
+	if (o_EditedFavorite.AA.strFavoriteType = "Menu")
+		strThisLocation := g_strMenuPathSeparator
+	else if (o_EditedFavorite.AA.strFavoriteType = "External")
+		strThisLocation := (ExternalMenuIsReadOnly(strFavoriteAppWorkingDir) ? o_L["DialogReadOnly"] . " " : "")
+			. g_strMenuPathSeparator . g_strMenuPathSeparator . " " . strFavoriteAppWorkingDir
+	else if (o_EditedFavorite.AA.strFavoriteType = "Group")
+		strThisLocation := g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix
+	else if (o_EditedFavorite.AA.strFavoriteType = "QAP")
+		strThisLocation := o_EditedFavorite.AA.strFavoriteName
+	else
+		strThisLocation := o_EditedFavorite.AA.strFavoriteLocation
+
+	strThisType := o_EditedFavorite.GetItemTypeLabelForList()
+	strThisHotkey := new Triggers.HotkeyParts(o_EditedFavorite.AA.strFavoriteShortcut).Hotkey2Text(true)
+	if StrLen(o_EditedFavorite.AA.strFavoriteHotstring)
+		strThisHotkey .= " " . BetweenParenthesis(GetHotstringTrigger(o_EditedFavorite.AA.strFavoriteHotstring))
+
+	; GuiCopyOneFavoriteSave condition to protect selected items in multiple copy to same folder
+	if (g_intNewItemPos)
+		LV_Insert(g_intNewItemPos, (strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus" : ""), o_EditedFavorite.AA.strFavoriteName, strThisType, strThisHotkey, strThisLocation)
+	else
+		LV_Add((strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus" : ""), o_EditedFavorite.AA.strFavoriteName, strThisType, strThisHotkey, strThisLocation)
+	
+	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
+		LV_Modify(LV_GetNext(), "Vis")
+}
+else if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+; only if saving only one favorite, load destination menu to gui and select new/edited item
+{
+	###_O2(A_ThisLabel . "`nPush: " . o_MenuInGui.AA.strMenuPath . "`nIn Gui: " . o_Containers.AA[strDestinationMenu], g_saSubmenuStackPrev, g_saSubmenuStackNext)
+	o_MenuInGui.AA.intMenuLastPosition := g_intOriginalMenuPosition
+	g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
+	
+	o_MenuInGui := o_Containers.AA[strDestinationMenu]
+	Gosub, LoadMenuInGui
+	
+	LV_Modify(0, "-Select")
+	LV_Modify(g_intNewItemPos, "Select Focus")
+	Gosub, UpdatePreviousAndUpPictures
+}
+
+GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|" ; required if submenu was added
+Gosub, AdjustColumnsWidth
 
 return
 ;------------------------------------------------------------
@@ -13470,7 +13453,7 @@ GuiRemoveOneFavorite:
 blnFavoriteFromSearch := StrLen(GetFavoritesListFilter())
 if (blnFavoriteFromSearch)
 {
-	oMenuInGuiCandidate := GetMenuForGuiFiltered(intItemToRemove) ; returns the item's position in intItemToRemove
+	oMenuInGuiCandidate := GetParentMenuOfSearchResultItem(intItemToRemove) ; returns the item's position in intItemToRemove
 	gosub, OpenMenuFromGuiSearch ; open the parent menu of found selected favorite
 	gosub, GuiFavoritesListFilterEmpty ; must be after we opened the menu
 }
@@ -14293,7 +14276,7 @@ return
 
 
 ;------------------------------------------------------------
-GetMenuForGuiFiltered(ByRef intPositionInMenuForGui)
+GetParentMenuOfSearchResultItem(ByRef intPositionInMenuForGui)
 ;------------------------------------------------------------
 {
 	Gui, 1:ListView, f_lvFavoritesListSearch
@@ -14304,9 +14287,9 @@ GetMenuForGuiFiltered(ByRef intPositionInMenuForGui)
 		intPositionInMenuForGui := 0
 		return % "" ; empty
 	}
-	
-	LV_GetText(strMenuPath, intPositionInListView, 2)
-	LV_GetText(intPositionInMenuForGui, intPositionInListView, 6)
+
+	intPositionInMenuForGui := o_MenuInGui.SA[intPositionInListView].AA.intPositionInMenu
+	strMenuPath := o_MenuInGui.SA[intPositionInListView].AA.oParentMenu.AA.strMenuPath
 	
 	return o_Containers.AA[strMenuPath]
 }
@@ -15204,6 +15187,12 @@ if (g_strOptionsGuiTitle = strThisTitle) and StrLen(strThisTitle) ; StrLen by sa
 }
 else
 {
+	if IsObject(o_MenuInGuiBackup)
+	{
+		o_MenuInGui := o_MenuInGuiBackup ; restore search result container
+		o_MenuInGuiBackup := ""
+	}
+	
 	; save position and size of add/edit/copy dialog box and of dialog box to select destination menu when copying/moving multiple favorites
 	blnIsAddEditCopyFavorite := WindowIsAddEditCopyFavorite(strThisTitle)
 	blnIsToMenuDialogBox := WindowIsToMenuDialogBox(strThisTitle)
@@ -18589,10 +18578,7 @@ AdjustColumnsWidth:
 ;------------------------------------------------------------
 
 Loop, % LV_GetCount("Column")
-	if (StrLen(GetFavoritesListFilter()) and A_Index = LV_GetCount("Column"))
-		LV_ModifyCol(LV_GetCount("Column"), 0) ; when filtered, hide last column "Object Position (hidden)"
-	else
-		LV_ModifyCol(A_Index, "AutoHdr") ; adjust other columns width
+	LV_ModifyCol(A_Index, "AutoHdr") ; adjust other columns width
 
 /*
 FOLLOWING NOT REQUIRED ANYMORE
@@ -21329,7 +21315,7 @@ StrUpper(str)
 SearchIsVisible()
 ;------------------------------------------------------------
 {
-	GuiControlGet, blnVisibled, Visible, f_lvFavoritesListSearch
+	GuiControlGet, blnVisibled, 1:Visible, f_lvFavoritesListSearch
 	
 	return blnVisibled
 }
@@ -24263,8 +24249,9 @@ class Container
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	Backup()
+	Backup(blnAAonly := false)
 	; copy of associative array AA and simple array SA to another object of class Container
+	; copy blnAAonly when storing a search result in prev/next stacks
 	;---------------------------------------------------------
 	{
 		oCopy := new Container(this.AA.strMenuType, this.AA.strMenuPath
@@ -24274,12 +24261,13 @@ class Container
 		for strKey, varValue in this.AA
 			oCopy.AA[strKey] := varValue
 		
-		for intKey, oItem in this.SA
-		{
-			oCopy.SA[intKey] := oItem.Backup()
-			if oItem.IsContainer()
-				oCopy.SA[intKey].AA.oSubMenu := oItem.AA.oSubMenu.Backup() ; recursive
-		}
+		if !(blnAAonly)
+			for intKey, oItem in this.SA
+			{
+				oCopy.SA[intKey] := oItem.Backup()
+				if oItem.IsContainer()
+					oCopy.SA[intKey].AA.oSubMenu := oItem.AA.oSubMenu.Backup() ; recursive
+			}
 			
 		return oCopy
 	}
@@ -24487,12 +24475,10 @@ class Container
 	LoadSearchResult()
 	;------------------------------------------------------------
 	{
-		saMenuItemsTable := Object()
-		
-		for intKey, oItem in this.AA.oStartingMenu.SA
+		for intKey, oItem in this.SA
 		{
 			strSearchIn := oItem.AA.strFavoriteName
-			if (this.AA.blnFavoritesListFilterExtended)
+			if (o_MenuInGui.AA.blnFavoritesListFilterExtended)
 			{
 				strHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
 				strHotkey := (strHotkey = o_L["DialogNone"] ? "" : strHotkey)
@@ -24508,9 +24494,9 @@ class Container
 					. " " . oItem.AA.strFavoritePassword
 					. " " . oItem.AA.strFavoriteSoundLocation
 			}
-			; ###_V(A_ThisFunc, strSearchIn, this.AA.strMenuPath, InStr(strSearchIn, this.AA.strMenuPath))
+			
 			if !oItem.IsSeparator()
-				and InStr(strSearchIn, this.AA.strMenuPath)
+				and InStr(strSearchIn, o_MenuInGui.AA.strMenuPath)
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
@@ -24530,15 +24516,16 @@ class Container
 							strGuiMenuLocation := o_L["OopsErrorIniFileUnavailable"] . " "
 						else
 							strGuiMenuLocation := ""
-						strGuiMenuLocation .= g_strMenuPathSeparator . g_strMenuPathSeparator . " " . oItem.AA.oSubMenu.AA.strrMenuExternalSettingsPath
+						strGuiMenuLocation .= g_strMenuPathSeparator . g_strMenuPathSeparator . " " . oItem.AA.oSubMenu.AA.strMenuExternalSettingsPath
 					}
 				}
 				
-				this.SA.Push(oItem)
+				oItem.AA.intPositionInMenu := A_Index
+				o_MenuInGui.SA.Push(oItem)
 			}
 			
-			if (this.IsContainer())
-				this.LoadSearchResult(oItem.AA.oSubMenu) ; RECURSIVE
+			if (oItem.IsContainer())
+				oItem.AA.oSubMenu.LoadSearchResult() ; RECURSIVE
 		}
 	}
 	;------------------------------------------------------------
