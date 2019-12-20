@@ -12832,11 +12832,11 @@ else
 Gosub, EnableSaveAndCancel
 
 ; if favorite's original or destination menu are in an external settings file, flag that they need to be saved
-if o_Containers.AA[strDestinationMenu].FavoriteIsUnderExternalMenu(o_ExternalMenu)
-	o_ExternalMenu.AA.blnNeedSave := true
+if o_Containers.AA[strDestinationMenu].FavoriteIsUnderExternalMenu(oExternalMenu)
+	oExternalMenu.AA.blnNeedSave := true
 if StrLen(strOriginalMenu) and (strOriginalMenu <> strDestinationMenu)
-	if o_Containers.AA[strOriginalMenu].FavoriteIsUnderExternalMenu(o_ExternalMenu)
-		o_ExternalMenu.AA.blnNeedSave := true
+	if o_Containers.AA[strOriginalMenu].FavoriteIsUnderExternalMenu(oExternalMenu)
+		oExternalMenu.AA.blnNeedSave := true
 
 if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	g_intNewItemPos++ ; move next favorite after this one in the destination menu (or will be deleted in GuiMoveOneFavoriteSave after the loop)
@@ -12874,6 +12874,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	strExternalFilenameNoExt := ""
 	strNewFavoriteSoundLocation := ""
 	strExpandedNewFavoriteLocation := ""
+	oExternalMenu := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
@@ -13430,28 +13431,32 @@ GuiRemoveFavorite:
 GuiRemoveOneFavorite:
 ;------------------------------------------------------------
 
-blnFavoriteFromSearch := StrLen(GetFavoritesListFilter())
-if (blnFavoriteFromSearch)
-{
-	oMenuInGuiCandidate := GetParentMenuOfSearchResultItem(intItemToRemove) ; returns the item's position in intItemToRemove
-	; ##### gosub, OpenMenuFromGuiSearch ; open the parent menu of found selected favorite
-	; ##### gosub, GuiFavoritesListFilterEmpty ? ; must be after we opened the menu
-}
-else
-{
-	GuiControl, Focus, f_lvFavoritesList
-	Gui, 1:ListView, f_lvFavoritesList
-	intItemToRemove := LV_GetNext()
-}
+intItemSelected := LV_GetNext()
 
-if !(intItemToRemove)
+if !(intItemSelected)
 {
 	Oops(1, o_L["DialogSelectItemToRemove"])
 	gosub, GuiRemoveFavoriteCleanup
 	return
 }
 
-if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
+if SearchIsVisible()
+{
+	oMenuOfRemovedItem := GetParentMenuOfSearchResultItem(intItemToRemove) ; get search result item original menu and position
+	if !IsObject(oMenuOfRemovedItem)
+	{
+		; ##### check with multiple remove the item was removed in a previous item of o_SearchResult GuiRemoveOneFavorite
+		LV_Delete(intItemSelected)
+		return
+	}
+}
+else
+{
+	intItemToRemove := intItemSelected
+	oMenuOfRemovedItem := o_MenuInGui
+}
+
+if oMenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu) and !oExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the menu is an external menu that cannot be locked, user received an error message, then abort
 {
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
@@ -13462,15 +13467,15 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 
 ; remove favorite in object model (if menu, leaving submenu objects unlinked without releasing them)
 
-blnItemIsMenu := o_MenuInGui.SA[intItemToRemove].IsContainer()
+blnItemIsMenu := oMenuOfRemovedItem.SA[intItemToRemove].IsContainer()
 
 if (blnItemIsMenu)
 {
 	Gui, 1:+OwnDialogs
 	MsgBox, 52, % L(o_L["DialogFavoriteRemoveTitle"], g_strAppNameText)
-		, % L((o_MenuInGui.SA[intItemToRemove].AA.strFavoriteType = "Menu" ? o_L["DialogFavoriteRemovePrompt"]
-			: (o_MenuInGui.SA[intItemToRemove].AA.strFavoriteType = "External" ? o_L["DialogFavoriteRemoveExternalPrompt"]
-			: o_L["DialogFavoriteRemoveGroupPrompt"])), o_MenuInGui.SA[intItemToRemove].AA.oSubmenu.AA.strMenuPath)
+		, % L((oMenuOfRemovedItem.SA[intItemToRemove].AA.strFavoriteType = "Menu" ? o_L["DialogFavoriteRemovePrompt"]
+			: (oMenuOfRemovedItem.SA[intItemToRemove].AA.strFavoriteType = "External" ? o_L["DialogFavoriteRemoveExternalPrompt"]
+			: o_L["DialogFavoriteRemoveGroupPrompt"])), oMenuOfRemovedItem.SA[intItemToRemove].AA.oSubmenu.AA.strMenuPath)
 	IfMsgBox, No
 	{
 		if (A_ThisLabel = "GuiRemoveOneFavorite")
@@ -13478,41 +13483,54 @@ if (blnItemIsMenu)
 		gosub, GuiRemoveFavoriteCleanup
 		return
 	}
-	o_Containers.AA.Delete(o_MenuInGui.SA[intItemToRemove].AA.oSubmenu.AA.strMenuPath) ; if user cancels settings changes, menu object will not be re-created (we live with it)
+	o_Containers.AA.Delete(oMenuOfRemovedItem.SA[intItemToRemove].AA.oSubmenu.AA.strMenuPath) ; if user cancels settings changes, menu object will not be re-created (we live with it)
 }
 
-o_EditedFavorite := o_MenuInGui.SA[intItemToRemove] ; for UpdateFavoriteObjectSaveShortcut
+o_EditedFavorite := oMenuOfRemovedItem.SA[intItemToRemove] ; for UpdateFavoriteObjectSaveShortcut
 g_strNewFavoriteShortcut := "" ; for UpdateFavoriteObjectSaveShortcut
 Gosub, UpdateFavoriteObjectSaveShortcut
 
-o_MenuInGui.SA.RemoveAt(intItemToRemove)
+oMenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
 
-; refresh menu dropdpown in gui
-
-if (blnItemIsMenu)
-	GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
-
-LV_Delete(intItemToRemove)
-if (A_ThisLabel = "GuiRemoveFavorite")
+if SearchIsVisible()
 {
-	LV_Modify(0, "-Select") ; de-select all items
-	LV_Modify(intItemToRemove, "Select Focus Vis") ; select item next to deleted one
-	if !LV_GetNext() ; if last item was deleted, select the new last item
-		LV_Modify(LV_GetCount(), "Select Focus Vis")
+	if (A_ThisLabel = "GuiRemoveOneFavorite")
+		LV_Delete(intItemSelected)
+	else ; GuiRemoveFavorite
+	{
+		o_MenuInGui.AA.intCurrentLastPosition := intItemSelected ; to restore position after favorite is removed
+		Gosub, LoadContainerInGui ; refresh search result
+	}
 }
-Gosub, AdjustColumnsWidth
+else
+{
+	; refresh menu dropdpown in gui
+	if (blnItemIsMenu)
+		GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(oMenuOfRemovedItem.AA.strMenuPath) . "|"
+
+	LV_Delete(intItemToRemove)
+	if (A_ThisLabel = "GuiRemoveFavorite")
+	{
+		LV_Modify(0, "-Select") ; de-select all items
+		LV_Modify(intItemToRemove, "Select Focus Vis") ; select item next to deleted one
+		if !LV_GetNext() ; if last item was deleted, select the new last item
+			LV_Modify(LV_GetCount(), "Select Focus Vis")
+	}
+	Gosub, AdjustColumnsWidth
+}
 
 Gosub, EnableSaveAndCancel
 
 ; if favorite's menu is in an external settings file, flag that it needs to be saved
-if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu)
-	o_ExternalMenu.AA.blnNeedSave := true
+if oMenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu)
+	oExternalMenu.AA.blnNeedSave := true
 
 GuiRemoveFavoriteCleanup:
 intItemToRemove := ""
 blnItemIsMenu := ""
 objExternalMenu := ""
 blnFavoriteFromSearch := ""
+oExternalMenu := ""
 
 return
 ;------------------------------------------------------------
