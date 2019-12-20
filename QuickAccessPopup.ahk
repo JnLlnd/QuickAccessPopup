@@ -4224,7 +4224,7 @@ SettingsShiftCtrlLeft: ; +^Left::
 GuiControlGet, strFocusedControl, FocusV
 
 ; for these keys, if Settings displays a search result, simply discard the hotkey
-if InStr("SettingsCtrlE|SettingsCtrlR|SettingsCtrlY|SettingsCtrlUp|SettingsCtrlDown|SettingsCtrlRight|SettingsCtrlLeft|SettingsCtrlA|", A_ThisLabel . "|")
+if InStr("SettingsCtrlE|SettingsCtrlR|SettingsCtrlY|SettingsCtrlUp|SettingsCtrlDown|SettingsCtrlRight|SettingsCtrlLeft|", A_ThisLabel . "|")
 	and InStr(strFocusedControl, "FavoritesListFilter") ; includes f_strFavoritesListFilter and f_lvFavoritesListSearch
 	return
 ; else continue
@@ -9195,7 +9195,7 @@ Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList Count32 AltSubmit NoSortHdr LV0x10 " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeader"] ; SysHeader321 / SysListView321
 Gui, 1:Add, ListView
-	, % "vf_lvFavoritesListSearch Count32 AltSubmit LV0x10 -Multi hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
+	, % "vf_lvFavoritesListSearch Count32 AltSubmit LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeaderFiltered"] ; SysHeader322 / SysListView322
 
 Gui, 1:Font, s8 w600, Verdana
@@ -9268,7 +9268,7 @@ else
 LV_Modify((g_intOriginalMenuPosition ? g_intOriginalMenuPosition : 1), "Select Focus Vis")
 Gosub, AdjustColumnsWidth
 
-if (!SearchIsVisible() or StrLen(strFilter))
+if !SearchIsVisible()
 	GuiControl, Focus, %A_DefaultListView%
 
 strGuiMenuLocation := ""
@@ -9560,7 +9560,7 @@ Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_pi
 	GuiControl, % (blnSearchVisible ? "Hide" : "Show"), %A_LoopField%
 
 ; disable/enable Favorite menu items for commands not supported in search result
-Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+Down|ControlToolTipSeparator|ControlToolTipColumnBreak|ControlToolTipSortFavorites", "|"
+Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+Down|ControlToolTipSeparator|ControlToolTipColumnBreak|ControlToolTipTextSeparator|ControlToolTipSortFavorites", "|"
 ; saMenuItem: 1) menu name, 2) has ellipse, 3) shortcut
 {
 	saMenuItem := StrSplit(A_LoopField, "`t")
@@ -13405,9 +13405,6 @@ return
 ;------------------------------------------------------------
 GuiRemoveMultipleFavorites:
 ;------------------------------------------------------------
-
-GuiControl, Focus, f_lvFavoritesList
-Gui, 1:ListView, f_lvFavoritesList
 
 if LV_GetCount("Selected") > 1
 {
