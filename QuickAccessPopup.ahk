@@ -31,7 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.3.1 (2019-12-??)
+Version: 10.3.1 (2019-12-22)
+- fix bug preventing to return a Live Folder back to a normal favorite folder
+- fix bug in dropdown list when selecting a favorite position and a menu contains a line separator
+- improve how Live folder document icons and favorite documents default icons are retrieved from applications files
+- allow to add control panel items using the "Add this Folder" context menu command (for control panel items supporting the Explorer context menu)
+- get localized name of an item added with an CLSID using the Explorer context menu and QAPmessenger (for example, items added from control panels with the "Add this Folder" command)
+- for Directory Opus and Total Commander users, fix a bug when trying to open items added with a CLSID
+- Dutch language file update
  
 Version: 10.3 (2019-11-24)
  
