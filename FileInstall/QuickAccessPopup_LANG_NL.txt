@@ -272,6 +272,7 @@ lDialogMouseButtonsTextShort	Linkerknop|Middelste knop|Rechterknop|Speciale knop
 lDialogMoveFavoritesTitle	Favoriet verplaatsen - ~1~ ~2~
 lDialogMoveFavoriteTitle	Verplaats favoriet - ~1~ ~2~
 lDialogMoveSettingsFail	Er is een fout opgetreden bij het kopiëren van de instellingenmap.`n`nDe bewerking is geannuleerd.
+lDialogMoveSettingsNotDefault	Je kunt de instellingenmap niet verplaatsen wanneer een alternatief instellingenbestand is geladen. Laad het standaardinstellingenbestand opnieuw en probeer het opnieuw.
 lDialogMoveSettingsReload	~1~ dient te worden herstart...
 lDialogMoveSettingsSuccess	Instellingenbestand succesvol gekopieerd.`n`nOude map: ~1~`n`nNieuwe map: ~2~`n`nDe bestanden in de oude map zijn niet verwijderd. Verwijder deze bestanden wanneer je dit wenst ná het afsluiten van ~3~.
 lDialogMoveSettingsUnder	Je kunt de instellingenmap niet over zichzelf heen kopiëren, kies een andere locatie.
@@ -303,7 +304,7 @@ lDialogSelectItemToEdit	Selecteer het te bewerken item alstublieft.
 lDialogSelectItemToMove	Selecteer het te verplaatsen item alstublieft.
 lDialogSelectItemToRemove	Selecteer het te verwijderen item alstublieft.
 lDialogSettingsInvalid	Het instellingenbestand is onjuist!`n`nZorg ervoor dat het bestand de secties ~1~ en ~2~ bevat.`n`nBestand: ~3~
-lDialogSettingsNotSavedPrompt	Het "Voorkeuren"-venster is open met onopgeslagen wijzigingen. Deze wijzigingen dienen te worden opgeslagen of geannuleerd alvorens de gevraagde actie uit te voeren.`n`nWil je:`n"Opslaan": De wijzigingen zullen worden opgeslagen en de actie zal worden uitgevoerd.`n"Voorkeuren": Annuleer de actie en ga terug naar het "Voorkeuren"-menu.`n"Annuleren": Alleen de gevraagde actie annuleren?
+lDialogSettingsNotSavedPrompt	Het voorkeurenvenster staat open met onopgeslagen wijzigingen. Deze wijzigingen dienen eerst te worden opgeslagen of te worden geannuleerd voordat de gevraagde actie kan worden uitgevoerd.`n`nWil je:`n"Opslaan": De wijzigingen zullen worden opgeslagen en de actie zal worden uitgevoerd.`n"Voorkeuren": Annuleer de gevraagde actie en ga terug naar het voorkeursmenu.`n"Annuleren": Alleen de gevraagde actie zal worden geannuleerd.
 lDialogSettingsNotSavedTitle	~1~ - instellingen niet opgeslagen
 lDialogShift	Shift
 lDialogShiftShort	Shift
@@ -632,6 +633,7 @@ lOopsExternalNotAllowedUnderExternal	"Openbare Menu's" kunnen niet worden opgesl
 lOopsExternalReadOnlyAlert	"Openbare menu's" van het type: "gecentraliseerd" kunnen alleen aangepast worden door gebruiker(s) welke vermeld staat in het "~1~"-veld (of door het wijzigen van het ini-bestand op het gedeelde station).`n`nUw gebruikersnaam is:  "~2~".`nUw Computer is: "~3~".
 lOopsExternalReadOnlyAlertUsernameAdded	Uw gebruikersnaam is automatisch toegevoegd aan de "gebruikers met schrijfrechten-lijst".
 lOopsExternalSelectType	Selecteer het type voor het Openbare menu in de tab: "Openbaar menu".
+lOopsExternalUnderExternalError	Het volgende gedeelde menu bevat een gedeeld menu: `n ~ 1 ~` n`nGedeelde menu's kunnen geen gedeelde submenu's bevatten. Verplaats het gedeelde submenu naar een ander niet gedeeld menu.
 lOopsFavoritesCopied	~1~ favorieten gekopiëerd.
 lOopsFileExpandedFrom	Uitgebreid van
 lOopsFileNotFound	Deze locatie bestaat niet
@@ -729,7 +731,7 @@ lOptionsNbLiveFolderItemsMax	Maximaal aantal items in Live-mappen:
 lOptionsNbLiveFolderItemsMaxDefault	(standaard 500 items)
 lOptionsOpenFavoritesOnActiveMonitor	Op een multi-monitorsysteem, Windows Explorer altijd starten op de actieve monitor
 lOptionsOpenMenuOnTaskbar	Open het menu wanneer er op de taakbalk geklikt wordt
-lOptionsOpenSettingsOnActiveMonitor	Open het "Voorkeuren"-venster op de actieve monitor
+lOptionsOpenSettingsOnActiveMonitor	Open het voorkeurenvenster op de actieve monitor
 lOptionsOtherOptions	Algemeen
 lOptionsPopupFixPositionX	Positie X:
 lOptionsPopupFixPositionY	Y:
@@ -748,7 +750,7 @@ lOptionsRefreshQAPMenuDebugBeep	Piep voor en na een verversing (debug)
 lOptionsRefreshQAPMenuIntervalSec	Verversinterval (in secondes)`n(minimaal 300 seconde wordt geadviseerd)
 lOptionsRefreshQAPMenuTitle	Automatisch verversen van het QAP-menu inschakelen
 lOptionsRefreshWindowsAppsListAtStartup	Windows Appslijst bij opstarten verversen
-lOptionsRememberSettingsPosition	Onthoud de positie van het "Voorkeuren"-venster
+lOptionsRememberSettingsPosition	Onthoud de positie van het voorkeurenvenster
 lOptionsRunAsAdmin	Als Administrator uitvoeren
 lOptionsRunAsAdminAlert	Waarschuwing: Het uitvoeren van ~1~ in Administrator mode kan leiden tot ongewenste consequenties bij het laden van programma's welke kwaadaardige en/of geïnfecteerde code bevat. Dit zou kwaadaardige programma's administratieve rechten tot uw computer kunnen geven en hierdoor uw computer kunnen infecteren of over kunnen nemen. Wees voorzichtig met het draaien van ~1~ in Administrator mode.
 lOptionsRunAsAdminChanged	Nieuwe instelling "Uitvoeren als beheerder" opgeslagen. Sluit ~1~ en start het opnieuw op om de nieuwe instellingen te activeren (dus niet alleen herstarten).
@@ -759,8 +761,8 @@ lOptionsSelectCatalogueRoot	Selecteer een openbare map voor de Openbare Menu's
 lOptionsSelectQAPTempFolder	Maak de tijdelijke map aan in:
 lOptionsSelectWorkingFolder	In welke map dienen de instellingen opgelagen te worden?
 lOptionsSendToConsoleWithAlt	Gebruik ASCII-codes (ALT + 0nnn) bij het wijzigen van de map in de Windows Command Line (CMD)
-lOptionsSettingsStartup	Open het "Voorkeuren"-venster bij het opstarten
-lOptionsSettingsWindow	Voorkeuren-venster
+lOptionsSettingsStartup	Open het voorkeurenvenster bij het opstarten
+lOptionsSettingsWindow	Voorkeurenvenster
 lOptionsSnippets	Fragmenten en Hotstrings
 lOptionsSnippetsHelp	Fragment standaard (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Huidige uitsluitingen voor vensters
@@ -788,7 +790,7 @@ lOptionsUsageDbFlushDatabaseDone	Database content verwijderd.
 lOptionsUsageDbIntervalSeconds	Ververs && verzamelinterval (seconden):
 lOptionsUsageDbMaximumSize	Maximale grootte van de database (in MB):
 lOptionsUsageDbMaximumSizeInvalid	De ingestelde maximale grootte van de database is geen juiste grootte: ~1~
-lOptionsUsageDbShowPopularityIndex	Geef de populariteitsindex weer in het menu en het "Voorkeuren"-venster
+lOptionsUsageDbShowPopularityIndex	Geef de populariteitsindex weer in het menu en het voorkeurenvenster
 lOptionsUsageDbStatement	De gegevens in de ~1~-database worden lokaal verzameld en opgeslagen, dit is uitsluitend om de dynamische menu's op te bouwen en de prestaties te verbeteren. Deze gegevens bevinden zich ALLEEN op jouw systeem en er wordt GEEN informatie verzonden door ~1~ naar een externe server.
 lOptionsUsageDbStatementTitle	Privacyverklaring
 lOptionsUserVariables	Gebruikersvariabelen
