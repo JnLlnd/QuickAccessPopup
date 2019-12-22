@@ -3918,6 +3918,7 @@ global g_strNewWindowId
 global g_intOriginalMenuPosition
 global o_EditedFavorite ; was g_objEditedFavorite
 global o_MenuInGui ; replace g_objMenuInGui, back item added at top when first loaded in gui
+global o_SearchResultContainer ; to swap search result container with menu of an item edited from the search result
 global g_intMenuPosX
 global g_intMenuPosY
 
@@ -10221,7 +10222,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 	if SearchIsVisible()
 	{
 		o_MenuInGui.AA.intSearchPositionBeforeEdit := g_intOriginalMenuPosition ; to restore position after favorite is saved or canceled
-		o_MenuInGuiBackup := o_MenuInGui ; to be restored after saving or cancelling the gui edit
+		o_SearchResultContainer := o_MenuInGui ; to be restored in after saving or cancelling the gui edit (in 2GuiClose or 2GuiCancel)
 		
 		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intPositionInMenu ; switching g_intOriginalMenuPosition to position in search resutl item original menu
 		o_MenuInGui := o_MenuInGui.SA[o_MenuInGui.AA.intSearchPositionBeforeEdit].AA.oParentMenu ; giving temporary access to original menu of search result item
@@ -11158,7 +11159,7 @@ Gui, 2:Add, Text, x10 y10 vf_lblFavoriteParentMenu
 	, % L((blnMove ? (A_ThisLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogFavoriteParentMenuMove"] : o_L["DialogFavoritesParentMenuMove"])
 	: o_L["DialogFavoritesParentMenuCopy"]), g_intFavoriteSelected)
 Gui, 2:Add, DropDownList, x10 w300 vf_drpParentMenu gDropdownParentMenuChanged
-	, % o_MainMenu.BuildMenuListDropDown(o_MenuinGui.AA.strMenuPath, , true) . "|" ; include self but exclude read-only external
+	, % o_MainMenu.BuildMenuListDropDown(SearchIsVisible() ? o_MainMenu.AA.strMenuPath : o_MenuinGui.AA.strMenuPath, , true) . "|" ; include self but exclude read-only external
 
 Gui, 2:Add, Text, x20 y+10 vf_lblFavoriteParentMenuPosition, % (A_ThisLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogFavoriteMenuPosition"] : o_L["DialogFavoritesMenuPosition"])
 Gui, 2:Add, DropDownList, x20 y+5 w290 vf_drpParentMenuItems AltSubmit
@@ -12553,7 +12554,7 @@ Gui, 2:Submit, NoHide
 
 blnMove := (A_ThisLabel = "GuiMoveMultipleFavoritesSave")
 
-if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
+if (!SearchIsVisible() and f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
 {
 	Oops(2, o_L["OopsCannotCopyMoveToSelf"])
 	return
@@ -12561,7 +12562,6 @@ if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
 
 ; check if favorites to copy include menus or groups
 Gui, 1:Default
-Gui, ListView, f_lvFavoritesList
 intTempMenuPosition := 0
 if (!blnMove) ; multiple copy not supported for menus, external and groups
 	Loop
@@ -12584,17 +12584,34 @@ g_intOriginalMenuPosition := 0
 intNbFavoritesCopied := 0
 g_blnMulipleMoveOrCopyAborted := false
 
+if SearchIsVisible()
+{
+	o_MenuInGui.AA.intSearchPositionBeforeEdit := LV_GetNext() ; to restore position in search result after items are moved/copied
+	o_SearchResultContainer := o_MenuInGui ; to be restored after lopoping the items to move or copy
+}
+
 Loop
 {
-	g_intOriginalMenuPosition := LV_GetNext(g_intOriginalMenuPosition)
+	if SearchIsVisible()
+	{
+		o_MenuInGui := GetParentMenuOfSearchResultItem(g_intOriginalMenuPosition)
+		if !IsObject(o_MenuInGui) ; ##### required?
+		{
+			LV_Delete(intItemSelected)
+			return
+		}
+	}
+	else
+		g_intOriginalMenuPosition := LV_GetNext(g_intOriginalMenuPosition)
+
 	if (!g_intOriginalMenuPosition)
         break
 	if (!blnMove and o_MenuInGui.SA[g_intOriginalMenuPosition].IsContainer()) ; skip menus and groups for copy
 		continue
 
-	if (blnMove) ; can only come from regular favorites list (not from search result)
+	if (blnMove)
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
-	else ; can be from regular list or search result
+	else
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition].Backup()
 
 	if (blnMove)
@@ -12607,13 +12624,16 @@ Loop
 		Gosub, GuiCopyOneFavoriteSave
 		if !(g_blnMulipleMoveOrCopyAborted)
 			intNbFavoritesCopied++
-		if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition >= g_intNewItemPos) ; copied items are inserted before selected, increment selected
+		if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition >= g_intNewItemPos) ; ##### g_intNewItemPos not initialized? ; copied items are inserted before selected, increment selected
 			g_intOriginalMenuPosition++
 	}
 	
 	if (g_blnMulipleMoveOrCopyAborted)
 		break
 }
+
+if SearchIsVisible()
+	o_MenuInGui := o_SearchResultContainer ; restore search result container
 
 if (intNbFavoritesCopied)
 	Oops(2, o_L["OopsFavoritesCopied"], intNbFavoritesCopied)
@@ -15165,10 +15185,10 @@ if (g_strOptionsGuiTitle = strThisTitle) and StrLen(strThisTitle) ; StrLen by sa
 }
 else
 {
-	if IsObject(o_MenuInGuiBackup)
+	if IsObject(o_SearchResultContainer)
 	{
-		o_MenuInGui := o_MenuInGuiBackup ; restore search result container
-		o_MenuInGuiBackup := ""
+		o_MenuInGui := o_SearchResultContainer ; restore search result container
+		o_SearchResultContainer := ""
 	}
 	
 	; save position and size of add/edit/copy dialog box and of dialog box to select destination menu when copying/moving multiple favorites
