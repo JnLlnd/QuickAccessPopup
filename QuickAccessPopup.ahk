@@ -25481,10 +25481,13 @@ class Container
 			s_intIniLineSave := 1
 			s_strIniFile := o_Settings.strIniFile
 			
-			; make internal backup
-			IniRead, strTempIniFavoritesSection, %s_strIniFile%, Favorites
-			IniWrite, %strTempIniFavoritesSection%, %s_strIniFile%, Favorites-backup
+			IniRead, strTempIniFavoritesSection, %s_strIniFile%, Favorites ; to make an undocumented internal backup
 			IniDelete, %s_strIniFile%, Favorites
+			
+			if StrLen(strTempIniFavoritesSection) <= 65532 ; ini section is OK, make the internal backup
+				IniWrite, %strTempIniFavoritesSection%, %s_strIniFile%, Favorites-backup
+			else ; ini section is incomplete because IniRead cannot read more than 65,533 characters, delete previous backup
+				IniDelete, %s_strIniFile%, Favorites-backup
 		}
 		
 		ToolTip, % o_L["ToolTipSaving"] . "`n" . this.AA.strMenuPath
