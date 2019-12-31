@@ -31,9 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.3.2 (2019-12-??)
-- 
-
+Version: 10.3.2 (2019-12-31)
+- when importing or exporting favorites with the "Import/Export Settings" command, fix bug when the "[Favorites]" section is larger than 65,532 characters (QAP now imports or exports favorites line by line instead of copying the section as a whole because of size limit)
+- display a progress popup text when importing or exporting
+- when saving favorites, stop doing an internal backup of the "[Favorites]" section of the ini file as "[Favorites-backup]" when its size is larger than 65,532 characters (this backup section is unused and is copied only for debugging)
+ 
 Version: 10.3.1 (2019-12-22)
 - fix bug preventing to return a Live Folder back to a normal favorite folder
 - fix bug in dropdown list when selecting a favorite position and a menu contains a line separator
@@ -17342,12 +17344,14 @@ if !(blnAbort) and (f_blnImpExpFavorites)
 	Loop
 	{
 		intIniLine++
+		ToolTip, % (f_radImpExpExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"]) . " - " . o_L["ImpExpOptionFavorites"] . ": #" . intIniLine
 		strAppendFavorite := o_Settings.ReadIniValue("Favorite" . intIniLine, "", "Favorites", g_strImpExpSourceFile) ; ERROR if not found
 		if (strAppendFavorite = "ERROR")
 			Break
 		intDestintIniLine := intIniLine + intLastFavorite
 		IniWrite, %strAppendFavorite%, %g_strImpExpDestinationFile%, Favorites, Favorite%intDestintIniLine%
 	}
+	ToolTip
 	blnContentTransfered := (intIniLine > 0)
 
 	; v10.3.2: STOP copying [Favorites] section as a whole because of the IniRead limit of 65,533 characters
