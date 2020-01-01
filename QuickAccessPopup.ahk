@@ -33,7 +33,7 @@ HISTORY
 
 Version: 10.3.2 (2019-12-31)
 - when importing or exporting favorites with the "Import/Export Settings" command, fix bug when the "[Favorites]" section is larger than 65,532 characters (QAP now imports or exports favorites line by line instead of copying the section as a whole because of size limit)
-- display a progress popup text when importing or exporting
+- display a progress popup text when importing or exporting favorites
 - when saving favorites, stop doing an internal backup of the "[Favorites]" section of the ini file as "[Favorites-backup]" when its size is larger than 65,532 characters (this backup section is unused and is copied only for debugging)
  
 Version: 10.3.1 (2019-12-22)
