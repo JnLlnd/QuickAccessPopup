@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.3.2 (2019-12-31)
+- when importing or exporting favorites with the "Import/Export Settings" command, fix bug when the "[Favorites]" section is larger than 65,532 characters (QAP now imports or exports favorites line by line instead of copying the section as a whole because of size limit)
+- display a progress popup text when importing or exporting favorites
+- when saving favorites, stop doing an internal backup of the "[Favorites]" section of the ini file as "[Favorites-backup]" when its size is larger than 65,532 characters (this backup section is unused and is copied only for debugging)
+ 
 Version: 10.3.1 (2019-12-22)
 - fix bug preventing to return a Live Folder back to a normal favorite folder
 - fix bug in dropdown list when selecting a favorite position and a menu contains a line separator
@@ -3731,7 +3736,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.1
+;@Ahk2Exe-SetVersion 10.3.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3836,7 +3841,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -17216,6 +17221,7 @@ if (g_blnUseColors)
 	Gui, ImpExp:Color, %g_strGuiWindowColor%
 
 Gui, ImpExp:Font, w700
+; f_radImpExpExport: Export / f_radImpExpImport: Import
 Gui, ImpExp:Add, Radio, y+20 x10 w130 vf_radImpExpExport gImpExpClicked Checked Group, % o_L["ImpExpExport"]
 Gui, ImpExp:Add, Radio, x150 yp w130 vf_radImpExpImport gImpExpClicked, % o_L["ImpExpImport"]
 
@@ -17256,6 +17262,7 @@ return
 
 ;------------------------------------------------------------
 ImpExpClicked:
+; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
 Gui, ImpExp:Submit, NoHide
 
@@ -17275,6 +17282,7 @@ return
 
 ;------------------------------------------------------------
 ButtonImpExpFile:
+; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
 Gui, ImpExp:Submit, NoHide
 Gui, ImpExp:+OwnDialogs
@@ -17299,6 +17307,7 @@ return
 
 ;------------------------------------------------------------
 ButtonImpExpGo:
+; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
 Gui, ImpExp:Submit, NoHide
 Gui, ImpExp:+OwnDialogs
@@ -17333,7 +17342,10 @@ if !(blnAbort) and (f_blnImpExpFavorites)
 {
 	blnReplace := false
 	strFavorite := o_Settings.ReadIniValue("Favorite1", "", "Favorites", g_strImpExpDestinationFile) ; ERROR if not found
-	if (strFavorite <> "ERROR")
+	
+	if (strFavorite = "ERROR") ; [Favorites] section is empty
+		intLastFavorite := 0
+	else ; [Favorites] section is NOT empty
 	{
 		SetTimer, ImpExpChangeButtonNames, 50
 		MsgBox, 3, % o_L["ImpExpMenu"] . " " o_L["ImpExpFavorites"] . " - " . g_strAppNameText, % L(o_L["ImpExpReplaceFavorites"], g_strImpExpDestinationFile)
@@ -17342,9 +17354,10 @@ if !(blnAbort) and (f_blnImpExpFavorites)
 		IfMsgBox, Cancel
 			return
 
-		if !(blnReplace) ; append
+		if (blnReplace)
+			intLastFavorite := 0
+		else ; append, get last index number
 		{
-			; get last index number
 			Loop
 			{
 				strAppendFavorite := o_Settings.ReadIniValue("Favorite" . A_Index, "", "Favorites", g_strImpExpDestinationFile)
@@ -17355,22 +17368,30 @@ if !(blnAbort) and (f_blnImpExpFavorites)
 				}
 			}
 			intLastFavorite -= 2 ; minus one for "ERROR" and minus one to overwrite "Z" (end of menu) that will be re-inserted in the import
-			intIniLine := 0
-			Loop
-			{
-				intIniLine++
-				strAppendFavorite := o_Settings.ReadIniValue("Favorite" . intIniLine, "", "Favorites", g_strImpExpSourceFile) ; ERROR if not found
-				if (strAppendFavorite = "ERROR")
-					Break
-				intDestintIniLine := intIniLine + intLastFavorite
-				IniWrite, %strAppendFavorite%, %g_strImpExpDestinationFile%, Favorites, Favorite%intDestintIniLine%
-			}
-			blnContentTransfered := (intIniLine > 0)
 		}
 	}
 	
-	if (strFavorite = "ERROR" or blnReplace)
-		WriteIniSection("Favorites", "", blnAbort, blnContentTransfered, blnContentIdentical) ; update blnAbort, blnContentTransfered and blnContentIdentical
+	if (blnReplace)
+		IniDelete, %g_strImpExpDestinationFile%, Favorites
+	
+	; intLastFavorite = 0 if overwrite or last existing favorite if append
+	intIniLine := 0 ; line number from source file
+	Loop
+	{
+		intIniLine++
+		ToolTip, % (f_radImpExpExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"]) . " - " . o_L["ImpExpOptionFavorites"] . ": #" . intIniLine
+		strAppendFavorite := o_Settings.ReadIniValue("Favorite" . intIniLine, "", "Favorites", g_strImpExpSourceFile) ; ERROR if not found
+		if (strAppendFavorite = "ERROR")
+			Break
+		intDestintIniLine := intIniLine + intLastFavorite
+		IniWrite, %strAppendFavorite%, %g_strImpExpDestinationFile%, Favorites, Favorite%intDestintIniLine%
+	}
+	ToolTip
+	blnContentTransfered := (intIniLine > 0)
+
+	; v10.3.2: STOP copying [Favorites] section as a whole because of the IniRead limit of 65,533 characters
+	; if (strFavorite = "ERROR" or blnReplace)
+		; WriteIniSection("Favorites", "", blnAbort, blnContentTransfered, blnContentIdentical) ; update blnAbort, blnContentTransfered and blnContentIdentical
 }
 
 if (f_blnImpExpGlobal)
@@ -25511,10 +25532,13 @@ class Container
 			s_intIniLineSave := 1
 			s_strIniFile := o_Settings.strIniFile
 			
-			; make internal backup
-			IniRead, strTempIniFavoritesSection, %s_strIniFile%, Favorites
-			IniWrite, %strTempIniFavoritesSection%, %s_strIniFile%, Favorites-backup
+			IniRead, strTempIniFavoritesSection, %s_strIniFile%, Favorites ; to make an undocumented internal backup
 			IniDelete, %s_strIniFile%, Favorites
+			
+			if StrLen(strTempIniFavoritesSection) <= 65532 ; ini section is OK, make the internal backup
+				IniWrite, %strTempIniFavoritesSection%, %s_strIniFile%, Favorites-backup
+			else ; ini section is incomplete because IniRead cannot read more than 65,533 characters, delete previous backup
+				IniDelete, %s_strIniFile%, Favorites-backup
 		}
 		
 		ToolTip, % o_L["ToolTipSaving"] . "`n" . this.AA.strMenuPath
