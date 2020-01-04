@@ -31,6 +31,21 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.3.9.1 (2020-01-04)
+ 
+Previous/Next arrows
+- add "Next" arrow in additon to the "Previous", allowing to browse backward and forward in QAP menus or groups
+- add hotkeys Shift+Ctrl+Left to return to previous menu and Shift+Ctrl+Right move forward in visited menus
+- allow to use the "Next" and "Previous" arrows to navigate back and forward in previous search results
+- skip previous/next menu item if it has been removed since it was added to the previous/next stacks
+- add a list of menu and groups in previous/next menus when hovering the "Next" and "Previous" icons
+ 
+Search
+- when editing a favorite from the search result, stop changing menu and stay in the search result
+- adapt remove single and multiple favorites from from search result
+- hide "Up" button when in a search result
+- in extended search, stop including location for QAP features (QAP feature code names not visible to user)
+
 Version: 10.3.2 (2019-12-31)
 - when importing or exporting favorites with the "Import/Export Settings" command, fix bug when the "[Favorites]" section is larger than 65,532 characters (QAP now imports or exports favorites line by line instead of copying the section as a whole because of size limit)
 - display a progress popup text when importing or exporting favorites
@@ -3736,7 +3751,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.2
+;@Ahk2Exe-SetVersion 10.3.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3841,8 +3856,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.3.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
