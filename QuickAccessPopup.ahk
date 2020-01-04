@@ -12024,7 +12024,13 @@ if (A_ThisLabel = "GuiMenusListChanged")
 if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 {
 	; pop last menu and the focus position left/right arrow stack and remove it from stack
-	oPopMenu := (A_ThisLabel = "GuiGotoMenuPrev" ? g_saSubmenuStackPrev.Pop() : g_saSubmenuStackNext.Pop())
+	loop
+	{
+		if !(A_ThisLabel = "GuiGotoMenuPrev" ? g_saSubmenuStackPrev.MaxIndex() : g_saSubmenuStackNext.MaxIndex())
+		; stack got empty because containers were removed after they were added to the stack
+			return
+		oPopMenu := (A_ThisLabel = "GuiGotoMenuPrev" ? g_saSubmenuStackPrev.Pop() : g_saSubmenuStackNext.Pop())
+	} until (oPopMenu.AA.strMenuType = "Search" or o_Containers.AA.HasKey(oPopMenu.AA.strMenuPath))
 	intMenuLastPosition := oPopMenu.AA.intMenuLastPosition
 	
 	; push current menu/search to left/right arrow stack
@@ -21438,11 +21444,30 @@ WM_MOUSEMOVE(wParam, lParam)
 		and StrLen(g_aaToolTipsMessages[s_strControl])
 	{
 		ToolTip, % g_aaToolTipsMessages[s_strControl] ; display tooltip or remove tooltip if no message for this control
+			. (s_strControl = "Static8" ? GetStackContent(g_saSubmenuStackPrev) : "") ; add list of containers in the stack
+			. (s_strControl = "Static9" ? GetStackContent(g_saSubmenuStackNext) : "") ; add list of containers in the stack
+			g_aaToolTipsMessages["Static8"] := o_L["ControlToolTipPreviousMenu"]
+
 		if StrLen(g_aaToolTipsMessages[s_strControl])
 			SetTimer, RemoveToolTip, 2500 ; will remove tooltip if not removed by mouse going hovering elsewhere (required if window become inactive)
 	}
 
 	return
+}
+;------------------------------------------------
+
+
+;------------------------------------------------
+GetStackContent(oStack)
+;------------------------------------------------
+{
+	intPos := oStack.MaxIndex()
+	while (intPos)
+	{
+		strList .= "`n" . (oStack[intPos].AA.strMenuType = "Search" ? o_L["DialogSearch"] . ": " : "") . oStack[intPos].AA.strMenuPath
+		intPos--
+	}
+	return strList
 }
 ;------------------------------------------------
 
