@@ -25102,10 +25102,6 @@ class Container
 		}
 		*/
 		
-		; The names of menus and menu items can be up to 260 characters long.
-		if StrLen(strMenuItemName) > 260
-			strMenuItemName := SubStr(strMenuItemName, 1, 256) . g_strEllipse ; minus one for the luck ;-) ### not ByRef strMenuItemName, since we will use a menu object to open the item
-		
 		if (o_Settings.Menu.blnDisplayNumericShortcuts.IniValue
 			and SubStr(strMenuItemName, 1, StrLen(g_strAmpersandPlaceholder)) = g_strAmpersandPlaceholder)
 		{
@@ -25127,6 +25123,10 @@ class Container
 				strMenuItemName := StrReplace(strMenuItemName, "&", "&&")
 			; else keep strMenuItemName unchanged
 			
+		; The names of menus and menu items can be up to 260 characters long. Avoid error "Error: Menu item name too long."
+		if StrLen(strMenuItemName) > 260
+			strMenuItemName := SubStr(strMenuItemName, 1, 256) . g_strEllipse ; g_strEllipse length is 1
+		
 		if SubStr(strAction, 1, 1) = ":" ; this is a menu
 		{
 			Try Menu, % this.AA.strMenuPath, Add, %strMenuItemName%, %strAction%, % (blnHasColumnBreak ? "BarBreak" : "")
