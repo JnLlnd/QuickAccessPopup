@@ -15132,6 +15132,8 @@ GuiCancel:
 GuiCancelAndExitApp:
 ;------------------------------------------------------------
 
+gosub, GuiFavoritesListFilterHide
+
 if SettingsUnsaved()
 {
 	Gui, 1:+OwnDialogs
