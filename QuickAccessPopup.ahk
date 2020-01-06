@@ -10264,6 +10264,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 	
 	if SearchIsVisible()
 	{
+		; ##### review edit from search result; use of o_SearchResultContainer
 		o_MenuInGui.AA.intSearchPositionBeforeEdit := g_intOriginalMenuPosition ; to restore position after favorite is saved or canceled
 		o_SearchResultContainer := o_MenuInGui ; to be restored in after saving or canceling the gui edit (in 2GuiClose or 2GuiCancel)
 		
@@ -12641,34 +12642,29 @@ if (!SearchIsVisible() and f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
 }
 
 g_intOriginalMenuPosition := 0
+intItemSelected := 0
 intNbFavoritesCopied := 0
 g_blnMulipleMoveOrCopyAborted := false
 
-if SearchIsVisible()
-{
-	o_MenuInGui.AA.intSearchPositionBeforeEdit := LV_GetNext() ; to restore position in search result after items are moved/copied
-	o_SearchResultContainer := o_MenuInGui ; to be restored after looping the items to move or copy
-}
+Gui, 1:Default
 
 Loop
 {
+	intItemSelected := LV_GetNext(intItemSelected)
+
+	if (!intItemSelected)
+        break
+	if (!blnMove and o_MenuInGui.SA[intItemSelected].IsContainer()) ; skip menus and groups for copy
+		continue
+	
 	if SearchIsVisible()
 	{
+		oMenuInGuiBK := o_MenuInGui
 		o_MenuInGui := GetParentMenuOfSearchResultItem(g_intOriginalMenuPosition)
-		if !IsObject(o_MenuInGui) ; ##### required?
-		{
-			LV_Delete(intItemSelected)
-			return
-		}
 	}
 	else
-		g_intOriginalMenuPosition := LV_GetNext(g_intOriginalMenuPosition)
-
-	if (!g_intOriginalMenuPosition)
-        break
-	if (!blnMove and o_MenuInGui.SA[g_intOriginalMenuPosition].IsContainer()) ; skip menus and groups for copy
-		continue
-
+		g_intOriginalMenuPosition := intItemSelected
+	
 	if (blnMove)
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
 	else
@@ -12677,7 +12673,7 @@ Loop
 	if (blnMove)
 	{
 		Gosub, GuiMoveOneFavoriteSave
-		g_intOriginalMenuPosition -=  1 ; because GuiMoveOneFavoriteSave deleted the previous item
+		intItemSelected -=  1 ; because GuiMoveOneFavoriteSave deleted the previous item
 	}
 	else
 	{
@@ -12688,12 +12684,12 @@ Loop
 			g_intOriginalMenuPosition++
 	}
 	
+	if SearchIsVisible()
+		o_MenuInGui := oMenuInGuiBK
+	
 	if (g_blnMulipleMoveOrCopyAborted)
 		break
 }
-
-if SearchIsVisible()
-	o_MenuInGui := o_SearchResultContainer ; restore search result container
 
 if (intNbFavoritesCopied)
 	Oops(2, o_L["OopsFavoritesCopied"], intNbFavoritesCopied)
@@ -12881,7 +12877,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.AA.blnFavoriteElevate := f_blnFavoriteElevate
 	}
 }
-else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave (but GuiCopyOneFavoriteSave cannot be part of multiple copy)
+else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave (but GuiCopyOneFavoriteSave cannot be part of multiple copy ##### ???)
 	if o_EditedFavorite.IsContainer()
 		; for Menu and Group in multiple moved, update the strFavoriteLocation in favorite object and update menus and hotkeys index objects
 		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu)
@@ -12898,7 +12894,7 @@ if !(g_intNewItemPos)
 o_Containers.AA[strDestinationMenu].SA.InsertAt(g_intNewItemPos, o_EditedFavorite)
 
 ; updating listview
-if (strThisLabel <> "GuiAddExternalSave")
+if (strThisLabel <> "GuiAddExternalSave") ; #### if search result?
 	Gosub, 2GuiClose
 else ; GuiAddExternalSave
 	g_blnExternalMenusAdded := true
@@ -13524,7 +13520,7 @@ if SearchIsVisible()
 	oMenuOfRemovedItem := GetParentMenuOfSearchResultItem(intItemToRemove) ; get search result item original menu and position
 	if !IsObject(oMenuOfRemovedItem)
 	{
-		; ##### check with multiple remove the item was removed in a previous item of o_SearchResult GuiRemoveOneFavorite
+		; check if the item was removed under a previous item of the search result
 		LV_Delete(intItemSelected)
 		return
 	}
@@ -15249,7 +15245,8 @@ if (g_strOptionsGuiTitle = strThisTitle) and StrLen(strThisTitle) ; StrLen by sa
 }
 else
 {
-	if IsObject(o_SearchResultContainer)
+	; ##### review edit from search result; use of o_SearchResultContainer
+	if IsObject(o_SearchResultContainer) ; used after edit favorite from search result
 	{
 		o_MenuInGui := o_SearchResultContainer ; restore search result container
 		o_SearchResultContainer := ""
