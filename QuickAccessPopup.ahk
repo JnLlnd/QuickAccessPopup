@@ -10267,7 +10267,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		o_MenuInGui.AA.intSearchPositionBeforeEdit := g_intOriginalMenuPosition ; to restore position after favorite is saved or canceled
 		o_SearchResultContainerBK := o_MenuInGui ; to be restored in after saving or canceling the gui edit (in 2GuiClose or 2GuiCancel)
 		
-		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intPositionInMenu ; switching g_intOriginalMenuPosition to position in search result item original menu
+		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intSearchItemOriginalPositionInMenu ; switching g_intOriginalMenuPosition to position in search result item original menu
 		o_MenuInGui := o_MenuInGui.SA[o_MenuInGui.AA.intSearchPositionBeforeEdit].AA.oParentMenu ; giving temporary access to original menu of search result item
 		
 		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].Backup() : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
@@ -13497,18 +13497,85 @@ if LV_GetCount("Selected") > 1
 }
 
 intLastSearchPosition := LV_GetNext()
-Loop
-	Gosub, GuiRemoveOneFavorite
-until !LV_GetNext()
 
-o_MainMenu.RemoveMarkedItems() ; remove marked favorites in menu objects
-Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intPositionInMenu
+; collect favorites to remove
+strFavoritesToRemove := ""
+intSelected := 0
+Loop
+{
+	intSelected := LV_GetNext(intSelected)
+	if !(intSelected)
+		break
+	if SearchIsVisible()
+	{
+		LV_GetText(strName, intSelected, 1)
+		LV_GetText(strMenu, intSelected, 2)
+		strFavoritesToRemove .= intSelected . "|" . strMenu . "|" . strName . "`n"
+	}
+	else
+		strFavoritesToRemove .= intSelected . "`n"
+}
+
+intRemovedItem := 0
+Loop, Parse, strFavoritesToRemove, `n
+{
+	if !StrLen(A_LoopField)
+		continue ; should happen only for last item
+	
+	; 1: position in listview when not search result; 2: menu path in search result; 3: item name in search result
+	saFavoriteToRemove := StrSplit(A_LoopField, "|")
+	
+	if SearchIsVisible()
+	{
+		; find item in updated listview
+		intSelected := 0
+		Loop
+		{
+			intSelected++ ; get next row
+			LV_GetText(strName, intSelected, 1)
+			LV_GetText(strMenu, intSelected, 2)
+			if !StrLen(strName) ; end of listview
+			{
+				o_EditedFavorite := ""
+				break
+			}
+			else if (strMenu = saFavoriteToRemove[2] and strName = saFavoriteToRemove[3]) ; item found
+			{
+				o_EditedFavorite := o_MenuInGui.SA[intSelected]
+				oMenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
+				intItemToRemove := o_EditedFavorite.AA.intSearchItemOriginalPositionInMenu
+				if IsObject(oMenuOfRemovedItem) and IsObject(o_EditedFavorite)
+					break ; item exists, process it
+				; else continue with next row
+			}
+		}
+	}
+	else
+	{
+		intItemToRemove := saFavoriteToRemove[1] - intRemovedItem
+		oMenuOfRemovedItem := o_MenuInGui
+		o_EditedFavorite := o_MenuInGui.SA[saFavoriteToRemove[1] - intRemovedItem]
+	}
+	
+	if IsObject(o_EditedFavorite)
+		Gosub, GuiRemoveOneFavorite
+	 
+	if SearchIsVisible()
+		Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
+}
+
+if !SearchIsVisible()
+	Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
 
 ; select row of first removed item
 LV_Modify(0, "-Select")
 LV_Modify(intLastSearchPosition, "Select Focus Vis")
 
 intLastSearchPosition := ""
+strFavoritesToRemove := ""
+intSelected := ""
+strName := ""
+strMenu := ""
 
 return
 ;------------------------------------------------------------
@@ -13519,30 +13586,26 @@ GuiRemoveFavorite:
 GuiRemoveOneFavorite:
 ;------------------------------------------------------------
 
-intItemSelected := LV_GetNext() ; also first selected if GuiRemoveOneFavorite because previously selected items were deselected in listview
-
-if !(intItemSelected)
+if (A_ThisLabel = "GuiRemoveFavorite")
 {
-	Oops(1, o_L["DialogSelectItemToRemove"])
-	gosub, GuiRemoveFavoriteCleanup
-	return
-}
-
-if SearchIsVisible()
-{
-	oMenuOfRemovedItem := GetNextSelectedItemInSearchResult(0, intItemToRemove, o_EditedFavorite) ; get search result item original menu and position
-	if !IsObject(oMenuOfRemovedItem)
+	intItemToRemove := LV_GetNext()
+	if !(intItemToRemove)
 	{
-		; check if the item was removed under a previous item of the search result
-		LV_Delete(intItemSelected)
+		Oops(1, o_L["DialogSelectItemToRemove"])
+		gosub, GuiRemoveFavoriteCleanup
 		return
 	}
-}
-else
-{
-	intItemToRemove := intItemSelected
-	oMenuOfRemovedItem := o_MenuInGui
-	o_EditedFavorite := oMenuOfRemovedItem.SA[intItemToRemove] ; for UpdateFavoriteObjectSaveShortcut
+	
+	if SearchIsVisible()
+	{
+		o_EditedFavorite := o_MenuInGui.SA[intItemToRemove]
+		oMenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
+	}
+	else
+	{
+		oMenuOfRemovedItem := o_MenuInGui
+		o_EditedFavorite := oMenuOfRemovedItem.SA[intItemToRemove] ; for UpdateFavoriteObjectSaveShortcut
+	}
 }
 
 if oMenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu) and !oExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
@@ -13578,24 +13641,9 @@ if (blnItemIsMenu)
 g_strNewFavoriteShortcut := "" ; for UpdateFavoriteObjectSaveShortcut
 Gosub, UpdateFavoriteObjectSaveShortcut
 
-if (A_ThisLabel = "GuiRemoveFavorite") ; only if single remove
-	oMenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
+oMenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
 
-if SearchIsVisible()
-{
-	if (A_ThisLabel = "GuiRemoveOneFavorite")
-	{
-		; mark to avoid changing menu SA and lose found favorites original position in menus
-		oMenuOfRemovedItem.SA[intItemToRemove].AA.blnMarkedForRemoval := true ; will be removed by container method RemoveMarkedItems()
-		LV_Modify(intItemSelected, "-Select") ; deselect in search result listview to allow selection of next item to remove
-	}
-	else ; GuiRemoveFavorite
-	{
-		o_MenuInGui.AA.intLastSearchPosition := intItemSelected ; to restore position after favorite is removed
-		Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intPositionInMenu
-	}
-}
-else
+if !SearchIsVisible()
 {
 	LV_Delete(intItemToRemove)
 	if (A_ThisLabel = "GuiRemoveFavorite")
@@ -13606,6 +13654,9 @@ else
 			LV_Modify(LV_GetCount(), "Select Focus Vis")
 	}
 	Gosub, AdjustColumnsWidth
+	
+	if (A_ThisLabel = "GuiRemoveOneFavorite")
+		intRemovedItem++
 }
 
 ; refresh menu dropdpown in gui
@@ -14367,6 +14418,7 @@ return
 
 
 ;------------------------------------------------------------
+; ##### remove?
 GetNextSelectedItemInSearchResult(ByRef intPositionInListView, ByRef intPositionInOriginalMenu, ByRef oFavorite)
 ; intPositionInListView is the starting position in search result list view and is returned incremented to next selected item
 ; intPositionInOriginalMenu returns the position of next selected favorite in its original container
@@ -14387,7 +14439,7 @@ GetNextSelectedItemInSearchResult(ByRef intPositionInListView, ByRef intPosition
 		
 		oFavorite := o_MenuInGui.SA[intPositionInListView]
 
-		intPositionInOriginalMenu := oFavorite.AA.intPositionInMenu ; ##### intPositionInMenu not good if items before in SA were removed or moved before -> must not touch SA before end of loop?
+		intPositionInOriginalMenu := oFavorite.AA.intSearchItemOriginalPositionInMenu ; ##### intSearchItemOriginalPositionInMenu not good if items before in SA were removed or moved before -> must not touch SA before end of loop?
 		strMenuPath := oFavorite.AA.oParentMenu.AA.strMenuPath
 		; ###_V(A_ThisFunc, strMenuPath, IsObject(o_Containers.AA[strMenuPath])
 			; , intPositionInOriginalMenu, IsObject(o_Containers.AA[strMenuPath].SA[intPositionInOriginalMenu]), IsObject(oFavorite)
@@ -24648,7 +24700,7 @@ class Container
 					}
 				}
 				
-				oItem.AA.intPositionInMenu := A_Index
+				oItem.AA.intSearchItemOriginalPositionInMenu := intKey ; used in search result to locate the original favorite object in the container
 				o_MenuInGui.SA.Push(oItem)
 			}
 			
