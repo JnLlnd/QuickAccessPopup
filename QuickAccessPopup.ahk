@@ -3934,6 +3934,7 @@ g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) 
 
 global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
+global g_intRemovedItems ; used when deleting multiple favorites from regular listview
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -13499,65 +13500,14 @@ if LV_GetCount("Selected") > 1
 intLastSearchPosition := LV_GetNext()
 
 ; collect favorites to remove
-strFavoritesToRemove := ""
-intSelected := 0
-Loop
-{
-	intSelected := LV_GetNext(intSelected)
-	if !(intSelected)
-		break
-	if SearchIsVisible()
-	{
-		LV_GetText(strName, intSelected, 1)
-		LV_GetText(strMenu, intSelected, 2)
-		strFavoritesToRemove .= intSelected . "|" . strMenu . "|" . strName . "`n"
-	}
-	else
-		strFavoritesToRemove .= intSelected . "`n"
-}
+strFavoritesToRemove := CollectSelectedFavorites()
 
-intRemovedItem := 0
+g_intRemovedItems := 0
 Loop, Parse, strFavoritesToRemove, `n
 {
-	if !StrLen(A_LoopField)
-		continue ; should happen only for last item
+	intItemToRemove := FindItemInListView(A_LoopField, o_EditedFavorite, oMenuOfRemovedItem)
 	
-	; 1: position in listview when not search result; 2: menu path in search result; 3: item name in search result
-	saFavoriteToRemove := StrSplit(A_LoopField, "|")
-	
-	if SearchIsVisible()
-	{
-		; find item in updated listview
-		intSelected := 0
-		Loop
-		{
-			intSelected++ ; get next row
-			LV_GetText(strName, intSelected, 1)
-			LV_GetText(strMenu, intSelected, 2)
-			if !StrLen(strName) ; end of listview
-			{
-				o_EditedFavorite := ""
-				break
-			}
-			else if (strMenu = saFavoriteToRemove[2] and strName = saFavoriteToRemove[3]) ; item found
-			{
-				o_EditedFavorite := o_MenuInGui.SA[intSelected]
-				oMenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
-				intItemToRemove := o_EditedFavorite.AA.intSearchItemOriginalPositionInMenu
-				if IsObject(oMenuOfRemovedItem) and IsObject(o_EditedFavorite)
-					break ; item exists, process it
-				; else continue with next row
-			}
-		}
-	}
-	else
-	{
-		intItemToRemove := saFavoriteToRemove[1] - intRemovedItem
-		oMenuOfRemovedItem := o_MenuInGui
-		o_EditedFavorite := o_MenuInGui.SA[saFavoriteToRemove[1] - intRemovedItem]
-	}
-	
-	if IsObject(o_EditedFavorite)
+	if (intItemToRemove and IsObject(o_EditedFavorite))
 		Gosub, GuiRemoveOneFavorite
 	 
 	if SearchIsVisible()
@@ -13656,7 +13606,7 @@ if !SearchIsVisible()
 	Gosub, AdjustColumnsWidth
 	
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
-		intRemovedItem++
+		g_intRemovedItems++
 }
 
 ; refresh menu dropdpown in gui
@@ -21483,6 +21433,73 @@ SearchIsVisible()
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+CollectSelectedFavorites()
+; return a string with items selected in active listview
+; 1: position in listview when not search result; 2: menu path in search result; 3: item name in search result
+;------------------------------------------------------------
+{
+	str := ""
+	intSelected := 0
+	Loop
+	{
+		intSelected := LV_GetNext(intSelected)
+		if !(intSelected)
+			break
+		if SearchIsVisible()
+		{
+			LV_GetText(strName, intSelected, 1)
+			LV_GetText(strMenu, intSelected, 2)
+			str .= intSelected . "|" . strMenu . "|" . strName . "`n"
+		}
+		else
+			str .= intSelected . "`n"
+	}
+	return SubStr(str, 1, -1) ; remove last end of line
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+FindItemInListView(strFavoriteToFind, ByRef oFoundFavorite, ByRef oMenuOfFoundItem)
+; returns position of searched item in its original menu, 0 if not found
+;------------------------------------------------------------
+{
+	saFavoriteToFind := StrSplit(strFavoriteToFind, "|")
+	
+	if SearchIsVisible() ; find matching item in updated listview and retrieve item's position in original menu
+	{
+		intSelected := 0
+		Loop
+		{
+			intSelected++ ; get next row
+			LV_GetText(strName, intSelected, 1)
+			LV_GetText(strMenu, intSelected, 2)
+			if !StrLen(strName) ; end of listview
+			{
+				oFoundFavorite := ""
+				oMenuOfFoundItem := ""
+				return 0
+			}
+			else if (strMenu = saFavoriteToFind[2] and strName = saFavoriteToFind[3]) ; item found
+			{
+				oFoundFavorite := o_MenuInGui.SA[intSelected]
+				oMenuOfFoundItem := oFoundFavorite.AA.oParentMenu
+				if IsObject(oMenuOfFoundItem) and IsObject(oFoundFavorite)
+					return oFoundFavorite.AA.intSearchItemOriginalPositionInMenu
+				; else continue with next row
+			}
+		}
+	}
+	else
+	{
+		oMenuOfFoundItem := o_MenuInGui
+		oFoundFavorite := o_MenuInGui.SA[saFavoriteToFind[1] - g_intRemovedItems]
+		return saFavoriteToFind[1] - g_intRemovedItems
+	}
+}
+;------------------------------------------------------------
+
 
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
@@ -25936,28 +25953,6 @@ class Container
 	}
 	;---------------------------------------------------------
 
-	;---------------------------------------------------------
-	RemoveMarkedItems()
-	;---------------------------------------------------------
-	{
-		for intKey, oItem in this.SA
-		{
-			if (oItem.AA.blnMarkedForRemoval)
-				strItemsToRemoveInThisMenu .= intKey . "|" ; do not remove items inside the for loop
-			else if oItem.IsContainer()
-				oItem.AA.oSubMenu.RemoveMarkedItems() ; recursive
-		}
-		
-		intRemovedItems := 0
-		loop, Parse, strItemsToRemoveInThisMenu, | ; removed items collected in the for loop
-			if StrLen(A_LoopField) ; to skip the last empty item
-			{
-				this.SA.RemoveAt(A_LoopField - intRemovedItems)
-				intRemovedItems++
-			}
-	}
-	;---------------------------------------------------------
-	
 	; === end of methods for class Container ===
 	
 	;-------------------------------------------------------------
