@@ -3934,7 +3934,7 @@ g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) 
 
 global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
-global g_intRemovedItems ; used when deleting multiple favorites from regular listview
+global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -10201,7 +10201,6 @@ blnIsGroupMember := ""
 g_strNewLocation := ""
 g_blnAbortEdit := ""
 o_ExternalMenu := ""
-strDialogPosition := ""
 intGui2Width := ""
 intGui2Height := ""
 strGuiTitle := ""
@@ -11180,40 +11179,31 @@ GuiMoveMultipleFavoritesToMenu:
 GuiCopyMultipleFavoritesToMenu:
 ;------------------------------------------------------------
 
-blnMove := InStr(A_ThisLabel, "GuiMove")
+Gui, 1:Default
+strGuiFavoriteLabel := A_ThisLabel
+g_intGui1WinID := WinExist("A")
+
+blnMove := InStr(strGuiFavoriteLabel, "GuiMove")
+
+; collect favorites to process
+g_strFavoritesToCopyOrMove := CollectSelectedFavorites()
 
 ; check if favorites to copy include menus or groups
 ; ##### remove if copy container gets supported
-Gui, 1:Default
-intItemSelected := 0
 if (!blnMove) ; multiple copy not supported for menus, external and groups
-	Loop
+	Loop, Parse, g_strFavoritesToCopyOrMove, `n
 	{
-		intItemSelected := LV_GetNext(intItemSelected)
-		if (!intItemSelected)
-			break
-		if SearchIsVisible()
-			oThisMenu := GetNextSelectedItemInSearchResult(intItemSelected, intThisMenuPosition, oCopiedFavorite) ; get search result item original menu and position
-		else
-		{
-			intThisMenuPosition := intItemSelected
-			oThisMenu := o_MenuInGui
-			oCopiedFavorite := oThisMenu.SA[intThisMenuPosition]
-		}
-		
-		if oCopiedFavorite.IsContainer()
+		saFavoriteToProcess := StrSplit(A_LoopField, "|")
+		if o_MenuInGui.SA[saFavoriteToProcess[1]].IsContainer()
 		{
 			Gui, 2:+OwnDialogs
 			MsgBox, 4, %g_strAppNameText%, % o_L["CopyFavoritesToMenuOrGroup"]
 			IfMsgBox, Yes
-				break
+				break ; continue with copy
 			else
-				return
+				return ; do not process
 		}
 	}
-
-strGuiFavoriteLabel := A_ThisLabel
-g_intGui1WinID := WinExist("A")
 
 if (LV_GetNext() = 0)
 {
@@ -11221,7 +11211,7 @@ if (LV_GetNext() = 0)
 	return
 }
 
-strGuiTitle := L((blnMove ? (A_ThisLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogMoveFavoriteTitle"] : o_L["DialogMoveFavoritesTitle"])
+strGuiTitle := L((blnMove ? (strGuiFavoriteLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogMoveFavoriteTitle"] : o_L["DialogMoveFavoritesTitle"])
 	: o_L["DialogCopyFavoritesTitle"]), g_strAppNameText, g_strAppVersion)
 Gui, 2:New, +Resize -MaximizeBox +MinSize320x160 +MaxSizex160 +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
@@ -11230,12 +11220,12 @@ if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
 Gui, 2:Add, Text, x10 y10 vf_lblFavoriteParentMenu
-	, % L((blnMove ? (A_ThisLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogFavoriteParentMenuMove"] : o_L["DialogFavoritesParentMenuMove"])
+	, % L((blnMove ? (strGuiFavoriteLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogFavoriteParentMenuMove"] : o_L["DialogFavoritesParentMenuMove"])
 	: o_L["DialogFavoritesParentMenuCopy"]), g_intFavoriteSelected)
 Gui, 2:Add, DropDownList, x10 w300 vf_drpParentMenu gDropdownParentMenuChanged
 	, % o_MainMenu.BuildMenuListDropDown(SearchIsVisible() ? o_MainMenu.AA.strMenuPath : o_MenuinGui.AA.strMenuPath, , true) . "|" ; include self but exclude read-only external
 
-Gui, 2:Add, Text, x20 y+10 vf_lblFavoriteParentMenuPosition, % (A_ThisLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogFavoriteMenuPosition"] : o_L["DialogFavoritesMenuPosition"])
+Gui, 2:Add, Text, x20 y+10 vf_lblFavoriteParentMenuPosition, % (strGuiFavoriteLabel = "GuiMoveFavoriteToMenu" ? o_L["DialogFavoriteMenuPosition"] : o_L["DialogFavoritesMenuPosition"])
 Gui, 2:Add, DropDownList, x20 y+5 w290 vf_drpParentMenuItems AltSubmit
 GuiControl, 2:, f_drpParentMenuItems, % "|" . strDropdownParentMenuItems . g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
 
@@ -11255,10 +11245,8 @@ WinMove, ahk_id %g_strGui2Hwnd%, , , , %intGui2Width% ; restore only width, alwa
 Gosub, ShowGui2AndDisableGui1
 
 blnMove := ""
-strDialogPosition := ""
 strGuiTitle := ""
-intItemSelected := ""
-oCopiedFavorite := ""
+strGuiFavoriteLabel := ""
 
 return
 ;------------------------------------------------------------
@@ -11360,17 +11348,17 @@ Gui, 2:Submit, NoHide
 
 saThisMenu := o_Containers.AA[f_drpParentMenu].SA
 
-for intIndex, o_Item in saThisMenu
-	if (o_EditedFavorite.AA.strFavoriteName = o_Item.AA.strFavoriteName and o_EditedFavorite.AA.strFavoriteType = o_Item.AA.strFavoriteType) ; to cover items of diff types with empty name
+for intIndex, oItem in saThisMenu
+	if (o_EditedFavorite.AA.strFavoriteName = oItem.AA.strFavoriteName and o_EditedFavorite.AA.strFavoriteType = oItem.AA.strFavoriteType) ; to cover items of diff types with empty name
 			and (o_MenuInGui.AA.strMenuPath = o_Containers.AA[f_drpParentMenu].AA.strMenuPath ; skip edited item itself
 			and !InStr(strGuiFavoriteLabel, "Copy")) ; and that we are not copying a favorite
 		Continue
-	else if (o_Item.AA.strFavoriteType = "X")
+	else if (oItem.AA.strFavoriteType = "X")
 		strDropdownParentMenuItems .= g_strGuiMenuSeparator . g_strGuiMenuSeparator . "|"
-	else if (o_Item.AA.strFavoriteType = "K")
+	else if (oItem.AA.strFavoriteType = "K")
 		strDropdownParentMenuItems .= g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine . "|"
 	else
-		strDropdownParentMenuItems .= o_Item.AA.strFavoriteName . "|"
+		strDropdownParentMenuItems .= oItem.AA.strFavoriteName . "|"
 
 GuiControl, , f_drpParentMenuItems, % "|" . strDropdownParentMenuItems . g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
 if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition <> 0xFFFF)
@@ -11381,7 +11369,7 @@ g_intNewItemPos := "" ; if new item position g_intNewItemPos is set, reset it an
 
 strDropdownParentMenuItems := ""
 saThisMenu := ""
-o_Item := ""
+oItem := ""
 
 return
 ;------------------------------------------------------------
@@ -12634,6 +12622,7 @@ GuiMoveMultipleFavoritesSave:
 GuiCopyMultipleFavoritesSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
+Gui, 1:Default
 
 blnMove := (A_ThisLabel = "GuiMoveMultipleFavoritesSave")
 
@@ -12643,59 +12632,30 @@ if (!SearchIsVisible() and f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
 	return
 }
 
+g_intRemovedItems := 0
 g_intOriginalMenuPosition := 0
-intItemSelected := 0
-intNbFavoritesCopied := 0
-g_blnMulipleMoveOrCopyAborted := false
 
-Gui, 1:Default
-intItemSelected := 0
-
-Loop
+Loop, Parse, g_strFavoritesToCopyOrMove, `n
 {
-	if SearchIsVisible()
-	{
-		oMenuInGuiBK := o_MenuInGui
-		o_MenuInGui := GetNextSelectedItemInSearchResult(intItemSelected, g_intOriginalMenuPosition, o_EditedFavorite)
-	}
-	else
-	{
-		intItemSelected := LV_GetNext(intItemSelected)
-		g_intOriginalMenuPosition := intItemSelected
-	}
-
-	if (!intItemSelected)
-        break
-	if (!blnMove and o_MenuInGui.SA[intItemSelected].IsContainer()) ; skip menus and groups for copy
-		continue
+	g_intOriginalMenuPosition := FindItemInListView(A_LoopField, o_EditedFavorite, oMenuOfProcessedItem)
 	
-	if !(blnMove) ; copy
-		o_EditedFavorite := o_EditedFavorite.Backup()
-
-	if (blnMove)
-		
-		Gosub, GuiMoveOneFavoriteSave
-		
-	else
-	{
-		Gosub, GuiCopyOneFavoriteSave
-		if !(g_blnMulipleMoveOrCopyAborted)
-			intNbFavoritesCopied++
-		if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition >= g_intNewItemPos) ; ##### g_intNewItemPos not initialized? ; copied items are inserted before selected, increment selected
-			g_intOriginalMenuPosition++
-	}
-	
-	if SearchIsVisible()
-		o_MenuInGui := oMenuInGuiBK
-	
+	if (g_intOriginalMenuPosition and IsObject(o_EditedFavorite))
+		if (blnMove)
+			Gosub, GuiMoveOneFavoriteSave
+		else
+		{
+			Gosub, GuiCopyOneFavoriteSave
+			if !(g_blnMulipleMoveOrCopyAborted)
+				intNbFavoritesCopied++
+			; ##### check this
+			; if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition >= g_intNewItemPos) ; ##### g_intNewItemPos not initialized? ; copied items are inserted before selected, increment selected
+				; g_intOriginalMenuPosition++
+		}
 	if (g_blnMulipleMoveOrCopyAborted)
 		break
-}
-
-if SearchIsVisible()
-{
-	Gosub, LoadFavoritesInGui
-	LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus Vis") ; ##### not sure?
+	 
+	if SearchIsVisible()
+		Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
 }
 
 if (intNbFavoritesCopied)
@@ -12894,10 +12854,18 @@ o_EditedFavorite.AA.oParentMenu := o_Containers.AA[strDestinationMenu]
 
 ; updating original and destination menu objects (these can be the same)
 
-if (strOriginalMenu <> "")
-	o_Containers.AA[strOriginalMenu].SA.RemoveAt(g_intOriginalMenuPosition) ; use .RemoveAt, not .Delete
+if !InStr(strThisLabel, "Copy")
+	if SearchIsVisible()
+		oMenuOfProcessedItem.SA.RemoveAt(g_intOriginalMenuPosition) ; use .RemoveAt, not .Delete
+	else
+		o_Containers.AA[strOriginalMenu].SA.RemoveAt(g_intOriginalMenuPosition) ; use .RemoveAt, not .Delete
+	
 if !(g_intNewItemPos)
-	g_intNewItemPos := o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1
+	if SearchIsVisible()
+		g_intNewItemPos := oMenuOfProcessedItem.SA.MaxIndex() + 1
+	else
+		g_intNewItemPos := o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1
+
 o_Containers.AA[strDestinationMenu].SA.InsertAt(g_intNewItemPos, o_EditedFavorite)
 
 ; updating listview
@@ -12913,7 +12881,11 @@ if SearchIsVisible()
 	LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus Vis")
 }
 else
+{
+	if (A_ThisLabel = "GuiMoveOneFavoriteSave")
+		g_intRemovedItems++ ; for FindItemInListView()
 	Gosub, GuiAddFavoriteSaveUpdateListView
+}
 
 Gosub, EnableSaveAndCancel
 
@@ -13606,7 +13578,7 @@ if !SearchIsVisible()
 	Gosub, AdjustColumnsWidth
 	
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
-		g_intRemovedItems++
+		g_intRemovedItems++ ; for FindItemInListView()
 }
 
 ; refresh menu dropdpown in gui
@@ -15303,7 +15275,6 @@ strThisTitle := ""
 blnIsAddEditCopyFavorite := ""
 blnIsToMenuDialogBox := ""
 intMinMax := ""
-strDialogPosition := ""
 intX := ""
 intY := ""
 intW := ""
