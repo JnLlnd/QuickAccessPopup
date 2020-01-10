@@ -5150,7 +5150,7 @@ AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
 
 IniWrite, 1, % o_Settings.strIniFile, Global, SnippetsDefaultMenuBuilt
-o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"] . " " . g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance)
+o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"] . g_strMenuPathSeparatorWithSpaces . g_strAddThisMenuNameWithInstance)
 
 g_intNextFavoriteNumber := ""
 g_strAddThisMenuName := ""
@@ -10270,20 +10270,15 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intSearchItemOriginalPositionInMenu ; switching g_intOriginalMenuPosition to position in search result item original menu
 		o_MenuInGui := o_MenuInGui.SA[o_MenuInGui.AA.intSearchPositionBeforeEdit].AA.oParentMenu ; giving temporary access to original menu of search result item
 		
-		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].Backup() : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
+		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
 	}
 	else if (strGuiFavoriteLabel = "GuiCopyFavorite")
-		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition].Backup()
+		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) ; true blnCopyItem
 	else
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
 	
 	if o_EditedFavorite.IsSeparator() ; favorite is menu separator or column break
 		g_blnAbortEdit := true
-	else if (strGuiFavoriteLabel = "GuiCopyFavorite" and InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true)) ; menu or group cannot be copied
-	{
-		Oops(1, o_L["OopsCannotCopyFavorite"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeShortName)
-		g_blnAbortEdit := true
-	}
 	
 	if (g_blnAbortEdit = true)
 		return
@@ -11188,23 +11183,6 @@ blnMove := InStr(strGuiFavoriteLabel, "GuiMove")
 ; collect favorites to process
 g_strFavoritesToCopyOrMove := CollectSelectedFavorites()
 
-; check if favorites to copy include menus or groups
-; ##### remove if copy container gets supported
-if (!blnMove) ; multiple copy not supported for menus, external and groups
-	Loop, Parse, g_strFavoritesToCopyOrMove, `n
-	{
-		saFavoriteToProcess := StrSplit(A_LoopField, "|")
-		if o_MenuInGui.SA[saFavoriteToProcess[1]].IsContainer()
-		{
-			Gui, 2:+OwnDialogs
-			MsgBox, 4, %g_strAppNameText%, % o_L["CopyFavoritesToMenuOrGroup"]
-			IfMsgBox, Yes
-				break ; continue with copy
-			else
-				return ; do not process
-		}
-	}
-
 if (LV_GetNext() = 0)
 {
 	Oops(1, o_L["DialogSelectItemOneOrMore"])
@@ -12042,7 +12020,7 @@ if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 	; push current menu/search to left/right arrow stack
 	if StrLen(o_MenuInGui.AA.strMenuPath) ; in case filter string in search result container is empty
 	{
-		oPushMenu := (SearchIsVisible() ? o_MenuInGui.Backup(true) : o_MenuInGui)
+		oPushMenu := (SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui)
 		oPushMenu.AA.intMenuLastPosition := LV_GetNext("Focused")
 		
 		if (A_ThisLabel = "GuiGotoMenuPrev")
@@ -12083,7 +12061,7 @@ else
 	; else continue
 	
 	o_MenuInGui.AA.intLastPostion := LV_GetNext("Focused")
-	g_saSubmenuStackPrev.Push(SearchIsVisible() ? o_MenuInGui.Backup(true) : o_MenuInGui) ; push the current menu (or a backup of the search result object - true for AA only) to the left arrow stack
+	g_saSubmenuStackPrev.Push(SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui) ; push the current menu (or a backup of the search result object - true for AA only) to the left arrow stack
 	###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
 	o_MenuInGui := oMenuInGuiCandidate
@@ -12203,7 +12181,7 @@ Gosub, RefreshQAPMenuExternalOnly
 ; ###avant1 := o_MainMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName
 ; ###avant2 := o_MainMenu.SA[2].AA.oSubMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName
 
-o_MainMenuBK := o_MainMenu.Backup() ; backup menu content
+o_MainMenuBK := o_MainMenu.BackupContainer() ; backup menu content
 
 ; to test backup/restore
 ; o_MainMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName := "Item Menu 1 MOD"
@@ -12763,7 +12741,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	o_EditedFavorite.AA.strFavoriteName := strNewFavoriteShortName
 
 	if o_EditedFavorite.IsContainer()
-		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu) ; also update o_Containers
+		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy")) ; also update o_Containers
 	else
 	{
 		if (o_EditedFavorite.AA.strFavoriteType = "WindowsApp") and (f_drpWindowsAppsList = "* " . o_L["DialogWindowsAppsListCustom"])
@@ -12847,7 +12825,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave (but GuiCopyOneFavoriteSave cannot be part of multiple copy ##### ???)
 	if o_EditedFavorite.IsContainer()
 		; for Menu and Group in multiple moved, update the strFavoriteLocation in favorite object and update menus and hotkeys index objects
-		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu)
+		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
 
 ; set item's parent menu
 o_EditedFavorite.AA.oParentMenu := o_Containers.AA[strDestinationMenu]
@@ -16265,7 +16243,7 @@ if StrLen(g_strLastActionRepeated) ; we are repeating an action
 else
 {
 	global o_NewLastAction := new Container.Item([])
-	o_NewLastAction := o_ThisFavorite.Backup()
+	o_NewLastAction := o_ThisFavorite.BackupItem()
 	strLastActionLabel := (g_strOpenFavoriteLabel = "OpenFavoriteFromShortcut" ? o_L["DialogShortcut"] : A_ThisMenu)
 		. " > " . o_ThisFavorite.AA.strFavoriteName
 }
@@ -24392,7 +24370,6 @@ class Container
 			else
 				this.AA.strMenuPath := oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . strContainerName
 					. (strType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
-			this.AA.strParentMenuLabel := BetweenParenthesis(GetDeepestMenuPath(oParentMenu.AA.strMenuPath))
 			this.AA.oParentMenu := oParentMenu
 		}		
 		else
@@ -24417,7 +24394,7 @@ class Container
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	Backup(blnAAonly := false)
+	BackupContainer(blnAAonly := false)
 	; copy of associative array AA and simple array SA to another object of class Container
 	; copy blnAAonly when storing a search result in prev/next stacks
 	;---------------------------------------------------------
@@ -24432,11 +24409,12 @@ class Container
 		if !(blnAAonly)
 			for intKey, oItem in this.SA
 			{
-				oCopy.SA[intKey] := oItem.Backup()
+				oCopy.SA[intKey] := oItem.BackupItem()
+				oCopy.SA[intKey].AA.oParentMenu  := oCopy ; ##### make sure this does not impact restore in RestoreContainersIndex when GuiCancel
 				if oItem.IsContainer()
-					oCopy.SA[intKey].AA.oSubMenu := oItem.AA.oSubMenu.Backup() ; recursive
+					oCopy.SA[intKey].AA.oSubMenu := oItem.AA.oSubMenu.BackupContainer() ; recursive
 			}
-			
+		
 		return oCopy
 	}
 	;---------------------------------------------------------
@@ -25926,7 +25904,7 @@ class Container
 
 	; === end of methods for class Container ===
 	
-	;-------------------------------------------------------------
+	;=============================================================
 	class Item
 	;-------------------------------------------------------------
 	{
@@ -26030,14 +26008,18 @@ class Container
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
-		Backup()
+		BackupItem(blnCopyItem := false)
 		; copy of associative array AA to another object of class Item
 		;---------------------------------------------------------
 		{
 			oCopy := new Container.Item
 			
 			for strKey, varValue in this.AA
+			{
 				oCopy.AA[strKey] := varValue
+				if (strKey = "oSubMenu" and blnCopyItem)
+					oCopy.AA.oSubMenu := varValue.BackupContainer()
+			}
 				
 			return oCopy
 		}
@@ -27382,24 +27364,40 @@ class Container
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
-		UpdateMenusPathAndLocation(strNewDestinationMenu)
+		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy)
 		; update submenus and their childrens to the new path of the parent menu
 		;---------------------------------------------------------
 		{
+			; ###_O("BEFORE`n`nstrNewDestinationMenu: " . strNewDestinationMenu
+				; . "`nParent Menu: " . this.AA.oParentMenu.AA.strMenuPath
+				; . "`nSub Menu: " . this.AA.oSubMenu.AA.strMenuPath
+				; . "`n`nthis.AA"
+				; , this.AA)
+				
 			strNewMenuPath := strNewDestinationMenu . g_strMenuPathSeparatorWithSpaces . this.AA.strFavoriteName
 				. (o_EditedFavorite.AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
 			
-			o_Containers.AA.Delete(this.AA.oSubMenu.AA.strMenuPath) ; remove old path from o_Containers
+			if !(blnCopy)
+				o_Containers.AA.Delete(this.AA.oSubMenu.AA.strMenuPath) ; remove old path from o_Containers
 			this.AA.oSubMenu.AA.strMenuPath := strNewMenuPath ; update menu path
 			o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
-			this.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ") ; menu path without main menu localized name
+			if SubStr(strNewMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
+				this.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", , , 1) ; menu path without main menu localized name
+			else
+				this.AA.strFavoriteLocation := strNewMenuPath
 			this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu]
 			
+			; ###_O("AFTER`n`nstrNewDestinationMenu: " . strNewDestinationMenu
+				; . "`nParent Menu: " . this.AA.oParentMenu.AA.strMenuPath
+				; . "`nSub Menu: " . this.AA.oSubMenu.AA.strMenuPath
+				; . "`n`nthis.AA"
+				; , this.AA)
+				
 			; update submenus (recursive)
 			if (o_EditedFavorite.AA.strFavoriteType <> "Group") ; groups have no submenu
 				for intKey, oItem in this.AA.oSubMenu.SA
 					if oItem.IsContainer()
-						oItem.UpdateMenusPathAndLocation(strNewMenuPath) ; RECURSIVE
+						oItem.UpdateMenusPathAndLocation(strNewMenuPath, blnCopy) ; RECURSIVE
 				
 			; Loop, % objEditedFavorite.SubMenu.MaxIndex()
 				; if InStr("Menu|Group|External", objEditedFavorite.SubMenu[A_Index].FavoriteType, true)
