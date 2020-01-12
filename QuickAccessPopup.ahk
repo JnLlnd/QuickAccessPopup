@@ -12622,13 +12622,12 @@ Loop, Parse, g_strFavoritesToCopyOrMove, `n
 			Gosub, GuiMoveOneFavoriteSave
 		else
 		{
+			o_EditedFavorite := o_EditedFavorite.BackupItem(true) ; true for blnCopy
 			Gosub, GuiCopyOneFavoriteSave
 			if !(g_blnMulipleMoveOrCopyAborted)
 				intNbFavoritesCopied++
-			; ##### check this
-			; if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition >= g_intNewItemPos) ; ##### g_intNewItemPos not initialized? ; copied items are inserted before selected, increment selected
-				; g_intOriginalMenuPosition++
 		}
+		
 	if (g_blnMulipleMoveOrCopyAborted)
 		break
 	 
@@ -12872,7 +12871,10 @@ if StrLen(strOriginalMenu) and (strOriginalMenu <> strDestinationMenu)
 	if o_Containers.AA[strOriginalMenu].FavoriteIsUnderExternalMenu(oExternalMenu)
 		oExternalMenu.AA.blnNeedSave := true
 
-g_intNewItemPos := "" ; delete it for next use
+if InStr(A_ThisLabel, "OneFavorite")
+	g_intNewItemPos++ ; increment position in destination menu
+else
+	g_intNewItemPos := "" ; delete it for next use
 
 GuiAddFavoriteSaveCleanup:
 if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ; do not execute at each favorite when moving multiple favorites
