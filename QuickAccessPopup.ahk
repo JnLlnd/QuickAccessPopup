@@ -9628,7 +9628,7 @@ if (A_ThisLabel = "GuiFavoritesListFilterShowOpen") ; push container in gui to p
 	; set current menu object as search starting menu and swap search result object with current menu object
 	oSearchResult.AA.oStartingMenu := o_MenuInGui
 	o_MenuInGui := oSearchResult
-	###_O2(A_ThisLabel . "`n`nPush: " . g_saSubmenuStackPrev[g_saSubmenuStackPrev.MaxIndex()].AA.strMenuPath . "`nPop: (none)`nInGui: " . o_MenuInGui.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
+	; ###_O2(A_ThisLabel . "`n`nPush: " . g_saSubmenuStackPrev[g_saSubmenuStackPrev.MaxIndex()].AA.strMenuPath . "`nPop: (none)`nInGui: " . o_MenuInGui.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 }
 
 if (blnSearchVisible) ; make search result visible
@@ -12028,7 +12028,7 @@ if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 		else ; GuiGotoMenuNext
 			g_saSubmenuStackPrev.Push(oPushMenu)
 	}
-	###_O2(A_ThisLabel . "`n`nPush: " . oPushMenu.AA.strMenuPath . "`nPop: " . oPopMenu.AA.strMenuPath . "`nInGui: " . oPopMenu.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
+	; ###_O2(A_ThisLabel . "`n`nPush: " . oPushMenu.AA.strMenuPath . "`nPop: " . oPopMenu.AA.strMenuPath . "`nInGui: " . oPopMenu.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
 	if (oPopMenu.AA.strMenuType = "Search") ; we have a search result
 	{
@@ -12062,7 +12062,7 @@ else
 	
 	o_MenuInGui.AA.intLastPostion := LV_GetNext("Focused")
 	g_saSubmenuStackPrev.Push(SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui) ; push the current menu (or a backup of the search result object - true for AA only) to the left arrow stack
-	###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
+	; ###_O2(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
 	o_MenuInGui := oMenuInGuiCandidate
 }
@@ -12741,7 +12741,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	o_EditedFavorite.AA.strFavoriteName := strNewFavoriteShortName
 
 	if o_EditedFavorite.IsContainer()
-		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy")) ; also update o_Containers
+		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
+		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
 	else
 	{
 		if (o_EditedFavorite.AA.strFavoriteType = "WindowsApp") and (f_drpWindowsAppsList = "* " . o_L["DialogWindowsAppsListCustom"])
@@ -12824,11 +12825,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 }
 else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave (but GuiCopyOneFavoriteSave cannot be part of multiple copy ##### ???)
 	if o_EditedFavorite.IsContainer()
-		; for Menu and Group in multiple moved, update the strFavoriteLocation in favorite object and update menus and hotkeys index objects
+		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
 		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
-
-; set item's parent menu
-o_EditedFavorite.AA.oParentMenu := o_Containers.AA[strDestinationMenu]
 
 ; updating original and destination menu objects (these can be the same)
 
@@ -13017,7 +13015,7 @@ if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview 
 else if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 ; only if saving only one favorite, load destination menu to gui and select new/edited item
 {
-	###_O2(A_ThisLabel . "`nPush: " . o_MenuInGui.AA.strMenuPath . "`nIn Gui: " . o_Containers.AA[strDestinationMenu], g_saSubmenuStackPrev, g_saSubmenuStackNext)
+	; ###_O2(A_ThisLabel . "`nPush: " . o_MenuInGui.AA.strMenuPath . "`nIn Gui: " . o_Containers.AA[strDestinationMenu], g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	o_MenuInGui.AA.intMenuLastPosition := g_intOriginalMenuPosition
 	g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
 	
@@ -27365,45 +27363,33 @@ class Container
 		
 		;---------------------------------------------------------
 		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy)
-		; update submenus and their childrens to the new path of the parent menu
+		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
 		;---------------------------------------------------------
 		{
-			; ###_O("BEFORE`n`nstrNewDestinationMenu: " . strNewDestinationMenu
-				; . "`nParent Menu: " . this.AA.oParentMenu.AA.strMenuPath
-				; . "`nSub Menu: " . this.AA.oSubMenu.AA.strMenuPath
-				; . "`n`nthis.AA"
-				; , this.AA)
-				
 			strNewMenuPath := strNewDestinationMenu . g_strMenuPathSeparatorWithSpaces . this.AA.strFavoriteName
 				. (o_EditedFavorite.AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
 			
 			if !(blnCopy)
 				o_Containers.AA.Delete(this.AA.oSubMenu.AA.strMenuPath) ; remove old path from o_Containers
+			
+			this.AA.oSubMenu.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu] ; update submenu's parent menu
+			this.AA.oSubMenu.AA.oParentMenu.AA.strMenuPath := strNewDestinationMenu ; update submenu's parent path
+			
 			this.AA.oSubMenu.AA.strMenuPath := strNewMenuPath ; update menu path
 			o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
+			
 			if SubStr(strNewMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
 				this.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", , , 1) ; menu path without main menu localized name
 			else
 				this.AA.strFavoriteLocation := strNewMenuPath
+			
 			this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu]
 			
-			; ###_O("AFTER`n`nstrNewDestinationMenu: " . strNewDestinationMenu
-				; . "`nParent Menu: " . this.AA.oParentMenu.AA.strMenuPath
-				; . "`nSub Menu: " . this.AA.oSubMenu.AA.strMenuPath
-				; . "`n`nthis.AA"
-				; , this.AA)
-				
 			; update submenus (recursive)
 			if (o_EditedFavorite.AA.strFavoriteType <> "Group") ; groups have no submenu
 				for intKey, oItem in this.AA.oSubMenu.SA
 					if oItem.IsContainer()
 						oItem.UpdateMenusPathAndLocation(strNewMenuPath, blnCopy) ; RECURSIVE
-				
-			; Loop, % objEditedFavorite.SubMenu.MaxIndex()
-				; if InStr("Menu|Group|External", objEditedFavorite.SubMenu[A_Index].FavoriteType, true)
-					; RecursiveUpdateMenuPathAndLocation(objEditedFavorite.SubMenu[A_Index]
-						; , objEditedFavorite.SubMenu.MenuPath . g_strMenuPathSeparatorWithSpaces . objEditedFavorite.SubMenu[A_Index].FavoriteName
-						; . (objEditedFavorite.SubMenu[A_Index].FavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "") ) ; RECURSIVE
 		}
 		;---------------------------------------------------------
 		
