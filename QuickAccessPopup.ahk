@@ -13590,6 +13590,8 @@ if (!g_blnAbortMultipleMove)
 		LV_Modify(A_LoopField  + (A_ThisLabel = "GuiMoveMultipleFavoritesUp" ? -1 : 1), "Select")
 
 LV_Modify(LV_GetNext(0), "Focus") ; give focus to the first selected row
+GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|" ; update menus dropdown list
+Gosub, EnableSaveAndCancel
 
 g_blnAbortMultipleMove := ""
 strSelectedRows := ""
@@ -13657,7 +13659,11 @@ LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), , saThisRow[1]
 if !InStr(A_ThisLabel, "One")
 	LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), "Select Focus Vis")
 
-Gosub, EnableSaveAndCancel
+if !InStr(A_ThisLabel, "One") ; if single move
+{
+	GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|" ; update menus dropdown list
+	Gosub, EnableSaveAndCancel
+}
 
 ; if favorite's menu is in an external settings file, flag that it needs to be saved
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) ; LATER
