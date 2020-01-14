@@ -5329,7 +5329,7 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 			if (strFavoriteType = "Special")
 				strName := o_SpecialFolders.AA[strLocation].strDefaultName
 			else ; QAP or WindowsApp
-				strName := o_QAPfeatures.AA[strLocation].strDefaultName
+				strName := o_QAPfeatures.AA[strLocation].strLocalizedName
 		
 		if (g_blnIniFileCreation) ; do not add shortcut if not creation of ini file at first launch
 			if StrLen(strCustomShortcut)
@@ -12992,28 +12992,9 @@ if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview 
 {
 	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
 		LV_Modify(0, "-Select")
-	if (o_EditedFavorite.AA.strFavoriteType = "Menu")
-		strThisLocation := g_strMenuPathSeparator
-	else if (o_EditedFavorite.AA.strFavoriteType = "External")
-		strThisLocation := (ExternalMenuIsReadOnly(strFavoriteAppWorkingDir) ? o_L["DialogReadOnly"] . " " : "")
-			. g_strMenuPathSeparator . g_strMenuPathSeparator . " " . strFavoriteAppWorkingDir
-	else if (o_EditedFavorite.AA.strFavoriteType = "Group")
-		strThisLocation := g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix
-	else if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-		strThisLocation := o_EditedFavorite.AA.strFavoriteName
-	else
-		strThisLocation := o_EditedFavorite.AA.strFavoriteLocation
-
-	strThisType := o_EditedFavorite.GetItemTypeLabelForList()
-	strThisHotkey := new Triggers.HotkeyParts(o_EditedFavorite.AA.strFavoriteShortcut).Hotkey2Text(true)
-	if StrLen(o_EditedFavorite.AA.strFavoriteHotstring)
-		strThisHotkey .= " " . BetweenParenthesis(GetHotstringTrigger(o_EditedFavorite.AA.strFavoriteHotstring))
 
 	; GuiCopyOneFavoriteSave condition to protect selected items in multiple copy to same folder
-	if (g_intNewItemPos)
-		LV_Insert(g_intNewItemPos, (strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus Vis" : ""), o_EditedFavorite.AA.strFavoriteName, strThisType, strThisHotkey, strThisLocation)
-	else
-		LV_Add((strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus Vis" : ""), o_EditedFavorite.AA.strFavoriteName, strThisType, strThisHotkey, strThisLocation)
+	o_EditedFavorite.LoadLineInGui(g_intNewItemPos, (strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus Vis" : "")) ; if g_intNewItemPos LV_Insert, if false LV_Add
 	
 	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
 		LV_Modify(LV_GetNext(), "Vis")
@@ -25389,64 +25370,13 @@ class Container
 	{
 		for intKey, oItem in this.SA
 		{
-			strThisType := oItem.GetItemTypeLabelForList()
-			strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
-			if StrLen(oItem.AA.strFavoriteHotstring)
-				strThisHotkey .= " " . BetweenParenthesis(GetHotstringTrigger(oItem.AA.strFavoriteHotstring))
-			
-			if oItem.IsContainer() ; this is a menu, a group or an external menu
+			if oItem.IsContainer() and oItem.AA.oSubMenu.ExternalMenuModifiedSinceLoaded()
 			{
-				if (oItem.AA.strFavoriteType = "Menu")
-					strGuiMenuLocation := g_strMenuPathSeparator
-				else if (oItem.AA.strFavoriteType = "Group")
-					strGuiMenuLocation := " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix
-				else ; oItem.AA.strFavoriteType = "External"
-				{
-					if oItem.AA.oSubMenu.ExternalMenuModifiedSinceLoaded()
-					; was ExternalMenuReloadAndRebuild(oItem.AA.oSubMenu)
-					{
-						oItem.AA.oSubMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
-						oItem.AA.oSubMenu.BuildMenu()
-					}
-					if ExternalMenuIsReadOnly(oItem.AA.oSubMenu.AA.strMenuExternalSettingsPath)
-						strGuiMenuLocation := o_L["DialogReadOnly"] . " "
-					else if !(oItem.AA.oSubMenu.AA.blnMenuExternalLoaded)
-						strGuiMenuLocation := o_L["OopsErrorIniFileUnavailable"] . " "
-					else
-						strGuiMenuLocation := ""
-					strGuiMenuLocation .= g_strMenuPathSeparator . g_strMenuPathSeparator . " " . oItem.AA.oSubMenu.AA.strMenuExternalSettingsPath
-				}
-				
-				if (this.AA.strMenuType = "Search")
-					LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
-						? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), oItem.AA.oParentMenu.AA.strMenuPath, strThisType, strThisHotkey, strGuiMenuLocation)
-				else
-					LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
-						? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), strThisType, strThisHotkey, strGuiMenuLocation)
+				oItem.AA.oSubMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+				oItem.AA.oSubMenu.BuildMenu()
 			}
-			else if (oItem.AA.strFavoriteType = "X") ; this is a separator
-				LV_Add(, g_strGuiMenuSeparator, g_strGuiMenuSeparatorShort, g_strGuiMenuSeparatorShort, g_strGuiMenuSeparator . g_strGuiMenuSeparator)
-
-			else if (oItem.AA.strFavoriteType = "K") ; this is a column break
-				LV_Add(, g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine
-				, g_strGuiDoubleLine, g_strGuiDoubleLine, g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine)
-				
-			else if (oItem.AA.strFavoriteType = "QAP") ; this is a QAP Feature
-				if (this.AA.strMenuType = "Search")
-					LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
-						? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), oItem.AA.oParentMenu.AA.strMenuPath, strThisType, strThisHotkey, oItem.AA.strFavoriteName)
-				else
-					LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
-						? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), strThisType, strThisHotkey, oItem.AA.strFavoriteName)
-			else ; this is a Folder, Document, QAP feature, URL, Application, Snippet or Windows App
-				if (this.AA.strMenuType = "Search")
-					LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
-						? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), oItem.AA.oParentMenu.AA.strMenuPath, strThisType, strThisHotkey
-						, (oItem.AA.strFavoriteType = "Snippet" ? StringLeftDotDotDot(oItem.AA.strFavoriteLocation, 250) : oItem.AA.strFavoriteLocation))
-				else
-					LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
-						? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), strThisType, strThisHotkey
-						, (oItem.AA.strFavoriteType = "Snippet" ? StringLeftDotDotDot(oItem.AA.strFavoriteLocation, 250) : oItem.AA.strFavoriteLocation))
+			
+			oItem.LoadLineInGui()
 		}
 	}
 	;------------------------------------------------------------
@@ -27531,6 +27461,76 @@ class Container
 		}
 		;---------------------------------------------------------
 		
+		;------------------------------------------------------------
+		LoadLineInGui(intPosition := 0, strOptions := "") ; called from LoadInGui()
+		; regular -> 1: name, 2: type, 3: hotkey, 4: content
+		; search  -> 1: name, 2: parent menu, 3: type, 4: hotkey, 5: content
+		;------------------------------------------------------------
+		{
+			saValues := Object()
+			
+			; get regular values first
+			if (this.AA.strFavoriteType = "X")
+			{
+				saValues[1] := g_strGuiMenuSeparator
+				saValues[2] := g_strGuiMenuSeparatorShort
+				saValues[3] := g_strGuiMenuSeparatorShort
+			}
+			else if (this.AA.strFavoriteType = "K")
+			{
+				saValues[1] := g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine
+				saValues[2] := g_strGuiDoubleLine
+				saValues[3] := g_strGuiDoubleLine
+			}
+			else
+			{
+				saValues[1] := this.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and this.AA.intFavoriteUsageDb
+							? " [" . this.AA.intFavoriteUsageDb . "]" : "")
+				saValues[2] := this.GetItemTypeLabelForList()
+				saValues[3] := new Triggers.HotkeyParts(this.AA.strFavoriteShortcut).Hotkey2Text(true)
+				if StrLen(this.AA.strFavoriteHotstring)
+					saValues[3] .= " " . BetweenParenthesis(GetHotstringTrigger(this.AA.strFavoriteHotstring))
+			}
+			
+			
+			if (this.AA.strFavoriteType = "Menu")
+				saValues[4] := g_strMenuPathSeparator
+			else if (this.AA.strFavoriteType = "Group")
+				saValues[4] := " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix
+			else if (this.AA.strFavoriteType = "External")
+			{
+				if ExternalMenuIsReadOnly(this.AA.oSubMenu.AA.strMenuExternalSettingsPath)
+					saValues[4] := o_L["DialogReadOnly"] . " "
+				else if !(this.AA.oSubMenu.AA.blnMenuExternalLoaded)
+					saValues[4] := o_L["OopsErrorIniFileUnavailable"] . " "
+				else
+					saValues[4] := ""
+				saValues[4] .= g_strMenuPathSeparator . g_strMenuPathSeparator . " " . this.AA.oSubMenu.AA.strMenuExternalSettingsPath
+			}
+			else if (this.AA.strFavoriteType = "X") ; this is a separator
+				saValues[4] := g_strGuiMenuSeparator . g_strGuiMenuSeparator
+			else if (this.AA.strFavoriteType = "K") ; this is a column break
+				saValues[4] := g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine
+			else if (this.AA.strFavoriteType = "QAP") ; this is a QAP Feature
+				saValues[4] := o_QAPfeatures.AA[this.AA.strFavoriteLocation].strLocalizedName
+			else if (this.AA.strFavoriteType = "Special" and SubStr(this.AA.strFavoriteLocation, 1, 1) = "{") ; this is a Special folder with CLSID
+				saValues[4] := o_SpecialFolders.AA[this.AA.strFavoriteLocation].strDefaultName
+			else if (this.AA.strFavoriteType = "Snippet")
+				saValues[4] :=StringLeftDotDotDot(this.AA.strFavoriteLocation, 250)
+			else ; this is a Folder, Special (except with CLSID), Document, URL, Application or Windows App
+				saValues[4] := this.AA.strFavoriteLocation
+			
+			if (this.AA.oParentMenu.AA.strMenuType = "Search")
+				saValues.InsertAt(2, this.AA.oParentMenu.AA.strMenuPath)
+			
+			if (intPosition)
+				intRow := LV_Insert(intPosition, strOptions)
+			else
+				intRow := LV_Add(strOptions)
+			for intKey, strValue in saValues
+				LV_Modify(intRow, "Col" . intKey, strValue)
+		}
+		;------------------------------------------------------------
 /*
 		;---------------------------------------------------------
 		Method()
