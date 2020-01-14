@@ -5296,7 +5296,7 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 			if (strFavoriteType = "Special")
 				strName := o_SpecialFolders.AA[strLocation].strDefaultName
 			else ; QAP or WindowsApp
-				strName := o_QAPfeatures.AA[strLocation].strDefaultName
+				strName := o_QAPfeatures.AA[strLocation].strLocalizedName
 		
 		if (g_blnIniFileCreation) ; do not add shortcut if not creation of ini file at first launch
 			if StrLen(strCustomShortcut)
@@ -12860,7 +12860,9 @@ if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview 
 	else if (o_EditedFavorite.AA.strFavoriteType = "Group")
 		strThisLocation := g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix
 	else if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-		strThisLocation := o_EditedFavorite.AA.strFavoriteName
+		strThisLocation := o_QAPfeatures.AA[o_EditedFavorite.AA.strFavoriteLocation].strLocalizedName
+	else if (o_EditedFavorite.AA.strFavoriteType = "Special" and SubStr(o_EditedFavorite.AA.strFavoriteLocation, 1, 1) = "{")
+		strThisLocation := o_SpecialFolders.AA[o_EditedFavorite.AA.strFavoriteLocation].strDefaultName
 	else
 		strThisLocation := o_EditedFavorite.AA.strFavoriteLocation
 
@@ -25225,7 +25227,10 @@ class Container
 				
 			else if (oItem.AA.strFavoriteType = "QAP") ; this is a QAP Feature
 				LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
-					? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), strThisType, strThisHotkey, oItem.AA.strFavoriteName)
+					? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), strThisType, strThisHotkey, o_QAPfeatures.AA[oItem.AA.strFavoriteLocation].strLocalizedName)
+			else if (oItem.AA.strFavoriteType = "Special" and SubStr(oItem.AA.strFavoriteLocation, 1, 1) = "{") ; this is a Special folder with CLSID
+				LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
+					? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), strThisType, strThisHotkey, o_SpecialFolders.AA[oItem.AA.strFavoriteLocation].strDefaultName)
 			else ; this is a Folder, Document, QAP feature, URL, Application, Snippet or Windows App
 				LV_Add(, oItem.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and oItem.AA.intFavoriteUsageDb
 					? " [" . oItem.AA.intFavoriteUsageDb . "]" : ""), strThisType, strThisHotkey
@@ -25284,6 +25289,12 @@ class Container
 					
 					LV_Add(, oItem.AA.strFavoriteName, oItem.AA.oParentMenu.AA.strMenuPath, strThisType, strThisHotkey, strGuiMenuLocation, A_Index)
 				}
+				else if (oItem.AA.strFavoriteType = "QAP") ; this is a QAP Feature
+					LV_Add(, oItem.AA.strFavoriteName, oItem.AA.oParentMenu.AA.strMenuPath, strThisType, strThisHotkey
+						, o_QAPfeatures.AA[oItem.AA.strFavoriteLocation].strLocalizedName, A_Index)
+				else if (oItem.AA.strFavoriteType = "Special" and SubStr(oItem.AA.strFavoriteLocation, 1, 1) = "{") ; this is a Special folder with CLSID
+					LV_Add(, oItem.AA.strFavoriteName, oItem.AA.oParentMenu.AA.strMenuPath, strThisType, strThisHotkey
+						, o_SpecialFolders.AA[oItem.AA.strFavoriteLocation].strDefaultName, A_Index)
 				else ; this is a folder, document, etc.
 					LV_Add(, oItem.AA.strFavoriteName, oItem.AA.oParentMenu.AA.strMenuPath, strThisType, strThisHotkey
 						, (oItem.AA.strFavoriteType = "Snippet" ? StringLeftDotDotDot(oItem.AA.strFavoriteLocation, 250) : oItem.AA.strFavoriteLocation)
