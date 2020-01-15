@@ -9923,7 +9923,10 @@ else
 		; initialy position new entry at top or bottom of menu
 		g_intOriginalMenuPosition := (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? 1 : 0xFFFF)
 		
-		Gosub, GuiShowFromAddThisFolder ; except for Express add, show Settings window
+		if InStr(A_ThisLabel, "FromMsg")
+			Gosub, GuiShowFromAddThisFolderMsg ; except for Express add, show Settings window
+		else
+			Gosub, GuiShowFromAddThisFolder ; except for Express add, show Settings window
 		
 		if (A_ThisLabel = "AddThisFolder")
 			
@@ -12116,6 +12119,7 @@ GuiShowFromGuiAddFavoriteQAPFeature:
 GuiShowFromTray:
 GuiShowFromGuiOutside:
 GuiShowFromAddThisFolder:
+GuiShowFromAddThisFolderMsg:
 GuiShowFromHotkeysManage:
 GuiShowFromIconsManage:
 GuiShowFromExternalCatalogue:
@@ -12130,7 +12134,8 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 		strThisMenu := o_Containers.AA[A_ThisMenu].AA.oParentMenu.AA.strMenuPath
 	else if (A_ThisMenu = "Tray" or A_ThisMenu = "" or !o_Containers.AA.HasKey(A_ThisMenu)
 		or o_Containers.AA[A_ThisMenu].AA.strMenuType = "MenuBar" ; A_ThisMenu is empty or menu not in containers or menu is menu bar
-		or A_ThisMenu = o_L["MenuLastActions"]) ; A_ThisMenu is empty or menu not in containers or menu is menu bar
+		or A_ThisMenu = o_L["MenuLastActions"] ; A_ThisMenu is empty or menu not in containers or menu is menu bar
+		or A_ThisLabel = "GuiShowFromAddThisFolderMsg") ; force add to main menu when called from QAPmessenger
 		strThisMenu := o_L["MainMenuName"] ; not "Main" for non-English
 	else
 		strThisMenu := A_ThisMenu
