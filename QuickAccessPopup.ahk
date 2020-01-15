@@ -12604,12 +12604,6 @@ Gui, 1:Default
 
 blnMove := (A_ThisLabel = "GuiMoveMultipleFavoritesSave")
 
-if (!SearchIsVisible() and f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
-{
-	Oops(2, o_L["OopsCannotCopyMoveToSelf"]) ; ##### unless copy renaming copied container?
-	return
-}
-
 g_intRemovedItems := 0
 g_intOriginalMenuPosition := 0
 
@@ -12822,7 +12816,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.AA.blnFavoriteElevate := f_blnFavoriteElevate
 	}
 }
-else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave (but GuiCopyOneFavoriteSave cannot be part of multiple copy ##### ???)
+else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave
 	if o_EditedFavorite.IsContainer()
 		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
 		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
@@ -13317,9 +13311,9 @@ loop ; loop for duplicate names; if in Add this Folder Express or GuiAddExternal
 			or (strNewFavoriteShortName <> o_EditedFavorite.AA.strFavoriteName) ; when the name has been edited from another menu
 			or (strThisLabel = "GuiAddFavoriteSaveXpress") ; for new favorite having the same name
 		{
-			if InStr("GuiAddFavoriteSaveXpress|GuiAddExternalSave", strThisLabel . "|")
+			if InStr("GuiAddFavoriteSaveXpress|GuiAddExternalSave|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", strThisLabel . "|")
 				and (o_EditedFavorite.AA.strFavoriteType <> "QAP")
-				if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ; #### not in effect now
+				if InStr("GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", strThisLabel . "|")
 					o_EditedFavorite.AA.strFavoriteName .= " [!]" ; and loop
 				else
 					strNewFavoriteShortName .= " [!]" ; and loop
@@ -14305,40 +14299,6 @@ g_strAddFavoriteType := "Text"
 gosub, GuiAddFavorite
 
 return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-; ##### remove?
-GetNextSelectedItemInSearchResult(ByRef intPositionInListView, ByRef intPositionInOriginalMenu, ByRef oFavorite)
-; intPositionInListView is the starting position in search result list view and is returned incremented to next selected item
-; intPositionInOriginalMenu returns the position of next selected favorite in its original container
-; oFavorite returns the object of the next item selected in search result
-; GetNextSelectedItemInSearchResult function returns the object of the original container of the next selected item
-;------------------------------------------------------------
-{
-	Gui, 1:ListView, f_lvFavoritesListSearch
-
-	Loop
-	{
-		intPositionInListView := LV_GetNext(intPositionInListView)
-		if !(intPositionInListView)
-		{
-			intPositionInOriginalMenu := 0
-			return % "" ; empty
-		}
-		
-		oFavorite := o_MenuInGui.SA[intPositionInListView]
-
-		intPositionInOriginalMenu := oFavorite.AA.intSearchItemOriginalPositionInMenu ; ##### intSearchItemOriginalPositionInMenu not good if items before in SA were removed or moved before -> must not touch SA before end of loop?
-		strMenuPath := oFavorite.AA.oParentMenu.AA.strMenuPath
-		; ###_V(A_ThisFunc, strMenuPath, IsObject(o_Containers.AA[strMenuPath])
-			; , intPositionInOriginalMenu, IsObject(o_Containers.AA[strMenuPath].SA[intPositionInOriginalMenu]), IsObject(oFavorite)
-			; , o_Containers.AA[strMenuPath].SA[intPositionInOriginalMenu].AA.strFavoriteName, oFavorite.AA.strFavoriteName)
-	} until IsObject(o_Containers.AA[strMenuPath]) and IsObject(oFavorite)
-	
-	return o_Containers.AA[strMenuPath]
-}
 ;------------------------------------------------------------
 
 
@@ -24401,7 +24361,7 @@ class Container
 			for intKey, oItem in this.SA
 			{
 				oCopy.SA[intKey] := oItem.BackupItem()
-				oCopy.SA[intKey].AA.oParentMenu  := oCopy ; ##### make sure this does not impact restore in RestoreContainersIndex when GuiCancel
+				oCopy.SA[intKey].AA.oParentMenu  := oCopy
 				if oItem.IsContainer()
 					oCopy.SA[intKey].AA.oSubMenu := oItem.AA.oSubMenu.BackupContainer() ; recursive
 			}
