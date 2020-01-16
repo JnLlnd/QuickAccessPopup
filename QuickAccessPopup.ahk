@@ -6804,13 +6804,10 @@ if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Container In Gui}")) ; we don't
 
 ; ##### if search result
 if (o_MenuInGui.AA.strMenuType = "Search")
-{
-	###_D("Built Search result")
-	o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object()
-}
+	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
 else
 	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
-###_O("Menu: " . o_L["MenuContainerInGui"], o_Containers.AA[o_L["MenuContainerInGui"]].SA, "AA", "strFavoriteName")
+
 o_Containers.AA[o_L["MenuContainerInGui"]].BuildMenu()
 
 return
@@ -9268,7 +9265,7 @@ Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList Count32 AltSubmit NoSortHdr LV0x10 " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeader"] ; SysHeader321 / SysListView321
 Gui, 1:Add, ListView
-	, % "vf_lvFavoritesListSearch Count32 AltSubmit LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
+	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeaderFiltered"] ; SysHeader322 / SysListView322
 
 Gui, 1:Font, s8 w600, Verdana
@@ -9617,6 +9614,8 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 			, % aaFavoriteL[saItem[1]] . (StrLen(saItem[2]) ? g_strEllipse : "") . "`t" . saItem[3]
 	}
 }
+; else if  (A_GuiEvent = "ColClick")
+	; sort is disabled in search result listview until the o_MenuInGui.SA object sort can be synced with the sort column (A_EventInfo)
 
 return
 ;------------------------------------------------------------
@@ -9673,16 +9672,10 @@ if (A_ThisLabel = "GuiFavoritesListFilterShowOpen") ; push container in gui to p
 	; ###_O2Stack(A_ThisLabel . "`n`nPush: " . g_saSubmenuStackPrev[g_saSubmenuStackPrev.MaxIndex()].AA.strMenuPath . "`nPop: (none)`nInGui: " . o_MenuInGui.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 }
 
-if (blnSearchVisible) ; make search result visible
+if (blnSearchVisible)
 {
 	Gui, 1:ListView, f_lvFavoritesListSearch
 	GuiControl, 1:Focus, f_strFavoritesListFilter
-}
-else ; make regular list visible
-{
-	Gui, 1:ListView, f_lvFavoritesList
-	g_intOriginalMenuPosition := o_MenuInGui.AA.intMenuLastPosition
-	Gosub, LoadFavoritesInGui ; in case items were edited or removed from search result
 }
 
 if (A_ThisLabel = "GuiFavoritesListFilterShowOpen")
@@ -13030,7 +13023,7 @@ if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview 
 		LV_Modify(0, "-Select")
 
 	; GuiCopyOneFavoriteSave condition to protect selected items in multiple copy to same folder
-	o_EditedFavorite.LoadLineInGui(g_intNewItemPos, (strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus Vis" : "")) ; if g_intNewItemPos LV_Insert, if false LV_Add
+	o_EditedFavorite.LoadLineInGui("", g_intNewItemPos, (strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus Vis" : "")) ; if g_intNewItemPos LV_Insert, if false LV_Add
 	
 	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
 		LV_Modify(LV_GetNext(), "Vis")
@@ -25388,7 +25381,7 @@ class Container
 				oItem.AA.oSubMenu.BuildMenu()
 			}
 			
-			oItem.LoadLineInGui()
+			oItem.LoadLineInGui(this.AA.strMenuType)
 		}
 	}
 	;------------------------------------------------------------
@@ -27474,12 +27467,12 @@ class Container
 		;---------------------------------------------------------
 		
 		;------------------------------------------------------------
-		LoadLineInGui(intPosition := 0, strOptions := "") ; called from LoadInGui()
-		; regular -> 1: name, 2: type, 3: hotkey, 4: content
-		; search  -> 1: name, 2: parent menu, 3: type, 4: hotkey, 5: content
+		LoadLineInGui(strMenuType, intPosition := 0, strOptions := "") ; called from LoadInGui()
 		;------------------------------------------------------------
 		{
 			saValues := Object()
+			; regular -> 1: name, 2: type, 3: hotkey, 4: content
+			; search  -> 1: name, 2: parent menu, 3: type, 4: hotkey, 5: content
 			
 			; get regular values first
 			if (this.AA.strFavoriteType = "X")
@@ -27532,7 +27525,7 @@ class Container
 			else ; this is a Folder, Special (except with CLSID), Document, URL, Application or Windows App
 				saValues[4] := this.AA.strFavoriteLocation
 			
-			if (this.AA.oParentMenu.AA.strMenuType = "Search")
+			if (strMenuType = "Search")
 				saValues.InsertAt(2, this.AA.oParentMenu.AA.strMenuPath)
 			
 			if (intPosition)
