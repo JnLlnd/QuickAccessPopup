@@ -4252,8 +4252,6 @@ SettingsCtrlLeft: ; ^Left::
 SettingsShiftCtrlRight: ; +^Right::
 SettingsShiftCtrlLeft: ; +^Left::
 
-GuiControlGet, strFocusedControl, FocusV
-
 ; for these keys, if Settings displays a search result, simply discard the hotkey
 if InStr("SettingsCtrlE|SettingsCtrlR|SettingsCtrlY|SettingsCtrlUp|SettingsCtrlDown|SettingsCtrlRight|SettingsCtrlLeft|", A_ThisLabel . "|")
 	and InStr(strFocusedControl, "FavoritesListFilter") ; includes f_strFavoritesListFilter and f_lvFavoritesListSearch
@@ -4268,8 +4266,11 @@ if (A_ThisLabel = "SettingsCtrlS")
 }
 
 else if (A_ThisLabel = "SettingsEsc")
-	if (strFocusedControl = "f_strFavoritesListFilter" and StrLen(f_strFavoritesListFilter))
-		GuiControl, , f_strFavoritesListFilter ; emptying it will trigger LoadFavoritesInGui to hide the filtered list
+	if SearchIsVisible()
+	{
+		o_MenuInGui := o_MenuInGui.AA.oStartingMenu
+		gosub, GuiFavoritesListFilterHide
+	}
 	else
 		Gosub, GuiCancel
 	
@@ -6289,6 +6290,25 @@ return
 
 
 ;------------------------------------------------------------
+ContainerInGuiShortcut:
+;------------------------------------------------------------
+
+SetWaitCursor(true)
+
+Gosub, RefreshContainerInGui
+
+Gosub, SetMenuPosition
+CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
+
+SetWaitCursor(false)
+
+Menu, % o_L["MenuContainerInGui"], Show, %g_intMenuPosX%, %g_intMenuPosY%
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 SwitchFolderOrAppMenuShortcut:
 ;------------------------------------------------------------
 
@@ -6771,6 +6791,28 @@ o_Containers.AA[o_L["MenuLastActions"]].BuildMenu()
 saMenuItemsTable := ""
 
 Diag(A_ThisLabel, "", "STOP")
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+RefreshContainerInGui:
+;------------------------------------------------------------
+
+if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Container In Gui}")) ; we don't have this QAP features in at least one menu
+	return
+
+; ##### if search result
+if (o_MenuInGui.AA.strMenuType = "Search")
+{
+	###_D("Built Search result")
+	o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object()
+}
+else
+	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
+###_O("Menu: " . o_L["MenuContainerInGui"], o_Containers.AA[o_L["MenuContainerInGui"]].SA, "AA", "strFavoriteName")
+o_Containers.AA[o_L["MenuContainerInGui"]].BuildMenu()
+
 return
 ;------------------------------------------------------------
 
@@ -15359,6 +15401,7 @@ Gosub, RefreshClipboardMenu
 Gosub, RefreshTotalCommanderHotlist
 Gosub, RefreshDirectoryOpusFavorites
 Gosub, RefreshLastActionsMenu
+Gosub, RefreshContainerInGui
 
 if (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
 {
@@ -23198,6 +23241,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Last Actions", 			o_L["MenuLastActions"], 			o_L["MenuLastActions"], 		"RepeatLastActionsShortcut",			"2-DynamicMenus~6-Utility"
 			, o_L["MenuLastActionsDescription"], 0, "iconReload", ""
 			, "can-i-reopen-one-of-the-last-favorites-i-selected-recently", "RefreshLastActionsMenu")
+		this.AddQAPFeatureObject("Container In Gui",		o_L["MenuContainerInGui"],			o_L["MenuContainerInGui"],		"ContainerInGuiShortcut",				"2-DynamicMenus"
+			, o_L["MenuContainerInGui"], 0, "iconQAP", ""
+			, "#####", "RefreshContainerInGui")
 		this.AddQAPFeatureObject("TC Directory hotlist",	o_L["TCMenuName"],					o_L["TCMenuName"],				"TotalCommanderHotlistMenuShortcut", 	"2-DynamicMenus"
 			, o_L["TCMenuNameDescription"], 0, "TotalCommander", "+^t"
 			, "how-do-i-enable-total-commander-support-in-quick-access-popup", "RefreshTotalCommanderHotlist")
@@ -23500,7 +23546,7 @@ class QAPfeatures
 	{
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
 			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, "", "init"
-			, (InStr("{DOpus Favorites}|{TC Directory hotlist}|{Last Actions}", strQAPFeatureCode) ? false : true)) ; last parameter for blnDoubleAmpersands
+				, (InStr("{DOpus Favorites}|{TC Directory hotlist}|{Last Actions}", strQAPFeatureCode) ? false : true)) ; last parameter for blnDoubleAmpersands
 	}
 	;---------------------------------------------------------
 }
@@ -24333,7 +24379,7 @@ class Container
 				Menu, %strContainerName%, DeleteAll
 				if (g_blnUseColors)
 					Menu, %strContainerName%, Color, %g_strMenuBackgroundColor%
-				strMenuItemLabel := (strContainerName = o_L["MenuClipboard"] ?  o_L["MenuClipboardNoContent"] : o_L["DialogNone"])
+				strMenuItemLabel := (strContainerName = o_L["MenuClipboard"] ? o_L["MenuClipboardNoContent"] : o_L["DialogNone"])
 				this.AddMenuIcon(strMenuItemLabel, "GuiShowNeverCalled", "iconNoContent", false) ; will never be called because disabled
 				this.AddCloseMenu()
 			}
@@ -24574,7 +24620,7 @@ class Container
 	{
 		for intKey, oItem in this.SA
 		{
-			strSearchIn := oItem.AA.strFavoriteName
+			strSearchIn := oItem.AA.strFavoriteName . " " . StrReplace(oItem.AA.strFavoriteName, "&", , , 1) ; search with or without the 1st ampersand
 			if (o_MenuInGui.AA.blnFavoritesListFilterExtended)
 			{
 				strHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
