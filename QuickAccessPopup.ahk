@@ -7437,7 +7437,7 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_intSnippetDefaultFontSizeEdit
 
 ; SnippetDefaultMacro
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gGuiOptionsGroupChanged hidden, % o_L["DialogFavoriteSnippetSendModeMacro"]
-GuiControl, , f_blnOptionsSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
+GuiControl, , f_blnSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
 ; QuickAddSnippetSubmenu
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblQuickAddSnippetFolder hidden, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddSnippet"]) . ":"
