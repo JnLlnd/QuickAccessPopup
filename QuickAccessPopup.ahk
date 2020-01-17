@@ -22537,11 +22537,13 @@ TODO
 				{
 					strAlternativeWinCmdIniFile := o_Settings.ReadIniValue("AlternateUserIni", " ", "Configuration", this.AA.strTCIniFileExpanded) ; empty by default
 					if !StrLen(strAlternativeWinCmdIniFile)
-						;  only wincmd.ini can redirect, redirection is not recursive (https://ghisler.ch/board/viewtopic.php?p=315939#315939)
+						;  only wincmd.ini can redirect, redirection is not recursive (https://ghisler.ch/board/viewtopic.php?p=315939#315939 or https://ghisler.ch/board/viewtopic.php?t=45434)
 						strAlternativeWinCmdIniFile := o_Settings.ReadIniValue("RedirectSection", " ", "DirMenu", this.AA.strTCIniFileExpanded) ; empty by default
 					if StrLen(strAlternativeWinCmdIniFile)
 					{
 						SplitPath, % this.AA.strTCIniFileExpanded, , strTCDir
+						; the EnVars commands will not expand Total Commander "pseudo" environment variables
+						; see: https://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/
 						this.AA.strTCIniFileExpanded := PathCombine(strTCDir, EnvVars(strAlternativeWinCmdIniFile))
 					}
 				}
