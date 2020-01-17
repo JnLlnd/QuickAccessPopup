@@ -22696,6 +22696,10 @@ class SpecialFolders
 		;---------------------
 		; CLSID giving localized name and icon, with valid Shell Command
 		
+		this.AddSpecialFolderObject("{4234d49b-0245-4df3-b780-3893943456e1}", "", -1, "", "", ""
+			, "Applications", "" ; Applications
+			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
+			, "2-Power User")
 		this.AddSpecialFolderObject("{D20EA4E1-3957-11d2-A40B-0C5020524153}", "Common Administrative Tools", -1, "", "commonadmintools", ""
 			, "Administrative Tools", "" ; Outils d’administration
 			, "CLS", "CLS", "NEW", "NEW", "DOA", "NEW", "NEW"
