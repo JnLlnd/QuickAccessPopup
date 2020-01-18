@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.3.3 (2020-01-18)
+- add new Special folder "Applications" (can be added in the "Power User" section)
+- fix bug when saving the "Options" causing the lost of the Snippets "Macro mode" default value
+- fix bug when adding a favorite from context menu or using QAPmessenger, now add the favorite to Main menu instead of the last shown menu
+- fix bug causing menu name too long error in some situation when building the menu
+- in favorites list, display QAP features default localized name and Special folders default names instead of repeating the custom name
+- Dutch language update
+ 
 Version BETA: 10.3.9.1 (2020-01-04)
  
 Previous/Next arrows
@@ -7509,7 +7517,7 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_intSnippetDefaultFontSizeEdit
 
 ; SnippetDefaultMacro
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gGuiOptionsGroupChanged hidden, % o_L["DialogFavoriteSnippetSendModeMacro"]
-GuiControl, , f_blnOptionsSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
+GuiControl, , f_blnSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
 ; QuickAddSnippetSubmenu
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblQuickAddSnippetFolder hidden, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddSnippet"]) . ":"
@@ -9972,7 +9980,10 @@ else
 		; initialy position new entry at top or bottom of menu
 		g_intOriginalMenuPosition := (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? 1 : 0xFFFF)
 		
-		Gosub, GuiShowFromAddThisFolder ; except for Express add, show Settings window
+		if InStr(A_ThisLabel, "FromMsg")
+			Gosub, GuiShowFromAddThisFolderMsg ; except for Express add, show Settings window
+		else
+			Gosub, GuiShowFromAddThisFolder ; except for Express add, show Settings window
 		
 		if (A_ThisLabel = "AddThisFolder")
 			
@@ -12189,6 +12200,7 @@ GuiShowFromGuiAddFavoriteQAPFeature:
 GuiShowFromTray:
 GuiShowFromGuiOutside:
 GuiShowFromAddThisFolder:
+GuiShowFromAddThisFolderMsg:
 GuiShowFromHotkeysManage:
 GuiShowFromIconsManage:
 GuiShowFromExternalCatalogue:
@@ -12203,7 +12215,8 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 		strThisMenu := o_Containers.AA[A_ThisMenu].AA.oParentMenu.AA.strMenuPath
 	else if (A_ThisMenu = "Tray" or A_ThisMenu = "" or !o_Containers.AA.HasKey(A_ThisMenu)
 		or o_Containers.AA[A_ThisMenu].AA.strMenuType = "MenuBar" ; A_ThisMenu is empty or menu not in containers or menu is menu bar
-		or A_ThisMenu = o_L["MenuLastActions"]) ; A_ThisMenu is empty or menu not in containers or menu is menu bar
+		or A_ThisMenu = o_L["MenuLastActions"] ; A_ThisMenu is empty or menu not in containers or menu is menu bar
+		or A_ThisLabel = "GuiShowFromAddThisFolderMsg") ; force add to main menu when called from QAPmessenger
 		strThisMenu := o_L["MainMenuName"] ; not "Main" for non-English
 	else
 		strThisMenu := A_ThisMenu
@@ -22654,11 +22667,13 @@ TODO
 				{
 					strAlternativeWinCmdIniFile := o_Settings.ReadIniValue("AlternateUserIni", " ", "Configuration", this.AA.strTCIniFileExpanded) ; empty by default
 					if !StrLen(strAlternativeWinCmdIniFile)
-						;  only wincmd.ini can redirect, redirection is not recursive (https://ghisler.ch/board/viewtopic.php?p=315939#315939)
+						;  only wincmd.ini can redirect, redirection is not recursive (https://ghisler.ch/board/viewtopic.php?p=315939#315939 or https://ghisler.ch/board/viewtopic.php?t=45434)
 						strAlternativeWinCmdIniFile := o_Settings.ReadIniValue("RedirectSection", " ", "DirMenu", this.AA.strTCIniFileExpanded) ; empty by default
 					if StrLen(strAlternativeWinCmdIniFile)
 					{
 						SplitPath, % this.AA.strTCIniFileExpanded, , strTCDir
+						; the EnVars commands will not expand Total Commander "pseudo" environment variables
+						; see: https://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/
 						this.AA.strTCIniFileExpanded := PathCombine(strTCDir, EnvVars(strAlternativeWinCmdIniFile))
 					}
 				}
@@ -22813,6 +22828,10 @@ class SpecialFolders
 		;---------------------
 		; CLSID giving localized name and icon, with valid Shell Command
 		
+		this.AddSpecialFolderObject("{4234d49b-0245-4df3-b780-3893943456e1}", "", -1, "", "", ""
+			, "Applications", "" ; Applications
+			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
+			, "2-Power User")
 		this.AddSpecialFolderObject("{D20EA4E1-3957-11d2-A40B-0C5020524153}", "Common Administrative Tools", -1, "", "commonadmintools", ""
 			, "Administrative Tools", "" ; Outils d’administration
 			, "CLS", "CLS", "NEW", "NEW", "DOA", "NEW", "NEW"
@@ -25292,10 +25311,6 @@ class Container
 		}
 		*/
 		
-		; The names of menus and menu items can be up to 260 characters long.
-		if StrLen(strMenuItemName) > 260
-			strMenuItemName := SubStr(strMenuItemName, 1, 256) . g_strEllipse ; minus one for the luck ;-) ### not ByRef strMenuItemName, since we will use a menu object to open the item
-		
 		if (o_Settings.Menu.blnDisplayNumericShortcuts.IniValue
 			and SubStr(strMenuItemName, 1, StrLen(g_strAmpersandPlaceholder)) = g_strAmpersandPlaceholder)
 		{
@@ -25317,6 +25332,10 @@ class Container
 				strMenuItemName := StrReplace(strMenuItemName, "&", "&&")
 			; else keep strMenuItemName unchanged
 			
+		; The names of menus and menu items can be up to 260 characters long. Avoid error "Error: Menu item name too long."
+		if StrLen(strMenuItemName) > 260
+			strMenuItemName := SubStr(strMenuItemName, 1, 256) . g_strEllipse ; g_strEllipse length is 1
+		
 		if SubStr(strAction, 1, 1) = ":" ; this is a menu
 		{
 			Try Menu, % this.AA.strMenuPath, Add, %strMenuItemName%, %strAction%, % (blnHasColumnBreak ? "BarBreak" : "")
