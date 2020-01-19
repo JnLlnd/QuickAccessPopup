@@ -12665,6 +12665,12 @@ Gui, 1:Default
 
 blnMove := (A_ThisLabel = "GuiMoveMultipleFavoritesSave")
 
+if (blnMove and !SearchIsVisible() and f_drpParentMenu = o_MenuInGui.AA.strMenuPath)
+{
+    Oops(2, o_L["OopsCannotMoveToSelf"])
+    return
+}
+
 g_intRemovedItems := 0
 g_intOriginalMenuPosition := 0
 
@@ -12674,7 +12680,10 @@ Loop, Parse, g_strFavoritesToCopyOrMove, `n
 	
 	if (g_intOriginalMenuPosition and IsObject(o_EditedFavorite))
 		if (blnMove)
-			Gosub, GuiMoveOneFavoriteSave
+			if (f_drpParentMenu = o_EditedFavoriteMenu.AA.strMenuPath)
+				continue ; skip item already in destination menu
+			else
+				Gosub, GuiMoveOneFavoriteSave
 		else
 		{
 			o_EditedFavorite := o_EditedFavorite.BackupItem(true) ; true for blnCopy
@@ -12916,7 +12925,7 @@ if SearchIsVisible()
 }
 else
 {
-	if (A_ThisLabel = "GuiMoveOneFavoriteSave")
+	if (strThisLabel = "GuiMoveOneFavoriteSave")
 		g_intRemovedItems++ ; for FindItemInListView()
 	Gosub, GuiAddFavoriteSaveUpdateListView
 }
@@ -12930,7 +12939,7 @@ if StrLen(strOriginalMenu) and (strOriginalMenu <> strDestinationMenu)
 	if o_Containers.AA[strOriginalMenu].FavoriteIsUnderExternalMenu(oExternalMenu)
 		oExternalMenu.AA.blnNeedSave := true
 
-if InStr(A_ThisLabel, "OneFavorite")
+if InStr(strThisLabel, "OneFavorite")
 	g_intNewItemPos++ ; increment position in destination menu
 else
 	g_intNewItemPos := "" ; delete it for next use
@@ -13360,43 +13369,25 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	}
 }
 
-; avoid duplicate names when saving express
+; avoid duplicate names when saving, rename if saving express or multiple
 
-loop ; loop for duplicate names; if in Add this Folder Express or GuiAddExternalSave (from Catalogue), add " [!]" if name is not new.
-	if !o_Containers.AA[strDestinationMenu].FavoriteNameIsNew(InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
-		and !o_EditedFavorite.IsSeparator() ; same name OK for separators
-	{
-		; we have the same name in the destination menu
-		if (strOriginalMenu <> strDestinationMenu) ; the favorite was moved to new destination menu
-			or (strThisLabel = "GuiCopyOneFavoriteSave") ; if same name in same menu to duplicate with multiple copy
-			or (strNewFavoriteShortName <> o_EditedFavorite.AA.strFavoriteName) ; when the name has been edited from another menu
-			or (strThisLabel = "GuiAddFavoriteSaveXpress") ; for new favorite having the same name
-		{
-			if InStr("GuiAddFavoriteSaveXpress|GuiAddExternalSave|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", strThisLabel . "|")
-				and (o_EditedFavorite.AA.strFavoriteType <> "QAP")
-				if InStr("GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", strThisLabel . "|")
-					o_EditedFavorite.AA.strFavoriteName .= " [!]" ; and loop
-				else
-					strNewFavoriteShortName .= " [!]" ; and loop
-			else
-			{
-				if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-					Oops(2, o_L["DialogFavoriteNameNotNewQAPfeature"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
-				else
-					Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
-				if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ; #### not in effect now
-					g_intOriginalMenuPosition++
-				if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
-					g_blnMulipleMoveOrCopyAborted := true
-				g_blnAbortSave := true
-				return
-			}
-		}
-		else
-			break ; name is not new but is OK - exit loop
-	}
-	else
-		break ; name is new - exit loop
+strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+	? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
+if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, strThisLabel)
+{
+	Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
+	if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+		g_intOriginalMenuPosition++
+	if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+		g_blnMulipleMoveOrCopyAborted := true
+	g_blnAbortSave := true
+	return
+}
+; in case strUniqueName has been modified by GetUniqueName()
+if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+	o_EditedFavorite.AA.strFavoriteName := strUniqueName
+else
+	strNewFavoriteShortName := strUniqueName
 
 ; check that a menu cannot be moved under itself when part of a multiple move (not when copy because menu cannot be copied)
 
@@ -13410,6 +13401,8 @@ if (strThisLabel = "GuiMoveOneFavoriteSave")
 		g_blnAbortSave := true
 		return
 	}
+
+strUniqueName := ""
 
 return
 ;------------------------------------------------------------
@@ -25470,7 +25463,7 @@ class Container
 	;------------------------------------------------------------
 
 	;------------------------------------------------------------
-	FavoriteNameIsNew(strCandidateName)
+	FavoriteNameIsUnique(strCandidateName)
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
@@ -27568,6 +27561,36 @@ class Container
 				LV_Modify(intRow, "Col" . intKey, strValue)
 		}
 		;------------------------------------------------------------
+		
+		;------------------------------------------------------------
+		GetUniqueName(ByRef strCandidateName, strOriginalMenu, strDestinationMenu, strLabel)
+		; return true if strCandidateName is OK, return strCandidateName modified with one or more "[!]" if necessary
+		;------------------------------------------------------------
+		{
+			if this.IsSeparator()
+				return true ; same name OK for separators
+			
+			Loop
+				if o_Containers.AA[strDestinationMenu].FavoriteNameIsUnique(strCandidateName)
+					
+					return true ; name is new - exit loop and return true
+					
+				else ; we have the same name in the destination menu
+					
+					if (strOriginalMenu <> strDestinationMenu) ; the favorite was moved to new destination menu
+						or (strCandidateName <> this.AA.strFavoriteName) ; the name has been edited from another menu
+						or InStr("GuiCopyOneFavoriteSave|GuiAddFavoriteSaveXpress|", strLabel . "|") ; same name in same menu in multiple copy or new favorite having the same name
+						
+						if InStr("GuiAddFavoriteSaveXpress|GuiAddExternalSave|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", strLabel . "|")
+							strCandidateName .= " [!]" ; add [!] and loop
+						else
+							return false ; reject candidate name and exit look
+						
+					else ; name is not new but is OK (favorite edited)
+						return true ; accept candidate name and exit loop
+		}
+		;------------------------------------------------------------
+
 /*
 		;---------------------------------------------------------
 		Method()
