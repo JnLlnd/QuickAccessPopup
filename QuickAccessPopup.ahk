@@ -4571,6 +4571,7 @@ FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off-26_c.p
 FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on-26_c.png
 FileInstall, FileInstall\text-26_c.png, %g_strTempDir%\text-26_c.png
 FileInstall, FileInstall\search-24_c.png, %g_strTempDir%\search-24_c.png
+FileInstall, FileInstall\preview_pane-26_c.png, %g_strTempDir%\preview_pane-26_c.png
 
 FileInstall, FileInstall\thumbs_up-32_c.png, %g_strTempDir%\thumbs_up-32_c.png
 FileInstall, FileInstall\solutions-32_c.png, %g_strTempDir%\solutions-32_c.png
@@ -4630,6 +4631,7 @@ InsertGuiControlPos("f_picAddColumnBreak",				  10,  174)
 InsertGuiControlPos("f_picAddSeparator",				  10,  144)
 InsertGuiControlPos("f_picMoveFavoriteDown",			  10,  113)
 InsertGuiControlPos("f_picMoveFavoriteUp",				  10,   85)
+InsertGuiControlPos("f_picShowMenuContainerInGui",		  10,   85)
 
 InsertGuiControlPos("f_picMenuUp",						  10,   22)
 InsertGuiControlPos("f_picMenuPrev",					  10,   56)
@@ -9258,6 +9260,8 @@ Gui, 1:Add, Picture, vf_picMenuNext gGuiGotoMenuNext hidden x+12 yp, %g_strTempD
 g_aaToolTipsMessages["Static9"] := o_L["ControlToolTipNextMenu"]
 Gui, 1:Add, Picture, vf_picMoveFavoriteUp gGuiMoveFavoriteUp x+1 yp, %g_strTempDir%\up_circular-26_c.png ; Static10
 g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipMoveUp"]
+Gui, 1:Add, Picture, vf_picShowMenuContainerInGui gContainerInGuiShortcut x+1 yp hidden, %g_strTempDir%\preview_pane-26_c.png ; Static11 #####
+g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipShowContainerInGui"] ; #####
 Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static11
 g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipMoveDown"]
 Gui, 1:Add, Picture, vf_picAddSeparator gGuiAddSeparator x+1 yp, %g_strTempDir%\separator-26_c.png ; Static12
@@ -9667,6 +9671,8 @@ blnSearchVisible := (InStr(A_ThisLabel, "Show") ? true : false) ; show else hide
 ; hide/show buttons for commands not supported in search result
 Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_picAddColumnBreak|f_picAddTextSeparator|f_picSortFavorites|f_lvFavoritesList", "|"
 	GuiControl, % (blnSearchVisible ? "Hide" : "Show"), %A_LoopField%
+
+GuiControl, % (blnSearchVisible ? "Show" : "Hide"), f_picShowMenuContainerInGui
 
 ; disable/enable Favorite menu items for commands not supported in search result
 Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+Down|ControlToolTipSeparator|ControlToolTipColumnBreak|ControlToolTipTextSeparator|ControlToolTipSortFavorites", "|"
