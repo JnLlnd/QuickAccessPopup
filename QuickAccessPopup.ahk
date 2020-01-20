@@ -3919,6 +3919,7 @@ global g_strEscapePipe := "Ð¡þ€" ; used to escape pipe in ini file, should not b
 global g_strSponsorHash := "!" ; used to hash the sponsor name
 global g_strAmpersandPlaceholder := "$?%" ; used as temporary marker for numeric shortcuts in menu item names
 global g_strEllipse := "…" ; "..."
+global g_strUniqueSuffix := "[!]"
 
 global g_strSnippetCommandStart := "{&" ; start of command in macro snippets
 global g_strSnippetCommandEnd := "}" ; end of command (including options) in macro snippets
@@ -6823,13 +6824,21 @@ RefreshContainerInGui:
 if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Container In Gui}")) ; we don't have this QAP features in at least one menu
 	return
 
-; ##### if search result
+o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object() ; reset array
 if (o_MenuInGui.AA.strMenuType = "Search")
-	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
+	for intKey, oItem in o_MenuInGui.SA
+	{
+		oItemCopy := oItem.BackupItem()
+		while !o_Containers.AA[o_L["MenuContainerInGui"]].FavoriteNameIsUnique(oItemCopy.AA.strFavoriteName)
+			oItemCopy.AA.strFavoriteName := AddUniqueSuffix(oItemCopy.AA.strFavoriteName)
+		o_Containers.AA[o_L["MenuContainerInGui"]].SA[intKey] := oItemCopy
+	}
 else
 	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
 
 o_Containers.AA[o_L["MenuContainerInGui"]].BuildMenu()
+
+oItemCopy := ""
 
 return
 ;------------------------------------------------------------
@@ -13373,7 +13382,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
-if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, strThisLabel)
+if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, InStr("GuiCopyOneFavoriteSave|GuiAddFavoriteSaveXpress|", strThisLabel . "|"))
 {
 	Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
 	if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
@@ -14405,9 +14414,12 @@ if (A_ThisLabel = "GuiSaveAndReloadQAP") or (g_blnHotstringNeedRestart)
 	Gosub, ReloadQAP
 
 Gosub, ExternalMenusRelease ; release reserved external menus
-Gosub, LoadFavoritesFromIniWithStatus ; load favorites to menu object
+Gosub, LoadFavoritesFromIniWithStatus ; reload favorites to menus objects
 if (A_ThisLabel = "GuiSaveAndStayFavorites") ; update object of menu in gui
-	o_MenuInGui := o_Containers.AA[strSavedMenuInGui]
+	if SearchIsVisible()
+		gosub, LoadFavoritesInGui ; reload the search result with refreshed menus objects
+	else
+		o_MenuInGui := o_Containers.AA[strSavedMenuInGui] ; load previsous menu to gui
 
 Gosub, BuildMainMenuWithStatus ; only here we load hotkeys, when user save favorites
 
@@ -21456,6 +21468,16 @@ FindItemInListView(strFavoriteToFind, ByRef oFoundFavorite, ByRef oMenuOfFoundIt
 ;------------------------------------------------------------
 
 
+;---------------------------------------------------------
+AddUniqueSuffix(strName)
+;---------------------------------------------------------
+{
+	; add space only if first suffix
+	return strName . (InStr(strName, g_strUniqueSuffix) ? "" : " ") . g_strUniqueSuffix
+}
+;---------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -23243,7 +23265,7 @@ class QAPfeatures
 	{
 		; AddQAPFeatureObject(strQAPFeatureCode, strThisLocalizedName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories
 		; , strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut
-		; , strHelpUrl, strRefreshCommand := "")
+		; , strHelpUrl, strRefreshCommand := "", blnDoubleAmpersands := false)
 		
 		; Dynamic menus features
 		
@@ -23258,16 +23280,16 @@ class QAPfeatures
 			, "how-is-built-the-current-folders-menu", "RefreshReopenFolderMenu")
 		this.AddQAPFeatureObject("Last Actions", 			o_L["MenuLastActions"], 			o_L["MenuLastActions"], 		"RepeatLastActionsShortcut",			"2-DynamicMenus~6-Utility"
 			, o_L["MenuLastActionsDescription"], 0, "iconReload", ""
-			, "can-i-reopen-one-of-the-last-favorites-i-selected-recently", "RefreshLastActionsMenu")
+			, "can-i-reopen-one-of-the-last-favorites-i-selected-recently", "RefreshLastActionsMenu", true)
 		this.AddQAPFeatureObject("Container In Gui",		o_L["MenuContainerInGui"],			o_L["MenuContainerInGui"],		"ContainerInGuiShortcut",				"2-DynamicMenus"
 			, o_L["MenuContainerInGui"], 0, "iconQAP", ""
 			, "#####", "RefreshContainerInGui")
 		this.AddQAPFeatureObject("TC Directory hotlist",	o_L["TCMenuName"],					o_L["TCMenuName"],				"TotalCommanderHotlistMenuShortcut", 	"2-DynamicMenus"
 			, o_L["TCMenuNameDescription"], 0, "TotalCommander", "+^t"
-			, "how-do-i-enable-total-commander-support-in-quick-access-popup", "RefreshTotalCommanderHotlist")
+			, "how-do-i-enable-total-commander-support-in-quick-access-popup", "RefreshTotalCommanderHotlist", true)
 		this.AddQAPFeatureObject("DOpus Favorites",			o_L["DOpusMenuName"],				o_L["DOpusMenuName"],			"DirectoryOpusFavoritesMenuShortcut", 	"2-DynamicMenus"
 			, o_L["DOpusMenuNameDescription"], 0, "DirectoryOpus", ""
-			, "how-to-i-enable-directory-opus-support-in-quick-access-popup", "RefreshDirectoryOpusFavorites")
+			, "how-to-i-enable-directory-opus-support-in-quick-access-popup", "RefreshDirectoryOpusFavorites", true)
 		
 		; Command features
 		
@@ -23517,8 +23539,8 @@ class QAPfeatures
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	AddQAPFeatureObject(strQAPFeatureCode, strThisLocalizedName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories
-	, strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut, strHelpUrl, strRefreshCommand := "")
+	AddQAPFeatureObject(strQAPFeatureCode, strThisLocalizedName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories, strQAPFeatureDescription
+		, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut, strHelpUrl, strRefreshCommand := "", blnDoubleAmpersands := false)
 	;
 	; QAP Feature Objects (o_QAPfeatures.AA) definition:
 	;		Key: strQAPFeatureInternalName
@@ -23547,6 +23569,7 @@ class QAPfeatures
 		aaOneQAPFeature.strQAPFeatureURL := strHelpUrl
 		aaOneQAPFeature.intQAPFeatureAlternativeOrder := intQAPFeatureAlternativeOrder
 		aaOneQAPFeature.strDefaultShortcut := strDefaultShortcut ; for Alternative Menu QAP features, the shortcut default contains the default strModifier
+		aaOneQAPFeature.blnDoubleAmpersands := blnDoubleAmpersands
 		
 		this.AA["{" . strQAPFeatureCode . "}"] := aaOneQAPFeature
 		this.aaQAPFeaturesCodeByDefaultName[strThisLocalizedName] := "{" . strQAPFeatureCode . "}"
@@ -23563,8 +23586,7 @@ class QAPfeatures
 	;---------------------------------------------------------
 	{
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
-			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, "", "init"
-				, (InStr("{DOpus Favorites}|{TC Directory hotlist}|{Last Actions}", strQAPFeatureCode) ? false : true)) ; last parameter for blnDoubleAmpersands
+			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
 	}
 	;---------------------------------------------------------
 }
@@ -25309,14 +25331,6 @@ class Container
 	; strIconValue can be an index from o_JLicons.AA (eg: "iconFolder") or a "file,index" icongroup (eg: "imageres.dll,33")
 	;------------------------------------------------------------
 	{
-		/* #### was for debugging
-		if (!StrLen(strMenuItemName) and !intStatus)
-		{
-			###_V(A_ThisFunc, "SEE LIST LINES IN CLIPBOARD", this.AA.strMenuPath)
-			Clipboard := ScriptInfo("ListLines")
-		}
-		*/
-		
 		if (o_Settings.Menu.blnDisplayNumericShortcuts.IniValue
 			and SubStr(strMenuItemName, 1, StrLen(g_strAmpersandPlaceholder)) = g_strAmpersandPlaceholder)
 		{
@@ -27563,7 +27577,7 @@ class Container
 		;------------------------------------------------------------
 		
 		;------------------------------------------------------------
-		GetUniqueName(ByRef strCandidateName, strOriginalMenu, strDestinationMenu, strLabel)
+		GetUniqueName(ByRef strCandidateName, strOriginalMenu, strDestinationMenu, blnAddSuffix)
 		; return true if strCandidateName is OK, return strCandidateName modified with one or more "[!]" if necessary
 		;------------------------------------------------------------
 		{
@@ -27577,12 +27591,12 @@ class Container
 					
 				else ; we have the same name in the destination menu
 					
-					if (strOriginalMenu <> strDestinationMenu) ; the favorite was moved to new destination menu
-						or (strCandidateName <> this.AA.strFavoriteName) ; the name has been edited from another menu
-						or InStr("GuiCopyOneFavoriteSave|GuiAddFavoriteSaveXpress|", strLabel . "|") ; same name in same menu in multiple copy or new favorite having the same name
+					if (strOriginalMenu <> strDestinationMenu ; the favorite was moved to new destination menu
+						or strCandidateName <> this.AA.strFavoriteName ; the name has been edited from another menu
+						or blnAddSuffix) ; same name in same menu in multiple copy or new favorite having the same name
 						
 						if InStr("GuiAddFavoriteSaveXpress|GuiAddExternalSave|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", strLabel . "|")
-							strCandidateName .= " [!]" ; add [!] and loop
+							strCandidateName := AddUniqueSuffix(strCandidateName) ; add [!] and loop
 						else
 							return false ; reject candidate name and exit look
 						
@@ -27590,7 +27604,7 @@ class Container
 						return true ; accept candidate name and exit loop
 		}
 		;------------------------------------------------------------
-
+		
 /*
 		;---------------------------------------------------------
 		Method()
