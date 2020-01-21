@@ -4572,6 +4572,7 @@ FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on-26_c.png
 FileInstall, FileInstall\text-26_c.png, %g_strTempDir%\text-26_c.png
 FileInstall, FileInstall\search-24_c.png, %g_strTempDir%\search-24_c.png
 FileInstall, FileInstall\preview_pane-26_c.png, %g_strTempDir%\preview_pane-26_c.png
+FileInstall, FileInstall\submenu-26_c.png, %g_strTempDir%\submenu-26_c.png
 
 FileInstall, FileInstall\thumbs_up-32_c.png, %g_strTempDir%\thumbs_up-32_c.png
 FileInstall, FileInstall\solutions-32_c.png, %g_strTempDir%\solutions-32_c.png
@@ -4630,6 +4631,7 @@ InsertGuiControlPos("f_picAddTextSeparator",			  10,  209)
 InsertGuiControlPos("f_picAddColumnBreak",				  10,  174)
 InsertGuiControlPos("f_picAddSeparator",				  10,  144)
 InsertGuiControlPos("f_picMoveFavoriteDown",			  10,  113)
+InsertGuiControlPos("f_picSubmenu",						  10,  113)
 InsertGuiControlPos("f_picMoveFavoriteUp",				  10,   85)
 InsertGuiControlPos("f_picShowMenuContainerInGui",		  10,   85)
 
@@ -5777,11 +5779,12 @@ saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A
 o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogShortcuts", "DialogHotstrings", "DialogIconsManage"
+aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchAllFavorites", "DialogShortcuts", "DialogHotstrings", "DialogIconsManage"
 	, "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys", "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["FilterAllFavorites", aaMenuToolsL["DialogSearchAllFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysManage", aaMenuToolsL["DialogShortcuts"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiHotkeysManageHotstrings", aaMenuToolsL["DialogHotstrings"], "", "iconNoIcon"])
@@ -9260,34 +9263,36 @@ Gui, 1:Add, Picture, vf_picMenuNext gGuiGotoMenuNext hidden x+12 yp, %g_strTempD
 g_aaToolTipsMessages["Static9"] := o_L["ControlToolTipNextMenu"]
 Gui, 1:Add, Picture, vf_picMoveFavoriteUp gGuiMoveFavoriteUp x+1 yp, %g_strTempDir%\up_circular-26_c.png ; Static10
 g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipMoveUp"]
-Gui, 1:Add, Picture, vf_picShowMenuContainerInGui gContainerInGuiShortcut x+1 yp hidden, %g_strTempDir%\preview_pane-26_c.png ; Static11 #####
-g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipShowContainerInGui"] ; #####
-Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static11
-g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipMoveDown"]
-Gui, 1:Add, Picture, vf_picAddSeparator gGuiAddSeparator x+1 yp, %g_strTempDir%\separator-26_c.png ; Static12
-g_aaToolTipsMessages["Static12"] := o_L["ControlToolTipSeparator"]
-Gui, 1:Add, Picture, vf_picAddColumnBreak gGuiAddColumnBreak x+1 yp, %g_strTempDir%\column-26_c.png ; Static13
-g_aaToolTipsMessages["Static13"] := o_L["ControlToolTipColumnBreak"]
-Gui, 1:Add, Picture, vf_picAddTextSeparator gGuiAddTextSeparator x+1 yp, %g_strTempDir%\text-26_c.png ; Static14
-g_aaToolTipsMessages["Static14"] := o_L["ControlToolTipTextSeparator"]
-Gui, 1:Add, Picture, vf_picSortFavorites gGuiSortFavorites x+1 yp, %g_strTempDir%\generic_sorting-26_c.png ; Static15
-g_aaToolTipsMessages["Static15"] := o_L["ControlToolTipSortFavorites"]
-Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_strTempDir%\QAP-pin-on-26_c.png ; Static16
-g_aaToolTipsMessages["Static16"] := o_L["ControlToolTipAlwaysOnTopOn"]
-Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempDir%\QAP-pin-off-26_c.png ; Static17
-g_aaToolTipsMessages["Static17"] := o_L["ControlToolTipAlwaysOnTopOff"]
-Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static18
-g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipSearchButton"]
+Gui, 1:Add, Picture, vf_picShowMenuContainerInGui gContainerInGuiShortcut x+1 yp hidden, %g_strTempDir%\preview_pane-26_c.png ; Static11
+g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipShowContainerInGui"]
+Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static12
+g_aaToolTipsMessages["Static12"] := o_L["ControlToolTipMoveDown"]
+Gui, 1:Add, Picture, vf_picSubmenu gOpenMenuContainingSearchItem x+1 yp hidden, %g_strTempDir%\submenu-26_c.png ; Static13
+g_aaToolTipsMessages["Static13"] := o_L["ControlToolTipOpenMenuContainingSearchItem"]
+Gui, 1:Add, Picture, vf_picAddSeparator gGuiAddSeparator x+1 yp, %g_strTempDir%\separator-26_c.png ; Static14
+g_aaToolTipsMessages["Static14"] := o_L["ControlToolTipSeparator"]
+Gui, 1:Add, Picture, vf_picAddColumnBreak gGuiAddColumnBreak x+1 yp, %g_strTempDir%\column-26_c.png ; Static15
+g_aaToolTipsMessages["Static15"] := o_L["ControlToolTipColumnBreak"]
+Gui, 1:Add, Picture, vf_picAddTextSeparator gGuiAddTextSeparator x+1 yp, %g_strTempDir%\text-26_c.png ; Static16
+g_aaToolTipsMessages["Static16"] := o_L["ControlToolTipTextSeparator"]
+Gui, 1:Add, Picture, vf_picSortFavorites gGuiSortFavorites x+1 yp, %g_strTempDir%\generic_sorting-26_c.png ; Static17
+g_aaToolTipsMessages["Static17"] := o_L["ControlToolTipSortFavorites"]
+Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_strTempDir%\QAP-pin-on-26_c.png ; Static18
+g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOn"]
+Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempDir%\QAP-pin-off-26_c.png ; Static19
+g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipAlwaysOnTopOff"]
+Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static20
+g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
 
 Gui, 1:Font, s8 w400, Arial ; button legend
-Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static19
-Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static20, w88 to make room fot when multiple favorites are selected
-Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static21
-Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static22
-Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static23
+Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static21
+Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static22, w88 to make room fot when multiple favorites are selected
+Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static23
+Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static24
+Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static25
 
 Gui, 1:Font, s8 w400 normal, Verdana
-Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static24
+Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static26
 Gui, 1:Add, DropDownList, vf_drpMenusList gGuiMenusListChanged x0 y+1 ; ComboBox1
 
 Gui, 1:Add, Edit, vf_strFavoritesListFilter r1 gLoadFavoritesInGui hidden ; Edit1 (EditN controls do not support tooltips)
@@ -9405,6 +9410,17 @@ if (A_ThisLabel = "FilterExtendedClick") ; triggered by the menu command, only w
 }
 Gosub, LoadFavoritesInGui
 Menu, menuBarTools, ToggleCheck, % aaMenuToolsL["DialogExtendedSearch"]
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+FilterAllFavorites:
+;------------------------------------------------------------
+
+Gosub, GuiFavoritesListFilterShowOpen
+GuiControl, , f_strFavoritesListFilter, {All} ; this will trigger LoadFavoritesInGui
 
 return
 ;------------------------------------------------------------
@@ -9673,6 +9689,7 @@ Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_pi
 	GuiControl, % (blnSearchVisible ? "Hide" : "Show"), %A_LoopField%
 
 GuiControl, % (blnSearchVisible ? "Show" : "Hide"), f_picShowMenuContainerInGui
+GuiControl, % (blnSearchVisible ? "Show" : "Hide"), f_picSubmenu
 
 ; disable/enable Favorite menu items for commands not supported in search result
 Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+Down|ControlToolTipSeparator|ControlToolTipColumnBreak|ControlToolTipTextSeparator|ControlToolTipSortFavorites", "|"
@@ -12064,6 +12081,7 @@ GuiGotoMenuPrev:
 GuiGotoMenuNext:
 OpenMenuFromEditForm:
 OpenMenuFromGuiHotkey:
+OpenMenuContainingSearchItem:
 ;------------------------------------------------------------
 
 intMenuLastPosition := 0
@@ -12125,6 +12143,8 @@ else
 		oMenuInGuiCandidate := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.oSubMenu
 	else if (A_ThisLabel = "OpenMenuFromEditForm")
 		oMenuInGuiCandidate := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.oSubMenu
+	else if (A_ThisLabel = "OpenMenuContainingSearchItem")
+		oMenuInGuiCandidate := o_MenuInGui.SA[LV_GetNext("Focused")].AA.oParentMenu
 	; else "OpenMenuFromGuiSearch", we already have oMenuInGuiCandidate
 
 	if (oMenuInGuiCandidate.AA.strMenuType = "External" and !oMenuInGuiCandidate.AA.blnMenuExternalLoaded)
@@ -24693,7 +24713,7 @@ class Container
 			}
 				
 			if !oItem.IsSeparator()
-				and InStr(strSearchIn, o_MenuInGui.AA.strMenuPath)
+				and (InStr(strSearchIn, o_MenuInGui.AA.strMenuPath) or o_MenuInGui.AA.strMenuPath = "{all}") ; case insensitive
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
