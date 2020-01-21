@@ -3744,7 +3744,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.3
+;@Ahk2Exe-SetVersion 10.3.3.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3849,7 +3849,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.3.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -4019,7 +4019,7 @@ g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
 	Gosub, InitDiagMode
-	Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
+	; Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
 	strLaunchSettingsFolderDiag := ""
 }
 
@@ -6791,7 +6791,7 @@ Menu, % o_L["MainMenuName"], Add
 Menu, % o_L["MainMenuName"], DeleteAll
 if (g_blnUseColors)
 	Menu, % o_L["MainMenuName"], Color, %g_strMenuBackgroundColor%
-Diag(A_ThisLabel, "menu name", o_L["MainMenuName"])
+; Diag(A_ThisLabel, "menu name", o_L["MainMenuName"])
 
 ; disable (turn off) existing hotstrings in g_dicItemsByHotstring (if any) before updating them
 gosub, DisableHotstrings
@@ -8130,6 +8130,7 @@ if (strShowQAPmenuPrev <> o_Settings.SettingsWindow.intShowQAPmenu.IniValue)
 ; rebuild Folders menus w/ or w/o optional folders and shortcuts
 for strMenuName, oContainer in o_Containers.AA
 {
+	Diag(A_ThisLabel, "strMenuName", strMenuName)
 	Menu, %strMenuName%, Add
 	Menu, %strMenuName%, DeleteAll
 }
