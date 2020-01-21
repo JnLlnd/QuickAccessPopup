@@ -25378,6 +25378,7 @@ class Container
 			; AHK generates an error here when trying to attach the {Container In Gui} dynamic menu to the {Container In Gui} menu itself
 			; (this prevents an infinite loop); use "catch e" to analyse the possible error messages
 			; catch e ; use e.Message, e.Extra, etc. to get info
+			; ###_V(A_ThisFunc, e.Message, e.Extra, this.AA.strMenuPath, strMenuItemName, strAction)
 			catch ; when menu this.SA[A_Index].AA.oSubMenu.AA.MenuPath is empty
 				Menu, % this.AA.strMenuPath, Add, %strMenuItemName%, DoNothing, % (blnFlagNextItemHasColumnBreak ? "BarBreak" : "") ; DoNothing will never be called because disabled
 		}
