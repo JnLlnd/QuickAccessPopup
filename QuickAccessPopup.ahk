@@ -13395,7 +13395,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
-if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, InStr("GuiCopyOneFavoriteSave|GuiAddFavoriteSaveXpress|", strThisLabel . "|"))
+blnRename := InStr("GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddExternalSave|", strThisLabel . "|")
+if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, blnRename)
 {
 	Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
 	if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
@@ -13406,7 +13407,7 @@ if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinatio
 	return
 }
 ; in case strUniqueName has been modified by GetUniqueName()
-if InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+if (blnRename)
 	o_EditedFavorite.AA.strFavoriteName := strUniqueName
 else
 	strNewFavoriteShortName := strUniqueName
@@ -27597,7 +27598,7 @@ class Container
 		;------------------------------------------------------------
 		
 		;------------------------------------------------------------
-		GetUniqueName(ByRef strCandidateName, strOriginalMenu, strDestinationMenu, blnAddSuffix)
+		GetUniqueName(ByRef strCandidateName, strOriginalMenu, strDestinationMenu, blnRename)
 		; return true if strCandidateName is OK, return strCandidateName modified with one or more "[!]" if necessary
 		;------------------------------------------------------------
 		{
@@ -27613,9 +27614,9 @@ class Container
 					
 					if (strOriginalMenu <> strDestinationMenu ; the favorite was moved to new destination menu
 						or strCandidateName <> this.AA.strFavoriteName ; the name has been edited from another menu
-						or blnAddSuffix) ; same name in same menu in multiple copy or new favorite having the same name
+						or blnRename) ; same name in same menu in multiple copy or new favorite having the same name
 						
-						if InStr("GuiAddFavoriteSaveXpress|GuiAddExternalSave|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", strLabel . "|")
+						if (blnRename) ; if GuiCopyOneFavoriteSave, GuiMoveOneFavoriteSave, GuiAddFavoriteSaveXpress or GuiAddExternalSave
 							strCandidateName := AddUniqueSuffix(strCandidateName) ; add [!] and loop
 						else
 							return false ; reject candidate name and exit look
