@@ -6830,7 +6830,7 @@ o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object() ; reset array
 if (o_MenuInGui.AA.strMenuType = "Search")
 	for intKey, oItem in o_MenuInGui.SA
 	{
-		oItemCopy := oItem.BackupItem()
+		oItemCopy := oItem.BackupItem() ; copy items to keep original untouched in case we need to change names
 		while !o_Containers.AA[o_L["MenuContainerInGui"]].FavoriteNameIsUnique(oItemCopy.AA.strFavoriteName)
 			oItemCopy.AA.strFavoriteName := AddUniqueSuffix(oItemCopy.AA.strFavoriteName)
 		o_Containers.AA[o_L["MenuContainerInGui"]].SA[intKey] := oItemCopy
@@ -13174,6 +13174,13 @@ else
 }
 
 ; now that we know original and destination menus, check if we need to lock them
+
+if (o_EditedFavorite.AA.strFavoriteLocation = "{Container In Gui}" and strDestinationMenu <> o_L["MainMenuName"])
+{
+	Oops(2, o_L["OopsContainerInGui"], o_L["MainMenuName"])
+	g_blnAbortSave := true
+	return
+}
 
 if o_Containers.AA[strDestinationMenu].FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the destination menu is an external menu that cannot be locked, user received an error message, then abort save
@@ -25100,6 +25107,9 @@ class Container
 					; Menu, % this.AA.strMenuPath, Default, %strMenuItemLabel%
 				else if (strMenuItemAction = "GuiShowNeverCalled")
 					intMenuItemStatus := 0 ; 0 disabled, 1 enabled, 2 default
+				else if (aaThisFavorite.strFavoriteName = o_L["MenuContainerInGui"] and this.AA.strMenuPath = o_L["MenuContainerInGui"])
+					; blocked by AHK because this could cause an infinite loop; disable the menu entry (menu will not be attached)
+					intMenuItemStatus := 0
 				else
 					intMenuItemStatus := 1 ; 0 disabled, 1 enabled, 2 default
 			}
@@ -25365,6 +25375,9 @@ class Container
 		if SubStr(strAction, 1, 1) = ":" ; this is a menu
 		{
 			Try Menu, % this.AA.strMenuPath, Add, %strMenuItemName%, %strAction%, % (blnHasColumnBreak ? "BarBreak" : "")
+			; AHK generates an error here when trying to attach the {Container In Gui} dynamic menu to the {Container In Gui} menu itself
+			; (this prevents an infinite loop); use "catch e" to analyse the possible error messages
+			; catch e ; use e.Message, e.Extra, etc. to get info
 			catch ; when menu this.SA[A_Index].AA.oSubMenu.AA.MenuPath is empty
 				Menu, % this.AA.strMenuPath, Add, %strMenuItemName%, DoNothing, % (blnFlagNextItemHasColumnBreak ? "BarBreak" : "") ; DoNothing will never be called because disabled
 		}
