@@ -25019,6 +25019,9 @@ class Container
 		
 		strContent := strSelfFolder . (StrLen(strFolders . strFiles) ? "`tX`n" : "")  . strFolders . (StrLen(strFolders) and StrLen(strFiles) ? "`tX`n" : "") . strFiles
 		
+		if StrLen(this.AA.strMenuPath . o_FavoriteLiveFolder.AA.strFavoriteName + 3) > 259 ; if new menu path exceeds Windows limit of 259 or 260 for menu names
+			return
+		
 		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, this, "init", true) ; last parameter true for blnDoubleAmpersands
 		oNewSubMenu.AA.blnIsLiveMenu := true
 		oNewSubMenu.AA.intLiveFolderParentPosition := intMenuParentPosition ; could be changed if we are in a Live Folder submenu
