@@ -12128,6 +12128,15 @@ if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 		o_MenuInGui.AA.intLastSearchPosition := intMenuLastPosition ; to restore position after favorite is saved or cancelled
 		
 		Gosub, RestoreSearchResult
+		sleep, 100 ; not sure why but in some tests, without the delay, o_MenuInGui.SA seems to be empty or is "temporarely"(?) empty
+		; ###_O("AFTER RestoreSearchResult - o_MenuInGui.SA`nPath: " . o_MenuInGui.AA.strMenuPath . "`nIsObject(): " . (IsObject(o_MenuInGui.SA) ? "yes" : "no") . "`nMaxIndex(): " . o_MenuInGui.SA.MaxIndex()
+			; , o_MenuInGui.SA, "AA", "strFavoriteName")
+		; if (!o_MenuInGui.SA.MaxIndex() or o_MenuInGui.SA.MaxIndex() = "")
+		; {
+			; ###_D("Reload to show .SA is empty")
+			; LV_Delete()
+			; o_MenuInGui.LoadInGui()
+		; }
 		return
 	}
 	; else this is a regular menu
@@ -12154,7 +12163,7 @@ else
 	}
 	; else continue
 	
-	o_MenuInGui.AA.intLastPostion := LV_GetNext("Focused")
+	o_MenuInGui.AA.intMenuLastPosition := LV_GetNext("Focused")
 	g_saSubmenuStackPrev.Push(SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui) ; push the current menu (or a backup of the search result object - true for AA only) to the left arrow stack
 	; ###_O2Stack(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
@@ -12193,10 +12202,10 @@ RestoreSearchResult:
 
 Gui, 1:ListView, f_lvFavoritesListSearch
 
+Gosub, GuiFavoritesListFilterShow ; must be before triggering LoadFavoritesInGui
 GuiControl, , f_blnFavoritesListFilterExtended, % (o_MenuInGui.AA.blnFavoritesListFilterExtended = 1)
 GuiControl, , f_strFavoritesListFilter, % o_MenuInGui.AA.strMenuPath ; triggers LoadFavoritesInGui
 
-Gosub, GuiFavoritesListFilterShow
 GuiControl, 1:Focus, f_lvFavoritesListSearch ; focus filtered list instead of the filter edit control
 
 return
