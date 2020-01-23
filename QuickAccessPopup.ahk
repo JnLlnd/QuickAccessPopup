@@ -31,7 +31,23 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.2 (2020-01-??)
+Version BETA: 10.3.9.2 (2020-01-23)
+ 
+Copy and move submenus and groups
+- allow to copy or move a single or multiple submenus or groups and all their contents (from a single menu or from search result)
+- allow to move multiple favorites from search result
+- when copying or moving favorites, add [!] to their name when an existing favorite has the same name (instead of aborting the copy/move)
+ 
+Search
+- new "Search" command in "Customize" window with improved usability
+- when editing a favorite from the search result, stay in the search result (instead of changing the menu to the edited favorite as before)
+- search result can be sorted by clicking any column header; the last column contains numbers of the orignal ordering allowing to return to the initial search result order
+- in search result, add an icon on the left side to open a menu with the favorites in the search result, duplicate menu names are appended with the ""[!]"" suffix to make them unique
+- add another icon to open the menu containing the selected item
+- show all favorites in the search result when the filter is set to "{All}" (case insensitive) and add a menu item "Search All Favorites" under the "Tool" menu of the "Customize" window
+- in extended search, stop including location for QAP features (as QAP feature code names are not visible to user)
+- when favorite names include and ampersant (&) as a keyboard shortcut, search the filter string in names w/o the ampersand
+- fix bug when hitting Escape in search mode, close the search box instead of closing the "Customize" window
  
 Previous/Next arrows
 - add "Next" arrow in additon to the "Previous", allowing to browse backward and forward in QAP menus or groups
@@ -39,17 +55,6 @@ Previous/Next arrows
 - "Next" and "Previous" arrows also navigate back and forward in previous search results
 - skip previous/next menu item if it has been removed since it was added to the previous/next stacks
 - add a list of menu and groups in previous/next menus when hovering the "Next" and "Previous" icons (only for debugging or keep it?)
- 
-Search
-- when editing a favorite from the search result, stay in the search result (instead of changing the menu to the edited favorite as before)
-- in extended search, stop including location for QAP features (as QAP feature code names are not visible to user)
-- when favorite names include and ampersant (&) as a keyboard shortcut, search the filter string in names w/o the ampersand
-- fix bug when hitting Escape in search mode, close the search box instead of closing the "Customize" window
- 
-Copy and move submenus and groups
-- allow to copy or move a single or multiple submenus or groups and all their contents (from a single menu or search result)
-- allow to move multiple favorites from search result
-- when copying or moving favorites, add [!] to their name when an existing favorite has the same name (instead of aborting the copy/move)
  
 Various
 - add the QAP feature "Favorites in Customize window" to show a menu with the current content of the "Customize" window (a sumenu, a group or a search result)
@@ -12204,7 +12209,7 @@ Gosub, UpdatePreviousAndUpPictures
 Gosub, LoadFavoritesInGui
 
 LV_Modify(0, "-Select")
-LV_Modify((intMenuLastPosition ? intMenuLastPosition : 1, "Select Focus Vis") ; select last position or first item
+LV_Modify((intMenuLastPosition ? intMenuLastPosition : 1), "Select Focus Vis") ; select last position or first item
 
 if (A_ThisLabel = "GuiMenusListChanged") ; keep focus on dropdown list
 	GuiControl, Focus, f_lvFavoritesList
@@ -13609,6 +13614,7 @@ if (A_ThisLabel = "GuiRemoveFavorite")
 	if SearchIsVisible()
 	{
 		o_EditedFavorite := o_MenuInGui.SA[intItemToRemove]
+		intItemToRemove := o_EditedFavorite.AA.intSearchItemOriginalPositioninMenu
 		oMenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
 	}
 	else
@@ -13668,6 +13674,8 @@ if !SearchIsVisible()
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
 		g_intRemovedItems++ ; for FindItemInListView()
 }
+else
+	Gosub, LoadFavoritesInGui
 
 ; refresh menu dropdpown in gui
 if (blnItemIsMenu)
@@ -23349,8 +23357,8 @@ class QAPfeatures
 			, o_L["MenuLastActionsDescription"], 0, "iconReload", ""
 			, "can-i-reopen-one-of-the-last-favorites-i-selected-recently", "RefreshLastActionsMenu", true)
 		this.AddQAPFeatureObject("Container In Gui",		o_L["MenuContainerInGui"],			o_L["MenuContainerInGui"],		"ContainerInGuiShortcut",				"2-DynamicMenus"
-			, o_L["MenuContainerInGui"], 0, "iconQAP", ""
-			, "#####", "RefreshContainerInGui")
+			, o_L["MenuContainerInGuiDescription"], 0, "iconQAP", ""
+			, "can-i-show-the-current-content-of-the-customize-window-in-a-temporary-menu", "RefreshContainerInGui")
 		this.AddQAPFeatureObject("TC Directory hotlist",	o_L["TCMenuName"],					o_L["TCMenuName"],				"TotalCommanderHotlistMenuShortcut", 	"2-DynamicMenus"
 			, o_L["TCMenuNameDescription"], 0, "TotalCommander", "+^t"
 			, "how-do-i-enable-total-commander-support-in-quick-access-popup", "RefreshTotalCommanderHotlist", true)
