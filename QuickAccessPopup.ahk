@@ -9304,8 +9304,9 @@ Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList Count32 AltSubmit NoSortHdr LV0x10 " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeader"] ; SysHeader321 / SysListView321
 Gui, 1:Add, ListView
-	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
-	, % o_L["GuiLvFavoritesHeaderFiltered"] ; SysHeader322 / SysListView322
+	, % "vf_lvFavoritesListSearch Count32 AltSubmit LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
+	, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#|Object Order" ; SysHeader322 / SysListView322
+LV_ModifyCol(6, "Integer")
 
 Gui, 1:Font, s8 w600, Verdana
 Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavorites x200 y400 w140 h35, % aaSettingsL["GuiSaveAndClose"] ; Button3
@@ -9367,6 +9368,9 @@ if SearchIsVisible()
 Gui, 1:Default
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
 LV_Delete()
+if SearchIsVisible()
+	LV_ModifyCol(7, 0) ; do early to avoid flash
+
 o_MenuInGui.LoadInGui()
 
 if SearchIsVisible()
@@ -9664,8 +9668,28 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 			, % aaFavoriteL[saItem[1]] . (StrLen(saItem[2]) ? g_strEllipse : "") . "`t" . saItem[3]
 	}
 }
-; else if  (A_GuiEvent = "ColClick")
-	; sort is disabled in search result listview until the o_MenuInGui.SA object sort can be synced with the sort column (A_EventInfo)
+else if (A_GuiEvent = "ColClick")
+{
+	; sync order of items in the container with ne new order of the listview
+	sleep, % 10 + o_MenuInGui.SA.MaxIndex() ; give time to AHK to finish the listview sorting
+	saTemp := Object() ; repository for sorted item objects
+	intRow := 0
+	Loop
+	{
+		intRow++
+		LV_GetText(intCurrentPositionInContainer, intRow, 7) ; col 7 contains the current position in o_MenuInGui.SA
+		if !StrLen(intCurrentPositionInContainer)
+			break
+		LV_Modify(intRow, "Col7", A_Index) ; sync current position in listview and container object
+		saTemp.Push(o_MenuInGui.SA[intCurrentPositionInContainer])
+	}
+	o_MenuInGui.SA := saTemp ; replace with items order sync with the 
+	o_MenuInGui.AA.intCurrentSortColumn := A_EventInfo
+	
+	saTemp := ""
+	intRow := ""
+	intCurrentPositionInContainer := ""
+}
 
 return
 ;------------------------------------------------------------
@@ -10364,7 +10388,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
 	}
 	else if (strGuiFavoriteLabel = "GuiCopyFavorite")
-		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) ; true blnCopyItem
+		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) ; true blnDuplicateSubmenu
 	else
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
 	
@@ -12112,7 +12136,7 @@ if (A_ThisLabel = "GuiGotoMenuPrev" or A_ThisLabel = "GuiGotoMenuNext")
 	; push current menu/search to left/right arrow stack
 	if StrLen(o_MenuInGui.AA.strMenuPath) ; in case filter string in search result container is empty
 	{
-		oPushMenu := (SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui)
+		oPushMenu := (SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui) ; push the current menu (or an instance of the search result object, true because we need AA only) to prev/next stack
 		oPushMenu.AA.intMenuLastPosition := LV_GetNext("Focused")
 		
 		if (A_ThisLabel = "GuiGotoMenuPrev")
@@ -12164,7 +12188,7 @@ else
 	; else continue
 	
 	o_MenuInGui.AA.intMenuLastPosition := LV_GetNext("Focused")
-	g_saSubmenuStackPrev.Push(SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui) ; push the current menu (or a backup of the search result object - true for AA only) to the left arrow stack
+	g_saSubmenuStackPrev.Push(SearchIsVisible() ? o_MenuInGui.BackupContainer(true) : o_MenuInGui) ; push the current menu (or an instance of the search result object, true because we need AA only) to the left arrow stack
 	; ###_O2Stack(A_ThisLabel . "`n`nPush: " . o_MenuInGui.AA.strMenuPath . "`nPop: (none)`nInGui: " . oMenuInGuiCandidate.AA.strMenuPath, g_saSubmenuStackPrev, g_saSubmenuStackNext)
 	
 	o_MenuInGui := oMenuInGuiCandidate
@@ -12730,7 +12754,7 @@ Loop, Parse, g_strFavoritesToCopyOrMove, `n
 				Gosub, GuiMoveOneFavoriteSave
 		else
 		{
-			o_EditedFavorite := o_EditedFavorite.BackupItem(true) ; true for blnCopy
+			o_EditedFavorite := o_EditedFavorite.BackupItem(true) ; true blnDuplicateSubmenu
 			Gosub, GuiCopyOneFavoriteSave
 			if !(g_blnMulipleMoveOrCopyAborted)
 				intNbFavoritesCopied++
@@ -15170,8 +15194,6 @@ GuiCancel:
 GuiCancelAndExitApp:
 ;------------------------------------------------------------
 
-gosub, GuiFavoritesListFilterHide
-
 if SettingsUnsaved()
 {
 	Gui, 1:+OwnDialogs
@@ -15180,7 +15202,6 @@ if SettingsUnsaved()
 	{
 		g_blnMenuReady := false
 		
-		; Gosub, RestoreBackupContainers
 		o_MainMenu := o_MainMenuBK
 		o_MainMenu.RestoreContainersIndex()
 		
@@ -15201,6 +15222,8 @@ if SettingsUnsaved()
 if (A_ThisLabel = "GuiCancelAndExitApp")
 	ExitApp
 ; else continue
+
+gosub, GuiFavoritesListFilterHide
 
 Gosub, ExternalMenusRelease ; release cancel enabled or not
 
@@ -18693,7 +18716,7 @@ GetCurrentLocation(strClass, strWinID)
 AdjustColumnsWidth:
 ;------------------------------------------------------------
 
-Loop, % LV_GetCount("Column")
+Loop, % LV_GetCount("Column") - (SearchIsVisible() ? 1 : 0)
 	LV_ModifyCol(A_Index, "AutoHdr") ; adjust other columns width
 
 /*
@@ -25470,7 +25493,7 @@ class Container
 				oItem.AA.oSubMenu.BuildMenu()
 			}
 			
-			oItem.LoadLineInGui(this.AA.strMenuType)
+			oItem.LoadLineInGui(this.AA.strMenuType, intKey)
 		}
 	}
 	;------------------------------------------------------------
@@ -26036,7 +26059,7 @@ class Container
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
-		BackupItem(blnCopyItem := false)
+		BackupItem(blnDuplicateSubmenu := false)
 		; copy of associative array AA to another object of class Item
 		;---------------------------------------------------------
 		{
@@ -26045,7 +26068,7 @@ class Container
 			for strKey, varValue in this.AA
 			{
 				oCopy.AA[strKey] := varValue
-				if (strKey = "oSubMenu" and blnCopyItem)
+				if (strKey = "oSubMenu" and blnDuplicateSubmenu)
 					oCopy.AA.oSubMenu := varValue.BackupContainer()
 			}
 				
@@ -27557,6 +27580,8 @@ class Container
 		
 		;------------------------------------------------------------
 		LoadLineInGui(strMenuType, intPosition := 0, strOptions := "") ; called from LoadInGui()
+		; in menu of type "Search", intPosition contains the position in the listview (used when sorting the search result)
+		; in menu of other types, intPosition indicates if the line must be inserted (else, it it added at the end of the list)
 		;------------------------------------------------------------
 		{
 			saValues := Object()
@@ -27610,12 +27635,17 @@ class Container
 			else if (this.AA.strFavoriteType = "Special" and SubStr(this.AA.strFavoriteLocation, 1, 1) = "{") ; this is a Special folder with CLSID
 				saValues[4] := o_SpecialFolders.AA[this.AA.strFavoriteLocation].strDefaultName
 			else if (this.AA.strFavoriteType = "Snippet")
-				saValues[4] :=StringLeftDotDotDot(this.AA.strFavoriteLocation, 250)
+				saValues[4] :=StringLeftDotDotDot(this.AA.strFavoriteLocation, 100)
 			else ; this is a Folder, Special (except with CLSID), Document, URL, Application or Windows App
 				saValues[4] := this.AA.strFavoriteLocation
 			
 			if (strMenuType = "Search")
+			{
 				saValues.InsertAt(2, this.AA.oParentMenu.AA.strMenuPath)
+				saValues.Push(intPosition) ; col 6, original position in search result o_MenuInGui.SA object (not modified by listview sort)
+				saValues.Push(intPosition) ; col 7, position in listview and current position o_MenuInGui.SA object (if modified by listview sort)
+				intPosition := 0 ; always LV_Add() below when in a search result
+			}
 			
 			if (intPosition)
 				intRow := LV_Insert(intPosition, strOptions)
