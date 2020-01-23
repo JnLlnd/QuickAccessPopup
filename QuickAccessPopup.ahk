@@ -9377,6 +9377,9 @@ if SearchIsVisible()
 {
 	g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
 	o_MenuInGui.AA.intLastSearchPosition := ""
+	if (o_MenuInGui.AA.intCurrentSortColumn) ; col number, positive sort ascending or negative sort descending
+		LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), (o_MenuInGui.AA.intCurrentSortColumn > 0 ? "Sort" : "SortDesc"))
+	; else keep o_MenuInGui.AA.intCurrentSortColumn empty, no sort order when loading initial search result
 }
 else
 	GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
@@ -9683,8 +9686,9 @@ else if (A_GuiEvent = "ColClick")
 		LV_Modify(intRow, "Col7", A_Index) ; sync current position in listview and container object
 		saTemp.Push(o_MenuInGui.SA[intCurrentPositionInContainer])
 	}
-	o_MenuInGui.SA := saTemp ; replace with items order sync with the 
-	o_MenuInGui.AA.intCurrentSortColumn := A_EventInfo
+	o_MenuInGui.SA := saTemp ; replace with items order synced with the listview
+	; if sort order already on this column, reverse the order (negative is descending)
+	o_MenuInGui.AA.intCurrentSortColumn := (A_EventInfo = Abs(o_MenuInGui.AA.intCurrentSortColumn) ? -A_EventInfo : A_EventInfo)
 	
 	saTemp := ""
 	intRow := ""
@@ -12199,11 +12203,8 @@ Gosub, UpdatePreviousAndUpPictures
 
 Gosub, LoadFavoritesInGui
 
-if (intMenuLastPosition) ; we went to a previous menu
-{
-	LV_Modify(0, "-Select")
-	LV_Modify(intMenuLastPosition, "Select Focus Vis")
-}
+LV_Modify(0, "-Select")
+LV_Modify((intMenuLastPosition ? intMenuLastPosition : 1, "Select Focus Vis") ; select last position or first item
 
 if (A_ThisLabel = "GuiMenusListChanged") ; keep focus on dropdown list
 	GuiControl, Focus, f_lvFavoritesList
