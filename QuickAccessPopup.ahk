@@ -4636,9 +4636,9 @@ InsertGuiControlPos("f_picAddTextSeparator",			  10,  209)
 InsertGuiControlPos("f_picAddColumnBreak",				  10,  174)
 InsertGuiControlPos("f_picAddSeparator",				  10,  144)
 InsertGuiControlPos("f_picMoveFavoriteDown",			  10,  113)
-InsertGuiControlPos("f_picSubmenu",						  10,  113)
+InsertGuiControlPos("f_picMenuContainerInGuiTop",		  10,  113)
 InsertGuiControlPos("f_picMoveFavoriteUp",				  10,   85)
-InsertGuiControlPos("f_picShowMenuContainerInGui",		  10,   85)
+InsertGuiControlPos("f_picSubmenu",						  10,   85)
 
 InsertGuiControlPos("f_picMenuUp",						  10,   22)
 InsertGuiControlPos("f_picMenuPrev",					  10,   56)
@@ -4647,6 +4647,7 @@ InsertGuiControlPos("f_picMenuNext",					  22,   56)
 InsertGuiControlPos("f_picGuiAlwaysOnTopOn",			  10,  -105, , true)
 InsertGuiControlPos("f_picGuiAlwaysOnTopOff",			  10,  -105, , true)
 InsertGuiControlPos("f_picSortFavorites",				  10,  -135, , true)
+InsertGuiControlPos("f_picMenuContainerInGuiBottom",	  10,  -165, , true)
 InsertGuiControlPos("f_picSearch",						-111,    23, , true)
 
 InsertGuiControlPos("f_btnGuiSaveAndCloseFavorites",	  0,  -70, , true)
@@ -9268,7 +9269,7 @@ Gui, 1:Add, Picture, vf_picMenuNext gGuiGotoMenuNext hidden x+12 yp, %g_strTempD
 g_aaToolTipsMessages["Static9"] := o_L["ControlToolTipNextMenu"]
 Gui, 1:Add, Picture, vf_picMoveFavoriteUp gGuiMoveFavoriteUp x+1 yp, %g_strTempDir%\up_circular-26_c.png ; Static10
 g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipMoveUp"]
-Gui, 1:Add, Picture, vf_picShowMenuContainerInGui gContainerInGuiShortcut x+1 yp hidden, %g_strTempDir%\preview_pane-26_c.png ; Static11
+Gui, 1:Add, Picture, vf_picMenuContainerInGuiTop gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane-26_c.png ; Static11
 g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipShowContainerInGui"]
 Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static12
 g_aaToolTipsMessages["Static12"] := o_L["ControlToolTipMoveDown"]
@@ -9286,18 +9287,20 @@ Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_st
 g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOn"]
 Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempDir%\QAP-pin-off-26_c.png ; Static19
 g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipAlwaysOnTopOff"]
-Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static20
-g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
+Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane-26_c.png ; Static20
+g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipShowContainerInGui"]
+Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static21
+g_aaToolTipsMessages["Static21"] := o_L["ControlToolTipSearchButton"]
 
 Gui, 1:Font, s8 w400, Arial ; button legend
-Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static21
-Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static22, w88 to make room fot when multiple favorites are selected
-Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static23
-Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static24
-Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static25
+Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static22
+Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static23, w88 to make room fot when multiple favorites are selected
+Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static24
+Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static25
+Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static26
 
 Gui, 1:Font, s8 w400 normal, Verdana
-Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static26
+Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static27
 Gui, 1:Add, DropDownList, vf_drpMenusList gGuiMenusListChanged x0 y+1 ; ComboBox1
 
 Gui, 1:Add, Edit, vf_strFavoritesListFilter r1 gLoadFavoritesInGui hidden ; Edit1 (EditN controls do not support tooltips)
@@ -9721,7 +9724,6 @@ blnSearchVisible := (InStr(A_ThisLabel, "Show") ? true : false) ; show else hide
 Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_picAddColumnBreak|f_picAddTextSeparator|f_picSortFavorites|f_lvFavoritesList", "|"
 	GuiControl, % (blnSearchVisible ? "Hide" : "Show"), %A_LoopField%
 
-GuiControl, % (blnSearchVisible ? "Show" : "Hide"), f_picShowMenuContainerInGui
 GuiControl, % (blnSearchVisible ? "Show" : "Hide"), f_picSubmenu
 
 ; disable/enable Favorite menu items for commands not supported in search result
@@ -9738,12 +9740,14 @@ GuiControl, %strShowHideCommand%, f_drpMenusList
 GuiControl, %strShowHideCommand%, f_picSearch
 GuiControl, , f_lblMenuDropdownOrSearchLabel, % (blnSearchVisible ? o_L["DialogSearch"] . ":" : o_L["GuiSubmenuDropdownLabel"])
 GuiControl, %strShowHideCommand%, f_lvFavoritesList
+GuiControl, %strShowHideCommand%, f_picMenuContainerInGuiBottom
 
 strShowHideCommand := (blnSearchVisible ? "Show" : "Hide")
 GuiControl, %strShowHideCommand%, f_strFavoritesListFilter
 GuiControl, %strShowHideCommand%, f_btnFavoritesListNoFilter
 GuiControl, %strShowHideCommand%, f_blnFavoritesListFilterExtended
 GuiControl, %strShowHideCommand%, f_lvFavoritesListSearch
+GuiControl, %strShowHideCommand%, f_picMenuContainerInGuiTop
 
 ; must be before changing default listview
 if (A_ThisLabel = "GuiFavoritesListFilterShowOpen") ; push container in gui to prev stack
@@ -13570,11 +13574,11 @@ strFavoritesToRemove := CollectSelectedFavorites()
 g_intRemovedItems := 0
 Loop, Parse, strFavoritesToRemove, `n
 {
-	intItemToRemove := FindItemInListView(A_LoopField, o_EditedFavorite, oMenuOfRemovedItem)
+	intItemToRemove := FindItemInListView(A_LoopField, o_EditedFavorite, o_MenuOfRemovedItem)
 	
 	if (intItemToRemove and IsObject(o_EditedFavorite))
 		Gosub, GuiRemoveOneFavorite
-	 
+		
 	if SearchIsVisible()
 		Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
 }
@@ -13591,6 +13595,7 @@ strFavoritesToRemove := ""
 intSelected := ""
 strName := ""
 strMenu := ""
+o_MenuOfRemovedItem := ""
 
 return
 ;------------------------------------------------------------
@@ -13615,16 +13620,16 @@ if (A_ThisLabel = "GuiRemoveFavorite")
 	{
 		o_EditedFavorite := o_MenuInGui.SA[intItemToRemove]
 		intItemToRemove := o_EditedFavorite.AA.intSearchItemOriginalPositioninMenu
-		oMenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
+		o_MenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
 	}
 	else
 	{
-		oMenuOfRemovedItem := o_MenuInGui
-		o_EditedFavorite := oMenuOfRemovedItem.SA[intItemToRemove] ; for UpdateFavoriteObjectSaveShortcut
+		o_MenuOfRemovedItem := o_MenuInGui
+		o_EditedFavorite := o_MenuOfRemovedItem.SA[intItemToRemove] ; for UpdateFavoriteObjectSaveShortcut
 	}
 }
 
-if oMenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu) and !oExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
+if o_MenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu) and !oExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the menu is an external menu that cannot be locked, user received an error message, then abort
 {
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
@@ -13657,7 +13662,7 @@ if (blnItemIsMenu)
 g_strNewFavoriteShortcut := "" ; for UpdateFavoriteObjectSaveShortcut
 Gosub, UpdateFavoriteObjectSaveShortcut
 
-oMenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
+o_MenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
 
 if !SearchIsVisible()
 {
@@ -13674,17 +13679,17 @@ if !SearchIsVisible()
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
 		g_intRemovedItems++ ; for FindItemInListView()
 }
-else
+else if (A_ThisLabel <> "GuiRemoveOneFavorite") ; for GuiRemoveOneFavorite, LoadFavoritesInGui is done in GuiRemoveMultipleFavorites
 	Gosub, LoadFavoritesInGui
 
 ; refresh menu dropdpown in gui
 if (blnItemIsMenu)
-	GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(oMenuOfRemovedItem.AA.strMenuPath) . "|"
+	GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuOfRemovedItem.AA.strMenuPath) . "|"
 
 Gosub, EnableSaveAndCancel
 
 ; if favorite's menu is in an external settings file, flag that it needs to be saved
-if oMenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu)
+if o_MenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu)
 	oExternalMenu.AA.blnNeedSave := true
 
 GuiRemoveFavoriteCleanup:
