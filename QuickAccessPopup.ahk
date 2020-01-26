@@ -8234,10 +8234,11 @@ if (strShowQAPmenuPrev <> o_Settings.SettingsWindow.intShowQAPmenu.IniValue)
 
 ; rebuild Folders menus w/ or w/o optional folders and shortcuts
 for strMenuName, oContainer in o_Containers.AA
-{
-	Menu, %strMenuName%, Add
-	Menu, %strMenuName%, DeleteAll
-}
+	if (oContainer.AA.strMenuType <> "Search") ; search result containers have no name and must not be deleted or built
+	{
+		Menu, %strMenuName%, Add
+		Menu, %strMenuName%, DeleteAll
+	}
 
 Gosub, BuildMainMenuWithStatus
 Gosub, BuildAlternativeMenu
@@ -9269,7 +9270,7 @@ Gui, 1:Add, Picture, vf_picMenuNext gGuiGotoMenuNext hidden x+12 yp, %g_strTempD
 g_aaToolTipsMessages["Static9"] := o_L["ControlToolTipNextMenu"]
 Gui, 1:Add, Picture, vf_picMoveFavoriteUp gGuiMoveFavoriteUp x+1 yp, %g_strTempDir%\up_circular-26_c.png ; Static10
 g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipMoveUp"]
-Gui, 1:Add, Picture, vf_picMenuContainerInGuiTop gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane-26_c.png ; Static11
+Gui, 1:Add, Picture, vf_picMenuContainerInGuiTop gContainerInGuiShortcut x+1 yp hidden, %g_strTempDir%\preview_pane-26_c.png ; Static11
 g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipShowContainerInGui"]
 Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static12
 g_aaToolTipsMessages["Static12"] := o_L["ControlToolTipMoveDown"]
@@ -9348,6 +9349,7 @@ return
 
 ;------------------------------------------------------------
 LoadFavoritesInGui:
+UpdateSearchResultInGui: ; avoid sort the listview when called from GuiRemoveMultipleFavorites, GuiMoveMultipleFavoritesSave or GuiCopyMultipleFavoritesSave
 ;------------------------------------------------------------
 
 Gui, 1:Submit, NoHide
@@ -9385,9 +9387,14 @@ if SearchIsVisible()
 {
 	g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
 	o_MenuInGui.AA.intLastSearchPosition := ""
-	if (o_MenuInGui.AA.intCurrentSortColumn) ; col number, positive sort ascending or negative sort descending
-		LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), (o_MenuInGui.AA.intCurrentSortColumn > 0 ? "Sort" : "SortDesc"))
-	; else keep o_MenuInGui.AA.intCurrentSortColumn empty, no sort order when loading initial search result
+	if (o_MenuInGui.AA.intCurrentSortColumn)
+	{
+		if (A_ThisLabel <> "UpdateSearchResultInGui") ; avoid re-sorting when updating listview in a multiple remove/copy/move command
+			LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), (o_MenuInGui.AA.intCurrentSortColumn > 0 ? "Sort" : "SortDesc")) ; col number, positive sort ascending or negative sort descending
+	}
+	else ; else keep o_MenuInGui.AA.intCurrentSortColumn empty, no sort order when loading initial search result
+		Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#", | ; reset column headers
+			LV_ModifyCol(A_Index, , A_LoopField)
 }
 else
 	GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
@@ -9701,7 +9708,7 @@ else if (A_GuiEvent = "ColClick")
 	{
 		LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
 		strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
-		LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), "", strHeader)
+		LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), , strHeader)
 	}
 	
 	; if sort order already on this column, reverse the order (negative is descending)
@@ -12789,7 +12796,7 @@ Loop, Parse, g_strFavoritesToCopyOrMove, `n
 		break
 	 
 	if SearchIsVisible()
-		Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
+		Gosub, UpdateSearchResultInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
 }
 
 if (intNbFavoritesCopied)
@@ -13592,10 +13599,8 @@ Loop, Parse, strFavoritesToRemove, `n
 	intItemToRemove := FindItemInListView(A_LoopField, o_EditedFavorite, o_MenuOfRemovedItem)
 	
 	if (intItemToRemove and IsObject(o_EditedFavorite))
-		Gosub, GuiRemoveOneFavorite
+		Gosub, GuiRemoveOneFavorite ; will UpdateSearchResultInGui to update found favorites AA.intSearchItemOriginalPositionInMenu
 }
-
-Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
 
 ; select row of first removed item
 LV_Modify(0, "-Select")
@@ -13675,7 +13680,9 @@ Gosub, UpdateFavoriteObjectSaveShortcut
 
 o_MenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
 
-if !SearchIsVisible()
+if SearchIsVisible()
+	Gosub, UpdateSearchResultInGui
+else
 {
 	LV_Delete(intItemToRemove)
 	if (A_ThisLabel = "GuiRemoveFavorite")
@@ -13690,8 +13697,6 @@ if !SearchIsVisible()
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
 		g_intRemovedItems++ ; for FindItemInListView()
 }
-else if (A_ThisLabel <> "GuiRemoveOneFavorite") ; for GuiRemoveOneFavorite, LoadFavoritesInGui is done in GuiRemoveMultipleFavorites
-	Gosub, LoadFavoritesInGui
 
 ; refresh menu dropdpown in gui
 if (blnItemIsMenu)
@@ -15219,11 +15224,11 @@ GuiCancel:
 GuiCancelAndExitApp:
 ;------------------------------------------------------------
 
+blnStay := GetKeyState("LShift")
+
 if SettingsUnsaved()
 {
-	Gui, 1:+OwnDialogs
-	MsgBox, 36, % L(o_L["DialogCancelTitle"], g_strAppNameText, g_strAppVersion), % o_L["DialogCancelPrompt"]
-	IfMsgBox, Yes
+	if (blnStay)
 	{
 		g_blnMenuReady := false
 		
@@ -15237,10 +15242,29 @@ if SettingsUnsaved()
 		g_blnHotstringNeedRestart := false
 		g_blnMenuReady := true
 	}
-	IfMsgBox, No
+	else
 	{
-		gosub, GuiCancelCleanup
-		return
+		Gui, 1:+OwnDialogs
+		MsgBox, 36, % L(o_L["DialogCancelTitle"], g_strAppNameText, g_strAppVersion), % o_L["DialogCancelPrompt"]
+		IfMsgBox, Yes
+		{
+			g_blnMenuReady := false
+			
+			o_MainMenu := o_MainMenuBK
+			o_MainMenu.RestoreContainersIndex()
+			
+			GuiControl, Disable, f_btnGuiSaveAndCloseFavorites
+			GuiControl, Disable, f_btnGuiSaveAndStayFavorites
+			GuiControl, , f_btnGuiCancel, % aaSettingsL["GuiClose"]
+			
+			g_blnHotstringNeedRestart := false
+			g_blnMenuReady := true
+		}
+		IfMsgBox, No
+		{
+			gosub, GuiCancelCleanup
+			return
+		}
 	}
 }
 
@@ -15264,11 +15288,15 @@ loop, Parse, % "DialogEdit`t...`tCtrl+E|GuiMove`t...`tCtrl+M|DialogCopy`t...`tCt
 		, % aaFavoriteL[saItem[1]] . (StrLen(saItem[2]) ? g_strEllipse : "") . (StrLen(saItem[3]) ? "`t" . saItem[3] : "")
 }
 
-Gui, 1:Cancel
+if (blnStay)
+	Gosub, GuiShow
+else
+	Gui, 1:Cancel
 
 GuiCancelCleanup:
 blnCancelEnabled := ""
 blnCancelEnabled := ""
+blnStay := ""
 
 return
 ;------------------------------------------------------------
