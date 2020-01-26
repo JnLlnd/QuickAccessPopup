@@ -9695,12 +9695,27 @@ else if (A_GuiEvent = "ColClick")
 		saTemp.Push(o_MenuInGui.SA[intCurrentPositionInContainer])
 	}
 	o_MenuInGui.SA := saTemp ; replace with items order synced with the listview
+	
+	; remove sort indicator on existing sort column header
+	if (o_MenuInGui.AA.intCurrentSortColumn)
+	{
+		LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
+		strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
+		LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), "", strHeader)
+	}
+	
 	; if sort order already on this column, reverse the order (negative is descending)
-	o_MenuInGui.AA.intCurrentSortColumn := (A_EventInfo = Abs(o_MenuInGui.AA.intCurrentSortColumn) ? -A_EventInfo : A_EventInfo)
+	o_MenuInGui.AA.intCurrentSortColumn := (A_EventInfo = Abs(o_MenuInGui.AA.intCurrentSortColumn) ? -o_MenuInGui.AA.intCurrentSortColumn : A_EventInfo)
+	
+	; add sort indicator to column header
+	LV_GetText(strHeader, 0, A_EventInfo)
+	strHeader .= (o_MenuInGui.AA.intCurrentSortColumn ? " " : "") . (o_MenuInGui.AA.intCurrentSortColumn > 0 ? " ^" : "") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " v" : "")
+	LV_ModifyCol(A_EventInfo, "", strHeader)
 	
 	saTemp := ""
 	intRow := ""
 	intCurrentPositionInContainer := ""
+	strHeader := ""
 }
 
 return
@@ -18729,6 +18744,9 @@ AdjustColumnsWidth:
 Loop, % LV_GetCount("Column") - (SearchIsVisible() ? 1 : 0)
 	LV_ModifyCol(A_Index, "AutoHdr") ; adjust other columns width
 
+if SearchIsVisible()
+	LV_ModifyCol(6, 50) ; adjust original order column to make room for sort indicator
+	
 /*
 FOLLOWING NOT REQUIRED ANYMORE
 when using option AutoHdr ("If applied to the last column, it will be made at least as wide as all the remaining space in the ListView.")
