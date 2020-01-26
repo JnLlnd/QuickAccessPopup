@@ -13578,13 +13578,9 @@ Loop, Parse, strFavoritesToRemove, `n
 	
 	if (intItemToRemove and IsObject(o_EditedFavorite))
 		Gosub, GuiRemoveOneFavorite
-		
-	if SearchIsVisible()
-		Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
 }
 
-if !SearchIsVisible()
-	Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
+Gosub, LoadFavoritesInGui ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
 
 ; select row of first removed item
 LV_Modify(0, "-Select")
