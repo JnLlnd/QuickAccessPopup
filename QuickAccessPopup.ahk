@@ -9719,6 +9719,8 @@ else if (A_GuiEvent = "ColClick")
 	strHeader .= (o_MenuInGui.AA.intCurrentSortColumn ? " " : "") . (o_MenuInGui.AA.intCurrentSortColumn > 0 ? " ^" : "") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " v" : "")
 	LV_ModifyCol(A_EventInfo, "", strHeader)
 	
+	Gosub, AdjustColumnsWidth
+	
 	saTemp := ""
 	intRow := ""
 	intCurrentPositionInContainer := ""
@@ -16128,6 +16130,9 @@ if (g_blnAlternativeMenu) and (g_strAlternativeMenu = o_L["MenuAlternativeNewWin
 	g_strHotkeyTypeDetected := "Launch"
 }
 
+if (A_ThisMenu = o_L["MenuContainerInGui"]) ; if menu open from gui, open in new window
+	g_strHotkeyTypeDetected := "Launch"
+
 ; beginning of OpenFavorite execution
 
 o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected)
@@ -18772,9 +18777,6 @@ AdjustColumnsWidth:
 Loop, % LV_GetCount("Column") - (SearchIsVisible() ? 1 : 0)
 	LV_ModifyCol(A_Index, "AutoHdr") ; adjust other columns width
 
-if SearchIsVisible()
-	LV_ModifyCol(6, 50) ; adjust original order column to make room for sort indicator
-	
 /*
 FOLLOWING NOT REQUIRED ANYMORE
 when using option AutoHdr ("If applied to the last column, it will be made at least as wide as all the remaining space in the ListView.")
