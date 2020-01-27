@@ -3966,6 +3966,7 @@ g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) 
 global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
+global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -4919,7 +4920,7 @@ global g_blnUsageDbDebug := (g_intUsageDbDebug > 0)
 global g_blnUsageDbDebugBeep := (g_intUsageDbDebug > 1)
 
 ; Group MenuAdvanced
-o_Settings.ReadIniOption("MenuAdvanced", "intNbLiveFolderItemsMax", "NbLiveFolderItemsMax", "", "MenuAdvanced", "f_lblNbLiveFolderItemsMax|f_lblNbLiveFolderItemsMaxDefault|f_intNbLiveFolderItemsMax") ; ERROR if not found ; g_intNbLiveFolderItemsMax
+o_Settings.ReadIniOption("MenuAdvanced", "intNbLiveFolderItemsMax", "NbLiveFolderItemsMax", "", "MenuAdvanced", "f_lblNbLiveFolderItemsMax|f_lblNbLiveFolderItemsMaxDefault|f_intNbLiveFolderItemsMax") ; ERROR if not found
 if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
 	o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(500)
 o_Settings.ReadIniOption("MenuPopup", "blnOpenMenuOnTaskbar", "OpenMenuOnTaskbar", 1, "MenuAdvanced", "f_blnOpenMenuOnTaskbar") ; g_blnOpenMenuOnTaskbar
@@ -6332,6 +6333,7 @@ ContainerInGuiShortcut:
 
 SetWaitCursor(true)
 
+g_intNbLiveFolderItems := 0
 Gosub, RefreshContainerInGui
 
 Gosub, SetMenuPosition
@@ -6836,9 +6838,6 @@ return
 RefreshContainerInGui:
 ;------------------------------------------------------------
 
-if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Container In Gui}")) ; we don't have this QAP features in at least one menu
-	return
-
 o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object() ; reset array
 if (o_MenuInGui.AA.strMenuType = "Search")
 	for intKey, oItem in o_MenuInGui.SA
@@ -6911,7 +6910,7 @@ gosub, DisableShortcuts ; turn off all favorites keyboard and mouse hotkeys
 g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
-global g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
+g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
 o_MainMenu.BuildMenu(A_ThisLabel = "BuildMainMenuWithStatus") ; recurse for submenus
 if (A_ThisLabel = "BuildMainMenuWithStatus")
@@ -12331,6 +12330,15 @@ GuiShowFromAddSnippetAndHotstring:
 GuiShowNeverCalled:
 ;------------------------------------------------------------
 
+; if gui already visible, just activate the window
+DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
+if WinExist(g_strGuiFullTitle) ; keep the gui as-is if it is not closed
+{
+	WinActivate, %g_strGuiFullTitle%
+	return
+}
+DetectHiddenWindows, On ; revert to app default
+
 if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|", A_ThisLabel . "|") ; menu object already set in these cases
 	or !IsObject(o_MenuInGui.AA) ; or in some situation at startup where o_MenuInGui is not defined
 {
@@ -16138,7 +16146,7 @@ if (g_blnAlternativeMenu) and (g_strAlternativeMenu = o_L["MenuAlternativeNewWin
 	g_strHotkeyTypeDetected := "Launch"
 }
 
-if (A_ThisMenu = o_L["MenuContainerInGui"]) ; if menu open from gui, open in new window
+if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected)) ; if menu open from gui, open in new window
 	g_strHotkeyTypeDetected := "Launch"
 
 ; beginning of OpenFavorite execution
