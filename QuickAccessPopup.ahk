@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.2 (2020-01-23)
+Version BETA: 10.3.9.3 (2020-01-27)
  
 Copy and move submenus and groups
 - allow to copy or move a single or multiple submenus or groups and all their contents (from a single menu or from search result)
@@ -60,6 +60,10 @@ Various
 - add the QAP feature "Favorites in Customize window" to show a menu with the current content of the "Customize" window (a sumenu, a group or a search result)
 - update menu dropdown list in "Customize" window after submenus or groups were moved using up/down arrows
 
+Version BETA: 10.3.9.2 (2020-01-23)
+- private release
+- see notes merged with beta release v10.3.9.3 notes
+
 Version: 10.3.3 (2020-01-18)
 - add new Special folder "Applications" (can be added in the "Power User" section)
 - fix bug when saving the "Options" causing the lost of the Snippets "Macro mode" default value
@@ -70,7 +74,7 @@ Version: 10.3.3 (2020-01-18)
 
 Version BETA: 10.3.9.1 (2020-01-04)
 - private release
-- see notes merged with beta release v10.3.9.2 notes
+- see notes merged with beta release v10.3.9.3 notes
 
 Version: 10.3.2 (2019-12-31)
 - when importing or exporting favorites with the "Import/Export Settings" command, fix bug when the "[Favorites]" section is larger than 65,532 characters (QAP now imports or exports favorites line by line instead of copying the section as a whole because of size limit)
@@ -3777,7 +3781,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.2
+;@Ahk2Exe-SetVersion 10.3.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3882,7 +3886,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
