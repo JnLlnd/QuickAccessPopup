@@ -9332,7 +9332,7 @@ Gui, 1:Add, Link, vf_lnkSponsoredBy x0 y+1 gSponsoredByClicked, %g_SponsoredMess
 GuiControlGet, arrPos, Pos, f_lnkSponsoredBy
 g_intLnkSponsoredByWidth := arrPosW
 
-GetSavedSettingsWindowPosition(saSettingsPosition) ; format: x|y|w|h
+GetSavedSettingsWindowPosition(saSettingsPosition) ; format: x|y|w|h with optional |M if maximized
 
 Gui, 1:Show, % "Hide "
 	. (saSettingsPosition[1] = -1 or saSettingsPosition[1] = "" or saSettingsPosition[2] = ""
@@ -9340,7 +9340,11 @@ Gui, 1:Show, % "Hide "
 	: "x" . saSettingsPosition[1] . " y" . saSettingsPosition[2])
 sleep, 100
 if (saSettingsPosition[1] <> -1)
+{
 	WinMove, ahk_id %g_strAppHwnd%, , , , % saSettingsPosition[3], % saSettingsPosition[4]
+	if (saSettingsPosition[5] = "M")
+		WinMaximize, ahk_id %g_strAppHwnd%
+}
 
 GuiControl, Focus, f_lvFavoritesList
 saSettingsPosition := ""
@@ -21076,12 +21080,12 @@ SaveWindowPosition(strThisWindow, strWindowHandle)
 	; always for Add, Edit, Copy or Move Favorites dialog boxes, only if remember for Settings
 	{
 		WinGet, intMinMax, MinMax, %strWindowHandle%
-		if (intMinMax <> 1) ; if window is maximized, we keep the last saved position and size
-		{
-			WinGetPos, intX, intY, intW, intH, %strWindowHandle%
-			strPosition := intX . "|" . intY . "|" . intW . "|" . intH
-			IniWrite, %strPosition%, % o_Settings.strIniFile, Global, %strThisWindow%
-		}
+		if (intMinMax = 1) ; if window is maximized, restore normal state to get position
+			WinRestore, %strWindowHandle%
+		
+		WinGetPos, intX, intY, intW, intH, %strWindowHandle%
+		strPosition := intX . "|" . intY . "|" . intW . "|" . intH . (intMinMax = 1 ? "|M" : "")
+		IniWrite, %strPosition%, % o_Settings.strIniFile, Global, %strThisWindow%
 	}
 	else ; delete Settings position
 		IniDelete, % o_Settings.strIniFile, Global, %strThisWindow%
