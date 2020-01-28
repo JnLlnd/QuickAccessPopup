@@ -9342,7 +9342,10 @@ if (saSettingsPosition[1] <> -1)
 {
 	WinMove, ahk_id %g_strAppHwnd%, , , , % saSettingsPosition[3], % saSettingsPosition[4]
 	if (saSettingsPosition[5] = "M")
+	{
 		WinMaximize, ahk_id %g_strAppHwnd%
+		WinHide, ahk_id %g_strAppHwnd%
+	}
 }
 
 GuiControl, Focus, f_lvFavoritesList
