@@ -4077,7 +4077,7 @@ if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 
 ; build menu for Sort search result button
 Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#", |
-	Menu, menuSortSearchResult, Add, % (A_Index = 6 ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSortSearchResult" . A_Index
+	Menu, menuSortSearchResult, Add, % (A_Index = 6 ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSearchResult" . A_Index
 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
@@ -5740,7 +5740,7 @@ BuildGuiMenuBar:
 ; see https://docs.microsoft.com/fr-fr/windows/desktop/uxguide/cmd-menus
 ;------------------------------------------------------------
 
-loop, Parse, % "Main|File|Favorite|Tools|Options|MoreOptions|Help", "|"
+loop, Parse, % "Main|File|Favorite|Tools|Options|MoreOptions|Help", |
 	new Container("MenuBar", "menuBar" . A_LoopField)
 
 ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource
@@ -6338,7 +6338,7 @@ ContainerInGuiShortcut:
 
 SetWaitCursor(true)
 
-Gosub, RefreshContainerInGui
+Gosub, RefreshContainerInGuiFromShortcut
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
@@ -6840,7 +6840,11 @@ return
 
 ;------------------------------------------------------------
 RefreshContainerInGui:
+RefreshContainerInGuiFromShortcut:
 ;------------------------------------------------------------
+
+if !(A_ThisLabel = "RefreshContainerInGuiFromShortcut") and !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Container In Gui}")) ; we don't have this QAP features in at least one menu
+	return
 
 o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object() ; reset array
 if (o_MenuInGui.AA.strMenuType = "Search")
@@ -6854,7 +6858,8 @@ if (o_MenuInGui.AA.strMenuType = "Search")
 else
 	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
 
-g_intNbLiveFolderItems := 0
+if (A_ThisLabel = "RefreshContainerInGuiFromShortcut")
+	g_intNbLiveFolderItems := 0
 o_Containers.AA[o_L["MenuContainerInGui"]].BuildMenu()
 
 oItemCopy := ""
@@ -9300,7 +9305,7 @@ Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 
 g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipShowContainerInGui"]
 Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static21
 g_aaToolTipsMessages["Static21"] := o_L["ControlToolTipSearchButton"]
-Gui, 1:Add, Picture, vf_picSortFavoritesTop gGuiSortSortSearchResultMenu x+1 yp hidden, %g_strTempDir%\generic_sorting-26_c.png ; Static22
+Gui, 1:Add, Picture, vf_picSortFavoritesTop gGuiSortSearchResultMenu x+1 yp hidden, %g_strTempDir%\generic_sorting-26_c.png ; Static22
 g_aaToolTipsMessages["Static22"] := o_L["ControlToolTipSortSearchResult"]
 
 Gui, 1:Font, s8 w400, Arial ; button legend
@@ -9367,46 +9372,49 @@ return
 ;------------------------------------------------------------
 LoadFavoritesInGui:
 UpdateSearchResultInGui: ; avoid sort the listview when called from GuiRemoveMultipleFavorites, GuiMoveMultipleFavoritesSave or GuiCopyMultipleFavoritesSave
+ReorderFavoritesInGui: ; called from GuiSortSearchResult to reload o_MenuInGui sorted
 ;------------------------------------------------------------
 
-Gui, 1:Submit, NoHide
-
-if (o_MenuInGui.AA.strMenuType = "External") and o_MenuInGui.ExternalMenuModifiedSinceLoaded() ; refresh only if changed
-	; was ExternalMenuReloadAndRebuild(g_objMenuInGui)
-	{
-		o_MenuInGui.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
-		o_MenuInGui.BuildMenu()
-	}
-
-if SearchIsVisible()
+if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already loaded
 {
-	GuiControlGet, strFilter, 1:, f_strFavoritesListFilter
-	o_MenuInGui.AA.strMenuPath := Trim(strFilter)
-	o_MenuInGui.AA.blnFavoritesListFilterExtended := f_blnFavoritesListFilterExtended
+	Gui, 1:Submit, NoHide
 
-	o_MenuInGui.SA := Object() ; flush content of previous search
-	if StrLen(o_MenuInGui.AA.strMenuPath)
+	if (o_MenuInGui.AA.strMenuType = "External") and o_MenuInGui.ExternalMenuModifiedSinceLoaded() ; refresh only if changed
+		; was ExternalMenuReloadAndRebuild(g_objMenuInGui)
+		{
+			o_MenuInGui.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+			o_MenuInGui.BuildMenu()
+		}
+
+	if SearchIsVisible()
 	{
-		Critical, On ; prevents the current thread from being interrupted by other threads (thread can interrup itself if user type fast in search box)
-		o_MenuInGui.AA.oStartingMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
+		GuiControlGet, strFilter, 1:, f_strFavoritesListFilter
+		o_MenuInGui.AA.strMenuPath := Trim(strFilter)
+		o_MenuInGui.AA.blnFavoritesListFilterExtended := f_blnFavoritesListFilterExtended
+
+		o_MenuInGui.SA := Object() ; flush content of previous search
+		if StrLen(o_MenuInGui.AA.strMenuPath)
+		{
+			Critical, On ; prevents the current thread from being interrupted by other threads (thread can interrup itself if user type fast in search box)
+			o_MenuInGui.AA.oStartingMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
+		}
 	}
 }
 
 Gui, 1:Default
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
 LV_Delete()
-if SearchIsVisible()
-	LV_ModifyCol(6, 0) ; do early to avoid flash
-
 o_MenuInGui.LoadInGui()
 
 if SearchIsVisible()
 {
+	LV_ModifyCol(6, 0) ; do early to avoid flash
+	
 	g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
 	o_MenuInGui.AA.intLastSearchPosition := ""
 
-	if (o_MenuInGui.AA.intCurrentSortColumn)
-		Gosub, GuiSortSortSearchResult
+	if (o_MenuInGui.AA.intCurrentSortColumn) and (A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultInGui or ReorderFavoritesInGui
+		Gosub, GuiSortSearchResult ; will call ReorderFavoritesInGui to LoadInGui again with o_MenuInGui sorted 
 }
 else
 	GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
@@ -9568,7 +9576,7 @@ loop, Parse, % "GuiHotkeysSelectNextItem`tDown/Up|DialogAdd`tCtrl+N|DialogEdit`t
 	. "GuiMove`tCtrl+M|DialogCopy`tCtrl+Y|ControlToolTipMoveUp`tCtrl+Up|ControlToolTipMoveDown`tCtrl+Down|GuiHotkeysOpenParentMenu`tCtrl+Left|GuiHotkeysOpenSubmenuOrEditFavorite`tCtrl+Right|"
 	. "ControlToolTipPreviousMenu`tShift+Ctrl+Left|ControlToolTipNextMenu`tShift+Ctrl+Right|ControlToolTipSearchButton`tCtrl+F|GuiOptions`tCtrl+O|"
 	. "MenuHelp`tCtrl+H|GuiHotkeysHelp`tF1|GuiSave`tCtrl+S|GuiClose`tEsc|MenuExitApp@g_strAppNameText`tAlt+F4"
-	, "|"
+	, |
 {
 	saLine := StrSplit(A_LoopField, "`t")
 	strShortcut := saLine[2]
@@ -9718,18 +9726,19 @@ blnSearchVisible := (InStr(A_ThisLabel, "Show") ? true : false) ; show else hide
 
 ; hide/show buttons for commands not supported in search result
 Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_picAddColumnBreak|f_picAddTextSeparator|f_picSortFavoritesBottom|f_lvFavoritesList"
-	. "|f_drpMenusList|f_picSearch|f_lvFavoritesList|f_picMenuContainerInGuiBottom", "|"
+	. "|f_drpMenusList|f_picSearch|f_lvFavoritesList|f_picMenuContainerInGuiBottom", |
 	GuiControl, % (blnSearchVisible ? "Hide" : "Show"), %A_LoopField%
 
 ; show/hide buttons for commands not supported in search result
 Loop, Parse, % "f_strFavoritesListFilter|f_btnFavoritesListNoFilter|f_blnFavoritesListFilterExtended|f_lvFavoritesListSearch"
-	. "|f_picMenuContainerInGuiTop|f_picSubmenu|f_picSortFavoritesTop", "|"
+	. "|f_picMenuContainerInGuiTop|f_picSubmenu|f_picSortFavoritesTop", |
 	GuiControl, % (blnSearchVisible ? "Show" : "Hide"), %A_LoopField%
 
 ; disable/enable Favorite menu items for commands not supported in search result
-Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+Down|ControlToolTipSeparator|ControlToolTipColumnBreak|ControlToolTipTextSeparator|ControlToolTipSortFavorites", "|"
-; saMenuItem: 1) menu name, 2) has ellipse, 3) shortcut
+Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+Down"
+	. "|ControlToolTipSeparator|ControlToolTipColumnBreak|ControlToolTipTextSeparator|ControlToolTipSortFavorites", |
 {
+	; saMenuItem: 1) menu name, 2) has ellipse, 3) shortcut
 	saMenuItem := StrSplit(A_LoopField, "`t")
 	Menu, menuBarFavorite, % (blnSearchVisible ? "Disable" : "Enable")
 		, % aaFavoriteL[saMenuItem[1]] . (StrLen(saMenuItem[2]) ? g_strEllipse : "") . (StrLen(saMenuItem[3]) ? "`t" . saMenuItem[3] : "")
@@ -13906,7 +13915,7 @@ GuiSortCleanFavoriteName(strFavoriteName)
 
 
 ;------------------------------------------------------------
-GuiSortSortSearchResultMenu:
+GuiSortSearchResultMenu:
 ;------------------------------------------------------------
 
 Menu, menuSortSearchResult, Show
@@ -13916,16 +13925,15 @@ return
 
 
 ;------------------------------------------------------------
-GuiSortSortSearchResult:
-GuiSortSortSearchResult1:
-GuiSortSortSearchResult2:
-GuiSortSortSearchResult3:
-GuiSortSortSearchResult4:
-GuiSortSortSearchResult5:
-GuiSortSortSearchResult6:
+GuiSortSearchResult:
+GuiSortSearchResult1:
+GuiSortSearchResult2:
+GuiSortSearchResult3:
+GuiSortSearchResult4:
+GuiSortSearchResult5:
+GuiSortSearchResult6:
 ;------------------------------------------------------------
 
-; ###_O("o_MenuInGui.SA", o_MenuInGui.SA, "AA", "strFavoriteName")
 ; remove sort indicator on existing sort column header
 if !(o_MenuInGui.AA.intCurrentSortColumn)
 	o_MenuInGui.AA.intCurrentSortColumn := 6 ; last invisible column
@@ -13937,7 +13945,7 @@ if (o_MenuInGui.AA.intCurrentSortColumn < 6)
 	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), , strHeader)
 }
 
-intCol := StrReplace(A_ThisLabel, "GuiSortSortSearchResult")
+intCol := StrReplace(A_ThisLabel, "GuiSortSearchResult")
 if (intCol)
 	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -o_MenuInGui.AA.intCurrentSortColumn : intCol)
 ; else keep existing sort column
@@ -13950,32 +13958,34 @@ if (o_MenuInGui.AA.intCurrentSortColumn < 6)
 	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), "", strHeader)
 }
 
-if (A_ThisLabel = "GuiSortSortSearchResult") ; search result already sorted
-	return
-; else sort search result
+; remember current position
+o_MenuInGui.AA.intLastSearchPosition := LV_GetNext()
 
 ; get values and sort
 strValues := ""
 Loop, % o_MenuInGui.SA.MaxIndex()
 {
 	LV_GetText(strValue, A_Index, Abs(o_MenuInGui.AA.intCurrentSortColumn))
-	strValues .= strValue . "|" . A_Index . "`n"
+	strValues .= strValue . "|" . A_Index . (o_MenuInGui.AA.intLastSearchPosition = A_Index ? "|*" : "") . "`n" ; * to flag selected item
 }
 Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 6 ? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
-; ###_V(A_ThisLabel . " strValues", o_MenuInGui.AA.intCurrentSortColumn, "|" . strValues . "|")
 
 saTemp := Object() ; repository for sorted item objects
 Loop, Parse, % SubStr(strValues, 1, -1), `n
-	saTemp.Push(o_MenuInGui.SA[StrSplit(A_LoopField, "|")[2]])
+{
+	saItem := StrSplit(A_LoopField, "|")
+	saTemp.Push(o_MenuInGui.SA[saItem[2]])
+	if (saItem[3] = "*")
+		o_MenuInGui.AA.intLastSearchPosition := A_Index
+}
 
-o_MenuInGui.SA := saTemp
-; ###_O("o_MenuInGui.SA", o_MenuInGui.SA, "AA", "strFavoriteName")
+o_MenuInGui.SA := saTemp ; replace items with sorted list
+gosub, ReorderFavoritesInGui ; reload gui with sorted list
 
 intCol := ""
 strHeader := ""
 saTemp := ""
-
-Gosub, LoadFavoritesInGui
+saItem := ""
 
 return
 ;------------------------------------------------------------
@@ -19795,7 +19805,7 @@ Url2Var(strUrl)
 {
 	strUrl .= (InStr(strUrl, "?") ? "&" : "?") . "cache-breaker=" . A_NowUTC
 	
-	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", "|" ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
+	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
 	{
 		oHttpRequest := ComObjCreate(A_LoopField)
 		oHttpRequest.Open("GET", strUrl)
@@ -23637,7 +23647,7 @@ class QAPfeatures
 			. "|" . o_L["DialogShiftRight"] . "|" . o_L["DialogShiftRight"] . " + " . o_L["DialogCtrlRight"] . "|" . o_L["DialogCtrlRight"]
 		
 		saMenuModificersNames := StrSplit(this.strMenuModificersNames, "|")
-		loop, Parse, % strMenuModificersCodes, "|"
+		loop, Parse, % strMenuModificersCodes, |
 		{
 			this.aaQAPFeaturesAlternativeMenuModifiersTextByCode[A_LoopField] := saMenuModificersNames[A_Index]
 			this.aaQAPFeaturesAlternativeMenuModifiersCodeByText[saMenuModificersNames[A_Index]] := A_LoopField
@@ -27749,8 +27759,7 @@ class Container
 			if (strMenuType = "Search")
 			{
 				saValues.InsertAt(2, this.AA.oParentMenu.AA.strMenuPath)
-				saValues.Push(intPosition) ; col 6, original position in search result o_MenuInGui.SA object (not modified by listview sort)
-				saValues.Push(intPosition) ; col 7, position in listview and current position o_MenuInGui.SA object (if modified by listview sort)
+				saValues.Push(intPosition) ; col 6, original position in search result
 				intPosition := 0 ; always LV_Add() below when in a search result
 			}
 			
