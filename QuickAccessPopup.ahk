@@ -4075,6 +4075,10 @@ Gosub, BuildGui
 if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
 
+; build menu for Sort search result button
+Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#", |
+	Menu, menuSortSearchResult, Add, % (A_Index = 6 ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSortSearchResult" . A_Index
+
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
 if (g_blnPortableMode and g_strCurrentBranch = "prod" and !o_Settings.Launch.blnDonorCode.IniValue
@@ -4640,6 +4644,7 @@ InsertGuiControlPos("f_picGuiMoveFavorite",				 -44,  352, true)
 InsertGuiControlPos("f_picAddTextSeparator",			  10,  209)
 InsertGuiControlPos("f_picAddColumnBreak",				  10,  174)
 InsertGuiControlPos("f_picAddSeparator",				  10,  144)
+InsertGuiControlPos("f_picSortFavoritesTop",			  10,  144)
 InsertGuiControlPos("f_picMoveFavoriteDown",			  10,  113)
 InsertGuiControlPos("f_picMenuContainerInGuiTop",		  10,  113)
 InsertGuiControlPos("f_picMoveFavoriteUp",				  10,   85)
@@ -4651,7 +4656,7 @@ InsertGuiControlPos("f_picMenuNext",					  22,   56)
 
 InsertGuiControlPos("f_picGuiAlwaysOnTopOn",			  10,  -105, , true)
 InsertGuiControlPos("f_picGuiAlwaysOnTopOff",			  10,  -105, , true)
-InsertGuiControlPos("f_picSortFavorites",				  10,  -135, , true)
+InsertGuiControlPos("f_picSortFavoritesBottom",			  10,  -135, , true)
 InsertGuiControlPos("f_picMenuContainerInGuiBottom",	  10,  -165, , true)
 InsertGuiControlPos("f_picSearch",						-111,    23, , true)
 
@@ -6333,7 +6338,6 @@ ContainerInGuiShortcut:
 
 SetWaitCursor(true)
 
-g_intNbLiveFolderItems := 0
 Gosub, RefreshContainerInGui
 
 Gosub, SetMenuPosition
@@ -6850,6 +6854,7 @@ if (o_MenuInGui.AA.strMenuType = "Search")
 else
 	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
 
+g_intNbLiveFolderItems := 0
 o_Containers.AA[o_L["MenuContainerInGui"]].BuildMenu()
 
 oItemCopy := ""
@@ -9285,7 +9290,7 @@ Gui, 1:Add, Picture, vf_picAddColumnBreak gGuiAddColumnBreak x+1 yp, %g_strTempD
 g_aaToolTipsMessages["Static15"] := o_L["ControlToolTipColumnBreak"]
 Gui, 1:Add, Picture, vf_picAddTextSeparator gGuiAddTextSeparator x+1 yp, %g_strTempDir%\text-26_c.png ; Static16
 g_aaToolTipsMessages["Static16"] := o_L["ControlToolTipTextSeparator"]
-Gui, 1:Add, Picture, vf_picSortFavorites gGuiSortFavorites x+1 yp, %g_strTempDir%\generic_sorting-26_c.png ; Static17
+Gui, 1:Add, Picture, vf_picSortFavoritesBottom gGuiSortFavorites x+1 yp, %g_strTempDir%\generic_sorting-26_c.png ; Static17
 g_aaToolTipsMessages["Static17"] := o_L["ControlToolTipSortFavorites"]
 Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_strTempDir%\QAP-pin-on-26_c.png ; Static18
 g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOn"]
@@ -9295,16 +9300,18 @@ Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 
 g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipShowContainerInGui"]
 Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static21
 g_aaToolTipsMessages["Static21"] := o_L["ControlToolTipSearchButton"]
+Gui, 1:Add, Picture, vf_picSortFavoritesTop gGuiSortSortSearchResultMenu x+1 yp hidden, %g_strTempDir%\generic_sorting-26_c.png ; Static22
+g_aaToolTipsMessages["Static22"] := o_L["ControlToolTipSortSearchResult"]
 
 Gui, 1:Font, s8 w400, Arial ; button legend
-Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static22
-Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static23, w88 to make room fot when multiple favorites are selected
-Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static24
-Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static25
-Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static26
+Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static23
+Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static24, w88 to make room fot when multiple favorites are selected
+Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static25
+Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static26
+Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static27
 
 Gui, 1:Font, s8 w400 normal, Verdana
-Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static27
+Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static28
 Gui, 1:Add, DropDownList, vf_drpMenusList gGuiMenusListChanged x0 y+1 ; ComboBox1
 
 Gui, 1:Add, Edit, vf_strFavoritesListFilter r1 gLoadFavoritesInGui hidden ; Edit1 (EditN controls do not support tooltips)
@@ -9316,8 +9323,8 @@ Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList Count32 AltSubmit NoSortHdr LV0x10 " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeader"] ; SysHeader321 / SysListView321
 Gui, 1:Add, ListView
-	, % "vf_lvFavoritesListSearch Count32 AltSubmit LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
-	, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#|Object Order" ; SysHeader322 / SysListView322
+	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
+	, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#" ; SysHeader322 / SysListView322
 LV_ModifyCol(6, "Integer")
 
 Gui, 1:Font, s8 w600, Verdana
@@ -9389,7 +9396,7 @@ Gui, 1:Default
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
 LV_Delete()
 if SearchIsVisible()
-	LV_ModifyCol(7, 0) ; do early to avoid flash
+	LV_ModifyCol(6, 0) ; do early to avoid flash
 
 o_MenuInGui.LoadInGui()
 
@@ -9397,14 +9404,9 @@ if SearchIsVisible()
 {
 	g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
 	o_MenuInGui.AA.intLastSearchPosition := ""
+
 	if (o_MenuInGui.AA.intCurrentSortColumn)
-	{
-		if (A_ThisLabel <> "UpdateSearchResultInGui") ; avoid re-sorting when updating listview in a multiple remove/copy/move command
-			LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), (o_MenuInGui.AA.intCurrentSortColumn > 0 ? "Sort" : "SortDesc")) ; col number, positive sort ascending or negative sort descending
-	}
-	else ; else keep o_MenuInGui.AA.intCurrentSortColumn empty, no sort order when loading initial search result
-		Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#", | ; reset column headers
-			LV_ModifyCol(A_Index, , A_LoopField)
+		Gosub, GuiSortSortSearchResult
 }
 else
 	GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
@@ -9696,46 +9698,6 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 			, % aaFavoriteL[saItem[1]] . (StrLen(saItem[2]) ? g_strEllipse : "") . "`t" . saItem[3]
 	}
 }
-else if (A_GuiEvent = "ColClick")
-{
-	; sync order of items in the container with ne new order of the listview
-	sleep, % 10 + o_MenuInGui.SA.MaxIndex() ; give time to AHK to finish the listview sorting
-	saTemp := Object() ; repository for sorted item objects
-	intRow := 0
-	Loop
-	{
-		intRow++
-		LV_GetText(intCurrentPositionInContainer, intRow, 7) ; col 7 contains the current position in o_MenuInGui.SA
-		if !StrLen(intCurrentPositionInContainer)
-			break
-		LV_Modify(intRow, "Col7", A_Index) ; sync current position in listview and container object
-		saTemp.Push(o_MenuInGui.SA[intCurrentPositionInContainer])
-	}
-	o_MenuInGui.SA := saTemp ; replace with items order synced with the listview
-	
-	; remove sort indicator on existing sort column header
-	if (o_MenuInGui.AA.intCurrentSortColumn)
-	{
-		LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
-		strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
-		LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), , strHeader)
-	}
-	
-	; if sort order already on this column, reverse the order (negative is descending)
-	o_MenuInGui.AA.intCurrentSortColumn := (A_EventInfo = Abs(o_MenuInGui.AA.intCurrentSortColumn) ? -o_MenuInGui.AA.intCurrentSortColumn : A_EventInfo)
-	
-	; add sort indicator to column header
-	LV_GetText(strHeader, 0, A_EventInfo)
-	strHeader .= (o_MenuInGui.AA.intCurrentSortColumn ? " " : "") . (o_MenuInGui.AA.intCurrentSortColumn > 0 ? " ^" : "") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " v" : "")
-	LV_ModifyCol(A_EventInfo, "", strHeader)
-	
-	Gosub, AdjustColumnsWidth
-	
-	saTemp := ""
-	intRow := ""
-	intCurrentPositionInContainer := ""
-	strHeader := ""
-}
 
 return
 ;------------------------------------------------------------
@@ -9755,10 +9717,14 @@ if (InStr(A_ThisLabel, "Show") and blnSearchVisible)
 blnSearchVisible := (InStr(A_ThisLabel, "Show") ? true : false) ; show else hide
 
 ; hide/show buttons for commands not supported in search result
-Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_picAddColumnBreak|f_picAddTextSeparator|f_picSortFavorites|f_lvFavoritesList", "|"
+Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_picAddColumnBreak|f_picAddTextSeparator|f_picSortFavoritesBottom|f_lvFavoritesList"
+	. "|f_drpMenusList|f_picSearch|f_lvFavoritesList|f_picMenuContainerInGuiBottom", "|"
 	GuiControl, % (blnSearchVisible ? "Hide" : "Show"), %A_LoopField%
 
-GuiControl, % (blnSearchVisible ? "Show" : "Hide"), f_picSubmenu
+; show/hide buttons for commands not supported in search result
+Loop, Parse, % "f_strFavoritesListFilter|f_btnFavoritesListNoFilter|f_blnFavoritesListFilterExtended|f_lvFavoritesListSearch"
+	. "|f_picMenuContainerInGuiTop|f_picSubmenu|f_picSortFavoritesTop", "|"
+	GuiControl, % (blnSearchVisible ? "Show" : "Hide"), %A_LoopField%
 
 ; disable/enable Favorite menu items for commands not supported in search result
 Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+Down|ControlToolTipSeparator|ControlToolTipColumnBreak|ControlToolTipTextSeparator|ControlToolTipSortFavorites", "|"
@@ -9769,19 +9735,7 @@ Loop, Parse, % "ControlToolTipMoveUp`t`tCtrl+Up|ControlToolTipMoveDown`t`tCtrl+D
 		, % aaFavoriteL[saMenuItem[1]] . (StrLen(saMenuItem[2]) ? g_strEllipse : "") . (StrLen(saMenuItem[3]) ? "`t" . saMenuItem[3] : "")
 }
 
-strShowHideCommand := (blnSearchVisible ? "Hide" : "Show")
-GuiControl, %strShowHideCommand%, f_drpMenusList
-GuiControl, %strShowHideCommand%, f_picSearch
 GuiControl, , f_lblMenuDropdownOrSearchLabel, % (blnSearchVisible ? o_L["DialogSearch"] . ":" : o_L["GuiSubmenuDropdownLabel"])
-GuiControl, %strShowHideCommand%, f_lvFavoritesList
-GuiControl, %strShowHideCommand%, f_picMenuContainerInGuiBottom
-
-strShowHideCommand := (blnSearchVisible ? "Show" : "Hide")
-GuiControl, %strShowHideCommand%, f_strFavoritesListFilter
-GuiControl, %strShowHideCommand%, f_btnFavoritesListNoFilter
-GuiControl, %strShowHideCommand%, f_blnFavoritesListFilterExtended
-GuiControl, %strShowHideCommand%, f_lvFavoritesListSearch
-GuiControl, %strShowHideCommand%, f_picMenuContainerInGuiTop
 
 ; must be before changing default listview
 if (A_ThisLabel = "GuiFavoritesListFilterShowOpen") ; push container in gui to prev stack
@@ -13948,6 +13902,82 @@ GuiSortCleanFavoriteName(strFavoriteName)
 	}
 	return strFavoriteName
 }
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSortSortSearchResultMenu:
+;------------------------------------------------------------
+
+Menu, menuSortSearchResult, Show
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSortSortSearchResult:
+GuiSortSortSearchResult1:
+GuiSortSortSearchResult2:
+GuiSortSortSearchResult3:
+GuiSortSortSearchResult4:
+GuiSortSortSearchResult5:
+GuiSortSortSearchResult6:
+;------------------------------------------------------------
+
+; ###_O("o_MenuInGui.SA", o_MenuInGui.SA, "AA", "strFavoriteName")
+; remove sort indicator on existing sort column header
+if !(o_MenuInGui.AA.intCurrentSortColumn)
+	o_MenuInGui.AA.intCurrentSortColumn := 6 ; last invisible column
+
+if (o_MenuInGui.AA.intCurrentSortColumn < 6)
+{
+	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
+	strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
+	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), , strHeader)
+}
+
+intCol := StrReplace(A_ThisLabel, "GuiSortSortSearchResult")
+if (intCol)
+	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -o_MenuInGui.AA.intCurrentSortColumn : intCol)
+; else keep existing sort column
+
+if (o_MenuInGui.AA.intCurrentSortColumn < 6)
+{
+	; add sort indicator to column header
+	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
+	strHeader .= (o_MenuInGui.AA.intCurrentSortColumn ? " " : "") . (o_MenuInGui.AA.intCurrentSortColumn > 0 ? "^" : "") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? "v" : "")
+	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), "", strHeader)
+}
+
+if (A_ThisLabel = "GuiSortSortSearchResult") ; search result already sorted
+	return
+; else sort search result
+
+; get values and sort
+strValues := ""
+Loop, % o_MenuInGui.SA.MaxIndex()
+{
+	LV_GetText(strValue, A_Index, Abs(o_MenuInGui.AA.intCurrentSortColumn))
+	strValues .= strValue . "|" . A_Index . "`n"
+}
+Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 6 ? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
+; ###_V(A_ThisLabel . " strValues", o_MenuInGui.AA.intCurrentSortColumn, "|" . strValues . "|")
+
+saTemp := Object() ; repository for sorted item objects
+Loop, Parse, % SubStr(strValues, 1, -1), `n
+	saTemp.Push(o_MenuInGui.SA[StrSplit(A_LoopField, "|")[2]])
+
+o_MenuInGui.SA := saTemp
+; ###_O("o_MenuInGui.SA", o_MenuInGui.SA, "AA", "strFavoriteName")
+
+intCol := ""
+strHeader := ""
+saTemp := ""
+
+Gosub, LoadFavoritesInGui
+
+return
 ;------------------------------------------------------------
 
 
