@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.3 (2020-01-27)
+Version BETA: 10.3.9.3 (2020-01-29)
  
 Copy and move submenus and groups
 - allow to copy or move a single or multiple submenus or groups and all their contents (from a single menu or from search result)
@@ -41,7 +41,7 @@ Copy and move submenus and groups
 Search
 - new "Search" command in "Customize" window with improved usability
 - when editing a favorite from the search result, stay in the search result (instead of changing the menu to the edited favorite as before)
-- search result can be sorted by clicking any column header; the last column contains numbers of the orignal ordering allowing to return to the initial search result order
+- search result can be sorted by clicking the sort button on left side of the "Customize" window; the last column contains numbers of the orignal ordering allowing to return to the initial search result order
 - in search result, add an icon on the left side to open a menu with the favorites in the search result, duplicate menu names are appended with the ""[!]"" suffix to make them unique
 - add another icon to open the menu containing the selected item
 - show all favorites in the search result when the filter is set to "{All}" (case insensitive) and add a menu item "Search All Favorites" under the "Tool" menu of the "Customize" window
