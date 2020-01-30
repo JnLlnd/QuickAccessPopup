@@ -658,6 +658,7 @@ this["OopsChangeFolderInDialogAlert"] := "Did you want to change the folder in t
 this["OopsContainerInGui"] := "This dynamic menu can only be inserted in menu: ~1~"
 this["OopsCouldNotOpenSpecialFolder"] := "~1~ could not open the special folder: ""~2~""."
 this["OopsEmpty"] := "empty" ; (no capital)
+this["OopsMultipleContainersError"] := "Menus, groups and shared menus can only be moved individually. These items will be skipped."
 this["OopsErrorIniFileDisplayErrorMessage"] := "Display this error message again for this Shared Menu?"
 this["OopsErrorIniFileModified"] := "This shared menu was modified since it was loaded. The menu will be refreshed but your last change cannot be saved."
 this["OopsErrorIniFileReadOnly"] := "This shared menu settings file or this location is READ-ONLY."
