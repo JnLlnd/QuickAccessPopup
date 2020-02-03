@@ -9408,6 +9408,7 @@ if (A_ThisLabel = "UpdateSearchResultContainer")
 
 Gui, 1:Default
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
+
 LV_Delete()
 o_MenuInGui.LoadInGui()
 
@@ -9415,23 +9416,25 @@ if SearchIsVisible()
 {
 	LV_ModifyCol(6, 0) ; do early to avoid flash
 	
-	g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
-	o_MenuInGui.AA.intLastSearchPosition := ""
-
-	if (o_MenuInGui.AA.intCurrentSortColumn) and (A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultContainer or ReorderFavoritesInGui
-		Gosub, GuiSortSearchResult ; will call ReorderFavoritesInGui to LoadInGui again with o_MenuInGui sorted 
+	if (o_MenuInGui.AA.intCurrentSortColumn and A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultContainer or ReorderFavoritesInGui
+		Gosub, GuiSortSearchResult ; will call ReorderFavoritesInGui to LoadInGui again with o_MenuInGui sorted
+	
+	if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if called from GuiSortSearchResult
+	{
+		g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
+		o_MenuInGui.AA.intLastSearchPosition := ""
+	}
 }
-else
-	GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
-
-LV_Modify((g_intOriginalMenuPosition ? g_intOriginalMenuPosition : 1), "Select Focus Vis")
+if (A_ThisLabel <> "ReorderFavoritesInGui")
+	LV_Modify((g_intOriginalMenuPosition ? g_intOriginalMenuPosition : 1), "Select Focus Vis")
 Gosub, AdjustColumnsWidth
 
-if !SearchIsVisible()
-{
-	GuiControl, Focus, %A_DefaultListView%
+GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
+
+if SearchIsVisible()
 	Critical, Off
-}
+else
+	GuiControl, Focus, %A_DefaultListView%
 
 strGuiMenuLocation := ""
 strThisType := ""
@@ -12764,15 +12767,17 @@ if (blnMove and !SearchIsVisible() and f_drpParentMenu = o_MenuInGui.AA.strMenuP
 
 g_intRemovedItems := 0
 g_intOriginalMenuPosition := 0
-o_MenuInGui.AA.intSearchPositionBeforeCopyMove := LV_GetNext(0)
+o_MenuInGui.AA.intLastSearchPosition := LV_GetNext(0)
 intNbItems := LV_GetCount("Selected")
 
 Loop, Parse, g_strFavoritesToCopyOrMove, `n
 {
-	ToolTip, % o_L[(blnMove ? "GuiMove" : "GuiCopy")] . ": " . A_Index . " / " . intNbItems
+	if (intNbItems > 50)
+		ToolTip, % o_L[(blnMove ? "GuiMove" : "GuiCopy")] . ": " . A_Index . " / " . intNbItems
+	
 	g_intOriginalMenuPosition := FindItemInMenuInGui(A_LoopField, o_EditedFavorite, o_EditedFavoriteMenu)
 	
-	if (g_intOriginalMenuPosition and IsObject(o_EditedFavorite))
+	if (g_intOriginalMenuPosition)
 		if (blnMove)
 			if (f_drpParentMenu = o_EditedFavoriteMenu.AA.strMenuPath)
 				continue ; skip item already in destination menu
@@ -12795,8 +12800,7 @@ if (intNbFavoritesCopied)
 	Oops(2, o_L["OopsFavoritesCopied"], intNbFavoritesCopied)
 
 Gosub, LoadFavoritesInGui
-LV_Modify(0, "-Select")
-LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeCopyMove, "Select Focus Vis")
+
 Gosub, EnableSaveAndCancel
 g_intNewItemPos := "" ; delete it for next use
 
@@ -13587,25 +13591,29 @@ if LV_GetCount("Selected") > 1
 		return
 }
 
-intLastSearchPosition := LV_GetNext()
+if SearchIsVisible()
+	o_MenuInGui.AA.intLastSearchPosition := LV_GetNext()
+else
+	intLastPosition := LV_GetNext()
 
 ; collect favorites to remove
-strFavoritesToRemove := CollectSelectedFavorites()
+strFavoritesToRemove := CollectSelectedFavorites(false) ; false for blnNoContainer to include containers
 
 g_intRemovedItems := 0
 Loop, Parse, strFavoritesToRemove, `n
 {
 	intItemToRemove := FindItemInMenuInGui(A_LoopField, o_EditedFavorite, o_MenuOfRemovedItem)
 	
-	if (intItemToRemove and IsObject(o_EditedFavorite))
+	if (intItemToRemove) ; and IsObject(o_EditedFavorite)
 		Gosub, GuiRemoveOneFavorite ; will UpdateSearchResultContainer to update found favorites AA.intSearchItemOriginalPositionInMenu
 }
 
-; select row of first removed item
-LV_Modify(0, "-Select")
-LV_Modify(intLastSearchPosition, "Select Focus Vis")
+if !SearchIsVisible()
+	g_intOriginalMenuPosition := intLastPosition
+; else g_intOriginalMenuPosition is set with o_MenuInGui.AA.intLastSearchPosition in LoadFavoritesInGui (this could be optimized...)
+Gosub, LoadFavoritesInGui
 
-intLastSearchPosition := ""
+intLastPosition := ""
 strFavoritesToRemove := ""
 intSelected := ""
 strName := ""
@@ -13679,9 +13687,7 @@ Gosub, UpdateFavoriteObjectSaveShortcut
 
 o_MenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
 
-if SearchIsVisible()
-	Gosub, UpdateSearchResultContainer ; refresh search result, updating found favorites AA.intSearchItemOriginalPositionInMenu
-else
+if !SearchIsVisible()
 {
 	LV_Delete(intItemToRemove)
 	if (A_ThisLabel = "GuiRemoveFavorite")
@@ -13694,7 +13700,7 @@ else
 	Gosub, AdjustColumnsWidth
 	
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
-		g_intRemovedItems++ ; for FindItemInMenuInGui() ##### required?
+		g_intRemovedItems++ ; for FindItemInMenuInGui() when not in search result
 }
 
 ; refresh menu dropdpown in gui
@@ -13974,7 +13980,8 @@ if (o_MenuInGui.AA.intCurrentSortColumn < 6)
 }
 
 ; remember current position
-o_MenuInGui.AA.intLastSearchPosition := LV_GetNext()
+if (A_ThisLabel <> "GuiSortSearchResult") ; not if called from LoadFavoritesInGui
+	o_MenuInGui.AA.intLastSearchPosition := LV_GetNext()
 
 ; get values and sort
 strValues := ""
@@ -21584,7 +21591,7 @@ SearchIsVisible()
 
 
 ;------------------------------------------------------------
-CollectSelectedFavorites()
+CollectSelectedFavorites(blnNoContainer := true)
 ; return a string with items selected in active listview, reject containers in multiple selection
 ; 1: position in listview; plus, when in search result 2: menu path; 3: item name; 4: item type
 ;------------------------------------------------------------
@@ -21597,8 +21604,8 @@ CollectSelectedFavorites()
 		intSelected := LV_GetNext(intSelected)
 		if !(intSelected)
 			break
-		LV_GetText(strType, intSelected, 2 + (SearchIsVisible() ? 1 : 0))
-		if (blnMultiple and InStr("|Menu|Group|External", "|" . strType, true))
+		oItem := o_MenuInGui.SA[intSelected]
+		if (blnMultiple and blnNoContainer and oItem.IsContainer())
 		{
 			if !(blnMultipleAlertDone)
 				Oops(1, o_L["OopsMultipleContainersError"])
@@ -21606,11 +21613,7 @@ CollectSelectedFavorites()
 			continue
 		}
 		if SearchIsVisible()
-		{
-			LV_GetText(strName, intSelected, 1)
-			LV_GetText(strMenu, intSelected, 2)
-			str .= intSelected . "|" . strMenu . "|" . strName . "|" . strType . "`n"
-		}
+			str .= intSelected . "|" . oItem.AA.oParentMenu.AA.strMenuPath . "|" . oItem.AA.strFavoriteName . "|" . oItem.AA.strFavoriteType . "`n"
 		else
 			str .= intSelected . "`n"
 	}
@@ -21648,7 +21651,7 @@ FindItemInMenuInGui(strFavoriteToFind, ByRef oFoundFavorite, ByRef oMenuOfFoundI
 				if (oItem.AA.strFavoriteName = saFavoriteToFind[3] and oItem.AA.strFavoriteType = saFavoriteToFind[4])
 				{
 					oFoundFavorite := oItem
-					oMenuOfFoundItem := o_Containers[saFavoriteToFind[2]]
+					oMenuOfFoundItem := o_Containers.AA[saFavoriteToFind[2]]
 					return intPos
 				}
 			}
@@ -24876,6 +24879,7 @@ class Container
 					. " " . oItem.AA.strFavoriteLoginName
 					. " " . oItem.AA.strFavoritePassword
 					. " " . oItem.AA.strFavoriteSoundLocation
+					. " " . oItem.AA.oParentMenu.AA.strMenuPath
 			}
 				
 			if !oItem.IsSeparator()
