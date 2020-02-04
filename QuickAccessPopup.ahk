@@ -12130,6 +12130,10 @@ OpenMenuContainingSearchItem:
 
 intMenuLastPosition := 0
 
+; before changing o_MenuInGui, check if we need to remove a sort indicator
+if SearchIsVisible()
+	Gosub, GuiSortRemoveIndicator
+
 if (A_ThisLabel = "GuiMenusListChanged")
 {
 	GuiControlGet, strNewDropdownMenu, , f_drpMenusList
@@ -13953,18 +13957,22 @@ GuiSortSearchResult3:
 GuiSortSearchResult4:
 GuiSortSearchResult5:
 GuiSortSearchResult6:
+GuiSortRemoveIndicator:
 ;------------------------------------------------------------
 
-; remove sort indicator on existing sort column header
 if !(o_MenuInGui.AA.intCurrentSortColumn)
 	o_MenuInGui.AA.intCurrentSortColumn := 6 ; last invisible column
 
+; remove sort indicator on existing sort column header
 if (o_MenuInGui.AA.intCurrentSortColumn < 6)
 {
 	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
 	strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
 	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), , strHeader)
 }
+
+if (A_ThisLabel = "GuiSortRemoveIndicator")
+	return
 
 intCol := StrReplace(A_ThisLabel, "GuiSortSearchResult")
 if (intCol)
