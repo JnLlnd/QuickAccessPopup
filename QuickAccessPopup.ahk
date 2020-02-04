@@ -13645,6 +13645,8 @@ if (A_ThisLabel = "GuiRemoveFavorite")
 	
 	if SearchIsVisible()
 	{
+		o_MenuInGui.AA.intLastSearchPosition := intItemToRemove
+		
 		o_EditedFavorite := o_MenuInGui.SA[intItemToRemove]
 		intItemToRemove := o_EditedFavorite.AA.intSearchItemOriginalPositioninMenu
 		o_MenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
@@ -13706,6 +13708,8 @@ if !SearchIsVisible()
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
 		g_intRemovedItems++ ; for FindItemInMenuInGui() when not in search result
 }
+else if (A_ThisLabel = "GuiRemoveFavorite")
+	Gosub, LoadFavoritesInGui ; refresh search result 
 
 ; refresh menu dropdpown in gui
 if (blnItemIsMenu)
