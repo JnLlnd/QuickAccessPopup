@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.4 (2020-01-??)
+Version BETA: 10.3.9.4 (2020-01-05)
  
 Copy and move submenus and groups
 - allow to copy or move a single or multiple submenus or groups and all their contents (from a single menu or from search result)
@@ -9419,24 +9419,24 @@ if SearchIsVisible()
 	LV_ModifyCol(6, 0) ; do early to avoid flash
 	
 	if (o_MenuInGui.AA.intCurrentSortColumn and A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultContainer or ReorderFavoritesInGui
-		Gosub, GuiSortSearchResult ; will call ReorderFavoritesInGui to LoadInGui again with o_MenuInGui sorted
-	
-	if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if called from GuiSortSearchResult
 	{
-		g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
-		o_MenuInGui.AA.intLastSearchPosition := ""
+		Gosub, GuiSortSearchResult ; will call ReorderFavoritesInGui to LoadInGui again with o_MenuInGui sorted
+		return ; and exit this instance
 	}
+	
+	g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
+	o_MenuInGui.AA.intLastSearchPosition := ""
 }
-if (A_ThisLabel <> "ReorderFavoritesInGui")
-	LV_Modify((g_intOriginalMenuPosition ? g_intOriginalMenuPosition : 1), "Select Focus Vis")
+LV_Modify((g_intOriginalMenuPosition ? g_intOriginalMenuPosition : 1), "Select Focus Vis")
+
 Gosub, AdjustColumnsWidth
 
 GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
 
 if SearchIsVisible()
 	Critical, Off
-else
-	GuiControl, Focus, %A_DefaultListView%
+
+GuiControl, Focus, %A_DefaultListView%
 
 strGuiMenuLocation := ""
 strThisType := ""
@@ -13649,7 +13649,7 @@ if (A_ThisLabel = "GuiRemoveFavorite")
 	
 	if SearchIsVisible()
 	{
-		o_MenuInGui.AA.intLastSearchPosition := intItemToRemove
+		o_MenuInGui.AA.intLastSearchPosition := intItemToRemove ; this is only for single item remove
 		
 		o_EditedFavorite := o_MenuInGui.SA[intItemToRemove]
 		intItemToRemove := o_EditedFavorite.AA.intSearchItemOriginalPositioninMenu
@@ -14004,7 +14004,10 @@ strValues := ""
 Loop, % o_MenuInGui.SA.MaxIndex()
 {
 	LV_GetText(strValue, A_Index, Abs(o_MenuInGui.AA.intCurrentSortColumn))
-	strValues .= strValue . "|" . A_Index . (o_MenuInGui.AA.intLastSearchPosition = A_Index ? "|*" : "") . "`n" ; * to flag selected item
+	strValues .= strValue . "|" . A_Index
+	if (o_MenuInGui.AA.intLastSearchPosition = A_Index and A_ThisLabel <> "GuiSortSearchResult")
+		strValues .= "|*" ; * to flag selected item
+	strValues .= "`n"
 }
 Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 6 ? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 
