@@ -13265,14 +13265,16 @@ else
 			g_strNewFavoriteIconResource := "iconFolderLive"
 }
 
-; now that we know original and destination menus, check if we need to lock them
-
+; check if QAP feature {Container In Gui} is in valid container
 if (o_EditedFavorite.AA.strFavoriteLocation = "{Container In Gui}" and strDestinationMenu <> o_L["MainMenuName"])
 {
-	Oops(2, o_L["OopsContainerInGui"], o_L["MainMenuName"])
+	Oops(2, o_L["OopsContainerInGui"], o_L["MenuContainerInGui"], o_L["MainMenuName"])
 	g_blnAbortSave := true
+	intNbFavoritesCopied-- ; decrement the number of items copied
 	return
 }
+
+; now that we know original and destination menus, check if we need to lock them
 
 if o_Containers.AA[strDestinationMenu].FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the destination menu is an external menu that cannot be locked, user received an error message, then abort save
