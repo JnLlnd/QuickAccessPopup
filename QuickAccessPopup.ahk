@@ -4080,8 +4080,8 @@ if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
 
 ; build menu for Sort search result button
-Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#", |
-	Menu, menuSortSearchResult, Add, % (A_Index = 6 ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSearchResult" . A_Index
+Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredWithStats"] : "") . "|#", |
+	Menu, menuSortSearchResult, Add, % (A_Index = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6) ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSearchResult" . A_Index
 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
@@ -4849,11 +4849,13 @@ global g_blnUseColors := (o_Settings.Launch.strTheme.IniValue <> "Windows")
 o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableThemes") ; g_strAvailableThemes
 
 ; Group SettingsWindow
-o_Settings.ReadIniOption("SettingsWindow", "blnDisplaySettingsStartup", "DisplaySettingsStartup", 0, "SettingsWindow", "f_blnDisplaySettingsStartup")
+o_Settings.ReadIniOption("SettingsWindow", "blnDisplaySettingsStartup", "DisplaySettingsStartup", 0, "SettingsWindow", "f_blnDisplaySettingsStartup|f_lblOptionsSettingsWindow")
 o_Settings.ReadIniOption("SettingsWindow", "intShowQAPmenu", "ShowQAPmenu", 3, "SettingsWindow", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
 o_Settings.ReadIniOption("SettingsWindow", "blnRememberSettingsPosition", "RememberSettingsPosition", 1, "SettingsWindow", "f_blnRememberSettingsPosition") ; g_blnRememberSettingsPosition
 o_Settings.ReadIniOption("SettingsWindow", "blnOpenSettingsOnActiveMonitor", "OpenSettingsOnActiveMonitor", 1, "SettingsWindow", "f_blnOpenSettingsOnActiveMonitor") ; g_blnOpenSettingsOnActiveMonitor
 o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0, "SettingsWindow", "f_lblAddAutoAtTop|f_blnAddAutoAtTop0|f_blnAddAutoAtTop1") ; g_blnAddAutoAtTop
+o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
+o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -5599,6 +5601,9 @@ CleanUpBeforeExit:
 ; if (o_Settings.Launch.blnDiagMode.IniValue)
 	; Diag("ListLines", ScriptInfo("ListLines"))
 
+if not DllCall("LockWindowUpdate", Uint, g_strAppHwnd) ; lock QAP window while restoring windo
+	Oops(1, "An error occured while locking window display.", g_strAppNameText, g_strAppVersion)
+
 if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to create a fresh one, this avoids creating an ini file with just this value
 {
 	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strAppHwnd)
@@ -5639,6 +5644,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 		Run, %g_strDiagFile%
 }
 
+DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 ExitApp
 ;-----------------------------------------------------------
 
@@ -7220,28 +7226,49 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 
 ; === SettingsWindow ===
 
+; Customize window (col 1)
+
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Text, y+20 y%intGroupItemsY% x%g_intGroupItemsX% w230 hidden vf_lblOptionsSettingsWindow, % o_L["OptionsSettingsWindow"]
+Gui, 2:Font
+
 ; DisplaySettingsStartup
-Gui, 2:Add, CheckBox, y%intGroupItemsY% x%g_intGroupItemsX% vf_blnDisplaySettingsStartup gGuiOptionsGroupChanged hidden, % o_L["OptionsSettingsStartup"]
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnDisplaySettingsStartup gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsStartup"]
 GuiControl, , f_blnDisplaySettingsStartup, % (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue = true)
 
 ; ShowQAPmenu
-Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w500 hidden vf_lblShowQAPmenu, % o_L["OptionsShowQAPmenu"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w500 hidden vf_radShowQAPmenu1 Group gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 1 ? "Checked" : ""), % o_L["OptionsShowQAPmenuCustomize"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w500 hidden vf_radShowQAPmenu2 gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 2 ? "Checked" : ""), % o_L["OptionsShowQAPmenuSystem"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w500 hidden vf_radShowQAPmenu3 gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 3 ? "Checked" : ""), % o_L["OptionsShowQAPmenuBoth"]
+Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblShowQAPmenu, % o_L["OptionsShowQAPmenu"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu1 Group gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 1 ? "Checked" : ""), % o_L["OptionsShowQAPmenuCustomize"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu2 gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 2 ? "Checked" : ""), % o_L["OptionsShowQAPmenuSystem"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu3 gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 3 ? "Checked" : ""), % o_L["OptionsShowQAPmenuBoth"]
 
 ; RememberSettingsPosition
-Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% w500 vf_blnRememberSettingsPosition gGuiOptionsGroupChanged hidden, % o_L["OptionsRememberSettingsPosition"]
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnRememberSettingsPosition gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsRememberSettingsPosition"]
 GuiControl, , f_blnRememberSettingsPosition, % (o_Settings.SettingsWindow.blnRememberSettingsPosition.IniValue = true)
 
 ; OpenSettingsOnActiveMonitor
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w500 vf_blnOpenSettingsOnActiveMonitor gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenSettingsOnActiveMonitor"]
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnOpenSettingsOnActiveMonitor gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsOpenSettingsOnActiveMonitor"]
 GuiControl, , f_blnOpenSettingsOnActiveMonitor, % (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue = true)
 
 ; AddAutoAtTop
-Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w500 hidden vf_lblAddAutoAtTop, % o_L["OptionsAddAutoAtTop"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w500 vf_blnAddAutoAtTop0 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? "Checked" : ""), % o_L["OptionsAddAutoTopOfMenu"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w500 vf_blnAddAutoAtTop1 gGuiOptionsGroupChanged hidden " . (!o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? "Checked" : ""), % o_L["OptionsAddAutoBottomOfMenu"]
+Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblAddAutoAtTop, % o_L["OptionsAddAutoAtTop"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w220 vf_blnAddAutoAtTop0 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? "Checked" : ""), % o_L["OptionsAddAutoTopOfMenu"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w220 vf_blnAddAutoAtTop1 gGuiOptionsGroupChanged hidden " . (!o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? "Checked" : ""), % o_L["OptionsAddAutoBottomOfMenu"]
+
+; Search Results (col 2)
+
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Text, y+20 y%intGroupItemsY% x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSettingsSearchResults, % o_L["OptionsSearchResults"]
+Gui, 2:Font
+
+; SearchFromMain
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchFrom, % o_L["OptionsSearchFrom"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsSearchFrom1 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromMain"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsSearchFrom0 gGuiOptionsGroupChanged hidden " . (!o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromCurrent"]
+
+; SearchWithStats
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithStats gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithStats"]
+GuiControl, , f_blnSearchWithStats, % (o_Settings.SettingsWindow.blnSearchWithStats.IniValue = true)
 
 GuiControlGet, arrPos, Pos, f_blnAddAutoAtTop1
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -7925,6 +7952,8 @@ o_Settings.SettingsWindow.intShowQAPmenu.WriteIni("", true) ; value already upda
 o_Settings.SettingsWindow.blnRememberSettingsPosition.WriteIni(f_blnRememberSettingsPosition)
 o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.WriteIni(f_blnOpenSettingsOnActiveMonitor)
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
+o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
+o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
 
 ; === MenuIcons ===
 
@@ -9333,8 +9362,8 @@ Gui, 1:Add, ListView
 	, % o_L["GuiLvFavoritesHeader"] ; SysHeader321 / SysListView321
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
-	, % o_L["GuiLvFavoritesHeaderFiltered"] . "|#" ; SysHeader322 / SysListView322
-LV_ModifyCol(6, "Integer")
+	, % o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredWithStats"] : "") . "|#" ; SysHeader322 / SysListView322
+LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6), "Integer")
 
 Gui, 1:Font, s8 w600, Verdana
 Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavorites x200 y400 w140 h35, % aaSettingsL["GuiSaveAndClose"] ; Button3
@@ -9400,13 +9429,20 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 		if StrLen(o_MenuInGui.AA.strMenuPath)
 		{
 			Critical, On ; prevents the current thread from being interrupted by other threads (thread can interrup itself if user type fast in search box)
-			o_MenuInGui.AA.oStartingMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
+			if (o_Settings.SettingsWindow.blnSearchFromMain.IniValue)
+				o_MainMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
+			else
+				o_MenuInGui.AA.oStartingMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
 		}
 	}
 }
 
 if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
+
+if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
+	if not DllCall("LockWindowUpdate", Uint, g_strAppHwnd) ; lock QAP window while listview is updated
+		Oops(1, "An error occured while locking window display.", g_strAppNameText, g_strAppVersion)
 
 Gui, 1:Default
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
@@ -9416,7 +9452,7 @@ o_MenuInGui.LoadInGui()
 
 if SearchIsVisible()
 {
-	LV_ModifyCol(6, 0) ; do early to avoid flash
+	LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6), 0) ; do early to avoid flash
 	
 	if (o_MenuInGui.AA.intCurrentSortColumn and A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultContainer or ReorderFavoritesInGui
 	{
@@ -9435,8 +9471,10 @@ GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInG
 
 if SearchIsVisible()
 	Critical, Off
+else
+	GuiControl, Focus, %A_DefaultListView%
 
-GuiControl, Focus, %A_DefaultListView%
+DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 
 strGuiMenuLocation := ""
 strThisType := ""
@@ -13965,14 +14003,17 @@ GuiSortSearchResult3:
 GuiSortSearchResult4:
 GuiSortSearchResult5:
 GuiSortSearchResult6:
+GuiSortSearchResult7:
+GuiSortSearchResult8:
+GuiSortSearchResult9:
 GuiSortRemoveIndicator:
 ;------------------------------------------------------------
 
 if !(o_MenuInGui.AA.intCurrentSortColumn)
-	o_MenuInGui.AA.intCurrentSortColumn := 6 ; last invisible column
+	o_MenuInGui.AA.intCurrentSortColumn := (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6) ; last invisible column
 
 ; remove sort indicator on existing sort column header
-if (o_MenuInGui.AA.intCurrentSortColumn < 6)
+if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6))
 {
 	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
 	strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
@@ -13987,7 +14028,7 @@ if (intCol)
 	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -o_MenuInGui.AA.intCurrentSortColumn : intCol)
 ; else keep existing sort column
 
-if (o_MenuInGui.AA.intCurrentSortColumn < 6)
+if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6))
 {
 	; add sort indicator to column header
 	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
@@ -14009,7 +14050,10 @@ Loop, % o_MenuInGui.SA.MaxIndex()
 		strValues .= "|*" ; * to flag selected item
 	strValues .= "`n"
 }
-Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 6 ? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
+; R for reverse order, CL for Case insensitive sort based on the current user's locale
+Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6) ; this is the original order hidden column
+	or (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and Abs(o_MenuInGui.AA.intCurrentSortColumn) = 6) ; this is the usage column
+	? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "")
 
 saTemp := Object() ; repository for sorted item objects
 Loop, Parse, % SubStr(strValues, 1, -1), `n
@@ -27720,7 +27764,7 @@ class Container
 		;---------------------------------------------------------
 		{
 			strGetUsageDbSQL := "SELECT COUNT(*) FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(item.AA.strFavoriteLocation) . "' COLLATE NOCASE;"
+				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE;"
 			if !o_UsageDb.Query(strGetUsageDbSQL, o_RecordSet)
 			{
 				Oops(0, "Message: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
@@ -27799,6 +27843,12 @@ class Container
 			if (strMenuType = "Search")
 			{
 				saValues.InsertAt(2, this.AA.oParentMenu.AA.strMenuPath)
+				if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+				{
+					saValues.Push(this.AA.intFavoriteUsageDb)
+					saValues.Push(this.AA.strFavoriteDateModified)
+					saValues.Push(this.AA.strFavoriteDateCreated)
+				}
 				saValues.Push(intPosition) ; col 6, original position in search result
 				intPosition := 0 ; always LV_Add() below when in a search result
 			}
