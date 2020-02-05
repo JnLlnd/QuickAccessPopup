@@ -13021,7 +13021,7 @@ if !(g_intNewItemPos)
 o_Containers.AA[strDestinationMenu].SA.InsertAt(g_intNewItemPos, o_EditedFavorite)
 
 if (strThisLabel = "GuiMoveOneFavoriteSave")
-	g_intRemovedItems++ ; for FindItemInMenuInGui() ##### required?
+	g_intRemovedItems++ ; for FindItemInMenuInGui()
 
 if InStr(strThisLabel, "OneFavorite")
 	g_intNewItemPos++ ; increment position in destination menu
