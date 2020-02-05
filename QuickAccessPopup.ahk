@@ -32,8 +32,6 @@ HISTORY
 =======
 
 Version BETA: 10.3.9.4 (2020-01-??)
-
-Version BETA: 10.3.9.3 (2020-01-29)
  
 Copy and move submenus and groups
 - allow to copy or move a single or multiple submenus or groups and all their contents (from a single menu or from search result)
@@ -47,7 +45,7 @@ Search
 - in search result, add an icon on the left side to open a menu with the favorites in the search result, duplicate menu names are appended with the ""[!]"" suffix to make them unique
 - add another icon to open the menu containing the selected item
 - show all favorites in the search result when the filter is set to "{All}" (case insensitive) and add a menu item "Search All Favorites" under the "Tool" menu of the "Customize" window
-- in extended search, stop including location for QAP features (as QAP feature code names are not visible to user)
+- in extended search, also search based on the menu path and stop searching in location for QAP features (as QAP feature code names are not visible to user)
 - when favorite names include and ampersant (&) as a keyboard shortcut, search the filter string in names w/o the ampersand
 - fix bug when hitting Escape in search mode, close the search box instead of closing the "Customize" window
  
@@ -61,6 +59,10 @@ Previous/Next arrows
 Various
 - add the QAP feature "Favorites in Customize window" to show a menu with the current content of the "Customize" window (a sumenu, a group or a search result)
 - update menu dropdown list in "Customize" window after submenus or groups were moved using up/down arrows
+
+Version BETA: 10.3.9.3 (2020-01-29)
+- private release
+- see notes merged with beta release v10.3.9.4 notes
 
 Version BETA: 10.3.9.2 (2020-01-23)
 - private release
