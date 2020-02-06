@@ -31,42 +31,52 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.4 (2020-01-05)
+Version BETA: 10.3.9.5 (2020-02-06)
  
 Copy and move submenus and groups
-- allow to copy or move a single or multiple submenus or groups and all their contents (from a single menu or from search result)
-- allow to move multiple favorites from search result
+- allow to copy or move multiple submenus or groups and all their contents
+- allow to copy a single submenu or group and its contents (moving was already possible)
 - when copying or moving favorites, add [!] to their name when an existing favorite has the same name (instead of aborting the copy/move)
  
 Search
-- new "Search" command in "Customize" window with improved usability
+- new "Search" implementation in "Customize" window with improved usability
 - when editing a favorite from the search result, stay in the search result (instead of changing the menu to the edited favorite as before)
-- search result can be sorted by clicking the sort button on left side of the "Customize" window; the last column contains numbers of the orignal ordering allowing to return to the initial search result order
-- in search result, add an icon on the left side to open a menu with the favorites in the search result, duplicate menu names are appended with the ""[!]"" suffix to make them unique
+- search result can be sorted by clicking the sort button on left side of the "Customize" window
+- in search results, add an icon on the left side to open a menu with the favorites currently in the search result (duplicate menu names are appended with the "[!]" suffix to make them unique)
 - add another icon to open the menu containing the selected item
-- show all favorites in the search result when the filter is set to "{All}" (case insensitive) and add a menu item "Search All Favorites" under the "Tool" menu of the "Customize" window
-- in extended search, also search based on the menu path and stop searching in location for QAP features (as QAP feature code names are not visible to user)
-- when favorite names include and ampersant (&) as a keyboard shortcut, search the filter string in names w/o the ampersand
+- allow to move multiple favorites from search result (multiple copy was already possible)
+- show all favorites in the search result when the filter is set to "{All}" and add a menu item "Search All Favorites" under the "Tool" menu of the "Customize" window
+- in extended search, also search based on the menu path and stop searching in location for QAP features (as QAP feature code names are internal names)
+- when favorite names include an ampersand (&) as a keyboard shortcut, search the filter string in names w/o the ampersand
 - fix bug when hitting Escape in search mode, close the search box instead of closing the "Customize" window
  
+Customize Window Options
+- add an option to set the search scope for all favorites from main menu (default) or only for favorites under the menu currently displayed in the "Customize" window
+- add an option to display additional columns in search result with statistical info (usage frequency, last usage date, date modified and date created)
+ 
 Previous/Next arrows
-- add "Next" arrow in additon to the "Previous", allowing to browse backward and forward in QAP menus or groups
+- add "Next" arrow in additon to the "Previous", allowing to browse backward and forward in QAP menus, groups or search results
 - add hotkeys Shift+Ctrl+Left to return to previous menu and Shift+Ctrl+Right move forward in visited menus
-- "Next" and "Previous" arrows also navigate back and forward in previous search results
-- skip previous/next menu item if it has been removed since it was added to the previous/next stacks
-- add a list of menu and groups in previous/next menus when hovering the "Next" and "Previous" icons (only for debugging or keep it?)
+- skip previous/next menu items if they has been removed since they were added to the previous/next stacks
+- display the list of menu and groups in previous/next menus when hovering the arrows
  
 Various
-- add the QAP feature "Favorites in Customize window" to show a menu with the current content of the "Customize" window (a sumenu, a group or a search result)
-- update menu dropdown list in "Customize" window after submenus or groups were moved using up/down arrows
+- add the QAP feature "Favorites in Customize window" to show a menu with the current content (a sumenu, a group or a search result) of the "Customize" window (this dynamic menu can only be added to the Main menu)
+- update the menus dropdown list in "Customize" window after submenus or groups were moved using up/down arrows
+- lock window display during favorites loading and when closing the app
+- fix bug when updating usage stats displayed in menu and "Customize window"
+
+Version BETA: 10.3.9.4 (2020-02-05)
+- private release
+- see notes merged with beta release v10.3.9.5 notes
 
 Version BETA: 10.3.9.3 (2020-01-29)
 - private release
-- see notes merged with beta release v10.3.9.4 notes
+- see notes merged with beta release v10.3.9.5 notes
 
 Version BETA: 10.3.9.2 (2020-01-23)
 - private release
-- see notes merged with beta release v10.3.9.3 notes
+- see notes merged with beta release v10.3.9.5 notes
 
 Version: 10.3.3 (2020-01-18)
 - add new Special folder "Applications" (can be added in the "Power User" section)
@@ -3785,7 +3795,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.4
+;@Ahk2Exe-SetVersion 10.3.9.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3890,7 +3900,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
