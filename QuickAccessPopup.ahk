@@ -66,6 +66,14 @@ Various
 - lock window display during favorites loading and when closing the app
 - fix bug when updating usage stats displayed in menu and "Customize window"
 
+Version: 10.3.4 (2020-02-06)
+- save and restore maximized state when exiting with "Customize" window maximized
+- fix bug with "Drives" menu when the option "Attach dynamic menus..." is unchecked
+- fix bug when menu path exceeds the Windows limit of 259 or 260 (rare because normally, the operating system does not allow creation of folder path of this length)
+- fix bugs when reading usage statistic from database
+- correction for the "Repeat last action" and "Repeat last actions" menu items in Simplified Chinese (ZH-CN)
+- Dutch language update
+
 Version BETA: 10.3.9.4 (2020-02-05)
 - private release
 - see notes merged with beta release v10.3.9.5 notes
@@ -4072,7 +4080,7 @@ g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
 	Gosub, InitDiagMode
-	Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
+	; Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
 	strLaunchSettingsFolderDiag := ""
 }
 
@@ -6174,7 +6182,7 @@ CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Wi
 
 SetWaitCursor(false)
 
-Menu, % o_L["MenuDrives"], Show, %g_intMenuPosX%, %g_intMenuPosY%
+Menu, % o_L["MenuDrives"] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse), Show, %g_intMenuPosX%, %g_intMenuPosY%
 
 return
 ;------------------------------------------------------------
@@ -6219,8 +6227,8 @@ Loop, Parse, g_strMenuItemsListDrives, `n
 		saMenuItemsTable.Push(saOneLine)
 	}
 
-o_Containers.AA[o_L["MenuDrives"]].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA[o_L["MenuDrives"]].BuildMenu()
+o_Containers.AA[o_L["MenuDrives"] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadFavoritesFromTable(saMenuItemsTable)
+o_Containers.AA[o_L["MenuDrives"] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].BuildMenu()
 
 strUsageDbSQL := ""
 o_MetadataRecordSet := ""
@@ -6929,7 +6937,7 @@ Menu, % o_L["MainMenuName"], Add
 Menu, % o_L["MainMenuName"], DeleteAll
 if (g_blnUseColors)
 	Menu, % o_L["MainMenuName"], Color, %g_strMenuBackgroundColor%
-Diag(A_ThisLabel, "menu name", o_L["MainMenuName"])
+; Diag(A_ThisLabel, "menu name", o_L["MainMenuName"])
 
 ; disable (turn off) existing hotstrings in g_dicItemsByHotstring (if any) before updating them
 gosub, DisableHotstrings
@@ -18282,6 +18290,7 @@ else ; modifications for previous versions
 		strUsageDbSQL .= "ALTER TABLE zMetaData ADD COLUMN RecentFoldersMenuData;"
 		strUsageDbSQL .= "ALTER TABLE zMetaData ADD COLUMN RecentFilesMenuData;"
 	}
+	
 	If StrLen(strUsageDbSQL)
 		!o_UsageDb.Exec(strUsageDbSQL)
 		{
@@ -25518,6 +25527,9 @@ class Container
 		Sort, strFiles, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 		
 		strContent := strSelfFolder . (StrLen(strFolders . strFiles) ? "`tX`n" : "")  . strFolders . (StrLen(strFolders) and StrLen(strFiles) ? "`tX`n" : "") . strFiles
+		
+		if StrLen(this.AA.strMenuPath . o_FavoriteLiveFolder.AA.strFavoriteName + 3) > 259 ; if new menu path exceeds Windows limit of 259 or 260 for menu names
+			return
 		
 		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, this, "init", true) ; last parameter true for blnDoubleAmpersands
 		oNewSubMenu.AA.blnIsLiveMenu := true
