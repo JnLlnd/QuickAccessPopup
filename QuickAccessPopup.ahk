@@ -31,7 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.3.4 (2020-02-??)
+Version: 10.3.4 (2020-02-06)
+- save and restore maximized state when exiting with "Customize" window maximized
+- fix bug with "Drives" menu when the option "Attach dynamic menus..." is unchecked
+- fix bug when menu path exceeds the Windows limit of 259 or 260 (rare because normally, the operating system does not allow creation of folder path of this length)
+- fix bugs when reading usage statistic from database
+- correction for the "Repeat last action" and "Repeat last actions" menu items in Simplified Chinese (ZH-CN)
+- Dutch language update
 
 Version: 10.3.3 (2020-01-18)
 - add new Special folder "Applications" (can be added in the "Power User" section)
