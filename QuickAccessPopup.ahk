@@ -14026,7 +14026,11 @@ if (A_ThisLabel = "GuiSortRemoveIndicator")
 
 intCol := StrReplace(A_ThisLabel, "GuiSortSearchResult")
 if (intCol)
-	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -o_MenuInGui.AA.intCurrentSortColumn : intCol)
+{
+	if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and InStr("6;7;8", intCol))
+		intCol := -intCol
+	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -intCol : intCol)
+}
 ; else keep existing sort column
 
 if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6))
