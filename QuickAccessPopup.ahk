@@ -25696,8 +25696,12 @@ class Container
 		; Diag(A_ThisFunc, "", "START")
 
 		for intKey, oItem in this.SA
+		{
 			if StrLen(oItem.AA.strFavoriteLocation) ; exclude separators
 				oItem.AA.intFavoriteUsageDb := oItem.GetUsageDbFavoriteUsage()
+			if oItem.IsContainer()
+				oItem.AA.oSubMenu.UpdateUsageDbFrequency() ; RECURSIVE
+		}
 		
 		if (g_blnUsageDbDebug)
 		{
@@ -27386,7 +27390,7 @@ class Container
 		;---------------------------------------------------------
 		{
 			strGetUsageDbSQL := "SELECT COUNT(*) FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(item.AA.strFavoriteLocation) . "' COLLATE NOCASE;"
+				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE;"
 			if !o_UsageDb.Query(strGetUsageDbSQL, o_RecordSet)
 			{
 				Oops(0, "Message: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
