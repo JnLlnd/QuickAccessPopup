@@ -4081,7 +4081,7 @@ if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 
 ; build menu for Sort search result button
 Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredWithStats"] : "") . "|#", |
-	Menu, menuSortSearchResult, Add, % (A_Index = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6) ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSearchResult" . A_Index
+	Menu, menuSortSearchResult, Add, % (A_Index = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6) ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSearchResult" . A_Index
 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
@@ -9363,7 +9363,7 @@ Gui, 1:Add, ListView
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredWithStats"] : "") . "|#" ; SysHeader322 / SysListView322
-LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6), "Integer")
+LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6), "Integer")
 
 Gui, 1:Font, s8 w600, Verdana
 Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavorites x200 y400 w140 h35, % aaSettingsL["GuiSaveAndClose"] ; Button3
@@ -9452,7 +9452,7 @@ o_MenuInGui.LoadInGui()
 
 if SearchIsVisible()
 {
-	LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6), 0) ; do early to avoid flash
+	LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6), 0) ; do early to avoid flash
 	
 	if (o_MenuInGui.AA.intCurrentSortColumn and A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultContainer or ReorderFavoritesInGui
 	{
@@ -14006,14 +14006,15 @@ GuiSortSearchResult6:
 GuiSortSearchResult7:
 GuiSortSearchResult8:
 GuiSortSearchResult9:
+GuiSortSearchResult10:
 GuiSortRemoveIndicator:
 ;------------------------------------------------------------
 
 if !(o_MenuInGui.AA.intCurrentSortColumn)
-	o_MenuInGui.AA.intCurrentSortColumn := (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6) ; last invisible column
+	o_MenuInGui.AA.intCurrentSortColumn := (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6) ; last invisible column
 
 ; remove sort indicator on existing sort column header
-if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6))
+if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6))
 {
 	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
 	strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
@@ -14028,7 +14029,7 @@ if (intCol)
 	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -o_MenuInGui.AA.intCurrentSortColumn : intCol)
 ; else keep existing sort column
 
-if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6))
+if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6))
 {
 	; add sort indicator to column header
 	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
@@ -14051,7 +14052,7 @@ Loop, % o_MenuInGui.SA.MaxIndex()
 	strValues .= "`n"
 }
 ; R for reverse order, CL for Case insensitive sort based on the current user's locale
-Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 9 : 6) ; this is the original order hidden column
+Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6) ; this is the original order hidden column
 	or (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and Abs(o_MenuInGui.AA.intCurrentSortColumn) = 6) ; this is the usage column
 	? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "")
 
@@ -26066,8 +26067,15 @@ class Container
 		; Diag(A_ThisFunc, "", "START")
 
 		for intKey, oItem in this.SA
+		{
 			if StrLen(oItem.AA.strFavoriteLocation) ; exclude separators
+			{
 				oItem.AA.intFavoriteUsageDb := oItem.GetUsageDbFavoriteUsage()
+				oItem.AA.strFavoriteDateLastUsed := oItem.GetUsageDbFavoriteDateLastUsed()
+			}
+			if oItem.IsContainer()
+				oItem.AA.oSubMenu.UpdateUsageDbFrequency() ; RECURSIVE
+		}
 		
 		if (g_blnUsageDbDebug)
 		{
@@ -27779,6 +27787,25 @@ class Container
 		}
 		;---------------------------------------------------------
 		
+		;---------------------------------------------------------
+		GetUsageDbFavoriteDateLastUsed()
+		;---------------------------------------------------------
+		{
+			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . this.AA.strFavoriteLocation . "' AND CollectType = 'Menu' ORDER BY CollectDateTime DESC"
+			if !o_UsageDb.Query(strGetLastUsedDate, o_RecordSet)
+			{
+				Oops(0, "Message: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
+				g_blnUsageDbEnabled := false
+				return
+			}
+			o_RecordSet.Next(o_Row)
+			strDate := o_Row[1] ; the first row is the most recent used date
+			o_RecordSet.Free()
+			
+			return strDate
+		}
+		;---------------------------------------------------------
+		
 		;------------------------------------------------------------
 		LoadLineInGui(strMenuType, intPosition := 0, strOptions := "") ; called from LoadInGui()
 		; in menu of type "Search", intPosition contains the position in the listview (used when sorting the search result)
@@ -27846,8 +27873,11 @@ class Container
 				if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 				{
 					saValues.Push(this.AA.intFavoriteUsageDb)
-					saValues.Push(this.AA.strFavoriteDateModified)
-					saValues.Push(this.AA.strFavoriteDateCreated)
+					saValues.Push(this.AA.strFavoriteDateLastUsed) ; already in format yyyy-MM-dd HH:mm:ss
+					FormatTime, strDateTime, % this.AA.strFavoriteDateModified, yyyy-MM-dd HH:mm:ss
+					saValues.Push(strDateTime)
+					FormatTime, strDateTime, % this.AA.strFavoriteDateCreated, yyyy-MM-dd HH:mm:ss
+					saValues.Push(strDateTime)
 				}
 				saValues.Push(intPosition) ; col 6, original position in search result
 				intPosition := 0 ; always LV_Add() below when in a search result
