@@ -6087,7 +6087,7 @@ CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Wi
 
 SetWaitCursor(false)
 
-Menu, % o_L["MenuDrives"], Show, %g_intMenuPosX%, %g_intMenuPosY%
+Menu, % o_L["MenuDrives"] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse), Show, %g_intMenuPosX%, %g_intMenuPosY%
 
 return
 ;------------------------------------------------------------
@@ -6132,8 +6132,8 @@ Loop, Parse, g_strMenuItemsListDrives, `n
 		saMenuItemsTable.Push(saOneLine)
 	}
 
-o_Containers.AA[o_L["MenuDrives"]].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA[o_L["MenuDrives"]].BuildMenu()
+o_Containers.AA[o_L["MenuDrives"] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadFavoritesFromTable(saMenuItemsTable)
+o_Containers.AA[o_L["MenuDrives"] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].BuildMenu()
 
 strUsageDbSQL := ""
 o_MetadataRecordSet := ""
