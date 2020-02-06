@@ -4021,7 +4021,7 @@ g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.
 if (o_Settings.Launch.blnDiagMode.IniValue)
 {
 	Gosub, InitDiagMode
-	Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
+	; Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
 	strLaunchSettingsFolderDiag := ""
 }
 
@@ -6793,7 +6793,7 @@ Menu, % o_L["MainMenuName"], Add
 Menu, % o_L["MainMenuName"], DeleteAll
 if (g_blnUseColors)
 	Menu, % o_L["MainMenuName"], Color, %g_strMenuBackgroundColor%
-Diag(A_ThisLabel, "menu name", o_L["MainMenuName"])
+; Diag(A_ThisLabel, "menu name", o_L["MainMenuName"])
 
 ; disable (turn off) existing hotstrings in g_dicItemsByHotstring (if any) before updating them
 gosub, DisableHotstrings
@@ -8132,6 +8132,7 @@ if (strShowQAPmenuPrev <> o_Settings.SettingsWindow.intShowQAPmenu.IniValue)
 ; rebuild Folders menus w/ or w/o optional folders and shortcuts
 for strMenuName, oContainer in o_Containers.AA
 {
+	Diag(A_ThisLabel, "strMenuName", strMenuName)
 	Menu, %strMenuName%, Add
 	Menu, %strMenuName%, DeleteAll
 }
@@ -25024,6 +25025,9 @@ class Container
 		Sort, strFiles, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 		
 		strContent := strSelfFolder . (StrLen(strFolders . strFiles) ? "`tX`n" : "")  . strFolders . (StrLen(strFolders) and StrLen(strFiles) ? "`tX`n" : "") . strFiles
+		
+		if StrLen(this.AA.strMenuPath . o_FavoriteLiveFolder.AA.strFavoriteName + 3) > 259 ; if new menu path exceeds Windows limit of 259 or 260 for menu names
+			return
 		
 		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, this, "init", true) ; last parameter true for blnDoubleAmpersands
 		oNewSubMenu.AA.blnIsLiveMenu := true
