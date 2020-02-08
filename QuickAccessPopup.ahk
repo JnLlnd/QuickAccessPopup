@@ -31,7 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.5 (2020-02-06)
+Version BETA: 10.3.9.6 (2020-02-??)
+ 
+In short...
+- copy and move submenus
+- improved search result
+- improved navigation in "Customize" window
  
 Copy and move submenus and groups
 - allow to copy or move multiple submenus or groups and all their contents
@@ -61,6 +66,7 @@ Previous/Next arrows
 - display the list of menu and groups in previous/next menus when hovering the arrows
  
 Various
+- in the "Customize" window, add an icon on the bottom left side to open a menu with the favorites in the menu or group currently displayed
 - add the QAP feature "Favorites in Customize window" to show a menu with the current content (a sumenu, a group or a search result) of the "Customize" window (this dynamic menu can only be added to the Main menu)
 - update the menus dropdown list in "Customize" window after submenus or groups were moved using up/down arrows
 - lock window display during favorites loading and when closing the app
@@ -74,17 +80,21 @@ Version: 10.3.4 (2020-02-06)
 - correction for the "Repeat last action" and "Repeat last actions" menu items in Simplified Chinese (ZH-CN)
 - Dutch language update
 
+Version BETA: 10.3.9.5 (2020-02-06)
+- private release
+- see notes merged with beta release v10.3.9.6 notes
+
 Version BETA: 10.3.9.4 (2020-02-05)
 - private release
-- see notes merged with beta release v10.3.9.5 notes
+- see notes merged with beta release v10.3.9.6 notes
 
 Version BETA: 10.3.9.3 (2020-01-29)
 - private release
-- see notes merged with beta release v10.3.9.5 notes
+- see notes merged with beta release v10.3.9.6 notes
 
 Version BETA: 10.3.9.2 (2020-01-23)
 - private release
-- see notes merged with beta release v10.3.9.5 notes
+- see notes merged with beta release v10.3.9.6 notes
 
 Version: 10.3.3 (2020-01-18)
 - add new Special folder "Applications" (can be added in the "Power User" section)
@@ -96,7 +106,7 @@ Version: 10.3.3 (2020-01-18)
 
 Version BETA: 10.3.9.1 (2020-01-04)
 - private release
-- see notes merged with beta release v10.3.9.3 notes
+- see notes merged with beta release v10.3.9.6 notes
 
 Version: 10.3.2 (2019-12-31)
 - when importing or exporting favorites with the "Import/Export Settings" command, fix bug when the "[Favorites]" section is larger than 65,532 characters (QAP now imports or exports favorites line by line instead of copying the section as a whole because of size limit)
@@ -3803,7 +3813,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.5
+;@Ahk2Exe-SetVersion 10.3.9.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3908,7 +3918,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -27801,7 +27811,7 @@ class Container
 				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE;"
 			if !o_UsageDb.Query(strGetUsageDbSQL, o_RecordSet)
 			{
-				Oops(0, "Message: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
+				Oops(0, "Database error (#1): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
 				g_blnUsageDbEnabled := false
 				return
 			}
@@ -27817,10 +27827,10 @@ class Container
 		GetUsageDbFavoriteDateLastUsed()
 		;---------------------------------------------------------
 		{
-			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . this.AA.strFavoriteLocation . "' AND CollectType = 'Menu' ORDER BY CollectDateTime DESC"
+			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' AND CollectType = 'Menu' ORDER BY CollectDateTime DESC"
 			if !o_UsageDb.Query(strGetLastUsedDate, o_RecordSet)
 			{
-				Oops(0, "Message: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
+				Oops(0, "Database error (#2): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
 				g_blnUsageDbEnabled := false
 				return
 			}
