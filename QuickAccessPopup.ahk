@@ -31,12 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.6 (2020-02-??)
- 
-In short...
-- copy and move submenus
-- improved search result
-- improved navigation in "Customize" window
+Version BETA: 10.3.9.6 (2020-02-09)
  
 Copy and move submenus and groups
 - allow to copy or move multiple submenus or groups and all their contents
