@@ -25397,6 +25397,11 @@ class Container
 					intMenuItemStatus := 1 ; 0 disabled, 1 enabled, 2 default
 			}
 			
+			if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue ; add popularity index
+				and StrLen(strMenuItemLabel) ; exclude separators
+				and aaThisFavorite.intFavoriteUsageDb) ; exclude if no usage index
+				strMenuItemLabel .= " [" . aaThisFavorite.intFavoriteUsageDb . "]"
+			
 			/* #### was for debugging
 			if 1 or (intMenuItemStatus = 0 and !StrLen(strMenuItemLabel))
 			{
