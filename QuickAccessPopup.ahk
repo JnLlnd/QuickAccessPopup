@@ -7976,6 +7976,7 @@ o_Settings.SettingsWindow.blnRememberSettingsPosition.WriteIni(f_blnRememberSett
 o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.WriteIni(f_blnOpenSettingsOnActiveMonitor)
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
+blnSearchWithStatsPrev := o_Settings.SettingsWindow.blnSearchWithStats.IniValue
 o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
 
 ; === MenuIcons ===
@@ -8253,6 +8254,7 @@ if (!g_blnPortableMode) ; Working folder (only for Setup installation)
 
 if (strWorkingFolderPrev <> strWorkingFolderNew and blnSettingsMoveOK)
 	or (blnRefreshedMenusAttachedPrev <> o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
+	or (blnSearchWithStatsPrev <> o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 {
 	Oops(2, o_L["DialogMoveSettingsReload"], g_strAppNameText)
 	Gosub, ReloadQAP
@@ -12336,12 +12338,12 @@ return
 CheckShowSettings:
 ;------------------------------------------------------------
 
-if !StrLen(o_MenuInGui.AA.strMenuPath)
-	o_MenuInGui := o_MainMenu
-
 DetectHiddenWindows, Off
 if !WinExist(g_strGuiFullTitle) 
 {
+	if !StrLen(o_MenuInGui.AA.strMenuPath)
+		o_MenuInGui := o_MainMenu
+
 	Gosub, GuiShowFromGuiOutside
 	Gui, 1:Default
 	Gui, 1:ListView, f_lvFavoritesList
