@@ -4058,6 +4058,10 @@ global o_QAPfeatures := new QAPfeatures
 global o_SpecialFolders := new SpecialFolders
 
 ;---------------------------------
+; Init class for UTC time conversion
+global o_Utc2LocalTime := new Utc2LocalTime
+
+;---------------------------------
 ; Load Settings file
 
 Gosub, LoadIniFile ; load options, load/enable popup hotkeys, load favorites to menu object
@@ -27913,9 +27917,9 @@ class Container
 				{
 					saValues.Push(this.AA.intFavoriteUsageDb)
 					saValues.Push(this.AA.strFavoriteDateLastUsed) ; already in format yyyy-MM-dd HH:mm:ss
-					FormatTime, strDateTime, % this.AA.strFavoriteDateModified, yyyy-MM-dd HH:mm:ss
+					FormatTime, strDateTime, % o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateModified), yyyy-MM-dd HH:mm:ss
 					saValues.Push(strDateTime)
-					FormatTime, strDateTime, % this.AA.strFavoriteDateCreated, yyyy-MM-dd HH:mm:ss
+					FormatTime, strDateTime, % o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateCreated), yyyy-MM-dd HH:mm:ss
 					saValues.Push(strDateTime)
 				}
 				saValues.Push(intPosition) ; col 6, original position in search result
@@ -27975,6 +27979,36 @@ class Container
 }
 ;---------------------------------------------------------
 ; === end of class Containers ===
+
+;-------------------------------------------------------------
+class Utc2LocalTime
+;-------------------------------------------------------------
+{
+	static intMinutesUtcOffset ; calculated at launch to store Local time vs UTC difference in minutes
+	
+	;---------------------------------------------------------
+	__New()
+	;---------------------------------------------------------
+	{
+		intMinutesUtcOffset := A_Now
+
+		EnvSub, intMinutes, A_NowUTC, Minutes
+		this.intMinutesUtcOffset := intMinutes
+	}
+	;---------------------------------------------------------
+	
+	;---------------------------------------------------------
+	ConvertToLocal(strUtcTime)
+	; Each method has a hidden parameter named this, which typically contains a reference to an object derived from the class.
+	; Inside a method, the pseudo-keyword base can be used to access the super-class versions of methods or properties which are overridden in a derived class.
+	;---------------------------------------------------------
+	{
+		EnvAdd, strUtcTime, % this.intMinutesUtcOffset, Minutes
+		return strUtcTime
+	}
+	;---------------------------------------------------------
+}
+;-------------------------------------------------------------
 
 ;-------------------------------------------------------------
 class Model
