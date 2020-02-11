@@ -3808,7 +3808,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.6
+;@Ahk2Exe-SetVersion 10.3.9.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3913,7 +3913,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -9388,7 +9388,9 @@ Gui, 1:Add, ListView
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredWithStats"] : "") . "|#" ; SysHeader322 / SysListView322
-LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6), "Integer")
+LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6), "Integer") ; original order column
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+	LV_ModifyCol(6, "Integer") ; usage column
 
 Gui, 1:Font, s8 w600, Verdana
 Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavorites x200 y400 w140 h35, % aaSettingsL["GuiSaveAndClose"] ; Button3
@@ -14066,10 +14068,6 @@ if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWi
 	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), "", strHeader)
 }
 
-; remember current position
-if (A_ThisLabel <> "GuiSortSearchResult") ; not if called from LoadFavoritesInGui
-	o_MenuInGui.AA.intLastSearchPosition := LV_GetNext()
-
 ; get values and sort
 strValues := ""
 Loop, % o_MenuInGui.SA.MaxIndex()
@@ -14093,6 +14091,9 @@ Loop, Parse, % SubStr(strValues, 1, -1), `n
 	if (saItem[3] = "*")
 		o_MenuInGui.AA.intLastSearchPosition := A_Index
 }
+
+if (A_ThisLabel <> "GuiSortSearchResult") ; not if called from LoadFavoritesInGui
+	o_MenuInGui.AA.intLastSearchPosition := 1 ; reset position to top
 
 o_MenuInGui.SA := saTemp ; replace items with sorted list
 gosub, ReorderFavoritesInGui ; reload gui with sorted list
@@ -27829,7 +27830,7 @@ class Container
 		GetUsageDbFavoriteDateLastUsed()
 		;---------------------------------------------------------
 		{
-			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' AND CollectType = 'Menu' ORDER BY CollectDateTime DESC"
+			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE AND CollectType = 'Menu' ORDER BY CollectDateTime DESC"
 			if !o_UsageDb.Query(strGetLastUsedDate, o_RecordSet)
 			{
 				Oops(0, "Database error (#2): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
