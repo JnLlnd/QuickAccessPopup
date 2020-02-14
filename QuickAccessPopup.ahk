@@ -18939,6 +18939,32 @@ GetCurrentLocation(strClass, strWinID)
 AdjustColumnsWidth:
 ;------------------------------------------------------------
 
+
+if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+{
+	WinGet, intMinMax, MinMax, ahk_id %g_strAppHwnd%
+	if (intMinMax = 1) ; maximized
+	{
+		; 1) Name 20%, 2) Menu 45%, 3) Type 6%, 4) Hotkey 9%, 5) Location or content 20%
+		; 6) Usage 50 fix, 7) Last Used 135 fix, 8) Last Modified 135 fix, 9) Created 135 fix
+		GuiControlGet, arrPos, Pos, f_lvFavoritesListSearch
+		LV_ModifyCol(9, 135)
+		LV_ModifyCol(8, 135)
+		LV_ModifyCol(7, 135)
+		LV_ModifyCol(6, 50)
+		intRemaining := arrPosW - (455 + 5) ; 5 for safety
+		LV_ModifyCol(5, intRemaining * 20/100)
+		LV_ModifyCol(4, intRemaining * 9/100)
+		LV_ModifyCol(3, intRemaining * 6/100)
+		LV_ModifyCol(2, intRemaining * 45/100)
+		LV_ModifyCol(1, intRemaining * 20/100)
+		arrPos := ""
+		intRemaining := ""
+		
+		return
+	} ; else continue
+}
+
 Loop, % LV_GetCount("Column") - (SearchIsVisible() ? 1 : 0)
 	LV_ModifyCol(A_Index, "AutoHdr") ; adjust other columns width
 
