@@ -4107,8 +4107,19 @@ if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
 
 ; build menu for Sort search result button
-Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredWithStats"] : "") . "|#", |
-	Menu, menuSortSearchResult, Add, % (A_Index = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6) ? o_L["MenuSearchOrder"] : A_LoopField), % "GuiSortSearchResult" . A_Index
+; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
+Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
+	Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+{
+	Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredDates"], | ; Last Modified|Created
+		Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 6 ; col 7-8
+	if (g_blnUsageDbEnabled)
+		Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredStats"], | ; Last Used|Usage
+			Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 8 ; 9-10
+}
+Menu, menuSortSearchResult, Add ; separator
+Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
@@ -9389,12 +9400,14 @@ g_aaToolTipsMessages["Button2"] := o_L["ControlToolTipSearchBoxClear"]
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList Count32 AltSubmit NoSortHdr LV0x10 " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeader"] ; SysHeader321 / SysListView321
+; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
-	, % o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredWithStats"] : "") . "|#" ; SysHeader322 / SysListView322
-LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6), "Integer") ; original order column
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-	LV_ModifyCol(6, "Integer") ; usage column
+	, % "#|" . o_L["GuiLvFavoritesHeaderFiltered"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? "|" . o_L["GuiLvFavoritesHeaderFilteredDates"]
+	. (g_blnUsageDbEnabled ? "|" . o_L["GuiLvFavoritesHeaderFilteredStats"] : "") : "") ; SysHeader322 / SysListView322
+LV_ModifyCol(1, "Integer") ; original order column
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
+	LV_ModifyCol(10, "Integer") ; usage column
 
 Gui, 1:Font, s8 w600, Verdana
 Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavorites x200 y400 w140 h35, % aaSettingsL["GuiSaveAndClose"] ; Button3
@@ -9460,6 +9473,7 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 		if StrLen(o_MenuInGui.AA.strMenuPath)
 		{
 			Critical, On ; prevents the current thread from being interrupted by other threads (thread can interrup itself if user type fast in search box)
+			Container.s_intOriginalPositionInResult := 0 ; used to sort search result items in their original sort order
 			if (o_Settings.SettingsWindow.blnSearchFromMain.IniValue)
 				o_MainMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
 			else
@@ -9483,7 +9497,8 @@ o_MenuInGui.LoadInGui()
 
 if SearchIsVisible()
 {
-	LV_ModifyCol((o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6), 0) ; do early to avoid flash
+	; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
+	LV_ModifyCol(1, 0) ; do early to avoid flash #####
 	
 	if (o_MenuInGui.AA.intCurrentSortColumn and A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultContainer or ReorderFavoritesInGui
 	{
@@ -10471,7 +10486,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		o_MenuInGui.AA.intSearchPositionBeforeEdit := g_intOriginalMenuPosition ; to restore position after favorite is saved or canceled
 		o_SearchResultContainerBK := o_MenuInGui ; to be restored in after saving or canceling the gui edit (in 2GuiClose or 2GuiCancel)
 		
-		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intSearchItemOriginalPositionInMenu ; switching g_intOriginalMenuPosition to position in search result item original menu
+		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intSearchItemPositionInOriginalMenu ; switching g_intOriginalMenuPosition to position in search result item original menu
 		o_MenuInGui := o_MenuInGui.SA[o_MenuInGui.AA.intSearchPositionBeforeEdit].AA.oParentMenu ; giving temporary access to original menu of search result item
 		
 		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
@@ -13682,7 +13697,7 @@ Loop, Parse, strFavoritesToRemove, `n
 	intItemToRemove := FindItemInMenuInGui(A_LoopField, o_EditedFavorite, o_MenuOfRemovedItem)
 	
 	if (intItemToRemove) ; and IsObject(o_EditedFavorite)
-		Gosub, GuiRemoveOneFavorite ; will UpdateSearchResultContainer to update found favorites AA.intSearchItemOriginalPositionInMenu
+		Gosub, GuiRemoveOneFavorite ; will UpdateSearchResultContainer to update found favorites AA.intSearchItemPositionInOriginalMenu
 }
 
 if !SearchIsVisible()
@@ -13721,7 +13736,7 @@ if (A_ThisLabel = "GuiRemoveFavorite")
 		o_MenuInGui.AA.intLastSearchPosition := intItemToRemove ; this is only for single item remove
 		
 		o_EditedFavorite := o_MenuInGui.SA[intItemToRemove]
-		intItemToRemove := o_EditedFavorite.AA.intSearchItemOriginalPositioninMenu
+		intItemToRemove := o_EditedFavorite.AA.intSearchItemPositionInOriginalMenu
 		o_MenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
 	}
 	else
@@ -14040,12 +14055,13 @@ GuiSortSearchResult9:
 GuiSortSearchResult10:
 GuiSortRemoveIndicator:
 ;------------------------------------------------------------
+; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 
 if !(o_MenuInGui.AA.intCurrentSortColumn)
-	o_MenuInGui.AA.intCurrentSortColumn := (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6) ; last invisible column
+	o_MenuInGui.AA.intCurrentSortColumn := 1 ; original order in first invisible column
 
 ; remove sort indicator on existing sort column header
-if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6))
+if (Abs(o_MenuInGui.AA.intCurrentSortColumn) > 1) ; if not invisible
 {
 	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
 	strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
@@ -14058,13 +14074,14 @@ if (A_ThisLabel = "GuiSortRemoveIndicator")
 intCol := StrReplace(A_ThisLabel, "GuiSortSearchResult")
 if (intCol)
 {
-	if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and InStr("6;7;8", intCol))
-		intCol := -intCol
-	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -intCol : intCol)
+	if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and InStr("7;8;9", intCol))
+		intCol := -intCol ; initialy sort these columns descending
+	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -intCol : intCol) ; reverse order
+	o_MenuInGui.AA.intCurrentSortColumn := (o_MenuInGui.AA.intCurrentSortColumn = -1 ? 1 : o_MenuInGui.AA.intCurrentSortColumn) ; if original order, do not reverse
 }
 ; else keep existing sort column
 
-if (o_MenuInGui.AA.intCurrentSortColumn < (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6))
+if (Abs(o_MenuInGui.AA.intCurrentSortColumn) > 1) ; if not invisible
 {
 	; add sort indicator to column header
 	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
@@ -14082,9 +14099,10 @@ Loop, % o_MenuInGui.SA.MaxIndex()
 		strValues .= "|*" ; * to flag selected item
 	strValues .= "`n"
 }
-; R for reverse order, CL for Case insensitive sort based on the current user's locale
-Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 10 : 6) ; this is the original order hidden column
-	or (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and Abs(o_MenuInGui.AA.intCurrentSortColumn) = 6) ; this is the usage column
+
+Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ; this is the original order hidden column
+	or (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and Abs(o_MenuInGui.AA.intCurrentSortColumn) = 10) ; this is the usage column
+	; R for reverse order, CL for Case insensitive sort based on the current user's locale
 	? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "")
 
 saTemp := Object() ; repository for sorted item objects
@@ -18939,8 +18957,8 @@ GetCurrentLocation(strClass, strWinID)
 AdjustColumnsWidth:
 ;------------------------------------------------------------
 
-
 if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 {
 	WinGet, intMinMax, MinMax, ahk_id %g_strAppHwnd%
 	if (intMinMax = 1) ; maximized
@@ -18948,16 +18966,19 @@ if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 		; 1) Name 20%, 2) Menu 45%, 3) Type 6%, 4) Hotkey 9%, 5) Location or content 20%
 		; 6) Usage 50 fix, 7) Last Used 135 fix, 8) Last Modified 135 fix, 9) Created 135 fix
 		GuiControlGet, arrPos, Pos, f_lvFavoritesListSearch
-		LV_ModifyCol(9, 135)
-		LV_ModifyCol(8, 135)
-		LV_ModifyCol(7, 135)
-		LV_ModifyCol(6, 50)
-		intRemaining := arrPosW - (455 + 5) ; 5 for safety
-		LV_ModifyCol(5, intRemaining * 20/100)
-		LV_ModifyCol(4, intRemaining * 9/100)
-		LV_ModifyCol(3, intRemaining * 6/100)
-		LV_ModifyCol(2, intRemaining * 45/100)
-		LV_ModifyCol(1, intRemaining * 20/100)
+		if (g_blnUsageDbEnabled)
+		{
+			LV_ModifyCol(10, 50) ; Usage
+			LV_ModifyCol(9, 135) ; Last Used
+		}
+		LV_ModifyCol(8, 135) ; Created
+		LV_ModifyCol(7, 135) ; Last Modified
+		intRemaining := arrPosW - 270 - (g_blnUsageDbEnabled ? 185 : 0) - 5 ; 5 for safety
+		LV_ModifyCol(6, intRemaining * 20/100)
+		LV_ModifyCol(5, intRemaining * 9/100)
+		LV_ModifyCol(4, intRemaining * 6/100)
+		LV_ModifyCol(3, intRemaining * 45/100)
+		LV_ModifyCol(2, intRemaining * 20/100)
 		arrPos := ""
 		intRemaining := ""
 		
@@ -18966,7 +18987,7 @@ if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 }
 
 Loop, % LV_GetCount("Column") - (SearchIsVisible() ? 1 : 0)
-	LV_ModifyCol(A_Index, "AutoHdr") ; adjust other columns width
+	LV_ModifyCol(A_Index + (SearchIsVisible() ? 1 : 0), "AutoHdr") ; adjust other columns width
 
 /*
 FOLLOWING NOT REQUIRED ANYMORE
@@ -21758,8 +21779,8 @@ FindItemInMenuInGui(strFavoriteToFind, ByRef oFoundFavorite, ByRef oMenuOfFoundI
 	if SearchIsVisible() ; find matching item in search result and retrieve item's position in original menu
 	{
 		; get position from container in search result
-		intSearchItemOriginalPositionInMenu := o_MenuInGui.SA[saFavoriteToFind[1]].AA.intSearchItemOriginalPositionInMenu
-		oFoundFavorite := o_Containers.AA[saFavoriteToFind[2]].SA[intSearchItemOriginalPositionInMenu]
+		intSearchItemPositionInOriginalMenu := o_MenuInGui.SA[saFavoriteToFind[1]].AA.intSearchItemPositionInOriginalMenu
+		oFoundFavorite := o_Containers.AA[saFavoriteToFind[2]].SA[intSearchItemPositionInOriginalMenu]
 		
 		if (oFoundFavorite.AA.oParentMenu.AA.strMenuPath = saFavoriteToFind[2]
 			and oFoundFavorite.AA.strFavoriteName = saFavoriteToFind[3]
@@ -21767,7 +21788,7 @@ FindItemInMenuInGui(strFavoriteToFind, ByRef oFoundFavorite, ByRef oMenuOfFoundI
 		; this is the correct item
 		{
 			oMenuOfFoundItem := oFoundFavorite.AA.oParentMenu
-			return oFoundFavorite.AA.intSearchItemOriginalPositionInMenu
+			return oFoundFavorite.AA.intSearchItemPositionInOriginalMenu
 		}
 		else ; item position has changed because another item has been added/removed in the menu, scan the menu to find the item
 		{
@@ -24705,6 +24726,7 @@ class Container
 	SA := Object() ; simple array for container's items
 	
 	static s_intMenuShortcutNumber
+	static s_intOriginalPositionInResult
 	
 	;---------------------------------------------------------
 	###__Call(function, parameters*)
@@ -25032,7 +25054,9 @@ class Container
 					}
 				}
 				
-				oItem.AA.intSearchItemOriginalPositionInMenu := intKey ; used in search result to locate the original favorite object in the container
+				oItem.AA.intSearchItemPositionInOriginalMenu := intKey ; used in search result to locate the original favorite object in the container
+				Container.s_intOriginalPositionInResult++
+				oItem.AA.intSearchItemOriginalPositionInResult := Container.s_intOriginalPositionInResult ; used to reorder items in the original search result order
 				o_MenuInGui.SA.Push(oItem)
 			}
 			
@@ -27908,7 +27932,6 @@ class Container
 					saValues[3] .= " " . BetweenParenthesis(GetHotstringTrigger(this.AA.strFavoriteHotstring))
 			}
 			
-			
 			if (this.AA.strFavoriteType = "Menu")
 				saValues[4] := g_strMenuPathSeparator
 			else if (this.AA.strFavoriteType = "Group")
@@ -27937,18 +27960,22 @@ class Container
 				saValues[4] := this.AA.strFavoriteLocation
 			
 			if (strMenuType = "Search")
+			; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 			{
-				saValues.InsertAt(2, this.AA.oParentMenu.AA.strMenuPath)
+				saValues.InsertAt(1, this.AA.intSearchItemOriginalPositionInResult) ; col 1, original position in search result, previous 1-4 become 2-5
+				saValues.InsertAt(3, this.AA.oParentMenu.AA.strMenuPath) ; insert col 2 menu, previous 3-5 become 4-6
 				if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 				{
-					saValues.Push(this.AA.intFavoriteUsageDb)
-					saValues.Push(this.AA.strFavoriteDateLastUsed) ; already in format yyyy-MM-dd HH:mm:ss
 					FormatTime, strDateTime, % o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateModified), yyyy-MM-dd HH:mm:ss
-					saValues.Push(strDateTime)
+					saValues.Push(strDateTime) ; col 7
 					FormatTime, strDateTime, % o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateCreated), yyyy-MM-dd HH:mm:ss
-					saValues.Push(strDateTime)
+					saValues.Push(strDateTime) ; col 8
+					if (g_blnUsageDbEnabled)
+					{
+					saValues.Push(this.AA.strFavoriteDateLastUsed) ; col 9, already in format yyyy-MM-dd HH:mm:ss
+					saValues.Push(this.AA.intFavoriteUsageDb) ; col 10
+					}
 				}
-				saValues.Push(intPosition) ; col 6, original position in search result
 				intPosition := 0 ; always LV_Add() below when in a search result
 			}
 			
