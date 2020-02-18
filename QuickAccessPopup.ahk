@@ -18968,12 +18968,12 @@ if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 		GuiControlGet, arrPos, Pos, f_lvFavoritesListSearch
 		if (g_blnUsageDbEnabled)
 		{
-			LV_ModifyCol(10, 50) ; Usage
+			LV_ModifyCol(10, 70) ; Usage
 			LV_ModifyCol(9, 135) ; Last Used
 		}
 		LV_ModifyCol(8, 135) ; Created
 		LV_ModifyCol(7, 135) ; Last Modified
-		intRemaining := arrPosW - 270 - (g_blnUsageDbEnabled ? 185 : 0) - 10 ; -10 for safety
+		intRemaining := arrPosW - 270 - (g_blnUsageDbEnabled ? 205 : 0) - 20 ; -00 for safety
 		LV_ModifyCol(6, intRemaining * 35/100) ; Location or content
 		LV_ModifyCol(5, intRemaining * 9/100) ; Hotkey
 		LV_ModifyCol(4, intRemaining * 6/100) ; Type
