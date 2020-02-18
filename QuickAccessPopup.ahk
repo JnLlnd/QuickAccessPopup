@@ -9498,7 +9498,7 @@ o_MenuInGui.LoadInGui()
 if SearchIsVisible()
 {
 	; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
-	LV_ModifyCol(1, 0) ; do early to avoid flash #####
+	LV_ModifyCol(1, 0)
 	
 	if (o_MenuInGui.AA.intCurrentSortColumn and A_ThisLabel = "LoadFavoritesInGui") ; not if UpdateSearchResultContainer or ReorderFavoritesInGui
 	{
@@ -18973,12 +18973,12 @@ if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 		}
 		LV_ModifyCol(8, 135) ; Created
 		LV_ModifyCol(7, 135) ; Last Modified
-		intRemaining := arrPosW - 270 - (g_blnUsageDbEnabled ? 185 : 0) - 5 ; 5 for safety
-		LV_ModifyCol(6, intRemaining * 20/100)
-		LV_ModifyCol(5, intRemaining * 9/100)
-		LV_ModifyCol(4, intRemaining * 6/100)
-		LV_ModifyCol(3, intRemaining * 45/100)
-		LV_ModifyCol(2, intRemaining * 20/100)
+		intRemaining := arrPosW - 270 - (g_blnUsageDbEnabled ? 185 : 0) - 10 ; -10 for safety
+		LV_ModifyCol(6, intRemaining * 35/100) ; Location or content
+		LV_ModifyCol(5, intRemaining * 9/100) ; Hotkey
+		LV_ModifyCol(4, intRemaining * 6/100) ; Type
+		LV_ModifyCol(3, intRemaining * 30/100) ; Menu
+		LV_ModifyCol(2, intRemaining * 20/100) ; Name
 		arrPos := ""
 		intRemaining := ""
 		
@@ -27759,6 +27759,8 @@ class Container
 			; Diag(A_ThisFunc, "", "START")
 			
 			strUsageMenuDateTime := A_Now
+			this.AA.strFavoriteDateLastUsed := ConvertUsageDbDateFormat(strUsageMenuDateTime) ; update current object last used date
+			
 			strUsageDbMenuPath :=  A_ThisMenu ; remember this could be older value if favorite was launched by an hotkey
 			strUsageDbMenuTrigger :=  A_ThisHotkey ; remember this could be older value if favorite was launched by a menu
 			strUsageBdMenuAlternative := (g_blnAlternativeMenu ? g_strAlternativeMenu : "")
@@ -27884,7 +27886,8 @@ class Container
 		GetUsageDbFavoriteDateLastUsed()
 		;---------------------------------------------------------
 		{
-			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE AND CollectType = 'Menu' ORDER BY CollectDateTime DESC"
+			; strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE AND CollectType = 'Menu' ORDER BY CollectDateTime DESC"
+			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE ORDER BY CollectDateTime DESC"
 			if !o_UsageDb.Query(strGetLastUsedDate, o_RecordSet)
 			{
 				Oops(0, "Database error (#2): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
@@ -27966,9 +27969,9 @@ class Container
 				saValues.InsertAt(3, this.AA.oParentMenu.AA.strMenuPath) ; insert col 2 menu, previous 3-5 become 4-6
 				if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 				{
-					FormatTime, strDateTime, % o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateModified), yyyy-MM-dd HH:mm:ss
+					strDateTime := ConvertUsageDbDateFormat(o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateModified))
 					saValues.Push(strDateTime) ; col 7
-					FormatTime, strDateTime, % o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateCreated), yyyy-MM-dd HH:mm:ss
+					strDateTime := ConvertUsageDbDateFormat(o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateCreated))
 					saValues.Push(strDateTime) ; col 8
 					if (g_blnUsageDbEnabled)
 					{
