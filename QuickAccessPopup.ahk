@@ -3752,7 +3752,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.4
+;@Ahk2Exe-SetVersion 10.3.4.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3857,7 +3857,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.4.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -20162,15 +20162,21 @@ PickIconDialog(strFavoriteIconResource)
 ;------------------------------------------------------------
 {
 	; Source: http://ahkscript.org/boards/viewtopic.php?f=5&t=5108#p29970
-	VarSetCapacity(strIconFile, 1024) ; must be placed before strIconFile is initialized because VarSetCapacity erase its content
+	VarSetCapacity(strIconFile, 2048) ; must be placed before strIconFile is initialized because VarSetCapacity erase its content
 	ParseIconResource(strFavoriteIconResource, strIconFile, intIconIndex)
-	blnFileExist := FileExistInPath(strIconFile)
+	
+	if !FileExistInPath(strIconFile) ; expand strIconFile ByRef
+	; if not found, default to shell32.dll first icon
+	{
+		strIconFile := A_WinDir . "\system32\shell32.dll"
+		intIconIndex := 1
+	}
 
-	WinGet, hWnd, ID, A
 	if (intIconIndex >= 0) ; adjust index for positive index only (not for negative index)
 		intIconIndex := intIconIndex - 1
 	
-	if !DllCall("shell32\PickIconDlg", "Uint", hWnd, "str", strIconFile, "Uint", 260, "intP", intIconIndex)
+	WinGet, hWnd, ID, A ; make the active window the parent window of the pick icon dialog box
+	if !DllCall("shell32\PickIconDlg", "Uint", hWnd, "str", strIconFile, "Uint", 2048, "intP", intIconIndex)
 		return ; return empty if user cancelled
 	
 	if (intIconIndex >= 0) ; adjust index for positive index only (not for negative index)
