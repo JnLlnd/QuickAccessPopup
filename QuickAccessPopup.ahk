@@ -11672,6 +11672,7 @@ ButtonSelectWorkingDir:
 ButtonSelectLaunchWith:
 ButtonSelectExternalSettingsFile:
 ButtonSelectFavoriteSoundLocation:
+ButtonSelectIconFile:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 Gui, 2:+OwnDialogs
@@ -11685,6 +11686,11 @@ else if InStr("ButtonSelectWorkingDir|ButtonSelectExternalSettingsFile", A_ThisL
 {
 	strDefault := f_strFavoriteAppWorkingDir ; working directory or external menu settings file
 	strType := (A_ThisLabel = "ButtonSelectWorkingDir" ? "Folder" : "IniFile") ; file if External settings file
+}
+else if (A_ThisLabel = "ButtonSelectIconFile")
+{
+	strDefault := g_strCurrentIconFile ; #####
+	strType := "DLL"
 }
 else ; ButtonSelectLaunchWith or ButtonSelectFavoriteSoundLocation 
 {
@@ -11705,6 +11711,8 @@ if (strType = "Folder")
 else if (strType = "File")
 	; do not use option "S" because it gives an error message on read-only supports
 	FileSelectFile, strNewLocation, 3, %strDefault%, % o_L["DialogAddFileSelect"]
+else if (strType = "DLL")
+	FileSelectFile, strNewLocation, 3, %strDefault%, % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl)
 else ; IniFile
 {
 	; do not use option "S" because it gives an error message on read-only supports
@@ -11725,6 +11733,12 @@ else if (A_ThisLabel = "ButtonSelectLaunchWith")
 	GuiControl, 2:, f_strFavoriteLaunchWith, %strNewLocation%
 else if (A_ThisLabel = "ButtonSelectFavoriteSoundLocation")
 	GuiControl, 2:, f_strFavoriteSoundLocation, %strNewLocation%
+else if (A_ThisLabel = "ButtonSelectIconFile")
+{
+	GuiControl, 3:, f_strIconFile, %strNewLocation%
+	Gosub, GetIconsCount
+	Gosub, LoadSelectIcon
+}
 else ; ButtonSelectFavoriteLocation
 {
 	GuiControl, 2:, f_strFavoriteLocation, %strNewLocation%
@@ -11774,24 +11788,193 @@ if (A_ThisLabel = "GuiEditIconDialog")
 	; InputBox, outVar, title, prompt, hide, width, height, x, y, font, timeout, %g_strNewFavoriteIconResource%
 	InputBox, strTempNewFavoriteIconResource, % g_strAppNameFile . " - " . o_L["DialogEditIcon"], % o_L["DialogEditIconPrompt"], , 400, 160, , , , , %g_strNewFavoriteIconResource%
 }
-else if (A_ThisLabel = "GuiPickIconDialog")
-	strTempNewFavoriteIconResource := PickIconDialog(g_strNewFavoriteIconResource)
-else if (A_ThisLabel = "GuiPickIconDialogJl")
-	strTempNewFavoriteIconResource := PickIconDialog(o_JLicons.strFileLocation)
-else if (A_ThisLabel = "GuiPickIconDialogShell")
-	strTempNewFavoriteIconResource := PickIconDialog(A_WinDir . "\System32\shell32.dll")
-else if (A_ThisLabel = "GuiPickIconDialogImageRes")
-	strTempNewFavoriteIconResource := PickIconDialog(A_WinDir . "\System32\imageres.dll")
 else if (A_ThisLabel = "GuiPickIconDialogNo")
 	strTempNewFavoriteIconResource := "iconNoIcon"
+else
+{
+	if (A_ThisLabel = "GuiPickIconDialogJL")
+		g_strNewFavoriteIconResource := o_JLicons.strFileLocation
+	else if (A_ThisLabel = "GuiPickIconDialogShell")
+		g_strNewFavoriteIconResource := A_WinDir . "\System32\shell32.dll"
+	else if (A_ThisLabel = "GuiPickIconDialogImageRes")
+		g_strNewFavoriteIconResource := A_WinDir . "\System32\imageres.dll"
+
+	Gosub, SelectIconInFile ; receive g_strNewFavoriteIconResource and returns strTempNewFavoriteIconResource
+	
+}
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SelectIconInFile:
+;------------------------------------------------------------
+
+g_intSelectIconRows := 2 ; 10
+g_intSelectIconCols := 2 ; 20
+g_intSelectIconPage := (g_intSelectIconRows * g_intSelectIconCols)
+
+strGuiTitle := L(o_L["DialogIconsSelectTitle"], g_strAppNameText, g_strAppVersion)
+Gui, 3:New, +Hwndg_strGui3Hwnd, %strGuiTitle%
+Gui, 3:+Owner2
+Gui, 3:+OwnDialogs
+if (g_blnUseColors)
+	Gui, 3:Color, %g_strGuiWindowColor%
+
+Gui, 3:Add, Text, x10 y10, % o_L["DialogFileName"] . ":"
+Gui, 3:Add, Edit, x+5 yp w500 h20 vf_strIconFile
+ParseIconResource(g_strNewFavoriteIconResource, strIconFile, intIconIndex)
+GuiControl, 3:, f_strIconFile, %strIconFile%
+Gui, 3:Add, Button, x+5 yp w100 gButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
+
+; create pic objects
+intTop := 44
+intLeft := 4
+intRow := 0
+Loop, %g_intSelectIconRows% ; rows
+{
+	intCol := 0
+	Loop, %g_intSelectIconCols% ; icons per row
+	{
+		Gui, 3:Add, Picture, % "y" . intTop + (40 * intRow) . " x" . intLeft + (40 * intCol) . " w32 h32 vf_picIcon" . (intRow * g_intSelectIconCols) + intCol . " gSelectIconInFileClicked"
+		intCol++
+	}
+	intRow++
+}
+
+aaL := o_L.InsertAmpersand(false, "DialogIconsManagePrevious", "DialogIconsManageNext", "GuiCancel") 
+Gui, 3:Add, Button, x10 y+25 vf_btnIconsManagePrev gLoadSelectIconPrev h20, % aaL["DialogIconsManagePrevious"]
+Gui, 3:Add, Button, x10 yp vf_btnIconsManageNext gLoadSelectIconNext, % aaL["DialogIconsManageNext"]
+Gui, 3:Add, Button, x10 yp vf_btnIconsManageClose g3GuiEscape, % aaL["GuiCancel"] ; ##### process Cancel
+Gui, 3:Add, Text, x10, %A_Space%
+GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnIconsManagePrev", "f_btnIconsManageNext", "f_btnIconsManageClose")
+
+Gosub, GetIconsCount
+Gosub, LoadSelectIcon
+
+Gui, 3:Show, AutoSize
+
+aaL := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+LoadSelectIcon:
+LoadSelectIconPrev:
+LoadSelectIconNext:
+;------------------------------------------------------------
+Gui, 3:Submit, NoHide
+
+; if not DllCall("LockWindowUpdate", Uint, strGui3Hwnd)
+	; Oops(3, "An error occured while locking window display in`n" . L(o_L["DialogIconsManageTitle"], g_strAppNameText, g_strAppVersion))
+
+if (A_ThisLabel = "LoadSelectIconNext")
+	if (g_intIconsManageStartingIcon + g_intSelectIconPage > g_intIconsCount)
+		return
+	else
+		g_intIconsManageStartingIcon += g_intSelectIconPage
+else if (A_ThisLabel = "LoadSelectIconPrev")
+	if (g_intIconsManageStartingIcon - g_intSelectIconPage < 1)
+		return
+	else
+		g_intIconsManageStartingIcon -= g_intSelectIconPage
+else ; LoadSelectIcon
+	g_intIconsManageStartingIcon := 1
+
+intRow := 0
+Loop, %g_intSelectIconRows% ; rows
+{
+	intCol := 0
+	Loop, %g_intSelectIconCols% ; icons per row
+	{
+		; ###_V(A_ThisLabel, intRow, g_intSelectIconCols, g_intIconsManageStartingIcon, "", (intRow * g_intSelectIconCols) + intCol + g_intIconsManageStartingIcon, g_intIconsCount)
+		if ((intRow * g_intSelectIconCols) + intCol + g_intIconsManageStartingIcon > g_intIconsCount)
+			GuiControl, , % "f_picIcon" . intRow . intCol
+		
+		GuiControl, , % "f_picIcon" . (intRow * g_intSelectIconCols) + intCol, % "*icon" . (intRow * g_intSelectIconCols) + intCol + g_intIconsManageStartingIcon . " " . f_strIconFile
+		intCol++
+	}
+	intRow++
+}
+
+; DllCall("LockWindowUpdate", Uint, 0)  ; Pass 0 to unlock the currently locked window.
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SelectIconInFileClicked:
+;------------------------------------------------------------
+
+###_V(A_ThisLabel, A_GuiControl, StrReplace(A_GuiControl, "f_picIcon"), g_intIconsManageStartingIcon, StrReplace(A_GuiControl, "f_picIcon") + g_intIconsManageStartingIcon)
+
+g_strNewFavoriteIconResource := f_strIconFile . "," . StrReplace(A_GuiControl, "f_picIcon") + g_intIconsManageStartingIcon
 g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
 
 Gosub, GuiFavoriteIconDisplay
 
 strTempNewFavoriteIconResource := ""
 
+Gosub, 3GuiClose
+
 return
 ;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetIconsCount:
+;------------------------------------------------------------
+Gui, 3:Submit, NoHide
+
+g_intIconsCount := 0
+While (oHandle := LoadPicture(f_strIconFile, "icon" . A_Index))
+{
+	DllCall( "DeleteObject", "Ptr", oHandle) ; delete unused handle
+	g_intIconsCount++
+}
+
+return
+;------------------------------------------------------------
+
+
+
+/*
+;------------------------------------------------------------
+GuiPickIconDialog(strFavoriteIconResource)
+;------------------------------------------------------------
+{
+	; Source: http://ahkscript.org/boards/viewtopic.php?f=5&t=5108#p29970
+	VarSetCapacity(strIconFile, 2048) ; must be placed before strIconFile is initialized because VarSetCapacity erase its content
+	ParseIconResource(strFavoriteIconResource, strIconFile, intIconIndex)
+	
+	if !FileExistInPath(strIconFile) ; expand strIconFile ByRef
+	; if not found, default to shell32.dll first icon
+	{
+		strIconFile := A_WinDir . "\system32\shell32.dll"
+		intIconIndex := 1
+	}
+
+	if (intIconIndex >= 0) ; adjust index for positive index only (not for negative index)
+		intIconIndex := intIconIndex - 1
+	
+	WinGet, hWnd, ID, A ; make the active window the parent window of the pick icon dialog box
+	if !DllCall("shell32\PickIconDlg", "Uint", hWnd, "str", strIconFile, "Uint", 2048, "intP", intIconIndex)
+		return ; return empty if user cancelled
+	
+	if (intIconIndex >= 0) ; adjust index for positive index only (not for negative index)
+		intIconIndex := intIconIndex + 1
+
+	if (strIconFile = o_JLicons.strFileLocation)
+		return o_JLicons.GetName(intIconIndex) ; JLicons index "iconXYZ"
+	else
+		return strIconFile . "," . intIconIndex
+}
+;------------------------------------------------------------
+*/
 
 
 ;------------------------------------------------------------
