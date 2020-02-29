@@ -31,6 +31,21 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.3.9.7 (2020-02-29)
+ 
+Search result
+- restart QAP after saving options when option for search result columns is changed
+- display modified and created time as local time in search results (instead of UTC)
+- when QAP window is maximized and showing stats, squeeze larger columns to show stats columns
+- do not display stats columns if database disabled
+- fix various display bugs in search results
+ 
+Various
+- add checkbox to Setup script to make Start menu icon creation optional
+- display popularity index in all menus (not only in Frequent menus)
+- replace Windows Pick Icon dialog box with custom Select icon dialog box
+- fix bug when a shared menu settings file is not found
+
 Version BETA: 10.3.9.6 (2020-02-09)
  
 Copy and move submenus and groups
@@ -9521,7 +9536,7 @@ if SearchIsVisible()
 else
 	GuiControl, Focus, %A_DefaultListView%
 
-DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
+DllCall("LockWindowUpdate", Uint, 0) ; 0 to unlock the window
 
 strGuiMenuLocation := ""
 strThisType := ""
