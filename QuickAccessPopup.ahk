@@ -82,6 +82,11 @@ Various
 - lock window display during favorites loading and when closing the app
 - fix bug when updating usage stats displayed in menu and "Customize window"
 
+Version: 10.3.5 (2020-02-29)
+- replace Windows "Pick icon" small dialog box (crashing QAP on some systems) with custom and larger "Select icon" dialog box
+- fix bug when a Shared menu settings file is not found (update strongly recommended for users of Shared menus)
+- add a checkbox in the Setup program to make optional the creation of Start menu icon when installing QAP; uninstall and reinstall QAP (keeping your data in the QAP Settings folder) because this option is maintained if you only update QAP
+
 Version: 10.3.4 (2020-02-06)
 - save and restore maximized state when exiting with "Customize" window maximized
 - fix bug with "Drives" menu when the option "Attach dynamic menus..." is unchecked
