@@ -5539,6 +5539,7 @@ if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to creat
 {
 	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strAppHwnd)
 	IniWrite, % GetScreenConfiguration(), % o_Settings.strIniFile, Global, LastScreenConfiguration
+	IniDelete, % o_Settings.strIniFile, Global, ExternalErrorMessageExclusions ; delete value created to avoid (in this session only) repetitive error messages for unfound external menus
 }
 
 FileRemoveDir, %g_strTempDir%, 1 ; Remove all files and subdirectories
@@ -24541,6 +24542,8 @@ class Container
 		
 		if (this.AA.strMenuType = "External")
 		{
+			this.AA.strMenuExternalSettingsPath := s_strIniFile
+			
 			if this.AA.oParentMenu.FavoriteIsUnderExternalMenu(o_ExternalMenu)
 			{
 				this.AA.blnMenuExternalLoaded := false ; true if the external menu was loaded, false if not loaded (or not an external menu)
@@ -24551,7 +24554,7 @@ class Container
 			{
 				this.AA.blnMenuExternalLoaded := false ; true if the external menu was loaded, false if not loaded (or not an external menu)
 				strExternalErrorMessageExclusions := o_Settings.ReadIniValue("ExternalErrorMessageExclusions", " ", "Global", o_Settings.strIniFile) ; not documented, internal use only
-				if !InStr(strExternalErrorMessageExclusions, s_strIniFile)
+				if !InStr(strExternalErrorMessageExclusions . "|", s_strIniFile)
 				{
 					MsgBox, 52, %g_strAppNameText%, % o_L["OopsErrorIniFileUnavailable"] . ":`n`n" . s_strIniFile
 						. "`n`n" . L(o_L["OopsErrorIniFileRetry"], g_strAppNameText)
@@ -24562,7 +24565,6 @@ class Container
 				return, "EOM" ; end of menu because of known error (external settings file unavailable) - error is noted in .MenuExternalLoaded false - external menu will be empty
 			}
 			
-			this.AA.strMenuExternalSettingsPath := s_strIniFile
 			; instead of FileGetTime, read last modified date from [Global] value updated only when content is changed
 			; FileGetTime, strLastModified, % objNewMenu.MenuExternalSettingsPath, M ; modified date
 			strLastModified := o_Settings.ReadIniValue("LastModified", " ", "Global", this.AA.strMenuExternalSettingsPath)
