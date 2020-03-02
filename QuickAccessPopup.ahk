@@ -11828,9 +11828,10 @@ Gui, 3:Add, Edit, x+5 yp w500 h20 vf_strIconFile
 ParseIconResource(g_strNewFavoriteIconResource, g_strCurrentIconFile, intIconIndex)
 GuiControl, 3:, f_strIconFile, %g_strCurrentIconFile%
 Gui, 3:Add, Button, x+5 yp w100 gButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
+Gui, 3:Add, Text, x10 y+10, % o_L["DialogIconsSelectPrompt"]
 
 ; create pic objects
-intTop := 44
+intTop := 64
 intLeft := 4
 intRow := 0
 Loop, %g_intPickIconRows%
