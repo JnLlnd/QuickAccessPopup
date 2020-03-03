@@ -9828,6 +9828,8 @@ GuiFavoritesListFilterShow:
 GuiFavoritesListFilterHide:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 blnSearchVisible := SearchIsVisible()
 if (InStr(A_ThisLabel, "Show") and blnSearchVisible)
 	or (InStr(A_ThisLabel, "Hide") and !blnSearchVisible)
@@ -14112,6 +14114,8 @@ return
 GuiSortFavorites:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 {
 	o_ExternalMenu := ""
@@ -14307,6 +14311,8 @@ return
 GuiSelectAll:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
 LV_Modify(0, "Select") ; select all in listview
 GuiControl, Focus, %A_DefaultListView%
@@ -14358,8 +14364,7 @@ GuiHotkeysManageHotstrings:
 GuiHotkeysManageHotstringsFromQAPFeature:
 ;------------------------------------------------------------
 
-if InStr(A_ThisLabel, "FromQAPFeature")
-	Gosub, GuiShowFromHotkeysManage
+gosub, CheckShowSettings
 	
 intWidth := 980
 
@@ -14576,8 +14581,7 @@ GuiIconsManage:
 GuiIconsManageFromQAPFeature:
 ;------------------------------------------------------------
 
-if (A_ThisLabel = "GuiIconsManageFromQAPFeature")
-	Gosub, GuiShowFromIconsManage
+gosub, CheckShowSettings
 
 global g_saManageIcons := Object() ; was g_objManageIcons
 o_MainMenu.LoadMenuIconsManage()
@@ -14775,6 +14779,8 @@ return
 GuiAddSeparator:
 GuiAddColumnBreak:
 ;------------------------------------------------------------
+
+gosub, CheckShowSettings
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the menu is an external menu that cannot be locked, user received an error message, then abort
