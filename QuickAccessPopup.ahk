@@ -5659,8 +5659,7 @@ CleanUpBeforeExit:
 ; if (o_Settings.Launch.blnDiagMode.IniValue)
 	; Diag("ListLines", ScriptInfo("ListLines"))
 
-if not DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while restoring windo
-	Oops(1, "An error occured while locking window display.", g_strAppNameText, g_strAppVersion)
+DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while restoring windo
 
 if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to create a fresh one, this avoids creating an ini file with just this value
 {
@@ -9505,8 +9504,7 @@ if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
-	if not DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while listview is updated
-		Oops(1, "An error occured while locking window display.", g_strAppNameText, g_strAppVersion)
+	DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while listview is updated
 
 Gui, 1:Default
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
@@ -12073,8 +12071,7 @@ PickIconLoadNext:
 ;------------------------------------------------------------
 Gui, 3:Submit, NoHide
 
-if not DllCall("LockWindowUpdate", Uint, g_strGui3Hwnd)
-	Oops(3, "An error occured while locking window display in`n" . L(o_L["DialogIconsManageTitle"], g_strAppNameText, g_strAppVersion))
+DllCall("LockWindowUpdate", Uint, g_strGui3Hwnd)
 
 if (A_ThisLabel = "PickIconLoad")
 	g_intIconsManageStartingIcon := 1 ; first load
@@ -14515,8 +14512,7 @@ Gui, 2:ListView, f_lvHotkeysManageList
 LV_Delete()
 
 intHotkeysManageListWinID := WinExist("A")
-if not DllCall("LockWindowUpdate", Uint, intHotkeysManageListWinID)
-	Oops(2, "An error occured while locking window display in`n" . L(o_L["DialogHotkeysManageTitle"], g_strAppNameText, g_strAppVersion))
+DllCall("LockWindowUpdate", Uint, intHotkeysManageListWinID)
 
 Loop, 2
 {
@@ -14672,8 +14668,7 @@ LoadIconsManageListNext:
 ;------------------------------------------------------------
 
 intIconsManageListWinID := WinExist("A")
-if not DllCall("LockWindowUpdate", Uint, intIconsManageListWinID)
-	Oops(2, "An error occured while locking window display in`n" . L(o_L["DialogIconsManageTitle"], g_strAppNameText, g_strAppVersion))
+DllCall("LockWindowUpdate", Uint, intIconsManageListWinID)
 
 if (A_ThisLabel = "LoadIconsManageListNext")
 	g_intIconsManageStartingRow += g_intIconsManageRows
