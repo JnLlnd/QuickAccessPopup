@@ -14134,10 +14134,9 @@ if (LV_GetCount("Selected") <= 1) ; if one or no row is selected, select all and
 Gosub, GetSelectedRows ; updated strSelectedRows (pipe delimited list of selected row numbers)
 saSelectedRows := StrSplit(strSelectedRows, "|")
 
-aaNewOrder := Object() ; associative array of Item objects to be sorted by favorite names
-
 intRowsToSort := 0 ; counter, sort only if at least 2 rows to sort
 strSortedRows := "" ; keep track of sorted rows to re-select only these rows
+strToSortOnNames := "" ; cleaned favorite names to sort with original row
 
 Loop, Parse, strSelectedRows, |
 {
@@ -14148,15 +14147,29 @@ Loop, Parse, strSelectedRows, |
 	}
 	intRowsToSort++
 	strSortedRows .= saSelectedRows[A_Index] . "|"
-	aaNewOrder[GuiSortCleanFavoriteName(o_MenuInGui.SA[A_LoopField].AA.strFavoriteName)] := o_MenuInGui.SA[A_LoopField] ; add object of favorite to sort
+	strToSortOnNames .= StrReplace(o_MenuInGui.SA[A_LoopField].AA.strFavoriteName, "&", "") . "|" . A_LoopField . "`n" ; name | original order
 }
-strSortedRows := SubStr(strSortedRows, 1, -1) ; trim last char
 
 if (intRowsToSort > 1) ; sort only if required
 {
-	for strThisName, o_Item in aaNewOrder
-		; replace gui menu objects to sort with favorites object sorted
-		o_MenuInGui.SA[saSelectedRows[A_Index]] := o_Item
+	strSortedRows := SubStr(strSortedRows, 1, -1) ; trim last char
+	; sort name|position on names using locale
+	Sort, strToSortOnNames, CL
+
+	; get copies of items to move
+	aaRowsToSortCopies := Object()
+	Loop, Parse, strToSortOnNames, `n
+		if StrLen(A_LoopField)
+			aaRowsToSortCopies.Push(o_MenuInGui.SA[StrSplit(A_LoopField, "|")[2]])
+	
+	; insert sorted copies in position of original items
+	Loop, Parse, strSelectedRows, |
+	{
+		if o_MenuInGui.SA[A_LoopField].IsSeparator() ; stop at first separator
+			break
+		
+		o_MenuInGui.SA[A_LoopField] := aaRowsToSortCopies[A_Index]
+	}
 
 	gosub, LoadFavoritesInGui ; refresh menu in gui
 	
@@ -14184,29 +14197,13 @@ intFirstSelectedRow := ""
 objExternalMenu := ""
 strSelectedRows := ""
 saSelectedRows := ""
-intSelected := ""
-aaNewOrder := ""
 intRowsToSort := ""
 strSortedRows := ""
-strThisName := ""
-o_Item := ""
 blnSeparatorFound := ""
+strToSortOnNames := ""
+aaRowsToSortCopies := ""
 
 return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiSortCleanFavoriteName(strFavoriteName)
-;------------------------------------------------------------
-{
-	if InStr(strFavoriteName, "&")
-	{
-		strFavoriteName := StrReplace(strFavoriteName, "&", "")
-		strFavoriteName .= "-" . RandomBetween() ; add random number in case another favorite has the same name without the ampersand)
-	}
-	return strFavoriteName
-}
 ;------------------------------------------------------------
 
 
