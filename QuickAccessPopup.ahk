@@ -4865,7 +4865,7 @@ else
 			g_strConvertSettingsEncodingNo := "No keep ANSI encoding"
 			g_strConvertSettingsEncodingLater := "Ask me next time"
 			strGuiTitle := g_strAppNameText . " " . g_strAppVersion
-			Gui, New, , %strGuiTitle%
+			Gui, 1:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
 			Gui, Color, White
 			Gui, Font, w700 s9, Segoe UI
 			Gui, Add, Text, w500 , % L("~1~ ""one-time"" maintenance", g_strAppNameText)
@@ -4882,7 +4882,7 @@ else
 			Gui, Add, Button, yp x+10 gConvertSettingsEncoding vf_btnConvertSettingsEncodingNo, %g_strConvertSettingsEncodingNo%
 			Gui, Add, Button, yp x+10 gConvertSettingsEncoding vf_btnConvertSettingsEncodingLater default, %g_strConvertSettingsEncodingLater%
 			Gui, Add, Text
-			GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnConvertSettingsEncodingYes", "f_btnConvertSettingsEncodingNo", "f_btnConvertSettingsEncodingLater")
+			GuiCenterButtons(g_strGui1Hwnd, 10, 5, 20, "f_btnConvertSettingsEncodingYes", "f_btnConvertSettingsEncodingNo", "f_btnConvertSettingsEncodingLater")
 			Gui, Show, AutoSize Center
 		}
 	}
@@ -4967,7 +4967,6 @@ o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultProcessEOLTab", "SnippetD
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultFixedFont", "SnippetDefaultFixedFont", 0, "Snippets", "f_blnSnippetDefaultFixedFont") ; g_blnSnippetDefaultFixedFont
 o_Settings.ReadIniOption("Snippets", "intSnippetDefaultFontSize", "SnippetDefaultFontSize", 10, "Snippets", "f_lblSnippetDefaultFontSize|f_intSnippetDefaultFontSizeEdit|f_intSnippetDefaultFontSize") ; g_intSnippetDefaultFontSize
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultMacro", "SnippetDefaultMacro", 0, "Snippets", "f_blnSnippetDefaultMacro") ; g_blnSnippetDefaultMacro
-o_Settings.ReadIniOption("Snippets", "strQuickAddSnippetSubmenu", "QuickAddSnippetSubmenu", o_L["MainMenuName"], "Snippets", "f_lblQuickAddSnippetFolder|f_drpQuickAddSnippetSubmenu")
 o_Settings.ReadIniOption("Hotstrings", "strHotstringsDefaultOptions", "HotstringsDefaultOptions", " ", "Snippets"
 	, "f_lblSelectHotstringDefaultOptions|f_btnSelectHotstringDefaultOptions") ; g_strHotstringsDefaultOptions
 
@@ -5257,7 +5256,6 @@ AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
 
 IniWrite, 1, % o_Settings.strIniFile, Global, SnippetsDefaultMenuBuilt
-o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"] . g_strMenuPathSeparatorWithSpaces . g_strAddThisMenuNameWithInstance)
 
 g_intNextFavoriteNumber := ""
 g_strAddThisMenuName := ""
@@ -5659,12 +5657,11 @@ CleanUpBeforeExit:
 ; if (o_Settings.Launch.blnDiagMode.IniValue)
 	; Diag("ListLines", ScriptInfo("ListLines"))
 
-if not DllCall("LockWindowUpdate", Uint, g_strAppHwnd) ; lock QAP window while restoring windo
-	Oops(1, "An error occured while locking window display.", g_strAppNameText, g_strAppVersion)
+DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while restoring windo
 
 if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to create a fresh one, this avoids creating an ini file with just this value
 {
-	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strAppHwnd)
+	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strGui1Hwnd)
 	IniWrite, % GetScreenConfiguration(), % o_Settings.strIniFile, Global, LastScreenConfiguration
 	IniDelete, % o_Settings.strIniFile, Global, ExternalErrorMessageExclusions ; delete value created to avoid (in this session only) repetitive error messages for unfound external menus
 }
@@ -7478,7 +7475,7 @@ Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList2
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList3, % L(o_L["OptionsExclusionMouseListDetail2"]
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText, strUrl)
 Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% vf_btnGetWinInfoMouseExclusions gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strOptionsGuiTitle, 10, 5, 20, "f_btnGetWinInfoMouseExclusions")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoMouseExclusions")
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoMouseExclusions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -7655,11 +7652,6 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_intSnippetDefaultFontSizeEdit
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gGuiOptionsGroupChanged hidden, % o_L["DialogFavoriteSnippetSendModeMacro"]
 GuiControl, , f_blnSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
-; QuickAddSnippetSubmenu
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblQuickAddSnippetFolder hidden, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddSnippet"]) . ":"
-Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w500 vf_drpQuickAddSnippetSubmenu gGuiOptionsGroupChanged hidden
-	, % o_MainMenu.BuildMenuListDropDown(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue, "", true) . "|" ; exclude read-only external menus
-
 ; HotstringsDefaultOptions
 strNewHotstringsDefaultOptions := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue ; to keep value when options are saved if the hotstrings options are not changed
 Gui, 2:Font, s8 w700
@@ -7819,7 +7811,7 @@ Gui, 2:Font
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w500 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
 Gui, 2:Add, Link, y+5 x%g_intGroupItemsX% w495 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
 Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strOptionsGuiTitle, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -8168,7 +8160,6 @@ o_Settings.Snippets.blnSnippetDefaultProcessEOLTab.WriteIni(f_blnSnippetDefaultP
 o_Settings.Snippets.blnSnippetDefaultFixedFont.WriteIni(f_blnSnippetDefaultFixedFont)
 o_Settings.Snippets.intSnippetDefaultFontSize.WriteIni(f_intSnippetDefaultFontSizeEdit)
 o_Settings.Snippets.blnSnippetDefaultMacro.WriteIni(f_blnSnippetDefaultMacro)
-o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(f_drpQuickAddSnippetSubmenu)
 o_Settings.Hotstrings.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
 
 ; === UserVariables ===
@@ -8434,7 +8425,7 @@ Gui, 2:Add, Button, x10 y%g_intOptionsFooterY% vf_btnOptionsSave gGuiOptionsGrou
 Gui, 2:Add, Button, yp vf_btnOptionsCancel gButtonOptionsCancel, % aaL["GuiCancel"]
 if (!o_Settings.Launch.blnDonorCode.IniValue)
 	Gui, 2:Add, Button, yp vf_btnOptionsDonate gGuiDonate, % o_L["DonateButton"]
-GuiCenterButtons(g_strOptionsGuiTitle, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel", (!o_Settings.Launch.blnDonorCode.IniValue ? "f_btnOptionsDonate" : ""))
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel", (!o_Settings.Launch.blnDonorCode.IniValue ? "f_btnOptionsDonate" : ""))
 
 Gui, 2:Add, Text
 GuiControl, Focus, f_btnOptionsSave
@@ -8802,8 +8793,6 @@ if !(f_blnChangeFolderInDialog)
 	return
 GuiControl, 2:, f_blnChangeFolderInDialog, 0
 
-g_intGui2WinID := WinExist("A")
-
 strGuiTitle := StrReplace(o_L["OptionsChangeFolderInDialog"], "&", "")
 Gui, 3:New, +Hwndg_strGui3Hwnd, %strGuiTitle%
 Gui, 3:+Owner2
@@ -8819,7 +8808,7 @@ Gui, 3:Add, Text, x10 w400, % o_L["OptionsChangeFolderInDialogCheckbox"]
 Gui, 3:Add, Button, y+25 x10 vf_btnChangeFolderInDialogOK gChangeFoldersInDialogOK, % o_L["DialogOK"]
 Gui, 3:Add, Button, yp x+20 vf_btnChangeFolderInDialogCancel gChangeFoldersInDialogCancel, % o_L["GuiCancel"]
 	
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnChangeFolderInDialogOK", "f_btnChangeFolderInDialogCancel")
+GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeFolderInDialogOK", "f_btnChangeFolderInDialogCancel")
 
 GuiControl, Focus, f_btnChangeFolderInDialogCancel
 CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, intX, intY)
@@ -8846,8 +8835,8 @@ if (A_ThisLabel = "ChangeFoldersInDialogOK")
 
 Gui, 2:-Disabled
 Gui, 3:Destroy
-if (g_intGui2WinID <> A_ScriptHwnd)
-	WinActivate, ahk_id %g_intGui2WinID%
+if (WinExist("A") <> g_strGui2WinID)
+	WinActivate, ahk_id %g_strGui2WinID%
 
 return
 ;------------------------------------------------------------
@@ -9350,7 +9339,7 @@ g_strGuiListviewBackgroundColor := o_Settings.ReadIniValue("ListviewBackground",
 g_strGuiListviewTextColor := o_Settings.ReadIniValue("ListviewText", 000000, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 
 g_strGuiFullTitle := L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion)
-Gui, 1:New, +Hwndg_strAppHwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
+Gui, 1:New, +Hwndg_strGui1Hwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
 
 if (o_Settings.SettingsWindow.intShowQAPmenu.IniValue <> 2) ; 1 Customize menu bar, 2 System menu, 3 both
 	Gui, Menu, menuBar
@@ -9450,11 +9439,11 @@ Gui, 1:Show, % "Hide "
 sleep, 100
 if (saSettingsPosition[1] <> -1)
 {
-	WinMove, ahk_id %g_strAppHwnd%, , , , % saSettingsPosition[3], % saSettingsPosition[4]
+	WinMove, ahk_id %g_strGui1Hwnd%, , , , % saSettingsPosition[3], % saSettingsPosition[4]
 	if (saSettingsPosition[5] = "M")
 	{
-		WinMaximize, ahk_id %g_strAppHwnd%
-		WinHide, ahk_id %g_strAppHwnd%
+		WinMaximize, ahk_id %g_strGui1Hwnd%
+		WinHide, ahk_id %g_strGui1Hwnd%
 	}
 }
 
@@ -9507,8 +9496,7 @@ if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
-	if not DllCall("LockWindowUpdate", Uint, g_strAppHwnd) ; lock QAP window while listview is updated
-		Oops(1, "An error occured while locking window display.", g_strAppNameText, g_strAppVersion)
+	DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while listview is updated
 
 Gui, 1:Default
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
@@ -9672,8 +9660,6 @@ return
 GuiHotkeysHelpClicked:
 ;------------------------------------------------------------
 Gui, 1:+OwnDialogs
-
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 strGuiTitle := o_L["GuiHotkeysHelp"]
@@ -9709,7 +9695,7 @@ LV_ModifyCol(1, "100 Right")
 ; LV_ModifyCol(1, 100)
 LV_ModifyCol(2, "Auto")
 Gui, 2:Add, Button, x10 y+10 g2GuiClose vf_btnHotkeysHelpClose, % o_L["GuiClose"]
-GuiCenterButtons(strGuiTitle, , , , "f_btnHotkeysHelpClose")
+GuiCenterButtons(g_strGui2Hwnd, , , , "f_btnHotkeysHelpClose")
 
 GuiControl, Focus, f_btnHotkeysHelpClose
 Gosub, ShowGui2AndDisableGui1
@@ -9832,6 +9818,8 @@ GuiFavoritesListFilterShow:
 GuiFavoritesListFilterHide:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 blnSearchVisible := SearchIsVisible()
 if (InStr(A_ThisLabel, "Show") and blnSearchVisible)
 	or (InStr(A_ThisLabel, "Hide") and !blnSearchVisible)
@@ -9901,7 +9889,6 @@ GuiQuickAddSnippet:
 
 Gosub, GuiShowFromAddSnippetAndHotstring
 
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 strGuiTitle := L(o_L["GuiQuickAddSnippetTitle"], g_strAppNameText, g_strAppVersion)
@@ -9917,8 +9904,8 @@ Gui, 2:Add, Text, x10 y10 vf_ShortNameLabel, % o_L["DialogFavoriteShortNameLabel
 Gui, 2:Add, Edit, x10 y+10 Limit250 vf_strFavoriteShortName h21 w400, % SubStr(strClipboardCleaned, 1, 20) . (StrLen(strClipboardCleaned) > 20 ? "..." : "")
 
 Gui, 2:Add, Text, x10 y+10, % L(o_L["OptionsQuickAddSnippetSubmenu"], o_L["GuiQuickAddNewSnippet"]) . ":"
-Gui, 2:Add, DropDownList, y+5 10 w500 vf_drpQuickAddSnippetSubmenu
-	, % o_MainMenu.BuildMenuListDropDown(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue, "", true) . "|" ; exclude read-only external menus
+Gui, 2:Add, DropDownList, y+5 10 w500 vf_drpParentMenu
+	, % o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath, "", true) . "|" ; exclude read-only external menus
 
 Gui, 2:Add, Text, x10 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
 Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-snippets/"">" . o_L["GuiHelp"] . "</a>)"
@@ -9935,7 +9922,7 @@ Gui, 2:Add, Button, y+20 vf_btnAddSnippetAndHotstringAdd gGuiQuickAddSnippetSave
 Gui, 2:Add, Button, yp vf_btnAddSnippetAndHotstringCancel gGuiQuickAddSnippetCancel, % aaL["GuiCancel"]
 Gui, 2:Add, Text, x10, %A_Space%
 
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAddSnippetAndHotstringAdd", "f_btnAddSnippetAndHotstringCancel")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddSnippetAndHotstringAdd", "f_btnAddSnippetAndHotstringCancel")
 Gosub, ShowGui2AndDisableGui1
 
 strClipboardCleaned := ""
@@ -10001,7 +9988,6 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 ; by another user since it was loaded in QAP by this user
 	return
 	
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 Gui, 1:ListView, f_lvFavoritesList
 g_intOriginalMenuPosition := (LV_GetCount() ? (LV_GetNext() ? LV_GetNext() : 0xFFFF) : 1)
@@ -10041,7 +10027,7 @@ Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, 
 Gui, Add, Text
 Gui, 2:Add, Text, xs+120 ys vf_lblAddFavoriteTypeHelp w250 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAddFavoriteSelectTypeContinue", "f_btnAddFavoriteSelectTypeCancel")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSelectTypeContinue", "f_btnAddFavoriteSelectTypeCancel")
 Gosub, ShowGui2AndDisableGui1
 
 o_ExternalMenu := ""
@@ -10377,21 +10363,21 @@ if InStr(strGuiFavoriteLabel, "GuiEditFavorite")
 	Gui, 2:Add, Button, y%intButtonsY% vf_btnEditFavoriteSave gGuiEditFavoriteSave default, % aaL["DialogOK"]
 	Gui, 2:Add, Button, yp vf_btnAddFavoriteCancel gGuiAddFavoriteCancel, % aaL["GuiCancel"]
 	
-	GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnEditFavoriteSave", "f_btnAddFavoriteCancel")
+	GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnEditFavoriteSave", "f_btnAddFavoriteCancel")
 }
 else if InStr(strGuiFavoriteLabel, "GuiCopyFavorite")
 {
 	Gui, 2:Add, Button, y%intButtonsY% vf_btnCopyFavoriteCopy gGuiCopyFavoriteSave default, % aaL["DialogCopy"]
 	Gui, 2:Add, Button, yp vf_btnAddFavoriteCancel gGuiAddFavoriteCancel, % aaL["GuiCancel"]
 	
-	GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnCopyFavoriteCopy", "f_btnAddFavoriteCancel")
+	GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnCopyFavoriteCopy", "f_btnAddFavoriteCancel")
 }
 else
 {
 	Gui, 2:Add, Button, y%intButtonsY% vf_btnAddFavoriteAdd gGuiAddFavoriteSave default, % aaL["DialogAdd"]
 	Gui, 2:Add, Button, yp vf_btnAddFavoriteCancel gGuiAddFavoriteCancel, % aaL["GuiCancel"]
 	
-	GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAddFavoriteAdd", "f_btnAddFavoriteCancel")
+	GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteAdd", "f_btnAddFavoriteCancel")
 }
 
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
@@ -11416,7 +11402,6 @@ GuiCopyMultipleFavoritesToMenu:
 
 Gui, 1:Default
 strGuiFavoriteLabel := A_ThisLabel
-g_intGui1WinID := WinExist("A")
 
 if (LV_GetNext() = 0)
 {
@@ -11453,7 +11438,7 @@ aaL := o_L.InsertAmpersand(false, "GuiCancel", "GuiCopy", "GuiMove")
 
 Gui, 2:Add, Button, % "y+20 vf_btnMoveOrCopyFavoritesSave default g" . (blnMove ? "GuiMoveMultipleFavoritesSave" : "GuiCopyMultipleFavoritesSave"), % (blnMove ? aaL["GuiMove"] : aaL["GuiCopy"])
 Gui, 2:Add, Button, yp vf_btnMoveOrCopyFavoritesCancel gGuiAddFavoriteCancel, % aaL["GuiCancel"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnMoveOrCopyFavoritesSave", "f_btnMoveOrCopyFavoritesCancel")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnMoveOrCopyFavoritesSave", "f_btnMoveOrCopyFavoritesCancel")
 
 g_intOriginalMenuPosition := 0xFFFF ; to select end of menu by default
 Gosub, DropdownParentMenuChanged ; to init the content of menu items
@@ -12054,7 +12039,7 @@ Gui, 3:Add, Button, x10 y+25 vf_btnIconsManagePrev gPickIconLoadPrev h20, % aaL[
 Gui, 3:Add, Button, x10 yp vf_btnIconsManageNext gPickIconLoadNext, % aaL["DialogIconsManageNext"]
 Gui, 3:Add, Button, x10 yp vf_btnIconsManageClose g3GuiEscape, % aaL["GuiCancel"]
 Gui, 3:Add, Text, x10, %A_Space%
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnIconsManagePrev", "f_btnIconsManageNext", "f_btnIconsManageClose")
+GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnIconsManagePrev", "f_btnIconsManageNext", "f_btnIconsManageClose")
 
 Gosub, GetIconsCount
 Gosub, PickIconLoad
@@ -12079,8 +12064,7 @@ PickIconLoadNext:
 ;------------------------------------------------------------
 Gui, 3:Submit, NoHide
 
-if not DllCall("LockWindowUpdate", Uint, g_strGui3Hwnd)
-	Oops(3, "An error occured while locking window display in`n" . L(o_L["DialogIconsManageTitle"], g_strAppNameText, g_strAppVersion))
+DllCall("LockWindowUpdate", Uint, g_strGui3Hwnd)
 
 if (A_ThisLabel = "PickIconLoad")
 	g_intIconsManageStartingIcon := 1 ; first load
@@ -12539,7 +12523,10 @@ CheckShowSettings:
 ;------------------------------------------------------------
 
 DetectHiddenWindows, Off
-if !WinExist(g_strGuiFullTitle) 
+blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
+DetectHiddenWindows, On ; revert to app default
+
+if !(blnExist) 
 {
 	if !StrLen(o_MenuInGui.AA.strMenuPath)
 		o_MenuInGui := o_MainMenu
@@ -12549,8 +12536,8 @@ if !WinExist(g_strGuiFullTitle)
 	Gui, 1:ListView, f_lvFavoritesList
 	LV_Modify(0, "-Select")
 }
-DetectHiddenWindows, On ; revert to app default
-g_intGui1WinID := WinExist("A")
+
+blnExist := ""
 
 return
 ;------------------------------------------------------------
@@ -12577,12 +12564,13 @@ GuiShowNeverCalled:
 
 ; if gui already visible, just activate the window
 DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
-if WinExist(g_strGuiFullTitle) ; keep the gui as-is if it is not closed
+blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
+DetectHiddenWindows, On ; revert to app default
+if (blnExist) ; keep the gui as-is if it is not closed
 {
 	WinActivate, %g_strGuiFullTitle%
 	return
 }
-DetectHiddenWindows, On ; revert to app default
 
 if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|", A_ThisLabel . "|") ; menu object already set in these cases
 	or !IsObject(o_MenuInGui.AA) ; or in some situation at startup where o_MenuInGui is not defined
@@ -12626,7 +12614,7 @@ else
 {
 	GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
 	if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
-		and GetWindowPositionOnActiveMonitor("ahk_id " . g_strAppHwnd, intActiveX, intActiveY, intPositionX, intPositionY))
+		and GetWindowPositionOnActiveMonitor("ahk_id " . g_strGui1Hwnd, intActiveX, intActiveY, intPositionX, intPositionY))
 		; display at center of active monitor
 		Gui, 1:Show, % "x" . intPositionX . " y" . intPositionY
 	else ; keep existing position
@@ -12640,6 +12628,7 @@ intActiveX := ""
 intActiveY := ""
 intPositionX := ""
 intPositionY := ""
+blnExist := ""
 
 return
 ;------------------------------------------------------------
@@ -12865,8 +12854,6 @@ if (A_ThisLabel = "AddExternalCatalogueFromQAPFeature")
 else
 	gosub, 2GuiClose
 
-g_intGui1WinID := WinExist("A")
-
 strGuiTitle := L(o_L["DialogExternalMenuAddFromCatalogue"], g_strAppNameText, g_strAppVersion)
 Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
@@ -12897,7 +12884,7 @@ Loop, Files, %strExpandedPath%\*.ini, R
 }
 LV_ModifyCol(, "")
 
-GuiCenterButtons(strGuiTitle, 20, 10, , "f_btnAddExternalMenusFromCatalogue", "f_btnAddExternalMenusNotFromCatalogue", "f_btnAddExternalMenusFromCatalogueClose")
+GuiCenterButtons(g_strGui2Hwnd, 20, 10, , "f_btnAddExternalMenusFromCatalogue", "f_btnAddExternalMenusNotFromCatalogue", "f_btnAddExternalMenusFromCatalogueClose")
 
 Gosub, ShowGui2AndDisableGui1
 
@@ -13512,17 +13499,7 @@ else
 	strNewFavoriteLocation := f_strFavoriteLocation
 	strFavoriteAppWorkingDir := f_strFavoriteAppWorkingDir
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
-	
-	if (strThisLabel = "GuiQuickAddSnippetSave")
-	{
-		; check if default Snippet Quick Add submenu exists
-		if !o_Containers.AA.HasKey(o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue)
-			o_Settings.Snippets.strQuickAddSnippetSubmenu.WriteIni(o_L["MainMenuName"])
-		strDestinationMenu := o_Settings.Snippets.strQuickAddSnippetSubmenu.IniValue
-	}
-	else
-		; f_drpParentMenu and f_drpParentMenuItems have same field name in 2 gui: GuiAddFavorite and GuiMoveMultipleFavoritesToMenu
-		strDestinationMenu := f_drpParentMenu
+	strDestinationMenu := f_drpParentMenu
 
 	; if gui was closed from Live Folder Options tab (without changing tab), update Live folder icon
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder" and f_blnFavoriteFolderLive
@@ -14117,6 +14094,8 @@ return
 GuiSortFavorites:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 {
 	o_ExternalMenu := ""
@@ -14309,6 +14288,8 @@ return
 GuiSelectAll:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
 LV_Modify(0, "Select") ; select all in listview
 GuiControl, Focus, %A_DefaultListView%
@@ -14360,12 +14341,10 @@ GuiHotkeysManageHotstrings:
 GuiHotkeysManageHotstringsFromQAPFeature:
 ;------------------------------------------------------------
 
-if InStr(A_ThisLabel, "FromQAPFeature")
-	Gosub, GuiShowFromHotkeysManage
+gosub, CheckShowSettings
 	
 intWidth := 980
 
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 strGuiTitle := L(o_L["DialogHotkeysManageTitle"], g_strAppNameText, g_strAppVersion)
@@ -14410,7 +14389,7 @@ Gosub, HotkeysManageListLoad
 
 Gui, 2:Tab
 Gui, 2:Add, Button, x+10 y+30 vf_btnHotkeysManageClose gGuiHotkeysManageClose h33 Default, % o_L["GuiClose"]
-GuiCenterButtons(strGuiTitle, , , , "f_btnHotkeysManageClose")
+GuiCenterButtons(g_strGui2Hwnd, , , , "f_btnHotkeysManageClose")
 GuiControl, Focus, f_btnHotkeysManageClose
 Gui, 2:Add, Text, x10, %A_Space%
 
@@ -14513,8 +14492,7 @@ Gui, 2:ListView, f_lvHotkeysManageList
 LV_Delete()
 
 intHotkeysManageListWinID := WinExist("A")
-if not DllCall("LockWindowUpdate", Uint, intHotkeysManageListWinID)
-	Oops(2, "An error occured while locking window display in`n" . L(o_L["DialogHotkeysManageTitle"], g_strAppNameText, g_strAppVersion))
+DllCall("LockWindowUpdate", Uint, intHotkeysManageListWinID)
 
 Loop, 2
 {
@@ -14579,13 +14557,11 @@ GuiIconsManage:
 GuiIconsManageFromQAPFeature:
 ;------------------------------------------------------------
 
-if (A_ThisLabel = "GuiIconsManageFromQAPFeature")
-	Gosub, GuiShowFromIconsManage
+gosub, CheckShowSettings
 
 global g_saManageIcons := Object() ; was g_objManageIcons
 o_MainMenu.LoadMenuIconsManage()
 
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 intIconsManageRowsHeight := 44
@@ -14641,8 +14617,8 @@ Gui, 2:Add, Text, x10, %A_Space%
 
 Gosub, LoadIconsManageList
 
-; GuiCenterButtons(strWindow, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, arrControls*)
-GuiCenterButtons(strGuiTitle, 20, 10, 40, "f_btnIconsManagePrev", "f_btnIconsManageNext", "f_btnIconsManageClose")
+; GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, arrControls*)
+GuiCenterButtons(g_strGui2Hwnd, 20, 10, 40, "f_btnIconsManagePrev", "f_btnIconsManageNext", "f_btnIconsManageClose")
 Gosub, ShowGui2AndDisableGui1
 
 intTop := ""
@@ -14672,8 +14648,7 @@ LoadIconsManageListNext:
 ;------------------------------------------------------------
 
 intIconsManageListWinID := WinExist("A")
-if not DllCall("LockWindowUpdate", Uint, intIconsManageListWinID)
-	Oops(2, "An error occured while locking window display in`n" . L(o_L["DialogIconsManageTitle"], g_strAppNameText, g_strAppVersion))
+DllCall("LockWindowUpdate", Uint, intIconsManageListWinID)
 
 if (A_ThisLabel = "LoadIconsManageListNext")
 	g_intIconsManageStartingRow += g_intIconsManageRows
@@ -14779,6 +14754,8 @@ return
 GuiAddSeparator:
 GuiAddColumnBreak:
 ;------------------------------------------------------------
+
+gosub, CheckShowSettings
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the menu is an external menu that cannot be locked, user received an error message, then abort
@@ -14943,8 +14920,6 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	
 	o_HotkeyActual := new Triggers.HotkeyParts(P_strActualShortcut) ; global
 
-	g_intGui2WinID := WinExist("A")
-	
 	SS_strGuiTitle := L(o_L["DialogChangeHotkeyTitle"], g_strAppNameText, g_strAppVersion)
 	Gui, 3:New, +Hwndg_strGui3Hwnd, %SS_strGuiTitle%
 	Gui, 3:Default
@@ -15000,12 +14975,12 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	if StrLen(P_strDefaultShortcut) and (P_strFavoriteType <> "Alternative")
 	{
 		Gui, Add, Button, % "x10 y" . SS_arrTopY + 100 . " vf_btnResetShortcut gButtonResetShortcut", % SS_aaL["GuiResetDefault"]
-		GuiCenterButtons(SS_strGuiTitle, 10, 5, 20, "f_btnNoneShortcut", "f_btnResetShortcut")
+		GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnNoneShortcut", "f_btnResetShortcut")
 	}
 	else
 	{
 		Gui, Add, Text, % "x10 y" . SS_arrTopY + 100
-		GuiCenterButtons(SS_strGuiTitle, 10, 5, 20, "f_btnNoneShortcut")
+		GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnNoneShortcut")
 	}
 	
 	Gui, Add, Text, x10 y+25 w400, % o_L["DialogChangeHotkeyLeftAnyRight"]
@@ -15025,7 +15000,7 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	Gui, Add, Button, y+25 x10 vf_btnChangeShortcutOK gButtonChangeShortcutOK, % SS_aaL["DialogOK"]
 	Gui, Add, Button, yp x+20 vf_btnChangeShortcutCancel gButtonChangeShortcutCancel, % SS_aaL["GuiCancel"]
 	
-	GuiCenterButtons(SS_strGuiTitle, 10, 5, 20, "f_btnChangeShortcutOK", "f_btnChangeShortcutCancel")
+	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeShortcutOK", "f_btnChangeShortcutCancel")
 
 	Gui, Add, Text
 	GuiControl, Focus, f_btnChangeShortcutOK
@@ -15278,8 +15253,6 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	if !StrLen(P_strActualHotstring) ; if new hotstring, use default options
 		SH_strFavoriteHotstringOptionsShort := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue
 
-	g_intGui2WinID := WinExist("A")
-
 	Gui, 3:New, +Hwndg_strGui3Hwnd, %SH_strGuiTitle%
 	Gui, 3:Default
 	Gui, +Owner2
@@ -15332,7 +15305,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	Gui, Add, Button, y+25 x10 vf_btnChangeHotstringOK gButtonChangeHotstringOK default, % SH_aaL["DialogOK"]
 	Gui, Add, Button, yp x+20 vf_btnChangeHotstringCancel gButtonChangeHotstringCancel, % SH_aaL["GuiCancel"]
 	
-	GuiCenterButtons(SH_strGuiTitle, 10, 5, 20, "f_btnChangeHotstringOK", "f_btnChangeHotstringCancel")
+	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeHotstringOK", "f_btnChangeHotstringCancel")
 
 	Gui, Add, Text
 	GuiControl, Focus, f_btnChangeHotkeyOK
@@ -15566,7 +15539,7 @@ ShowGui2AndDisableGui1KeepPosition:
 
 if (A_ThisLabel = "ShowGui2AndDisableGui1")
 {
-	CalculateTopGuiPosition(g_strGui2Hwnd, g_strAppHwnd, intX, intY)
+	CalculateTopGuiPosition(g_strGui2Hwnd, g_strGui1Hwnd, intX, intY)
 	Gui, 2:Show, AutoSize x%intX% y%intY%
 }
 else ; KeepPosition
@@ -15700,7 +15673,7 @@ return
 2GuiEscape:
 ;------------------------------------------------------------
 
-WinGetTitle, strThisTitle, A
+WinGetTitle, strThisTitle, ahk_id %g_strGui2Hwnd%
 
 if (g_strOptionsGuiTitle = strThisTitle) and StrLen(strThisTitle) ; StrLen by safety in case WinGetTitle returned nothing
 {
@@ -15738,8 +15711,8 @@ else
 
 Gui, 1:-Disabled
 Gui, 2:Destroy
-if (g_intGui1WinID <> A_ScriptHwnd)
-	WinActivate, ahk_id %g_intGui1WinID%
+if (WinExist("A") <> g_strGui1Hwnd)
+	WinActivate, ahk_id %g_strGui1Hwnd%
 
 if (g_Gui1AlwaysOnTop)
 	WinSet, AlwaysOnTop, On, % L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion)
@@ -15776,8 +15749,8 @@ if (A_ThisLabel = "3GuiEscape")
 
 Gui, 2:-Disabled
 Gui, 3:Destroy
-if (g_intGui2WinID <> A_ScriptHwnd)
-	WinActivate, ahk_id %g_intGui2WinID%
+if (WinExist("A") <> g_strGui2WinID)
+	WinActivate, ahk_id %g_strGui2WinID%
 
 return
 ;------------------------------------------------------------
@@ -16846,9 +16819,9 @@ Gui, CloseComputer:Add, Button, % "x10 y" . arrGroupLastPosY + 25 . " gCloseComp
 Gui, CloseComputer:Add, Button, x10 yp gCloseComputerGuiEscape vf_btnCloseComputerCancel, % o_L["DialogCancelButton"]
 Gui, CloseComputer:Add, Text, y+10
 
-GuiCenterButtons(strGuiTitle, 20, 10, , "f_btnCloseComputerGo", "f_btnCloseComputerCancel")
+GuiCenterButtons(g_strGui3Hwnd, 20, 10, , "f_btnCloseComputerGo", "f_btnCloseComputerCancel")
 
-CalculateTopGuiPosition(g_strGui3Hwnd, g_strAppHwnd, intX, intY)
+CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
 Gui, CloseComputer:Show, AutoSize x%intX% y%intY%
 
 intX := ""
@@ -17016,10 +16989,10 @@ Loop, %strWinIDs%
 		LV_Add("", objWindowProperties.WindowTitle, strWinIDs%A_Index%, objWindowProperties.ProcessPath)
 LV_ModifyCol(1, "Auto")
 
-GuiCenterButtons(strGuiTitle, 20, 10, , "f_btnCloseAllWindowsClose", "f_btnCloseAllWindowsCancel")
+GuiCenterButtons(g_strGui3Hwnd, 20, 10, , "f_btnCloseAllWindowsClose", "f_btnCloseAllWindowsCancel")
 
 GuiControl, CloseAllWindows:Focus, f_lvCloseAllWindows
-CalculateTopGuiPosition(g_strGui3Hwnd, g_strAppHwnd, intX, intY)
+CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
 Gui, CloseAllWindows:Show, AutoSize x%intX% y%intY%
 
 intX := ""
@@ -17597,24 +17570,24 @@ Gui, Update:Font
 Gui, Update:Add, Button, y+20 x10 vf_btnCheck4UpdateDialogChangeLog gButtonCheck4UpdateDialogChangeLog, % o_L["UpdateButtonChangeLog"]
 Gui, Update:Add, Button, yp x+20 vf_btnCheck4UpdateDialogVisit gButtonCheck4UpdateDialogVisit, % o_L["UpdateButtonVisit"]
 
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnCheck4UpdateDialogChangeLog", "f_btnCheck4UpdateDialogVisit")
+GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnCheck4UpdateDialogChangeLog", "f_btnCheck4UpdateDialogVisit")
 
 if (g_strUpdateProdOrBeta = "prod")
 {
 	Gui, Update:Add, Button, y+20 x10 vf_btnCheck4UpdateDialogDownloadSetup gButtonCheck4UpdateDialogDownloadSetup, % o_L["UpdateButtonDownloadSetup"]
 	Gui, Update:Add, Button, yp x+20 vf_btnCheck4UpdateDialogDownloadPortable gButtonCheck4UpdateDialogDownloadPortable, % o_L["UpdateButtonDownloadPortable"]
 
-	GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnCheck4UpdateDialogDownloadSetup", "f_btnCheck4UpdateDialogDownloadPortable")
+	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnCheck4UpdateDialogDownloadSetup", "f_btnCheck4UpdateDialogDownloadPortable")
 }
 
 Gui, Update:Add, Button, y+20 x10 vf_btnCheck4UpdateDialogSkipVersion gButtonCheck4UpdateDialogSkipVersion, % o_L["UpdateButtonSkipVersion"]
 Gui, Update:Add, Button, yp x+20 vf_btnCheck4UpdateDialogRemind gButtonCheck4UpdateDialogRemind, % o_L["UpdateButtonRemind"]
 Gui, Update:Add, Text
 
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnCheck4UpdateDialogSkipVersion", "f_btnCheck4UpdateDialogRemind")
+GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnCheck4UpdateDialogSkipVersion", "f_btnCheck4UpdateDialogRemind")
 
 GuiControl, Update:Focus, f_btnCheck4UpdateDialogRemind
-CalculateTopGuiPosition(g_strGui3Hwnd, g_strAppHwnd, intX, intY)
+CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
 Gui, Update:Show, AutoSize x%intX% y%intY%
 
 strGuiTitle := ""
@@ -17762,12 +17735,12 @@ aaImportExportL := o_L.InsertAmpersand(false, "ImpExpImport", "ImpExpExport", "G
 
 Gui, ImpExp:Add, Button, y+20 x10 vf_btnImpExpGo gButtonImpExpGo default, % aaImportExportL["ImpExpExport"]
 Gui, ImpExp:Add, Button, yp x+20 vf_btnImpExpClose gButtonImpExpClose, % aaImportExportL["GuiClose"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnImpExpGo", "f_btnImpExpClose")
+GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnImpExpGo", "f_btnImpExpClose")
 Gui, ImpExp:Add, Text
 
 ; GuiControl, Focus, f_btnCheck4UpdateDialogDownloadSetup
 gosub, ImpExpClicked
-CalculateTopGuiPosition(g_strGui3Hwnd, g_strAppHwnd, intX, intY)
+CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
 Gui, ImpExp:Show, AutoSize x%intX% y%intY%
 
 intX := ""
@@ -18051,8 +18024,6 @@ return
 ;------------------------------------------------------------
 GuiAbout:
 ;------------------------------------------------------------
-
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 strGuiTitle := L(o_L["AboutTitle"], g_strAppNameText, g_strAppVersion)
@@ -18075,7 +18046,7 @@ aaL := o_L.InsertAmpersand(false, "GuiClose", "DonateButton")
 
 Gui, 2:Add, Button, y+20 vf_btnAboutDonate gGuiDonate, % aaL["DonateButton"]
 Gui, 2:Add, Button, yp vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnAboutDonate", "f_btnAboutClose")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutDonate", "f_btnAboutClose")
 
 GuiControl, Focus, f_btnAboutClose
 Gosub, ShowGui2AndDisableGui1
@@ -18091,8 +18062,6 @@ return
 ;------------------------------------------------------------
 GuiDonate:
 ;------------------------------------------------------------
-
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
@@ -18146,7 +18115,7 @@ aaL := o_L.InsertAmpersand(false, "GuiDonateCodeInput", "GuiClose")
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Button, x175 y+20 gGuiDonateCodeInput vf_btnDonateCodeInuput, % aaL["GuiDonateCodeInput"] . g_strEllipse
 Gui, 2:Add, Button, x175 yp g2GuiClose vf_btnDonateClose, % aaL["GuiClose"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnDonateCodeInuput", "f_btnDonateClose")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateCodeInuput", "f_btnDonateClose")
 Gui, 2:Add, Text
 
 GuiControl, Focus, btnDonateDefault
@@ -18188,8 +18157,6 @@ return
 ;------------------------------------------------------------
 GuiDonateCodeInput:
 ;------------------------------------------------------------
-
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
@@ -18212,11 +18179,11 @@ aaL := o_L.InsertAmpersand(false, "GuiSave", "DialogCancelButton")
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Button, x175 y+20 gGuiDonateCodeInputSave vf_btnDonateCodeInputSave, % aaL["GuiSave"]
 Gui, 2:Add, Button, x175 yp g2GuiClose vf_btnDonateCodeInputCancel, % aaL["DialogCancelButton"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnDonateCodeInputSave", "f_btnDonateCodeInputCancel")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateCodeInputSave", "f_btnDonateCodeInputCancel")
 if (o_Settings.Launch.blnDonorCode.IniValue)
 {
 	Gui, 2:Add, Link, y+15 gGuiDonateCodeInputRemove vf_lnkSponsorRemove, % "<a>" . o_L["SponsorRemove"] . "</a>"
-	GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_lnkSponsorRemove")
+	GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_lnkSponsorRemove")
 }
 Gui, 2:Add, Text
 
@@ -18286,7 +18253,6 @@ GuiHelp:
 
 aaL := o_L.InsertAmpersand(false, "DonateButton", "GuiClose", "DialogTabNext")
 
-g_intGui1WinID := WinExist("A")
 Gui, 1:Submit, NoHide
 
 strGuiTitle := L(o_L["HelpTitle"], g_strAppNameText, g_strAppVersion)
@@ -18311,7 +18277,7 @@ Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText12"]
 Gui, 2:Add, Link, w%intWidth%, % L(o_L["HelpText13"], o_PopupHotkeyAlternativeHotkeyMouse.AA.strPopupHotkeyText, o_PopupHotkeyAlternativeHotkeyKeyboard.AA.strPopupHotkeyText)
 Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText14"]
 Gui, 2:Add, Button, y+25 vf_btnNext1 gNextHelpButtonClicked, % aaL["DialogTabNext"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnNext1")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnNext1")
 
 Gui, 2:Tab, 2
 Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText21"]
@@ -18319,7 +18285,7 @@ Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText22"]
 Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText24"]
 Gui, 2:Add, Link, w%intWidth%, % L(o_L["HelpText23"], o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText, o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.AA.strPopupHotkeyText)
 Gui, 2:Add, Button, y+25 vf_btnNext2 gNextHelpButtonClicked, % aaL["DialogTabNext"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnNext2")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnNext2")
 
 Gui, 2:Tab, 3
 Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText35"]
@@ -18329,7 +18295,7 @@ Gui, 2:Add, Link, w%intWidth% y+3, % o_L["HelpText32"]
 Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText33"]
 Gui, 2:Add, Link, w%intWidth% y+3, % L(o_L["HelpText34"], new Triggers.HotkeyParts(GetFavoriteHotkeyFromLocation("{Settings}")).Hotkey2Text())
 Gui, 2:Add, Button, y+25 vf_btnNext3 gNextHelpButtonClicked, % aaL["DialogTabNext"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnNext3")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnNext3")
 
 Gui, 2:Tab, 4 ; has text numbered 51, 52, etc.
 Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText51"]
@@ -18341,7 +18307,7 @@ Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText52"]
 Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText53"]
 Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText54"]
 Gui, 2:Add, Button, y+25 vf_btnNext4 gNextHelpButtonClicked, % aaL["DialogTabNext"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnNext4")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnNext4")
 
 Gui, 2:Tab, 5 ; has text numbered 41, 42, etc.
 Gui, 2:Add, Link, w%intWidth%, % o_L["HelpText41"]
@@ -18355,7 +18321,7 @@ Gui, 2:Tab
 GuiControlGet, arrTabPos, Pos, f_intHelpTab
 Gui, 2:Add, Button, % "x180 y" . arrTabPosY + arrTabPosH + 10. " vf_btnHelpDonate gGuiDonate", % aaL["DonateButton"]
 Gui, 2:Add, Button, x+80 yp g2GuiClose vf_btnHelpClose, % aaL["GuiClose"]
-GuiCenterButtons(strGuiTitle, 10, 5, 20, "f_btnHelpDonate", "f_btnHelpClose")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnHelpDonate", "f_btnHelpClose")
 
 GuiControl, Focus, btnHelpClose
 Gosub, ShowGui2AndDisableGui1
@@ -19136,7 +19102,7 @@ AdjustColumnsWidth:
 if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 ; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 {
-	WinGet, intMinMax, MinMax, ahk_id %g_strAppHwnd%
+	WinGet, intMinMax, MinMax, ahk_id %g_strGui1Hwnd%
 	if (intMinMax = 1) ; maximized
 	{
 		; 1) Name 20%, 2) Menu 45%, 3) Type 6%, 4) Hotkey 9%, 5) Location or content 20%
@@ -19164,23 +19130,6 @@ if (SearchIsVisible() and o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 
 Loop, % LV_GetCount("Column") - (SearchIsVisible() ? 1 : 0)
 	LV_ModifyCol(A_Index + (SearchIsVisible() ? 1 : 0), "AutoHdr") ; adjust other columns width
-
-/*
-FOLLOWING NOT REQUIRED ANYMORE
-when using option AutoHdr ("If applied to the last column, it will be made at least as wide as all the remaining space in the ListView.")
-
-; See http://www.autohotkey.com/board/topic/6073-get-listview-column-width-with-sendmessage/
-Loop, %intNbColAuto%
-{
-	intColZeroBased := A_Index - 1 ; column index, zero-based
-	SendMessage, 0x1000+29, %intColZeroBased%, 0, SysListView321, ahk_id %g_strAppHwnd%
-	intColSum += ErrorLevel ; column width
-}
-
-LV_ModifyCol(intNbColAuto + 1, g_intListW - intColSum - 21) ; adjust column width (-21 is for vertical scroll bar width)
-
-intColSum := ""
-*/
 
 return
 ;------------------------------------------------------------
@@ -19841,12 +19790,13 @@ GetIcon4Location(strLocation)
 
 
 ;------------------------------------------------------------
-GuiCenterButtons(strWindow, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, arrControls*)
+GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, arrControls*)
 ; This is a variadic function. See: http://ahkscript.org/docs/Functions.htm#Variadic
 ;------------------------------------------------------------
 {
-	Gui, Show, Hide ; why?
-	WinGetPos, , , intWidth, , %strWindow%
+	; A_DetectHiddenWindows must be on (app's default); Gui, Show acts on current default gui (1: or 2: , etc)
+	Gui, Show, Hide ; hides the window and activates the one beneath it, allows a hidden window to be moved, resized, or given a new title without showing it
+	WinGetPos, , , intWidth, , ahk_id %strWindowHandle%
 
 	; find largest control height and width
 	intMaxControlWidth := 0
