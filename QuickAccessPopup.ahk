@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.3.9.8 (2020-03-04)
+- when clicking the "Sort" button in the "Customize" window, sort favorites based on user's locale setting (taking into account all non-English characters)
+- add prompt "Click an icon to select it" to the new "Select icon" dialog box
+- fix bug centering buttons in the "Snippet Quick Add" dialog box
+- fix bug to show "Customize window" when calling various tools from the "Tools" and "Favorites" in the system menus (Tray menu in the notification zone)
+- fix bug when setting the default submenu in "Snippet Quick Add" dialog box using the current menu in the "Customize" (if it is visible) or the menu where the "Snippet Quick Add" feature was called (for example, "My Snippets" default submenu)
+- remove the option "Submenu for Snippet Quick Add" in "Snippets and Hotstrings" section (use instead same approach as for "Add Favorite - QAP Feature" and "Add Favorite - Special Folder" as described above)
+
 Version BETA: 10.3.9.7 (2020-02-29)
  
 Search result
@@ -3828,7 +3836,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.7
+;@Ahk2Exe-SetVersion 10.3.9.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3933,7 +3941,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
