@@ -46,6 +46,11 @@ Various
 - replace Windows Pick Icon dialog box with custom Select icon dialog box
 - fix bug when a shared menu settings file is not found
 
+Version: 10.3.5 (2020-02-29)
+- replace Windows "Pick icon" small dialog box (crashing QAP on some systems) with custom and larger "Select icon" dialog box
+- fix bug when a Shared menu settings file is not found (update strongly recommended for users of Shared menus)
+- add a checkbox in the Setup program to make optional the creation of Start menu icon when installing QAP; uninstall and reinstall QAP (keeping your data in the QAP Settings folder) because this option is maintained if you only update QAP
+
 Version BETA: 10.3.9.6 (2020-02-09)
  
 Copy and move submenus and groups
@@ -12027,9 +12032,10 @@ Gui, 3:Add, Edit, x+5 yp w500 h20 vf_strIconFile
 ParseIconResource(g_strNewFavoriteIconResource, g_strCurrentIconFile, intIconIndex)
 GuiControl, 3:, f_strIconFile, %g_strCurrentIconFile%
 Gui, 3:Add, Button, x+5 yp w100 gButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
+Gui, 3:Add, Text, x10 y+10, % o_L["DialogIconsSelectPrompt"]
 
 ; create pic objects
-intTop := 44
+intTop := 64
 intLeft := 4
 intRow := 0
 Loop, %g_intPickIconRows%
