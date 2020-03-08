@@ -6368,6 +6368,7 @@ else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
 		aaFolderOrApp := Object()
 		aaFolderOrApp.strLocationURL := aaTCTab.strLocation
 		aaFolderOrApp.strName := aaTCTab.strName
+		aaFolderOrApp.strWindowId := aaTCTab.strWindowId
 		aaFolderOrApp.strWindowType := "TC"
 		
 		saFoldersAndAppsList.Push(aaFolderOrApp)
@@ -6640,6 +6641,8 @@ GetTCTab(intControl, intType)
 			if FileExist(strCleanedText)
 			{
 				strPathInTC := strCleanedText
+				if SubStr(strPathInTC, 0, 1) = ":" ; 0 to start from end of string
+					strPathInTC .= "\" ; exception for drive paths
 				break
 			}
 		}
@@ -6661,7 +6664,8 @@ CollectTCTabs(strFolder)
 			aaTCtab := Object()
 			aaTCtab.intMinMax := intMinMax
 			aaTCtab.strLocation := A_LoopField
-			aaTCtab.strName := GetLocationPathName(A_LoopField)
+			aaTCtab.strName := A_LoopField
+			aaTCtab.strWindowId := WinExist("ahk_class TTOTAL_CMD") 
 			saTCTabs.Push(aaTCtab)
 		}
 	
@@ -19205,7 +19209,7 @@ GetSelectedLocation(strClass, strWinId)
 		ControlGet, objFiles, List, Selected Col1, SysListView321, ahk_class %strClass%
 		Loop, Parse, objFiles, `n, `r
 		{
-			strFirstItem := A_Desktop . "\" A_LoopField
+			strFirstItem := A_Desktop . "\" . A_LoopField
 			if StrLen(strFirstItem)
 				break
 		}
@@ -19781,7 +19785,7 @@ DecodeSnippet(strSnippet, blnWithCarriageReturn := false)
 	strSnippet := StrReplace(strSnippet
 		, "``n", (blnWithCarriageReturn ? "`r" : "") . "`n")		; decode end-of-lines (with `r only when sending as Snippet)
 	strSnippet := StrReplace(strSnippet, "``t", "`t")				; decode tabs
-	strSnippet := StrReplace(strSnippet, "!r4nd0mt3xt!", "````")	; restore double-backticks
+	strSnippet := StrReplace(strSnippet, "!r4nd0mt3xt!", "``")		; restore double-backticks
 	
 	return strSnippet
 }
@@ -27096,9 +27100,7 @@ class Container
 		;---------------------------------------------------------
 		{
 			saFolderWindowId := StrSplit(this.AA.strFavoriteLocation, "|")
-			if (saFolderWindowId[1] = "EX") ; Explorer
-				WinActivate, % "ahk_id " . saFolderWindowId[2]
-			else if (saFolderWindowId[1] = "DO") ; Directory Opus
+			if (saFolderWindowId[1] = "DO") ; Directory Opus
 				; double % for DOpusRT (http://resource.dopus.com/viewtopic.php?f=3&t=23013#p124395)
 				; this.strFavoriteName := StrReplace(this.strFavoriteName, "%", "%%")
 				; remove because does not seem to be required anymore?
