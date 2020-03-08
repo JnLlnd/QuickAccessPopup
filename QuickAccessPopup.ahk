@@ -6457,12 +6457,17 @@ if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Current Folders}") or o_QAPfeat
 
 Diag(A_ThisLabel, "", "START")
 
-; Gather Explorer and DOpus windows/listers
+; Gather Explorer windows, DOpus listers and TC current folder
 
 if (o_FileManagers.P_intActiveFileManager = 2) ; DirectoryOpus
 {
-	Gosub, RefreshDOpusListersListText
+	Gosub, RefreshDOpusListersListText ; update g_strDOpusListText
 	saDOpusListers := CollectDOpusListersList(g_strDOpusListText) ; list all listers, excluding special folders like Recycle Bin
+}
+else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
+{
+	gosub, RefreshTCTabs ; update g_strTCTabs
+	saTCTabs := CollectTCTabs(g_strTCTabs)
 }
 
 saExplorersWindows := CollectExplorers(ComObjCreate("Shell.Application").Windows)
@@ -6474,7 +6479,7 @@ saFoldersAndAppsList := Object()
 intWindowsIdIndex := 0
 blnWeHaveFolders := false
 
-; Process DOpus listers
+; Process DOpus listers and Total Commander tabs
 
 if (o_FileManagers.P_intActiveFileManager = 2) ; DirectoryOpus
 	for intIndex, aaLister in saDOpusListers
@@ -6493,6 +6498,26 @@ if (o_FileManagers.P_intActiveFileManager = 2) ; DirectoryOpus
 		aaFolderOrApp.strName := aaLister.strName
 		aaFolderOrApp.strWindowId := aaLister.strLister
 		aaFolderOrApp.strWindowType := "DO"
+		
+		saFoldersAndAppsList.Push(aaFolderOrApp)
+	}
+else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
+	for intIndex, aaTCTab in saTCTabs
+	{
+		; if we have no path or a DOpus collection, skip it
+		if !StrLen(aaTCTab.strLocation)
+			continue
+		
+		if NameIsInObject(aaTCTab.strName, saFoldersAndAppsList)
+			continue
+		
+		intWindowsIdIndex++
+		blnWeHaveFolders := true
+		aaFolderOrApp := Object()
+		aaFolderOrApp.strLocationURL := aaTCTab.strLocation
+		aaFolderOrApp.strName := aaTCTab.strName
+		aaFolderOrApp.strWindowId := aaTCTab.strWindowId
+		aaFolderOrApp.strWindowType := "TC"
 		
 		saFoldersAndAppsList.Push(aaFolderOrApp)
 	}
@@ -6591,10 +6616,15 @@ if (intWindowsIdIndex)
 				; g_aaReopenFolderLocationUrlByName[strMenuName] := aaFolderOrApp.strLocationURL) ; replaced by menu o_Containers.AA[o_L["MenuCurrentFolders"]]
 				saCurrentFoldersTable.Push([strFavoriteType, strMenuName, strMenuName, strFolderIcon]) ; insert strMenuName as location because it is decoded
 			}
-			saSwitchFolderOrAppTable.Push(["OpenSwitchFolderOrApp", strMenuName, aaFolderOrApp.strWindowType . "|" . aaFolderOrApp.strWindowId
-				, (aaFolderOrApp.strWindowType = "EX" ? strFolderIcon
-					: (aaFolderOrApp.strWindowType = "DO" ? (strFolderIcon = "iconFolder" ? g_aaFileManagerDirectoryOpus.strDirectoryOpusRtPath . ",1" : strFolderIcon)
-					: aaFolderOrApp.strLocationURL . ",1"))])
+			if (aaFolderOrApp.strWindowType = "EX")
+				strIcon := strFolderIcon
+			else if (aaFolderOrApp.strWindowType = "DO")
+				strIcon := (strFolderIcon = "iconFolder" ? g_aaFileManagerDirectoryOpus.strDirectoryOpusRtPath . ",1" : strFolderIcon)
+			else if (aaFolderOrApp.strWindowType = "TC")
+				strIcon := (strFolderIcon = "iconFolder" ? g_aaFileManagerTotalCommander.strFileManagerPathExpanded . ",1" : strFolderIcon)
+			else
+				strIcon := aaFolderOrApp.strLocationURL . ",1"
+			saSwitchFolderOrAppTable.Push(["OpenSwitchFolderOrApp", strMenuName, aaFolderOrApp.strWindowType . "|" . aaFolderOrApp.strWindowId, strIcon])
 		}
 	}
 }
@@ -6727,13 +6757,76 @@ ParseDOpusListerProperty(strSource, strProperty)
 }
 ;------------------------------------------------------------
 
+;------------------------------------------------------------
+RefreshTCTabs:
+;------------------------------------------------------------
+
+g_strTCTabs := GetTCTab(17, 1) ; control 17=bottompanel
+	. GetTCTab(15, 2) ; control 15=leftpanel
+	. GetTCTab(16, 2) ; control 16=rightpanel
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetTCTab(intControl, intType)
+;------------------------------------------------------------
+{
+	SendMessage, 1074, %intControl%, , , ahk_class TTOTAL_CMD ; WM_USER+50 = 1074
+	strControlHandle := ErrorLevel
+	if (strControlHandle = "FAIL")
+		return
+	
+	WinGetText, strControlText, ahk_id %strControlHandle% ; Get the current path in control
+
+	if (intType = 1)
+		strPathInTC := SubStr(strControlText, 1, -3) ; remove trailing > and newline
+	else
+		loop, Parse, strControlText, `n ; folder path can be on line 2 or 3, check all lines
+		{
+			strCleanedText := SubStr(A_LoopField, 1, InStr(A_LoopField, "\", , 0) - 1)
+			if FileExist(strCleanedText)
+			{
+				strPathInTC := strCleanedText
+				if SubStr(strPathInTC, 0, 1) = ":" ; 0 to start from end of string
+					strPathInTC .= "\" ; exception for drive paths
+				break
+			}
+		}
+	
+	return strPathInTC . "`n"
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+CollectTCTabs(strFolder)
+;------------------------------------------------------------
+{
+	saTCTabs := Object()
+	
+	Loop, Parse, strFolder, `n
+		if StrLen(A_LoopField)
+		{
+			aaTCtab := Object()
+			aaTCtab.intMinMax := intMinMax
+			aaTCtab.strLocation := A_LoopField
+			aaTCtab.strName := A_LoopField
+			aaTCtab.strWindowId := WinExist("ahk_class TTOTAL_CMD") 
+			saTCTabs.Push(aaTCtab)
+		}
+	
+	return saTCTabs
+}
+;------------------------------------------------------------
+
 
 ;------------------------------------------------------------
 CollectExplorers(pExplorers)
 ;------------------------------------------------------------
 {
 	saExplorers := Object()
-	intExplorers := 0
 	
 	For pExplorer in pExplorers
 	; see http://msdn.microsoft.com/en-us/library/windows/desktop/aa752084(v=vs.85).aspx
@@ -6752,7 +6845,6 @@ CollectExplorers(pExplorers)
 		if !StrLen(strType) ; must be empty
 			and StrLen(strWindowID) ; must not be empty
 		{
-			intExplorers++
 			aaExplorer := Object()
 			aaExplorer.strPosition := pExplorer.Left . "|" . pExplorer.Top . "|" . pExplorer.Width . "|" . pExplorer.Height
 
@@ -19462,7 +19554,7 @@ GetSelectedLocation(strClass, strWinId)
 		ControlGet, objFiles, List, Selected Col1, SysListView321, ahk_class %strClass%
 		Loop, Parse, objFiles, `n, `r
 		{
-			strFirstItem := A_Desktop . "\" A_LoopField
+			strFirstItem := A_Desktop . "\" . A_LoopField
 			if StrLen(strFirstItem)
 				break
 		}
@@ -20039,7 +20131,7 @@ DecodeSnippet(strSnippet, blnWithCarriageReturn := false)
 	strSnippet := StrReplace(strSnippet
 		, "``n", (blnWithCarriageReturn ? "`r" : "") . "`n")		; decode end-of-lines (with `r only when sending as Snippet)
 	strSnippet := StrReplace(strSnippet, "``t", "`t")				; decode tabs
-	strSnippet := StrReplace(strSnippet, "!r4nd0mt3xt!", "````")	; restore double-backticks
+	strSnippet := StrReplace(strSnippet, "!r4nd0mt3xt!", "``")		; restore double-backticks
 	
 	return strSnippet
 }
@@ -27436,9 +27528,7 @@ class Container
 		;---------------------------------------------------------
 		{
 			saFolderWindowId := StrSplit(this.AA.strFavoriteLocation, "|")
-			if (saFolderWindowId[1] = "EX") ; Explorer
-				WinActivate, % "ahk_id " . saFolderWindowId[2]
-			else if (saFolderWindowId[1] = "DO") ; Directory Opus
+			if (saFolderWindowId[1] = "DO") ; Directory Opus
 				; double % for DOpusRT (http://resource.dopus.com/viewtopic.php?f=3&t=23013#p124395)
 				; this.strFavoriteName := StrReplace(this.strFavoriteName, "%", "%%")
 				; remove because does not seem to be required anymore?
