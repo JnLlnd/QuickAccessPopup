@@ -9617,6 +9617,7 @@ return
 GuiFocusFilter:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
 gosub, GuiFavoritesListFilterShow
 
 GuiControl, 1:Focus, f_strFavoritesListFilter
@@ -12275,19 +12276,22 @@ return
 CheckShowSettings:
 ;------------------------------------------------------------
 
-if !StrLen(o_MenuInGui.AA.strMenuPath)
-	o_MenuInGui := o_MainMenu
-
 DetectHiddenWindows, Off
-if !WinExist(g_strGuiFullTitle) 
+blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
+DetectHiddenWindows, On ; revert to app default
+
+if !(blnExist) 
 {
+	if !StrLen(o_MenuInGui.AA.strMenuPath)
+		o_MenuInGui := o_MainMenu
+
 	Gosub, GuiShowFromGuiOutside
 	Gui, 1:Default
 	Gui, 1:ListView, f_lvFavoritesList
 	LV_Modify(0, "-Select")
 }
-DetectHiddenWindows, On ; revert to app default
-g_intGui1WinID := WinExist("A")
+
+blnExist := ""
 
 return
 ;------------------------------------------------------------
@@ -13824,6 +13828,8 @@ return
 GuiSortFavorites:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 {
 	o_ExternalMenu := ""
@@ -13921,6 +13927,8 @@ GuiSortCleanFavoriteName(strFavoriteName)
 GuiSelectAll:
 ;------------------------------------------------------------
 
+gosub, CheckShowSettings
+
 LV_Modify(0, "Select") ; select all in listview
 
 return
@@ -13970,8 +13978,7 @@ GuiHotkeysManageHotstrings:
 GuiHotkeysManageHotstringsFromQAPFeature:
 ;------------------------------------------------------------
 
-if InStr(A_ThisLabel, "FromQAPFeature")
-	Gosub, GuiShowFromHotkeysManage
+gosub, CheckShowSettings
 	
 intWidth := 980
 
@@ -14189,8 +14196,7 @@ GuiIconsManage:
 GuiIconsManageFromQAPFeature:
 ;------------------------------------------------------------
 
-if (A_ThisLabel = "GuiIconsManageFromQAPFeature")
-	Gosub, GuiShowFromIconsManage
+gosub, CheckShowSettings
 
 global g_saManageIcons := Object() ; was g_objManageIcons
 o_MainMenu.LoadMenuIconsManage()
@@ -14389,6 +14395,8 @@ return
 GuiAddSeparator:
 GuiAddColumnBreak:
 ;------------------------------------------------------------
+
+gosub, CheckShowSettings
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the menu is an external menu that cannot be locked, user received an error message, then abort
