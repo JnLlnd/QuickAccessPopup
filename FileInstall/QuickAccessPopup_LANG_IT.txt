@@ -21,13 +21,17 @@ lControlToolTipAlwaysOnTopOn	Mantieni questa finestra sempre in primo piano
 lControlToolTipColumnBreak	Inserisci un separatore di colonna
 lControlToolTipMoveDown	Sposta in giú il preferito selezionato/i
 lControlToolTipMoveUp	Sposta in su il preferito selezionato/i
+lControlToolTipNextMenu	Torna al menÃ¹ successivo
+lControlToolTipOpenMenuContainingSearchItem	Apri il sottomenÃ¹ o il gruppo contenente il preferito selezionato
 lControlToolTipParentMenu	Vai al menú superiore
 lControlToolTipPreviousMenu	Ritorna al menú precedente
 lControlToolTipSearchBoxClear	Svuota la casella di ricerca e mostra tutti i preferiti
 lControlToolTipSearchBoxExtended	Cerca a partire dal menù corrente nomi dei preferiti *e* varie proprietà
 lControlToolTipSearchButton	Cerca preferiti
 lControlToolTipSeparator	Inserisci un separatore di menú
+lControlToolTipShowContainerInGui	Mostra un menÃ¹ con preferiti nella finestra Personalizza
 lControlToolTipSortFavorites	Ordina tutti i Preferiti, o solo quelli selezionati nella lista
+lControlToolTipSortSearchResult	Ordina i preferiti nei risultati di ricerca
 lControlToolTipTextSeparator	Inserisci un separatore di menu testuale
 lCopyFavoritesToMenuOrGroup	Menú e gruppi non possono essere copiati.`n`nVuoi proseguire senza copiarli?
 lCopyLocationCopiedToClipboard	Percorso o URL copiato negli Appunti
@@ -173,7 +177,7 @@ lDialogFavoriteNameEmpty	Il nome del Preferito non può essere vuoto. Per favore,
 lDialogFavoriteNameNoSeparator	Questo oggetto non può contenere il carattere riservato "~1~".
 lDialogFavoriteNameNotAllowed	Preferiti del tipo "~1~" non sono permessi nei Gruppi. Per favore, seleziona un altro menù di destinazione dalla scheda "Menù Opzioni".
 lDialogFavoriteNameNotNew	Il nome "~1~" è già in uso in questo menù. Si prega di scegliere un altro nome.
-lDialogFavoriteNameNotNewQAPfeature	Il nome "~1~" è già in uso in questo menù. Per favore, rinomina il Preferito esistente e prova di nuovo.
+lDialogFavoriteNameNotNewQAPfeature	Il nome "~1~" Ã¨ giÃ  in uso in questo menÃ¹. Prova di nuovo dopo aver rinominato il preferito esistente.
 lDialogFavoriteParentMenu	Scegli il menù in cui inserirlo
 lDialogFavoriteParentMenuMove	Sposta il Preferito in questo menù
 lDialogFavoriteRemoveExternalPrompt	Vuoi eliminare il sottomenù esterno "~1~"?`n(il file .ini delle impostazioni "esterne" NON verrà cancellato)
@@ -265,6 +269,8 @@ lDialogIconsManageParentMenu	Menù superiore del Preferito
 lDialogIconsManagePrevious	Precedente
 lDialogIconsManageSetDefaultIcon	Assegna l'icona di default
 lDialogIconsManageTitle	Gestione Icone - ~1~ ~2~
+lDialogIconsSelectPrompt	Clicca su un'icona per selezionarla.
+lDialogIconsSelectTitle	Seleziona Icona - ~1~ ~2~
 lDialogInputExample	Esempio di input
 lDialogInputParameter	Parametro di input - ~1~
 lDialogInvalidHotkey	Con il tuo attuale layout di tastiera di sistema, non è stato possibile usare la combinazione "~1~" per aprire il popup menù (errore: tasto scelto non valido).`n`nPer favore, apri la finestra "Personalizzare ~2~" dal menù dell'icona nell'area notifiche e clicca: "Opzioni". In questa casella di dialogo, scegli un altro shortcut per "~3~".
@@ -310,6 +316,7 @@ lDialogRefresh	Aggiorna
 lDialogRemoveMultipleFavorites	Vuoi davvero eliminare ~1~ preferiti / sottomenù?
 lDialogResetQAPSpecialDefaultNames	Questo comando resetta tutte le Cartelle Speciali e Caratteristiche di QAP preferite nel tuo menù al loro nome di default in "~1~".`n`nContinuare?
 lDialogSearch	Cerca
+lDialogSearchAllFavorites	Ricerca in Tutti i Preferiti
 lDialogSelectIcon	Cambia icona
 lDialogSelectIconJL	Seleziona da:
 lDialogSelectIconNo	Senza icone
@@ -437,6 +444,8 @@ lGuiListApplicationsHeader	Indice|ID|titolo Finestra|Nome Processo|Percorso del 
 lGuiLoginName	Nome di Login
 lGuiLvFavoritesHeader	Nome|Tipo|Scorciatoia|Locazionen o contenuto
 lGuiLvFavoritesHeaderFiltered	Nome|Menù|Tipo|Combinazione|Posizione o contenuto
+lGuiLvFavoritesHeaderFilteredDates	Modificato|Creato per ultimo
+lGuiLvFavoritesHeaderFilteredStats	Usato|Uso per ultimo
 lGuiMove	Sposta
 lGuiOptions	Opzioni
 lGuiOptionsDescription	Visualizza la casella di dialogo "Opzioni" per consentire a QAP di comportarsi come preferisci.
@@ -545,6 +554,8 @@ lMenuCommonAppData	Dati Applicazioni (pubblica)
 lMenuCommonDesktop	Desktop pubblico
 lMenuCommonStartMenu	Menù Avvio (pubblico)
 lMenuCommonStartupMenu	Esecuzione Automatica (pubblico)
+lMenuContainerInGui	Preferiti nella finestra Personalizza
+lMenuContainerInGuiDescription	Mostra un menÃ¹ con i preferiti visualizzati nella finestra Personalizza, anche nel caso contenga risultati di ricerca. Nei risultati di ricerca, nomi di menÃ¹ duplicati vengono appesi col suffisso "[!]" per renderli unici.
 lMenuCookies	Cookies
 lMenuCopyLocation	Copia URL o Percorso del Preferito
 lMenuCurrentFolders	Cartelle Correnti
@@ -613,6 +624,7 @@ lMenuResetQAPSpecialDefaultNames	Resetta Nomi di Default delle Cartelle Speciali
 lMenuRestoreSettingsWindowPosition	Ripristina la posizione della finestra "Personalizzare"
 lMenuRestoreSettingsWindowPositionDescription	Ripristina dimensione finestra e posizione della finestra "Personalizzare" al centro dello schermo principale.
 lMenuRunAtStartup	Esegui all'Avvio
+lMenuSearchOrder	Ordine di ricerca originale
 lMenuSelectAll	Sleziona tutti gli elementi
 lMenuSettings	Personalizzare
 lMenuSettingsDescription	Visualizza la finestra "Personalizzare" in cui puoi personalizzare il menù popup QAP, gestire i tuoi preferiti e settare varie opzioni.`n`nPer impostazione predefinita, questa funzione è inclusa nel menù Principale.
@@ -646,8 +658,10 @@ lOopsAlternativeMenuModifiersDuplicates	Il Modificatore "~1~" del Menù alternati
 lOopsAlternativeNotSupported	Il comando "~1~" del menù Alternativo non è supportato per preferiti di tipo "~2~".
 lOopsAmpersandInName	L'ampersand "&" viene riservato per assegnare scorciatoie da tastiera nei nomi dei menù di Windows. Per visualizzare un ampersand nel nome di un menù, inseriscilo così: "&&".`n`nPer maggiori informazioni, cerca "ampersand" nelle FAQ del sito web di QAP.
 lOopsCannotCopyFavorite	Preferiti di tipo "~1~" non possono essere copiati.
-lOopsCannotCopyMoveToSelf	Non puoi spostare o copiare preferiti nella loro attuale collocazione. Per favore, seleziona una destinazione differente.
+lOopsCannotCopyMoveToSelf	Non Ã¨ possibile spostare o copiare preferiti nella loro posizione corrente. Per favore selezionare un'altra destinazione.
+lOopsCannotMoveToSelf	Non puoi spostare preferiti nella loro attuale posizione. Per favore, seleziona una destinazione differente.
 lOopsChangeFolderInDialogAlert	Hai intenzione di cambiare cartella da questa casella di dialogo? Per poter navigare all'interno di una casella di dialogo, è necessario abilitare un'opzione nel gruppo impostazioni "Generale".`n`nVuoi aprire la finestra delle Opzioni?
+lOopsContainerInGui	Il menÃ¹ dinamico "~1~" puÃ² essere inserito soltanto nel menÃ¹: ~2~
 lOopsCouldNotOpenSpecialFolder	~1~ non è riuscito ad aprire la Cartella Speciale: "~2~".
 lOopsEmpty	vuoto
 lOopsErrorIniFileDisplayErrorMessage	Vuoi visualizzare di nuovo questo messaggio di errore per questo Menù Condiviso?
@@ -681,6 +695,7 @@ lOopsMenuExternalCentralized	menù condiviso centralizzato
 lOopsMenuExternalCollaborative	menù condiviso collaborativo
 lOopsMenuExternalPersonalChangedBy	Questo menù personale condiviso è attualmente in corso di MODIFICHE o ci sono modifiche ancora NON SALVATE sul computer: ~1~.`n`nSe salvi delle modifiche a questo menù qui, le modifiche non ancora salvate sull'altro computer saranno perse e dovresti annullare tali modifiche quando ritorni su quel computer.
 lOopsMenuExternalReservedBy	Questo ~1~ è RISERVATO dall'utente: ~2~.`n`nAspetta che tale utente rilasci il menù condiviso o contatta l'amministratore di sistema.
+lOopsMultipleContainersError	MenÃ¹, gruppi e menÃ¹ condivisi possono essere spostati solo individualmente. Questi elementi saranno saltati.
 lOopsNotAdmin	Non é stato possibile ~1~ come Amministratore.`n`nE' pertanto in esecuzione in modalitá Normale.
 lOopsOptionsPathNotExist	~1~ non esiste:`n~2~`n`nPer favore, seleziona un percorso valido.
 lOopsOptionsPathTrayIcon	File dell'icona nell'area notifiche
@@ -796,11 +811,17 @@ lOptionsRunAsAdminAlert	Avviso: Eseguire ~1~ in modalitá Amministratore puó caus
 lOptionsRunAsAdminChanged	Nuova impostazione "Esegui come amministratore" salvata. Esci da ~1~ e riaprilo per abilitare la nuova impostazione (cioè, non riavviando semplicemente).
 lOptionsRunAsAdminShort	Ammin.
 lOptionsRunAtStartup	Esegui all'avvio
+lOptionsSearchFrom	Ambito di ricerca
+lOptionsSearchFromCurrent	Cerca dal menÃ¹ o gruppo corrente
+lOptionsSearchFromMain	Ricerca sempre dal menÃ¹ Principaleu
+lOptionsSearchResults	Risultati di Ricerca
+lOptionsSearchWithStats	Risultati di ricerca con data di modifica e statistiche in colonna
 lOptionsSelectBackupFolder	Seleziona Select la cartella di backup del file delle Impostazioni principali
 lOptionsSelectCatalogueRoot	Seleziona la cartella radice del Catalogo dei Menù Condivisi
 lOptionsSelectQAPTempFolder	Crea la Cartella Temporanea in:
 lOptionsSelectWorkingFolder	Salva Impostazioni in quale cartella?
 lOptionsSendToConsoleWithAlt	Usa codici ASCII (ALT+0nnn) per cambiare cartella dalla Linea di Comando (CMD)
+lOptionsSettingsSearchResults	Risultati di Ricerca
 lOptionsSettingsStartup	Apri la Finestra "Personalizzare" all'avvio
 lOptionsSettingsWindow	Finestra "Personalizzare"
 lOptionsShowQAPmenu	Mostra menù QAP (File, Preferito, ecc.):

@@ -21,13 +21,17 @@ lControlToolTipAlwaysOnTopOn	Arrêter de garder cette fenêtre toujours visible
 lControlToolTipColumnBreak	Insérer un saut de colonne
 lControlToolTipMoveDown	Déplacer le(s) favori(s) vers le haut
 lControlToolTipMoveUp	Déplacer le(s) favori(s) vers le bas
+lControlToolTipNextMenu	Retourner au menu suivant
+lControlToolTipOpenMenuContainingSearchItem	Ouvrir le sous-menu ou le groupe contenant le favori sélectionné
 lControlToolTipParentMenu	Aller au menu parent
 lControlToolTipPreviousMenu	Retourner au menu précédent
 lControlToolTipSearchBoxClear	Efface le filtre et affiche tous les favoris
 lControlToolTipSearchBoxExtended	Recherche à partir du menu courant selon le nom *et* les propriétés des favoris
 lControlToolTipSearchButton	Recherche des favoris
 lControlToolTipSeparator	Insérer une ligne de séparation
+lControlToolTipShowContainerInGui	Afficher un menu contenant les favoris dans la fenêtre "Personnaliser"
 lControlToolTipSortFavorites	Trier tous les favoris ou ceux sélectionnés
+lControlToolTipSortSearchResult	Trier les favoris dans le résultat de recherche
 lControlToolTipTextSeparator	Insérer un texte séparateur
 lCopyFavoritesToMenuOrGroup	Les menus et les groupes ne peuvent pas être copiés.`n`nVoulez-vous continuer sans copier les menus et les groupes?
 lCopyLocationCopiedToClipboard	Emplacement copié dans le Presse-papiers
@@ -173,7 +177,6 @@ lDialogFavoriteNameEmpty	Le nom du favori est vide. Veuillez indiquer un nom cou
 lDialogFavoriteNameNoSeparator	Le nom de cet item ne doit pas inclure le caractère réservé "~1~".
 lDialogFavoriteNameNotAllowed	Les favoris de type "~1~" ne peuvent être ajoutés dans les groupes. Veuillez sélectionner un autre menu dans l'onglet "Options du menu Options".
 lDialogFavoriteNameNotNew	Le nom "~1~" est déjà présent dans ce menu. Veuillez choisir un nouveau nom.
-lDialogFavoriteNameNotNewQAPfeature	Le nom "~1~" est déjà présent dans ce menu. Veuillez renommer le favori existant et essayez à nouveau.
 lDialogFavoriteParentMenu	Insérer le nouveau favori dans ce menu
 lDialogFavoriteParentMenuMove	Déplacer le favori dans ce menu
 lDialogFavoriteRemoveExternalPrompt	Supprimer le menu partagé "~1~"`n(le fichier de configuration partagé ne sera PAS supprimé)?
@@ -265,6 +268,8 @@ lDialogIconsManageParentMenu	Menu contenant ce favori
 lDialogIconsManagePrevious	Précédant
 lDialogIconsManageSetDefaultIcon	Icône par défaut
 lDialogIconsManageTitle	Gérer les icônes - ~1~ ~2~
+lDialogIconsSelectPrompt	Cliquez sur une icône pour la sélectionner.
+lDialogIconsSelectTitle	SÃ©lection de l'icÃ´ne - ~1~ ~2~
 lDialogInputExample	Exemple de saisie
 lDialogInputParameter	Saisie du paramètre - ~1~
 lDialogInvalidHotkey	Avec votre configuration actuelle de clavier, la touche de raccourci "~1~" ne peut être utilisée comme un déclencheur pour le menu popup.`n`nVeuillez ouvrir la fenêtre "Personnaliser" dans la zone de notification et cliquez sur "Options". Dans cette boîte de dialogue, choisissez une autre touche de raccourci pour "~2~".
@@ -310,6 +315,7 @@ lDialogRefresh	Actualiser
 lDialogRemoveMultipleFavorites	Voulez-vous vraiement supprimer ~1~ favoris ou sous-menus?
 lDialogResetQAPSpecialDefaultNames	Cette commande va réinitialiser tous les noms des Dossiers spéciaux et des Fonctionnalités QAP dans votre menu à leur nom par défaut en "~1~".`n`nContinuer?
 lDialogSearch	Rechercher
+lDialogSearchAllFavorites	Rechercher tous les favoris
 lDialogSelectIcon	Changer l'icône
 lDialogSelectIconJL	Sélectionner dans:
 lDialogSelectIconNo	Pas d'icône
@@ -437,6 +443,8 @@ lGuiListApplicationsHeader	Index|ID|Titre de la fenêtre|Nom du processus|Chemin 
 lGuiLoginName	Code d'utilisateur
 lGuiLvFavoritesHeader	Nom|Type|Raccourci|Emplacement ou contenu
 lGuiLvFavoritesHeaderFiltered	Nom|Menu|Type|Raccourci|Emplacement ou contenu
+lGuiLvFavoritesHeaderFilteredDates	Modification|Création
+lGuiLvFavoritesHeaderFilteredStats	Ouverture|Utilisation
 lGuiMove	Déplacer
 lGuiOptions	Options
 lGuiOptionsDescription	Afficher la fenêtre "Options" qui permet d'adapter QAP à vos préférences.
@@ -545,6 +553,8 @@ lMenuCommonAppData	Application Data (commun)
 lMenuCommonDesktop	Bureau (commun)
 lMenuCommonStartMenu	Menu Démarrer (commun)
 lMenuCommonStartupMenu	Démarrage (commun)
+lMenuContainerInGui	Favoris dans la fenêtre "Personnaliser"
+lMenuContainerInGuiDescription	Affiche un menu avec les favoris affichés dans la fenêtre "Personnaliser", incluant dans un résultat de recherche. Dans les résultats de recherche, le suffixe "[!]" est ajouté aux noms en double pour les rendre uniques.
 lMenuCookies	Cookies
 lMenuCopyLocation	Copier l'emplacement d'un favori
 lMenuCurrentFolders	Réutiliser un dossier
@@ -612,6 +622,7 @@ lMenuResetQAPSpecialDefaultNames	Réinitialiser les nom des Fonctionnalités QAP e
 lMenuRestoreSettingsWindowPosition	Restaurer la position de la fenêtre "Personnaliser"
 lMenuRestoreSettingsWindowPositionDescription	Restaurer la taille et la position par défaut (au centre de l'écran principal) de la fenêtre "Personnaliser".
 lMenuRunAtStartup	Exécuter au démarrage
+lMenuSearchOrder	Ordre original du résultat de recherche
 lMenuSelectAll	Sélectionner tous les items
 lMenuSettings	Personnaliser
 lMenuSettingsDescription	Afficher la fenêtre "Personnaliser" pour personnaliser le menu QAP, gérer les favoris et configurer diverses options.`n`nPar défaut, cette commande est incluse dans le menu principal de QAP.
@@ -645,8 +656,9 @@ lOopsAlternativeMenuModifiersDuplicates	La touche ou la combinaison de touches "
 lOopsAlternativeNotSupported	La commande du menu Alternatif "~1~" n'est pas disponible pour le type de favori "~2~".
 lOopsAmpersandInName	L'esperluette "&" dans les noms de menus de Windows est utilisée pour définir des raccourcis clavier. Pour afficher une esperluette dans un nom de menu, entrez "&&". `n`nPour plus d'informations, recherchez "ampersand" dans la FAQ du site Web de QAP.
 lOopsCannotCopyFavorite	Les favoris de type "~1~" ne peuvent pas être copiés.
-lOopsCannotCopyMoveToSelf	Vous ne pouvez pas déplacer ou copier un favori dans son menu d'origine. Veuillez choisir un menu de destination.
+lOopsCannotMoveToSelf	Vous ne pouvez pas déplacer un favori dans son menu d'origine. Veuillez choisir un menu de destination.
 lOopsChangeFolderInDialogAlert	Vouliez-vous changer de dossier dans cette boîte de dialogue? Afin de pouvoir naviguer à l'intérieur d'une boîte de dialogue, vous devez activer une option dans la section "Général" des "Options".`n`nVoulez-vous ouvrir la fenêtre "Options"?
+lOopsContainerInGui	Le menu dynamique "~1~" ne peut être inséré que dans le menu: ~2~
 lOopsCouldNotOpenSpecialFolder	~1~ ne peut ouvrir le dossier spécial: "~2~".
 lOopsEmpty	vide
 lOopsErrorIniFileDisplayErrorMessage	Afficher ce message d'erreur à nouveau pour ce menu partagé?
@@ -680,6 +692,7 @@ lOopsMenuExternalCentralized	menu partagé centralisé
 lOopsMenuExternalCollaborative	menu partagé collaboratif
 lOopsMenuExternalPersonalChangedBy	Ce menu partagé personnel est actuellement MODIFIÉ ou comporte des modifications NON ENREGISTRÉES sur l'ordinateur: ~1~.`n`nSi vous enregistrez ici les modifications à ce menu, les changements non enregistrés sur l'autre ordinateur seront perdus et vous devriez annuler ces changements quand vous serez de retour sur l'autre ordinateur.
 lOopsMenuExternalReservedBy	Ce ~1~ est RÉSERVÉ par l'utilisateur: ~2~.`n`nAttendez que cet utilisateur libère le menu ou contactez votre administrateur de système.
+lOopsMultipleContainersError	Les menus, groupes and menus partagés doivent être déplacés individuellement. Ces items de la sélection seront ne seront pas déplacés.
 lOopsNotAdmin	~1~ ne peut être exécuté en tant qu'administrateur.`n`nL'application est maintenant exécutée avec les privilèges normaux.
 lOopsOptionsPathNotExist	~1~ n'existe pas:`n~2~`n`nVeuillez choisir un emplacement valide.
 lOopsOptionsPathTrayIcon	Icône dans la zone de notification
@@ -795,11 +808,17 @@ lOptionsRunAsAdminAlert	Avertissement: Exécuter ~1~ en tant qu'administrateur pe
 lOptionsRunAsAdminChanged	Nouveau réglage "Exécuter en tant qu'administrateur" enregistré. Quittez et relancez ~1~ pour activer ce nouveau réglage (ne pas utiliser "Redémarrer ~1~").
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Exécuter au démarrage
+lOptionsSearchFrom	Étendue de la recherche
+lOptionsSearchFromCurrent	Chercher à partir du menu ou groupe actuel
+lOptionsSearchFromMain	Toujours chercher à partir du menu principal
+lOptionsSearchResults	Résultats de recherche
+lOptionsSearchWithStats	Résultats de recherche avec dates de modification et statistiques
 lOptionsSelectBackupFolder	Selectionnez le dossier de copie du fichier de configuration principal
 lOptionsSelectCatalogueRoot	Choisissez le dossier racine du Catalogue des menus partagés
 lOptionsSelectQAPTempFolder	Créer le dossier temporaire dans:
 lOptionsSelectWorkingFolder	Enregistrer les paramètres dans quel dossier?
 lOptionsSendToConsoleWithAlt	Utiliser les codes ASCII (ALT+0nnn) lors des changements de dossier dans la fenêtre Commandes de Windows (CMD)
+lOptionsSettingsSearchResults	Résultats de recherche
 lOptionsSettingsStartup	Ouvrir la fenêtre "Personnaliser" lors du démarrage
 lOptionsSettingsWindow	Fenêtre Personnaliser
 lOptionsShowQAPmenu	Afficher le menu QAP (Fichier, Favori, etc.):
