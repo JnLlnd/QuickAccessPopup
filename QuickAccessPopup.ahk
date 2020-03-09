@@ -35,6 +35,7 @@ Version: 10.3.6 (2020-03-09)
  
 Total Commander
 - add active folders in left and right panes of Total Commander when building the "Current windows" and "Reopen a Folder" dynamic menus, and support active folder in TC for the "Reopen Current Folder in Dialog Box"
+  (retrieving the active folder in TC is currently not supported for some Windows Special Folders like "My Computer" or "Recycle Bin")
  
 Snippets
 - fix bug doubling backticks when editing snippets
