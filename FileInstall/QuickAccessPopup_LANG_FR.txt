@@ -27,7 +27,7 @@ lControlToolTipParentMenu	Aller au menu parent
 lControlToolTipPreviousMenu	Retourner au menu précédent
 lControlToolTipSearchBoxClear	Efface le filtre et affiche tous les favoris
 lControlToolTipSearchBoxExtended	Recherche à partir du menu courant selon le nom *et* les propriétés des favoris
-lControlToolTipSearchButton	Recherche des favoris
+lControlToolTipSearchButton	Rechercher des favoris
 lControlToolTipSeparator	Insérer une ligne de séparation
 lControlToolTipShowContainerInGui	Afficher un menu contenant les favoris dans la fenêtre "Personnaliser"
 lControlToolTipSortFavorites	Trier tous les favoris ou ceux sélectionnés
