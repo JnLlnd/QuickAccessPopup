@@ -21,13 +21,17 @@ lControlToolTipAlwaysOnTopOn	Stop met het weergeven van dit venster op de voorgr
 lControlToolTipColumnBreak	Voeg een kolomeinde in
 lControlToolTipMoveDown	Verplaats de geselecteerde favoriet(en) naar beneden
 lControlToolTipMoveUp	Verplaats de geselecteerde favoriet(en) naar boven
+lControlToolTipNextMenu	Terugkeren naar volgend menu
+lControlToolTipOpenMenuContainingSearchItem	Open het submenu of groep met de geselecteerde favoriet
 lControlToolTipParentMenu	Ga naar het hoofdmenu
 lControlToolTipPreviousMenu	Ga terug naar het vorige menu
 lControlToolTipSearchBoxClear	Wis het zoekvak en toon alle favorieten
 lControlToolTipSearchBoxExtended	Zoek in het huidige menu naar favorieten *en* naar diverse eigenschappen
 lControlToolTipSearchButton	Zoek naar favorieten
 lControlToolTipSeparator	Voeg een menu-scheider in
+lControlToolTipShowContainerInGui	Toon een menu met favorieten in het venster: "Aanpassen"
 lControlToolTipSortFavorites	Sorteer alle (of geselecteerde) favorieten in de lijst
+lControlToolTipSortSearchResult	Sorteer de favorieten in het zoekresultaat
 lControlToolTipTextSeparator	Voeg een tekstmenu-scheider in
 lCopyFavoritesToMenuOrGroup	Menu's en groepen kunnen niet gekopieerd worden.`n`nWilt je verder gaan zonder het kopiëren van de menu's en/of groepen?
 lCopyLocationCopiedToClipboard	Pad of Website is gekopieërd naar het klembord
@@ -252,7 +256,7 @@ lDialogHotstringTriggerAbbreviation	Trigger (afkorting):
 lDialogHotstringTriggerOptions	Hotstring (trigger en opties)
 lDialogIcon	Pictogram
 lDialogIconsManage	Pictogrammen
-lDialogIconsManageAbout	Selecteer een nieuw pictogram voor het gewenste favoriet, of herstel het standaardpictogram. Vergeet niet om de wijzigingen op te slaan in het "Voorkeuren"-menu.
+lDialogIconsManageAbout	Selecteer een nieuw pictogram voor de gewenste favoriet, of herstel het standaardpictogram, vergeet niet om de wijzigingen op te slaan in het voorkeurenmenu.
 lDialogIconsManageCurrent	Huidig pictogram
 lDialogIconsManageDefault	Standaard pictogram
 lDialogIconsManageDescription	Geeft het venster weer met alle favorieten in uw QAP-menu met de huidige pictogrammen en het standaardpictogram voor dit type favoriet. Favorieten zijn gegroepeerd op submenu's, in de volgorde waarin ze in uw menu verschijnen.`n`nKlik op de knoppen om een aangepast pictogram te selecteren of stel een favoriet in op het standaardpictogram.
@@ -262,9 +266,11 @@ lDialogIconsManageParentMenu	Favoriete hoofdmenu
 lDialogIconsManagePrevious	Terug
 lDialogIconsManageSetDefaultIcon	Stel standaard pictogram in
 lDialogIconsManageTitle	Beheer pictogrammen - ~1~ ~2~
+lDialogIconsSelectPrompt	Klik op een pictogram om het te selecteren.
+lDialogIconsSelectTitle	Selecteer het pictogram - ~1~ ~2~
 lDialogInputExample	Invoervoorbeeld
 lDialogInputParameter	Invoer parameter - ~1~
-lDialogInvalidHotkey	Met de huidige toetsenbordindeling kan de sneltoets "~1~" niet gebruikt worden als commando voor het popup-menu (fout: geen valide sneltoets).`n`Open het "Voorkeurs"-menu vanuit de taakbalk en klik op "Opties". Selecteer hier een andere sneltoets voor "~2~".
+lDialogInvalidHotkey	Met de huidige toetsenbordindeling kan de sneltoets "~1~" niet gebruikt worden als commando voor het popupmenu.`n`nGelieve het voorkeurenmenu te openen vanuit de taakbalk en klik op "Voorkeuren". Selecteer hier een andere sneltoets voor "~2~".
 lDialogInvalidHotkeyFavorite	Met de huidige toetsenbordindeling kan de sneltoets "~1~" niet gebruikt worden als snelkoppeling naar het favoriet "~2~".`n`nGelieve het instellingenmenu te openen vanuit de taakbalk en klik op "Instellingen". Selecteer hier een andere sneltoets voor "~2~" en zijn locatie "~3~".
 lDialogKeyboard	Toetsenbord
 lDialogLaunchWith	Starten met deze applicatie
@@ -307,6 +313,7 @@ lDialogRefresh	Verversen
 lDialogRemoveMultipleFavorites	Wilt u ~1~ favoriet of submenu verwijderen?
 lDialogResetQAPSpecialDefaultNames	Met deze opdracht worden alle favorieten in de "speciale mappen" en de QAP-functies teruggezet naar de standaardnamen in "~1~".`n`nWil je doorgaan?
 lDialogSearch	Zoeken
+lDialogSearchAllFavorites	Zoek in alle favorieten
 lDialogSelectIcon	Pictogram wijzigen
 lDialogSelectIconJL	Selecteer in:
 lDialogSelectIconNo	Geen pictogrammen
@@ -367,7 +374,7 @@ lDonateCheckPrompt	Welkom bij deze nieuwe versie van ~1~`n`nDit bericht toont zi
 lDonateCheckPrompt2	nb: Gebruikers die een minimum donatie storten van €5,- of $5,- (of via een maandelijkse donatie) krijgen een sponsorcode om ~1~ te deactiveren.
 lDonateCheckPrompt3	dit bericht weergeven
 lDonateCheckPrompt4	sponsorherinneringen
-lDonateCheckPrompt5	het sponsorbericht in het "Voorkeuren"-venster weergeven
+lDonateCheckPrompt5	en het sponsorbericht in het voorkeurenvenster
 lDonateCheckTitle	~1~ keer! - ~2~
 lDonateMenu	Sponsor deze software!
 lDonatePlatformComment1	Doneer met een Kredietkaart (een account is niet nodig) of uw Paypal account.
@@ -396,7 +403,7 @@ lDOpusMenuName	Directory Opus Favorieten
 lDopusMenuNameDescription	Voor Directory Opus (DOpus) gebruikers: een dynamisch menu weergeven dat is opgebouwd met de mappen die zijn toegevoegd aan de DOpus-favorieten. Als u DOpus-support tijdens de installatie van QAP heeft geselecteerd dan zijn de Directory Opus-favorieten automatisch aan uw menu toegevoegd.
 lDopusMenuNameShowLayout	Vensterindelingen in ~1~ menus weergeven
 lGuiAbout	Over
-lGuiAboutDescription	Geeft het "Over"-venster weer met verschillende informatie over de ontwikkeling, vertaling en andere credits, applicatie- en runtime-versienummers, licentie, de huidige gebruiker en computernaam & links naar de ondersteuningswebsite.
+lGuiAboutDescription	Het venster weergeven met de verschillende informatie over de ontwikkeling, vertaling en credits, applicatie- en runtime-versienummers, licentie, de huidige gebruiker en computernaam, links naar de ondersteuningswebsite.
 lGuiAddFavorite	Toevoegen
 lGuiCancel	Annuleren
 lGuiClose	Sluiten
@@ -410,7 +417,7 @@ lGuiDonateCodeInputSponsorLabel	Voer jouw naam in (SPONSORNAAM)
 lGuiDonateDescription	Geeft het venster "Sponsor deze software" weer.
 lGuiDropFilesHelp	Hulp voor Slepen && Neerzetten
 lGuiDropFilesIncentive	Je kunt de volgende type favorieten Slepen & Neerzetten naar het ~1~ venster:`n`n- ~2~`n- ~3~`n- ~4~
-lGuiDropFilesIncentive2	Om je te helpen met het verplaatsen van 1 of meerdere bestanden, kun je in het "Voorkeuren"-venster altijd op de voorgrond laten weergeven door "altijd op de voorgrond weergeven" in te schakelen door op het "pin"-pictogram te klikken links in van het venster.
+lGuiDropFilesIncentive2	Om je te helpen met het verplaatsen van 1 of meerdere bestanden, kun je het voorkeurenvenster altijd op de voorgrond laten weergeven door op het "pin"-pictogram te klikken linksonder in het voorkeurenvenster.
 lGuiEditFavorite	Wijzigen
 lGuiGroupClosing	Windows Explorer sluiten
 lGuiGroupRestoreDelay	Herstelvertraging tussen favorieten:
@@ -431,6 +438,8 @@ lGuiListApplicationsHeader	Index|ID|Venstertitel|Procesnaam|Procespad|W & H|MinM
 lGuiLoginName	Login naam
 lGuiLvFavoritesHeader	Naam|Type|Sneltoets|Locatie of inhoud
 lGuiLvFavoritesHeaderFiltered	Naam|Menu|Type|Sneltoets|Locatie of inhoud
+lGuiLvFavoritesHeaderFilteredDates	Laatst gewijzigd | Aangemaakt
+lGuiLvFavoritesHeaderFilteredStats	Laatst gebruikt | In gebruik
 lGuiMove	Verplaatsen
 lGuiOptions	Opties
 lGuiOptionsDescription	Geeft het venster "Opties" weer, zodat je QAP naar jouw wens kan aanpassen.
@@ -454,21 +463,21 @@ lHelpTabTipsAndTricks	Tips and Trucs
 lHelpText11	Wanneer Quick Access Popup laadt, geeft het een pictogram weer in het systeemvak en zal wachten op uw orders.  Wanneer u 1 van uw geprefereerde MAPPEN, APPLICATIE'S, WEB LINKS, FTP SITE of FRAGMENTEN wilt starten, gebruik dan de sneltoets [~1~] of [~2~] en selecteer uw gewenste favoriet in het popupmenu.
 lHelpText12	Wanneer je een favoriete map in Windows Explorer of een bestandsdialoogbox* selecteert, dan zal Quick Access Popup direct "navigeren" naar de bewuste locatie!`n*) Deze optie dient ingeschakeld te worden in "Opties" - "Algemeen".
 lHelpText13	Om het openen van een map in een nieuw venster te forceren, kunt u gebruik maken van de alternatieve sneltoetsen: [~1~] of [~2~].`nSelecteer "Open in nieuw venster" in het alternatieve menu en selecteer uw gewenste map.`nHet alternatieve menu heeft nog tal van andere functionaliteiten.
-lHelpText14	Kies "Voorkeuren" om jouw Quick Access Popup menu aan te passen aan je persoonlijke wensen. Je kunt hier favorieten toevoegen aan je menu of deze verplaatsen, hernoemen of verwijderen. Ook kun je SUBMENU'S, GROEPEN of OPENBARE MENU'S toevoegen. Kies het aan te passen menu onder: "Menu of groep om te wijzigen" en sla je wijzigingen op door op "Opslaan" te klikken.	
-lHelpText21	Om een favoriet toe te voegen klik je in het "Voorkeuren"-menu op de knop: "Toevoegen".`nSelecteer het gewenste type van de nieuwe favoriet en lees de tips aan de rechterkant van dit venster.`nKlik op "Volgende" om het "Toevoegen Favoriet"-venster te openen.
-lHelpText22	In de verschillende tabs van het venster "Favoriet toevoegen" kunnen de "Basisopties", "Menuopties", "Vensteropties" en "Geavanceerde opties" ingesteld worden.`nKlik op "Toevoegen" om de favoriet toe te voegen in jouw menu en hierna op "Opslaan" om de favoriet op te slaan.
-lHelpText23	VOEG ACTIEVE MAP OF WEBPAGINA TOE`n`nOm snel een nieuwe MAP of LINK toe te voegen als favoriet in het popup-menu:`n1) Ga naar de veel gebuikte map of webpagina.`n2) Klik op de QAP-sneltoets [~1~] of [~2~] en selecteer "Voeg actieve map of webpagina toe".`n3) Geef de favoriet een verkorte naam, klik op "Toevoegen" en hierna op "Opslaan" in het "Voorkeuren"-venster.
-lHelpText24	Het "Voorkeuren"-menu wordt automatisch geopend bij het starten van QAP. Wanneer je tevreden bent in met jouw menu, dan kan je dit menu gesloten houden en alleen openen om jouw menu te updaten. Selecteer jouw voorkeuren in "Opties" van het "Voorkeuren"-venster.
+lHelpText14	Kies "Voorkeuren" om jouw Quick Access Popup menu aan te passen aan jouw persoonlijke wensen. Je kunt hier favorieten toevoegen aan jouw menu of je kunt deze verplaatsen, hernoemen of verwijderen. Ook kun je SUBMENU'S, GROEPEN of OPENBARE MENU'S toevoegen. Kies het aan te passen menu onder: "Menu of groep om te wijzigen" en sla je wijzigingen op door op "Opslaan" te drukken.
+lHelpText21	Om een favoriet toe te voegen klik je in het voorkeurenmenu op de knop "Toevoegen".`nSelecteer het gewenste type van de nieuwe favoriet en lees de tips aan de rechterkant van dit scherm.`nKlik op "Volgende" om het venster "Favoriet toevoegen" te openen.
+lHelpText22	In de verschillende tabs van het venster "Favoriet toevoegen" kunnen de "Basisopties", "Menuopties", "Vensteropties" en "Geavanceerde opties" ingesteld worden.`nKlik op "Toevoegen" om de favoriet toe te voegen in jouw menu en hierna op "Opslaan" in het voorkeurenmenu om de favoriet op te slaan.
+lHelpText23	VOEG ACTIEVE MAP OF WEBPAGINA TOE`n`nOm snel een nieuwe MAP of LINK toe te voegen als favoriet in het popup-menu:`n1) Ga naar de veel gebuikte map of webpagina.`n2) Klik op de QAP-sneltoets [~1~] of [~2~] en selecteer "Voeg actieve map of webpagina toe".`n3) Geef de favoriet een verkorte naam, klik op "Toevoegen" en hierna op "Opslaan" in het Voorkeurenmenu.
+lHelpText24	Het Voorkeurenmenu wordt automatisch geopend bij het starten van QAP. Wanneer je tevreden bent met jouw menu dan kan je dit menu gesloten houden en alleen openen om jouw menu te updaten. Selecteer jouw voorkeur in "Opties" van het Voorkeurenmenu.
 lHelpText31	In het "Mijn QAP Essentials"-menu:
 lHelpText32	- Gebruik "Heropen een map" of "Heropen huidige map in dialoogbox" menu's om één van de mappen te heropenen in een Verkenner.`n- Gebruik de functie "Klembord" om bestanden of URL's opgeslagen in jouw klembord op te roepen.`n- Klik op het menu: "Stations" voor een lijst van bekende stations met informatie over de vrije ruimte.
 lHelpText33	PAS UW QAP FUNCTIES MENU AAN
-lHelpText34	Je kunt menuitems van "Dagelijks Gebruik" en "Mijn QAP Essentials" als volgt verplaatsen naar het hoofdmenu of naar andere submenu's. Selecteer in het "Voorkeuren"-menu het item wat je wilt verplaatsen, maak gebruik van "Menu of groep om te wijzigen:" om de desbetreffende submenu te selecteren, vervolgens klik je op "Wijzigen", op het tabblad "Menuopties" pas je de locatie van het item aan.
+lHelpText34	Je kunt menuitems van "Dagelijks Gebruik" en "Mijn QAP Essentials" als volgt verplaatsen naar het hoofdmenu of naar andere submenu's. Selecteer in het Voorkeurenmenu het item wat je wilt verplaatsen, maak gebruik van "Menu of groep om te wijzigen:" om de desbetreffende submenu te selecteren, vervolgens klik je op "Wijzigen" en pas op het tabblad "Menuopties" de locatie van het item aan.
 lHelpText35	Vindt je dagelijkse gebruikte items in het menu: "Dagelijks Gebruik":
 lHelpText36	- Open de menu's "Frequent gebruikte mappen" of "Frequent gebruikte bestanden" om jouw meest gebruikte inhoud te bekijken.`n- Kies de menu's "Recente mappen" of "Recente bestanden" om een bijgewerkte lijst van uw recente werk weer te geven.`n- Klik op het "Huidige vensters" om naar een andere actieve Verkenner of applicatie te schakelen.
-lHelpText41	- Gebruik het pictogram van Quick Access Popup in het systeemvak (bij de klok) op de volgende 3 methodes:`n1) Klik met de linkermuistoets op het pictogram om het QAP-Menu te openen`n2) Klik met de rechtermuistoets op het pictogram om het QAP-systeemmenu te openen`n3) Dubbelklik op het pictogram om het "Voorkeuren"-menu te openen.
+lHelpText41	- Gebruik het pictogram van Quick Access Popup in het systeemvak (bij de klok) op de volgende 3 methodes:`n1) Klik met de linkermuistoets op het pictogram om het QAP-Menu te openen`n2) Klik met de rechtermuistoets op het pictogram om het QAP-systeemmenu te openen`n3) Dubbelklik op het pictogram om het Voorkeurenmenu te openen.
 lHelpText42	- In het systeemvak, klik rechts op het Quick Access Popup pictogram en zet: "Uitboeren bij opstarten" aan om Quick Access Popup op automaisch op te starten bij het opstarten van Windows.
-lHelpText43	- Configureer jouw "Quick Access Popup"-menutriggers zoals een muistoets of sneltoets onder: "Voorkeuren", klik op "Opties" en ga vervolgens naar de tab: "Popup sneltoetsen".
-lHelpText44	- Ook te vinden in "Opties": Kies je Taal, pictogramgrootte & vensterkleuren. Selecteer het aantal recente mappen om weer te geven, voeg numerieke sneltoetsen toe aan mappen of geef de sneltoetsen weer in het menu. Selecteer waar QAP het menu opent, op een vaste plaats of de voorgaande locatie. En er is nog zoveel meer...
+lHelpText43	- Configureer jouw "Quick Access Popup"-menutriggers zoals een muistoets of sneltoets onder: "Voorkeuren", "Opties", tab: "Popup sneltoetsen".
+lHelpText44	- Ook te vinden in "Opties": Taalkeuze, pictogramgrootte & vensterkleuren. Selecteer het aantal recente mappen om weer te geven, voeg numerieke sneltoetsen toe aan mappen of geef de sneltoetsen weer in het menu. Selecteer waar QAP het menu opent, op een vaste plaats of de voorgaande locatie. En er is nog zoveel meer...
 lHelpText45	- Directory Opus gebruikers, lees <a href="http://www.quickaccesspopup.com/how-to-i-enable-directory-opus-support-in-quick-access-popup/">deze pagina</a> voor aanvullende informatie`n- Total Commander gebruikers, lees <a href="http://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/">deze pagina</a> voor aanvullende informatie`n- Voor overige bestandsbeheerders, lees <a href="http://www.quickaccesspopup.com/what-file-managers-are-supported-in-addition-to-windows-explorer/">deze pagina</a> voor aanvullende informatie over QAP-Connect.
 lHelpText51	Openbare menu's zorgen ervoor dat favorieten beheerd kunnen worden door een configuratiebestand welke gedeeld kan worden tussen verschillende gebruikers of door 1 gebruiker over verschillende computers. Er zijn 3 verschillende soorten Openbare Menu's:
 lHelpText52	Openbare menu's kunnen elk type favorieten bevatten, behalve andere Openbare menu's. Het configuratiebestand van een Openbare menu kan worden opgeslagen op een netwerklocatie of een openbare map (zoals dropbox) en kan worden gebruikt op verschillende computers. QAP heeft volledige ondersteuning voor het werken in teamverband en vermijd modificatieconflicten.
@@ -533,6 +542,8 @@ lMenuCommonAppData	Openbare Applicatiegegevens
 lMenuCommonDesktop	Openbaar Bureaublad
 lMenuCommonStartMenu	Openbaar Startmenu
 lMenuCommonStartupMenu	Openbare Startup menu
+lMenuContainerInGui	Favorieten in venster: "Aanpassen"
+lMenuContainerInGuiDescription	Geef een menu weer met de favorieten die worden weergegeven in het venster: "Aanpassen", ook wanneer het zoekresultaten bevat. Zoekresultaten met dubbele menunamen worden aangepast met het achtervoegsel "[!]" om deze menu's uniek te maken.
 lMenuCookies	Cookies
 lMenuCopyLocation	Kopiëer een pad of website uit een favoriet
 lMenuCurrentFolders	Een map openen
@@ -590,18 +601,19 @@ lMenuRecentItems	Onlangs geopend
 lMenuRefreshMenu	Live-mappen && Gedeelde menu's verversen
 lMenuRefreshMenuDescription	Refresh on-demand the "Live folders" menus. This action can also be executed repeatedly by entering an interval (in seconds) in the "Scheduled QAP menu refresh" of the "Menu" tab in the "Options" windows.`n`nDuring the short (depending on the number of Live folders or Shared menus) refresh time, the QAP menu is not available.
 lMenuReload	~1~ opnieuw laden
-lMenuReloadDescription	Herstart Quick Access Popup.`n`nSla eventuele wijzigingen eerst op voordat je QAP opnieuw opstart.
+lMenuReloadDescription	Herstart Quick Access Popup.`n`nSla eventuele wijzigingen eerst op voordat u QAP opnieuw opstart.
 lMenuReopenCurrentFolder	Heropen de huidige map in een dialogbox
 lMenuReopenCurrentFolderDescription	Navigeer naar de openstaande map in Windows Verkenner binnen het bestandsdialoogvenster. Om deze functie te gebruiken, dient de optie "Schakel QAP-mapnavigatie voor dialoogboxen in" onder "Opties" -> "Algemeen".
 lMenuReopenInNewWindow	Heropen actuele map van dialoogbox
 lMenuReopenInNewWindowDescription	Open de huidige map opnieuw in een nieuw Explorer-venster (ook in Directory Opus of Total Commander). Handig als u de map wilt openen die u bekijkt in een bestandsdialoogvenster.
 lMenuResetQAPSpecialDefaultNames	Breng QAP-functies en "speciale mappen" terug naar standaardnamen
-lMenuRestoreSettingsWindowPosition	Positie van het "Voorkeuren"-venster herstellen
-lMenuRestoreSettingsWindowPositionDescription	Herstel het vensterformaat en de positie van het "Voorkeuren"-menu naar het midden van het hoofdscherm.
+lMenuRestoreSettingsWindowPosition	Positie van het Voorkeurenmenu herstellen
+lMenuRestoreSettingsWindowPositionDescription	Herstel het vensterformaat en de positie van het Voorkeurenmenu naar het midden van het hoofdscherm.
 lMenuRunAtStartup	Uitvoeren bij opstarten
+lMenuSearchOrder	Oorspronkelijke zoekvolgorde
 lMenuSelectAll	Selecteer alle items
 lMenuSettings	Voorkeuren
-lMenuSettingsDescription	Open het venster "Voorkeuren" om je QAP-popupmenu te personaliseren, jouw favorieten kunt beheren en verschillende opties kunt instellen.`n`nStandaard is deze functie opgenomen in het hoofdmenu.
+lMenuSettingsDescription	Open het venster "Voorkeuren" waar je je QAP-popupmenu kunt aanpassen, je favorieten kun je beheren en verschillende opties kunnen hier worden ingegesteld.`n`nStandaard is deze functie opgenomen in het hoofdmenu.
 lMenuStartMenu	Startmenu
 lMenuStartup	Start op
 lMenuSuspendHotkeys	Sneltoetsen tijdelijk uitschakelen
@@ -610,7 +622,7 @@ lMenuSwitchFolderOrAppDescription	Geeft een dynamisch menu in twee delen weer:`n
 lMenuSwitchSettings	Schakel tussen instellingenbestand
 lMenuSwitchSettingsDefault	Schakel naar standaard instellingenbestand
 lMenuSwitchSettingsDefaultDescription	Restart Quick Access Popup with the Settings file at its default location.`n`nIf you installed QAP using the "one-step installation" procedure, the default location is located under the User directory (for example, "C:\Users\Jean\AppData\Roaming\Quick Access Popup").`n`nIf you preferred the portable installation, the default location is where the QuickAccessPopup.exe program is running.
-lMenuSwitchSettingsDescription	Selecteer een ander QAP-instellingenbestand en start Quick Access Popup met deze instellingen (inclusief favorieten en de verschillende opties).`n`nZorg ervoor dat je je wijzigingen in "Voorkeuren" opslaat voordat je QAP opnieuw start.
+lMenuSwitchSettingsDescription	Selecteer een ander QAP-voorkeurenbestand en herstart Quick Access Popup met deze voorkeuren (inclusief favorieten en de verschillende opties).`n`nZorg ervoor dat je de wijzigingen in "Voorkeuren" opslaat voordat je QAP opnieuw start.
 lMenuSystemCertificates	Systeem Certificaten
 lMenuTemplates	Sjablonen
 lMenuTemporaryFiles	Tijdelijke bestanden
@@ -628,8 +640,9 @@ lNavigateSpecialError	Er is een fout opgetreden tijdens het openen van deze spec
 lOopsAddThisFolderTip	Voor betere resultaten van het "Voeg actieve map of webpagina toe" commando:`n`n1)Activeer het ~1~ venster met de map of link om toe te voegen aan het menu.`n2)Open het popup-menu gebruikmakend van ~2~.`n3)Selecteer "Voeg actieve map of webpagina toe" en sla de nieuwe favoriet op.
 lOopsAmpersandInName	Het karakter ampersand "&" in Windows menu's wordt gebruikt om sneltoetsen te definiëren. Om een ampersand "&" weer te geven in een menunaam dient u gebruik te maken van een dubbele ampersand "&&".`n`nVoor meer informatie, raadpleeg de FAQ op onze Engelstalige website en zoek naar: "Ampersand".
 lOopsCannotCopyFavorite	Favorieten van het type: "~1~" kunnen niet worden gekopieërd.
-lOopsCannotMoveToSelf	U kunt een favoriet niet kopiÃ«ren naar de bestaande locatie. Selecteer een andere locatie alstublieft.
+lOopsCannotMoveToSelf	Je kunt favorieten niet naar de huidige locatie verplaatsen, selecteer een andere bestemming.
 lOopsChangeFolderInDialogAlert	Wil je gebruik maken van mapnavigatie in dit venster? Om in een dialoogbox te kunnen navigeren, dien je eerst de optie: "Schakel QAP-mapnavigatie voor dialoogboxen in" in te schakelen onder het tabblad: "Algemeen"`n`nWil je het instellingenmenu openen?
+lOopsContainerInGui	Het dynamische menu "~1~" kan alleen worden toegevoegd aan menu: ~2~
 lOopsCouldNotOpenSpecialFolder	~1~ kan de speciale map "~2~" niet openen.
 lOopsEmpty	leeg
 lOopsErrorIniFileDisplayErrorMessage	Dit bericht nogmaals weergeven voor dit openbare menu?
@@ -663,6 +676,7 @@ lOopsMenuExternalCentralized	gecentraliseerd openbaar menu
 lOopsMenuExternalCollaborative	openbaar team menu
 lOopsMenuExternalPersonalChangedBy	Dit persoonlijke Openbare menu wordt GEWIJZIGD of heeft onopgeslagen wijzigingen op computer: ~1~.`n`nAls u uw wijzigingen opslaat zullen de onopgeslagen wijzigingen van de andere computer verloren gaan, daarnaast zult u de wijzigingen op die computer moeten annuleren.
 lOopsMenuExternalReservedBy	Deze sessie van ~1~ is GERESERVEERD door gebruiker: ~2~.`n`nWacht alstublieft totdat deze gebruiker het Openbare menu afsluit of neem contact op met de systeembeheerder.
+lOopsMultipleContainersError	Menu's, groepen en gedeelde menu's kunnen alleen afzonderlijk worden verplaatst, deze items worden overgeslagen.
 lOopsNotAdmin	~1~ kon niet worden geladen als Administrator.`n`nHet is geladen in de normale modus.
 lOopsOptionsPathNotExist	~1~ bestaat niet:`n~2~`n`nSelecteer een geldig pad.
 lOopsOptionsPathTrayIcon	Taakbalk pictogrambestand
@@ -776,11 +790,17 @@ lOptionsRunAsAdminAlert	Waarschuwing: Het uitvoeren van ~1~ in Administrator mod
 lOptionsRunAsAdminChanged	Nieuwe instelling "Uitvoeren als beheerder" opgeslagen. Sluit ~1~ en start het opnieuw op om de nieuwe instellingen te activeren (dus niet alleen herstarten).
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Uitvoeren bij opstarten
+lOptionsSearchFrom	Zoekbereik
+lOptionsSearchFromCurrent	Zoeken vanuit het huidige menu of groep
+lOptionsSearchFromMain	Zoek altijd vanuit het hoofdmenu
+lOptionsSearchResults	Zoekresultaten
+lOptionsSearchWithStats	bewerkingsdatums en statistiekkolommen toevoegen aan zoekresultaten
 lOptionsSelectBackupFolder	Selecteer de backupmap voor het hoofdinstellingenbestand
 lOptionsSelectCatalogueRoot	Selecteer een openbare map voor de Openbare Menu's
 lOptionsSelectQAPTempFolder	Maak de tijdelijke map aan in:
 lOptionsSelectWorkingFolder	In welke map dienen de instellingen opgelagen te worden?
 lOptionsSendToConsoleWithAlt	Gebruik ASCII-codes (ALT + 0nnn) bij het wijzigen van de map in de Windows Command Line (CMD)
+lOptionsSettingsSearchResults	Zoekresultaten
 lOptionsSettingsStartup	Open het voorkeurenvenster bij het opstarten
 lOptionsSettingsWindow	Voorkeurenvenster
 lOptionsShowQAPmenu	QAP menu (Bestand, Favoriet, etc.) weergeven:
