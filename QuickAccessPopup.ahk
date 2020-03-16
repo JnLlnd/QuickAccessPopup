@@ -13358,6 +13358,23 @@ else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave
 if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is processed in UpdateMenusPathAndLocation
 	o_EditedFavorite.AA.oParentMenu := o_Containers.AA[strDestinationMenu]
 
+; alert user if an existing favorite has the same location + parameters
+
+if (strThisLabel = "GuiAddFavoriteSave") and o_EditedFavorite.FoundIdenticalFavorite(oDuplicateFavorite)
+{
+	Gui, 2:+OwnDialogs
+	MsgBox, 4, %g_strAppNameText%, % o_L["DialogSameLocartionExistsPrompt"] . "`n`n"
+		. o_EditedFavorite.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_EditedFavorite.AA.strFavoriteName . "`n"
+		. o_EditedFavorite.AA.strFavoriteLocation
+		. (StrLen(o_EditedFavorite.AA.strFavoriteArguments) ? "`n`n" . o_L["DialogArgumentsLabel"] . ": " . o_EditedFavorite.AA.strFavoriteArguments : "")
+		. "`n`n" . o_L["DialogSameLocartionExistsQuestion"]
+	IfMsgBox, No
+	{
+		gosub, GuiAddFavoriteSaveCleanup
+		return
+	}
+}
+
 ; updating original and destination menu objects (these can be the same)
 
 if !InStr(strThisLabel, "Copy")
@@ -28254,6 +28271,22 @@ class Container
 						return true ; accept candidate name and exit loop
 		}
 		;------------------------------------------------------------
+		
+		;---------------------------------------------------------
+		FoundIdenticalFavorite(ByRef oTestedFavorite)
+		/*
+		check: strFavoriteLocation
+		if exists, check other properties concatenated:
+		strFavoriteAppWorkingDir
+		strFavoriteArguments
+		strFavoriteLaunchWith
+		strFavoriteLoginName
+		*/
+		;---------------------------------------------------------
+		{
+			return true
+		}
+		;---------------------------------------------------------
 		
 /*
 		;---------------------------------------------------------
