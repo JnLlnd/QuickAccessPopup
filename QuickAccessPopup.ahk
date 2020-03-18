@@ -13360,18 +13360,21 @@ if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is proces
 
 ; alert user if an existing favorite has the same location + parameters
 
-if (strThisLabel = "GuiAddFavoriteSave") and o_EditedFavorite.FoundIdenticalFavorite(oDuplicateFavorite)
+if InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|")
 {
-	Gui, 2:+OwnDialogs
-	MsgBox, 4, %g_strAppNameText%, % o_L["DialogSameLocartionExistsPrompt"] . "`n`n"
-		. o_EditedFavorite.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_EditedFavorite.AA.strFavoriteName . "`n"
-		. o_EditedFavorite.AA.strFavoriteLocation
-		. (StrLen(o_EditedFavorite.AA.strFavoriteArguments) ? "`n`n" . o_L["DialogArgumentsLabel"] . ": " . o_EditedFavorite.AA.strFavoriteArguments : "")
-		. "`n`n" . o_L["DialogSameLocartionExistsQuestion"]
-	IfMsgBox, No
+	oDuplicateFavorite := o_MainMenu.FoundIdenticalFavorite(o_EditedFavorite)
+	if (oDuplicateFavorite) ; FoundIdenticalFavorite returned false if not duplicate
 	{
-		gosub, GuiAddFavoriteSaveCleanup
-		return
+		Gui, 2:+OwnDialogs
+		MsgBox, 4, %g_strAppNameText%, % o_L["DialogSameLocartionExistsPrompt"] . "`n`n"
+			. oDuplicateFavorite.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oDuplicateFavorite.AA.strFavoriteName . "`n"
+			. oDuplicateFavorite.AA.strFavoriteLocation . "`n`n"
+			. o_L["DialogSameLocartionExistsQuestion"]
+		IfMsgBox, No
+		{
+			gosub, GuiAddFavoriteSaveCleanup
+			return
+		}
 	}
 }
 
@@ -13456,6 +13459,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	strNewFavoriteSoundLocation := ""
 	strExpandedNewFavoriteLocation := ""
 	oExternalMenu := ""
+	oDuplicateFavorite := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
@@ -26509,6 +26513,34 @@ class Container
 	}
 	;---------------------------------------------------------
 
+	;--------------------------------------------------------
+	FoundIdenticalFavorite(oFavorite)
+	; returns the found duplicate or false
+	; compare strFavoriteLocation; if identical, also compare other properties concatenated: strFavoriteAppWorkingDir, strFavoriteArguments, strFavoriteLaunchWith and strFavoriteLoginName
+	;---------------------------------------------------------
+	{
+		if !oFavorite.IsSeparator() ; do not check duplicates for separators
+			for intKey, oItem in this.SA
+				if oItem.IsContainer()
+				{
+					oDuplicateItem := oItem.AA.oSubMenu.FoundIdenticalFavorite(oFavorite) ; recursive
+					if (oDuplicateItem)
+						return oDuplicateItem
+				}
+				else if (oFavorite.AA.strFavoriteType <> oItem.AA.strFavoriteType) ;  not same type
+					or (&oFavorite.AA = &oItem.AA) ; do not compare object to itself when saving edited favorite
+					continue
+				else
+					if (oFavorite.AA.strFavoriteLocation = oItem.AA.strFavoriteLocation)
+						; then check other properties
+						if (oFavorite.AA.strFavoriteAppWorkingDir . oFavorite.AA.strFavoriteArguments . oFavorite.AA.strFavoriteLaunchWith . oFavorite.AA.strFavoriteLoginName
+							= oItem.AA.strFavoriteAppWorkingDir . oItem.AA.strFavoriteArguments . oItem.AA.strFavoriteLaunchWith . oItem.AA.strFavoriteLoginName)
+							return oItem ; return duplicate item
+		
+		return false
+	}
+	;---------------------------------------------------------
+
 	; === end of methods for class Container ===
 	
 	;=============================================================
@@ -28271,22 +28303,6 @@ class Container
 						return true ; accept candidate name and exit loop
 		}
 		;------------------------------------------------------------
-		
-		;---------------------------------------------------------
-		FoundIdenticalFavorite(ByRef oTestedFavorite)
-		/*
-		check: strFavoriteLocation
-		if exists, check other properties concatenated:
-		strFavoriteAppWorkingDir
-		strFavoriteArguments
-		strFavoriteLaunchWith
-		strFavoriteLoginName
-		*/
-		;---------------------------------------------------------
-		{
-			return true
-		}
-		;---------------------------------------------------------
 		
 /*
 		;---------------------------------------------------------
