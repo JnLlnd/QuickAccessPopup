@@ -21,13 +21,17 @@ lControlToolTipAlwaysOnTopOn	Parar de manter esta janela sempre no topo
 lControlToolTipColumnBreak	Inserir uma quebra de coluna
 lControlToolTipMoveDown	Mover favorito(s) selecionado(s) para baixo
 lControlToolTipMoveUp	Mover favorito(s) selecionado(s) para cima
+lControlToolTipNextMenu	Retornar para o prÛximo menu
+lControlToolTipOpenMenuContainingSearchItem	Abrir o submenu ou grupo contendo o favorito selecionado
 lControlToolTipParentMenu	Ir para o menu principal
 lControlToolTipPreviousMenu	Voltar para o menu anterior
 lControlToolTipSearchBoxClear	Limpa a caixa de pesquisa e exibe todos os favoritos
 lControlToolTipSearchBoxExtended	Pesquisa a partir do menu atual por nomes de favoritos *e* v√°rias propriedades
 lControlToolTipSearchButton	Pesquisa por favoritos
 lControlToolTipSeparator	Inserir um separador no menu
+lControlToolTipShowContainerInGui	Exibir um menu com favoritos na janela Personalizar
 lControlToolTipSortFavorites	Classifica todos os favoritos ou os selecionados na lista
+lControlToolTipSortSearchResult	Classificar favoritos no resultado da pesquisa
 lControlToolTipTextSeparator	Inserir um separador no menu
 lCopyFavoritesToMenuOrGroup	Menus e grupos n„o podem ser copiados.`n`nDeseja continuar sem copiar os menus e grupos?
 lCopyLocationCopiedToClipboard	Caminho ou URL copiada para a ¡rea de TransferÍncia
@@ -173,7 +177,6 @@ lDialogFavoriteNameEmpty	O nome do favorito est· vazio. Por favor, escolha um no
 lDialogFavoriteNameNoSeparator	O nome deste item n„o pode incluir o caractere reservado "~1~".
 lDialogFavoriteNameNotAllowed	Favoritos do tipo "~1~" n„o s„o permitidos em grupos. Por favor, selecione outro menu pai na aba "OpÁıes do Menu".
 lDialogFavoriteNameNotNew	O nome "~1~" j· est· em uso neste menu. Por favor, escolha um novo nome.
-lDialogFavoriteNameNotNewQAPfeature	O nome "~1~" j· est· em uso neste menu. Por favor, renomeie o favorito existente e tente novamente.
 lDialogFavoriteParentMenu	Menu pai do favorito
 lDialogFavoriteParentMenuMove	Mover favorito para este menu
 lDialogFavoriteRemoveExternalPrompt	Remover o submenu externo "~1~"`n(arquivo ini de configuraÁıes externas N√O ser· excluÌdo)?
@@ -265,6 +268,8 @@ lDialogIconsManageParentMenu	Menu principal do favorito
 lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir Ìcone padr„o
 lDialogIconsManageTitle	Gerenciar Õcones - ~1~ ~2~
+lDialogIconsSelectPrompt	Clique em um Ìcone para selecion·-lo.
+lDialogIconsSelectTitle	Selecionar √çcone - ~1~ ~2~
 lDialogInputExample	Input Exemplo
 lDialogInputParameter	Par‚metro de entrada - ~1~
 lDialogInvalidHotkey	Com o layout de teclado atual do sistema, a tecla de atalho "~1~" n„o pode ser usada como disparador para o menu popup (erro 'n„o È uma tecla v·lida').`n`nPor favor, abra a janela "Personalizar" pelo menu da ¡rea de NotificaÁ„o e clique em "OpÁıes". Nesta caixa de di·logo, escolha outro atalho para "~2~".
@@ -310,6 +315,7 @@ lDialogRefresh	Atualizar
 lDialogRemoveMultipleFavorites	Deseja realmente remover favoritos do ~1~ ou submenus?
 lDialogResetQAPSpecialDefaultNames	Este comando redefine todos os favoritos das Pastas Especiais e Recursos do QAP no seu menus para seu nome padr„o em "~1~".`n`nContinuar?
 lDialogSearch	Pesquisar
+lDialogSearchAllFavorites	Pesquisar Todos os Favoritos
 lDialogSelectIcon	Alterar Ìcone
 lDialogSelectIconJL	Selecionar em:
 lDialogSelectIconNo	Sem Ìcone
@@ -437,6 +443,8 @@ lGuiListApplicationsHeader	Õndice|ID|TÌtulo da janela|Nome do Processo|Caminho d
 lGuiLoginName	Nome de login
 lGuiLvFavoritesHeader	Nome|Tipo|Tecla de Atalho|Local ou conte˙do
 lGuiLvFavoritesHeaderFiltered	Nome|Menu|Tipo|Tecla de atalho|Local ou conte˙do
+lGuiLvFavoritesHeaderFilteredDates	⁄ltima ModificaÁ„o|CriaÁ„o
+lGuiLvFavoritesHeaderFilteredStats	⁄ltimo Uso|Uso
 lGuiMove	Mover
 lGuiOptions	OpÁıes
 lGuiOptionsDescription	Exibe a caixa de di·logo "OpÁıes" para fazer o QAP funcionar do jeito que quiser.
@@ -545,6 +553,8 @@ lMenuCommonAppData	Dados de Aplicativos Comuns
 lMenuCommonDesktop	¡rea de Trabalho Comum
 lMenuCommonStartMenu	Menu Iniciar Comum
 lMenuCommonStartupMenu	Menu Inicializar Comum
+lMenuContainerInGui	Favoritos na janela Personalizar
+lMenuContainerInGuiDescription	Exibir um menu com os favoritos exibidos na janela Personalizar, incluindo quando ele conter um resultado de pesquisa. Nos resultados da pesquisa, nomes d menu duplicados s„o anexados com o sufixo "[!]" para torn·-los ˙nicos.
 lMenuCookies	Cookies
 lMenuCopyLocation	Copiar Caminho ou URL do Favorite
 lMenuCurrentFolders	Reabrir Pasta
@@ -613,6 +623,7 @@ lMenuResetQAPSpecialDefaultNames	Redefinir Nomes Padr„o de Recursos do QAP e Pas
 lMenuRestoreSettingsWindowPosition	Restaurar posiÁ„o da janela "Personalizar"
 lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e a posiÁ„o da janela "Personalizar" para o centro da tela principal.
 lMenuRunAtStartup	Executar na InicializaÁ„o
+lMenuSearchOrder	Ordem de pesquisa original
 lMenuSelectAll	Selecionar todos os itens
 lMenuSettings	Personalizar
 lMenuSettingsDescription	Exibe a janela "Personalizar" onde vocÍ pode personalizar seu menu popup do QAP, gerenciar seus favoritos e definir v·rias opÁıes.`n`nPor padr„o, este recurso È incluÌdo no menu Principal.
@@ -646,8 +657,9 @@ lOopsAlternativeMenuModifiersDuplicates	O Modificador do Menu Alternativo "~1~" 
 lOopsAlternativeNotSupported	O comando do menu Alternativo "~1~" n√£o √© suportado para favoritos do tipo "~2~".
 lOopsAmpersandInName	O 'e' comercial "&" em nomes do menu do Windows È usado para definir atalhos de teclado. Para exibir um 'e' comercial no nome do menu, entre "&&".`n`nPara mais informaÁıes, pesquise "ampersand" no FAQ do site do QAP.
 lOopsCannotCopyFavorite	Favoritos do tipo "~1~" n„o podem ser copiados.
-lOopsCannotCopyMoveToSelf	VocÍ n„o pode mover ou copiar favoritos para sua localizaÁ„o atual. Por favor, selecione outro destino.
+lOopsCannotMoveToSelf	VocÍ n„o pode mover favoritos para o seu local atual. Por favor, selecione outro destino.
 lOopsChangeFolderInDialogAlert	Deseja alterar a pasta nesta caixa de di·logo? Para poder navegar dentro de uma caixa de di·logo, vocÍ precisa habilitar uma opÁ„o no grupo de opÁıes "Geral").`n`nDeseja abrir a janela de OpÁıes?
+lOopsContainerInGui	O menu din‚mico "~1~" somente pode ser inserido no menu: ~2~
 lOopsCouldNotOpenSpecialFolder	O ~1~ n„o pÙde abrir a pasta especial: "~2~".
 lOopsEmpty	vazio
 lOopsErrorIniFileDisplayErrorMessage	Exibir esta mensagem de erro novamente para este Menu Compartilhado?
@@ -681,6 +693,7 @@ lOopsMenuExternalCentralized	menu compartilhado centralizado
 lOopsMenuExternalCollaborative	menu compartilhado colaborativo
 lOopsMenuExternalPersonalChangedBy	Este menu compartilhado pessoal est· sendo EDITADO ou possui alteraÁıes N√O SALVAS no computador: ~1~.`n`nSe vocÍ salvar alteraÁıes neste menu aqui, as alteraÁıes n„o salvas no  outro computador ser„o perdidas e pode deve cancelar estas alteraÁıes ao retornar para aquele computador.
 lOopsMenuExternalReservedBy	Este ~1~ est· RESERVADO pelo usu·rio: ~2~.`n`nAguarde este usu·rio liberar o menu compartilhado ou contate o administrador do sistema.
+lOopsMultipleContainersError	Menus, grupos e menus compartilhados somente podem ser movidos individualmente. Estes itens ser„o ignorados.
 lOopsNotAdmin	~1~ n„o pÙde ser iniciado como Administrador.`n`nEle est· sendo executado como Normal.
 lOopsOptionsPathNotExist	~1~ n„o existe:`n~2~`n`nPor favor, selecione um caminho v·lido.
 lOopsOptionsPathTrayIcon	Arquivo de Ìcone da ¡rea de NotificaÁ„o
@@ -796,11 +809,17 @@ lOptionsRunAsAdminAlert	Aviso: Executar o ~1~ como Administrador pode resultar e
 lOptionsRunAsAdminChanged	Nova configuraÁ„o "Executar como Administrador" salva. Feche o ~1~ e reinicie-o para habilitar a nova configuraÁ„o (n„o reinicie somente).
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Executar na InicializaÁ„o
+lOptionsSearchFrom	Extens„o da pesquisa
+lOptionsSearchFromCurrent	Pesquisar no menu ou grupo atual
+lOptionsSearchFromMain	Sempre pesquisar a partir do menu Principal
+lOptionsSearchResults	Resultados da Pesquisa
+lOptionsSearchWithStats	Pesquisar resultados com datas de ediÁ„o e colunas de estatÌsticas
 lOptionsSelectBackupFolder	Selecione a backup do arquivo principal de configuraÁıes
 lOptionsSelectCatalogueRoot	Selecione a pasta raiz do Cat·logo de Menus Compartilhados
 lOptionsSelectQAPTempFolder	Criar a Pasta Tempor·ria em:
 lOptionsSelectWorkingFolder	Salvar ConfiguraÁıes em qual pasta?
 lOptionsSendToConsoleWithAlt	Usar cÛdigos ASCII (ALT+0nnn) ao alterar pasta na Linha de Comando do Windows (CMD)
+lOptionsSettingsSearchResults	Resultados da Pesquisa
 lOptionsSettingsStartup	Abrir janela "Personalizar" ao Inicializar
 lOptionsSettingsWindow	Janela Personalizar
 lOptionsShowQAPmenu	Exibir menu do QAP (Arquivo, Favorito, etc.):

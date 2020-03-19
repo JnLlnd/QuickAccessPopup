@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.3.9.10 (2020-03-19)
+- when saving a new, edited or copied favorite, alert user if an existing favorite has the same location and some other properties
+- update for v10.4 of language files for German, French, Italian, Korean, Portuguese, Brazilian Portuguese, Dutch language and Simplified Chinese languages
+  (still looking for a Spanish translator)
+
 Version BETA: 10.3.9.9 (2020-03-08)
 - fix bug doubling backticks when editing snippets
 - add support for Total Commander in "Current windows", "Reopen a Folder" and "Reopen Current Folder in Dialog Box" by retrieving active folders in left and right panes
@@ -3840,7 +3845,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.9
+;@Ahk2Exe-SetVersion 10.3.9.10
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3945,7 +3950,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -5127,7 +5132,10 @@ ProcessSponsorName:
 
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
-	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
+{
+    g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
+    o_Settings.Launch.blnDonorCode.IniValue := 0 ; boolean value used later
+}
 else if SponsorNameOK(o_Settings.Launch.strSponsorName.IniValue, o_Settings.Launch.blnDonorCode.IniValue)
 ; donor code matches MD5 of sponsor name
 {
@@ -13358,6 +13366,26 @@ else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave
 if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is processed in UpdateMenusPathAndLocation
 	o_EditedFavorite.AA.oParentMenu := o_Containers.AA[strDestinationMenu]
 
+; alert user if an existing favorite has the same location + parameters
+
+if InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|")
+{
+	oDuplicateFavorite := o_MainMenu.FoundIdenticalFavorite(o_EditedFavorite)
+	if (oDuplicateFavorite) ; FoundIdenticalFavorite returned false if not duplicate
+	{
+		Gui, 2:+OwnDialogs
+		MsgBox, 4, %g_strAppNameText%, % o_L["DialogSameLocartionExistsPrompt"] . "`n`n"
+			. oDuplicateFavorite.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oDuplicateFavorite.AA.strFavoriteName . "`n"
+			. oDuplicateFavorite.AA.strFavoriteLocation . "`n`n"
+			. o_L["DialogSameLocartionExistsQuestion"]
+		IfMsgBox, No
+		{
+			gosub, GuiAddFavoriteSaveCleanup
+			return
+		}
+	}
+}
+
 ; updating original and destination menu objects (these can be the same)
 
 if !InStr(strThisLabel, "Copy")
@@ -13439,6 +13467,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	strNewFavoriteSoundLocation := ""
 	strExpandedNewFavoriteLocation := ""
 	oExternalMenu := ""
+	oDuplicateFavorite := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
@@ -26489,6 +26518,34 @@ class Container
 		}
 		
 		return intHiddenItems
+	}
+	;---------------------------------------------------------
+
+	;--------------------------------------------------------
+	FoundIdenticalFavorite(oFavorite)
+	; returns the found duplicate or false
+	; compare strFavoriteLocation; if identical, also compare other properties concatenated: strFavoriteAppWorkingDir, strFavoriteArguments, strFavoriteLaunchWith and strFavoriteLoginName
+	;---------------------------------------------------------
+	{
+		if !oFavorite.IsSeparator() ; do not check duplicates for separators
+			for intKey, oItem in this.SA
+				if oItem.IsContainer()
+				{
+					oDuplicateItem := oItem.AA.oSubMenu.FoundIdenticalFavorite(oFavorite) ; recursive
+					if (oDuplicateItem)
+						return oDuplicateItem
+				}
+				else if (oFavorite.AA.strFavoriteType <> oItem.AA.strFavoriteType) ;  not same type
+					or (&oFavorite.AA = &oItem.AA) ; do not compare object to itself when saving edited favorite
+					continue
+				else
+					if (oFavorite.AA.strFavoriteLocation = oItem.AA.strFavoriteLocation)
+						; then check other properties
+						if (oFavorite.AA.strFavoriteAppWorkingDir . oFavorite.AA.strFavoriteArguments . oFavorite.AA.strFavoriteLaunchWith . oFavorite.AA.strFavoriteLoginName
+							= oItem.AA.strFavoriteAppWorkingDir . oItem.AA.strFavoriteArguments . oItem.AA.strFavoriteLaunchWith . oItem.AA.strFavoriteLoginName)
+							return oItem ; return duplicate item
+		
+		return false
 	}
 	;---------------------------------------------------------
 
