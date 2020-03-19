@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.3.9.10 (2020-03-19)
+- when saving a new, edited or copied favorite, alert user if an existing favorite has the same location and some other properties
+- update for v10.4 of language files for German, French, Italian, Korean, Portuguese, Brazilian Portuguese, Dutch language and Simplified Chinese languages
+  (still looking for a Spanish translator)
+
 Version BETA: 10.3.9.9 (2020-03-08)
 - fix bug doubling backticks when editing snippets
 - add support for Total Commander in "Current windows", "Reopen a Folder" and "Reopen Current Folder in Dialog Box" by retrieving active folders in left and right panes
@@ -3840,7 +3845,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.9
+;@Ahk2Exe-SetVersion 10.3.9.10
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3945,7 +3950,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -5127,7 +5132,10 @@ ProcessSponsorName:
 
 if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
 ; donor code need to be updated
-	g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
+{
+    g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
+    o_Settings.Launch.blnDonorCode.IniValue := 0 ; boolean value used later
+}
 else if SponsorNameOK(o_Settings.Launch.strSponsorName.IniValue, o_Settings.Launch.blnDonorCode.IniValue)
 ; donor code matches MD5 of sponsor name
 {
