@@ -20342,7 +20342,53 @@ NumDecode(str)
 
 
 ;------------------------------------------------------------
+CompareStringEx(strToCompare1, strToCompare2, intFlags)
+; from Alguimist https://www.autohotkey.com/boards/viewtopic.php?f=76&t=73799
+; MsgBox % CompareStringEx("HEllO«", "h…LLoc", 0x21)
+; String Flags.
+; 	NORM_IGNORECASE            0x00000001  // ignore case
+; 	NORM_IGNORENONSPACE        0x00000002  // ignore nonspacing chars
+; 	NORM_IGNORESYMBOLS         0x00000004  // ignore symbols
+; 	LINGUISTIC_IGNORECASE      0x00000010  // linguistically appropriate 'ignore case'
+; 	LINGUISTIC_IGNOREDIACRITIC 0x00000020  // linguistically appropriate 'ignore nonspace'
+; 	NORM_IGNOREKANATYPE        0x00010000  // ignore kanatype
+; 	NORM_IGNOREWIDTH           0x00020000  // ignore width
+; 	NORM_LINGUISTIC_CASING     0x08000000  // use linguistic rules for casing
+; Compare String Return Values.
+; 	CSTR_LESS_THAN             1           // string 1 less than string 2
+; 	CSTR_EQUAL                 2           // string 1 equal to string 2
+; 	CSTR_GREATER_THAN          3           // string 1 greater than string 2
+;------------------------------------------------------------
+{
+    intLenStr1 := StrPutVar(strToCompare1, strVarPut1, "UTF-16")
+    intLenStr2 := StrPutVar(strToCompare2, strVarPut2, "UTF-16")
+
+    Return DllCall("Kernel32.dll\CompareStringEx"
+		, "Ptr",  0
+		, "UInt", intFlags
+		, "Ptr",  &strVarPut1, "Int", intLenStr1
+		, "Ptr",  &strVarPut2, "Int", intLenStr2
+		, "Ptr", 0, "Ptr", 0, "Ptr", 0, "Int")
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+StrPutVar(strToPut, ByRef strAfterPut, strEncoding)
+; from Alguimist https://www.autohotkey.com/boards/viewtopic.php?f=76&t=73799
+;------------------------------------------------------------
+{
+	VarSetCapacity(strAfterPut, StrPut(strToPut, strEncoding) * ((strEncoding = "UTF-16" || strEncoding = "CP1200") ? 2 : 1), 0)
+    Return StrPut(strToPut, &strAfterPut, strEncoding)
+}
+;------------------------------------------------------------
+
+
+/*
+;------------------------------------------------------------
 StrPutVar(string, ByRef var, encoding)
+; 2020-03-24 before new version of StrPutVar for CompareStringEx (was used only for UriEncode)
+; from GoogleTranslate by Mikhail Kuropyatnikov http://www.autohotkey.net/~sumon/GoogleTranslate.ahk
 ;------------------------------------------------------------
 {
     ; Ensure capacity.
@@ -20354,6 +20400,7 @@ StrPutVar(string, ByRef var, encoding)
    Return SizeInBytes 
 }
 ;------------------------------------------------------------
+*/
 
 
 ;------------------------------------------------------------
