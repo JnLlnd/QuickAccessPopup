@@ -31,7 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.3.9.11 (2020-03-??)
+Version BETA: 10.3.9.11 (2020-03-29)
+- when searching favorites in the "Customize" window, use the locale settings making (e.g. "é" considered as "e")
+- add an option in section "Customize Window" to make the use locale settings optional when searching favorites (default enabled)
+- add Russian language file
 
 Version BETA: 10.3.9.10 (2020-03-19)
 - when saving a new, edited or copied favorite, alert user if an existing favorite has the same location and some other properties
