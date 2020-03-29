@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 10.3.9.11 (2020-03-??)
+
 Version BETA: 10.3.9.10 (2020-03-19)
 - when saving a new, edited or copied favorite, alert user if an existing favorite has the same location and some other properties
 - update for v10.4 of language files for German, French, Italian, Korean, Portuguese, Brazilian Portuguese, Dutch language and Simplified Chinese languages
@@ -3845,7 +3847,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.3.9.10
+;@Ahk2Exe-SetVersion 10.3.9.11
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3950,7 +3952,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.3.9.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.3.9.11" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -20342,6 +20344,21 @@ NumDecode(str)
 
 
 ;------------------------------------------------------------
+InStrEx(strHaystack, strNeedle)
+; using locale settings; CaseSensitive := false, StartingPos := 1, Occurrence := 1; returns the position of the occurrence, 0 (false) if not found
+;------------------------------------------------------------
+{
+	intLengthNeedle := StrLen(strNeedle)
+	loop, % StrLen(strHaystack)
+		if CompareStringEx(SubStr(strHaystack, A_Index, intLengthNeedle), strNeedle, 0x21) = 2 ; equal
+			return A_Index
+	
+	return false
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 CompareStringEx(strToCompare1, strToCompare2, intFlags)
 ; from Alguimist https://www.autohotkey.com/boards/viewtopic.php?f=76&t=73799
 ; MsgBox % CompareStringEx("HEllO«", "h…LLoc", 0x21)
@@ -20362,8 +20379,7 @@ CompareStringEx(strToCompare1, strToCompare2, intFlags)
 {
     intLenStr1 := StrPutVar(strToCompare1, strVarPut1, "UTF-16")
     intLenStr2 := StrPutVar(strToCompare2, strVarPut2, "UTF-16")
-
-    Return DllCall("Kernel32.dll\CompareStringEx"
+	return DllCall("Kernel32.dll\CompareStringEx"
 		, "Ptr",  0
 		, "UInt", intFlags
 		, "Ptr",  &strVarPut1, "Int", intLenStr1
@@ -25343,7 +25359,7 @@ class Container
 			}
 				
 			if !oItem.IsSeparator()
-				and (InStr(strSearchIn, o_MenuInGui.AA.strMenuPath) or o_MenuInGui.AA.strMenuPath = "{all}") ; case insensitive
+				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or o_MenuInGui.AA.strMenuPath = "{all}") ; case insensitive
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
