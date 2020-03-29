@@ -4933,6 +4933,7 @@ o_Settings.ReadIniOption("SettingsWindow", "blnOpenSettingsOnActiveMonitor", "Op
 o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0, "SettingsWindow", "f_lblAddAutoAtTop|f_blnAddAutoAtTop0|f_blnAddAutoAtTop1") ; g_blnAddAutoAtTop
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
+o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -7440,6 +7441,10 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsS
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithStats gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithStats"]
 GuiControl, , f_blnSearchWithStats, % (o_Settings.SettingsWindow.blnSearchWithStats.IniValue = true)
 
+; SearchWithLocale
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithLocale gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithLocale"]
+GuiControl, , f_blnSearchWithLocale, % (o_Settings.SettingsWindow.blnSearchWithLocale.IniValue = true)
+
 GuiControlGet, arrPos, Pos, f_blnAddAutoAtTop1
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
@@ -8120,6 +8125,7 @@ o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 blnSearchWithStatsPrev := o_Settings.SettingsWindow.blnSearchWithStats.IniValue
 o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
+o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 
 ; === MenuIcons ===
 
@@ -20348,12 +20354,17 @@ InStrEx(strHaystack, strNeedle)
 ; using locale settings; CaseSensitive := false, StartingPos := 1, Occurrence := 1; returns the position of the occurrence, 0 (false) if not found
 ;------------------------------------------------------------
 {
-	intLengthNeedle := StrLen(strNeedle)
-	loop, % StrLen(strHaystack)
-		if CompareStringEx(SubStr(strHaystack, A_Index, intLengthNeedle), strNeedle, 0x21) = 2 ; equal
-			return A_Index
-	
-	return false
+	if (o_Settings.SettingsWindow.blnSearchWithLocale.IniValue)
+	{
+		intLengthNeedle := StrLen(strNeedle)
+		loop, % StrLen(strHaystack)
+			if CompareStringEx(SubStr(strHaystack, A_Index, intLengthNeedle), strNeedle, 0x21) = 2 ; equal
+				return A_Index
+		
+		return false
+	}
+	else
+		return InStr(strHaystack, strNeedle)
 }
 ;------------------------------------------------------------
 
