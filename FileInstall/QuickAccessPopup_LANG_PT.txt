@@ -177,7 +177,6 @@ lDialogFavoriteNameEmpty	O nome do favorito está em branco. Por favor, escolha u
 lDialogFavoriteNameNoSeparator	O nome deste item não pode incluir o caracter reservado "~1~".
 lDialogFavoriteNameNotAllowed	Favoritos do tipo "~1~" não são permitidos em grupos. Por favor, seleccione outro menu no separador "Opções de Menu".
 lDialogFavoriteNameNotNew	O nome "~1~" já é usado neste menu. Por favor, escolha um novo nome.
-lDialogFavoriteNameNotNewQAPfeature	O nome "~1~" já está a ser usado neste menu. Por favor renomeie o favorito existente e tente de novo.
 lDialogFavoriteParentMenu	Menu superior do Favorito
 lDialogFavoriteParentMenuMove	Mover o favorito para este menu
 lDialogFavoriteRemoveExternalPrompt	Remover o submenu externo "~1~"`n(o ficheiro ini das definições externas NÃO será eliminado)?
@@ -658,7 +657,6 @@ lOopsAlternativeMenuModifiersDuplicates	O Modificador "~1~" do Menu Alternativo 
 lOopsAlternativeNotSupported	O comando do Menu Alternativo "~1~" nÃ£o Ã© suportado para favoritos do tipo "~2~".
 lOopsAmpersandInName	O sÃ­mbolo "&" Ã© utilizado para definir teclas de atalho nos menus do Windows. Para exibir o sÃ­mbolo num nome de menu, digite "&&".`n`nPara mais informaÃ§Ã£o, procure por "ampersand" nas FAQ na pÃ¡gina do QAP.
 lOopsCannotCopyFavorite	Não é possível copiar favoritos do tipo "~1~".
-lOopsCannotCopyMoveToSelf	Não pode mover ou copiar favoritos para as suas localizações actuais. Por favor, seleccione outro destino.
 lOopsCannotMoveToSelf	Não poder mover favoritos para as suas localizações actuais. Por favor, seleccione outro destino.
 lOopsChangeFolderInDialogAlert	Deseja alterar a pasta nesta caixa de diálogo? Para poder navegar dentro desta caixa de diálogo, tem que activar uma opção nas opções do separador "Geral".`n`nDeseja abrir a janela de Opções?
 lOopsContainerInGui	O menu dinâmico "~1~" só pode ser inserido no menu: ~2~
@@ -770,7 +768,7 @@ lOptionsIconSize	Tamanho dos ícones do menu
 lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponível)
 lOptionsIconsRetrieveInFrequentMenus	Recuperar ícones ao actualizar menus de pastas e ficheiros Frequentes (evitar se alguns ficheiros estiverem frequentemente offline)
 lOptionsLanguage	Idioma
-lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese
+lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela activa
 lOptionsMenuAdvanced	Oções Avançadas de Menus
 lOptionsMenuAppearance	Aspecto dos Menus
