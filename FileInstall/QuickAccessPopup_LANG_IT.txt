@@ -177,7 +177,6 @@ lDialogFavoriteNameEmpty	Il nome del Preferito non può essere vuoto. Per favore,
 lDialogFavoriteNameNoSeparator	Questo oggetto non può contenere il carattere riservato "~1~".
 lDialogFavoriteNameNotAllowed	Preferiti del tipo "~1~" non sono permessi nei Gruppi. Per favore, seleziona un altro menù di destinazione dalla scheda "Menù Opzioni".
 lDialogFavoriteNameNotNew	Il nome "~1~" è già in uso in questo menù. Si prega di scegliere un altro nome.
-lDialogFavoriteNameNotNewQAPfeature	Il nome "~1~" Ã¨ giÃ  in uso in questo menÃ¹. Prova di nuovo dopo aver rinominato il preferito esistente.
 lDialogFavoriteParentMenu	Scegli il menù in cui inserirlo
 lDialogFavoriteParentMenuMove	Sposta il Preferito in questo menù
 lDialogFavoriteRemoveExternalPrompt	Vuoi eliminare il sottomenù esterno "~1~"?`n(il file .ini delle impostazioni "esterne" NON verrà cancellato)
@@ -658,7 +657,6 @@ lOopsAlternativeMenuModifiersDuplicates	Il Modificatore "~1~" del Menù alternati
 lOopsAlternativeNotSupported	Il comando "~1~" del menù Alternativo non è supportato per preferiti di tipo "~2~".
 lOopsAmpersandInName	L'ampersand "&" viene riservato per assegnare scorciatoie da tastiera nei nomi dei menù di Windows. Per visualizzare un ampersand nel nome di un menù, inseriscilo così: "&&".`n`nPer maggiori informazioni, cerca "ampersand" nelle FAQ del sito web di QAP.
 lOopsCannotCopyFavorite	Preferiti di tipo "~1~" non possono essere copiati.
-lOopsCannotCopyMoveToSelf	Non Ã¨ possibile spostare o copiare preferiti nella loro posizione corrente. Per favore selezionare un'altra destinazione.
 lOopsCannotMoveToSelf	Non puoi spostare preferiti nella loro attuale posizione. Per favore, seleziona una destinazione differente.
 lOopsChangeFolderInDialogAlert	Hai intenzione di cambiare cartella da questa casella di dialogo? Per poter navigare all'interno di una casella di dialogo, è necessario abilitare un'opzione nel gruppo impostazioni "Generale".`n`nVuoi aprire la finestra delle Opzioni?
 lOopsContainerInGui	Il menÃ¹ dinamico "~1~" puÃ² essere inserito soltanto nel menÃ¹: ~2~
@@ -770,7 +768,7 @@ lOptionsIconSize	Dimensione delle icone
 lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto lo spazio disponibile)
 lOptionsIconsRetrieveInFrequentMenus	Carica le icone nel fare l'aggiornamento delle Cartelle frequenti e Menù file frequenti (evitare quando alcuni file sono spesso offline)
 lOptionsLanguage	Lingua
-lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese
+lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
 lOptionsMenuAppearance	Aspetto dei Menù
