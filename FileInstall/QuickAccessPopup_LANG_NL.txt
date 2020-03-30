@@ -111,6 +111,8 @@ lDialogContinue	Volgende
 lDialogCopy	Kopiëren
 lDialogCopyFavoritesTitle	Kopieer favorieten - ~1~ ~2~
 lDialogCtrl	Control
+lDialogCtrlLeft	Linker Ctrl
+lDialogCtrlRight	Rechter Ctrl
 lDialogCtrlShort	Ctrl
 lDialogDescending	Aflopend
 lDialogDialogBoxes	Dialoogvensters
@@ -325,6 +327,8 @@ lDialogSettingsInvalid	Het instellingenbestand is onjuist!`n`nZorg ervoor dat he
 lDialogSettingsNotSavedPrompt	Het voorkeurenvenster staat open met onopgeslagen wijzigingen. Deze wijzigingen dienen eerst te worden opgeslagen of te worden geannuleerd voordat de gevraagde actie kan worden uitgevoerd.`n`nWil je:`n"Opslaan": De wijzigingen zullen worden opgeslagen en de actie zal worden uitgevoerd.`n"Voorkeuren": Annuleer de gevraagde actie en ga terug naar het voorkeursmenu.`n"Annuleren": Alleen de gevraagde actie zal worden geannuleerd.
 lDialogSettingsNotSavedTitle	~1~ - instellingen niet opgeslagen
 lDialogShift	Shift
+lDialogShiftLeft	Linker Shift
+lDialogShiftRight	Rechter Shift
 lDialogShiftShort	Shift
 lDialogShortcut	Snelkoppeling
 lDialogShortcuts	sneltoetsen
@@ -445,6 +449,12 @@ lGuiOptions	Opties
 lGuiOptionsDescription	Geeft het venster "Opties" weer, zodat je QAP naar jouw wens kan aanpassen.
 lGuiPassword	Wachtwoord
 lGuiPasswordNotEncripted	nb: Het wachtwoord zal niet versleuteld worden wanneer deze verzonden wordt naar het internet
+lGuiQuickAddNewSnippet	dit nieuwe fragment
+lGuiQuickAddSnippet	Snel toevoegen fragment
+lGuiQuickAddSnippetDescription	Maak snel een fragment-favoriet en/of Hotstring-trigger in hetzelfde dialoogvenster aan. Als het Windows-klembord tekst bevat, wordt het gebruikt als standaard ingevulde waarden. Gebruik het gewone dialoogvenster "Favoriet bewerken" om de meer geavanceerde opties in te stellen.
+lGuiQuickAddSnippetExample	Type ~1~ in een tekstverwerker om het fragment toe te voegen.
+lGuiQuickAddSnippetExampleName	Voorbeeld fragment
+lGuiQuickAddSnippetTitle	Fragment snel toevoegen - ~1~ ~2~
 lGuiRemoveFavorite	Verwijderen
 lGuiResetDefault	Standaard sneltoets herstellen
 lGuiSave	Opslaan
@@ -576,10 +586,12 @@ lMenuListApplicationsDescription	Titel, Proces pad en overige opties van open ve
 lMenuMenu	Menu
 lMenuMyMusic	Mijn muziek
 lMenuMyQAPMenu	Mijn QAP Essentials
+lMenuMySnippetsMenu	Mijn fragmenten
 lMenuMySpecialMenu	Mijn speciale mappen
 lMenuMyVideo	Mijn videos
 lMenuMyWindowsAppsMenu	Mijn Windows Apps
 lMenuNoCurrentFolder	Geen open mappen gevonden...
+lMenuOpenBackupDirectory	Open QAP-Instellingen Backup Map
 lMenuOpenWorkingDirectory	Open de QAP instellingenmap
 lMenuOptions	Opties
 lMenuPictures	Afbeeldingen
@@ -631,6 +643,8 @@ lMenuUpdate	Controleren op nieuwe versies
 lMenuUpdateDescription	Controleren op nieuwe versies van Quick Access Popup.
 lMenuUserFolder	Gebruikersmap
 lMenuUserPinned	User Pinned
+lMenuWindowAlwaysonTop	Venster altijd op voorgrond weergeven
+lMenuWindowAlwaysonTopDescription	Zet voor het huidige venster "Altijd op voorgrond weergeven" aan of uit (schakelen)
 lMessengerCloseQAPSettings	Een instellingenvenster is open in ~1~, mogelijk met onopgeslagen wijzingen.`n`nSluit alstublieft het venster alvorens het context menu te gebruiken.
 lMessengerDoNotRun	Start ~1~ niet direct. U kunt gebruik maken van:`n`n- Klik met de rechtermuistoets op een bestand of map in Explorer om deze toe te voegen aan het menu`n- Klik met de rechtermuistoets op de achtergrond van Explorer om de geopende map toe te voegen`n- Klik met de rechtermuistoets op het bureaublad om QAP te openen.`n`nZorg ervoor dat ~2~ geopend is voordat de contextmenus gebruikt kunnen worden. Zie de "Context menus"-optie in ~2~ "Instellingen".
 lMessengerError	Er is een fout opgetreden.`n`nZorg er alstublieft voor dat ~1~ geladen is voor het gebruik van het context menu.
@@ -638,6 +652,8 @@ lMessengerHelp	Zoek naar "Messenger" op www.QuickAccessPopup.com voor hulp.
 lNavigateFileError	Er is een fout opgetreden tijdens het openen van deze map:`n~1~.
 lNavigateSpecialError	Er is een fout opgetreden tijdens het openen van deze speciale map:`n#~1~.
 lOopsAddThisFolderTip	Voor betere resultaten van het "Voeg actieve map of webpagina toe" commando:`n`n1)Activeer het ~1~ venster met de map of link om toe te voegen aan het menu.`n2)Open het popup-menu gebruikmakend van ~2~.`n3)Selecteer "Voeg actieve map of webpagina toe" en sla de nieuwe favoriet op.
+lOopsAlternativeMenuModifiersDuplicates	De alternatieve menu-modifier "~1~" wordt twee keer gebruikt.`n`nZorg ervoor dat elke modifier slechts Ã©Ã©n keer wordt gebruikt.
+lOopsAlternativeNotSupported	De opdracht voor het alternatieve menu "~1~" wordt niet ondersteund voor favorieten van het type "~2~".
 lOopsAmpersandInName	Het karakter ampersand "&" in Windows menu's wordt gebruikt om sneltoetsen te definiëren. Om een ampersand "&" weer te geven in een menunaam dient u gebruik te maken van een dubbele ampersand "&&".`n`nVoor meer informatie, raadpleeg de FAQ op onze Engelstalige website en zoek naar: "Ampersand".
 lOopsCannotCopyFavorite	Favorieten van het type: "~1~" kunnen niet worden gekopieërd.
 lOopsCannotMoveToSelf	Je kunt favorieten niet naar de huidige locatie verplaatsen, selecteer een andere bestemming.
@@ -701,6 +717,7 @@ lOptionsAdvancedOther	Diverse geavanceerde opties
 lOptionsAlternativeMenuFeatures	Alternatieve sneltoetsen
 lOptionsAlternativeMenuFeaturesIntro	Configureer hier de muis en snel-toetsen welke het QAP-alternatieve menu zal oproepen.
 lOptionsAlternativeMenuShowNotification	Notificatie weergeven bij het gebruik van het Alternatieve Menu
+lOptionsAlternativeModifiers	Modifiers
 lOptionsAlternativeTrayIcon	QAP Taakbalk pictogrambestand vervanger (file,index)
 lOptionsBackupFolder	Backupmap voor het hoofdinstellingenbestand
 lOptionsCataloguePath	Bronmap van de Catalogus
@@ -775,6 +792,7 @@ lOptionsPopupHotkeyTitles	Quick Access Popup Muistoets|Quick Access Popup Snelto
 lOptionsPopupHotkeyTitlesSub	Deze muistoets zal het QAP-menu oproepen (behalve bij <a>uitgesloten applicaties</a>) en kan een favoriet uitvoeren of een map openen.|Deze sneltoets zal het QAP-menu oproepen en kan een favoriet uitvoeren of een map openen.|Deze muistoets zal het QAP-alternatieve menu oproepen met verscheidene opties. Dit menu kan overal opgeroepen worden(zonder uitzonderingen).|Deze sneltoets zal het QAP-alternatieve menu oproepen met verscheidene opties. Dit menu kan overal opgeroepen worden.
 lOptionsPopupMenu	Popup Menu
 lOptionsQAPTempFolder	Tijdelijke map
+lOptionsQuickAddSnippetSubmenu	Submenu voor ~1~
 lOptionsRecentFolders	Nummer van items in de menu's
 lOptionsRecentFoldersPrompt	"Recente" en "Frequente"-Items menus:
 lOptionsRefreshedMenusAttached	Koppel alle dynamische menus aan het QAP-hoofdmenu
@@ -848,9 +866,12 @@ lReloadPrompt	~1~ gewijzigd in ~2~. Wilt u ~3~ herladen naar ~2~? Niet opgeslage
 lSponsoredName	Deze software wordt vriendelijk gesponsord door ~1~
 lSponsoredNone	Klik hier om deze software te sponsoren!
 lSponsoredUpdate	Werk uw donorcode bij alsjeblieft (er is geen nieuwe donatie vereist)
+lSponsorRemove	Verwijder de sponsorcode
+lSponsorRemoved	Sponsorcode verwijdert
 lTCMenuName	TC Directory hotlist
 lTCMenuNameDescription	Deze functie is specifiek bedoelt voor Total Commander (TC)-gebruikers.`nDeze functie geeft een dynamisch menu weer dat is opgebouwd met favorieten vanuit de TC Hotlist (vanuit wincdm.ini).`n`nStel de locatie van het wincdm.ini-bestand in via "Opties" -> "Bestandsbeheerders". Als TC was geselecteerd toen u QAP installeerde, is de directory-hotlist automatisch aan uw menu toegevoegd.
 lTCWinCmdLocation	WinCmd.ini locatie
+lToolTipAlwaysOnTop	"Altijd op voorgrond weergeven" uitgeschakeld voor venster:`n~1~
 lToolTipBuilding	Menu opbouwen...
 lToolTipLoading	Favorieten laden...
 lToolTipRetrievingWebPageTitle	Titel van de webpagina aan het ophalen...
