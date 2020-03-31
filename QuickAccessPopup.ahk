@@ -26364,7 +26364,6 @@ class Container
 			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction", strOpenFavoriteLabel)
 				and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
-				###str := A_ThisFunc . "`n"
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
 				blnOpenOK := true
 			}
@@ -26383,8 +26382,9 @@ class Container
 			; ACTIVATE RUNNING APPLICATION
 			else if (this.AA.strFavoriteType = "Application")
 				and (this.AA.strFavoriteLaunchWith = 1) ; 1 activate existing if running
-				and AppIsRunning(this.aaTemp.strLocationWithPlaceholders, this.AA.blnFavoriteElevate, this.aaTemp.strAppID) ; returns true if app is running with same UAC level and updates strAppID
+				and AppIsRunning(this.aaTemp.strFullLocation, this.AA.blnFavoriteElevate, strThisAppID) ; returns true if app is running with same UAC level and updates strAppID
 			{
+				this.aaTemp.strAppID := strThisAppID
 				this.ActivateRunningApplication()
 				blnOpenOK := true
 			}
