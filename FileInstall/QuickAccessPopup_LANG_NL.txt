@@ -314,6 +314,8 @@ lDialogReadOnly	Alleen lezen
 lDialogRefresh	Verversen
 lDialogRemoveMultipleFavorites	Wil je ~1~ favoriet of submenu verwijderen?
 lDialogResetQAPSpecialDefaultNames	Met deze opdracht worden alle favorieten in de "speciale mappen" en de QAP-functies teruggezet naar de standaardnamen in "~1~".`n`nWil je doorgaan?
+lDialogSameLocartionExistsPrompt	De volgende favoriet heeft dezelfde inhoud:
+lDialogSameLocartionExistsQuestion	Wil je deze favoriet nog steeds opslaan?
 lDialogSearch	Zoeken
 lDialogSearchAllFavorites	Zoek in alle favorieten...
 lDialogSelectIcon	Pictogram wijzigen
@@ -432,6 +434,7 @@ lGuiGroupSaveReplaceWindowsLabel	Vervang mappen in bestaande vensters
 lGuiGroupSaveRestoreOption	Bij het verversen van mappen in deze groep:
 lGuiGroupSaveRestoreWith	Herstel de mappen met:
 lGuiHelp	Help
+lGuiHelpDescription	Toon het korte QAP "Help" -venster.
 lGuiHotkeysHelp	Geef QAP sneltoetsen weer
 lGuiHotkeysOpenParentMenu	Bovenliggend menu openen
 lGuiHotkeysOpenSubmenuOrEditFavorite	Open submenu of bewerk favoriet
@@ -793,6 +796,7 @@ lOptionsPopupHotkeyTitlesSub	Deze muisknop zal het QAP-menu oproepen (behalve bi
 lOptionsPopupMenu	Popupmenu
 lOptionsQAPTempFolder	Tijdelijke map
 lOptionsQuickAddSnippetSubmenu	Submenu voor ~1~
+lOptionsRecentFolders	Aantal items in menu's
 lOptionsRecentFoldersPrompt	Aantal recente en frequente items in menu:
 lOptionsRefreshedMenusAttached	Koppel alle dynamische menu's aan het QAP-menu
 lOptionsRefreshedMenusAttachedInfo	Als je deze optie inschakelt dan bestaat de mogelijkheid dat er een lichte vertraging (afhankelijk van uw systeemconfiguratie) optreedt elke keer als je het popupmenu opvraagt.`n`nDe duur van de vertraging is afhankelijk van de tijd dat Windows nodig heeft om de informatie te verversen voor het menu (b.v. de lijst van recente items en beschikbare ruimte op de stations). Deze tijd kan verschillen voor elke menuoproep.`n`nAls je deze optie uitschakelt dan zal "~1~", "~2~", "~3~", "~4~" en "~5~" menu's alleen op handmatig verzoek worden ververst en los van het hoofdmenu weergegeven worden.
@@ -811,6 +815,7 @@ lOptionsSearchFrom	Zoekbereik
 lOptionsSearchFromCurrent	Zoek vanuit het huidige menu of groep
 lOptionsSearchFromMain	Zoek altijd vanuit het hoofdmenu
 lOptionsSearchResults	Zoekresultaten
+lOptionsSearchWithLocale	Zoeken met lokale taalinstellingen (bijv. "È" beschouwd als "e")
 lOptionsSearchWithStats	Voeg bewerkingsdatums en statistiekkolommen toe aan zoekresultaten
 lOptionsSelectBackupFolder	Selecteer de back-upmap voor het voorkeurenbestand
 lOptionsSelectCatalogueRoot	Selecteer een openbare map voor de Openbare Menu's
@@ -891,6 +896,8 @@ lUpdateButtonSkipVersion	Sla deze versie over
 lUpdateButtonVisit	Website bezoeken
 lUpdateError	Er is een fout opgetreden tijdens het controleren van nieuwe versies. De update is onderbroken...
 lUpdatePrompt	Update ~1~ van v~2~ naar v~3~?
+lUpdatePromptBetaContinue	Wil je de hoogte blijven van toekomstige b√®taversies?
+lUpdateTitle	Update ~1~?
 lUpdateYouHaveLatest	Je hebt de laatste versie: ~1~.`n`nWil je de website van ~2~ bezoeken?
 lWindowIsTreeviewText	Sorry... Door een Windows beperking kunnen Boomstructuur-vensters niet ondersteund worden.
 lWindowIsTreeviewTitle	Boomstructuur-vensters worden niet ondersteund
