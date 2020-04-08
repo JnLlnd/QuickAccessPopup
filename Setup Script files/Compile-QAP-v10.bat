@@ -1,5 +1,5 @@
 rem Check that there is no debug code flag
->NUL find "#####" ..\QuickAccessPopup.ahk && (ECHO Debug code ##### FOUND in QuickAccessPopup.ahk & PAUSE & EXIT) || (ECHO NO debug code flag found)
+IF [%CHECKHASHTAGS%] == [1] >NUL find "#####" ..\QuickAccessPopup.ahk && (ECHO Debug code ##### FOUND in QuickAccessPopup.ahk & PAUSE & EXIT) || (ECHO NO debug code flag found)
 rem Check if version number is OK in source file
 >NUL find "SetVersion %QAPVERSIONNUMBER%" ..\QuickAccessPopup.ahk && (ECHO Version %QAPVERSIONNUMBER% #1 FOUND in QuickAccessPopup.ahk) || (ECHO SetVersion %QAPVERSIONNUMBER% = Version number NOT FOUND in QuickAccessPopup.ahk & PAUSE & EXIT)
 >NUL find """%QAPVERSIONNUMBER%""" ..\QuickAccessPopup.ahk && (ECHO Version %QAPVERSIONNUMBER% #2 FOUND in QuickAccessPopup.ahk) || (ECHO "%QAPVERSIONNUMBER%" = Version number NOT FOUND in QuickAccessPopup.ahk & PAUSE & EXIT)

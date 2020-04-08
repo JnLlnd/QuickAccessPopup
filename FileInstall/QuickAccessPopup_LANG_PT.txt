@@ -1,5 +1,5 @@
 lAboutText1	~1~ ~2~ (~3~ bits)
-lAboutText2	~1~ foi escrito por Jean Lalonde usando a`nlinguagem de programação <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução Alemã: Edgar "Fast Edi" Hoffmann`nTradução Francesa: Jean Lalonde`nTradução Italiana: Riccardo Leone`nTradução Espanhola: kiketrucker`nTradução Brasileira: Igor Ruckert`nTradução Chinês: ilaoyao`nTradução Portuguesa: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nRevisão do Inglês: (a ajuda é bem-vinda)`n`nÍcones por: <a href="https://icons8.com/">Icons8</a>`nInstalador: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nAutoHotkey_L v~2~ sources: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
+lAboutText2	~1~ foi escrito por Jean Lalonde usando a`nlinguagem de programação <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução Alemã: Edgar "Fast Edi" Hoffmann`nTradução Francesa: Jean Lalonde`nTradução Italiana: Riccardo Leone`nTradução Espanhola: kiketrucker`nTradução Brasileira: Igor Ruckert`nTradução Chinês: ilaoyao`nTradução Portuguesa: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nRevisão do Inglês: (a ajuda é bem-vinda)`n`nÍcones por: <a href="https://icons8.com/">Icons8</a>`nInstalador: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nAutoHotkey_L v~2~ sources: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Suporte em <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	Acerca do - ~1~ ~2~
@@ -21,13 +21,17 @@ lControlToolTipAlwaysOnTopOn	Para de manter esta janela sempre visível
 lControlToolTipColumnBreak	Insere uma quebra de coluna
 lControlToolTipMoveDown	Move o(s) favorito(s) seleccionado(s) para baixo
 lControlToolTipMoveUp	Move o(s) favorito(s) seleccionado(s) para cima
+lControlToolTipNextMenu	Volta ao menu seguinte
+lControlToolTipOpenMenuContainingSearchItem	Abre o submenu ou grupo contendo o favorito seleccionado
 lControlToolTipParentMenu	Vai para o menu principal
 lControlToolTipPreviousMenu	Regressa ao menu anterior
 lControlToolTipSearchBoxClear	Limpa a caixa de procura e mostra todos os favoritos
 lControlToolTipSearchBoxExtended	Procura por nomes de favoritos no menu actual *e* vÃ¡rias propriedades
 lControlToolTipSearchButton	Procurar favoritos
 lControlToolTipSeparator	Insere um separador de menu
+lControlToolTipShowContainerInGui	Mostra um menu com favoritos na janela Personalizar
 lControlToolTipSortFavorites	Ordena todos ou os favoritos seleccionados na lista
+lControlToolTipSortSearchResult	Ordena os favoritos nos resultados da pesquisa
 lControlToolTipTextSeparator	Insere um separador de texto do menu
 lCopyFavoritesToMenuOrGroup	Os menus e grupos não podem ser copiados.`n`nDeseja continuar sem copiar menus e grupos?
 lCopyLocationCopiedToClipboard	Atalho ou URL copiado para a área de transferência
@@ -173,7 +177,6 @@ lDialogFavoriteNameEmpty	O nome do favorito está em branco. Por favor, escolha u
 lDialogFavoriteNameNoSeparator	O nome deste item não pode incluir o caracter reservado "~1~".
 lDialogFavoriteNameNotAllowed	Favoritos do tipo "~1~" não são permitidos em grupos. Por favor, seleccione outro menu no separador "Opções de Menu".
 lDialogFavoriteNameNotNew	O nome "~1~" já é usado neste menu. Por favor, escolha um novo nome.
-lDialogFavoriteNameNotNewQAPfeature	O nome "~1~" já é usado neste menu. Por favor, mude o nome do favorito existente e tente de novo.
 lDialogFavoriteParentMenu	Menu superior do Favorito
 lDialogFavoriteParentMenuMove	Mover o favorito para este menu
 lDialogFavoriteRemoveExternalPrompt	Remover o submenu externo "~1~"`n(o ficheiro ini das definições externas NÃO será eliminado)?
@@ -265,6 +268,8 @@ lDialogIconsManageParentMenu	Menu principal do Favorito
 lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir ícone padrão
 lDialogIconsManageTitle	Gerir Ícones - ~1~ ~2~
+lDialogIconsSelectPrompt	Clique num ícone para o seleccionar.
+lDialogIconsSelectTitle	Seleccionar ícone - ~1~ ~2~
 lDialogInputExample	Inserir Exemplo
 lDialogInputParameter	Inserir parâmetro - ~1~
 lDialogInvalidHotkey	Com a sua actual configuração do teclado, a tecla de atalho "~1~" não pode usada como desencadeadora do menu emergente (erro de nome de tecla inválido).`n`nPor favor, abra a janela "Personalizar" do menu da Barra de notificação e clique em "Opções". Nesta caixa de diálogo, escolha outro atalho para "~2~".
@@ -309,7 +314,10 @@ lDialogReadOnly	Só de leitura
 lDialogRefresh	Actualizar
 lDialogRemoveMultipleFavorites	Deseja mesmo remover ~1~ favoritos ou submenus?
 lDialogResetQAPSpecialDefaultNames	Este comando irá redefinir para o nome padrão todas as Pastas Especiais e Favoritos QAP no seu menu em "~1~".`n`nContinuar?
+lDialogSameLocartionExistsPrompt	Os seguintes favoritos têm o mesmo conteúdo:
+lDialogSameLocartionExistsQuestion	Ainda deseja guardar este favorito?
 lDialogSearch	Procurar
+lDialogSearchAllFavorites	Procurar Todos Favoritos
 lDialogSelectIcon	Alterar ícone
 lDialogSelectIconJL	Seleccionar em:
 lDialogSelectIconNo	Sem ícone
@@ -437,6 +445,8 @@ lGuiListApplicationsHeader	Índice|ID|Título da janela|Nome do Processo|Caminho d
 lGuiLoginName	Nome de Utilizador
 lGuiLvFavoritesHeader	Nome|Tipo|Tecla de Atalho|Localização ou conteúdo
 lGuiLvFavoritesHeaderFiltered	Nome|Menu|Tipo|Tecla de Atalho|Localização ou conteúdo
+lGuiLvFavoritesHeaderFilteredDates	Modificado|Criado
+lGuiLvFavoritesHeaderFilteredStats	Última utilização|Utilização
 lGuiMove	Mover
 lGuiOptions	Opções
 lGuiOptionsDescription	Exibe a caixa de diálogo "Opções" permitindo fazer o QAP trabalhar à sua maneira.
@@ -545,6 +555,8 @@ lMenuCommonAppData	Dados de Aplicações (comum)
 lMenuCommonDesktop	Ambiente de Trabalho (comum)
 lMenuCommonStartMenu	Menu Iniciar (comum)
 lMenuCommonStartupMenu	Menu de Arranque (comum)
+lMenuContainerInGui	Favoritos na janela Personalizar
+lMenuContainerInGuiDescription	Mostra um menu com os favoritos exibidos na janela Personalizar, inclusivé quando contém um resultado da pesquisa. Nos resultados da pesquisa, aos nomes dos menus duplicados é anexado o sufixo "[!]" para torná-los únicos.
 lMenuCookies	Cookies
 lMenuCopyLocation	Copiar um Atalho ou URL dos Favoritos
 lMenuCurrentFolders	Reabrir uma Pasta
@@ -613,6 +625,7 @@ lMenuResetQAPSpecialDefaultNames	Repor Nomes Padrão de Funções QAP e Pastas Espe
 lMenuRestoreSettingsWindowPosition	Restaurar posição da janela "Personalizar"
 lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e posição da janela "Personalizar" no centro do ecrã principal.
 lMenuRunAtStartup	Executar no Arranque
+lMenuSearchOrder	Ordem de pesquisa original
 lMenuSelectAll	Seleccionar todos os itens
 lMenuSettings	Personalizar
 lMenuSettingsDescription	Exibe a janela "Personalizar" onde pode personalizar o seu menu emergente do QAP, gerir os seus favoritos e definir diversas opções.`n`nPor defeito esta funcionalidade faz parte do meu Principal.
@@ -646,8 +659,9 @@ lOopsAlternativeMenuModifiersDuplicates	O Modificador "~1~" do Menu Alternativo 
 lOopsAlternativeNotSupported	O comando do Menu Alternativo "~1~" nÃ£o Ã© suportado para favoritos do tipo "~2~".
 lOopsAmpersandInName	O sÃ­mbolo "&" Ã© utilizado para definir teclas de atalho nos menus do Windows. Para exibir o sÃ­mbolo num nome de menu, digite "&&".`n`nPara mais informaÃ§Ã£o, procure por "ampersand" nas FAQ na pÃ¡gina do QAP.
 lOopsCannotCopyFavorite	Não é possível copiar favoritos do tipo "~1~".
-lOopsCannotCopyMoveToSelf	Não pode mover ou copiar favoritos para a sua localização actual. Por favor, seleccione outro destino.
+lOopsCannotMoveToSelf	Não poder mover favoritos para as suas localizações actuais. Por favor, seleccione outro destino.
 lOopsChangeFolderInDialogAlert	Deseja alterar a pasta nesta caixa de diálogo? Para poder navegar dentro desta caixa de diálogo, tem que activar uma opção nas opções do separador "Geral".`n`nDeseja abrir a janela de Opções?
+lOopsContainerInGui	O menu dinâmico "~1~" só pode ser inserido no menu: ~2~
 lOopsCouldNotOpenSpecialFolder	O ~1~ não conseguiu abrir a pasta especial: "~2~".
 lOopsEmpty	vazia
 lOopsErrorIniFileDisplayErrorMessage	Exibir de novo esta mensagem de erro para este Menu Partilhado?
@@ -681,6 +695,7 @@ lOopsMenuExternalCentralized	menu partilhado centralizado
 lOopsMenuExternalCollaborative	menu partilhado colaborativo
 lOopsMenuExternalPersonalChangedBy	Este menu partilhado pessoal está a ser EDITADO ou tem alterações NÃO GUARDADAS no computador: ~1~.`n`nSe guardar as alterações para este menu aqui, as alterações não guardadas no outro computador serão perdidas e deve cancelar essas alterações quando regressar a esse computador.
 lOopsMenuExternalReservedBy	Este ~1~ está RESERVADO pelo utilizador: ~2~.`n`nAguarde que este utilizador liberte o menu partilhado ou contacte o administrador do sistema.
+lOopsMultipleContainersError	Menus, grupos e menus partilhados só podem ser movidos individualmente. Estes itens serão ignorados.
 lOopsNotAdmin	Não foi possível carregar ~1~ como Administrador.`n`nEstá agora a ser executado como Normal.
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, seleccione um atalho válido.
 lOopsOptionsPathTrayIcon	Ficheiro do ícone da área de notificação
@@ -755,7 +770,7 @@ lOptionsIconSize	Tamanho dos ícones do menu
 lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponível)
 lOptionsIconsRetrieveInFrequentMenus	Recuperar ícones ao actualizar menus de pastas e ficheiros Frequentes (evitar se alguns ficheiros estiverem frequentemente offline)
 lOptionsLanguage	Idioma
-lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese
+lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela activa
 lOptionsMenuAdvanced	Oções Avançadas de Menus
 lOptionsMenuAppearance	Aspecto dos Menus
@@ -796,11 +811,18 @@ lOptionsRunAsAdminAlert	Alerta: Executar o ~1~ em modo Administrador pode provoc
 lOptionsRunAsAdminChanged	Nova definição "Executar como administrador" guardada. Sair do ~1~ recarregá-lo para activar a nova definição (não reiniciar apenas).
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Executar no Arranque
+lOptionsSearchFrom	Âmbito da pesquisa
+lOptionsSearchFromCurrent	Procurar a partir do menu actual ou grupo
+lOptionsSearchFromMain	Procurar sempre a partir do menu Principal
+lOptionsSearchResults	Resultados da pesquisa
+lOptionsSearchWithLocale	Procurar usando definições do idioma local (p.e. "é" considerado como "e")
+lOptionsSearchWithStats	Resultados da pesquisa com datas de edição e colunas estatísticas
 lOptionsSelectBackupFolder	Selecciona o ficheiro de definições da pasta cópia de segurança
 lOptionsSelectCatalogueRoot	Seleccionar a pasta raiz do Catálogo de Menus Partilhados
 lOptionsSelectQAPTempFolder	Criar a Pasta Temporária em:
 lOptionsSelectWorkingFolder	Guardar definições em que pasta?
 lOptionsSendToConsoleWithAlt	Usar códigos ASCII (ALT+0nnn) quando alterar pasta na Linha de Comandos do Windows (CMD)
+lOptionsSettingsSearchResults	Resultados da pesquisa
 lOptionsSettingsStartup	Abrir a janela "Personalizar" ao iniciar
 lOptionsSettingsWindow	Janela Personalizar
 lOptionsShowQAPmenu	Mostrar menu QAP (Ficheiro, Favorito, etc.):
