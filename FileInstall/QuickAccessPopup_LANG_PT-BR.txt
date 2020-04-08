@@ -1,5 +1,5 @@
 lAboutText1	~1~ ~2~ (~3~ bits)
-lAboutText2	O ~1~ é escrito por Jean Lalonde usando a linguagem de programação`n<a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução para o Alemão: Edgar "Fast Edi" Hoffmann`nTradução para o Francês: Jean Lalonde`nTradução para o Holandês: Pieter Dejonghe`nTradução para o Italiano: Riccardo Leone`nTradução para o Espanhol: kiketrucker`nTradução para Português (Brasil): Igor Rückert`nTradução para Chinês Simplificado: ilaoyao`nTradução para Português: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nVerificação do inglês: (ajuda sempre bem-vinda)`n`nÍcones por: <a href="http://www.visualpharm.com">Visual Pharm</a>`nPrograma de instalação: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nFontes AutoHotkey_L v~2~: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
+lAboutText2	O ~1~ é escrito por Jean Lalonde usando a linguagem de programação`n<a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução para o Alemão: Edgar "Fast Edi" Hoffmann`nTradução para o Francês: Jean Lalonde`nTradução para o Holandês: Pieter Dejonghe`nTradução para o Italiano: Riccardo Leone`nTradução para o Espanhol: kiketrucker`nTradução para Português (Brasil): Igor Rückert`nTradução para Chinês Simplificado: ilaoyao`nTradução para Português: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nVerificação do inglês: (ajuda sempre bem-vinda)`n`nÍcones por: <a href="http://www.visualpharm.com">Visual Pharm</a>`nPrograma de instalação: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nFontes AutoHotkey_L v~2~: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Suporte em <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	Sobre - ~1~ ~2~
@@ -314,6 +314,8 @@ lDialogReadOnly	Somente leitura
 lDialogRefresh	Atualizar
 lDialogRemoveMultipleFavorites	Deseja realmente remover favoritos do ~1~ ou submenus?
 lDialogResetQAPSpecialDefaultNames	Este comando redefine todos os favoritos das Pastas Especiais e Recursos do QAP no seu menus para seu nome padrão em "~1~".`n`nContinuar?
+lDialogSameLocartionExistsPrompt	O seguinte favoritoi possui o mesmo conteúdo:
+lDialogSameLocartionExistsQuestion	Você ainda quer salvar este favorito?
 lDialogSearch	Pesquisar
 lDialogSearchAllFavorites	Pesquisar Todos os Favoritos
 lDialogSelectIcon	Alterar ícone
@@ -813,6 +815,7 @@ lOptionsSearchFrom	Extensão da pesquisa
 lOptionsSearchFromCurrent	Pesquisar no menu ou grupo atual
 lOptionsSearchFromMain	Sempre pesquisar a partir do menu Principal
 lOptionsSearchResults	Resultados da Pesquisa
+lOptionsSearchWithLocale	Pesquisar usando configurações de idioma local (ex.: "é" considerado como "e")
 lOptionsSearchWithStats	Pesquisar resultados com datas de edição e colunas de estatísticas
 lOptionsSelectBackupFolder	Selecione a backup do arquivo principal de configurações
 lOptionsSelectCatalogueRoot	Selecione a pasta raiz do Catálogo de Menus Compartilhados
