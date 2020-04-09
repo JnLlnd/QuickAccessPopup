@@ -12146,7 +12146,7 @@ ButtonPlayFavoriteSoundLocation:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-; OpenFavoritePlaySound(f_strFavoriteSoundLocation)
+o_EditedFavorite.OpenFavoritePlaySound(f_strFavoriteSoundLocation)
 
 return
 ;------------------------------------------------------------
@@ -28059,18 +28059,21 @@ class Container
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
-		OpenFavoritePlaySound()
+		OpenFavoritePlaySound(strSound := "")
 		;---------------------------------------------------------
 		{
-			if (SubStr(this.AA.strFavoriteSoundLocation, 1, 2) = "*|")
+			if !StrLen(strSound)
+				strSound := this.AA.strFavoriteSoundLocation
+			
+			if (SubStr(strSound, 1, 2) = "*|")
 				intFavoriteSoundType := 1 ; sequence
-			else if (SubStr(this.AA.strFavoriteSoundLocation, 1, 1) = "*")
+			else if (SubStr(strSound, 1, 1) = "*")
 				intFavoriteSoundType := 2 ; system
 			else
 				intFavoriteSoundType := 3 ; file
 			
 			if (intFavoriteSoundType = 1)
-				Loop, Parse, % this.AA.strFavoriteSoundLocation, |, *
+				Loop, Parse, % strSound, |, *
 					if StrLen(A_LoopField)
 					{
 						saThisSound := StrSplit(A_LoopField, "@")
@@ -28080,8 +28083,8 @@ class Container
 			if (intFavoriteSoundType > 1) ; do not use else with previous if(s)
 			{
 				strFavoriteSoundLocationExpanded := (intFavoriteSoundType = 2
-					? this.AA.strFavoriteSoundLocation ; system
-					: PathCombine(A_WorkingDir, EnvVars(this.AA.strFavoriteSoundLocation))) ; file
+					? strSound ; system
+					: PathCombine(A_WorkingDir, EnvVars(strSound))) ; file
 					
 				if (intFavoriteSoundType = 3) ; if file do not exist play system sound
 					if !FileExist(strFavoriteSoundLocationExpanded)
