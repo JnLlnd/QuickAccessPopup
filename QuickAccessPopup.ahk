@@ -31,6 +31,54 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.4 (2020-04-08)
+ 
+IN SHORT
+- copy and move SUBMENUS and groups
+- improved SEARCH tool with more actions on found items and optional advanced view
+- improved navigation in submenus, groups and search results
+- other various improvements, including new Russian language
+ 
+Copy and move submenus and groups
+- allow to delete, copy or move multiple items at a time from the search result (using shift+click or ctrl+click to select multiple items)
+- allow to copy or move multiple submenus or groups and all their contents
+- allow to copy a single submenu or group and its contents (moving was already possible)
+- when copying or moving favorites, add [!] to their name when an existing favorite has the same name (instead of aborting the copy/move)
+ 
+Search
+- improved "Search" tool in the "Customize" window
+- add three buttons on the left side of the Search result:
+  - sort button to sort by any search result column
+  - button to open a menu with the favorites currently in the search result (duplicate menu names are appended with the "[!]" suffix to make them unique)
+  - button to open the submenu containing the selected item oin the search result
+- when editing a favorite from the search result, stay in the search result (instead of changing the menu to the edited favorite as before)
+- allow to move multiple favorites from search result (multiple copy was already possible)
+- show all favorites in the search result when selecting the new menu item "Search All Favorites" under the "Tool" menu of the "Customize" window or when setting the search filter to "{All}"
+- in "Extended search", also search based on the menu path
+- when searching favorites in the "Customize" window, use the locale settings making (e.g. "é" considered as "e")
+- when favorite names include an ampersand (&) as a keyboard shortcut, search the filter string in names w/o the ampersand
+ 
+New Options for Search tool
+- add an option in "Customize Window" section to set the "Search scope" to all favorites from main menu (default) or only for favorites under the menu currently displayed in the "Customize" window
+- also in in "Customize Window", add an option to display additional columns in search result with statistical info: usage frequency, last usage date, date modified and date created (restart QAP must me restarted after changing this option)
+- when QAP window is maximized and showing additional columns, squeeze larger columns to show all columns
+- do not display stats columns if database disabled
+- add an option in section "Customize Window" to make the use locale settings optional when searching favorites (default enabled)
+ 
+Previous/Next arrows
+- in the "Customize window", add "Next" arrow in additon to the "Previous" arrow, allowing to browse backward and forward in QAP selected menus, groups or search results
+- add hotkeys Shift+Ctrl+Left to return to previous menu and Shift+Ctrl+Right move forward in visited menus
+- display the list of menu and groups in previous/next menus when hovering the arrows
+ 
+Various
+- when saving a new, edited or copied favorite, alert user if an existing favorite in any submenu has the same location and some other properties
+- when clicking the "Sort" button in the "Customize" window, sort favorites based on user's locale setting (taking into account all non-English characters)
+- in the "Customize" window, add an icon on the bottom left side to open a menu with the favorites in the menu or group currently displayed
+- add the QAP feature "Favorites in Customize window" to show a menu with the current content (a sumenu, a group or a search result) of the "Customize" window (this dynamic menu can only be added to the Main menu)
+- fix bug when activating a running application instead of relaunching it
+- add Russian language file
+- update of language files for German, French, Italian, Korean, Portuguese, Brazilian Portuguese, Dutch language and Simplified Chinese languages (still looking for new a Spanish translator)
+
 Version BETA: 10.3.9.11 (2020-03-29)
 - when searching favorites in the "Customize" window, use the locale settings making (e.g. "é" considered as "e")
 - add an option in section "Customize Window" to make the use locale settings optional when searching favorites (default enabled)
@@ -3868,11 +3916,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-<<<<<<< HEAD
-;@Ahk2Exe-SetVersion 10.3.6
-=======
-;@Ahk2Exe-SetVersion 10.3.9.11
->>>>>>> beta
+;@Ahk2Exe-SetVersion 10.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -3977,13 +4021,8 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-<<<<<<< HEAD
-global g_strCurrentVersion := "10.3.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
-=======
-global g_strCurrentVersion := "10.3.9.11" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
->>>>>>> beta
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
@@ -14359,8 +14398,6 @@ return
 
 
 ;------------------------------------------------------------
-<<<<<<< HEAD
-=======
 GuiSortSearchResultMenu:
 ;------------------------------------------------------------
 
@@ -14459,7 +14496,6 @@ return
 
 
 ;------------------------------------------------------------
->>>>>>> beta
 GuiSelectAll:
 ;------------------------------------------------------------
 
