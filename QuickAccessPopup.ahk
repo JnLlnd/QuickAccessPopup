@@ -75,7 +75,13 @@ Various
 - when clicking the "Sort" button in the "Customize" window, sort favorites based on user's locale setting (taking into account all non-English characters)
 - in the "Customize" window, add an icon on the bottom left side to open a menu with the favorites in the menu or group currently displayed
 - add the QAP feature "Favorites in Customize window" to show a menu with the current content (a sumenu, a group or a search result) of the "Customize" window (this dynamic menu can only be added to the Main menu)
+ 
+Bug fixes
 - fix bug when activating a running application instead of relaunching it
+- fix bug playing favorite's sound
+- fix bug transforming HTTP location to UNC format
+ 
+Language
 - add Russian language file
 - update of language files for German, French, Italian, Korean, Portuguese, Brazilian Portuguese, Dutch language and Simplified Chinese languages (still looking for new a Spanish translator)
 
@@ -13925,10 +13931,11 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		}
 	}
 	
-	if LocationTransformedFromHTTP2UNC(o_EditedFavorite.AA.strFavoriteType, (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
-		and (o_EditedFavorite.AA.strFavoriteType <> "Snippet")
-		Oops(2, o_L["OopsHttpLocationTransformed"], (o_EditedFavorite.AA.strFavoriteType = "External" ? strFavoriteAppWorkingDir : strNewFavoriteLocation))
-		; do not abort
+	if (o_EditedFavorite.AA.strFavoriteType <> "Snippet")
+		and ((o_EditedFavorite.AA.strFavoriteType <> "External" and LocationTransformedFromHTTP2UNC(o_EditedFavorite.AA.strFavoriteType, strNewFavoriteLocation))
+			or (o_EditedFavorite.AA.strFavoriteType = "External" and LocationTransformedFromHTTP2UNC(o_EditedFavorite.AA.strFavoriteType, strFavoriteAppWorkingDir)))
+				Oops(2, o_L["OopsHttpLocationTransformed"], (o_EditedFavorite.AA.strFavoriteType <> "External" ? strNewFavoriteLocation : strFavoriteAppWorkingDir))
+				; do not abort
 
 	if (strNewFavoriteLocation = "{TC Directory hotlist}" and !o_FileManagers.SA[3].TotalCommanderWinCmdIniFileExist())
 	{
