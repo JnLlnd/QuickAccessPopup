@@ -26516,7 +26516,7 @@ class Container
 		{
 			if (StrLen(oItem.AA.strFavoriteShortcut) and (intShortcutOrHotstrings = 1))
 				or (StrLen(oItem.AA.strFavoriteHotstring) and (intShortcutOrHotstrings = 2))
-				or (blnSeeAllFavorites and !oItem.IsSeparator()) ; see all except separators
+				or (blnSeeAllFavorites and !oItem.IsSeparator() and oItem.AA.strFavoriteType <> "Text") ; see all except separators and text separators
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				intHotkeyListOrder++
@@ -26678,7 +26678,7 @@ class Container
 	; compare strFavoriteLocation; if identical, also compare other properties concatenated: strFavoriteAppWorkingDir, strFavoriteArguments, strFavoriteLaunchWith and strFavoriteLoginName
 	;---------------------------------------------------------
 	{
-		if !oFavorite.IsSeparator() ; do not check duplicates for separators
+		if !(oFavorite.IsSeparator() or oFavorite.AA.strFavoriteType = "Text") ; do not check duplicates for separators
 			for intKey, oItem in this.SA
 				if oItem.IsContainer()
 				{
