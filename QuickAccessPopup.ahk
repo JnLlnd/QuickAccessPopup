@@ -11253,6 +11253,7 @@ if !(blnIsGroupMember)
 	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogShell vf_lblSelectIconShell, % "<a>Shell32.dll</a>"
 	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogImageRes vf_lblSelectIconImageRes, % "<a>ImageRes.dll</a>"
 
+	g_strNewFavoriteHotstring := o_EditedFavorite.AA.strFavoriteHotstring ; init g_strNewFavoriteHotstring even if favorite is Text
 	if (o_EditedFavorite.AA.strFavoriteType <> "Text")
 	{
 		Gui, 2:Add, Text, x20 y+20, % o_L["DialogShortcut"]
@@ -11260,7 +11261,6 @@ if !(blnIsGroupMember)
 		Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotkeyText gButtonChangeFavoriteHotkey, % new Triggers.HotkeyParts(g_strNewFavoriteShortcut).Hotkey2Text()
 		Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotkey, % o_L["OptionsChangeHotkey"]
 		
-		g_strNewFavoriteHotstring := o_EditedFavorite.AA.strFavoriteHotstring
 		SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
 		Gui, 2:Add, Text, x20 y+20, % o_L["DialogHotstringTriggerOptions"]
 		Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
@@ -15654,6 +15654,7 @@ UpdateFavoriteObjectSaveHotstring:
 UpdateFavoriteObjectSaveHotstringList:
 ;-----------------------------------------------------------
 
+###_V(A_ThisLabel, o_EditedFavorite.AA.strFavoriteHotstring, g_strNewFavoriteHotstring)
 if (o_EditedFavorite.AA.strFavoriteHotstring == g_strNewFavoriteHotstring) ; if not changed (case-sensitive equal)
 	return
 
