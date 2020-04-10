@@ -79,7 +79,7 @@ Various
 Bug fixes
 - fix bug when activating a running application instead of relaunching it
 - fix bug playing favorite's sound
-- fix bug transforming HTTP location to UNC format
+- fix various other minor bugs
  
 Language
 - add Russian language file
