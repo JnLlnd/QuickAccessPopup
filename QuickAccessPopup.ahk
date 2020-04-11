@@ -13725,7 +13725,7 @@ else
 }
 
 ; check if QAP feature {Container In Gui} is in valid container
-if (o_EditedFavorite.AA.strFavoriteLocation = "{Container In Gui}" and strDestinationMenu <> o_L["MainMenuName"])
+if (strNewFavoriteLocation = "{Container In Gui}" and strDestinationMenu <> o_L["MainMenuName"])
 {
 	Oops(2, o_L["OopsContainerInGui"], o_L["MenuContainerInGui"], o_L["MainMenuName"])
 	g_blnAbortSave := true
@@ -15654,7 +15654,6 @@ UpdateFavoriteObjectSaveHotstring:
 UpdateFavoriteObjectSaveHotstringList:
 ;-----------------------------------------------------------
 
-###_V(A_ThisLabel, o_EditedFavorite.AA.strFavoriteHotstring, g_strNewFavoriteHotstring)
 if (o_EditedFavorite.AA.strFavoriteHotstring == g_strNewFavoriteHotstring) ; if not changed (case-sensitive equal)
 	return
 
