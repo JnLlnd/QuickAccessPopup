@@ -34,51 +34,51 @@ HISTORY
 Version: 10.4 (2020-04-08)
  
 IN SHORT
-- copy and move SUBMENUS and groups
-- improved SEARCH tool with more actions on found items and optional advanced view
+- COPY and MOVE SUBMENUS and groups
+- IMPROVED SEARCH tool with more actions on found items and optional advanced view
 - improved navigation in submenus, groups and search results
 - other various improvements, including new Russian language
  
 Copy and move submenus and groups
-- allow to delete, copy or move multiple items at a time from the search result (using shift+click or ctrl+click to select multiple items)
-- allow to copy or move multiple submenus or groups and all their contents
 - allow to copy a single submenu or group and its contents (moving was already possible)
+- allow to copy or move multiple submenus or groups and all their contents (using shift+click or ctrl+click to select multiple items)
 - when copying or moving favorites, add [!] to their name when an existing favorite has the same name (instead of aborting the copy/move)
  
 Search
 - improved "Search" tool in the "Customize" window
 - add three buttons on the left side of the Search result:
-  - sort button to sort by any search result column
-  - button to open a menu with the favorites currently in the search result (duplicate menu names are appended with the "[!]" suffix to make them unique)
-  - button to open the submenu containing the selected item oin the search result
+  - "Sort" button to sort by any search result column
+  - "View menu" button button to open a popup menu with the favorites currently in the search result (duplicate menu names are appended with the "[!]" suffix to make them unique)
+  - "Open submenu" to open in the Customize window the submenu containing the selected item in the search result
 - when editing a favorite from the search result, stay in the search result (instead of changing the menu to the edited favorite as before)
 - allow to move multiple favorites from search result (multiple copy was already possible)
 - show all favorites in the search result when selecting the new menu item "Search All Favorites" under the "Tool" menu of the "Customize" window or when setting the search filter to "{All}"
-- in "Extended search", also search based on the menu path
+- in "Extended search", also search based on the favorite's menu path
 - when searching favorites in the "Customize" window, use the locale settings making (e.g. "é" considered as "e")
-- when favorite names include an ampersand (&) as a keyboard shortcut, search the filter string in names w/o the ampersand
+- when favorite names include an ampersand (&) as a keyboard shortcut, search names wtih or without the ampersand
  
 New Options for Search tool
-- add an option in "Customize Window" section to set the "Search scope" to all favorites from main menu (default) or only for favorites under the menu currently displayed in the "Customize" window
-- also in in "Customize Window", add an option to display additional columns in search result with statistical info: usage frequency, last usage date, date modified and date created (restart QAP must me restarted after changing this option)
-- when QAP window is maximized and showing additional columns, squeeze larger columns to show all columns
-- do not display stats columns if database disabled
+- add an option in "Customize Window" section to set the "Search scope" to all favorites from main menu (default) or ton only favorites under the menu currently displayed in the "Customize" window
+- add an option to display additional columns in search result with dates and statistical info: date modified, date created, last usage date and usage frequency (QAP must me restarted after changing this option)
+- when QAP window is maximized and showing additional columns, squeeze larger columns to show all columns in the available space
+- do not display last used and usage stats columns if database disabled
 - add an option in section "Customize Window" to make the use locale settings optional when searching favorites (default enabled)
  
 Previous/Next arrows
-- in the "Customize window", add "Next" arrow in additon to the "Previous" arrow, allowing to browse backward and forward in QAP selected menus, groups or search results
-- add hotkeys Shift+Ctrl+Left to return to previous menu and Shift+Ctrl+Right move forward in visited menus
-- display the list of menu and groups in previous/next menus when hovering the arrows
+- in the "Customize" window, add "Next" arrow in additon to the "Previous" arrow, allowing to browse backward and forward in QAP already visited menus, groups or search results
+- add hotkeys Shift+Ctrl+Left to return to previous menu and Shift+Ctrl+Right move forward in visited menus in the "Customize" window
+- display the list of menu and groups already visited in the previous/next menus when hovering these arrows buttons
  
 Various
 - when saving a new, edited or copied favorite, alert user if an existing favorite in any submenu has the same location and some other properties
 - when clicking the "Sort" button in the "Customize" window, sort favorites based on user's locale setting (taking into account all non-English characters)
-- in the "Customize" window, add an icon on the bottom left side to open a menu with the favorites in the menu or group currently displayed
-- add the QAP feature "Favorites in Customize window" to show a menu with the current content (a sumenu, a group or a search result) of the "Customize" window (this dynamic menu can only be added to the Main menu)
+- in the "Customize" window, add an icon on the bottom left side to open a popup menu with the favorites in the menu or group currently displayed
+- add the QAP feature "Favorites in Customize window" to show a menu with the current content (a sumenu, a group or a search result) of the "Customize" window (this dynamic menu can only be added to the "Main" menu)
  
 Bug fixes
-- fix bug when activating a running application instead of relaunching it
+- fix bug when activating a running application instead of relaunching it if this option is selected in Application favorites
 - fix bug playing favorite's sound
+- fix bug when launching with the "Run as administrator" option enabled
 - fix various other minor bugs
  
 Language
@@ -3985,6 +3985,15 @@ ListLines, On
 OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure deletion of temporary files
 
 ;---------------------------------
+; Init class for JLicons
+if (g_blnPortableMode)
+	global o_JLicons := new JLIcons(A_ScriptDir . "\JLicons.dll") ; in portable mode, same folder as QAP exe file or script directory in developement environment
+else ; setup mode
+	global o_JLicons := new JLIcons(A_AppDataCommon . "\JeanLalonde\JLicons.dll") ; in setup mode, shared data folder
+; set tray icon to loading icon
+Menu, Tray, Icon, % o_JLicons.strFileLocation, 60, 1 ; 60 is iconQAPloading, last 1 to freeze icon during pause or suspend
+
+;---------------------------------
 ; Init Settings instance
 global o_Settings := new Settings
 
@@ -4041,11 +4050,7 @@ global o_L := new Language
 o_Settings.InitOptionsGroupsLabelNames() ; init options groups labels after language is initialized
 
 ;---------------------------------
-; Init class for JLicons
-if (g_blnPortableMode)
-	global o_JLicons := new JLIcons(A_ScriptDir . "\JLicons.dll") ; in portable mode, same folder as QAP exe file or script directory in developement environment
-else ; setup mode
-	global o_JLicons := new JLIcons(A_AppDataCommon . "\JeanLalonde\JLicons.dll") ; in setup mode, shared data folder
+; Init global variables
 
 global g_intGuiDefaultWidth := 636
 global g_intGuiDefaultHeight := 496 ; was 601
@@ -4249,12 +4254,6 @@ if (g_blnPortableMode and g_strCurrentBranch = "prod" and !o_Settings.Launch.bln
 ; after sponsor message, we can update these values in ini file
 IniWrite, % (intStartups + 1), % o_Settings.strIniFile, Global, Startups
 IniWrite, %g_strCurrentVersion%, % o_Settings.strIniFile, Global, % "LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod"))
-
-; now that the Gui is built, temporary change the tray icon to loading icon
-Menu, Tray, UseErrorLevel
-Menu, Tray, Icon, % o_JLicons.strFileLocation, % (g_strCurrentBranch = "alpha" ? 59 : 60), 1 ; 60 is iconQAPloading, 59 is iconQAPdev (red) if loading alpha branch, last 1 to freeze icon during pause or suspend
-g_blnTrayIconError := ErrorLevel
-Menu, Tray, UseErrorLevel, Off
 
 o_Settings.ReadIniOption("MenuAdvanced", "intRefreshQAPMenuIntervalSec", "RefreshQAPMenuIntervalSec", 0, "MenuAdvanced"
 	, "f_blnRefreshQAPMenuEnable|f_intRefreshQAPMenuIntervalSecEdit|f_intRefreshQAPMenuIntervalSec|f_lblRefreshQAPMenuIntervalSec") ; g_intRefreshQAPMenuIntervalSec
@@ -5827,18 +5826,32 @@ strTempAlternativeTrayIconLocation := arrAlternativeTrayIcon[1]
 if StrLen(arrAlternativeTrayIcon[1]) and FileExistInPath(strTempAlternativeTrayIconLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
 	Menu, Tray, Icon, %strTempAlternativeTrayIconLocation%, % arrAlternativeTrayIcon[2], 1 ; last 1 to freeze icon during pause or suspend
 else
-	if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
-		; 56 is iconQAPadminBeta and 55 is iconQAPadmin, last 1 to freeze icon during pause or suspend
-		Menu, Tray, Icon, % o_JLicons.strFileLocation, % (g_strCurrentBranch <> "prod" ? 56 : 55), 1
-	else
-		; 60 is iconQAPloading, 58 is iconQAPbeta and 1 is iconQAP, last 1 to freeze icon during pause or suspend
-		Menu, Tray, Icon, % o_JLicons.strFileLocation, % (g_strCurrentBranch <> "prod" ?  (g_strCurrentBranch = "beta" ? 58 : 60) : 1), 1
-
-g_blnTrayIconError := ErrorLevel or g_blnTrayIconError
-Menu, Tray, UseErrorLevel, Off
+	gosub, SetTrayMenuIconForCurrentBranch
 
 if (g_blnTrayIconError)
 	Oops(0, o_L["OopsJLiconsError"], g_strJLiconsVersion)
+
+arrAlternativeTrayIcon := ""
+strTempAlternativeTrayIconLocation := ""
+g_blnTrayIconError := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SetTrayMenuIconForCurrentBranch:
+;------------------------------------------------------------
+
+if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
+	; 56 is iconQAPadminBeta and 55 is iconQAPadmin, last 1 to freeze icon during pause or suspend
+	Menu, Tray, Icon, % o_JLicons.strFileLocation, % (g_strCurrentBranch <> "prod" ? 56 : 55), 1
+else
+	; 60 is iconQAPloading, 58 is iconQAPbeta and 1 is iconQAP, last 1 to freeze icon during pause or suspend
+	Menu, Tray, Icon, % o_JLicons.strFileLocation, % (g_strCurrentBranch <> "prod" ? (g_strCurrentBranch = "beta" ? 58 : 60) : 1), 1
+
+g_blnTrayIconError := ErrorLevel or g_blnTrayIconError
+Menu, Tray, UseErrorLevel, Off
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
@@ -5846,10 +5859,6 @@ Menu, Tray, Icon, % o_JLicons.strFileLocation, % (A_IsAdmin ? 57 : 59), 1 ; 57 i
 Menu, Tray, Standard
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
-
-arrAlternativeTrayIcon := ""
-strTempAlternativeTrayIconLocation := ""
-g_blnTrayIconError := ""
 
 return
 ;------------------------------------------------------------
@@ -9535,7 +9544,11 @@ g_strGuiListviewBackgroundColor := o_Settings.ReadIniValue("ListviewBackground",
 g_strGuiListviewTextColor := o_Settings.ReadIniValue("ListviewText", 000000, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 
 g_strGuiFullTitle := L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion)
+; temporarily set the tray icon used for the gui
+gosub, SetTrayMenuIconForCurrentBranch
 Gui, 1:New, +Hwndg_strGui1Hwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
+; return to loading icon
+Menu, Tray, Icon, % o_JLicons.strFileLocation, 60, 1 ; 60 is iconQAPloading, last 1 to freeze icon during pause or suspend
 
 if (o_Settings.SettingsWindow.intShowQAPmenu.IniValue <> 2) ; 1 Customize menu bar, 2 System menu, 3 both
 	Gui, Menu, menuBar
@@ -17486,7 +17499,7 @@ ReloadQAPDontSave:
 ;------------------------------------------------------------
 
 ; check if there are changes to save
-if SettingsUnsaved() and (A_ThisLabel <> "ReloadQAPDontSave")
+if !InStr("ReloadQAPAsAdmin|ReloadQAPDontSave|", A_ThisLabel . "|") and SettingsUnsaved()
 	if SettingsNotSavedReturn()
 		return
 
@@ -28426,8 +28439,8 @@ class Container
 					saValues.Push(strDateTime) ; col 8
 					if (g_blnUsageDbEnabled)
 					{
-					saValues.Push(this.AA.strFavoriteDateLastUsed) ; col 9, already in format yyyy-MM-dd HH:mm:ss
-					saValues.Push(this.AA.intFavoriteUsageDb) ; col 10
+						saValues.Push(this.AA.strFavoriteDateLastUsed) ; col 9, already in format yyyy-MM-dd HH:mm:ss
+						saValues.Push(this.AA.intFavoriteUsageDb) ; col 10
 					}
 				}
 				intPosition := 0 ; always LV_Add() below when in a search result
