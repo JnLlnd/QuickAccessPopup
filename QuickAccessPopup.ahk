@@ -13725,11 +13725,13 @@ else
 }
 
 ; check if QAP feature {Container In Gui} is in valid container
-if (strNewFavoriteLocation = "{Container In Gui}" and strDestinationMenu <> o_L["MainMenuName"])
+if ((strNewFavoriteLocation = "{Container In Gui}" or o_EditedFavorite.AA.strFavoriteLocation = "{Container In Gui}")
+	and strDestinationMenu <> o_L["MainMenuName"])
 {
 	Oops(2, o_L["OopsContainerInGui"], o_L["MenuContainerInGui"], o_L["MainMenuName"])
 	g_blnAbortSave := true
-	intNbFavoritesCopied-- ; decrement the number of items copied
+	if (strThisLabel = "GuiCopyOneFavoriteSave")
+		intNbFavoritesCopied-- ; decrement the number of items copied
 	return
 }
 
@@ -25859,13 +25861,16 @@ class Container
 				else
 					strMenuItemIcon := "iconNoIcon"
 				
-				if (aaThisFavorite.strFavoriteName = o_L["MenuSettings"]) ; make Settings... menu bold in any menu
+				if (aaThisFavorite.strFavoriteLocation = "{Settings}") ; make Settings... menu bold in any menu; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 2 ; 0 disabled, 1 enabled, 2 default
 					; Menu, % this.AA.strMenuPath, Default, %strMenuItemLabel%
 				else if (strMenuItemAction = "GuiShowNeverCalled")
 					intMenuItemStatus := 0 ; 0 disabled, 1 enabled, 2 default
-				else if (aaThisFavorite.strFavoriteName = o_L["MenuContainerInGui"] and this.AA.strMenuPath = o_L["MenuContainerInGui"])
+				else if (aaThisFavorite.strFavoriteLocation = "{Container In Gui}" and this.AA.strMenuPath = o_L["MenuContainerInGui"])
 					; blocked by AHK because this could cause an infinite loop; disable the menu entry (menu will not be attached)
+					or (aaThisFavorite.strFavoriteLocation = "{Container In Gui}" and aaThisFavorite.oParentMenu.AA.strMenupath <> o_L["MainMenuName"])
+					; block MenuContainerInGui menu if not in Main menu
+					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
 				else
 					intMenuItemStatus := 1 ; 0 disabled, 1 enabled, 2 default
