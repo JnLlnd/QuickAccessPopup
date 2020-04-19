@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.4 (2020-04-08)
+Version: 10.4 (2020-04-19)
  
 IN SHORT
 - COPY and MOVE SUBMENUS and groups
@@ -48,7 +48,7 @@ Search
 - improved "Search" tool in the "Customize" window
 - add three buttons on the left side of the Search result:
   - "Sort" button to sort by any search result column
-  - "View menu" button button to open a popup menu with the favorites currently in the search result (duplicate menu names are appended with the "[!]" suffix to make them unique)
+  - "View menu" button to open a popup menu with the favorites currently in the search result (duplicate menu names are appended with the "[!]" suffix to make them unique)
   - "Open submenu" to open in the Customize window the submenu containing the selected item in the search result
 - when editing a favorite from the search result, stay in the search result (instead of changing the menu to the edited favorite as before)
 - allow to move multiple favorites from search result (multiple copy was already possible)
@@ -65,7 +65,7 @@ New Options for Search tool
 - add an option in section "Customize Window" to make the use locale settings optional when searching favorites (default enabled)
  
 Previous/Next arrows
-- in the "Customize" window, add "Next" arrow in additon to the "Previous" arrow, allowing to browse backward and forward in QAP already visited menus, groups or search results
+- in the "Customize" window, add "Next" arrow in addition to the "Previous" arrow, allowing to browse backward and forward in QAP already visited menus, groups or search results
 - add hotkeys Shift+Ctrl+Left to return to previous menu and Shift+Ctrl+Right move forward in visited menus in the "Customize" window
 - display the list of menu and groups already visited in the previous/next menus when hovering these arrows buttons
  
@@ -10524,7 +10524,7 @@ if (strGuiFavoriteLabel = "GuiAddFavorite")
 
 strGuiTitle := L(o_L["DialogAddEditFavoriteTitle"]
 	, (InStr(strGuiFavoriteLabel, "GuiEditFavorite") ? o_L["DialogEdit"] : (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_L["DialogCopy"] : o_L["DialogAdd"]))
-	, g_strAppNameText, g_strAppVersion, o_EditedFavorite.AA.strFavoriteType)
+	, g_strAppNameText, g_strAppVersion, StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", ""))
 Gui, 2:New, +Resize -MaximizeBox +MinSize560x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
