@@ -10870,12 +10870,16 @@ else ; add favorite
 		o_EditedFavorite.AA.strFavoriteIconResource := g_strNewFavoriteIconResource
 	}
 	
-	if (o_EditedFavorite.AA.strFavoriteType = "Folder") ; get default values for live folders options from user's registry
+	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
 	{
+		; get default values for live folders options from user's registry
 		o_EditedFavorite.AA.blnFavoriteFolderLiveHideIcons := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "HideIcons")
 		o_EditedFavorite.AA.blnFavoriteFolderLiveHideExtensions := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "HideFileExt")
 		o_EditedFavorite.AA.blnFavoriteFolderLiveShowHidden := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "Hidden")
 		o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ShowSuperHidden")
+		
+		; set default values for open subfolder option
+		o_EditedFavorite.AA.intFavoriteOpenSubFolder := 1 ; folder itself
 	}
 
 	o_EditedFavorite.AA.strFavoriteDateCreated := A_NowUTC
@@ -11426,6 +11430,17 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 	Gui, 2:Add, Text, x20 y50 w400 vf_lblFavoriteLaunchWith, % o_L["DialogLaunchWith"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteLaunchWith, % o_EditedFavorite.AA.strFavoriteLaunchWith
 	Gui, 2:Add, Button, x+10 yp vf_btnFavoriteLaunchWith gButtonSelectLaunchWith, % o_L["DialogBrowseButton"]
+
+	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
+	; folder to open, 1 folder itself, most recently 2 created, 3 modified or 4 accessed subfolder
+	{
+		Gui, 2:Add, Text, x20 y+20, % o_L["DialogOpenSubFolderLabel"]
+		Gui, 2:Add, Radio, % "x20 y+10 vf_intRadioOpenSubFolder " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 1 ? "checked" : ""), % o_L["DialogOpenSubFolderItself"]
+		Gui, 2:Add, Radio, % "x20 y+10 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 2 ? "checked" : ""), % o_L["DialogOpenSubFolderCreated"]
+		Gui, 2:Add, Radio, % "x20 y+10 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 3 ? "checked" : ""), % o_L["DialogOpenSubFolderModified"]
+		Gui, 2:Add, Radio, % "x20 y+10 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 4 ? "checked" : ""), % o_L["DialogOpenSubFolderAccessed"]
+		Gui, 2:Add, Text, x20 y+10
+	}
 }
 
 if !InStr("Group|Snippet|QAP|Folder", o_EditedFavorite.AA.strFavoriteType, true)
@@ -13451,7 +13466,9 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 			o_EditedFavorite.AA.strFavoriteLaunchWith := ""
 		else
 			o_EditedFavorite.AA.strFavoriteLaunchWith := f_strFavoriteLaunchWith
+		
 		o_EditedFavorite.AA.blnFavoriteElevate := f_blnFavoriteElevate
+		o_EditedFavorite.AA.intFavoriteOpenSubFolder := f_intRadioOpenSubFolder
 	}
 }
 else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave
@@ -25261,7 +25278,7 @@ class Container
 			; 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude, 19 strFavoriteFolderLiveExtensions,
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
-			; 29 blnFavoriteFolderLiveHideExtensions
+			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder
 
 	;---------------------------------------------------------
 	{
@@ -26477,6 +26494,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveHideIcons . "|" ; 27
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveShowHidden + (oItem.AA.blnFavoriteFolderLiveShowSystem ? 2 : 0) . "|" ; 28 / hidden (+1) + system (+2) items, default 0+0
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveHideExtensions . "|" ; 29
+			strIniLine .= oItem.AA.intFavoriteOpenSubFolder . "|" ; 30
 
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -26749,7 +26767,7 @@ class Container
 			; 15 intFavoriteFolderLiveLevels, 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude,
 			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
-			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions
+			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -26808,6 +26826,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveShowHidden", (StrLen(saFavorite[28]) ? Mod(saFavorite[28], 2) : false)) ; show hidden files, true if value is unpair, default false
 			this.InsertItemValue("blnFavoriteFolderLiveShowSystem", (StrLen(saFavorite[28]) ? saFavorite[28] >= 2 : false)) ; show system files, true if value is 2 or 3, default false
 			this.InsertItemValue("blnFavoriteFolderLiveHideExtensions", (StrLen(saFavorite[29]) ? saFavorite[29] : false)) ; hide file extensions in live folders, pre-existing and default false
+			this.InsertItemValue("intFavoriteOpenSubFolder", saFavorite[30]) ; folder to open, 1 folder itself, most recently 2 created, 3 modified or 4 accessed subfolder
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
@@ -27965,13 +27984,16 @@ class Container
 				else
 					if InStr("Folder|Document|Application", this.AA.strFavoriteType) ; not for URL, Special Folder and others
 						and !LocationIsHTTP(this.AA.strFavoriteLocation) ; except if the folder location is on a server (like WebDAV)
-						and !(SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{")
+						and !(SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{") ; except for CLSIDs
 					{
-						; placeholders are already expanded but neet to expand other variables
+						; placeholders are already expanded but need to expand other variables
 						; make the location absolute based on the current working directory
 						strTemp := this.aaTemp.strFullLocation ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 						blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strFullLocation with expanded relative path, envvars and user variables, and absolute location if in PATH
 						this.aaTemp.strFullLocation := strTemp
+
+						if StrLen(this.AA.intFavoriteOpenSubFolder) and (this.AA.intFavoriteOpenSubFolder > 1)
+							this.aaTemp.strFullLocation .= "\" . this.GetSubFolderToOpen() ; get subfolder to open
 					}	
 					else if (this.AA.strFavoriteType = "WindowsApp")
 					{
@@ -28007,6 +28029,26 @@ class Container
 			return StrLen(this.aaTemp.strFullLocation) ; if empty, SetFullLocation was aborted, return false, else return true
 		}
 		;---------------------------------------------------------
+		
+		;---------------------------------------------------------
+		GetSubFolderToOpen()
+		; subfolder to open, most recently 2 created, 3 modified or 4 accessed
+		;---------------------------------------------------------
+		{
+			loop, Files, % this.aaTemp.strFullLocation . "\*.*", D
+			{
+				if (this.AA.intFavoriteOpenSubFolder = 2)
+					strTimeStamp := A_LoopFileTimeCreated
+				else if (this.AA.intFavoriteOpenSubFolder = 3)
+					strTimeStamp := A_LoopFileTimeModified
+				else if (this.AA.intFavoriteOpenSubFolder = 4)
+					strTimeStamp := A_LoopFileTimeAccessed
+				strFolders .= strTimeStamp . "`t" . A_LoopFileName . "`n"
+			}
+			Sort, strFolders, R
+			
+			return StrSplit(StrSplit(strFolders, "`n")[1], "`t")[2]
+		}
 		
 		;---------------------------------------------------------
 		FileExistIfMust()
