@@ -25480,10 +25480,11 @@ class Container
 				if (saThisFavorite[1] = "External")
 				{
 					intPreviousIniLine := s_intIniLineLoad
+					s_intIniLineLoad := 1 ; always start from Favorite1 in external files (since v8.1.9.1)
 					strPreviousIniFile := s_strIniFile
+					s_strIniFile := PathCombine(A_WorkingDir, EnvVars(saThisFavorite[6]))
 					if (FirstVsSecondIs(g_strLastVersionUsed, "10.4") = -1) ; returns -1 if first smaller, 0 if equal, 1 if first greater
 						saThisFavorite[11] := "" ; from v10.4, stop supporting external menu starting number stored in FavoriteGroupSettings (deprecated since v8.1.9.1)
-					s_strIniFile := PathCombine(A_WorkingDir, EnvVars(saThisFavorite[6]))
 				}
 				
 				; load the submenu
