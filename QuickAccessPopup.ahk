@@ -4184,6 +4184,11 @@ global o_SpecialFolders := new SpecialFolders
 global o_Utc2LocalTime := new Utc2LocalTime
 
 ;---------------------------------
+; Init startups and last version used
+intStartups := o_Settings.ReadIniValue("Startups", 1)
+global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
+
+;---------------------------------
 ; Load Settings file
 
 Gosub, LoadIniFile ; load options, load/enable popup hotkeys, load favorites to menu object
@@ -4200,9 +4205,6 @@ if (A_IsAdmin and !o_CommandLineParameters.AA.HasKey("AdminSilent")
 if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; add [admin] tag only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
-
-intStartups := o_Settings.ReadIniValue("Startups", 1)
-global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
 
 ; not sure it is required to have a physical file with .html extension - but keep it as is by safety
 g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.html")
@@ -11625,7 +11627,14 @@ MenuAutoSortClicked:
 Gui, 2:Submit, NoHide
 
 GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortOrder
-; #####
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSortOrder1
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSortOrder2
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortCriteria
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort1
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort2
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort3
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort4
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort5
 
 return
 ;------------------------------------------------------------
@@ -25456,6 +25465,8 @@ class Container
 			
 			saThisFavorite := StrSplit(strLoadIniLine, "|")
 			
+			if (s_intIniLineLoad = 12)
+				a := a ; #####
 			if (saThisFavorite[1] = "Z") ; container loaded without error
 			{
 				if (blnRefreshExternal) ; reset the main ini file
