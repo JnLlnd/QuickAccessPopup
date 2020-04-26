@@ -4202,7 +4202,7 @@ if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
 
 intStartups := o_Settings.ReadIniValue("Startups", 1)
-strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
+global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
 
 ; not sure it is required to have a physical file with .html extension - but keep it as is by safety
 g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.html")
@@ -4246,7 +4246,7 @@ Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
 if (g_blnPortableMode and g_strCurrentBranch = "prod" and !o_Settings.Launch.blnDonorCode.IniValue
-	and FirstVsSecondIs(g_strCurrentVersion, strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
+	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
 {
 	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
 		, % L(o_L["DonateCheckPrompt"] . "`n`n" . L(o_L["DonateCheckPrompt2"], o_L["DonateCheckPrompt3"] . " " . o_L["DonateCheckPrompt5"]), g_strAppNameText, intStartups)
@@ -10735,6 +10735,8 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		; 2 restore folders with "Explorer" or "Other" (Directory Opus, Total Commander or QAPconnect)
 		; 3 delay in milliseconds to insert between each favorite to restore
 		g_saGroupInGuiSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
+	else
+		g_saGroupInGuiSettings := ""
 	
 	o_EditedFavorite.AA.strFavoriteDateModified := A_NowUTC
 }
@@ -11112,6 +11114,26 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 	Gui, 2:Add, Link, x20 y+15 w500, % L(o_L["DialogFavoriteExternalHelpWeb"], "https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/")
 }
 
+; o_EditedFavorite.AA.strFavoriteGroupSettings := f_intMenuAutoSort
+if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
+; menu auto sort order (0 manual, 1 name, 2 created, 3 modified, 4 last used, 5 usage, reverse order if negative)
+{
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (o_EditedFavorite.AA.strFavoriteGroupSettings ? "checked" : "")
+		, % o_L["DialogMenuAutoSortEnable"]
+		
+	Gui, 2:Add, Text, y+20 x260 section vf_lblMenuAutoSortOrder hidden, % o_L["DialogSortOrder"] . ":"
+	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder1 hidden group" .(o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? "checked" : ""), % o_L["DialogAscending"]
+	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder2 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? "checked" : ""), % o_L["DialogDescending"]
+
+	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria hidden, % o_L["DialogSortBy"] . ":"
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort1 hidden section" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "1" ? " checked" : ""), % o_L["DialogFileName"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort2 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "2" ? " checked" : ""), % o_L["DialogMenuAutoSortCreated"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort3 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "3" ? " checked" : ""), % o_L["DialogMenuAutoSortLastModified"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort4 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "4" ? " checked" : ""), % o_L["DialogMenuAutoSortLastUsed"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort5 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "5" ? " checked" : ""), % o_L["DialogMenuAutoSortUsage"]
+	Gosub, MenuAutoSortClicked
+}
+
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
 Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
 	. " vf_blnFavoriteDisabled gCheckboxDisabledClicked " . (o_EditedFavorite.AA.intFavoriteDisabled = 1 ? "checked" : "")
@@ -11435,9 +11457,9 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 	Gui, 2:Add, Button, x+10 yp vf_btnFavoriteLaunchWith gButtonSelectLaunchWith, % o_L["DialogBrowseButton"]
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
-	; folder to open, 1 folder itself, most recently 2 created, 3 modified or 4 accessed subfolder
+	; folder to open, 0 folder itself, most recently(+)/anciently(-) 1 created, 2 modified or 3 accessed subfolder
 	{
-		Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnRadioOpenSubFolder gRadioButtonOpenSubFolderClicked " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder ? "checked" : "")
+		Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnOpenSubFolder gOpenSubFolderClicked " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder ? "checked" : "")
 			, % o_L["DialogOpenSubFolderEnable"]
 		Gui, 2:Add, Text, x20 y+10 vf_lblOpenSubFolder, % o_L["DialogOpenSubFolderLabel"]
 		Gui, 2:Add, Radio, % "x20 y+10 vf_intRadioOpenSubFolderOrder1 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder > 0 ? "checked" : ""), % o_L["DialogOpenSubFolderMostRecently"] . g_strEllipse
@@ -11446,7 +11468,7 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 		Gui, 2:Add, Radio, % "x+10 yp vf_intRadioOpenSubFolder2 " . (Abs(o_EditedFavorite.AA.intFavoriteOpenSubFolder) = 2 ? "checked" : ""), % g_strEllipse . " " . o_L["DialogOpenSubFolderModified"]
 		Gui, 2:Add, Radio, % "x+10 yp vf_intRadioOpenSubFolder3 " . (Abs(o_EditedFavorite.AA.intFavoriteOpenSubFolder) = 3 ? "checked" : ""), % g_strEllipse . " " . o_L["DialogOpenSubFolderAccessed"]
 		Gui, 2:Add, Text, x20 y+10
-		Gosub, RadioButtonOpenSubFolderClicked
+		Gosub, OpenSubFolderClicked
 	}
 }
 
@@ -11582,16 +11604,28 @@ return
 
 
 ;------------------------------------------------------------
-RadioButtonOpenSubFolderClicked:
+OpenSubFolderClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_lblOpenSubFolder
-GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder1
-GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder2
-GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder1
-GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder2
-GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder3
+GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_lblOpenSubFolder
+GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder1
+GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder2
+GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder1
+GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder2
+GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder3
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+MenuAutoSortClicked:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortOrder
+; #####
 
 return
 ;------------------------------------------------------------
@@ -13494,7 +13528,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		
 		o_EditedFavorite.AA.blnFavoriteElevate := f_blnFavoriteElevate
 		
-		if (f_blnRadioOpenSubFolder)
+		if (f_blnOpenSubFolder)
 		{
 			o_EditedFavorite.AA.intFavoriteOpenSubFolder := (f_intRadioOpenSubFolder1 ? 1 : (f_intRadioOpenSubFolder2 ? 2 : (f_intRadioOpenSubFolder3 ? 3 : 0)))
 			o_EditedFavorite.AA.intFavoriteOpenSubFolder := (f_intRadioOpenSubFolderOrder2 ? -o_EditedFavorite.AA.intFavoriteOpenSubFolder : o_EditedFavorite.AA.intFavoriteOpenSubFolder)
@@ -25436,14 +25470,16 @@ class Container
 				{
 					intPreviousIniLine := s_intIniLineLoad
 					strPreviousIniFile := s_strIniFile
-					if (FirstVsSecondIs(g_strCurrentVersion, "10.4") = 1)
-						saThisFavorite[11] := "" ; after v10.4, stop supporting external menu starting number stored in FavoriteGroupSettings (deprecated since v8.1.9.1)
+					if (FirstVsSecondIs(g_strLastVersionUsed, "10.4") = -1) ; returns -1 if first smaller, 0 if equal, 1 if first greater
+						saThisFavorite[11] := "" ; from v10.4, stop supporting external menu starting number stored in FavoriteGroupSettings (deprecated since v8.1.9.1)
 					s_strIniFile := PathCombine(A_WorkingDir, EnvVars(saThisFavorite[6]))
 				}
 				
 				; load the submenu
 				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], saThisFavorite[11], this)
 				
+				if StrLen(saThisFavorite[11])
+					a := a ; #####
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
 				else if InStr("Menu|External", oNewSubMenu.AA.strMenuType)
@@ -26517,6 +26553,8 @@ class Container
 			strIniLine .= StrReplace(oItem.AA.strFavoriteLoginName, "|", g_strEscapePipe) . "|" ; 9
 			strIniLine .= StrReplace(oItem.AA.strFavoritePassword, "|", g_strEscapePipe) . "|" ; 10
 			strIniLine .= oItem.AA.strFavoriteGroupSettings . "|" ; 11
+			if StrLen(oItem.AA.strFavoriteGroupSettings)
+				a := a ; #####
 			strIniLine .= oItem.AA.blnFavoriteFtpEncoding . "|" ; 12
 			strIniLine .= oItem.AA.blnFavoriteElevate . "|" ; 13
 			strIniLine .= oItem.AA.intFavoriteDisabled . "|" ; 14
@@ -26847,6 +26885,8 @@ class Container
 			}
 			this.InsertItemValue("strFavoriteLoginName", StrReplace(saFavorite[9], g_strEscapePipe, "|")) ; login name for FTP favorite
 			this.InsertItemValue("strFavoritePassword", StrReplace(saFavorite[10], g_strEscapePipe, "|")) ; password for FTP favorite
+			if StrLen(saFavorite[11])
+				a := a ; #####
 			this.InsertItemValue("strFavoriteGroupSettings", saFavorite[11]) ; coma separated values for group restore settings or external menu starting line or Menu and External auto sort order 
 			this.InsertItemValue("blnFavoriteFtpEncoding", saFavorite[12]) ; encoding of FTP username and password, 0 do not encode, 1 encode
 			this.InsertItemValue("blnFavoriteElevate", saFavorite[13]) ; elevate application, 0 do not elevate, 1 elevate
