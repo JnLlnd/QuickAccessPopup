@@ -10882,7 +10882,7 @@ else ; add favorite
 		o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem := GetRegistry("HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ShowSuperHidden")
 		
 		; set default values for open subfolder option
-		o_EditedFavorite.AA.intFavoriteOpenSubFolder := 1 ; folder itself
+		o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0 ; folder itself
 	}
 
 	o_EditedFavorite.AA.strFavoriteDateCreated := A_NowUTC
@@ -11437,12 +11437,16 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
 	; folder to open, 1 folder itself, most recently 2 created, 3 modified or 4 accessed subfolder
 	{
-		Gui, 2:Add, Text, x20 y+20, % o_L["DialogOpenSubFolderLabel"]
-		Gui, 2:Add, Radio, % "x20 y+10 vf_intRadioOpenSubFolder " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 1 ? "checked" : ""), % o_L["DialogOpenSubFolderItself"]
-		Gui, 2:Add, Radio, % "x20 y+10 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 2 ? "checked" : ""), % o_L["DialogOpenSubFolderCreated"]
-		Gui, 2:Add, Radio, % "x20 y+10 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 3 ? "checked" : ""), % o_L["DialogOpenSubFolderModified"]
-		Gui, 2:Add, Radio, % "x20 y+10 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder = 4 ? "checked" : ""), % o_L["DialogOpenSubFolderAccessed"]
+		Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnRadioOpenSubFolder gRadioButtonOpenSubFolderClicked " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder ? "checked" : "")
+			, % o_L["DialogOpenSubFolderEnable"]
+		Gui, 2:Add, Text, x20 y+10 vf_lblOpenSubFolder, % o_L["DialogOpenSubFolderLabel"]
+		Gui, 2:Add, Radio, % "x20 y+10 vf_intRadioOpenSubFolderOrder1 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder > 0 ? "checked" : ""), % o_L["DialogOpenSubFolderMostRecently"] . g_strEllipse
+		Gui, 2:Add, Radio, % "x+10 yp vf_intRadioOpenSubFolderOrder2 " . (o_EditedFavorite.AA.intFavoriteOpenSubFolder < 0 ? "checked" : ""), % o_L["DialogOpenSubFolderMostAnciently"] . g_strEllipse
+		Gui, 2:Add, Radio, % "x20 y+10 group vf_intRadioOpenSubFolder1 " . (Abs(o_EditedFavorite.AA.intFavoriteOpenSubFolder) = 1 ? "checked" : ""), %  g_strEllipse . " " . o_L["DialogOpenSubFolderCreated"]
+		Gui, 2:Add, Radio, % "x+10 yp vf_intRadioOpenSubFolder2 " . (Abs(o_EditedFavorite.AA.intFavoriteOpenSubFolder) = 2 ? "checked" : ""), % g_strEllipse . " " . o_L["DialogOpenSubFolderModified"]
+		Gui, 2:Add, Radio, % "x+10 yp vf_intRadioOpenSubFolder3 " . (Abs(o_EditedFavorite.AA.intFavoriteOpenSubFolder) = 3 ? "checked" : ""), % g_strEllipse . " " . o_L["DialogOpenSubFolderAccessed"]
 		Gui, 2:Add, Text, x20 y+10
+		Gosub, RadioButtonOpenSubFolderClicked
 	}
 }
 
@@ -11572,6 +11576,22 @@ strEnableDisableCommand := (f_blnAppWorkingDirCurrent ? "Disable" : "Enable")
 GuiControl, 2:%strEnableDisableCommand%, f_strFavoriteAppWorkingDir
 GuiControl, 2:%strEnableDisableCommand%, f_btnBrowseAppWorkingDir
 strEnableDisableCommand := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+RadioButtonOpenSubFolderClicked:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_lblOpenSubFolder
+GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder1
+GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder2
+GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder1
+GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder2
+GuiControl, % (f_blnRadioOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder3
 
 return
 ;------------------------------------------------------------
@@ -13473,7 +13493,14 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 			o_EditedFavorite.AA.strFavoriteLaunchWith := f_strFavoriteLaunchWith
 		
 		o_EditedFavorite.AA.blnFavoriteElevate := f_blnFavoriteElevate
-		o_EditedFavorite.AA.intFavoriteOpenSubFolder := f_intRadioOpenSubFolder
+		
+		if (f_blnRadioOpenSubFolder)
+		{
+			o_EditedFavorite.AA.intFavoriteOpenSubFolder := (f_intRadioOpenSubFolder1 ? 1 : (f_intRadioOpenSubFolder2 ? 2 : (f_intRadioOpenSubFolder3 ? 3 : 0)))
+			o_EditedFavorite.AA.intFavoriteOpenSubFolder := (f_intRadioOpenSubFolderOrder2 ? -o_EditedFavorite.AA.intFavoriteOpenSubFolder : o_EditedFavorite.AA.intFavoriteOpenSubFolder)
+		}
+		else
+			o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0
 	}
 }
 else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave
@@ -26840,7 +26867,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveShowHidden", (StrLen(saFavorite[28]) ? Mod(saFavorite[28], 2) : false)) ; show hidden files, true if value is unpair, default false
 			this.InsertItemValue("blnFavoriteFolderLiveShowSystem", (StrLen(saFavorite[28]) ? saFavorite[28] >= 2 : false)) ; show system files, true if value is 2 or 3, default false
 			this.InsertItemValue("blnFavoriteFolderLiveHideExtensions", (StrLen(saFavorite[29]) ? saFavorite[29] : false)) ; hide file extensions in live folders, pre-existing and default false
-			this.InsertItemValue("intFavoriteOpenSubFolder", saFavorite[30]) ; folder to open, 1 folder itself, most recently 2 created, 3 modified or 4 accessed subfolder
+			this.InsertItemValue("intFavoriteOpenSubFolder", (StrLen(saFavorite[30]) ? saFavorite[30] : 0)) ; folder to open, 0 folder itself, most recently(+)/anciently(-) 1 created, 2 modified or 3 accessed subfolder
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
@@ -28006,7 +28033,7 @@ class Container
 						blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strFullLocation with expanded relative path, envvars and user variables, and absolute location if in PATH
 						this.aaTemp.strFullLocation := strTemp
 
-						if StrLen(this.AA.intFavoriteOpenSubFolder) and (this.AA.intFavoriteOpenSubFolder > 1)
+						if StrLen(this.AA.intFavoriteOpenSubFolder) and (this.AA.intFavoriteOpenSubFolder)
 							this.aaTemp.strFullLocation .= "\" . this.GetSubFolderToOpen() ; get subfolder to open
 					}	
 					else if (this.AA.strFavoriteType = "WindowsApp")
@@ -28051,15 +28078,15 @@ class Container
 		{
 			loop, Files, % this.aaTemp.strFullLocation . "\*.*", D
 			{
-				if (this.AA.intFavoriteOpenSubFolder = 2)
+				if Abs(this.AA.intFavoriteOpenSubFolder) = 1
 					strTimeStamp := A_LoopFileTimeCreated
-				else if (this.AA.intFavoriteOpenSubFolder = 3)
+				else if Abs(this.AA.intFavoriteOpenSubFolder) = 2
 					strTimeStamp := A_LoopFileTimeModified
-				else if (this.AA.intFavoriteOpenSubFolder = 4)
+				else if Abs(this.AA.intFavoriteOpenSubFolder) = 3
 					strTimeStamp := A_LoopFileTimeAccessed
 				strFolders .= strTimeStamp . "`t" . A_LoopFileName . "`n"
 			}
-			Sort, strFolders, R
+			Sort, strFolders, % (this.AA.intFavoriteOpenSubFolder > 0 ? "R" : "")
 			
 			return StrSplit(StrSplit(strFolders, "`n")[1], "`t")[2]
 		}
