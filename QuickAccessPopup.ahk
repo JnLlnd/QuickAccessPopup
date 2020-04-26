@@ -10067,7 +10067,7 @@ if (A_ThisLabel = "GuiFavoritesListFilterShowOpen") ; push container in gui to p
 	o_MenuInGui.AA.intMenuLastPosition := LV_GetNext("Focused") ; to restore position in menu
 	g_saSubmenuStackPrev.Push(o_MenuInGui) ; push the current menu to the left arrow stack
 	
-	oSearchResult := new Container("Search", o_L["GuiSearchResultTitle"], "", "nomenu")
+	oSearchResult := new Container("Search", o_L["GuiSearchResultTitle"], , "nomenu")
 	; set current menu object as search starting menu and swap search result object with current menu object
 	oSearchResult.AA.oStartingMenu := o_MenuInGui
 	o_MenuInGui := oSearchResult
@@ -13326,7 +13326,7 @@ if (g_blnAbortSave)
 
 if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalSave|", strThisLabel . "|"))
 {
-	global o_EditedFavoriteMenu := new Container(o_EditedFavorite.AA.strFavoriteType, strNewFavoriteShortName, o_Containers.AA[strDestinationMenu]) ; class instance for the new menu or group
+	global o_EditedFavoriteMenu := new Container(o_EditedFavorite.AA.strFavoriteType, strNewFavoriteShortName, , o_Containers.AA[strDestinationMenu]) ; class instance for the new menu or group
 
 	if (o_EditedFavoriteMenu.AA.strMenuType = "External")
 	{
@@ -13415,6 +13415,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer")
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay
 	}
+	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
+		o_EditedFavorite.AA.strFavoriteGroupSettings := f_intMenuAutoSort
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
 	o_EditedFavorite.AA.strFavoritePassword := f_strFavoritePassword
@@ -24386,7 +24388,7 @@ class QAPfeatures
 	;---------------------------------------------------------
 	{
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
-			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
+			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, , "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
 	}
 	;---------------------------------------------------------
 }
@@ -25193,22 +25195,30 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	__New(strType, strContainerName, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false)
+	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
 		; "Menu", "External" and "Search" can include any type of favorite and submenus, "Group" can contain only some favorite types and no submenu
 		this.AA.strMenuType := strType
+		this.AA.intMenuAutoSort := intAutoSort
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		if (oParentMenu)
 		{
-			; path from main menu to the current submenus, delimited with " > " (see constant g_strMenuPathSeparator), example: "Main > Sub1 > Sub1.1"
-			if SubStr(strContainerName, 1, StrLen(o_L["MainMenuName"] . " >")) = o_L["MainMenuName"] . " >" ; strContainerName is already fully formed (when creating a backup or restore)
-				this.AA.strMenuPath := strContainerName
-			else
-				this.AA.strMenuPath := oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . strContainerName
-					. (strType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
-			this.AA.oParentMenu := oParentMenu
+			if (oParentMenu = "nomenu") ; exception string for search result containers
+			{
+				this.AA.strMenuPath := ""
+				this.AA.oParentMenu := ""
+			}
+			else ; path from main menu to the current submenus, delimited with " > " (see constant g_strMenuPathSeparator), example: "Main > Sub1 > Sub1.1"
+			{
+				if SubStr(strContainerName, 1, StrLen(o_L["MainMenuName"] . " >")) = o_L["MainMenuName"] . " >" ; strContainerName is already fully formed (when creating a backup or restore)
+					this.AA.strMenuPath := strContainerName
+				else
+					this.AA.strMenuPath := oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . strContainerName
+						. (strType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
+				this.AA.oParentMenu := oParentMenu
+			}
 		}		
 		else
 		{
@@ -25237,7 +25247,7 @@ class Container
 	; copy blnAAonly when storing a search result in prev/next stacks
 	;---------------------------------------------------------
 	{
-		oCopy := new Container(this.AA.strMenuType, this.AA.strMenuPath
+		oCopy := new Container(this.AA.strMenuType, this.AA.strMenuPath, ; empty parameter
 			, (this.AA.strMenuPath = o_L["MainMenuName"] ? "" : this.AA.oParentMenu) ; no parent for Main menu
 			, "backup") ; pass action to avoid re-creating menu or updating o_Containers index when creating backup
 		
@@ -25399,17 +25409,18 @@ class Container
 				{
 					intPreviousIniLine := s_intIniLineLoad
 					strPreviousIniFile := s_strIniFile
-					s_intIniLineLoad := saThisFavorite[11] ; FavoriteGroupSettings, starting number - DEPRECATED since v8.1.9.1
-					if !StrLen(s_intIniLineLoad)
-						s_intIniLineLoad := 1 ; always 1 for menu added since v8.1.9.1
+					if (FirstVsSecondIs(g_strCurrentVersion, "10.4") = 1)
+						saThisFavorite[11] := "" ; after v10.4, stop supporting external menu starting number stored in FavoriteGroupSettings (deprecated since v8.1.9.1)
 					s_strIniFile := PathCombine(A_WorkingDir, EnvVars(saThisFavorite[6]))
 				}
 				
 				; load the submenu
-				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], this)
+				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], saThisFavorite[11], this)
 				
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
+				else if InStr("Menu|External", oNewSubMenu.AA.strMenuType)
+					oNewSubMenu.AA.intMenuAutoSort := saThisFavorite[11] ; intMenuAutoSort
 				
 				strResult := oNewSubMenu.LoadFavoritesFromIniFile(blnWorkingToolTip, false, false) ; RECURSIVE, 2nd param false not external root, 3rd param false non entry menu
 				
@@ -25546,7 +25557,7 @@ class Container
 			if (blnItemIsMenu)
 			{
 				strWinCmdItemName := SubStr(strWinCmdItemName, 2)
-				oNewSubMenu := new Container("Menu", strWinCmdItemName, this, "init", false) ; last parameter for blnDoubleAmpersands
+				oNewSubMenu := new Container("Menu", strWinCmdItemName, , this, "init", false) ; last parameter for blnDoubleAmpersands
 				oNewSubMenu.LoadTCFavoritesFromIniFile(strIniFile, false) ; RECURSIVE
 			}
 			else if (SubStr(strWinCmdItemCommand, 1, 3) <> "cd ")
@@ -25601,7 +25612,7 @@ class Container
 			
 			if (blnItemIsMenu)
 			{
-				oNewSubMenu := new Container("Menu", xmlItemAttributes.label, this, "init", true) ; last parameter for blnDoubleAmpersands
+				oNewSubMenu := new Container("Menu", xmlItemAttributes.label, , this, "init", true) ; last parameter for blnDoubleAmpersands
 				oNewSubMenu.LoadDirectoryOpusFavoritesFromXML(xmlItem.xml) ; RECURSIVE
 			}
 			
@@ -25684,7 +25695,7 @@ class Container
 				
 				if (blnItemIsMenu)
 				{
-					oNewSubMenu := new Container("Menu", xmlItemAttributes.name, this, "init", true) ; last parameter true for blnDoubleAmpersands
+					oNewSubMenu := new Container("Menu", xmlItemAttributes.name, , this, "init", true) ; last parameter true for blnDoubleAmpersands
 					oNewSubMenu.LoadDirectoryOpusLayoutsFromXML(strFolderNodeXml) ; RECURSIVE
 				}
 			}
@@ -26053,7 +26064,7 @@ class Container
 		if StrLen(this.AA.strMenuPath . o_FavoriteLiveFolder.AA.strFavoriteName + 3) > 259 ; if new menu path exceeds Windows limit of 259 or 260 for menu names
 			return
 		
-		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, this, "init", true) ; last parameter true for blnDoubleAmpersands
+		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, , this, "init", true) ; last parameter true for blnDoubleAmpersands
 		oNewSubMenu.AA.blnIsLiveMenu := true
 		oNewSubMenu.AA.intLiveFolderParentPosition := intMenuParentPosition ; could be changed if we are in a Live Folder submenu
 		oNewSubMenu.AA.strLiveFolderParentPath := strMenuParentPath ; could be changed if we are in a Live Folder submenu
@@ -26809,7 +26820,7 @@ class Container
 			}
 			this.InsertItemValue("strFavoriteLoginName", StrReplace(saFavorite[9], g_strEscapePipe, "|")) ; login name for FTP favorite
 			this.InsertItemValue("strFavoritePassword", StrReplace(saFavorite[10], g_strEscapePipe, "|")) ; password for FTP favorite
-			this.InsertItemValue("strFavoriteGroupSettings", saFavorite[11]) ; coma separated values for group restore settings or external menu starting line
+			this.InsertItemValue("strFavoriteGroupSettings", saFavorite[11]) ; coma separated values for group restore settings or external menu starting line or Menu and External auto sort order 
 			this.InsertItemValue("blnFavoriteFtpEncoding", saFavorite[12]) ; encoding of FTP username and password, 0 do not encode, 1 encode
 			this.InsertItemValue("blnFavoriteElevate", saFavorite[13]) ; elevate application, 0 do not elevate, 1 elevate
 			this.InsertItemValue("intFavoriteDisabled", saFavorite[14]) ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
