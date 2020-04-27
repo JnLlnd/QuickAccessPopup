@@ -11124,7 +11124,7 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 		, % o_L["DialogMenuAutoSortEnable"]
 		
 	Gui, 2:Add, Text, y+20 x260 section vf_lblMenuAutoSortOrder hidden, % o_L["DialogSortOrder"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder1 hidden group" .(o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? "checked" : ""), % o_L["DialogAscending"]
+	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder1 hidden group" . (o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? "checked" : ""), % o_L["DialogAscending"]
 	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder2 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? "checked" : ""), % o_L["DialogDescending"]
 
 	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria hidden, % o_L["DialogSortBy"] . ":"
@@ -11133,7 +11133,6 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort3 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "3" ? " checked" : ""), % o_L["DialogMenuAutoSortLastModified"]
 	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort4 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "4" ? " checked" : ""), % o_L["DialogMenuAutoSortLastUsed"]
 	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort5 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "5" ? " checked" : ""), % o_L["DialogMenuAutoSortUsage"]
-	Gosub, MenuAutoSortClicked
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -11144,6 +11143,8 @@ if !(blnIsGroupMember)
 	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteHidden " . (o_EditedFavorite.AA.intFavoriteDisabled ? "checked" : "")
 		, % o_L["DialogFavoriteHidden"]
 
+if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
+	gosub, MenuAutoSortClicked ; must be after f_blnFavoriteDisabled and f_blnFavoriteHidden are created
 gosub, CheckboxDisabledClickedInit
 
 saNewFavoriteWindowPosition := ""
@@ -11635,6 +11636,18 @@ GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSor
 GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort3
 GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort4
 GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort5
+
+if (f_blnMenuAutoSortEnable and !o_EditedFavorite.AA.strFavoriteGroupSettings)
+{
+	GuiControl, , f_intRadioMenuAutoSort1, 1
+	GuiControl, , f_intRadioMenuAutoSortOrder1, 1
+}
+
+GuiControlGet, arrDisabledPos, Pos, f_blnFavoriteDisabled
+GuiControl, Move, f_blnFavoriteDisabled, % "y" . arrDisabledPosY + (f_blnMenuAutoSortEnable ? 123 : -123) ; 123 is the heigth of the sort section
+GuiControl, Move, f_blnFavoriteHidden, % "y" . arrDisabledPosY + (f_blnMenuAutoSortEnable ? 123 : -123)
+
+arrDisabledPos := ""
 
 return
 ;------------------------------------------------------------
@@ -25465,8 +25478,6 @@ class Container
 			
 			saThisFavorite := StrSplit(strLoadIniLine, "|")
 			
-			if (s_intIniLineLoad = 12)
-				a := a ; #####
 			if (saThisFavorite[1] = "Z") ; container loaded without error
 			{
 				if (blnRefreshExternal) ; reset the main ini file
@@ -25490,8 +25501,6 @@ class Container
 				; load the submenu
 				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], saThisFavorite[11], this)
 				
-				if StrLen(saThisFavorite[11])
-					a := a ; #####
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
 				else if InStr("Menu|External", oNewSubMenu.AA.strMenuType)
@@ -26565,8 +26574,6 @@ class Container
 			strIniLine .= StrReplace(oItem.AA.strFavoriteLoginName, "|", g_strEscapePipe) . "|" ; 9
 			strIniLine .= StrReplace(oItem.AA.strFavoritePassword, "|", g_strEscapePipe) . "|" ; 10
 			strIniLine .= oItem.AA.strFavoriteGroupSettings . "|" ; 11
-			if StrLen(oItem.AA.strFavoriteGroupSettings)
-				a := a ; #####
 			strIniLine .= oItem.AA.blnFavoriteFtpEncoding . "|" ; 12
 			strIniLine .= oItem.AA.blnFavoriteElevate . "|" ; 13
 			strIniLine .= oItem.AA.intFavoriteDisabled . "|" ; 14
@@ -26897,8 +26904,6 @@ class Container
 			}
 			this.InsertItemValue("strFavoriteLoginName", StrReplace(saFavorite[9], g_strEscapePipe, "|")) ; login name for FTP favorite
 			this.InsertItemValue("strFavoritePassword", StrReplace(saFavorite[10], g_strEscapePipe, "|")) ; password for FTP favorite
-			if StrLen(saFavorite[11])
-				a := a ; #####
 			this.InsertItemValue("strFavoriteGroupSettings", saFavorite[11]) ; coma separated values for group restore settings or external menu starting line or Menu and External auto sort order 
 			this.InsertItemValue("blnFavoriteFtpEncoding", saFavorite[12]) ; encoding of FTP username and password, 0 do not encode, 1 encode
 			this.InsertItemValue("blnFavoriteElevate", saFavorite[13]) ; elevate application, 0 do not elevate, 1 elevate
