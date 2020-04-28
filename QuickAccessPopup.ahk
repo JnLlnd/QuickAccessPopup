@@ -11868,8 +11868,6 @@ else
 	GuiControl, ChooseString, f_drpParentMenuItems, % g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
 g_intNewItemPos := "" ; if new item position g_intNewItemPos is set, reset it and let f_drpParentMenuItems set it later #### not sure if safe...
 
-GuiControl, % (o_Containers.AA[f_drpParentMenu].AA.intMenuAutoSort ? "Disable" : "Enable"), f_drpParentMenuItems
-
 strDropdownParentMenuItems := ""
 saThisMenu := ""
 oItem := ""
@@ -14368,14 +14366,6 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 	return
 }
 
-if (o_MenuInGui.AA.intMenuAutoSort)
-{
-	Oops(2, o_L["OopsMenuSorted"])
-	if InStr(A_ThisLabel, "One")
-		g_blnAbortMultipleMove := true
-	return
-}
-
 if !InStr(A_ThisLabel, "One")
 {
 	GuiControl, Focus, f_lvFavoritesList
@@ -14446,14 +14436,6 @@ GuiSortFavorites:
 ;------------------------------------------------------------
 
 gosub, CheckShowSettings
-
-if (o_MenuInGui.AA.intMenuAutoSort)
-{
-	Oops(2, o_L["OopsMenuSorted"])
-	if InStr(A_ThisLabel, "One")
-		g_blnAbortMultipleMove := true
-	return
-}
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 {
@@ -15116,14 +15098,6 @@ GuiAddColumnBreak:
 
 gosub, CheckShowSettings
 
-if (o_MenuInGui.AA.intMenuAutoSort)
-{
-	Oops(2, o_L["OopsMenuSorted"])
-	if InStr(A_ThisLabel, "One")
-		g_blnAbortMultipleMove := true
-	return
-}
-
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the menu is an external menu that cannot be locked, user received an error message, then abort
 	return
@@ -15170,14 +15144,6 @@ return
 GuiAddTextSeparator:
 ;------------------------------------------------------------
 Gui, 1:Submit, NoHide
-
-if (o_MenuInGui.AA.intMenuAutoSort)
-{
-	Oops(2, o_L["OopsMenuSorted"])
-	if InStr(A_ThisLabel, "One")
-		g_blnAbortMultipleMove := true
-	return
-}
 
 Gui, 1:ListView, f_lvFavoritesList
 g_intOriginalMenuPosition := (LV_GetCount() ? (LV_GetNext() ? LV_GetNext() : 0xFFFF) : 1)
