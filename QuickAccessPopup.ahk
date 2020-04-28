@@ -10737,8 +10737,8 @@ if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 		; 2 restore folders with "Explorer" or "Other" (Directory Opus, Total Commander or QAPconnect)
 		; 3 delay in milliseconds to insert between each favorite to restore
 		g_saGroupInGuiSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
-	else
-		g_saGroupInGuiSettings := ""
+	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
+		g_saGroupInGuiSettings := "" ; value not used if not a group
 	
 	o_EditedFavorite.AA.strFavoriteDateModified := A_NowUTC
 }
@@ -11116,27 +11116,26 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 	Gui, 2:Add, Link, x20 y+15 w500, % L(o_L["DialogFavoriteExternalHelpWeb"], "https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/")
 }
 
-; o_EditedFavorite.AA.strFavoriteGroupSettings := f_intMenuAutoSort
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 ; menu auto sort order (0 manual, 1 name, 2 created, 3 modified, 4 last used, 5 usage, reverse order if negative)
 {
 	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (o_EditedFavorite.AA.strFavoriteGroupSettings ? "checked" : "")
 		, % o_L["DialogMenuAutoSortEnable"]
 		
-	Gui, 2:Add, Text, y+20 x260 section vf_lblMenuAutoSortOrder hidden, % o_L["DialogSortOrder"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder1 hidden group" . (o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? "checked" : ""), % o_L["DialogAscending"]
-	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder2 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? "checked" : ""), % o_L["DialogDescending"]
+	Gui, 2:Add, Text, y+5 x260 section vf_lblMenuAutoSortOrder, % o_L["DialogSortOrder"] . ":"
+	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder1 group" . (o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? " checked" : ""), % o_L["DialogAscending"]
+	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder2" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? " checked" : ""), % o_L["DialogDescending"]
 
-	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria hidden, % o_L["DialogSortBy"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort1 hidden section" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "1" ? " checked" : ""), % o_L["DialogFileName"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort2 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "2" ? " checked" : ""), % o_L["DialogMenuAutoSortCreated"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort3 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "3" ? " checked" : ""), % o_L["DialogMenuAutoSortLastModified"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort4 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "4" ? " checked" : ""), % o_L["DialogMenuAutoSortLastUsed"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort5 hidden" . (o_EditedFavorite.AA.strFavoriteGroupSettings = "5" ? " checked" : ""), % o_L["DialogMenuAutoSortUsage"]
+	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria, % o_L["DialogSortBy"] . ":"
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort1 section" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "1" ? " checked" : ""), % o_L["DialogFileName"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort2" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "2" ? " checked" : ""), % o_L["DialogMenuAutoSortCreated"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort3" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "3" ? " checked" : ""), % o_L["DialogMenuAutoSortLastModified"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort4" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "4" ? " checked" : ""), % o_L["DialogMenuAutoSortLastUsed"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort5" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "5" ? " checked" : ""), % o_L["DialogMenuAutoSortUsage"]
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
-Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "20"))
+Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFavoriteType) ? "10" : (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "30" : "15"))
 	. " vf_blnFavoriteDisabled gCheckboxDisabledClicked " . (o_EditedFavorite.AA.intFavoriteDisabled = 1 ? "checked" : "")
 	, % (blnIsGroupMember ? o_L["DialogFavoriteDisabledGroupMember"] : o_L["DialogFavoriteDisabled"])
 if !(blnIsGroupMember)
@@ -11611,12 +11610,12 @@ OpenSubFolderClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_lblOpenSubFolder
-GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder1
-GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolderOrder2
-GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder1
-GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder2
-GuiControl, % (f_blnOpenSubFolder ? "Show" : "Hide"), f_intRadioOpenSubFolder3
+GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_lblOpenSubFolder
+GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolderOrder1
+GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolderOrder2
+GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolder1
+GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolder2
+GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolder3
 
 return
 ;------------------------------------------------------------
@@ -11627,27 +11626,21 @@ MenuAutoSortClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortOrder
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSortOrder1
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSortOrder2
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortCriteria
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort1
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort2
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort3
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort4
-GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_intRadioMenuAutoSort5
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSortOrder
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder1
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder2
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSortCriteria
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort1
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort2
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort3
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort4
+GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort5
 
 if (f_blnMenuAutoSortEnable and !o_EditedFavorite.AA.strFavoriteGroupSettings)
 {
 	GuiControl, , f_intRadioMenuAutoSort1, 1
 	GuiControl, , f_intRadioMenuAutoSortOrder1, 1
 }
-
-GuiControlGet, arrDisabledPos, Pos, f_blnFavoriteDisabled
-GuiControl, Move, f_blnFavoriteDisabled, % "y" . arrDisabledPosY + (f_blnMenuAutoSortEnable ? 123 : -123) ; 123 is the heigth of the sort section
-GuiControl, Move, f_blnFavoriteHidden, % "y" . arrDisabledPosY + (f_blnMenuAutoSortEnable ? 123 : -123)
-
-arrDisabledPos := ""
 
 return
 ;------------------------------------------------------------
@@ -11874,6 +11867,8 @@ if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition
 else
 	GuiControl, ChooseString, f_drpParentMenuItems, % g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
 g_intNewItemPos := "" ; if new item position g_intNewItemPos is set, reset it and let f_drpParentMenuItems set it later #### not sure if safe...
+
+GuiControl, % (o_Containers.AA[f_drpParentMenu].AA.intMenuAutoSort ? "Disable" : "Enable"), f_drpParentMenuItems
 
 strDropdownParentMenuItems := ""
 saThisMenu := ""
@@ -13492,7 +13487,17 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
-		o_EditedFavorite.AA.strFavoriteGroupSettings := f_intMenuAutoSort
+	{
+		if (f_blnMenuAutoSortEnable)
+		{
+			intMenuAutoSort := (f_intRadioMenuAutoSort1 ? 1 : (f_intRadioMenuAutoSort2 ? 2 : (f_intRadioMenuAutoSort3 ? 3
+				: (f_intRadioMenuAutoSort4 ? 4 : (f_intRadioMenuAutoSort5 ? 5 : 0)))))
+			o_EditedFavorite.AA.strFavoriteGroupSettings := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; descending (2) / ascending (1)
+		}
+		else
+			o_EditedFavorite.AA.strFavoriteGroupSettings := 0 ; manual, no auto sorting
+		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := o_EditedFavorite.AA.strFavoriteGroupSettings ; update menu object
+	}
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
 	o_EditedFavorite.AA.strFavoritePassword := f_strFavoritePassword
@@ -14363,6 +14368,14 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 	return
 }
 
+if (o_MenuInGui.AA.intMenuAutoSort)
+{
+	Oops(2, o_L["OopsMenuSorted"])
+	if InStr(A_ThisLabel, "One")
+		g_blnAbortMultipleMove := true
+	return
+}
+
 if !InStr(A_ThisLabel, "One")
 {
 	GuiControl, Focus, f_lvFavoritesList
@@ -14433,6 +14446,14 @@ GuiSortFavorites:
 ;------------------------------------------------------------
 
 gosub, CheckShowSettings
+
+if (o_MenuInGui.AA.intMenuAutoSort)
+{
+	Oops(2, o_L["OopsMenuSorted"])
+	if InStr(A_ThisLabel, "One")
+		g_blnAbortMultipleMove := true
+	return
+}
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 {
@@ -15095,6 +15116,14 @@ GuiAddColumnBreak:
 
 gosub, CheckShowSettings
 
+if (o_MenuInGui.AA.intMenuAutoSort)
+{
+	Oops(2, o_L["OopsMenuSorted"])
+	if InStr(A_ThisLabel, "One")
+		g_blnAbortMultipleMove := true
+	return
+}
+
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 ; if the menu is an external menu that cannot be locked, user received an error message, then abort
 	return
@@ -15141,6 +15170,14 @@ return
 GuiAddTextSeparator:
 ;------------------------------------------------------------
 Gui, 1:Submit, NoHide
+
+if (o_MenuInGui.AA.intMenuAutoSort)
+{
+	Oops(2, o_L["OopsMenuSorted"])
+	if InStr(A_ThisLabel, "One")
+		g_blnAbortMultipleMove := true
+	return
+}
 
 Gui, 1:ListView, f_lvFavoritesList
 g_intOriginalMenuPosition := (LV_GetCount() ? (LV_GetNext() ? LV_GetNext() : 0xFFFF) : 1)
