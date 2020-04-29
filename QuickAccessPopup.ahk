@@ -9672,6 +9672,7 @@ return
 
 ;------------------------------------------------------------
 LoadFavoritesInGui:
+LoadFavoritesInGuiNoSort:
 UpdateSearchResultContainer: ; refresh container but not listview, called from GuiRemoveMultipleFavorites, GuiMoveMultipleFavoritesSave or GuiCopyMultipleFavoritesSave
 ReorderFavoritesInGui: ; called from GuiSortSearchResult to reload o_MenuInGui sorted
 ;------------------------------------------------------------
@@ -9717,6 +9718,8 @@ Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavorit
 
 LV_Delete()
 o_MenuInGui.LoadInGui()
+if (o_MenuInGui.AA.intMenuAutoSort and A_ThisLabel <> "LoadFavoritesInGuiNoSort")
+	Gosub, GuiSortFavoritesFromLoadInGui
 
 if SearchIsVisible()
 {
@@ -13619,11 +13622,15 @@ else ; update listview
 	else ; GuiAddExternalSave
 		g_blnExternalMenusAdded := true
 
-	if SearchIsVisible()
+	if (SearchIsVisible() or o_EditedFavorite.AA.oParentMenu.AA.intMenuAutoSort)
 	{
 		Gosub, LoadFavoritesInGui
-		LV_Modify(0, "-Select")
-		LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus Vis")
+		
+		if SearchIsVisible()
+		{
+			LV_Modify(0, "-Select")
+			LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus Vis")
+		}
 	}
 	else
 		Gosub, GuiAddFavoriteSaveUpdateListView
@@ -14433,6 +14440,7 @@ return
 
 ;------------------------------------------------------------
 GuiSortFavorites:
+GuiSortFavoritesFromLoadInGui:
 ;------------------------------------------------------------
 
 gosub, CheckShowSettings
@@ -14491,27 +14499,33 @@ if (intRowsToSort > 1) ; sort only if required
 		o_MenuInGui.SA[A_LoopField] := aaRowsToSortCopies[A_Index]
 	}
 
-	gosub, LoadFavoritesInGui ; refresh menu in gui
+	gosub, LoadFavoritesInGuiNoSort ; refresh menu in gui, avoid loop by calling "no sort"
 	
-	LV_Modify(0, "-Select") ; deselect all
-	Loop, Parse, strSortedRows, |
-		LV_Modify(A_LoopField, "Select") ; select only sorted rows
-	LV_Modify(LV_GetNext(0), "Focus Vis") ; give focus to the first sorted row and make it visible
-
-	Gosub, EnableSaveAndCancel
-
-	; if favorite's menu is in an external settings file, flag that it needs to be saved
-	if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu)
-		o_ExternalMenu.AA.blnNeedSave := true
+	if (A_ThisLabel <> "GuiSortFavoritesFromLoadInGui")
+	{
+		LV_Modify(0, "-Select") ; deselect all
+		Loop, Parse, strSortedRows, |
+			LV_Modify(A_LoopField, "Select") ; select only sorted rows
+		LV_Modify(LV_GetNext(0), "Focus Vis") ; give focus to the first sorted row and make it visible
+		
+		Gosub, EnableSaveAndCancel
+		
+		; if favorite's menu is in an external settings file, flag that it needs to be saved
+		if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu)
+			o_ExternalMenu.AA.blnNeedSave := true
+		
+		if (blnSeparatorFound)
+			Oops(1, o_L["OopsSortUpToSeparator"])
+	}
+	else ; GuiSortFavoritesFromLoadInGui
+		if (blnSeparatorFound)
+			OopsSilent(1, 2, o_L["OopsSortUpToSeparator"])
 }
 else
 {
 	LV_Modify(0, "-Select") ; deselect all
 	LV_Modify((intFirstSelectedRow ? intFirstSelectedRow : 1), "Select") ; re-select first selected
 }
-
-if (blnSeparatorFound)
-	Oops(1, o_L["OopsSortUpToSeparator"])
 
 intFirstSelectedRow := ""
 objExternalMenu := ""
@@ -19845,6 +19859,19 @@ Oops(varOwner, strMessage, objVariables*)
 		varOwner := 1
 	Gui, %varOwner%:+OwnDialogs
 	MsgBox, 48, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*)
+}
+;------------------------------------------------
+
+
+;------------------------------------------------
+OopsSilent(varOwner, intSeconds, strMessage, objVariables*)
+; varOwner can be a number or a string
+;------------------------------------------------
+{
+	if (!varOwner)
+		varOwner := 1
+	Gui, %varOwner%:+OwnDialogs
+	MsgBox, 0, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*), %intSeconds%
 }
 ;------------------------------------------------
 
@@ -25850,6 +25877,9 @@ class Container
 		if (blnWorkingToolTip)
 			ToolTip, % o_L["ToolTipBuilding"] . "`n" . this.AA.strMenuPath
 		
+		if (this.AA.intMenuAutoSort)
+			this.SortMenu()
+		
 		Loop, % this.SA.MaxIndex()
 		{
 			aaThisFavorite := this.SA[A_Index].AA
@@ -26039,6 +26069,14 @@ class Container
 	}
 	;------------------------------------------------------------
 
+	;------------------------------------------------------------
+	SortMenu()
+	;------------------------------------------------------------
+	{
+		MsgBox, , , Sort..., 1 ; #####
+	}
+	;------------------------------------------------------------
+	
 	;------------------------------------------------------------
 	BuildLiveFolderMenu(o_FavoriteLiveFolder, strMenuParentPath, intMenuParentPosition)
 	; this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
