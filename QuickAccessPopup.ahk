@@ -4117,6 +4117,8 @@ global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 
+global g_intLastSortContainerCriteria ; last criteria seleced in sort container popup menu
+
 ;---------------------------------
 ; Used in OpenFavorite
 global g_blnAlternativeMenu
@@ -4224,26 +4226,12 @@ Gosub, BuildAlternativeMenu
 ; Build menu used in Settings Gui
 Gosub, BuildGuiMenuBar ; must be before BuildMainMenu
 Gosub, BuildTrayMenu
+Gosub, BuildSortMenus
 
 ; Build Settings Gui
 Gosub, BuildGui
 if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
-
-; build menu for Sort search result button
-; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
-Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
-	Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-{
-	Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredDates"], | ; Last Modified|Created
-		Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 6 ; col 7-8
-	if (g_blnUsageDbEnabled)
-		Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredStats"], | ; Last Used|Usage
-			Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 8 ; 9-10
-}
-Menu, menuSortSearchResult, Add ; separator
-Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
@@ -5909,6 +5897,36 @@ if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
 	. (o_Settings.Launch.blnDonorCode.IniValue ? L(g_aaMenuTrayL["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : g_aaMenuTrayL["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+BuildSortMenus:
+;------------------------------------------------------------
+
+; build menu for Sort search result button
+; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
+Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
+	Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+{
+	Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredDates"], | ; Last Modified|Created
+		Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 6 ; col 7-8
+	if (g_blnUsageDbEnabled)
+		Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredStats"], | ; Last Used|Usage
+			Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 8 ; 9-10
+}
+Menu, menuSortSearchResult, Add ; separator
+Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
+
+; build sort container menu
+Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortFavoriteName"], GuiSortContainer1
+Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortCreated"], GuiSortContainer2
+Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortLastModified"], GuiSortContainer3
+Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortLastUsed"], GuiSortContainer4
+Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortUsage"], GuiSortContainer5
 
 return
 ;------------------------------------------------------------
@@ -9710,6 +9728,10 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
 
+if (o_MenuInGui.AA.intMenuAutoSort and A_ThisLabel <> "LoadFavoritesInGuiNoSort")
+	if o_MenuInGui.SortContainer("", strSortedRows, blnSeparatorFound) and (blnSeparatorFound)
+		OopsSilent(1, 2, o_L["OopsSortUpToSeparator"])
+
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
 	DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while listview is updated
 
@@ -9718,8 +9740,6 @@ Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavorit
 
 LV_Delete()
 o_MenuInGui.LoadInGui()
-if (o_MenuInGui.AA.intMenuAutoSort and A_ThisLabel <> "LoadFavoritesInGuiNoSort")
-	Gosub, GuiSortFavoritesFromLoadInGui
 
 if SearchIsVisible()
 {
@@ -11130,7 +11150,7 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder2" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? " checked" : ""), % o_L["DialogDescending"]
 
 	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria, % o_L["DialogSortBy"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort1 section" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "1" ? " checked" : ""), % o_L["DialogFileName"]
+	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort1 section" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "1" ? " checked" : ""), % o_L["DialogMenuAutoSortFavoriteName"]
 	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort2" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "2" ? " checked" : ""), % o_L["DialogMenuAutoSortCreated"]
 	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort3" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "3" ? " checked" : ""), % o_L["DialogMenuAutoSortLastModified"]
 	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort4" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "4" ? " checked" : ""), % o_L["DialogMenuAutoSortLastUsed"]
@@ -14440,8 +14460,27 @@ return
 
 ;------------------------------------------------------------
 GuiSortFavorites:
-GuiSortFavoritesFromLoadInGui:
 ;------------------------------------------------------------
+
+Menu, menuSortContainer, Show
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSortContainer1:
+GuiSortContainer2:
+GuiSortContainer3:
+GuiSortContainer4:
+GuiSortContainer5:
+;------------------------------------------------------------
+
+intCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
+if (intCriteria = Abs(g_intLastSortContainerCriteria))
+	intCriteria := -intCriteria 
+else
+	g_intLastSortContainerCriteria := intCriteria
 
 gosub, CheckShowSettings
 
@@ -14460,66 +14499,24 @@ if (LV_GetCount("Selected") <= 1) ; if one or no row is selected, select all and
 	LV_Modify(0, "Select") ; select all rows
 	
 Gosub, GetSelectedRows ; updated strSelectedRows (pipe delimited list of selected row numbers)
-saSelectedRows := StrSplit(strSelectedRows, "|")
 
-intRowsToSort := 0 ; counter, sort only if at least 2 rows to sort
-strSortedRows := "" ; keep track of sorted rows to re-select only these rows
-strToSortOnNames := "" ; cleaned favorite names to sort with original row
-
-Loop, Parse, strSelectedRows, |
+if o_MenuInGui.SortContainer(strSelectedRows, strSortedRows, blnSeparatorFound)
 {
-	if o_MenuInGui.SA[A_LoopField].IsSeparator() ; stop at first separator
-	{
-		blnSeparatorFound := true
-		break
-	}
-	intRowsToSort++
-	strSortedRows .= saSelectedRows[A_Index] . "|"
-	strToSortOnNames .= StrReplace(o_MenuInGui.SA[A_LoopField].AA.strFavoriteName, "&", "") . "|" . A_LoopField . "`n" ; name | original order
-}
-
-if (intRowsToSort > 1) ; sort only if required
-{
-	strSortedRows := SubStr(strSortedRows, 1, -1) ; trim last char
-	; sort name|position on names using locale
-	Sort, strToSortOnNames, CL
-
-	; get copies of items to move
-	aaRowsToSortCopies := Object()
-	Loop, Parse, strToSortOnNames, `n
-		if StrLen(A_LoopField)
-			aaRowsToSortCopies.Push(o_MenuInGui.SA[StrSplit(A_LoopField, "|")[2]])
+	gosub, LoadFavoritesInGuiNoSort ; refresh menu in gui, avoid double sort for auto sort menus by calling "no sort"
 	
-	; insert sorted copies in position of original items
-	Loop, Parse, strSelectedRows, |
-	{
-		if o_MenuInGui.SA[A_LoopField].IsSeparator() ; stop at first separator
-			break
-		
-		o_MenuInGui.SA[A_LoopField] := aaRowsToSortCopies[A_Index]
-	}
-
-	gosub, LoadFavoritesInGuiNoSort ; refresh menu in gui, avoid loop by calling "no sort"
+	LV_Modify(0, "-Select") ; deselect all
+	Loop, Parse, strSortedRows, |
+		LV_Modify(A_LoopField, "Select") ; select only sorted rows
+	LV_Modify(LV_GetNext(0), "Focus Vis") ; give focus to the first sorted row and make it visible
 	
-	if (A_ThisLabel <> "GuiSortFavoritesFromLoadInGui")
-	{
-		LV_Modify(0, "-Select") ; deselect all
-		Loop, Parse, strSortedRows, |
-			LV_Modify(A_LoopField, "Select") ; select only sorted rows
-		LV_Modify(LV_GetNext(0), "Focus Vis") ; give focus to the first sorted row and make it visible
-		
-		Gosub, EnableSaveAndCancel
-		
-		; if favorite's menu is in an external settings file, flag that it needs to be saved
-		if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu)
-			o_ExternalMenu.AA.blnNeedSave := true
-		
-		if (blnSeparatorFound)
-			Oops(1, o_L["OopsSortUpToSeparator"])
-	}
-	else ; GuiSortFavoritesFromLoadInGui
-		if (blnSeparatorFound)
-			OopsSilent(1, 2, o_L["OopsSortUpToSeparator"])
+	Gosub, EnableSaveAndCancel
+	
+	; if favorite's menu is in an external settings file, flag that it needs to be saved
+	if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu)
+		o_ExternalMenu.AA.blnNeedSave := true
+	
+	if (blnSeparatorFound)
+		Oops(1, o_L["OopsSortUpToSeparator"])
 }
 else
 {
@@ -14530,12 +14527,8 @@ else
 intFirstSelectedRow := ""
 objExternalMenu := ""
 strSelectedRows := ""
-saSelectedRows := ""
-intRowsToSort := ""
 strSortedRows := ""
 blnSeparatorFound := ""
-strToSortOnNames := ""
-aaRowsToSortCopies := ""
 
 return
 ;------------------------------------------------------------
@@ -26073,7 +26066,7 @@ class Container
 	SortMenu()
 	;------------------------------------------------------------
 	{
-		MsgBox, , , Sort..., 1 ; #####
+		MsgBox, , , Sort menu..., 0.5 ; #####
 	}
 	;------------------------------------------------------------
 	
@@ -26875,6 +26868,64 @@ class Container
 	}
 	;---------------------------------------------------------
 
+	;---------------------------------------------------------
+	SortContainer(strRows, ByRef strSortedRows, ByRef blnSeparatorFound)
+	; use g_intLastSortContainerCriteria to set sort criteria
+	; returns the number of sorted rows (used as boolean) and byref values
+	;---------------------------------------------------------
+	{
+		if !StrLen(strRows) ; if empty, sort all rows
+		{
+			Loop, % this.SA.Length()
+				strRows .= A_Index . "|"
+			strRows := SubStr(strRows, 1, -1) ; remove last |
+		}
+		saRows := StrSplit(strRows, "|")
+		
+		blnSeparatorFound := false
+		intRowsToSort := 0 ; counter, sort only if at least 2 rows to sort
+		strSortedRows := "" ; keep track of sorted rows to re-select only these rows
+		strToSortOnNames := "" ; cleaned favorite names to sort with original row
+		
+		Loop, Parse, strRows, |
+		{
+			if this.SA[A_LoopField].IsSeparator() ; stop at first separator
+			{
+				blnSeparatorFound := true
+				break
+			}
+			intRowsToSort++
+			strSortedRows .= saRows[A_Index] . "|"
+			; ##### check g_intLastSortContainerCriteria for sort container or AA.intAutoSort for auto sort
+			strToSortOnNames .= StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "") . "|" . A_LoopField . "`n" ; name | original order
+		}
+		
+		if (intRowsToSort > 1) ; sort only if required
+		{
+			strSortedRows := SubStr(strSortedRows, 1, -1) ; trim last char
+			; sort name|position on names using locale
+			Sort, strToSortOnNames, CL
+
+			; get copies of items to move
+			aaRowsToSortCopies := Object()
+			Loop, Parse, strToSortOnNames, `n
+				if StrLen(A_LoopField)
+					aaRowsToSortCopies.Push(this.SA[StrSplit(A_LoopField, "|")[2]])
+			
+			; insert sorted copies in position of original items
+			Loop, Parse, strRows, |
+			{
+				if this.SA[A_LoopField].IsSeparator() ; stop at first separator
+					break
+				
+				this.SA[A_LoopField] := aaRowsToSortCopies[A_Index]
+			}
+		}
+		
+		return intRowsToSort
+	}
+	;---------------------------------------------------------
+		
 	; === end of methods for class Container ===
 	
 	;=============================================================
