@@ -33,15 +33,18 @@ if 0 = 0
 	MsgBox, Ajouter le paramètre 32 ou 64 / et, optionellement, le paramètre -beta
 	ExitApp, 0x2 ; Compilation cancelled
 }
-; %1% = "32" ou "64"
-; %2% = "alpha", "-beta" ou est vide
+; intBits := "32"
+; intBits := "32"
+intBits := A_Args[1]
+; strBranch := "-beta"
+; strBranch := "" ; pour prod
+strBranch := A_Args[2]
 AhkFile := "E:\Dropbox\AutoHotkey\QuickAccessPopup\QuickAccessPopup.ahk"
-ExeFile = E:\Dropbox\AutoHotkey\QuickAccessPopup\Build-v8%2%\QuickAccessPopup-%1%-bit.exe ; PAS expression
-IcoFile = E:\Dropbox\AutoHotkey\QuickAccessPopup\Distribution-files\QuickAccessPopup%2%.ico
+ExeFile := "E:\Dropbox\AutoHotkey\QuickAccessPopup\Build-v8" . strBranch . "\QuickAccessPopup-" . intBits . "-bit.exe"
+IcoFile := "E:\Dropbox\AutoHotkey\QuickAccessPopup\Distribution-files\QuickAccessPopup" . strBranch . ".ico"
 CustomBinFile := true
-BinFile = E:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Ahk2Exe-Custom\Unicode %1%-bit-JL.bin
+BinFile := "E:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Ahk2Exe-Custom\Unicode " . intBits . "-bit-JL.bin"
 CLIMode := true ; command line mode
-; ###_V("Ahk2Exe", AhkFile, ExeFile, IcoFile, BinFile)
 ; ----------------------------------------------
 
 if !UsesCustomBin
