@@ -4117,7 +4117,7 @@ global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 
-global g_intLastSortContainerCriteria ; last criteria seleced in sort container popup menu
+global g_intLastSortContainerCriteria := 0 ; last criteria selected in sort container popup menu
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -9729,7 +9729,7 @@ if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
 
 if (o_MenuInGui.AA.intMenuAutoSort and A_ThisLabel <> "LoadFavoritesInGuiNoSort")
-	if o_MenuInGui.SortContainer("", strSortedRows, blnSeparatorFound) and (blnSeparatorFound)
+	if o_MenuInGui.SortContainer("", g_intLastSortContainerCriteria, strSortedRows, blnSeparatorFound) and (blnSeparatorFound)
 		OopsSilent(1, 2, o_L["OopsSortUpToSeparator"])
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
@@ -14476,11 +14476,16 @@ GuiSortContainer4:
 GuiSortContainer5:
 ;------------------------------------------------------------
 
+intPreviousSortContainerCriteria := g_intLastSortContainerCriteria
 intCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
 if (intCriteria = Abs(g_intLastSortContainerCriteria))
 	intCriteria := -intCriteria 
 else
 	g_intLastSortContainerCriteria := intCriteria
+
+if (intPreviousSortContainerCriteria)
+	Menu, menuSortContainer, Uncheck, % Abs(intPreviousSortContainerCriteria) . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+Menu, menuSortContainer, Icon, % Abs(intCriteria) . "&", % o_JLicons.strFileLocation, % (intCriteria > 0 ? 5 : 12) ; ##### add icons
 
 gosub, CheckShowSettings
 
@@ -14500,7 +14505,7 @@ if (LV_GetCount("Selected") <= 1) ; if one or no row is selected, select all and
 	
 Gosub, GetSelectedRows ; updated strSelectedRows (pipe delimited list of selected row numbers)
 
-if o_MenuInGui.SortContainer(strSelectedRows, strSortedRows, blnSeparatorFound)
+if o_MenuInGui.SortContainer(strSelectedRows, intCriteria, strSortedRows, blnSeparatorFound)
 {
 	gosub, LoadFavoritesInGuiNoSort ; refresh menu in gui, avoid double sort for auto sort menus by calling "no sort"
 	
@@ -14529,6 +14534,8 @@ objExternalMenu := ""
 strSelectedRows := ""
 strSortedRows := ""
 blnSeparatorFound := ""
+intCriteria := ""
+intPreviousSortContainerCriteria := ""
 
 return
 ;------------------------------------------------------------
@@ -26092,7 +26099,7 @@ class Container
 			if !(InStr(A_LoopFileAttrib, "H") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if folder is hidden and include hidden items is false
 				and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if folder is system and include system items is false
 			{
-				strFolders .= this.GetSortCriteria(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . A_LoopFileName . "`t" . A_LoopFileLongPath . "`t"
+				strFolders .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . A_LoopFileName . "`t" . A_LoopFileLongPath . "`t"
 					. (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveHideIcons ? "iconNoIcon" : GetFolderIcon(A_LoopFileLongPath)) . "`n"
 				aaMenuNameCheckDuplicates[A_LoopFileName] := "foo" ; no need to check for duplicates among folder names but take note to check for duplicates with file names or live folder name
 			}
@@ -26140,7 +26147,7 @@ class Container
 						strFileName .= "_"
 					aaMenuNameCheckDuplicates[strFileName] := "foo" ; take note for duplicate with live folder name
 					
-					strFiles .= this.GetSortCriteria(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`t" . strFavoriteType . "`t" . strFileName . "`t"
+					strFiles .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`t" . strFavoriteType . "`t" . strFileName . "`t"
 						. strFileLocation . "`t" ; keep the ending tab to make sure we have an empty value if not .url or .lnk
 					
 					; get icon for link or shortcut, and add start in directory and args for applications
@@ -26238,7 +26245,7 @@ class Container
 	;------------------------------------------------------------
 
 	;------------------------------------------------------------
-	GetSortCriteria(strSort)
+	GetCriteriaSortLiveFolder(strSort)
 	;------------------------------------------------------------
 	{
 		; sort criteria 1 file name, 2 extension, 3 size or 4 modified date (22)
@@ -26869,63 +26876,87 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	SortContainer(strRows, ByRef strSortedRows, ByRef blnSeparatorFound)
-	; use g_intLastSortContainerCriteria to set sort criteria
-	; returns the number of sorted rows (used as boolean) and byref values
+	SortContainer(strItems, intCriteria, ByRef strSortedItems, ByRef blnSeparatorFound)
+	; if intCriteria is empty, use criteria in AA.intMenuAutoSort, else intCriteria contains the sort criteria for manual sort in gui
+	; returns the number of sorted items (used as boolean) and byref values
 	;---------------------------------------------------------
 	{
-		if !StrLen(strRows) ; if empty, sort all rows
+		if !StrLen(strItems) ; if empty, sort all items
 		{
 			Loop, % this.SA.Length()
-				strRows .= A_Index . "|"
-			strRows := SubStr(strRows, 1, -1) ; remove last |
+				strItems .= A_Index . "|"
+			strItems := SubStr(strItems, 1, -1) ; remove last |
 		}
-		saRows := StrSplit(strRows, "|")
+		saItems := StrSplit(strItems, "|")
+		
+		if !(intCriteria)
+			intCriteria := this.AA.intMenuAutoSort ; container auto sort
 		
 		blnSeparatorFound := false
-		intRowsToSort := 0 ; counter, sort only if at least 2 rows to sort
-		strSortedRows := "" ; keep track of sorted rows to re-select only these rows
-		strToSortOnNames := "" ; cleaned favorite names to sort with original row
+		intItemsToSort := 0 ; counter, sort only if at least 2 items to sort
+		strSortedItems := "" ; keep track of sorted items to re-select only these items
+		strToSort := "" ; cleaned favorite names to sort with original item
 		
-		Loop, Parse, strRows, |
+		Loop, Parse, strItems, |
 		{
 			if this.SA[A_LoopField].IsSeparator() ; stop at first separator
 			{
 				blnSeparatorFound := true
 				break
 			}
-			intRowsToSort++
-			strSortedRows .= saRows[A_Index] . "|"
-			; ##### check g_intLastSortContainerCriteria for sort container or AA.intAutoSort for auto sort
-			strToSortOnNames .= StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "") . "|" . A_LoopField . "`n" ; name | original order
+			intItemsToSort++
+			strSortedItems .= saItems[A_Index] . "|"
+			strToSort .= this.GetCriteriaSortContainer(Abs(intCriteria)) . "|" . A_LoopField . "`n" ; name | original order
 		}
 		
-		if (intRowsToSort > 1) ; sort only if required
+		if (intItemsToSort > 1) ; sort only if required
 		{
-			strSortedRows := SubStr(strSortedRows, 1, -1) ; trim last char
+			strSortedItems := SubStr(strSortedItems, 1, -1) ; trim last char
 			; sort name|position on names using locale
-			Sort, strToSortOnNames, CL
-
+			Sort, strToSort, % "CL" . (intCriteria < 0 ? "R" : "")
+			
 			; get copies of items to move
-			aaRowsToSortCopies := Object()
-			Loop, Parse, strToSortOnNames, `n
+			aaItemsToSortCopies := Object()
+			Loop, Parse, strToSort, `n
 				if StrLen(A_LoopField)
-					aaRowsToSortCopies.Push(this.SA[StrSplit(A_LoopField, "|")[2]])
+					aaItemsToSortCopies.Push(this.SA[StrSplit(A_LoopField, "|")[2]])
 			
 			; insert sorted copies in position of original items
-			Loop, Parse, strRows, |
+			Loop, Parse, strItems, |
 			{
 				if this.SA[A_LoopField].IsSeparator() ; stop at first separator
 					break
 				
-				this.SA[A_LoopField] := aaRowsToSortCopies[A_Index]
+				this.SA[A_LoopField] := aaItemsToSortCopies[A_Index]
 			}
 		}
 		
-		return intRowsToSort
+		return intItemsToSort
 	}
 	;---------------------------------------------------------
+	
+	;------------------------------------------------------------
+	GetCriteriaSortContainer(intAbsSortCriteria)
+	;------------------------------------------------------------
+	{
+		strFavoriteName := StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "")
+		; sort criteria 1 name, 2 last created, 3 last edit, 4 last used, 5 usage, reverse order if negative
 		
+		if (intAbsSortCriteria = "1")
+			strCriteria := strFavoriteName
+		else if (intAbsSortCriteria = "2")
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateCreated . strFavoriteName
+		else if (intAbsSortCriteria = "3")
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateModified . strFavoriteName
+		else if (intAbsSortCriteria = "4")
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateLastUsed . strFavoriteName
+		else ; intAbsSortCriteria = 5
+			strCriteria := this.SA[A_LoopField].AA.intFavoriteUsageDb . strFavoriteName
+		
+		return strCriteria
+	}
+	;------------------------------------------------------------
+
 	; === end of methods for class Container ===
 	
 	;=============================================================
