@@ -4117,7 +4117,7 @@ global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 
-global g_intLastSortContainerCriteria := 0 ; last criteria selected in sort container popup menu
+global g_intSortContainerCriteria := 0 ; last criteria selected in sort container popup menu
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -5922,6 +5922,7 @@ Menu, menuSortSearchResult, Add ; separator
 Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
 
 ; build sort container menu
+; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
 Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortFavoriteName"], GuiSortContainer1
 Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortCreated"], GuiSortContainer2
 Menu, menuSortContainer, Add, % o_L["DialogMenuAutoSortLastModified"], GuiSortContainer3
@@ -9729,7 +9730,7 @@ if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
 
 if (o_MenuInGui.AA.intMenuAutoSort and A_ThisLabel <> "LoadFavoritesInGuiNoSort")
-	if o_MenuInGui.SortContainer("", g_intLastSortContainerCriteria, strSortedRows, blnSeparatorFound) and (blnSeparatorFound)
+	if o_MenuInGui.SortContainer("", g_intSortContainerCriteria, strSortedRows, blnSeparatorFound) and (blnSeparatorFound)
 		OopsSilent(1, 2, o_L["OopsSortUpToSeparator"])
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
@@ -11140,7 +11141,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 }
 
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
-; menu auto sort order (0 manual, 1 name, 2 created, 3 modified, 4 last used, 5 usage, reverse order if negative)
+; menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
 {
 	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (o_EditedFavorite.AA.strFavoriteGroupSettings ? "checked" : "")
 		, % o_L["DialogMenuAutoSortEnable"]
@@ -13513,7 +13514,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		{
 			intMenuAutoSort := (f_intRadioMenuAutoSort1 ? 1 : (f_intRadioMenuAutoSort2 ? 2 : (f_intRadioMenuAutoSort3 ? 3
 				: (f_intRadioMenuAutoSort4 ? 4 : (f_intRadioMenuAutoSort5 ? 5 : 0)))))
-			o_EditedFavorite.AA.strFavoriteGroupSettings := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; descending (2) / ascending (1)
+			o_EditedFavorite.AA.strFavoriteGroupSettings := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; 2 descending else 1 ascending
 		}
 		else
 			o_EditedFavorite.AA.strFavoriteGroupSettings := 0 ; manual, no auto sorting
@@ -14476,16 +14477,18 @@ GuiSortContainer4:
 GuiSortContainer5:
 ;------------------------------------------------------------
 
-intPreviousSortContainerCriteria := g_intLastSortContainerCriteria
-intCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
-if (intCriteria = Abs(g_intLastSortContainerCriteria))
-	intCriteria := -intCriteria 
-else
-	g_intLastSortContainerCriteria := intCriteria
+; g_intSortContainerCriteria: ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
+intPreviousSortContainerCriteria := g_intSortContainerCriteria
+g_intSortContainerCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
+
+if (g_intSortContainerCriteria = Abs(intPreviousSortContainerCriteria))
+	g_intSortContainerCriteria := -intPreviousSortContainerCriteria 
 
 if (intPreviousSortContainerCriteria)
-	Menu, menuSortContainer, Uncheck, % Abs(intPreviousSortContainerCriteria) . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
-Menu, menuSortContainer, Icon, % Abs(intCriteria) . "&", % o_JLicons.strFileLocation, % (intCriteria > 0 ? 5 : 12) ; ##### add icons
+	Menu, menuSortContainer, Icon, % Abs(intPreviousSortContainerCriteria) . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+Menu, menuSortContainer, Icon, % Abs(g_intSortContainerCriteria) . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
+	+ (g_intSortContainerCriteria < 0 ? 1 : 0) ; if negative descending (63 or 65)
+	+ (Abs(g_intSortContainerCriteria) > 1 ? 2 : 0) ; if date or number, sort numeric
 
 gosub, CheckShowSettings
 
@@ -14500,19 +14503,25 @@ Gui, 1:ListView, f_lvFavoritesList
 
 intFirstSelectedRow := LV_GetNext(0)
 
-if (LV_GetCount("Selected") <= 1) ; if one or no row is selected, select all and sort until the first separator
+blnManyItemsSelected := LV_GetCount("Selected") > 1
+if !(blnManyItemsSelected) ; if one or no row is selected, select all and sort until the first separator
 	LV_Modify(0, "Select") ; select all rows
 	
 Gosub, GetSelectedRows ; updated strSelectedRows (pipe delimited list of selected row numbers)
 
-if o_MenuInGui.SortContainer(strSelectedRows, intCriteria, strSortedRows, blnSeparatorFound)
+if o_MenuInGui.SortContainer(strSelectedRows, g_intSortContainerCriteria, strSortedRows, blnSeparatorFound)
 {
 	gosub, LoadFavoritesInGuiNoSort ; refresh menu in gui, avoid double sort for auto sort menus by calling "no sort"
 	
 	LV_Modify(0, "-Select") ; deselect all
-	Loop, Parse, strSortedRows, |
-		LV_Modify(A_LoopField, "Select") ; select only sorted rows
-	LV_Modify(LV_GetNext(0), "Focus Vis") ; give focus to the first sorted row and make it visible
+	if (blnManyItemsSelected)
+	{
+		Loop, Parse, strSortedRows, |
+			LV_Modify(A_LoopField, "Select") ; select only sorted rows
+		LV_Modify(LV_GetNext(0), "Focus Vis") ; give focus to the first sorted row and make it visible
+	}
+	else
+		LV_Modify(1, "Focus Vis") ; give focus to the first row and make it visible
 	
 	Gosub, EnableSaveAndCancel
 	
@@ -14534,8 +14543,8 @@ objExternalMenu := ""
 strSelectedRows := ""
 strSortedRows := ""
 blnSeparatorFound := ""
-intCriteria := ""
 intPreviousSortContainerCriteria := ""
+blnManyItemsSelected := ""
 
 return
 ;------------------------------------------------------------
@@ -26073,7 +26082,7 @@ class Container
 	SortMenu()
 	;------------------------------------------------------------
 	{
-		MsgBox, , , Sort menu..., 0.5 ; #####
+		; MsgBox, , , Sort menu..., 0.5
 	}
 	;------------------------------------------------------------
 	
@@ -26940,7 +26949,7 @@ class Container
 	;------------------------------------------------------------
 	{
 		strFavoriteName := StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "")
-		; sort criteria 1 name, 2 last created, 3 last edit, 4 last used, 5 usage, reverse order if negative
+		; sort criteria 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, reverse order if negative
 		
 		if (intAbsSortCriteria = "1")
 			strCriteria := strFavoriteName
