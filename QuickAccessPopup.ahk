@@ -9696,6 +9696,9 @@ UpdateSearchResultContainer: ; refresh container but not listview, called from G
 ReorderFavoritesInGui: ; called from GuiSortSearchResult to reload o_MenuInGui sorted
 ;------------------------------------------------------------
 
+if (A_ThisLabel <> "LoadFavoritesInGuiNoSort")
+	g_intSortContainerCriteria := "" ; reset manual sorting
+
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already loaded
 {
 	Gui, 1:Submit, NoHide
