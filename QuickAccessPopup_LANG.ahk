@@ -666,6 +666,7 @@ this["OopsCouldNotOpenSpecialFolder"] := "~1~ could not open the special folder:
 this["OopsEmpty"] := "empty" ; (no capital)
 this["OopsMultipleContainersError"] := "Menus, groups and shared menus can only be copied or moved individually. These items will be skipped."
 this["OopsErrorIniFileDisplayErrorMessage"] := "Display this error message again for this Shared Menu?"
+this["OopsErrorIniFileDuplicateNames"] := "The favorite ""~1~"" in menu ""~2~"" is not unique and has been temporarily renamed to ""~3~"".`n`nPlease edit this favorite to give it a unique name."
 this["OopsErrorIniFileModified"] := "This shared menu was modified since it was loaded. The menu will be refreshed but your last change cannot be saved."
 this["OopsErrorIniFileReadOnly"] := "This shared menu settings file or this location is READ-ONLY."
 this["OopsErrorIniFileRetry"] := "If the settings file is on a network drive, try reloading ~1~ when the network drive becomes available."
