@@ -28,7 +28,7 @@ global DEBUG := !A_IsCompiled
 
 ; ----------------------------------------------
 ; QAP params hardcoded
-if 0 = 0
+if !A_Args.Length()
 {
 	MsgBox, Ajouter le paramètre 32 ou 64 / et, optionellement, le paramètre -beta
 	ExitApp, 0x2 ; Compilation cancelled
