@@ -34,6 +34,10 @@ HISTORY
 Version BETA: v10.4.0.9.1 (2020-04-??)
 - New option in folders favorite Advanced Settings to automatically open last created, last modified or last accessed subfolder of the favorite's location
 
+Version: 10.4.1 (2020-05-01)
+- fix bug when adding a favorite with "Add Active Folder Express" that could cause duplicate menu item names and menu becoming "off-by-one"
+- add code to fix duplicate favorite names that would be found when loading favorites
+ 
 Version: 10.4 (2020-04-19)
  
 IN SHORT
@@ -14025,8 +14029,7 @@ if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinatio
 ; in case strUniqueName has been modified by GetUniqueName()
 if (blnRename)
 	o_EditedFavorite.AA.strFavoriteName := strUniqueName
-else
-	strNewFavoriteShortName := strUniqueName
+strNewFavoriteShortName := strUniqueName ; update regardless of blnRename (bug fixed v10.4.1)
 
 ; check that a menu cannot be moved under itself when part of a multiple move (not when copy because menu cannot be copied)
 
@@ -26822,6 +26825,16 @@ class Container
 			; this is a regular favorite, add it to the current menu
 			this.InsertItemValue("strFavoriteType", saFavorite[1]) ; see Favorite Types
 			this.InsertItemValue("strFavoriteName", StrReplace(saFavorite[2], g_strEscapePipe, "|")) ; display name of this menu item
+			if StrLen(this.AA.oParentMenu.AA.strMenuPath) and StrLen(this.AA.strFavoriteName) ; if parent menu exists and if favorite name is not empty, check that it is unique
+			{
+				strUniqueName := this.AA.strFavoriteName
+				this.GetUniqueName(strUniqueName, "", this.AA.oParentMenu.AA.strMenuPath, true)
+				if (strUniqueName <> this.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+				{
+					Oops(1, o_L["OopsErrorIniFileDuplicateNames"], this.AA.strFavoriteName, this.AA.oParentMenu.AA.strMenuPath, strUniqueName)
+					this.AA.strFavoriteName := strUniqueName
+				}
+			}
 			this.InsertItemValue("strFavoriteLocation", StrReplace(saFavorite[3], g_strEscapePipe, "|")) ; path, URL or menu path (without "Main") for this menu item
 			this.InsertItemValue("strFavoriteIconResource", saFavorite[4]) ; icon resource in format "iconfile,iconindex" or JLicons index "iconXYZ"
 			this.InsertItemValue("strFavoriteArguments", StrReplace(saFavorite[5], g_strEscapePipe, "|")) ; application arguments

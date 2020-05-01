@@ -672,6 +672,7 @@ this["OopsContainerInGui"] := "The dynamic menu ""~1~"" can only be inserted in 
 this["OopsCouldNotOpenSpecialFolder"] := "~1~ could not open the special folder: ""~2~""."
 this["OopsEmpty"] := "empty" ; (no capital)
 this["OopsErrorIniFileDisplayErrorMessage"] := "Display this error message again for this Shared Menu?"
+this["OopsErrorIniFileDuplicateNames"] := "The favorite ""~1~"" in menu ""~2~"" is not unique and has been temporarily renamed to ""~3~"".`n`nPlease edit this favorite to give it a unique name."
 this["OopsErrorIniFileModified"] := "This shared menu was modified since it was loaded. The menu will be refreshed but your last change cannot be saved."
 this["OopsErrorIniFileReadOnly"] := "This shared menu settings file or this location is READ-ONLY."
 this["OopsErrorIniFileRetry"] := "If the settings file is on a network drive, try reloading ~1~ when the network drive becomes available."
