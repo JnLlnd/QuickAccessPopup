@@ -14496,7 +14496,7 @@ if (g_intSortContainerCriteria = Abs(intPreviousSortContainerCriteria))
 if (intPreviousSortContainerCriteria)
 	Menu, menuSortContainer, Icon, % Abs(intPreviousSortContainerCriteria) . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 Menu, menuSortContainer, Icon, % Abs(g_intSortContainerCriteria) . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
-	+ (g_intSortContainerCriteria < 0 ? 1 : 0) ; if negative descending (63 or 65)
+	+ (g_intSortContainerCriteria = -1 or g_intSortContainerCriteria >= 2 ? 1 : 0) ; reverse sort (63 or 65)
 	+ (Abs(g_intSortContainerCriteria) > 1 ? 2 : 0) ; if date or number, sort numeric
 
 gosub, CheckShowSettings
@@ -26931,8 +26931,9 @@ class Container
 		if (intItemsToSort > 1) ; sort only if required
 		{
 			strSortedItems := SubStr(strSortedItems, 1, -1) ; trim last char
+			strReverse := (intCriteria = -1 or intCriteria >= 2 ? "R" : "")
 			; sort name|position on names using locale
-			Sort, strToSort, % "CL" . (intCriteria < 0 ? "R" : "")
+			Sort, strToSort, % "CL" . strReverse
 			
 			; get copies of items to move
 			aaItemsToSortCopies := Object()
@@ -26964,13 +26965,22 @@ class Container
 		if (intAbsSortCriteria = "1")
 			strCriteria := strFavoriteName
 		else if (intAbsSortCriteria = "2")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateCreated . strFavoriteName
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateCreated
 		else if (intAbsSortCriteria = "3")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateModified . strFavoriteName
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateModified
 		else if (intAbsSortCriteria = "4")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateLastUsed . strFavoriteName
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateLastUsed
 		else ; intAbsSortCriteria = 5
-			strCriteria := this.SA[A_LoopField].AA.intFavoriteUsageDb . strFavoriteName
+			strCriteria := this.SA[A_LoopField].AA.intFavoriteUsageDb
+		
+		if (intAbsSortCriteria = 4) ; date format YYYY-MM-DD hh:mm:ss
+			strCriteria := (StrLen(this.SA[A_LoopField].AA.strFavoriteDateLastUsed) ? this.SA[A_LoopField].AA.strFavoriteDateLastUsed : "0000-00-00 00:00:00") . " " . strFavoriteName
+		else if (intAbsSortCriteria >  1) ; for AHK formatted dates or numeric citeria, pad left to 14 chars (prevent empty dates and make sort numerical for usage)
+		{
+			while StrLen(strCriteria) < 14
+				strCriteria := "0" . strCriteria
+			strCriteria .= " " . strFavoriteName
+		}
 		
 		return strCriteria
 	}
