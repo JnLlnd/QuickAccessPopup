@@ -34,6 +34,9 @@ HISTORY
 Version BETA: v10.4.0.9.1 (2020-04-??)
 - New option in folders favorite Advanced Settings to automatically open last created, last modified or last accessed subfolder of the favorite's location
 
+Version: 10.4.1.1 (2020-05-01)
+- fix bug introduced in v10.4.1
+
 Version: 10.4.1 (2020-05-01)
 - fix bug when adding a favorite with "Add Active Folder Express" that could cause duplicate menu item names and menu becoming "off-by-one"
 - add code to fix duplicate favorite names that would be found when loading favorites
@@ -5144,7 +5147,7 @@ global g_strGuiWindowColor := o_Settings.ReadIniValue("WindowColor", E0E0E0, "Gu
 global g_strMenuBackgroundColor := o_Settings.ReadIniValue("MenuBackgroundColor", FFFFFF, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 
 global o_Containers := new Containers() ; replace g_objMenusIndex index of menus path used in Gui menu dropdown list and to access the menu object for a given menu path
-global o_MainMenu := new Container("Menu", o_L["MainMenuName"]) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
+global o_MainMenu := new Container("Menu", o_L["MainMenuName"], , , , true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 
 Gosub, LoadFavoritesFromIni
 
@@ -25223,13 +25226,14 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	__New(strType, strContainerName, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false)
+	__New(strType, strContainerName, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
 		; "Menu", "External" and "Search" can include any type of favorite and submenus, "Group" can contain only some favorite types and no submenu
 		this.AA.strMenuType := strType
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
+		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
 		if (oParentMenu)
 		{
 			; path from main menu to the current submenus, delimited with " > " (see constant g_strMenuPathSeparator), example: "Main > Sub1 > Sub1.1"
@@ -25436,7 +25440,7 @@ class Container
 				}
 				
 				; load the submenu
-				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], this)
+				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], this, , , true)
 				
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
@@ -26825,7 +26829,8 @@ class Container
 			; this is a regular favorite, add it to the current menu
 			this.InsertItemValue("strFavoriteType", saFavorite[1]) ; see Favorite Types
 			this.InsertItemValue("strFavoriteName", StrReplace(saFavorite[2], g_strEscapePipe, "|")) ; display name of this menu item
-			if StrLen(this.AA.oParentMenu.AA.strMenuPath) and StrLen(this.AA.strFavoriteName) ; if parent menu exists and if favorite name is not empty, check that it is unique
+			if (this.AA.blnCheckDuplicates and StrLen(this.AA.oParentMenu.AA.strMenuPath) and StrLen(this.AA.strFavoriteName))
+			; if this menu needs to be checked, if parent menu exists and if favorite name is not empty, check that favorite name is unique in this menu
 			{
 				strUniqueName := this.AA.strFavoriteName
 				this.GetUniqueName(strUniqueName, "", this.AA.oParentMenu.AA.strMenuPath, true)
