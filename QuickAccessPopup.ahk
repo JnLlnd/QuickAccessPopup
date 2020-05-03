@@ -32,8 +32,10 @@ HISTORY
 =======
 
 Version BETA: v10.4.1.9.1 (2020-05-??)
-- New option in folders favorite Advanced Settings to automatically open last created, last modified or last accessed subfolder of the favorite's location
-- New sort option in submenus (to be completed)
+- new option in folders favorite "Advanced Settings" to open automatically the most recently or mosyt anciently created, modified or accessed subfolder of the favorite's location
+- new sort option in submenus (to be completed)
+- new sort button menu with icon for currently selected sort criteria, new JLicon DLL v1.6 (to be completed)
+- starting number in shared menu files is not supported starting with v10.4.1 (this option is deprecated since v8.1.9.1)
 
 Version: 10.4.1.1 (2020-05-01)
 - fix bug introduced in v10.4.1
@@ -19885,19 +19887,6 @@ Oops(varOwner, strMessage, objVariables*)
 		varOwner := 1
 	Gui, %varOwner%:+OwnDialogs
 	MsgBox, 48, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*)
-}
-;------------------------------------------------
-
-
-;------------------------------------------------
-OopsSilent(varOwner, intSeconds, strMessage, objVariables*)
-; varOwner can be a number or a string
-;------------------------------------------------
-{
-	if (!varOwner)
-		varOwner := 1
-	Gui, %varOwner%:+OwnDialogs
-	MsgBox, 0, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*), % (intSeconds ? intSeconds : "")
 }
 ;------------------------------------------------
 
