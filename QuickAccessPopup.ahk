@@ -9741,8 +9741,7 @@ if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
 
 if (o_MenuInGui.AA.intMenuAutoSort and A_ThisLabel <> "LoadFavoritesInGuiNoSort")
-	if o_MenuInGui.SortContainer("", g_intSortContainerCriteria, strSortedRows, blnSeparatorFound) and (blnSeparatorFound)
-		OopsSilent(1, 2, o_L["OopsSortUpToSeparator"])
+	o_MenuInGui.SortContainer("", g_intSortContainerCriteria, strSortedRows) ; returned value and strSortedRows not used here
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
 	DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while listview is updated
@@ -11902,6 +11901,8 @@ if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition
 else
 	GuiControl, ChooseString, f_drpParentMenuItems, % g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
 g_intNewItemPos := "" ; if new item position g_intNewItemPos is set, reset it and let f_drpParentMenuItems set it later #### not sure if safe...
+
+GuiControl, % (o_Containers.AA[f_drpParentMenu].AA.intMenuAutoSort ? "Disable" : "Enable"), f_drpParentMenuItems
 
 strDropdownParentMenuItems := ""
 saThisMenu := ""
@@ -14360,6 +14361,9 @@ GuiMoveMultipleFavoritesUp:
 GuiMoveMultipleFavoritesDown:
 ;------------------------------------------------------------
 
+if o_MenuInGui.OopsMenuIsSorted()
+	return
+
 GuiControl, Focus, f_lvFavoritesList
 Gui, 1:ListView, f_lvFavoritesList
 
@@ -14397,6 +14401,9 @@ GuiMoveFavoriteDown:
 GuiMoveOneFavoriteUp:
 GuiMoveOneFavoriteDown:
 ;------------------------------------------------------------
+
+if o_MenuInGui.OopsMenuIsSorted()
+	return
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 {
@@ -14473,7 +14480,8 @@ return
 GuiSortFavorites:
 ;------------------------------------------------------------
 
-Menu, menuSortContainer, Show
+if !o_MenuInGui.OopsMenuIsSorted()
+	Menu, menuSortContainer, Show
 
 return
 ;------------------------------------------------------------
@@ -14519,7 +14527,7 @@ if !(blnManyItemsSelected) ; if one or no row is selected, select all and sort u
 	
 Gosub, GetSelectedRows ; updated strSelectedRows (pipe delimited list of selected row numbers)
 
-if o_MenuInGui.SortContainer(strSelectedRows, g_intSortContainerCriteria, strSortedRows, blnSeparatorFound)
+if o_MenuInGui.SortContainer(strSelectedRows, g_intSortContainerCriteria, strSortedRows)
 {
 	gosub, LoadFavoritesInGuiNoSort ; refresh menu in gui, avoid double sort for auto sort menus by calling "no sort"
 	
@@ -14538,9 +14546,6 @@ if o_MenuInGui.SortContainer(strSelectedRows, g_intSortContainerCriteria, strSor
 	; if favorite's menu is in an external settings file, flag that it needs to be saved
 	if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu)
 		o_ExternalMenu.AA.blnNeedSave := true
-	
-	if (blnSeparatorFound)
-		OopsSilent(1, "", o_L["OopsSortUpToSeparator"])
 }
 else
 {
@@ -14552,7 +14557,6 @@ intFirstSelectedRow := ""
 objExternalMenu := ""
 strSelectedRows := ""
 strSortedRows := ""
-blnSeparatorFound := ""
 intPreviousSortContainerCriteria := ""
 blnManyItemsSelected := ""
 
@@ -15128,6 +15132,9 @@ return
 GuiAddSeparator:
 GuiAddColumnBreak:
 ;------------------------------------------------------------
+
+if o_MenuInGui.OopsMenuIsSorted()
+	return
 
 gosub, CheckShowSettings
 
@@ -25898,7 +25905,7 @@ class Container
 			ToolTip, % o_L["ToolTipBuilding"] . "`n" . this.AA.strMenuPath
 		
 		if (this.AA.intMenuAutoSort)
-			this.SortContainer("", "", strSortedItems, blnSeparatorFound)
+			this.SortContainer("", "", strSortedItems)
 		
 		Loop, % this.SA.MaxIndex()
 		{
@@ -26880,8 +26887,8 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	SortContainer(strItems, intCriteria, ByRef strSortedItems, ByRef blnSeparatorFound)
-	; if strItems is empty, sort all favorites (until first horizontal separator)
+	SortContainer(strItems, intCriteria, ByRef strSortedItems)
+	; if strItems is empty, sort all favorites
 	; if intCriteria is empty, use criteria in AA.intMenuAutoSort, else intCriteria contains the sort criteria for manual sort in gui
 	; returns the number of sorted items (used as boolean) and byref values
 	;---------------------------------------------------------
@@ -26889,32 +26896,20 @@ class Container
 		if !StrLen(strItems) ; if empty, sort all items
 		{
 			Loop, % this.SA.Length()
-				if (this.SA[A_Index].AA.strFavoriteType <> "K") ; except column break separators
-					strItemsNoColumnBreak .= A_Index . "|"
-		} ; keep braces because else ambiguity
-		else
-			Loop, Parse, strItems, | ; remove column break separators from items
-				if (this.SA[A_Index].AA.strFavoriteType <> "K")
-					strItemsNoColumnBreak .= A_LoopField . "|"
-		strItemsNoColumnBreak := SubStr(strItemsNoColumnBreak, 1, -1) ; remove last |
-		saItems := StrSplit(strItemsNoColumnBreak, "|")
+				strItems .= A_Index . "|"
+			strItems := SubStr(strItems, 1, -1) ; remove last |
+		}
+		saItems := StrSplit(strItems, "|")
 		
 		if !(intCriteria)
 			intCriteria := this.AA.intMenuAutoSort ; container auto sort
 		
-		blnSeparatorFound := false
 		intItemsToSort := 0 ; counter, sort only if at least 2 items to sort
 		strSortedItems := "" ; keep track of sorted items to re-select only these items
 		strToSort := "" ; cleaned favorite names to sort with original item
 		
-		Loop, Parse, strItemsNoColumnBreak, |
+		Loop, Parse, strItems, |
 		{
-			; if this.SA[A_LoopField].IsSeparator() ; stop at first separator
-			if (this.SA[A_LoopField].AA.strFavoriteType = "X") ; stop at first horizontal separator
-			{
-				blnSeparatorFound := true
-				break
-			}
 			intItemsToSort++
 			strSortedItems .= saItems[A_Index] . "|"
 			strToSort .= this.GetCriteriaSortContainer(Abs(intCriteria)) . "|" . A_LoopField . "`n" ; name | original order
@@ -26934,13 +26929,8 @@ class Container
 					aaItemsToSortCopies.Push(this.SA[StrSplit(A_LoopField, "|")[2]])
 			
 			; insert sorted copies in position of original items
-			Loop, Parse, strItemsNoColumnBreak, |
-			{
-				if this.SA[A_LoopField].AA.strFavoriteType = "X" ; stop at first separator
-					break
-				
+			Loop, Parse, strItems, |
 				this.SA[A_LoopField] := aaItemsToSortCopies[A_Index]
-			}
 		}
 		
 		return intItemsToSort
@@ -26975,6 +26965,16 @@ class Container
 		}
 		
 		return strCriteria
+	}
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	OopsMenuIsSorted()
+	;------------------------------------------------------------
+	{
+		if (this.AA.intMenuAutoSort)
+			Oops(1, o_L["OopsMenuSorted"])
+		return (this.AA.intMenuAutoSort)
 	}
 	;------------------------------------------------------------
 
