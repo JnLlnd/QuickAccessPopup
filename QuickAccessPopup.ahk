@@ -14539,7 +14539,7 @@ if o_MenuInGui.SortContainer(strSelectedRows, g_intSortContainerCriteria, strSor
 		o_ExternalMenu.AA.blnNeedSave := true
 	
 	if (blnSeparatorFound)
-		Oops(1, o_L["OopsSortUpToSeparator"])
+		OopsSilent(1, "", o_L["OopsSortUpToSeparator"])
 }
 else
 {
@@ -19889,7 +19889,7 @@ OopsSilent(varOwner, intSeconds, strMessage, objVariables*)
 	if (!varOwner)
 		varOwner := 1
 	Gui, %varOwner%:+OwnDialogs
-	MsgBox, 0, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*), %intSeconds%
+	MsgBox, 0, % L(o_L["OopsTitle"], g_strAppNameText, g_strAppVersion), % L(strMessage, objVariables*), % (intSeconds ? intSeconds : "")
 }
 ;------------------------------------------------
 
@@ -25897,7 +25897,7 @@ class Container
 			ToolTip, % o_L["ToolTipBuilding"] . "`n" . this.AA.strMenuPath
 		
 		if (this.AA.intMenuAutoSort)
-			this.SortMenu()
+			this.SortContainer("", "", strSortedItems, blnSeparatorFound)
 		
 		Loop, % this.SA.MaxIndex()
 		{
@@ -26088,14 +26088,6 @@ class Container
 	}
 	;------------------------------------------------------------
 
-	;------------------------------------------------------------
-	SortMenu()
-	;------------------------------------------------------------
-	{
-		; MsgBox, , , Sort menu..., 0.5
-	}
-	;------------------------------------------------------------
-	
 	;------------------------------------------------------------
 	BuildLiveFolderMenu(o_FavoriteLiveFolder, strMenuParentPath, intMenuParentPosition)
 	; this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
@@ -26896,6 +26888,7 @@ class Container
 
 	;---------------------------------------------------------
 	SortContainer(strItems, intCriteria, ByRef strSortedItems, ByRef blnSeparatorFound)
+	; if strItems is empty, sort all favorites (until first separator)
 	; if intCriteria is empty, use criteria in AA.intMenuAutoSort, else intCriteria contains the sort criteria for manual sort in gui
 	; returns the number of sorted items (used as boolean) and byref values
 	;---------------------------------------------------------
