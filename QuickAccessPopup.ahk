@@ -26062,14 +26062,6 @@ class Container
 				and aaThisFavorite.intFavoriteUsageDb) ; exclude if no usage index
 				strMenuItemLabel .= " [" . aaThisFavorite.intFavoriteUsageDb . "]"
 			
-			/* #### was for debugging
-			if 1 or (intMenuItemStatus = 0 and !StrLen(strMenuItemLabel))
-			{
-				###_V(A_ThisFunc, strMenuItemLabel, intMenuItemStatus)
-				###_V(A_ThisFunc, "*DEBUG:", "SEE LIST LINES IN CLIPBOARD", "*strMenuItemLabel", strMenuItemLabel, "*intMenuItemStatus", intMenuItemStatus, "*this.AA.strMenuPath", this.AA.strMenuPath)
-				Clipboard := ScriptInfo("ListLines")
-			}
-			*/
 			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
 			if (aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 				this.AddMenuIcon(strMenuItemLabel, strMenuItemAction, strMenuItemIcon, intMenuItemStatus, blnFlagNextItemHasColumnBreak)
@@ -26889,7 +26881,7 @@ class Container
 
 	;---------------------------------------------------------
 	SortContainer(strItems, intCriteria, ByRef strSortedItems, ByRef blnSeparatorFound)
-	; if strItems is empty, sort all favorites (until first separator)
+	; if strItems is empty, sort all favorites (until first horizontal separator)
 	; if intCriteria is empty, use criteria in AA.intMenuAutoSort, else intCriteria contains the sort criteria for manual sort in gui
 	; returns the number of sorted items (used as boolean) and byref values
 	;---------------------------------------------------------
@@ -26897,10 +26889,15 @@ class Container
 		if !StrLen(strItems) ; if empty, sort all items
 		{
 			Loop, % this.SA.Length()
-				strItems .= A_Index . "|"
-			strItems := SubStr(strItems, 1, -1) ; remove last |
-		}
-		saItems := StrSplit(strItems, "|")
+				if (this.SA[A_Index].AA.strFavoriteType <> "K") ; except column break separators
+					strItemsNoColumnBreak .= A_Index . "|"
+		} ; keep braces because else ambiguity
+		else
+			Loop, Parse, strItems, | ; remove column break separators from items
+				if (this.SA[A_Index].AA.strFavoriteType <> "K")
+					strItemsNoColumnBreak .= A_LoopField . "|"
+		strItemsNoColumnBreak := SubStr(strItemsNoColumnBreak, 1, -1) ; remove last |
+		saItems := StrSplit(strItemsNoColumnBreak, "|")
 		
 		if !(intCriteria)
 			intCriteria := this.AA.intMenuAutoSort ; container auto sort
@@ -26910,9 +26907,10 @@ class Container
 		strSortedItems := "" ; keep track of sorted items to re-select only these items
 		strToSort := "" ; cleaned favorite names to sort with original item
 		
-		Loop, Parse, strItems, |
+		Loop, Parse, strItemsNoColumnBreak, |
 		{
-			if this.SA[A_LoopField].IsSeparator() ; stop at first separator
+			; if this.SA[A_LoopField].IsSeparator() ; stop at first separator
+			if (this.SA[A_LoopField].AA.strFavoriteType = "X") ; stop at first horizontal separator
 			{
 				blnSeparatorFound := true
 				break
@@ -26936,9 +26934,9 @@ class Container
 					aaItemsToSortCopies.Push(this.SA[StrSplit(A_LoopField, "|")[2]])
 			
 			; insert sorted copies in position of original items
-			Loop, Parse, strItems, |
+			Loop, Parse, strItemsNoColumnBreak, |
 			{
-				if this.SA[A_LoopField].IsSeparator() ; stop at first separator
+				if this.SA[A_LoopField].AA.strFavoriteType = "X" ; stop at first separator
 					break
 				
 				this.SA[A_LoopField] := aaItemsToSortCopies[A_Index]
