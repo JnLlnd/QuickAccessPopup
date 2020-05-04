@@ -32,10 +32,11 @@ HISTORY
 =======
 
 Version BETA: v10.4.1.9.1 (2020-05-??)
-- new option in folders favorite "Advanced Settings" to open automatically the most recently or mosyt anciently created, modified or accessed subfolder of the favorite's location
-- new sort option in submenus (to be completed)
-- new sort button menu with icon for currently selected sort criteria, new JLicon DLL v1.6 (to be completed)
-- starting number in shared menu files is not supported starting with v10.4.1 (this option is deprecated since v8.1.9.1)
+- for folders favorite in "Edit Favorite" dialog box, "Advanced Settings" tab, a new option to open automatically the most recently or most anciently created, modified or accessed subfolder of the favorite's location
+- for submenus in "Edit Favorite" dialog box, a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (ascending or descending)
+- new sort button opening a popup menu in "Customize" dialog box allowing to sort favorites in the currently displayed menu by name, created, modified or last used date or by usage level; this does a manual sorting in regular submenus or change the sort criteria in menu with automatic sorting
+- new JLicon.DLL icon file v1.6 with icons to display the current sort criteria in sort popup menu
+- removed feature: starting number in shared menu files is not supported starting with v10.4.1 (this option was deprecated since v8.1.9.1)
 
 Version: 10.4.1.1 (2020-05-01)
 - fix bug introduced in v10.4.1
