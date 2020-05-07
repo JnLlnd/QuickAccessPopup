@@ -33,8 +33,9 @@ HISTORY
 
 Version BETA: v10.4.1.9.1 (2020-05-??)
 - for folders favorite in "Edit Favorite" dialog box, "Advanced Settings" tab, a new option to open automatically the most recently or most anciently created, modified or accessed subfolder of the favorite's location
-- for submenus in "Edit Favorite" dialog box, a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (ascending or descending)
-- new sort button opening a popup menu in "Customize" dialog box allowing to sort favorites in the currently displayed menu by name, created, modified or last used date or by usage level; this does a manual sorting in regular submenus or change the sort criteria in menu with automatic sorting
+- in "Edit Favorite" dialog box for menus (regular or shared menus), a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (ascending or descending)
+- in "Customize" dialog box, new "Sort" button opening a popup menu allowing to sort favorites in the currently displayed menu by name, created, modified or last used date or by usage level; this does a manual sorting in regular submenus or change the sort criteria in menu with automatic sorting
+- in "Customize" dialog box, when in a submenu (not in the Main menu), add an entry to the "Sort" button menu to edit the currently displayed menu
 - new JLicon.DLL icon file v1.6 with icons to display the current sort criteria in sort popup menu
 - removed feature: starting number in shared menu files is not supported starting with v10.4.1 (this option was deprecated since v8.1.9.1)
 
@@ -4804,9 +4805,7 @@ InsertGuiControlPos("f_picGuiMoveFavorite",				 -44,  352, true)
 InsertGuiControlPos("f_picAddTextSeparator",			  10,  209)
 InsertGuiControlPos("f_picAddColumnBreak",				  10,  174)
 InsertGuiControlPos("f_picAddSeparator",				  10,  144)
-InsertGuiControlPos("f_picSortFavoritesTop",			  10,  144)
 InsertGuiControlPos("f_picMoveFavoriteDown",			  10,  113)
-InsertGuiControlPos("f_picMenuContainerInGuiTop",		  10,  113)
 InsertGuiControlPos("f_picMoveFavoriteUp",				  10,   85)
 InsertGuiControlPos("f_picSubmenu",						  10,   85)
 
@@ -5006,7 +5005,6 @@ o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableTheme
 
 ; Group SettingsWindow
 o_Settings.ReadIniOption("SettingsWindow", "blnDisplaySettingsStartup", "DisplaySettingsStartup", 0, "SettingsWindow", "f_blnDisplaySettingsStartup|f_lblOptionsSettingsWindow")
-o_Settings.ReadIniOption("SettingsWindow", "intShowQAPmenu", "ShowQAPmenu", 3, "SettingsWindow", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
 o_Settings.ReadIniOption("SettingsWindow", "blnRememberSettingsPosition", "RememberSettingsPosition", 1, "SettingsWindow", "f_blnRememberSettingsPosition") ; g_blnRememberSettingsPosition
 o_Settings.ReadIniOption("SettingsWindow", "blnOpenSettingsOnActiveMonitor", "OpenSettingsOnActiveMonitor", 1, "SettingsWindow", "f_blnOpenSettingsOnActiveMonitor") ; g_blnOpenSettingsOnActiveMonitor
 o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0, "SettingsWindow", "f_lblAddAutoAtTop|f_blnAddAutoAtTop0|f_blnAddAutoAtTop1") ; g_blnAddAutoAtTop
@@ -5087,6 +5085,7 @@ global g_blnUsageDbDebug := (g_intUsageDbDebug > 0)
 global g_blnUsageDbDebugBeep := (g_intUsageDbDebug > 1)
 
 ; Group MenuAdvanced
+o_Settings.ReadIniOption("MenuAdvanced", "intShowQAPmenu", "ShowQAPmenu", 3, "MenuAdvanced", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
 o_Settings.ReadIniOption("MenuAdvanced", "intNbLiveFolderItemsMax", "NbLiveFolderItemsMax", "", "MenuAdvanced", "f_lblNbLiveFolderItemsMax|f_lblNbLiveFolderItemsMaxDefault|f_intNbLiveFolderItemsMax") ; ERROR if not found
 if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
 	o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(500)
@@ -5880,7 +5879,7 @@ if (A_ThisLabel = "BuildTrayMenuRefresh")
 	Menu, Tray, DeleteAll
 
 Menu, Tray, Add, % g_aaMenuTrayL["MenuSettings"], GuiShowFromTray
-if (o_Settings.SettingsWindow.intShowQAPmenu.IniValue > 1) ; 1 Customize menu bar, 2 System menu, 3 both
+if (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue > 1) ; 1 Customize menu bar, 2 System menu, 3 both
 {
 	Menu, Tray, Add
 	Menu, Tray, Add, % g_aaMenuTrayL["MenuFile"], :menuBarFile
@@ -5935,36 +5934,51 @@ Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 
 ; build automatic sort container menu
 ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
 Menu, menuSortAutomatic, Add, % "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --", DoNothing
+Menu, menuSortAutomatic, Disable, % "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --"
 Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortFavoriteName"], GuiSortContainer1
-Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
-Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
-Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
-Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+{
+	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
+	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
+	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
+	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+}
 Menu, menuSortAutomatic, Add
 Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
-Menu, menuSortAutomatic, Disable, % "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --"
+Menu, menuSortAutomatic, Add
+Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 ; build manual sort container menu
 ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
 Menu, menuSortManual, Add, % "-- " . o_L["DialogMenuSortHeaderManual"] . " --", DoNothing
+Menu, menuSortManual, Disable, % "-- " . o_L["DialogMenuSortHeaderManual"] . " --"
 Menu, menuSortManual, Add, % o_L["DialogMenuSortFavoriteName"], GuiSortContainer1
-Menu, menuSortManual, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
-Menu, menuSortManual, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
-Menu, menuSortManual, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
-Menu, menuSortManual, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+{
+	Menu, menuSortManual, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
+	Menu, menuSortManual, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
+	Menu, menuSortManual, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
+	Menu, menuSortManual, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+}
 Menu, menuSortManual, Add
 Menu, menuSortManual, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
-Menu, menuSortManual, Disable, % "-- " . o_L["DialogMenuSortHeaderManual"] . " --"
+Menu, menuSortManual, Add
+Menu, menuSortManual, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 ; build manual sort for Main menu
 ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
 Menu, menuSortMainMenu, Add, % "-- " . o_L["DialogMenuSortHeaderMainMenu"] . " --", DoNothing
-Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortFavoriteName"], GuiSortContainer1
-Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
-Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
-Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
-Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
 Menu, menuSortMainMenu, Disable, % "-- " . o_L["DialogMenuSortHeaderMainMenu"] . " --"
+Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortFavoriteName"], GuiSortContainer1
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+{
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+}
+Menu, menuSortMainMenu, Add
+Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 return
 ;------------------------------------------------------------
@@ -6024,7 +6038,7 @@ saMenuItemsTable.Push(["GuiAddSeparator", aaFavoriteL["ControlToolTipSeparator"]
 saMenuItemsTable.Push(["GuiAddColumnBreak", aaFavoriteL["ControlToolTipColumnBreak"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiAddTextSeparator", aaFavoriteL["ControlToolTipTextSeparator"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiSortFavorites", aaFavoriteL["ControlToolTipSortFavorites"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiSortFavoritesMenu", aaFavoriteL["ControlToolTipSortFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A", "", "iconNoIcon"])
 o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -7553,11 +7567,9 @@ Gui, 2:Font
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnDisplaySettingsStartup gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsStartup"]
 GuiControl, , f_blnDisplaySettingsStartup, % (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue = true)
 
-; ShowQAPmenu
-Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblShowQAPmenu, % o_L["OptionsShowQAPmenu"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu1 Group gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 1 ? "Checked" : ""), % o_L["OptionsShowQAPmenuCustomize"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu2 gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 2 ? "Checked" : ""), % o_L["OptionsShowQAPmenuSystem"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu3 gGuiOptionsGroupChanged " . (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 3 ? "Checked" : ""), % o_L["OptionsShowQAPmenuBoth"]
+; SearchWithStats (also applies to Customize regular listview)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnSearchWithStats gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithStats"]
+GuiControl, , f_blnSearchWithStats, % (o_Settings.SettingsWindow.blnSearchWithStats.IniValue = true)
 
 ; RememberSettingsPosition
 Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnRememberSettingsPosition gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsRememberSettingsPosition"]
@@ -7582,10 +7594,6 @@ Gui, 2:Font
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchFrom, % o_L["OptionsSearchFrom"]
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsSearchFrom1 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromMain"]
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsSearchFrom0 gGuiOptionsGroupChanged hidden " . (!o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromCurrent"]
-
-; SearchWithStats
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithStats gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithStats"]
-GuiControl, , f_blnSearchWithStats, % (o_Settings.SettingsWindow.blnSearchWithStats.IniValue = true)
 
 ; SearchWithLocale
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithLocale gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithLocale"]
@@ -7984,8 +7992,14 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 
 ; === MenuAdvanced ===
 
+; ShowQAPmenu
+Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w230 hidden vf_lblShowQAPmenu, % o_L["OptionsShowQAPmenu"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu1 Group gGuiOptionsGroupChanged " . (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue = 1 ? "Checked" : ""), % o_L["OptionsShowQAPmenuCustomize"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu2 gGuiOptionsGroupChanged " . (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue = 2 ? "Checked" : ""), % o_L["OptionsShowQAPmenuSystem"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu3 gGuiOptionsGroupChanged " . (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue = 3 ? "Checked" : ""), % o_L["OptionsShowQAPmenuBoth"]
+
 ; OpenMenuOnTaskbar
-Gui, 2:Add, CheckBox, y%intGroupItemsY% x%g_intGroupItemsX% vf_blnOpenMenuOnTaskbar gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenMenuOnTaskbar"]
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnOpenMenuOnTaskbar gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenMenuOnTaskbar"]
 GuiControl, , f_blnOpenMenuOnTaskbar, % (o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue = true)
 
 ; RefreshQAPMenuIntervalSec
@@ -8257,20 +8271,12 @@ o_Settings.Launch.strQAPTempFolderParent.WriteIni(StrLen(f_strQAPTempFolderParen
 ; === SettingsWindow ===
 
 o_Settings.SettingsWindow.blnDisplaySettingsStartup.WriteIni(f_blnDisplaySettingsStartup)
-strShowQAPmenuPrev := o_Settings.SettingsWindow.intShowQAPmenu.IniValue
-if (f_radShowQAPmenu1)
-	o_Settings.SettingsWindow.intShowQAPmenu.IniValue := 1
-else if (f_radShowQAPmenu2)
-	o_Settings.SettingsWindow.intShowQAPmenu.IniValue := 2
-else
-	o_Settings.SettingsWindow.intShowQAPmenu.IniValue := 3
-o_Settings.SettingsWindow.intShowQAPmenu.WriteIni("", true) ; value already updated
+blnSearchWithStatsPrev := o_Settings.SettingsWindow.blnSearchWithStats.IniValue
+o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
 o_Settings.SettingsWindow.blnRememberSettingsPosition.WriteIni(f_blnRememberSettingsPosition)
 o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.WriteIni(f_blnOpenSettingsOnActiveMonitor)
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
-blnSearchWithStatsPrev := o_Settings.SettingsWindow.blnSearchWithStats.IniValue
-o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 
 ; === MenuIcons ===
@@ -8467,6 +8473,14 @@ strQAPconnectPath := ""
 
 ; === MenuAdvanced ===
 
+strShowQAPmenuPrev := o_Settings.MenuAdvanced.intShowQAPmenu .IniValue
+if (f_radShowQAPmenu1)
+	o_Settings.MenuAdvanced.intShowQAPmenu .IniValue := 1
+else if (f_radShowQAPmenu2)
+	o_Settings.MenuAdvanced.intShowQAPmenu .IniValue := 2
+else
+	o_Settings.MenuAdvanced.intShowQAPmenu .IniValue := 3
+o_Settings.MenuAdvanced.intShowQAPmenu .WriteIni("", true) ; value already updated
 o_Settings.MenuPopup.blnOpenMenuOnTaskbar.WriteIni(f_blnOpenMenuOnTaskbar)
 o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.WriteIni(f_blnRefreshQAPMenuEnable ? f_intRefreshQAPMenuIntervalSec : 0)
 o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.WriteIni(f_blnRefreshQAPMenuDebugBeep)
@@ -8555,16 +8569,16 @@ if (strWorkingFolderPrev <> strWorkingFolderNew and blnSettingsMoveOK)
 
 ; === Optional restart if show QAP menu, language, theme or temporary folder changed
 
-if (strShowQAPmenuPrev <> o_Settings.SettingsWindow.intShowQAPmenu.IniValue)
+if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (strLanguageCodePrev <> o_Settings.Launch.strLanguageCode.IniValue)
 	or (strThemePrev <> o_Settings.Launch.strTheme.IniValue)
 	or (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
 {
-	if (strShowQAPmenuPrev <> o_Settings.SettingsWindow.intShowQAPmenu.IniValue)
+	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
 		strOption := o_L["OptionsShowQAPmenu"]
-		strValue := (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 1 ? o_L["OptionsShowQAPmenuCustomize"]
-			: (o_Settings.SettingsWindow.intShowQAPmenu.IniValue = 2 ? o_L["OptionsShowQAPmenuSystem"] : o_L["OptionsShowQAPmenuBoth"]))
+		strValue := (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue = 1 ? o_L["OptionsShowQAPmenuCustomize"]
+			: (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue = 2 ? o_L["OptionsShowQAPmenuSystem"] : o_L["OptionsShowQAPmenuBoth"]))
 	}
 	else if (strLanguageCodePrev <> o_Settings.Launch.strLanguageCode.IniValue)
 	{
@@ -9611,7 +9625,7 @@ Gui, 1:New, +Hwndg_strGui1Hwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidt
 ; return to loading icon
 Menu, Tray, Icon, % o_JLicons.strFileLocation, 60, 1 ; 60 is iconQAPloading, last 1 to freeze icon during pause or suspend
 
-if (o_Settings.SettingsWindow.intShowQAPmenu.IniValue <> 2) ; 1 Customize menu bar, 2 System menu, 3 both
+if (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue <> 2) ; 1 Customize menu bar, 2 System menu, 3 both
 	Gui, Menu, menuBar
 
 if (g_blnUseColors)
@@ -9636,40 +9650,36 @@ Gui, 1:Add, Picture, vf_picMenuNext gGuiGotoMenuNext hidden x+12 yp, %g_strTempD
 g_aaToolTipsMessages["Static9"] := o_L["ControlToolTipNextMenu"]
 Gui, 1:Add, Picture, vf_picMoveFavoriteUp gGuiMoveFavoriteUp x+1 yp, %g_strTempDir%\up_circular-26_c.png ; Static10
 g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipMoveUp"]
-Gui, 1:Add, Picture, vf_picMenuContainerInGuiTop gContainerInGuiShortcut x+1 yp hidden, %g_strTempDir%\preview_pane-26_c.png ; Static11
-g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipShowContainerInGui"]
-Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static12
-g_aaToolTipsMessages["Static12"] := o_L["ControlToolTipMoveDown"]
-Gui, 1:Add, Picture, vf_picSubmenu gOpenMenuContainingSearchItem x+1 yp hidden, %g_strTempDir%\submenu-26_c.png ; Static13
-g_aaToolTipsMessages["Static13"] := o_L["ControlToolTipOpenMenuContainingSearchItem"]
-Gui, 1:Add, Picture, vf_picAddSeparator gGuiAddSeparator x+1 yp, %g_strTempDir%\separator-26_c.png ; Static14
-g_aaToolTipsMessages["Static14"] := o_L["ControlToolTipSeparator"]
-Gui, 1:Add, Picture, vf_picAddColumnBreak gGuiAddColumnBreak x+1 yp, %g_strTempDir%\column-26_c.png ; Static15
-g_aaToolTipsMessages["Static15"] := o_L["ControlToolTipColumnBreak"]
-Gui, 1:Add, Picture, vf_picAddTextSeparator gGuiAddTextSeparator x+1 yp, %g_strTempDir%\text-26_c.png ; Static16
-g_aaToolTipsMessages["Static16"] := o_L["ControlToolTipTextSeparator"]
-Gui, 1:Add, Picture, vf_picSortFavoritesBottom gGuiSortFavorites x+1 yp, %g_strTempDir%\generic_sorting-26_c.png ; Static17
-g_aaToolTipsMessages["Static17"] := o_L["ControlToolTipSortFavorites"]
-Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_strTempDir%\QAP-pin-on-26_c.png ; Static18
-g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOn"]
+Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static11
+g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipMoveDown"]
+Gui, 1:Add, Picture, vf_picSubmenu gOpenMenuContainingSearchItem x+1 yp hidden, %g_strTempDir%\submenu-26_c.png ; Static12
+g_aaToolTipsMessages["Static12"] := o_L["ControlToolTipOpenMenuContainingSearchItem"]
+Gui, 1:Add, Picture, vf_picAddSeparator gGuiAddSeparator x+1 yp, %g_strTempDir%\separator-26_c.png ; Static13
+g_aaToolTipsMessages["Static13"] := o_L["ControlToolTipSeparator"]
+Gui, 1:Add, Picture, vf_picAddColumnBreak gGuiAddColumnBreak x+1 yp, %g_strTempDir%\column-26_c.png ; Static14
+g_aaToolTipsMessages["Static14"] := o_L["ControlToolTipColumnBreak"]
+Gui, 1:Add, Picture, vf_picAddTextSeparator gGuiAddTextSeparator x+1 yp, %g_strTempDir%\text-26_c.png ; Static15
+g_aaToolTipsMessages["Static15"] := o_L["ControlToolTipTextSeparator"]
+Gui, 1:Add, Picture, vf_picSortFavoritesBottom gGuiSortFavoritesMenu x+1 yp, %g_strTempDir%\generic_sorting-26_c.png ; Static16
+g_aaToolTipsMessages["Static16"] := o_L["ControlToolTipSortFavorites"]
+Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_strTempDir%\QAP-pin-on-26_c.png ; Static17
+g_aaToolTipsMessages["Static17"] := o_L["ControlToolTipAlwaysOnTopOn"]
 Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempDir%\QAP-pin-off-26_c.png ; Static19
-g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipAlwaysOnTopOff"]
-Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane-26_c.png ; Static20
-g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipShowContainerInGui"]
-Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static21
-g_aaToolTipsMessages["Static21"] := o_L["ControlToolTipSearchButton"]
-Gui, 1:Add, Picture, vf_picSortFavoritesTop gGuiSortSearchResultMenu x+1 yp hidden, %g_strTempDir%\generic_sorting-26_c.png ; Static22
-g_aaToolTipsMessages["Static22"] := o_L["ControlToolTipSortSearchResult"]
+g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOff"]
+Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane-26_c.png ; Static19
+g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipShowContainerInGui"]
+Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static20
+g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
 
 Gui, 1:Font, s8 w400, Arial ; button legend
-Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static23
-Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static24, w88 to make room fot when multiple favorites are selected
-Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static25
-Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static26
-Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static27
+Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static21
+Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static22, w88 to make room fot when multiple favorites are selected
+Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static23
+Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static24
+Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static25
 
 Gui, 1:Font, s8 w400 normal, Verdana
-Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static28
+Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static26
 Gui, 1:Add, DropDownList, vf_drpMenusList gGuiMenusListChanged x0 y+1 ; ComboBox1
 
 Gui, 1:Add, Edit, vf_strFavoritesListFilter r1 gLoadFavoritesInGui hidden ; Edit1 (EditN controls do not support tooltips)
@@ -9677,9 +9687,13 @@ Gui, 1:Add, Checkbox, vf_blnFavoritesListFilterExtended x+10 yp gFilterExtendedC
 g_aaToolTipsMessages["Button1"] := o_L["ControlToolTipSearchBoxExtended"]
 Gui, 1:Add, Button, vf_btnFavoritesListNoFilter gGuiGotoMenuPrev x+10 yp w20 h20 hidden, X ; Button2
 g_aaToolTipsMessages["Button2"] := o_L["ControlToolTipSearchBoxClear"]
+; #| + Name|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList Count32 AltSubmit NoSortHdr LV0x10 " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
-	, % o_L["GuiLvFavoritesHeader"] ; SysHeader321 / SysListView321
+	, % o_L["GuiLvFavoritesHeader"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? "|" . o_L["GuiLvFavoritesHeaderFilteredDates"]
+	. (g_blnUsageDbEnabled ? "|" . o_L["GuiLvFavoritesHeaderFilteredStats"] : "") : "") ; SysHeader321 / SysListView321
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
+	LV_ModifyCol(9, "Integer") ; usage column
 ; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
@@ -10100,6 +10114,17 @@ return
 
 
 ;------------------------------------------------------------
+GuiContextMenu:
+;------------------------------------------------------------
+
+if InStr("f_lvFavoritesList|f_lvFavoritesListSearch|", A_GuiControl . "|")
+	Gosub, GuiSortFavoritesMenu
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GuiFavoritesListFilterShowOpen:
 GuiFavoritesListFilterShow:
 GuiFavoritesListFilterHide:
@@ -10115,13 +10140,13 @@ if (InStr(A_ThisLabel, "Show") and blnSearchVisible)
 blnSearchVisible := (InStr(A_ThisLabel, "Show") ? true : false) ; show else hide
 
 ; hide/show buttons for commands not supported in search result
-Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_picAddColumnBreak|f_picAddTextSeparator|f_picSortFavoritesBottom|f_lvFavoritesList"
-	. "|f_drpMenusList|f_picSearch|f_lvFavoritesList|f_picMenuContainerInGuiBottom", |
+Loop, Parse, % "f_picMoveFavoriteUp|f_picMoveFavoriteDown|f_picAddSeparator|f_picAddColumnBreak|f_picAddTextSeparator|f_lvFavoritesList"
+	. "|f_drpMenusList|f_picSearch|f_lvFavoritesList", |
 	GuiControl, % (blnSearchVisible ? "Hide" : "Show"), %A_LoopField%
 
 ; show/hide buttons for commands not supported in search result
 Loop, Parse, % "f_strFavoritesListFilter|f_btnFavoritesListNoFilter|f_blnFavoritesListFilterExtended|f_lvFavoritesListSearch"
-	. "|f_picMenuContainerInGuiTop|f_picSubmenu|f_picSortFavoritesTop", |
+	. "|f_picSubmenu", |
 	GuiControl, % (blnSearchVisible ? "Show" : "Hide"), %A_LoopField%
 
 ; disable/enable Favorite menu items for commands not supported in search result
@@ -10765,20 +10790,26 @@ GuiFavoriteInit:
 g_strDefaultIconResource := ""
 g_strNewFavoriteIconResource := ""
 
-if (strGuiFavoriteLabel = "GuiEditMenuFromGui")
-{
-	loop ; search position of edited item in parent container
-		if (o_MenuInGui.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteName = o_MenuInGui.AA.strMenuPath)
-		{
-			g_intOriginalMenuPosition := A_Index
-			break
-		}
-	o_MenuInGui := o_MenuInGui.AA.oParentMenu ; switch o_MenuInGui with parent container (switched back after item is saved)
-}
-
 if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLabel)
 {
-	g_intOriginalMenuPosition := LV_GetNext()
+	if (strGuiFavoriteLabel = "GuiEditMenuFromGui")
+	{
+		loop ; search position of edited item in parent container
+		{
+			; ###_V(A_ThisLabel, o_MenuInGui.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteName
+				; . (o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
+				; , o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteName, o_MenuInGui.AA.strMenuPath)
+			if (o_MenuInGui.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteName
+				. (o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "") = o_MenuInGui.AA.strMenuPath)
+			{
+				g_intOriginalMenuPosition := A_Index
+				break
+			}
+		}
+		o_MenuInGui := o_MenuInGui.AA.oParentMenu ; switch o_MenuInGui with parent container (switched back after item is saved)
+	}
+	else
+		g_intOriginalMenuPosition := LV_GetNext()
 
 	if !(g_intOriginalMenuPosition)
 	{
@@ -12894,6 +12925,9 @@ GuiAddFavoriteCancel:
 GuiQuickAddSnippetCancel:
 ;------------------------------------------------------------
 
+if (strGuiFavoriteLabel = "GuiEditMenuFromGui") ; switch back o_MenuInGui
+	o_MenuInGui := o_EditedFavorite.AA.oSubMenu
+
 Gosub, GuiAddFavoriteFlush
 Gosub, 2GuiClose
 
@@ -14538,7 +14572,7 @@ return
 
 
 ;------------------------------------------------------------
-GuiSortFavorites:
+GuiSortFavoritesMenu:
 ;------------------------------------------------------------
 
 Menu, % "menuSort" . (o_MenuInGui.AA.intMenuAutoSort ? "Automatic" : (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"] ? "MainMenu" : "Manual"))
@@ -25629,7 +25663,7 @@ class Container
 				}
 				
 				; load the submenu
-				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], saThisFavorite[11], this, , , true)
+				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], (saThisFavorite[1] = "Group" ? "" : saThisFavorite[11]), this, , , true)
 				
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
@@ -28799,19 +28833,20 @@ class Container
 			{
 				saValues.InsertAt(1, this.AA.intSearchItemOriginalPositionInResult) ; col 1, original position in search result, previous 1-4 become 2-5
 				saValues.InsertAt(3, this.AA.oParentMenu.AA.strMenuPath) ; insert col 2 menu, previous 3-5 become 4-6
-				if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-				{
-					strDateTime := ConvertUsageDbDateFormat(o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateModified))
-					saValues.Push(strDateTime) ; col 7
-					strDateTime := ConvertUsageDbDateFormat(o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateCreated))
-					saValues.Push(strDateTime) ; col 8
-					if (g_blnUsageDbEnabled)
-					{
-						saValues.Push(this.AA.strFavoriteDateLastUsed) ; col 9, already in format yyyy-MM-dd HH:mm:ss
-						saValues.Push(this.AA.intFavoriteUsageDb) ; col 10
-					}
-				}
 				intPosition := 0 ; always LV_Add() below when in a search result
+			}
+			
+			if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+			{
+				strDateTime := ConvertUsageDbDateFormat(o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateModified))
+				saValues.Push(strDateTime) ; col 7
+				strDateTime := ConvertUsageDbDateFormat(o_Utc2LocalTime.ConvertToLocal(this.AA.strFavoriteDateCreated))
+				saValues.Push(strDateTime) ; col 8
+				if (g_blnUsageDbEnabled)
+				{
+					saValues.Push(this.AA.strFavoriteDateLastUsed) ; col 9, already in format yyyy-MM-dd HH:mm:ss
+					saValues.Push(this.AA.intFavoriteUsageDb) ; col 10
+				}
 			}
 			
 			if (intPosition)
