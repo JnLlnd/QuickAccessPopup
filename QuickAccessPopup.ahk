@@ -23466,7 +23466,7 @@ TODO
 				If !StrLen(strIniFile)
 					RegRead, strIniFile, HKEY_LOCAL_MACHINE, Software\Ghisler\Total Commander\, IniFileName
 				this.AA.strTCIniFile := strIniFile
-				this.AA.strTCIniFileExpanded := EnvVars(this.AA.strTCIniFile)
+				this.AA.strTCIniFileExpanded := PathCombine(A_WorkingDir, EnvVars(this.AA.strTCIniFile))
 				this.AA.blnFileManagerValid := StrLen(this.AA.strTCIniFileExpanded) and FileExist(this.AA.strTCIniFileExpanded) ; TotalCommander settings file exists
 				
 				this.AA.blnFileManagerUseTabs := o_Settings.ReadIniOption("FileManagers", "blnTotalCommanderUseTabs", "TotalCommanderUseTabs", 1, "FileManagers", "")
