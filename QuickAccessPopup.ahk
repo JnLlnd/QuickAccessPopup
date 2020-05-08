@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.4.2 (2020-05-08)
+- support relative path for Total Commander wincmd.ini configuration file (path relative to QAP folder)
+- fix bug making Explorer window un-maximized when using "Add Active Folder or Web page Express" command
+- fix bug making the Alternative menu commands not being executed in some situations
+- fix bug causing a loop when opening a special folder in Total Commander using the "Open in new window" Alternative menu command
+- fix bug with the "Edit a favorite" Alternative menu command opening the wrong favorite in some situations
+ 
 Version: 10.4.1.1 (2020-05-01)
 - fix bug introduced in v10.4.1
 
@@ -3929,7 +3936,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.4.1.1
+;@Ahk2Exe-SetVersion 10.4.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4043,7 +4050,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.4.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.4.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -7810,7 +7817,7 @@ Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidd
 ; QAPconnectFileManager
 Gui, 2:Add, DropDownList, xp yp w300 vf_drpQAPconnectFileManager hidden Sort gGuiOptionsGroupChanged
 if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
-	GuiControl, ChooseString, f_drpQAPconnectFileManager, % g_aaFileManagerQAPconnect.strQAPconnectFileManager
+	GuiControl, ChooseString, f_drpQAPconnectFileManager gGuiOptionsGroupChanged, % g_aaFileManagerQAPconnect.strQAPconnectFileManager
 Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath hidden, % o_L["DialogBrowseButton"]
 
 ; DirectoryOpusUseTabs
@@ -7825,7 +7832,7 @@ Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedIni
 
 ; TotalCommanderWinCmd
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
-Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd hidden ; gGuiOptionsGroupChanged
+Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd gGuiOptionsGroupChanged hidden ; gGuiOptionsGroupChanged
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
@@ -16700,7 +16707,7 @@ if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and (g_strAlternativeMenu
 ; preparation for Alternative menu features before setting the full location
 if (g_blnAlternativeMenu) and (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
 	; g_strTargetWinId := "" ; never use target window when launched from alternative menu with new window
-	; (was a bug until v10.4.1.1, value (any value) needed when opening in a new TC tab in OpenFolder())
+	; (was a bug before v10.4.2, value (any value) needed when opening in a new TC tab in OpenFolder())
 	g_strHotkeyTypeDetected := "Launch"
 
 if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected)) ; if menu open from gui, open in new window
