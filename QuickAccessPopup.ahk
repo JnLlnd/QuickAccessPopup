@@ -5930,6 +5930,8 @@ if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 }
 Menu, menuSortSearchResult, Add ; separator
 Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
+Menu, menuSortSearchResult, Add
+Menu, menuSortSearchResult, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 ; build automatic sort container menu
 ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
@@ -10794,18 +10796,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 {
 	if (strGuiFavoriteLabel = "GuiEditMenuFromGui")
 	{
-		loop ; search position of edited item in parent container
-		{
-			; ###_V(A_ThisLabel, o_MenuInGui.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteName
-				; . (o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
-				; , o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteName, o_MenuInGui.AA.strMenuPath)
-			if (o_MenuInGui.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteName
-				. (o_MenuInGui.AA.oParentMenu.SA[A_Index].AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "") = o_MenuInGui.AA.strMenuPath)
-			{
-				g_intOriginalMenuPosition := A_Index
-				break
-			}
-		}
+		g_intOriginalMenuPosition := o_MenuInGui.GetPositionOfContainerFavoriteInParentContainer()
 		o_MenuInGui := o_MenuInGui.AA.oParentMenu ; switch o_MenuInGui with parent container (switched back after item is saved)
 	}
 	else
@@ -14575,9 +14566,19 @@ return
 GuiSortFavoritesMenu:
 ;------------------------------------------------------------
 
-Menu, % "menuSort" . (o_MenuInGui.AA.intMenuAutoSort ? "Automatic" : (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"] ? "MainMenu" : "Manual"))
-	, Show ; menuSortAutomatic or menuSortManual
-	
+if (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"])
+	strSortMenu := "menuSortMainMenu"
+else if SearchIsVisible()
+	strSortMenu := "menuSortSearchResult"
+else if !(o_MenuInGui.AA.intMenuAutoSort)
+	strSortMenu := "menuSortManual"
+else ; o_MenuInGui.AA.intMenuAutoSort <> 0
+	strSortMenu := "menuSortAutomatic"
+
+Menu, %strSortMenu%, Show
+
+strSortMenu := ""
+
 return
 ;------------------------------------------------------------
 
@@ -14591,19 +14592,22 @@ GuiSortContainer5:
 GuiSortContainerEditMenu:
 ;------------------------------------------------------------
 
-; g_intSortContainerCriteria: ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
-intPreviousSortContainerCriteria := g_intSortContainerCriteria
-g_intSortContainerCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
+varSortContainerCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
 
-if (g_intSortContainerCriteria = "EditMenu")
+if (varSortContainerCriteria = "EditMenu")
 {
 	gosub, GuiEditMenuFromGui
 	return
 }
+; else continue
+
+intPreviousSortContainerCriteria := g_intSortContainerCriteria
+g_intSortContainerCriteria := varSortContainerCriteria
 
 if (g_intSortContainerCriteria = Abs(intPreviousSortContainerCriteria))
 	g_intSortContainerCriteria := -intPreviousSortContainerCriteria 
 
+; g_intSortContainerCriteria: ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
 if (intPreviousSortContainerCriteria)
 	Menu, %A_ThisMenu%, Icon, % Abs(intPreviousSortContainerCriteria) + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 Menu, %A_ThisMenu%, Icon, % Abs(g_intSortContainerCriteria) + 1 . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
@@ -14623,12 +14627,14 @@ if (A_ThisMenu = "menuSortManual")
 else
 {
 	o_MenuInGui.AA.intMenuAutoSort := g_intSortContainerCriteria
+	o_MenuInGui.AA.oParentMenu.SA[o_MenuInGui.GetPositionOfContainerFavoriteInParentContainer()].AA.strFavoriteGroupSettings := g_intSortContainerCriteria
 	Gosub, EnableSaveAndCancel ; enable save button
 	Gosub, LoadFavoritesInGui
 }
 
 objExternalMenu := ""
 intPreviousSortContainerCriteria := ""
+varSortContainerCriteria := ""
 
 return
 ;------------------------------------------------------------
@@ -14679,16 +14685,6 @@ intFirstSelectedRow := ""
 strSelectedRows := ""
 strSortedRows := ""
 blnManyItemsSelected := ""
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiSortSearchResultMenu:
-;------------------------------------------------------------
-
-Menu, menuSortSearchResult, Show
 
 return
 ;------------------------------------------------------------
@@ -27082,6 +27078,18 @@ class Container
 		if (this.AA.intMenuAutoSort)
 			Oops(1, o_L["OopsMenuSorted"])
 		return (this.AA.intMenuAutoSort)
+	}
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	GetPositionOfContainerFavoriteInParentContainer()
+	; returns position of favorite for this container in parent container
+	;------------------------------------------------------------
+	{
+		loop
+			if (this.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . this.AA.oParentMenu.SA[A_Index].AA.strFavoriteName
+				. (this.AA.oParentMenu.SA[A_Index].AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "") = this.AA.strMenuPath)
+				return A_Index
 	}
 	;------------------------------------------------------------
 
