@@ -16699,10 +16699,9 @@ if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and (g_strAlternativeMenu
 
 ; preparation for Alternative menu features before setting the full location
 if (g_blnAlternativeMenu) and (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
-{
-	g_strTargetWinId := "" ; never use target window when launched from alternative menu with new window
+	; g_strTargetWinId := "" ; never use target window when launched from alternative menu with new window
+	; (was a bug until v10.4.1.1, value (any value) needed when opening in a new TC tab in OpenFolder())
 	g_strHotkeyTypeDetected := "Launch"
-}
 
 if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected)) ; if menu open from gui, open in new window
 	g_strHotkeyTypeDetected := "Launch"
