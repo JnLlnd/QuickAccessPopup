@@ -13518,10 +13518,10 @@ if InStr(strThisLabel, "OneFavorite")
 	g_intNewItemPos++ ; increment position in destination menu
 else ; update listview
 {
-	if (strThisLabel <> "GuiAddExternalSave")
-		Gosub, 2GuiClose
-	else ; GuiAddExternalSave
+	if (strThisLabel = "GuiAddExternalSave")
 		g_blnExternalMenusAdded := true
+	else if (strThisLabel<> "GuiAddFavoriteSaveXpress")
+		Gosub, 2GuiClose
 
 	if SearchIsVisible()
 	{
