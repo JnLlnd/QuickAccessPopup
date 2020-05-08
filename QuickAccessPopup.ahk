@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: v10.4.1.9.1 (2020-05-??)
+Version BETA: v10.4.2.9.1 (2020-05-??)
 - for folders favorite in "Edit Favorite" dialog box, "Advanced Settings" tab, a new option to open automatically the most recently or most anciently created, modified or accessed subfolder of the favorite's location
 - in "Edit Favorite" dialog box for menus (regular or shared menus), a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (ascending or descending)
 - in "Customize" dialog box, new "Sort" button opening a popup menu allowing to sort favorites in the currently displayed menu by name, created, modified or last used date or by usage level; this does a manual sorting in regular submenus or change the sort criteria in menu with automatic sorting
@@ -39,6 +39,13 @@ Version BETA: v10.4.1.9.1 (2020-05-??)
 - new JLicon.DLL icon file v1.6 with icons to display the current sort criteria in sort popup menu
 - removed feature: starting number in shared menu files is not supported starting with v10.4.1 (this option was deprecated since v8.1.9.1)
 
+Version: 10.4.2 (2020-05-08)
+- support relative path for Total Commander wincmd.ini configuration file (path relative to QAP folder)
+- fix bug making Explorer window un-maximized when using "Add Active Folder or Web page Express" command
+- fix bug making the Alternative menu commands not being executed in some situations
+- fix bug causing a loop when opening a special folder in Total Commander using the "Open in new window" Alternative menu command
+- fix bug with the "Edit a favorite" Alternative menu command opening the wrong favorite in some situations
+ 
 Version: 10.4.1.1 (2020-05-01)
 - fix bug introduced in v10.4.1
 
@@ -3937,7 +3944,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.4.1.9.1
+;@Ahk2Exe-SetVersion 10.4.2.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4051,7 +4058,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.4.1.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.4.2.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -4141,6 +4148,7 @@ global g_strTargetClass
 global g_strHotkeyTypeDetected
 global g_strNewWindowId
 global g_intOriginalMenuPosition
+global g_blnOriginalMenuPositionKeep
 global o_EditedFavorite ; was g_objEditedFavorite
 global o_MenuInGui ; replace g_objMenuInGui, back item added at top when first loaded in gui
 global o_SearchResultContainerBK ; to swap search result container with menu of an item edited from the search result
@@ -7873,7 +7881,7 @@ Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidd
 ; QAPconnectFileManager
 Gui, 2:Add, DropDownList, xp yp w300 vf_drpQAPconnectFileManager hidden Sort gGuiOptionsGroupChanged
 if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
-	GuiControl, ChooseString, f_drpQAPconnectFileManager, % g_aaFileManagerQAPconnect.strQAPconnectFileManager
+	GuiControl, ChooseString, f_drpQAPconnectFileManager gGuiOptionsGroupChanged, % g_aaFileManagerQAPconnect.strQAPconnectFileManager
 Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath hidden, % o_L["DialogBrowseButton"]
 
 ; DirectoryOpusUseTabs
@@ -7888,7 +7896,7 @@ Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedIni
 
 ; TotalCommanderWinCmd
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
-Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd hidden ; gGuiOptionsGroupChanged
+Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd gGuiOptionsGroupChanged hidden ; gGuiOptionsGroupChanged
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
@@ -10800,7 +10808,11 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		o_MenuInGui := o_MenuInGui.AA.oParentMenu ; switch o_MenuInGui with parent container (switched back after item is saved)
 	}
 	else
-		g_intOriginalMenuPosition := LV_GetNext()
+		if !(g_blnOriginalMenuPositionKeep)
+		{
+			g_intOriginalMenuPosition := LV_GetNext()
+			g_blnOriginalMenuPositionKeep := false
+		}
 
 	if !(g_intOriginalMenuPosition)
 	{
@@ -13736,10 +13748,10 @@ else if (strGuiFavoriteLabel = "GuiEditMenuFromGui") ; switch back o_MenuInGui
 }
 else ; update listview
 {
-	if (strThisLabel <> "GuiAddExternalSave")
-		Gosub, 2GuiClose
-	else ; GuiAddExternalSave
+	if (strThisLabel = "GuiAddExternalSave")
 		g_blnExternalMenusAdded := true
+	else if (strThisLabel<> "GuiAddFavoriteSaveXpress")
+		Gosub, 2GuiClose
 
 	if (SearchIsVisible() or o_EditedFavorite.AA.oParentMenu.AA.intMenuAutoSort)
 	{
@@ -16716,7 +16728,7 @@ if (o_Settings.Menu.blnDisplayNumericShortcuts.IniValue)
 
 if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) ; Alternative menu items don't have hostrings
 	if (o_Settings.Menu.blnHotkeyRemindersRightAlignShortcuts.IniValue) and InStr(g_strAlternativeMenu, "`t")
-		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, "`t")) ; remove shortcut reminder from tab
+		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, "`t") - 1) ; remove shortcut reminder from tab
 	else if InStr(g_strAlternativeMenu, " (")
 		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, " (") - 1) ; or remove shortcut reminder from " ("
 
@@ -16952,10 +16964,9 @@ if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and (g_strAlternativeMenu
 
 ; preparation for Alternative menu features before setting the full location
 if (g_blnAlternativeMenu) and (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
-{
-	g_strTargetWinId := "" ; never use target window when launched from alternative menu with new window
+	; g_strTargetWinId := "" ; never use target window when launched from alternative menu with new window
+	; (was a bug before v10.4.2, value (any value) needed when opening in a new TC tab in OpenFolder())
 	g_strHotkeyTypeDetected := "Launch"
-}
 
 if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected)) ; if menu open from gui, open in new window
 	g_strHotkeyTypeDetected := "Launch"
@@ -23720,7 +23731,7 @@ TODO
 				If !StrLen(strIniFile)
 					RegRead, strIniFile, HKEY_LOCAL_MACHINE, Software\Ghisler\Total Commander\, IniFileName
 				this.AA.strTCIniFile := strIniFile
-				this.AA.strTCIniFileExpanded := EnvVars(this.AA.strTCIniFile)
+				this.AA.strTCIniFileExpanded := PathCombine(A_WorkingDir, EnvVars(this.AA.strTCIniFile))
 				this.AA.blnFileManagerValid := StrLen(this.AA.strTCIniFileExpanded) and FileExist(this.AA.strTCIniFileExpanded) ; TotalCommander settings file exists
 				
 				this.AA.blnFileManagerUseTabs := o_Settings.ReadIniOption("FileManagers", "blnTotalCommanderUseTabs", "TotalCommanderUseTabs", 1, "FileManagers", "")
@@ -27470,9 +27481,9 @@ class Container
 			}
 		}
 		;---------------------------------------------------------
-
+		
 		;---------------------------------------------------------
-		AlternativeOpenContainer(strOpenFavoriteLabel, strTargetWinId)
+		AlternativeOpenContainer()
 		;---------------------------------------------------------
 		{
 			SplitPath, % this.aaTemp.strLocationWithPlaceholders, , strContainingFolder
@@ -27499,7 +27510,7 @@ class Container
 				strHotkeyTypeDetected := "Launch"
 			}
 			
-			oContainingFolderItem.OpenFavorite(strMenuTriggerLabel, strOpenFavoriteLabel, strTargetWinId, strHotkeyTypeDetected)
+			oContainingFolderItem.OpenFavorite(strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel, this.aaTemp.strTargetWinId, strHotkeyTypeDetected)
 		}
 		;---------------------------------------------------------
 		
@@ -27520,6 +27531,7 @@ class Container
 			else
 			{
 				g_intOriginalMenuPosition := A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
+				g_blnOriginalMenuPositionKeep := true ; avoid overwriting the position in GuiEditFavorite / GuiFavoriteInit
 				o_MenuInGui := this.AA.oParentMenu
 				; no need to set o_EditedFavorite here, it will be set in GuiEditFavorite / GuiFavoriteInit
 			}
