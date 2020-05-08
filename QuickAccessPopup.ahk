@@ -4131,6 +4131,7 @@ global g_strTargetClass
 global g_strHotkeyTypeDetected
 global g_strNewWindowId
 global g_intOriginalMenuPosition
+global g_blnOriginalMenuPositionKeep
 global o_EditedFavorite ; was g_objEditedFavorite
 global o_MenuInGui ; replace g_objMenuInGui, back item added at top when first loaded in gui
 global o_SearchResultContainerBK ; to swap search result container with menu of an item edited from the search result
@@ -10695,7 +10696,11 @@ g_strNewFavoriteIconResource := ""
 
 if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel)
 {
-	g_intOriginalMenuPosition := LV_GetNext()
+	if !(g_blnOriginalMenuPositionKeep)
+	{
+		g_intOriginalMenuPosition := LV_GetNext()
+		g_blnOriginalMenuPositionKeep := false
+	}
 
 	if !(g_intOriginalMenuPosition)
 	{
@@ -16458,7 +16463,7 @@ if (o_Settings.Menu.blnDisplayNumericShortcuts.IniValue)
 
 if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) ; Alternative menu items don't have hostrings
 	if (o_Settings.Menu.blnHotkeyRemindersRightAlignShortcuts.IniValue) and InStr(g_strAlternativeMenu, "`t")
-		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, "`t")) ; remove shortcut reminder from tab
+		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, "`t") - 1) ; remove shortcut reminder from tab
 	else if InStr(g_strAlternativeMenu, " (")
 		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, " (") - 1) ; or remove shortcut reminder from " ("
 
@@ -27101,9 +27106,9 @@ class Container
 			}
 		}
 		;---------------------------------------------------------
-
+		
 		;---------------------------------------------------------
-		AlternativeOpenContainer(strOpenFavoriteLabel, strTargetWinId)
+		AlternativeOpenContainer()
 		;---------------------------------------------------------
 		{
 			SplitPath, % this.aaTemp.strLocationWithPlaceholders, , strContainingFolder
@@ -27130,7 +27135,7 @@ class Container
 				strHotkeyTypeDetected := "Launch"
 			}
 			
-			oContainingFolderItem.OpenFavorite(strMenuTriggerLabel, strOpenFavoriteLabel, strTargetWinId, strHotkeyTypeDetected)
+			oContainingFolderItem.OpenFavorite(strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel, this.aaTemp.strTargetWinId, strHotkeyTypeDetected)
 		}
 		;---------------------------------------------------------
 		
@@ -27151,6 +27156,7 @@ class Container
 			else
 			{
 				g_intOriginalMenuPosition := A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
+				g_blnOriginalMenuPositionKeep := true ; avoid overwriting the position in GuiEditFavorite / GuiFavoriteInit
 				o_MenuInGui := this.AA.oParentMenu
 				; no need to set o_EditedFavorite here, it will be set in GuiEditFavorite / GuiFavoriteInit
 			}
