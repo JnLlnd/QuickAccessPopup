@@ -5925,7 +5925,8 @@ BuildSortMenus:
 ;------------------------------------------------------------
 
 ; build menu for Sort search result button
-; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
+; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
+Menu, menuSortSearchResult, Add, % "-- " . o_L["DialogMenuSortHeaderSearch"] . " --", DoNothing
 Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
 	Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
@@ -5942,16 +5943,21 @@ Menu, menuSortSearchResult, Add
 Menu, menuSortSearchResult, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 ; build automatic sort container menu
-; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
+; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 Menu, menuSortAutomatic, Add, % "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --", DoNothing
 Menu, menuSortAutomatic, Disable, % "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --"
-Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortFavoriteName"], GuiSortContainer1
+
+loop, Parse, % o_L["GuiLvFavoritesHeader"], |
+	Menu, menuSortAutomatic, Add, %A_LoopField%, % "GuiSortContainer" . A_Index ; 1-4
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 {
-	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
-	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
-	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
-	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer5
+	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer6
+	if (g_blnUsageDbEnabled)
+	{
+		Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer7
+		Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer8
+	}
 }
 Menu, menuSortAutomatic, Add
 Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
@@ -5959,16 +5965,20 @@ Menu, menuSortAutomatic, Add
 Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 ; build manual sort container menu
-; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
+; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 Menu, menuSortManual, Add, % "-- " . o_L["DialogMenuSortHeaderManual"] . " --", DoNothing
 Menu, menuSortManual, Disable, % "-- " . o_L["DialogMenuSortHeaderManual"] . " --"
-Menu, menuSortManual, Add, % o_L["DialogMenuSortFavoriteName"], GuiSortContainer1
+loop, Parse, % o_L["GuiLvFavoritesHeader"], |
+	Menu, menuSortManual, Add, %A_LoopField%, % "GuiSortContainer" . A_Index ; 1-4
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 {
-	Menu, menuSortManual, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
-	Menu, menuSortManual, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
-	Menu, menuSortManual, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
-	Menu, menuSortManual, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+	Menu, menuSortManual, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer5
+	Menu, menuSortManual, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer6
+	if (g_blnUsageDbEnabled)
+	{
+		Menu, menuSortManual, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer7
+		Menu, menuSortManual, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer8
+	}
 }
 Menu, menuSortManual, Add
 Menu, menuSortManual, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
@@ -5979,13 +5989,14 @@ Menu, menuSortManual, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGro
 ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
 Menu, menuSortMainMenu, Add, % "-- " . o_L["DialogMenuSortHeaderMainMenu"] . " --", DoNothing
 Menu, menuSortMainMenu, Disable, % "-- " . o_L["DialogMenuSortHeaderMainMenu"] . " --"
-Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortFavoriteName"], GuiSortContainer1
+loop, Parse, % o_L["GuiLvFavoritesHeader"], |
+	Menu, menuSortMainMenu, Add, %A_LoopField%, % "GuiSortContainer" . A_Index ; 1-4
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
 {
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer2
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer3
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer4
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer5
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer5
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer6
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer7
+	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer8
 }
 Menu, menuSortMainMenu, Add
 Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
@@ -14601,8 +14612,12 @@ GuiSortContainer2:
 GuiSortContainer3:
 GuiSortContainer4:
 GuiSortContainer5:
+GuiSortContainer6:
+GuiSortContainer7:
+GuiSortContainer8:
 GuiSortContainerEditMenu:
 ;------------------------------------------------------------
+; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 
 varSortContainerCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
 
@@ -14619,12 +14634,11 @@ g_intSortContainerCriteria := varSortContainerCriteria
 if (g_intSortContainerCriteria = Abs(intPreviousSortContainerCriteria))
 	g_intSortContainerCriteria := -intPreviousSortContainerCriteria 
 
-; g_intSortContainerCriteria: ; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
 if (intPreviousSortContainerCriteria)
 	Menu, %A_ThisMenu%, Icon, % Abs(intPreviousSortContainerCriteria) + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 Menu, %A_ThisMenu%, Icon, % Abs(g_intSortContainerCriteria) + 1 . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
-	+ (g_intSortContainerCriteria = -1 or g_intSortContainerCriteria >= 2 ? 1 : 0) ; reverse sort (63 or 65)
-	+ (Abs(g_intSortContainerCriteria) > 1 ? 2 : 0) ; if date or number, sort numeric
+	+ (g_intSortContainerCriteria = -1 or g_intSortContainerCriteria >= 5 ? 1 : 0) ; reverse sort (63 or 65)
+	+ (Abs(g_intSortContainerCriteria) >= 5 ? 2 : 0) ; if date or number, sort numeric
 
 gosub, CheckShowSettings
 
@@ -14634,15 +14648,15 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 	return
 }
 
-if (A_ThisMenu = "menuSortManual")
-	Gosub, GuiSortContainerManual
-else
+if (A_ThisMenu = "menuSortAutomatic")
 {
 	o_MenuInGui.AA.intMenuAutoSort := g_intSortContainerCriteria
 	o_MenuInGui.AA.oParentMenu.SA[o_MenuInGui.GetPositionOfContainerFavoriteInParentContainer()].AA.strFavoriteGroupSettings := g_intSortContainerCriteria
 	Gosub, EnableSaveAndCancel ; enable save button
 	Gosub, LoadFavoritesInGui
 }
+else ; menuSortManual and menuSortMainMenu
+	Gosub, GuiSortContainerManual
 
 objExternalMenu := ""
 intPreviousSortContainerCriteria := ""
@@ -14716,18 +14730,12 @@ GuiSortSearchResult9:
 GuiSortSearchResult10:
 GuiSortRemoveIndicator:
 ;------------------------------------------------------------
-; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
+; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
 
-if !(o_MenuInGui.AA.intCurrentSortColumn)
+if (o_MenuInGui.AA.intCurrentSortColumn)
+	Menu, menuSortSearchResult, Icon, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 12 : Abs(o_MenuInGui.AA.intCurrentSortColumn)) . "&" ; & identify position
+else
 	o_MenuInGui.AA.intCurrentSortColumn := 1 ; original order in first invisible column
-
-; remove sort indicator on existing sort column header
-if (Abs(o_MenuInGui.AA.intCurrentSortColumn) > 1) ; if not invisible
-{
-	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
-	strHeader := Trim(RegExReplace(strHeader, "[v^]$", ""))
-	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), , strHeader)
-}
 
 if (A_ThisLabel = "GuiSortRemoveIndicator")
 	return
@@ -14735,20 +14743,18 @@ if (A_ThisLabel = "GuiSortRemoveIndicator")
 intCol := StrReplace(A_ThisLabel, "GuiSortSearchResult")
 if (intCol)
 {
-	if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and InStr("7;8;9", intCol))
+	if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and IsBetween(intCol, 7, 10))
 		intCol := -intCol ; initialy sort these columns descending
 	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -intCol : intCol) ; reverse order
 	o_MenuInGui.AA.intCurrentSortColumn := (o_MenuInGui.AA.intCurrentSortColumn = -1 ? 1 : o_MenuInGui.AA.intCurrentSortColumn) ; if original order, do not reverse
+	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 12 : Abs(o_MenuInGui.AA.intCurrentSortColumn))
+	intMenuPosition := (o_MenuInGui.AA.intCurrentSortColumn < 0 ? -intMenuPosition : intMenuPosition)
+	
+	Menu, menuSortSearchResult, Icon, % Abs(intMenuPosition) . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
+		+ (o_MenuInGui.AA.intCurrentSortColumn < 0 ? 1 : 0) ; reverse sort (63 or 65)
+		+ (IsBetween(Abs(o_MenuInGui.AA.intCurrentSortColumn), 7, 10) ? 2 : 0) ; if date or number, sort numeric
 }
 ; else keep existing sort column
-
-if (Abs(o_MenuInGui.AA.intCurrentSortColumn) > 1) ; if not invisible
-{
-	; add sort indicator to column header
-	LV_GetText(strHeader, 0, Abs(o_MenuInGui.AA.intCurrentSortColumn))
-	strHeader .= (o_MenuInGui.AA.intCurrentSortColumn ? " " : "") . (o_MenuInGui.AA.intCurrentSortColumn > 0 ? "^" : "") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? "v" : "")
-	LV_ModifyCol(Abs(o_MenuInGui.AA.intCurrentSortColumn), "", strHeader)
-}
 
 ; get values and sort
 strValues := ""
@@ -14761,10 +14767,8 @@ Loop, % o_MenuInGui.SA.MaxIndex()
 	strValues .= "`n"
 }
 
-Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ; this is the original order hidden column
-	or (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and Abs(o_MenuInGui.AA.intCurrentSortColumn) = 10) ; this is the usage column
-	; R for reverse order, CL for Case insensitive sort based on the current user's locale
-	? "N" : "CL") . (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "")
+Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 10 ? "N" : "CL") ; 10 is the usage numeric column (N), else sort with locale (CL)
+	. (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "")
 
 saTemp := Object() ; repository for sorted item objects
 Loop, Parse, % SubStr(strValues, 1, -1), `n
@@ -14782,7 +14786,7 @@ o_MenuInGui.SA := saTemp ; replace items with sorted list
 gosub, ReorderFavoritesInGui ; reload gui with sorted list
 
 intCol := ""
-strHeader := ""
+intMenuPosition := ""
 saTemp := ""
 saItem := ""
 
@@ -22533,6 +22537,16 @@ AddUniqueSuffix(strName)
 ;---------------------------------------------------------
 
 
+;---------------------------------------------------------
+IsBetween(intIs, intLow, intHigh)
+;---------------------------------------------------------
+{
+	bool := (intIs >= intLow and intIs <= intHigh)
+	return (intIs >= intLow and intIs <= intHigh)
+}
+;---------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -27032,9 +27046,9 @@ class Container
 		if (intItemsToSort > 1) ; sort only if required
 		{
 			strSortedItems := SubStr(strSortedItems, 1, -1) ; trim last char
-			strReverse := (intCriteria = -1 or intCriteria >= 2 ? "R" : "")
+			strReverse := (IsBetween(intCriteria, -4, -1) or intCriteria >= 5 ? "R" : "")
 			; sort name|position on names using locale
-			Sort, strToSort, % "CL" . strReverse
+			Sort, strToSort, % "CL" . strReverse ; no need for N (numeric) sort for usage because criteria is left padded
 			
 			; get copies of items to move
 			aaItemsToSortCopies := Object()
@@ -27053,25 +27067,33 @@ class Container
 	
 	;------------------------------------------------------------
 	GetCriteriaSortContainer(intAbsSortCriteria)
+	; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 	;------------------------------------------------------------
 	{
 		strFavoriteName := StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "")
 		; sort criteria 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, reverse order if negative
+		; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 		
 		if (intAbsSortCriteria = "1")
 			strCriteria := strFavoriteName
 		else if (intAbsSortCriteria = "2")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateCreated
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteType
 		else if (intAbsSortCriteria = "3")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateModified
+			strCriteria := this.SA[A_LoopField].GetHotkeyColumnContent()
 		else if (intAbsSortCriteria = "4")
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteLocation
+		else if (intAbsSortCriteria = "5")
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateModified
+		else if (intAbsSortCriteria = "6")
+			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateCreated
+		else if (intAbsSortCriteria = "7")
 			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateLastUsed
-		else ; intAbsSortCriteria = 5
+		else ; intAbsSortCriteria = 8
 			strCriteria := this.SA[A_LoopField].AA.intFavoriteUsageDb
 		
-		if (intAbsSortCriteria = 4) ; date format YYYY-MM-DD hh:mm:ss
+		if (intAbsSortCriteria = 7) ; date format YYYY-MM-DD hh:mm:ss
 			strCriteria := (StrLen(this.SA[A_LoopField].AA.strFavoriteDateLastUsed) ? this.SA[A_LoopField].AA.strFavoriteDateLastUsed : "0000-00-00 00:00:00") . " " . strFavoriteName
-		else if (intAbsSortCriteria >  1) ; for AHK formatted dates or numeric citeria, pad left to 14 chars (prevent empty dates and make sort numerical for usage)
+		else if (intAbsSortCriteria >  5) ; for AHK formatted dates or numeric citeria, pad left to 14 chars (prevent empty dates and make sort numerical for usage)
 		{
 			while StrLen(strCriteria) < 14
 				strCriteria := "0" . strCriteria
@@ -28816,9 +28838,7 @@ class Container
 				saValues[1] := this.AA.strFavoriteName . (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and this.AA.intFavoriteUsageDb
 							? " [" . this.AA.intFavoriteUsageDb . "]" : "")
 				saValues[2] := this.GetItemTypeLabelForList()
-				saValues[3] := new Triggers.HotkeyParts(this.AA.strFavoriteShortcut).Hotkey2Text(true)
-				if StrLen(this.AA.strFavoriteHotstring)
-					saValues[3] .= " " . BetweenParenthesis(GetHotstringTrigger(this.AA.strFavoriteHotstring))
+				saValues[3] := this.GetHotkeyColumnContent()
 			}
 			
 			if (this.AA.strFavoriteType = "Menu")
@@ -28875,6 +28895,15 @@ class Container
 				intRow := LV_Add(strOptions)
 			for intKey, strValue in saValues
 				LV_Modify(intRow, "Col" . intKey, strValue)
+		}
+		;------------------------------------------------------------
+		
+		;------------------------------------------------------------
+		GetHotkeyColumnContent()
+		;------------------------------------------------------------
+		{
+			return new Triggers.HotkeyParts(this.AA.strFavoriteShortcut).Hotkey2Text(true)
+				. (StrLen(this.AA.strFavoriteHotstring) ? " " . BetweenParenthesis(GetHotstringTrigger(this.AA.strFavoriteHotstring)) : "")
 		}
 		;------------------------------------------------------------
 		
