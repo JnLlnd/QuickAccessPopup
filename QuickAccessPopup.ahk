@@ -31,12 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: v10.4.2.9.1 (2020-05-??)
-- for folders favorite in "Edit Favorite" dialog box, "Advanced Settings" tab, a new option to open automatically the most recently or most anciently created, modified or accessed subfolder of the favorite's location
-- in "Edit Favorite" dialog box for menus (regular or shared menus), a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (ascending or descending)
-- in "Customize" dialog box, new "Sort" button opening a popup menu allowing to sort favorites in the currently displayed menu by name, created, modified or last used date or by usage level; this does a manual sorting in regular submenus or change the sort criteria in menu with automatic sorting
-- in "Customize" dialog box, when in a submenu (not in the Main menu), add an entry to the "Sort" button menu to edit the currently displayed menu
+Version BETA: v10.4.9.1 (2020-05-10)
+- a new option to open automatically the most recently or most anciently created, modified or accessed subfolder of the favorite folder's location (in "Edit Favorite" dialog box, "Advanced Settings" tab)
+- a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (in "Edit Favorite" dialog box for menus or shared menus)
+- a new option to display additional columns modified date, created date, last used date and by usage level in favorites list (merging this with the similar option that existed for search results)
+- new "Sort" button in "Customize" dialog box opening a popup menu allowing to sort favorites currently displayed by any column; this does a manual sorting in regular submenus or change the sort criteria in automatically sorted menus
+- in the "Sort" menu, an entry allows to edit the currently menu (the same button already existed in search results)
+- in "Sort" menu, an additional entry to access the "Customize Window" options
 - new JLicon.DLL icon file v1.6 with icons to display the current sort criteria in sort popup menu
+- in Options, move the "Show QAP menu" option from "Customize Window" to "Menu Advanced Options" section
 - removed feature: starting number in shared menu files is not supported starting with v10.4.1 (this option was deprecated since v8.1.9.1)
 
 Version: 10.4.2 (2020-05-08)
@@ -3944,7 +3947,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.4.2.9.1
+;@Ahk2Exe-SetVersion 10.4.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4058,7 +4061,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.4.2.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.4.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
