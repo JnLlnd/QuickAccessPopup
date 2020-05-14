@@ -5928,10 +5928,10 @@ BuildSortMenus:
 ;------------------------------------------------------------
 
 saSortMenusNames := Object()
-saSortMenusNames := StrSplit("menuSortSearchResult|menuSortAutomatic|menuSortManual|menuSortMainMenu", "|")
+saSortMenusNames := StrSplit("menuSortAutomatic|menuSortManual|menuSortMainMenu", "|")
 
 saSortMenusHeaders := Object()
-saSortMenusHeaders := StrSplit("DialogMenuSortHeaderSearch|DialogMenuSortHeaderAutomatic|DialogMenuSortHeaderAutomatic|DialogMenuSortHeaderMainMenu", "|")
+saSortMenusHeaders := StrSplit("DialogMenuSortHeaderAutomatic|DialogMenuSortHeaderManual|DialogMenuSortHeaderMainMenu", "|")
 loop, % saSortMenusHeaders.Length()
 	saSortMenusHeaders[A_Index] :=  "-- " . o_L[saSortMenusHeaders[A_Index]] . " --"
 
@@ -5942,79 +5942,34 @@ saSortMenusItems := StrSplit( o_L["GuiLvFavoritesHeader"] . "|"
 	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" : "")
 	. "|" . o_L["DialogMenuSortSettingsOptions"], "|")
 
-intEditMenuItem := 5 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
+intEditMenu := 5 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
 	+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
 
-strMenuActionRoot := "GuiSortContainer"
 for intKeyMenuName, strMenuName in saSortMenusNames ; 4 sort menus variants
 {
-	if (strMenuName = "menuSortSearchResult")
-		continue
-	
 	for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; 4 sort menus variants
 	{
 		if (intKeyMenuItem = 1) ; menu header
 		{
 			Menu, %strMenuName%, Add, % saSortMenusHeaders[intKeyMenuName], DoNothing
 			Menu, %strMenuName%, Disable, % saSortMenusHeaders[intKeyMenuName]
-			; ###_V(intKeyMenuName . "-" . intKeyMenuItem, strMenuName, strSortMenusItem, , strMenuName, saSortMenusHeaders[intKeyMenuName])
-			str### .= saSortMenusHeaders[intKeyMenuName] . "`n"
 		}
 		
-		if (intKeyMenuItem = intEditMenuItem and InStr("menuSortAutomatic|menuSortManual", strMenuName)) ; insert Edit this menu header menu header
+		if (intKeyMenuItem = intEditMenu) and InStr("menuSortAutomatic|menuSortManual", strMenuName) ; insert Edit this menu header menu header
 		{
 			Menu, %strMenuName%, Add ; separator
-			str### .= strMenuName . " - -" . "`n"
 			Menu, %strMenuName%, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
-			str### .= strMenuName . " - " . o_L["DialogMenuSortEditMenu"] " - GuiSortContainerEditMenu" . "`n"
 		}
 		
-		if (intKeyMenuItem = intEditMenuItem)
+		if (intKeyMenuItem = intEditMenu)
 			strMenuAction := ""
 		else if (intKeyMenuItem = 10)
 			strMenuAction := "GuiOptionsGroupSettingsWindow"
 		else
-			strMenuAction := strMenuActionRoot . intKeyMenuItem
+			strMenuAction := "GuiSortContainer" . intKeyMenuItem
 		Menu, %strMenuName%, Add, %strSortMenusItem%, %strMenuAction%
-		; str### .= saSortMenusItems[intKeyMenuItem] " - " . strMenuAction . "`n"
-		str### .= strMenuName . " - " . strSortMenusItem " - " . strMenuAction . "`n"
-		; Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
 	}
 }
-
-saSortMenusNames := ""
-saSortMenusHeaders := ""
-saSortMenusItems := ""
-intEditMenuItem := ""
-strMenuActionRoot := ""
-intKeyMenuName := ""
-strMenuName := ""
-intKeyMenuItem := ""
-strSortMenusItem := ""
-
-/*
-strHeaderSearchResult := "-- " . o_L["DialogMenuSortHeaderSearch"] . " --" . "|" . o_L["GuiLvFavoritesHeaderFiltered"] . "|" ; --title--|Name|Menu|Type|Hotkey|Location or content|
-strHeaderAutomatic := "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --" . "|" . o_L["GuiLvFavoritesHeader"] . "|" ; --title--|Name|Type|Hotkey|Location or content|
-strHeaderManual := "-- " . o_L["DialogMenuSortHeaderManual"] . " --" "|" . o_L["GuiLvFavoritesHeader"] . "|" ; --title--|Name|Type|Hotkey|Location or content|
-strHeaderMainMenu := "-- " . o_L["DialogMenuSortHeaderMainMenu"] . " --" "|" . o_L["GuiLvFavoritesHeader"] . "|" ; --title--|Name|Type|Hotkey|Location or content|
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-{
-	strHeaderSearchResult .= o_L["GuiLvFavoritesHeaderFilteredDates"] . "|" ; Last Modified|Created
-	strHeaderAutomatic .= o_L["GuiLvFavoritesHeaderFilteredDates"] . "|" ; Last Modified|Created
-	strHeaderManual .= o_L["GuiLvFavoritesHeaderFilteredDates"] . "|" ; Last Modified|Created
-	strHeaderMainMenu .= o_L["GuiLvFavoritesHeaderFilteredDates"] . "|" ; Last Modified|Created
-	if (g_blnUsageDbEnabled)
-	{
-		strHeaderSearchResult .= o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" ; Last Used|Usage
-		strHeaderAutomatic .= o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" ; Last Used|Usage
-		strHeaderManual .= o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" ; Last Used|Usage
-		strHeaderMainMenu .= o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" ; Last Used|Usage
-	}
-}
-strHeaderSearchResult .= "|" . o_L["MenuSearchOrder"] . "||" . o_L["DialogMenuSortSettingsOptions"]
-strHeaderAutomatic .= "|" . o_L["DialogMenuSortEditMenu"] . "||" . o_L["DialogMenuSortSettingsOptions"]
-strHeaderManual .= "|" . o_L["DialogMenuSortEditMenu"] . "||" . o_L["DialogMenuSortSettingsOptions"]
-strHeaderMainMenu .= "|" . o_L["DialogMenuSortSettingsOptions"]
 
 ; build menu for Sort search result button
 ; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
@@ -6034,65 +5989,14 @@ Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 
 Menu, menuSortSearchResult, Add
 Menu, menuSortSearchResult, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
-; build automatic sort container menu
-; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
-Menu, menuSortAutomatic, Add, % "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --", DoNothing
-Menu, menuSortAutomatic, Disable, % "-- " . o_L["DialogMenuSortHeaderAutomatic"] . " --"
-
-loop, Parse, % o_L["GuiLvFavoritesHeader"], |
-	Menu, menuSortAutomatic, Add, %A_LoopField%, % "GuiSortContainer" . A_Index ; 1-4
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-{
-	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer5
-	Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer6
-	if (g_blnUsageDbEnabled)
-	{
-		Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer7
-		Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer8
-	}
-}
-Menu, menuSortAutomatic, Add
-Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
-Menu, menuSortAutomatic, Add
-Menu, menuSortAutomatic, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
-
-; build manual sort container menu
-; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
-Menu, menuSortManual, Add, % "-- " . o_L["DialogMenuSortHeaderManual"] . " --", DoNothing
-Menu, menuSortManual, Disable, % "-- " . o_L["DialogMenuSortHeaderManual"] . " --"
-loop, Parse, % o_L["GuiLvFavoritesHeader"], |
-	Menu, menuSortManual, Add, %A_LoopField%, % "GuiSortContainer" . A_Index ; 1-4
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-{
-	Menu, menuSortManual, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer5
-	Menu, menuSortManual, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer6
-	if (g_blnUsageDbEnabled)
-	{
-		Menu, menuSortManual, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer7
-		Menu, menuSortManual, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer8
-	}
-}
-Menu, menuSortManual, Add
-Menu, menuSortManual, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
-Menu, menuSortManual, Add
-Menu, menuSortManual, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
-
-; build manual sort for Main menu
-; 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, if select same again negative to reverse order
-Menu, menuSortMainMenu, Add, % "-- " . o_L["DialogMenuSortHeaderMainMenu"] . " --", DoNothing
-Menu, menuSortMainMenu, Disable, % "-- " . o_L["DialogMenuSortHeaderMainMenu"] . " --"
-loop, Parse, % o_L["GuiLvFavoritesHeader"], |
-	Menu, menuSortMainMenu, Add, %A_LoopField%, % "GuiSortContainer" . A_Index ; 1-4
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-{
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastModified"], GuiSortContainer5
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortCreated"], GuiSortContainer6
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortLastUsed"], GuiSortContainer7
-	Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortUsage"], GuiSortContainer8
-}
-Menu, menuSortMainMenu, Add
-Menu, menuSortMainMenu, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
-*/
+saSortMenusNames := ""
+saSortMenusHeaders := ""
+saSortMenusItems := ""
+intEditMenu := ""
+intKeyMenuName := ""
+strMenuName := ""
+intKeyMenuItem := ""
+strSortMenusItem := ""
 
 return
 ;------------------------------------------------------------
@@ -14767,7 +14671,6 @@ GuiControl, Focus, f_lvFavoritesList
 Gui, 1:ListView, f_lvFavoritesList
 
 intFirstSelectedRow := LV_GetNext(0)
-
 blnManyItemsSelected := LV_GetCount("Selected") > 1
 if !(blnManyItemsSelected) ; if one or no row is selected, select all and sort until the first separator
 	LV_Modify(0, "Select") ; select all rows
@@ -14825,8 +14728,11 @@ GuiSortRemoveIndicator:
 ;------------------------------------------------------------
 ; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
 
-if (o_MenuInGui.AA.intCurrentSortColumn)
-	Menu, menuSortSearchResult, Icon, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 12 : Abs(o_MenuInGui.AA.intCurrentSortColumn)) . "&" ; & identify position
+if (o_MenuInGui.AA.intCurrentSortColumn) ; remove previous icon
+	Menu, menuSortSearchResult, Icon, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 8
+		+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
+		+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
+		: Abs(o_MenuInGui.AA.intCurrentSortColumn)) . "&" ; & identify position
 else
 	o_MenuInGui.AA.intCurrentSortColumn := 1 ; original order in first invisible column
 
@@ -14840,8 +14746,13 @@ if (intCol)
 		intCol := -intCol ; initialy sort these columns descending
 	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -intCol : intCol) ; reverse order
 	o_MenuInGui.AA.intCurrentSortColumn := (o_MenuInGui.AA.intCurrentSortColumn = -1 ? 1 : o_MenuInGui.AA.intCurrentSortColumn) ; if original order, do not reverse
-	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 12 : Abs(o_MenuInGui.AA.intCurrentSortColumn))
-	intMenuPosition := (o_MenuInGui.AA.intCurrentSortColumn < 0 ? -intMenuPosition : intMenuPosition)
+	
+	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 8 : Abs(o_MenuInGui.AA.intCurrentSortColumn))
+	if (intMenuPosition = 8) ; original order
+		intMenuPosition += (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
+			+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
+	else
+		intMenuPosition := (o_MenuInGui.AA.intCurrentSortColumn < 0 ? -intMenuPosition : intMenuPosition)
 	
 	Menu, menuSortSearchResult, Icon, % Abs(intMenuPosition) . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
 		+ (o_MenuInGui.AA.intCurrentSortColumn < 0 ? 1 : 0) ; reverse sort (63 or 65)
@@ -14860,7 +14771,7 @@ Loop, % o_MenuInGui.SA.MaxIndex()
 	strValues .= "`n"
 }
 
-Sort, strValues, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 10 ? "N" : "CL") ; 10 is the usage numeric column (N), else sort with locale (CL)
+Sort, strValues, % (o_MenuInGui.AA.intCurrentSortColumn = 1 or Abs(o_MenuInGui.AA.intCurrentSortColumn) = 10 ? "N" : "CL") ; 10 is the usage numeric column (N), else sort with locale (CL)
 	. (o_MenuInGui.AA.intCurrentSortColumn < 0 ? " R" : "")
 
 saTemp := Object() ; repository for sorted item objects
