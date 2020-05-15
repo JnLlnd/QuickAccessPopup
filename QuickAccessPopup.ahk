@@ -14212,6 +14212,13 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		g_blnAbortSave := true
 		return
 	}
+	
+	if (f_blnFavoriteFolderLive and f_blnOpenSubFolder)
+	{
+		Oops(2, o_L["OopsFolderLiveAndAutomatic"], o_L["DialogFavoriteFolderLive"], o_L["DialogOpenSubFolderEnable"])
+		g_blnAbortSave := true
+		return
+	}
 }
 
 ; avoid duplicate names when saving, rename if saving express or multiple
