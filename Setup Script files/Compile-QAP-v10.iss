@@ -278,11 +278,22 @@ begin
 end;
 
 function SetupExplorerContextMenus(): Boolean;
+var
+  WorkingFolder: String;
 begin
+  // function RegQueryStringValue(const RootKey: Integer; const SubKeyName, ValueName: String; var ResultStr: String): Boolean;
+  if RegQueryStringValue(HKEY_CURRENT_USER, ExpandConstant('Software\Jean Lalonde\{#MyAppName}'), 'WorkingFolder', WorkingFolder) then
+  begin
   // function GetIniString(const Section, Key, Default, Filename: String): String;
-  // setup Explorer context menus if ExplorerContextMenus is 1 (or is not found) for both userappdata and commonappdata
+  // setup Explorer context menus if ExplorerContextMenus is 1 (or is not found) for both quickaccesspopup.ini file in current Settings Folder and in commonappdata
   // (in other words, do not setup context menus if either of these files include ExplorerContextMenus with value "0")
-  Result := (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant('{userappdata}\{#MyAppName}\{#MyAppNameNoSpace}.ini')) = '1') and (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant('{commonappdata}\{#MyAppName}\{#MyAppNameNoSpace}.ini')) = '1');
+    Result := (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant(WorkingFolder + '\{#MyAppNameNoSpace}.ini')) = '1') and (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant('{commonappdata}\{#MyAppName}\{#MyAppNameNoSpace}.ini')) = '1')
+  end
+  else
+  begin
+    // WorkingFolder not found, this is a first installation, task enabled
+    Result := True;
+  end;
 end;
 
 function ExecuteSponsoringTask(): Boolean;
