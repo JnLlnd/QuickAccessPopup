@@ -16620,7 +16620,7 @@ WindowIsTray(strClass)
 WindowIsConsole(strClass)
 ;------------------------------------------------------------
 {
-	return (strClass = "ConsoleWindowClass")
+	return (strClass = "ConsoleWindowClass" or strClass = "VirtualConsoleClass")
 }
 ;------------------------------------------------------------
 
@@ -27683,11 +27683,11 @@ class Container
 					if (WinExist("A") <> g_strTargetWinId) ; in case that some window just popped out, and initialy active window lost focus
 						WinActivate, ahk_id %g_strTargetWinId% ; we'll activate initialy active window
 					
-					WinGet, strProcessName, ProcessName, ahk_id %g_strTargetWinId%
+					WinGet, strProcessName, ProcessName, ahk_id %g_strTargetWinId% ; cmd.exe, powershell.exe, conemu.exe or conemu64.exe
 					; add /D option only for cmd.exe, not required for powershell.exe
-					strCommand := "CD " . (strProcessName = "powershell.exe" ? "" : "/D ") ; must end with space
+					strCommand := "CD " . (strProcessName = "cmd.exe" ? "/D " : "") ; must end with space
 					
-					if (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue)
+					if (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue) and (strProcessName = "cmd.exe") ; not required for PowerShell or ConEmu
 					; using ALT+0nnn ASCII codes for console with international keyboard input language
 					{
 						strCommand .= """" . this.aaTemp.strFullLocation . """" ; double-quotes required for PowerShell
