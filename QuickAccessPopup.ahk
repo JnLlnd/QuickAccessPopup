@@ -4402,6 +4402,9 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
+; #####
+g_strNewLocation := "C:\"
+gosub, AddThisFolderFromMsgXpress
 return
 
 ;========================================================================================================================
@@ -10618,7 +10621,7 @@ GuiEditMenuFromGui:
 strGuiFavoriteLabel := A_ThisLabel
 g_blnAbortEdit := false
 
-; must be before GuiFavoriteInit and GuiAddFavoriteSaveXpress
+; must be before GuiFavoriteInit and GuiAddFavoriteSaveXpress or GuiAddFavoriteSaveXpressFromMsg
 g_strTypesForTabWindowOptions := "|Folder|Special|FTP" . (o_Settings.Execution.blnTryWindowPosition.IniValue ? "|Document|Application|URL|WindowsApp" : "") ; must start with "|"
 g_strTypesForTabAdvancedOptions := "|Folder|Document|Application|Special|URL|FTP|Snippet|QAP|Group|WindowsApp" ; must start with "|"
 
@@ -10633,7 +10636,10 @@ if (g_blnAbortEdit)
 if InStr(strGuiFavoriteLabel, "Xpress") or (strGuiFavoriteLabel = "GuiAddExternalFromCatalogue") ; when from GuiAddExternalFromCatalogue, item is saved in ButtonAddExternalMenusFromCatalogue
 {
 	if InStr(strGuiFavoriteLabel, "Xpress")
-		gosub, GuiAddFavoriteSaveXpress ; save this new favorite and return
+		if InStr(strGuiFavoriteLabel, "FromMsg")
+			gosub, GuiAddFavoriteSaveXpressFromMsg ; set destination menu to Main, save this new favorite and return
+		else
+			gosub, GuiAddFavoriteSaveXpress ; set destination menu to A_ThisMenu, save this new favorite and return
 	gosub, GuiAddFavoriteCleanup
 	return
 }
@@ -13504,6 +13510,7 @@ return
 ;------------------------------------------------------------
 GuiAddFavoriteSave:
 GuiAddFavoriteSaveXpress:
+GuiAddFavoriteSaveXpressFromMsg:
 GuiEditFavoriteSave:
 GuiCopyOneFavoriteSave:
 GuiMoveOneFavoriteSave:
@@ -13758,7 +13765,7 @@ else ; update listview
 {
 	if (strThisLabel = "GuiAddExternalSave")
 		g_blnExternalMenusAdded := true
-	else if (strThisLabel<> "GuiAddFavoriteSaveXpress")
+	else if !InStr(strThisLabel, "GuiAddFavoriteSaveXpress") ; also exclude GuiAddFavoriteSaveXpressFromMsg
 		Gosub, 2GuiClose
 
 	if (SearchIsVisible() or o_EditedFavorite.AA.oParentMenu.AA.intMenuAutoSort)
@@ -13943,7 +13950,7 @@ if (strThisLabel = "GuiQuickAddSnippetSave")
 
 if InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|GuiEditMenuFromGui", "|" . strThisLabel)
 	strOriginalMenu := o_MenuInGui.AA.strMenuPath
-else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|GuiQuickAddSnippetSave
+else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|GuiQuickAddSnippetSave
 {
 	strOriginalMenu := "" ; no change required in original menu
 	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; but keep original menu position for multiple copy
@@ -13953,19 +13960,21 @@ else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiCopyFavoriteSave|GuiCopyOn
 if (strThisLabel = "GuiAddExternalSave")
 	strExternalMenuName := o_Settings.ReadIniValue("MenuName", " ", "Global", o_EditedFavorite.AA.strFavoriteAppWorkingDir) ; empty if not found
 
-if InStr("GuiAddFavoriteSaveXpress|GuiAddExternalSave|", strThisLabel . "|")
+if InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|", strThisLabel . "|")
 {
 	strNewFavoriteShortName := (StrLen(o_EditedFavorite.AA.strFavoriteName) ? o_EditedFavorite.AA.strFavoriteName : strExternalMenuName)
 	strNewFavoriteLocation := o_EditedFavorite.AA.strFavoriteLocation
 	strFavoriteAppWorkingDir := o_EditedFavorite.AA.strFavoriteAppWorkingDir ; for external menu from catalogue
 	strNewFavoriteWindowPosition := g_strNewFavoriteWindowPosition
 	
-	if (strThisLabel = "GuiAddFavoriteSaveXpress")
+	if InStr(strThisLabel, "GuiAddFavoriteSaveXpress") ; include GuiAddFavoriteSaveXpressFromMsg
 	{
+		strNewFavoriteShortName := StrReplace(strNewFavoriteShortName, "&", "&&") ; double ampersand automatically to make it visible
 		; add new favorite in first or last position of menu where the XPress command was used
-		strDestinationMenu := A_ThisMenu
-		if !StrLen(strDestinationMenu) ; for GuiAddFavoriteSaveXpress favorite is added from context menu (no A_ThisMenu)
-			strDestinationMenu := o_L["MainMenuName"]
+		if InStr(strThisLabel, "FromMsg")
+			strDestinationMenu := o_L["MainMenuName"] ; for GuiAddFavoriteSaveXpressFromMsg favorite is added from context menu (no A_ThisMenu)
+		else
+			strDestinationMenu := A_ThisMenu
 		g_intNewItemPos := (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? 1 : o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1) ; 
 	}
 	else ; GuiAddExternalSave
@@ -14019,7 +14028,7 @@ if StrLen(strOriginalMenu) and (strOriginalMenu <> strDestinationMenu)
 	}
 
 if (!g_intNewItemPos)
-	; g_intNewItemPos may be already set if in GuiMoveOneFavoriteSave, GuiCopyOneFavoriteSave, GuiAddFavoriteSaveXpress, GuiAddExternalSave, 
+	; g_intNewItemPos may be already set if in GuiMoveOneFavoriteSave, GuiCopyOneFavoriteSave, GuiAddFavoriteSaveXpress, GuiAddFavoriteSaveXpressFromMsg, GuiAddExternalSave, 
 	; GuiAddFavoriteFromQAPFeature or GuiAddFavoriteFromQAPFeatureFolder (and other types)
 	if (f_drpParentMenuItems)
 		g_intNewItemPos := f_drpParentMenuItems
@@ -14166,7 +14175,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		Oops(2, o_L["OopsAmpersandInName"])
 		; do not abort for this
 	
-	if InStr(g_strTypesForTabWindowOptions, "|" . o_EditedFavorite.AA.strFavoriteType) and (strThisLabel <> "GuiAddFavoriteSaveXpress")
+	if InStr(g_strTypesForTabWindowOptions, "|" . o_EditedFavorite.AA.strFavoriteType) and !InStr(strThisLabel, "GuiAddFavoriteSaveXpress") ; also exclude GuiAddFavoriteSaveXpressFromMsg
 	{
 		strNewFavoriteWindowPosition := (f_blnUseDefaultWindowPosition ? 0 : 1)
 		strNewFavoriteWindowPosition .= "," . (f_lblWindowPositionMinMax1 ? 0 : (f_lblWindowPositionMinMax2 ? 1 : -1))
@@ -14225,7 +14234,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
-blnRename := InStr("GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddExternalSave|", strThisLabel . "|")
+blnRename := InStr("GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|", strThisLabel . "|")
 if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, blnRename)
 {
 	Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
@@ -28937,7 +28946,7 @@ class Container
 						or strCandidateName <> this.AA.strFavoriteName ; the name has been edited from another menu
 						or blnRename) ; same name in same menu in multiple copy or new favorite having the same name
 						
-						if (blnRename) ; if GuiCopyOneFavoriteSave, GuiMoveOneFavoriteSave, GuiAddFavoriteSaveXpress or GuiAddExternalSave
+						if (blnRename) ; if GuiCopyOneFavoriteSave, GuiMoveOneFavoriteSave, GuiAddFavoriteSaveXpress, GuiAddFavoriteSaveXpressFromMsg or GuiAddExternalSave
 							strCandidateName := AddUniqueSuffix(strCandidateName) ; add [!] and loop
 						else
 							return false ; reject candidate name and exit look
