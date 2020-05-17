@@ -4401,9 +4401,6 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; #####
-g_strNewLocation := "C:\"
-gosub, AddThisFolderFromMsgXpress
 return
 
 ;========================================================================================================================
