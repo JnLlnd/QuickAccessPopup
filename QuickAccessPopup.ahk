@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: v10.4.9.2 (2020-05-17)
+- add support for ConEmu (console emulator) similar to support for cmd.exe and PowerShell
+- when changing folder in Console window, add /D parameter and send chars using ALT keys only when using Cmd.exe
+- avoid enabling "Live Folder" and "Open a folder automatically" options simultaneously for the same favorite folder
+- make ampersands "&" visibles automatically in favorites name (by doubling them "&&") when adding favorites with the "Add Active Folder or Web page Express" command or context menu entries "Add Folder/File to QAP menu Express"
+- fix bug when setting the submenu for items added from context menu entries "Add Folder/File to QAP menu Express" or other QAPmessenger commands
+- fix bug right align numbers in "Usage" column of the favorites list in the "Customize" window
+- fix a bug in the installer (setup mode only) when checking for the Explorer context menu option
+
 Version BETA: v10.4.9.1 (2020-05-10)
 - a new option to open automatically the most recently or most anciently created, modified or accessed subfolder of the favorite folder's location (in "Edit Favorite" dialog box, "Advanced Settings" tab)
 - a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (in "Edit Favorite" dialog box for menus or shared menus)
@@ -3947,7 +3956,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.4.9.1
+;@Ahk2Exe-SetVersion 10.4.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4061,7 +4070,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.4.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.4.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
