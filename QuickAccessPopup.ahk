@@ -23901,7 +23901,7 @@ class SpecialFolders
 ;-------------------------------------------------------------
 {
 	;---------------------------------------------------------
-	__Call(function, parameters*)
+	###__Call(function, parameters*)
 	; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 	{
 		funcRef := Func(funcName := this.__class "." function)
@@ -23948,6 +23948,11 @@ class SpecialFolders
 
 	;---------------------------------------------------------
 	{
+		; AddSpecialFolderObject(strClassIdOrPath, strShellConstantText, intShellConstantNumeric, strAHKConstant, strDOpusAlias, strTCCommand
+			; , strDefaultName, strDefaultIcon
+			; , strUse4NavigateExplorer, strUse4NewExplorer, strUse4Dialog, strUse4Console, strUse4DOpus, strUse4TC, strUse4FPc
+			; , strCategories)
+		
 		;---------------------
 		; CLSID giving localized name and icon, with valid Shell Command
 		
@@ -24063,6 +24068,14 @@ class SpecialFolders
 			, "System", "" ; Système
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "3-Sysadmin~5-Hardware")
+		this.AddSpecialFolderObject("{05d7b0f4-2121-4eff-bf6b-ed3f69b894d9}", "", -1, "", "", ""
+			, "Notification Area Icons", ""
+			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
+			, "2-Power User")
+		this.AddSpecialFolderObject("{2559a1f8-21d7-11d4-bdaf-00c04f60b9f0}", "", -1, "", "", ""
+			, "Windows Search", "iconApplication"
+			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
+			, "1-Basic")
 		
 		;---------------------
 		; Path from registry (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
@@ -24167,6 +24180,22 @@ class SpecialFolders
 				, "3-Sysadmin")
 		this.AddSpecialFolderObject("%PUBLIC%\Libraries", "", -1, "", "", ""
 			, o_L["MenuPublicLibraries"], "iconFolder"
+			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "3-Sysadmin")
+		this.AddSpecialFolderObject("%windir%\system32\taskmgr.exe", "", -1, "", "", ""
+			, o_L["MenuTaskManager"], "iconControlPanel"
+			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "2-Power User")
+		this.AddSpecialFolderObject("%windir%\system32\diskmgmt.msc", "", -1, "", "", ""
+			, o_L["MenuDiskManagement"], "iconDrives"
+			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "2-Power User")
+		this.AddSpecialFolderObject("%windir%\system32\compmgmt.msc", "", -1, "", "", ""
+			, o_L["MenuComputerManagement"], "iconMyComputer"
+			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "5-Hardware")
+		this.AddSpecialFolderObject("%windir%\system32\eventvwr.exe", "", -1, "", "", ""
+			, o_L["MenuEventViewer"], "iconMyComputer"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
 			, "3-Sysadmin")
 		
