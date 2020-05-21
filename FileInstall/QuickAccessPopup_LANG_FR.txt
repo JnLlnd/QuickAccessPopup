@@ -282,6 +282,19 @@ lDialogListApplicationYesNo	[Oui] pour Activer ou [Non] pour fermer cette fenêtr
 lDialogMaximized	Maximisée
 lDialogMenuKey	Touche Menu
 lDialogMenuNotMoveUnderItself	Le menu "~1~" ne peut être déplacé sous lui-même.
+lDialogMenuSortCreated	Date de création
+lDialogMenuSortEditMenu	Modifier ce menu
+lDialogMenuSortEnable	Trier le menu automatiquement
+lDialogMenuSortFavoriteName	Nom du favori
+lDialogMenuSortHeaderAutomatic	Trier ce menu automatiquement par...
+lDialogMenuSortHeaderFiltered	Trier ce menu manuellement par...
+lDialogMenuSortHeaderMainMenu	Trier le menu Principal par...
+lDialogMenuSortHeaderManual	Trier ce menu manuellement par...
+lDialogMenuSortHeaderSearch	Trier le résultat de recherche par...
+lDialogMenuSortLastModified	Date de modification
+lDialogMenuSortLastUsed	Dernière utilisation
+lDialogMenuSortSettingsOptions	Modifier les options de la fenêtre Personaliser
+lDialogMenuSortUsage	Utilisation
 lDialogMinimized	Minimisée
 lDialogModifiedDate	Date de modification
 lDialogMouse	Souris
@@ -301,6 +314,13 @@ lDialogNormal	Normal
 lDialogOff	Inactif
 lDialogOK	OK
 lDialogOn	Actif
+lDialogOpenSubFolderAccessed	accédé
+lDialogOpenSubFolderCreated	créé
+lDialogOpenSubFolderEnable	Ouvrir un sous-dossier automatiquement
+lDialogOpenSubFolderLabel	Sélectionner le dossier à ouvrir:
+lDialogOpenSubFolderModified	modifié
+lDialogOpenSubFolderMostAnciently	le plus anciennement
+lDialogOpenSubFolderMostRecently	le plus récemment
 lDialogOpenThisGroup	Ouvrir ce groupe
 lDialogOpenThisMenu	Ouvrir ce menu
 lDialogOptionsPathNotExist	Ce dossier n'existe pas:`n~1~`n`nVoulez-vous le créer?
@@ -555,6 +575,7 @@ lMenuCommonAppData	Application Data (commun)
 lMenuCommonDesktop	Bureau (commun)
 lMenuCommonStartMenu	Menu Démarrer (commun)
 lMenuCommonStartupMenu	Démarrage (commun)
+lMenuComputerManagement	Gestion de l'ordinateur
 lMenuContainerInGui	Favoris dans la fenêtre "Personnaliser"
 lMenuContainerInGuiDescription	Affiche un menu avec les favoris affichés dans la fenêtre "Personnaliser", incluant dans un résultat de recherche. Dans les résultats de recherche, le suffixe "[!]" est ajouté aux noms en double pour les rendre uniques.
 lMenuCookies	Cookies
@@ -562,6 +583,7 @@ lMenuCopyLocation	Copier l'emplacement d'un favori
 lMenuCurrentFolders	Réutiliser un dossier
 lMenuCurrentFoldersDescription	Afficher un menu dynamique présentant la liste des dossiers déjà ouverts dans des fenêtres de Windows Explorer ou de Directory Opus. Ce menu est actualisé chaque fois que vous ouvrez le menu de QAP.`n`nLa commande "Réutiliser un dossier" est particulièrement utile lorsque vous êtes dans une boîte de dialogue de fichier et que vous souhaitez accéder à un dossier déjà ouvert dans une autre fenêtre. Voyez aussi "Réouvrir le dossier actif dans une boîte de dialogue".
 lMenuDesktop	Bureau
+lMenuDiskManagement	Gestion des disques
 lMenuDownloads	Téléchargements
 lMenuDrives	Disques
 lMenuDrivesDescription	Afficher un menu dynamique présentant les lecteurs de disques de votre système avec leur nom, l'espace libre, la capacité et un icône indiquant le type de lecteur.`n`nCe menu est actualisé chaque fois que vous ouvrez le menu de QAP.
@@ -569,6 +591,7 @@ lMenuDrivesSpace	(~1~ GB libres / ~2~ GB)
 lMenuDynamicMenus	En cours
 lMenuEditIniFile	Modifier ~1~
 lMenuEditIniFileDescription	Modifier le fichier de configuration (.ini) de Quick Access Popup actuellement en vigueur.
+lMenuEventViewer	Observateur d'événements
 lMenuExitApp	Quitter ~1~
 lMenuExitAppDescription	Fermer l'application Quick Access Popup, libérant tous les raccourcis claviers ou souris du menu QAP et des favoris.
 lMenuExternalCatalogue	Ajouter un menu partagé du catalogue
@@ -638,6 +661,7 @@ lMenuSwitchSettingsDefault	Revenir au fichier de paramètres par défaut
 lMenuSwitchSettingsDefaultDescription	Redémarrer Quick Access Popup avec son fichier de configuration par défaut.`n`nSi vous avez installé QAP en utilisant le programme "Setup" ("one-step installation"), l'emplacement par défaut du fichier de configuration est sous le dossier "Utilisateurs" (par exemple, "C:\Users\Jean\AppData\Roaming\Quick Access Popup").`n`nSi vous avez préféré l'installation "portable", l'emplacement par défaut est le même que celui où réside le fichier QuickAccessPopup.exe en cours d'exécution.
 lMenuSwitchSettingsDescription	Choisir un autre fichier de configuration (.ini) et redémarrer QAP avec cette configuration (incluant les favoris et diverses options).`n`nAssurez-vous d'avoir enregistré vos changements dans la fenêtre "Personnaliser" avant de relancer QAP.
 lMenuSystemCertificates	Certificats système
+lMenuTaskManager	Gestionnaire des tâches Windows
 lMenuTemplates	Modèles
 lMenuTemporaryFiles	Fichiers temporaires
 lMenuTools	Outils
@@ -664,6 +688,7 @@ lOopsContainerInGui	Le menu dynamique "~1~" ne peut être inséré que dans le menu
 lOopsCouldNotOpenSpecialFolder	~1~ ne peut ouvrir le dossier spécial: "~2~".
 lOopsEmpty	vide
 lOopsErrorIniFileDisplayErrorMessage	Afficher ce message d'erreur à nouveau pour ce menu partagé?
+lOopsErrorIniFileDuplicateNames	Le favori "~1~" dans le menu "~2~" n'est pas unique et a été temporairement renommé "~3~".`n`nVeuillez modifier ce favori pour lui donner un nom unique.
 lOopsErrorIniFileModified	Ce menu partagé a été modifié depuis qu'il a été chargé. Ce menu sera raffraîchi mais vos derniers changements ne pourront pas être enregistrés.
 lOopsErrorIniFileReadOnly	Le fichier de paramètres de ce menu partagé ou cet emplacement est en LECTURE seulement.
 lOopsErrorIniFileRetry	Si le fichier de configuration externe est sur un lecteur réseau, essayez de redémarrer ~1~ lorsque le lecteur réseau sera disponible.
@@ -680,6 +705,7 @@ lOopsFavoritesCopied	~1~ favoris copiés.
 lOopsFileExpandedFrom	Étendu à partir de
 lOopsFileNotFound	Cet emplacement n'existe pas
 lOopsFirstEnterUrl	Veuillez d'abord saisir une addresse dans le champ "~1~".
+lOopsFolderLiveAndAutomatic	Les options "~1~" et "~2~" ne peuvent pas être activées simultanément.`n`nVeuillez désactiver l'une de ces options.
 lOopsFtpLocationProtocol	L'emplacement d'un site FTP doit débuter par "ftp://".
 lOopsHotkeyAlreadyUsed	Le raccourci "~1~" est déjà utilisé pour l'emplacement "~2~".`n`nVeuillez choisir un autre raccourci pour "~3~".
 lOopsHotkeyObjectNotFound	~1~ ne peut trouver le favori associé à: ~2~ "~3~".`n`nCela pourrait être une situation temporaire. Essayez de redémarrer ~1~.
@@ -694,7 +720,8 @@ lOopsMenuExternalCentralized	menu partagé centralisé
 lOopsMenuExternalCollaborative	menu partagé collaboratif
 lOopsMenuExternalPersonalChangedBy	Ce menu partagé personnel est actuellement MODIFIÉ ou comporte des modifications NON ENREGISTRÉES sur l'ordinateur: ~1~.`n`nSi vous enregistrez ici les modifications à ce menu, les changements non enregistrés sur l'autre ordinateur seront perdus et vous devriez annuler ces changements quand vous serez de retour sur l'autre ordinateur.
 lOopsMenuExternalReservedBy	Ce ~1~ est RÉSERVÉ par l'utilisateur: ~2~.`n`nAttendez que cet utilisateur libère le menu ou contactez votre administrateur de système.
-lOopsMultipleContainersError	Les menus, groupes and menus partagés doivent être déplacés individuellement. Ces items de la sélection seront ne seront pas déplacés.
+lOopsMenuSorted	Cette commande ne peut pas être exécutée dans un menu trié automatiquement.
+lOopsMultipleContainersError	Les menus, groupes and menus partagés doivent être copiés ou déplacés individuellement. Ces items de la sélection seront ignorés.
 lOopsNotAdmin	~1~ ne peut être exécuté en tant qu'administrateur.`n`nL'application est maintenant exécutée avec les privilèges normaux.
 lOopsOptionsPathNotExist	~1~ n'existe pas:`n~2~`n`nVeuillez choisir un emplacement valide.
 lOopsOptionsPathTrayIcon	Icône dans la zone de notification
@@ -815,7 +842,7 @@ lOptionsSearchFromCurrent	Chercher à partir du menu ou groupe actuel
 lOptionsSearchFromMain	Toujours chercher à partir du menu principal
 lOptionsSearchResults	Résultats de recherche
 lOptionsSearchWithLocale	Recherche en utilisant la configuration linguistique de Windows (par exemple, "é" considéré comme "e")
-lOptionsSearchWithStats	Résultats de recherche avec dates de modification et statistiques
+lOptionsSearchWithStats	Liste des favoris et résultats de recherche avec dates et statistiques
 lOptionsSelectBackupFolder	Selectionnez le dossier de copie du fichier de configuration principal
 lOptionsSelectCatalogueRoot	Choisissez le dossier racine du Catalogue des menus partagés
 lOptionsSelectQAPTempFolder	Créer le dossier temporaire dans:
