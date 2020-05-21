@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: v10.4.9.3 (2020-05-21)
+- add six new entries to QAP Special Folders in
+  "Basic" section: "Windows Search"
+  "Power User" section: "Notification Area Icons", "Task Manager", "Disk Management")
+  "Sysadmin" section: "Event Viewer" and
+  "Hardware" section: "Computer Management"
+
 Version BETA: v10.4.9.2 (2020-05-17)
 - add support for ConEmu (console emulator) similar to support for cmd.exe and PowerShell
 - when changing folder in Console window, add /D parameter and send chars using ALT keys only when using Cmd.exe
@@ -3956,7 +3963,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.4.9.2
+;@Ahk2Exe-SetVersion 10.4.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4070,7 +4077,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.4.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.4.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
