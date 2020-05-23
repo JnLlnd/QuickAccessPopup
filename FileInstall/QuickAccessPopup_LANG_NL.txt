@@ -223,7 +223,7 @@ lDialogFavoriteTypesLocationLabels	Map (locatie)|Document (locatie en bestandsna
 lDialogFavoriteTypesShortNames	Map|Doc|App|Speciaal|Link|FTP|QAP|Menu|Groep|Scheider|Kolom|..|Fragment|Openbaar|Tekst|Win App
 lDialogFavoriteWorkingDirNotFoundPrompt	De geavanceerde functie "Start in" van favoriet "~1~" is niet gevonden:`n~2~
 lDialogFavoriteWorkingDirNotFoundTitle	"Start in" parameter niet gevonden - ~1~
-lDialogFileExtension	Bestandsextensie
+lDialogFileExtension	Bestandsextensie 
 lDialogFileLabel	Document
 lDialogFileName	Bestandsnaam
 lDialogFileSize	Bestandsformaat
@@ -282,6 +282,19 @@ lDialogListApplicationYesNo	[Ja] om te activeren of [Nee] om dit venster te slui
 lDialogMaximized	Maximaliseren
 lDialogMenuKey	Menu toets
 lDialogMenuNotMoveUnderItself	Menu "~1~" kan niet onder zichzelf geplaatst worden
+lDialogMenuSortCreated	Aanmaakdatum
+lDialogMenuSortEditMenu	Wijzig dit menu
+lDialogMenuSortEnable	Sorteer het menu automatisch
+lDialogMenuSortFavoriteName	Naam favoriet
+lDialogMenuSortHeaderAutomatic	Sorteer het menu automatisch bij...
+lDialogMenuSortHeaderFiltered	Sorteer zoekresultaten bij...
+lDialogMenuSortHeaderMainMenu	Sorteer het hoofdmenu bij...
+lDialogMenuSortHeaderManual	Sorteer het menu handmatig bij...
+lDialogMenuSortHeaderSearch	Sorteer de zoekresultaten bij...
+lDialogMenuSortLastModified	Wijzigingsdatum
+lDialogMenuSortLastUsed	Datum laatst gebruikt
+lDialogMenuSortSettingsOptions	Vensteropties aanpassen
+lDialogMenuSortUsage	Gebruik
 lDialogMinimized	Minimaliseren
 lDialogModifiedDate	Datum aanpassen
 lDialogMouse	Muis
@@ -301,6 +314,13 @@ lDialogNormal	Normaal
 lDialogOff	Uit
 lDialogOK	OK
 lDialogOn	Aan
+lDialogOpenSubFolderAccessed	Geopend
+lDialogOpenSubFolderCreated	Aangemaakt op
+lDialogOpenSubFolderEnable	Open automatisch een submap
+lDialogOpenSubFolderLabel	Selecteer de te openen map:
+lDialogOpenSubFolderModified	wijzigingsdatum
+lDialogOpenSubFolderMostAnciently	de oudste
+lDialogOpenSubFolderMostRecently	de meest recente
 lDialogOpenThisGroup	Open deze groep
 lDialogOpenThisMenu	Open dit menu
 lDialogOptionsPathNotExist	Deze map bestaat niet:`n~1~`n`nWil je deze aanmaken?
@@ -376,7 +396,7 @@ lDialogWindowsFolderIconUpdate	update
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Start in
 lDonateButton	Sponsor deze software!
-lDonateCheckPrompt	Welkom bij deze nieuwe versie van ~1~`n`nDit bericht toont zich slechts bij de installatie van een nieuwe versie.`n`n~1~ is niet alleen GRATIS maar bevat ook GEEN vervelende reclame of adware (waarvan nooit zeker is of deze geen spyware of malware bevatten)`n`nTot nog toe heeft ~1~ je ~2~ maal geassisteerd om tijd te besparen tijdens de dagelijkse werkzaamheden. Zou je ~1~ willen sponsoren?
+lDonateCheckPrompt	Welkom bij deze nieuwe versie van ~1~.`n`nDit bericht toont zich slechts bij de installatie van een nieuwe versie.`n`n~1~ is niet alleen GRATIS maar bevat ook GEEN vervelende reclame of adware (waarvan nooit zeker is of deze geen spyware of malware bevatten)`n`nTot nog toe heeft ~1~ je ~2~ maal geassisteerd om tijd te besparen tijdens de dagelijkse werkzaamheden. Zou je ~1~ willen sponsoren?
 lDonateCheckPrompt2	NB: Gebruikers die een minimum donatie storten van €5,- of $5,- (of via een maandelijkse donatie) krijgen een sponsorcode om ~1~ te deactiveren.
 lDonateCheckPrompt3	dit bericht weergeven
 lDonateCheckPrompt4	sponsorherinneringen
@@ -555,6 +575,7 @@ lMenuCommonAppData	Openbare Applicatiegegevens
 lMenuCommonDesktop	Openbaar Bureaublad
 lMenuCommonStartMenu	Openbaar Startmenu
 lMenuCommonStartupMenu	Openbaar opstart menu
+lMenuComputerManagement	Computerbeheer
 lMenuContainerInGui	Favorieten in venster: "Aanpassen"
 lMenuContainerInGuiDescription	Geef een menu weer met de favorieten die worden weergegeven in het venster: "Aanpassen", ook wanneer het zoekresultaten bevat. Zoekresultaten met dubbele menunamen worden aangepast met het achtervoegsel "[!]" om deze menu's uniek te maken.
 lMenuCookies	Cookies
@@ -562,6 +583,7 @@ lMenuCopyLocation	Kopieer een locatie of website uit een favoriet
 lMenuCurrentFolders	Een map openen
 lMenuCurrentFoldersDescription	Geeft een dynamisch menu weer met de mappen die zijn geopend in de Windows Verkenner of Directory Opus-vensters. Dit menu wordt vernieuwd wanneer je het QAP-menu opent.`n`nDeze functie is met name handig wanneer je je in een dialoogvenster bevindt en een bestand wilt selecteren op een locatie die al in een ander venster is geopend. Zie ook de functie: "Huidige map opnieuw openen in venster".
 lMenuDesktop	Bureaublad
+lMenuDiskManagement	Schijfbeheer
 lMenuDownloads	Downloads
 lMenuDrives	Stations
 lMenuDrivesDescription	Geeft een dynamisch menu weer met de schijven van uw systeem met label, vrije ruimte, capaciteit en een pictogram dat het stationstype toont.`n`nDit menu wordt vernieuwd telkens wanneer je het QAP-menu opent.
@@ -569,6 +591,7 @@ lMenuDrivesSpace	(~1~ GB vrij / ~2~ GB) GB staat voor Giga-Bytes
 lMenuDynamicMenus	Dagelijks Gebruik
 lMenuEditIniFile	Wijzig ~1~...
 lMenuEditIniFileDescription	Wijzigen van het actieve "Quick Access Popup instellingenbestand (.ini).
+lMenuEventViewer	Gebeurtenislogboek
 lMenuExitApp	~1~ afsluiten 
 lMenuExitAppDescription	Mogelijkheid om het Quick Access Popup af te sluiten, zodat alle muis- en toetsenbord sneltoetsen worden vrijgegeven welke voor favotieten zijn gedefinieerd.
 lMenuExternalCatalogue	Openbare favorietenmenu vanuit de catalogus toevoegen
@@ -639,6 +662,7 @@ lMenuSwitchSettingsDefault	Schakel naar standaard voorkeurenbestand
 lMenuSwitchSettingsDefaultDescription	Start Quick Access Popup opnieuw met het standaardinstellingenbestand.`n`nAls je QAP hebt geïnstalleerd met de "éénstaps" installatie dan staat deze in de gebruikersdirectory (bijvoorbeeld "C:\Gebruikers\Jean\AppData\Roaming\Quick Access Popup").`n`nAls je de draagbare installatie gekozen hebt dan is de standaardlocatie op dezelfde locatie als waar het programma QuickAccessPopup.exe wordt uitgevoerd.
 lMenuSwitchSettingsDescription	Selecteer een ander QAP-voorkeurenbestand en herstart Quick Access Popup met deze voorkeuren (inclusief favorieten en de verschillende opties).`n`nZorg ervoor dat je de wijzigingen in "Voorkeuren" opslaat voordat je QAP opnieuw start.
 lMenuSystemCertificates	Systeem Certificaten
+lMenuTaskManager	Taakbeheer
 lMenuTemplates	Sjablonen
 lMenuTemporaryFiles	Tijdelijke bestanden
 lMenuTools	Hulpmiddelen
@@ -665,6 +689,7 @@ lOopsContainerInGui	Het dynamische menu "~1~" kan alleen worden toegevoegd aan m
 lOopsCouldNotOpenSpecialFolder	~1~ kan de speciale map "~2~" niet openen.
 lOopsEmpty	leeg
 lOopsErrorIniFileDisplayErrorMessage	Dit bericht nogmaals weergeven voor dit openbare menu?
+lOopsErrorIniFileDuplicateNames	De favoriet "~1~" in menu "~2~" is niet uniek en is tijdelijk hernoemd naar "~3~".`n`nJe kunt deze favoriet bewerken om de favoriet een unieke naam te geven.
 lOopsErrorIniFileModified	Dit openbare menu is aangepast sinds deze geladen is. Het menu zal worden ververst echter jouw onopgeslagen wijzigingen zullen verloren gaan.
 lOopsErrorIniFileReadOnly	Dit "Openbaar Menu" -instellingenbestand of deze locatie is ALLEEN-LEZEN.
 lOopsErrorIniFileRetry	Als het instellingenbestand opgeslagen is op een netwerkstation, probeer ~1~ te herladen wanneer het netwerkstation beschikbaar is.
@@ -681,6 +706,7 @@ lOopsFavoritesCopied	~1~ favorieten gekopieerd.
 lOopsFileExpandedFrom	Uitgebreid van
 lOopsFileNotFound	Deze locatie bestaat niet
 lOopsFirstEnterUrl	Selecteer eerst een adres in het "~1~" veld.
+lOopsFolderLiveAndAutomatic	De opties "~1~" en "~2~" kunnen niet tegelijkertijd worden ingeschakeld.`n`nJe dient Ã©Ã©n van deze opties uit te schakelen.
 lOopsFtpLocationProtocol	Het FTP-Adres dient te starten met "ftp://".
 lOopsHotkeyAlreadyUsed	De sneltoets "~1~" is al in gebruik voor ~2~.`n`nSelecteer een andere sneltoets voor ~3~.
 lOopsHotkeyObjectNotFound	~1~ kon de favoriet geassocieerd met ~2~ "~3~" niet vinden.`n`nDit kan een tijdelijke situatie zijn, probeer ~1~ te herstarten.
@@ -695,7 +721,8 @@ lOopsMenuExternalCentralized	gecentraliseerd openbaar menu
 lOopsMenuExternalCollaborative	openbaar team menu
 lOopsMenuExternalPersonalChangedBy	Dit persoonlijke Openbare menu wordt GEWIJZIGD of heeft onopgeslagen wijzigingen op computer: ~1~.`n`nAls je jouw wijzigingen opslaat zullen de onopgeslagen wijzigingen van de andere computer verloren gaan, daarnaast zullen wijzigingen op die computer moeten worden geannuleerd.
 lOopsMenuExternalReservedBy	Deze sessie van ~1~ is GERESERVEERD door gebruiker: ~2~.`n`nWacht alsjeblieft totdat deze gebruiker het Openbare menu afsluit of neem contact op met de systeembeheerder.
-lOopsMultipleContainersError	Menu's, groepen en gedeelde menu's kunnen alleen afzonderlijk worden verplaatst, deze items worden overgeslagen.
+lOopsMenuSorted	Deze opdracht kan niet worden uitgevoerd omdat dit menu automatisch wordt gesorteerd.
+lOopsMultipleContainersError	Menu's, groepen en gedeelde menu's kunnen alleen afzonderlijk worden gekopieerd of verplaatst, deze items worden overgeslagen.
 lOopsNotAdmin	~1~ kon niet worden geladen als Administrator.`n`nHet is geladen in de normale modus.
 lOopsOptionsPathNotExist	~1~ bestaat niet:`n~2~`n`nSelecteer een geldige locatie.
 lOopsOptionsPathTrayIcon	Taakbalk pictogrambestand
@@ -816,7 +843,7 @@ lOptionsSearchFromCurrent	Zoek vanuit het huidige menu of groep
 lOptionsSearchFromMain	Zoek altijd vanuit het hoofdmenu
 lOptionsSearchResults	Zoekresultaten
 lOptionsSearchWithLocale	Zoeken met lokale taalinstellingen (bijv. "é" beschouwd als "e")
-lOptionsSearchWithStats	Voeg bewerkingsdatums en statistiekkolommen toe aan zoekresultaten
+lOptionsSearchWithStats	Voeg datums en statistiekkolommen toe aan de favorietenlijst && zoekresultaten
 lOptionsSelectBackupFolder	Selecteer de back-upmap voor het voorkeurenbestand
 lOptionsSelectCatalogueRoot	Selecteer een openbare map voor de Openbare Menu's
 lOptionsSelectQAPTempFolder	Maak de tijdelijke map aan in:

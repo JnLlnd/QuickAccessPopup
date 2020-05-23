@@ -282,6 +282,19 @@ lDialogListApplicationYesNo	[Si] per Attivare o [No] per Chiudere questa finestr
 lDialogMaximized	Massimizzata
 lDialogMenuKey	Tasto del Menú
 lDialogMenuNotMoveUnderItself	Il menù "~1~" non può essere posizionato sotto se stesso.
+lDialogMenuSortCreated	Data di Creazione
+lDialogMenuSortEditMenu	Modifica questo menÃ¹
+lDialogMenuSortEnable	Ordina il menÃ¹ automaticamente
+lDialogMenuSortFavoriteName	Nome del Preferito
+lDialogMenuSortHeaderAutomatic	Ordina il menÃ¹ automaticamente per...
+lDialogMenuSortHeaderFiltered	Ordina i risultati di ricerca per...
+lDialogMenuSortHeaderMainMenu	Ordina il MenÃ¹ Principale per...
+lDialogMenuSortHeaderManual	Ordina il menÃ¹ manualmente per...
+lDialogMenuSortHeaderSearch	Ordina i risultati di ricerca per...
+lDialogMenuSortLastModified	Data di Modifica
+lDialogMenuSortLastUsed	Data di Ultimo utilizzo
+lDialogMenuSortSettingsOptions	Opzioni di Personalizz. finestra
+lDialogMenuSortUsage	Uso
 lDialogMinimized	Minimizzato
 lDialogModifiedDate	Data modificata
 lDialogMouse	Mouse
@@ -301,6 +314,13 @@ lDialogNormal	Normale
 lDialogOff	Assente
 lDialogOK	OK
 lDialogOn	Presente
+lDialogOpenSubFolderAccessed	aperta
+lDialogOpenSubFolderCreated	creata
+lDialogOpenSubFolderEnable	Apri una sottocartella automaticamente
+lDialogOpenSubFolderLabel	Seleziona la cartella da aprire:
+lDialogOpenSubFolderModified	modificata
+lDialogOpenSubFolderMostAnciently	la piÃ¹ vecchia
+lDialogOpenSubFolderMostRecently	la piÃ¹ recentemente
 lDialogOpenThisGroup	Apri questo gruppo
 lDialogOpenThisMenu	Apri questo menù
 lDialogOptionsPathNotExist	Questa cartella non esiste:`n~1~`n`nVuoi crearla?
@@ -376,7 +396,7 @@ lDialogWindowsFolderIconUpdate	Aggiorna
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Avvia in
 lDonateButton		Supporta questo Programma!
-lDonateCheckPrompt	Benvenuto a questa nuova versione di ~1~?`n`nQuesto messaggio non sarà più visualizzato finchè non installerai un successivo aggiornamento.`n`nNon solo ~1~ può essere usato GRATUITAMENTE ma è anche completamente PRIVO di fastidiosi messaggi pubblicitari o altro software installato a tua insaputa, che non si è mai sicuri se nascondano spyware o malware.`n`nAl momento, per ~2~ volte ~1~ ti ha aiutato nel tuo lavoro quotidiano. Che ne diresti di inviare un contributo adesso per sostenere lo sviluppo di questo programma?
+lDonateCheckPrompt	Benvenuto a questa nuova versione di ~1~.`n`nQuesto messaggio non sarà più visualizzato finchè non installerai un successivo aggiornamento.`n`nNon solo ~1~ può essere usato GRATUITAMENTE ma è anche completamente PRIVO di fastidiosi messaggi pubblicitari o altro software installato a tua insaputa, che non si è mai sicuri se nascondano spyware o malware.`n`nAl momento, per ~2~ volte ~1~ ti ha aiutato nel tuo lavoro quotidiano. Che ne diresti di inviare un contributo adesso per sostenere lo sviluppo di questo programma?
 lDonateCheckPrompt2	Nota: Agli Utenti che generosamente invieranno un contributo minimo di 5$ o 5€ o più (o un'offerta mensile di qualunque importo) sarà dato un CODICE SOSTENITORE che BLOCCA ~1~.
 lDonateCheckPrompt3	mostra questo messaggio
 lDonateCheckPrompt4	visualizza i promemoria sui contributi allo sviluppo del programma
@@ -555,6 +575,7 @@ lMenuCommonAppData	Dati Applicazioni (pubblica)
 lMenuCommonDesktop	Desktop pubblico
 lMenuCommonStartMenu	Menù Avvio (pubblico)
 lMenuCommonStartupMenu	Esecuzione Automatica (pubblico)
+lMenuComputerManagement	Gestione Computer
 lMenuContainerInGui	Preferiti nella finestra Personalizza
 lMenuContainerInGuiDescription	Mostra un menÃ¹ con i preferiti visualizzati nella finestra Personalizza, anche nel caso contenga risultati di ricerca. Nei risultati di ricerca, nomi di menÃ¹ duplicati vengono appesi col suffisso "[!]" per renderli unici.
 lMenuCookies	Cookies
@@ -562,6 +583,7 @@ lMenuCopyLocation	Copia URL o Percorso del Preferito
 lMenuCurrentFolders	Cartelle Correnti
 lMenuCurrentFoldersDescription	Visualizza un menù dinamico che mostra le cartelle già aperte in Windows Explorer e Directory Opus. Questo menù viene rigenerato ogni volta che apri il menù QAP.`n`nIl "Riapri una Cartella" è utile specialmente quando sei in una casella di dialogo di file e vuoi aprire un file che si trova in una cartella già aperta in un'altra finestra.  Vedi anche "Riapri la Cartella Corrente nella Casella di Dialogo".
 lMenuDesktop	Desktop
+lMenuDiskManagement	Gestione Disco
 lMenuDownloads	Download
 lMenuDrives	Unità disco
 lMenuDrivesDescription	Visualizza un menù dinamico che mostra i dischi montati nel tuo computer con etichetta, spazio libero, capacità ed un'icona che dipende dal tipo di unità disco.`n`nQuesto menù viene rigenerato ogni volta che apri il menù QAP.
@@ -569,6 +591,7 @@ lMenuDrivesSpace	(~1~ GB liberi / ~2~ GB)
 lMenuDynamicMenus	Usati di recente (o spesso)
 lMenuEditIniFile	Modifica ~1~
 lMenuEditIniFileDescription	Modifica il file di impostazioni (.ini) attivo di Quick Access Popup (QAP).
+lMenuEventViewer	Gestione Eventi
 lMenuExitApp	Esci da ~1~
 lMenuExitAppDescription	Esci da Quick Access Popup, rilasciando tutti i tasti attivanti e le scorciatoie del menù, sia del mouse che della tastiera, assegnati ai preferiti.
 lMenuExternalCatalogue	Aggiungi un menù condiviso di Preferiti dal catalogo
@@ -639,6 +662,7 @@ lMenuSwitchSettingsDefault	Passa al file delle impostazioni predefinite
 lMenuSwitchSettingsDefaultDescription	Riavvia Quick Access Popup con il file di Impostazioni presente nella posizione predefinita.`n`nSe hai installato QAP usando la procedura "installazione immediata", la posizione predefinita si trova nella cartella Utente (per esempio, "C:\Users\Jean\AppData\Roaming\Quick Access Popup").`n`nSe invece hai optato per l'installazione portabile, la posizione predefinita è la stessa da cui viene richiamato il programma eseguibile QuickAccessPopup.exe.
 lMenuSwitchSettingsDescription	Seleziona un altro file di impostazioni QAP e riavvia Quick Access Popup con tali impostazioni (inclusi preferiti e opzioni varie).`n`nAssicurati di aver salvato le modifiche nella finestra "Personalizzare" prima di riavviare QAP.
 lMenuSystemCertificates	Certificati di Sistema
+lMenuTaskManager	Task Manager
 lMenuTemplates	Modelli
 lMenuTemporaryFiles	File temporanei
 lMenuTools	Strumenti
@@ -665,6 +689,7 @@ lOopsContainerInGui	Il menÃ¹ dinamico "~1~" puÃ² essere inserito soltanto nel me
 lOopsCouldNotOpenSpecialFolder	~1~ non è riuscito ad aprire la Cartella Speciale: "~2~".
 lOopsEmpty	vuoto
 lOopsErrorIniFileDisplayErrorMessage	Vuoi visualizzare di nuovo questo messaggio di errore per questo Menù Condiviso?
+lOopsErrorIniFileDuplicateNames	Il preferito "~1~" nel menÃ¹ "~2~" non Ã¨ unico ed Ã¨ stato temporaneamente rinominato in "~3~".`n`nSi prega di modificare questo preferito per dargli un nome unico.
 lOopsErrorIniFileModified	Questo menù condiviso è stato modificato dopo essere stato aperto. Il menù verrà aggiornato con le modifiche apportate, che però NON saranno salvate e verranno perse.
 lOopsErrorIniFileReadOnly	Questo file delle impostazioni del menù condiviso o questa posizione è di SOLA-LETTURA.
 lOopsErrorIniFileRetry	Se il file delle impostazioni si trova su un disco di rete, prova a ricaricare ~1~ quando il disco di rete sarà disponibile.
@@ -681,6 +706,7 @@ lOopsFavoritesCopied	~1~ preferiti copiati.
 lOopsFileExpandedFrom	Espanso da
 lOopsFileNotFound	Questa destinazione non esiste
 lOopsFirstEnterUrl	Dapprima inserisci un indirizzo nel campo "~1~".
+lOopsFolderLiveAndAutomatic	Le opzioni "~1~" e "~2~" non possono essere abilitate simultaneamente.`n`nSi prega di disabilitare una di queste opzioni.
 lOopsFtpLocationProtocol	L'indirizzo di un sito FTP deve iniziare con "ftp://".
 lOopsHotkeyAlreadyUsed	La combinazione di tasti "~1~" è già usata per ~2~.`n`nE' necessario scegliere un altra combinazione per ~3~.
 lOopsHotkeyObjectNotFound	~1~ potrebbe non trovare il preferito associato al ~2~ "~3~".`n`nQuesta può essere una situazione temporanea. Prova a riavviare ~1~.
@@ -695,7 +721,8 @@ lOopsMenuExternalCentralized	menù condiviso centralizzato
 lOopsMenuExternalCollaborative	menù condiviso collaborativo
 lOopsMenuExternalPersonalChangedBy	Questo menù personale condiviso è attualmente in corso di MODIFICHE o ci sono modifiche ancora NON SALVATE sul computer: ~1~.`n`nSe salvi delle modifiche a questo menù qui, le modifiche non ancora salvate sull'altro computer saranno perse e dovresti annullare tali modifiche quando ritorni su quel computer.
 lOopsMenuExternalReservedBy	Questo ~1~ è RISERVATO dall'utente: ~2~.`n`nAspetta che tale utente rilasci il menù condiviso o contatta l'amministratore di sistema.
-lOopsMultipleContainersError	MenÃ¹, gruppi e menÃ¹ condivisi possono essere spostati solo individualmente. Questi elementi saranno saltati.
+lOopsMenuSorted	Questo comando non puÃ² essere eseguito perchÃ¨ questo menÃ¹ Ã¨ ordinato automaticamente.
+lOopsMultipleContainersError	MenÃ¹, gruppi e menÃ¹ condivisi possono essere copiati o spostati solo individualmente. Questi elementi saranno saltati.
 lOopsNotAdmin	Non é stato possibile ~1~ come Amministratore.`n`nE' pertanto in esecuzione in modalitá Normale.
 lOopsOptionsPathNotExist	~1~ non esiste:`n~2~`n`nPer favore, seleziona un percorso valido.
 lOopsOptionsPathTrayIcon	File dell'icona nell'area notifiche
@@ -816,7 +843,7 @@ lOptionsSearchFromCurrent	Cerca dal menÃ¹ o gruppo corrente
 lOptionsSearchFromMain	Ricerca sempre dal menÃ¹ Principaleu
 lOptionsSearchResults	Risultati di Ricerca
 lOptionsSearchWithLocale	Ricerca usando le impostazioni del linguaggio locale (per esempio, "é" considerata come "e")
-lOptionsSearchWithStats	Risultati di ricerca con data di modifica e statistiche in colonna
+lOptionsSearchWithStats	Visualizza date e statistiche in colonna nella lista di Preferiti e Risultati di ricerca
 lOptionsSelectBackupFolder	Seleziona Select la cartella di backup del file delle Impostazioni principali
 lOptionsSelectCatalogueRoot	Seleziona la cartella radice del Catalogo dei Menù Condivisi
 lOptionsSelectQAPTempFolder	Crea la Cartella Temporanea in:
