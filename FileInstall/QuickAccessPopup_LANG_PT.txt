@@ -223,10 +223,10 @@ lDialogFavoriteTypesLocationLabels	Pasta (atalho)|Documento (atalho e nome de fi
 lDialogFavoriteTypesShortNames	Pasta|Doc|App|Especial|Ligação|FTP|QAP|Menu|Grupo|Separador|Quebra de Coluna|..|Snippet|Partilhado|Texto|App Win
 lDialogFavoriteWorkingDirNotFoundPrompt	A definição avançada "Iniciar em" do favorito "~1~" não foi encontrada:`n~2~
 lDialogFavoriteWorkingDirNotFoundTitle	Parâmetro Iniciar em não encontrado - ~1~
-lDialogFileExtension	Extensão do Ficheiro
+lDialogFileExtension	Extensão do ficheiro
 lDialogFileLabel	Documento
-lDialogFileName	Nome do Ficheiro
-lDialogFileSize	Tamanho do Ficheiro
+lDialogFileName	Nome do ficheiro
+lDialogFileSize	Tamanho do ficheiro
 lDialogFolderLabel	Pasta
 lDialogGetWebPageTitle	Obter título
 lDialogGetWinInfo	Para identificar a janela da qual pretende obter o título, classe ou nome do processo, clique na janela alvo com a combimação [~1~] do menu QAP.
@@ -282,6 +282,19 @@ lDialogListApplicationYesNo	[Sim] para Activar ou [Não] para Fechar esta janela?
 lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla de Menu
 lDialogMenuNotMoveUnderItself	O menu "~1~" não pode ser movido para si próprio
+lDialogMenuSortCreated	Data de criação
+lDialogMenuSortEditMenu	Editar este menu
+lDialogMenuSortEnable	Ordenar menu automaticamente
+lDialogMenuSortFavoriteName	Nome do favorito
+lDialogMenuSortHeaderAutomatic	Ordenar menu automaticamente por...
+lDialogMenuSortHeaderFiltered	Ordenar resultado da procura por...
+lDialogMenuSortHeaderMainMenu	Ordenar menu principal por...
+lDialogMenuSortHeaderManual	Ordenar menu manualmente por...
+lDialogMenuSortHeaderSearch	Ordenar resultado da procura por...
+lDialogMenuSortLastModified	Data de modificação
+lDialogMenuSortLastUsed	Data da última utilização
+lDialogMenuSortSettingsOptions	Personalizar opções da janela
+lDialogMenuSortUsage	Utilização
 lDialogMinimized	Minimizado
 lDialogModifiedDate	Data de modificação
 lDialogMouse	Rato
@@ -301,6 +314,13 @@ lDialogNormal	Normal
 lDialogOff	Desligado
 lDialogOK	OK
 lDialogOn	Ligado
+lDialogOpenSubFolderAccessed	acedido
+lDialogOpenSubFolderCreated	criado
+lDialogOpenSubFolderEnable	Abrir uma sub-pasta automaticamente
+lDialogOpenSubFolderLabel	Seleccionar a pasta para abrir:
+lDialogOpenSubFolderModified	modificada
+lDialogOpenSubFolderMostAnciently	o mais antigo
+lDialogOpenSubFolderMostRecently	o mais recente
 lDialogOpenThisGroup	Abrir este grupo
 lDialogOpenThisMenu	Abrir este menu
 lDialogOptionsPathNotExist	Esta pasta não existe:`n~1~`n`nDeseja criá-la?
@@ -376,7 +396,7 @@ lDialogWindowsFolderIconUpdate	actualizar
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Iniciar em
 lDonateButton	Patrocine este software
-lDonateCheckPrompt	Bem-vindo a esta nova versão do ~1~?`n`nEsta é uma mensagem ÚNICA que só surge até instalar uma nova versão.`n`nO ~1~ é não só GRÁTIS, mas também ISENTO de publicidade desagradável ou adware que pode ser portador de spyware ou malware.`n`n~2~ até agora, ~1~ ajudou-o no seu trabalho diário. Que tal patrocinar este software agora?
+lDonateCheckPrompt	Bem-vindo a esta nova versão do ~1~.`n`nEsta é uma mensagem ÚNICA que só surge até instalar uma nova versão.`n`nO ~1~ é não só GRÁTIS, mas também ISENTO de publicidade desagradável ou adware que pode ser portador de spyware ou malware.`n`n~2~ até agora, ~1~ ajudou-o no seu trabalho diário. Que tal patrocinar este software agora?
 lDonateCheckPrompt2	Nota: Aos utilizadores que gentilmente fizerem uma doação de 5$ ou 5€ ou mais (ou qualquer doação mensal) será fornecido um CÓDIGO DE PATROCINADOR que irá PARAR ~1~.
 lDonateCheckPrompt3	a exibição desta mensagem
 lDonateCheckPrompt4	a exibição de lembretes de patrocínio
@@ -555,6 +575,7 @@ lMenuCommonAppData	Dados de Aplicações (comum)
 lMenuCommonDesktop	Ambiente de Trabalho (comum)
 lMenuCommonStartMenu	Menu Iniciar (comum)
 lMenuCommonStartupMenu	Menu de Arranque (comum)
+lMenuComputerManagement	Gestão do Computador
 lMenuContainerInGui	Favoritos na janela Personalizar
 lMenuContainerInGuiDescription	Mostra um menu com os favoritos exibidos na janela Personalizar, inclusivé quando contém um resultado da pesquisa. Nos resultados da pesquisa, aos nomes dos menus duplicados é anexado o sufixo "[!]" para torná-los únicos.
 lMenuCookies	Cookies
@@ -562,6 +583,7 @@ lMenuCopyLocation	Copiar um Atalho ou URL dos Favoritos
 lMenuCurrentFolders	Reabrir uma Pasta
 lMenuCurrentFoldersDescription	Exibe um menu dinâmico mostrando as pastas já abertas nas janelas do Windows Explorer e Directory Opus. Este menu é actualizado todas as vezes que abrir o menu QAP.`n`nÉ particularmente útil para reabrir uma Pasta quando estiver numa caixa de diálogo de ficheiro e quiser abrir um ficheiro numa pasta já aberta noutra janela.  Veja também "Reabrir Pasta Actual em Caixa de Diálogo".
 lMenuDesktop	Ambiente de Trabalho
+lMenuDiskManagement	Gestão do Disco
 lMenuDownloads	Transferências
 lMenuDrives	Unidades
 lMenuDrivesDescription	Exibe um menu dinâmico mostrando as unidades do seu sistema com etiqueta, espaço livre, capacidade e ícone mostrando o tipo de unidade.`n`nEste menu é actualizado sempre que abrir o menu QAP.
@@ -569,6 +591,7 @@ lMenuDrivesSpace	(~1~ GB livres / ~2~ GB)
 lMenuDynamicMenus	A trabalhar
 lMenuEditIniFile	Editar ~1~
 lMenuEditIniFileDescription	Edita o ficheiro de definições (.ini) activo do Quick Access Popup.
+lMenuEventViewer	Visualizador de Eventos
 lMenuExitApp	Sair ~1~
 lMenuExitAppDescription	Sai do Quick Access Popup, libertando todos os activadores de rato ou teclado e teclas de atalho atribuídas aos favoritos.
 lMenuExternalCatalogue	Adicionar menu de favoritos partilhado do catálogo
@@ -639,6 +662,7 @@ lMenuSwitchSettingsDefault	Mudar para o ficheiro de definições padrão
 lMenuSwitchSettingsDefaultDescription	Reinicia o Quick Access Popup com o ficheiro de definições na sua localização padrão.`n`nSe nstalou o QAP usando o procedimento "instalação em um passo", a localização padrão é na pasta Utilizador (por exemplo, "C:\Utilizadores\Lus\AppData\Roaming\Quick Access Popup").`n`nSe optou pela instalação portátil, a localização padrão é na pasta onde se encontra o programa QuickAccessPopup.exe.
 lMenuSwitchSettingsDescription	 Selecciona outro ficheiro de definições do QAP e reinicia o Quick Access Popup com essas definições (incluindo favoritos e diversas opções).`n`nCertifique-se de que guarda as alterações na janela "Personalizar" antes de reiniciar o QAP.
 lMenuSystemCertificates	Certificados do Sistema
+lMenuTaskManager	Gestor de Tarefas
 lMenuTemplates	Modelos
 lMenuTemporaryFiles	Ficheiros Temporários
 lMenuTools	Ferramentas
@@ -665,6 +689,7 @@ lOopsContainerInGui	O menu dinâmico "~1~" só pode ser inserido no menu: ~2~
 lOopsCouldNotOpenSpecialFolder	O ~1~ não conseguiu abrir a pasta especial: "~2~".
 lOopsEmpty	vazia
 lOopsErrorIniFileDisplayErrorMessage	Exibir de novo esta mensagem de erro para este Menu Partilhado?
+lOopsErrorIniFileDuplicateNames	O favorito "~1~" no menu "~2~" não é exclusivo e foi temporariamente renomeado para "~3~".`n`nPor favor, edite este favorito para lhe dar um nome exclusivo.
 lOopsErrorIniFileModified	Este menu partilhado foi modificado desde o seu carregamento. O menu será actualizado mas a sua última alteração não poderá ser guardada.
 lOopsErrorIniFileReadOnly	Este ficheiro de definições de menu partilhado ou esta localização é SÓ-DE-LEITURA.
 lOopsErrorIniFileRetry	Se o ficheiro de definições estiver numa unidade de rede, tente reiniciar o ~1~ quando a unidade de rede estiver disponível.
@@ -681,6 +706,7 @@ lOopsFavoritesCopied	~1~ favoritos copiados.
 lOopsFileExpandedFrom	Expandido a partir de
 lOopsFileNotFound	Esta localizaÃ§Ã£o nÃ£o existe
 lOopsFirstEnterUrl	Primeiro, introduza um endereço no campo "~1~".
+lOopsFolderLiveAndAutomatic	As opções "~1~" e "~2~" não podem ser activadas em simultâneo.`n`nPor favor, desactive uma destas opções.
 lOopsFtpLocationProtocol	A localização FTP deve começar com "ftp://".
 lOopsHotkeyAlreadyUsed	A tecla de atalho "~1~" já está em uso para "~2~".`n`nPor favor, escolha outra tecla de atalho para "~3~".
 lOopsHotkeyObjectNotFound	~1~ não conseguiu localizar o favorito associado ao ~2~ "~3~".`n`nIsto pode ser uma situação temporária. Tente reiniciar o ~1~.
@@ -695,7 +721,8 @@ lOopsMenuExternalCentralized	menu partilhado centralizado
 lOopsMenuExternalCollaborative	menu partilhado colaborativo
 lOopsMenuExternalPersonalChangedBy	Este menu partilhado pessoal está a ser EDITADO ou tem alterações NÃO GUARDADAS no computador: ~1~.`n`nSe guardar as alterações para este menu aqui, as alterações não guardadas no outro computador serão perdidas e deve cancelar essas alterações quando regressar a esse computador.
 lOopsMenuExternalReservedBy	Este ~1~ está RESERVADO pelo utilizador: ~2~.`n`nAguarde que este utilizador liberte o menu partilhado ou contacte o administrador do sistema.
-lOopsMultipleContainersError	Menus, grupos e menus partilhados só podem ser movidos individualmente. Estes itens serão ignorados.
+lOopsMenuSorted	Este comando não pode ser executado porque este menu é ordenado automaticamente.
+lOopsMultipleContainersError	Menus, grupos e menus partilhados só podem ser copiados ou movidos individualmente. Estes itens serão ignorados.
 lOopsNotAdmin	Não foi possível carregar ~1~ como Administrador.`n`nEstá agora a ser executado como Normal.
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, seleccione um atalho válido.
 lOopsOptionsPathTrayIcon	Ficheiro do ícone da área de notificação
@@ -816,7 +843,7 @@ lOptionsSearchFromCurrent	Procurar a partir do menu actual ou grupo
 lOptionsSearchFromMain	Procurar sempre a partir do menu Principal
 lOptionsSearchResults	Resultados da pesquisa
 lOptionsSearchWithLocale	Procurar usando definições do idioma local (p.e. "é" considerado como "e")
-lOptionsSearchWithStats	Resultados da pesquisa com datas de edição e colunas estatísticas
+lOptionsSearchWithStats	Exibir datas e colunas estatísticas na lista de Favoritos e resultados da procura
 lOptionsSelectBackupFolder	Selecciona o ficheiro de definições da pasta cópia de segurança
 lOptionsSelectCatalogueRoot	Seleccionar a pasta raiz do Catálogo de Menus Partilhados
 lOptionsSelectQAPTempFolder	Criar a Pasta Temporária em:
