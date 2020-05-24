@@ -4158,8 +4158,6 @@ global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 
-global g_intSortContainerCriteria := 0 ; last criteria selected in sort container popup menu
-
 ;---------------------------------
 ; Used in OpenFavorite
 global g_blnAlternativeMenu
@@ -9784,8 +9782,18 @@ UpdateSearchResultContainer: ; refresh container but not listview, called from G
 ReorderFavoritesInGui: ; called from GuiSortSearchResult to reload o_MenuInGui sorted
 ;------------------------------------------------------------
 
-if (A_ThisLabel <> "LoadFavoritesInGuiNoSort" and !o_MenuInGui.AA.intMenuAutoSort)
-	g_intSortContainerCriteria := "" ; reset manual sorting
+if !SearchIsVisible()
+{
+	strThisSortMenu := (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"] ? "menuSortMainMenu" : (o_MenuInGui.AA.intMenuAutoSort ? "menuSortAutomatic" : "menuSortManual"))
+	intNbItemsInSortMenu := 4 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
+	Loop, %intNbItemsInSortMenu% ; remove previous icon, if any
+		Menu, %strThisSortMenu%, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+	if (o_MenuInGui.AA.intCurrentSortCriteria)
+		Menu, %strThisSortMenu%, Icon, % Abs(o_MenuInGui.AA.intCurrentSortCriteria) + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+			, % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
+				+ (IsBetween(o_MenuInGui.AA.intCurrentSortCriteria, -4, -1) or o_MenuInGui.AA.intCurrentSortCriteria > 4 ? 1 : 0) ; +1 for reverse sort (63 or 65)
+				+ (Abs(o_MenuInGui.AA.intCurrentSortCriteria) > 4 ? 2 : 0) ; +2 if date or number, sort numeric
+}
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already loaded
 {
@@ -9821,7 +9829,7 @@ if (A_ThisLabel = "UpdateSearchResultContainer")
 	return
 
 if (o_MenuInGui.AA.intMenuAutoSort and A_ThisLabel <> "LoadFavoritesInGuiNoSort")
-	o_MenuInGui.SortContainer("", g_intSortContainerCriteria, strSortedRows) ; returned value and strSortedRows not used here
+	o_MenuInGui.SortContainer("", strSortedRows) ; returned value and strSortedRows not used here
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; window already locked previously by LoadFavoritesInGui
 	DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while listview is updated
@@ -9848,16 +9856,6 @@ if SearchIsVisible()
 }
 LV_Modify((g_intOriginalMenuPosition ? g_intOriginalMenuPosition : 1), "Select Focus Vis")
 
-if (o_MenuInGui.AA.intMenuAutoSort)
-{
-	Loop, 5 ; remove previous icon, if any
-		Menu, menuSortAutomatic, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
-	Menu, menuSortAutomatic, Icon, % Abs(o_MenuInGui.AA.intMenuAutoSort) + 1 . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
-		+ (o_MenuInGui.AA.intMenuAutoSort = -1 or o_MenuInGui.AA.intMenuAutoSort >= 2 ? 1 : 0) ; reverse sort (63 or 65)
-		+ (Abs(o_MenuInGui.AA.intMenuAutoSort) > 1 ? 2 : 0) ; if date or number, sort numeric
-	g_intSortContainerCriteria := o_MenuInGui.AA.intMenuAutoSort
-}
-
 Gosub, AdjustColumnsWidth
 
 GuiControl, , f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|"
@@ -9875,6 +9873,7 @@ strThisHotkey := ""
 strExternalMenuName := ""
 strFavoriteName := ""
 strFilter := ""
+strThisSortMenu := ""
 
 return
 ;------------------------------------------------------------
@@ -11276,11 +11275,14 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder2" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? " checked" : ""), % o_L["DialogDescending"]
 
 	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria, % o_L["DialogSortBy"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort1 section" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "1" ? " checked" : ""), % o_L["DialogMenuSortFavoriteName"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort2" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "2" ? " checked" : ""), % o_L["DialogMenuSortCreated"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort3" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "3" ? " checked" : ""), % o_L["DialogMenuSortLastModified"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort4" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "4" ? " checked" : ""), % o_L["DialogMenuSortLastUsed"]
-	Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort5" . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = "5" ? " checked" : ""), % o_L["DialogMenuSortUsage"]
+	
+	saSortCriteria := StrSplit(o_L["GuiLvFavoritesHeader"], "|") ; Name|Type|Hotkey|Location or content
+	saSortCriteria.Push(o_L["DialogMenuSortCreated"])
+	saSortCriteria.Push(o_L["DialogMenuSortLastModified"])
+	saSortCriteria.Push(o_L["DialogMenuSortLastUsed"])
+	saSortCriteria.Push(o_L["DialogMenuSortUsage"])
+	for intKey, strCriteria in saSortCriteria
+		Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort" . intKey . (intKey = 1 ? " section" : "") . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = intKey ? " checked" : ""), %strCriteria%
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -11301,6 +11303,8 @@ intTreeViewWidth := ""
 strWindowsAppsDropdownList := ""
 blnIsCustomWindowsApp := ""
 blnFolderInAGroupWithSide := ""
+intKey := ""
+strCriteria := ""
 
 return
 ;------------------------------------------------------------
@@ -11779,11 +11783,8 @@ GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSor
 GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder1
 GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder2
 GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSortCriteria
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort1
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort2
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort3
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort4
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSort5
+Loop, 8
+	GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), % "f_intRadioMenuAutoSort" . A_Index
 
 if (f_blnMenuAutoSortEnable and !o_EditedFavorite.AA.strFavoriteGroupSettings)
 {
@@ -13643,8 +13644,15 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	{
 		if (f_blnMenuAutoSortEnable)
 		{
-			intMenuAutoSort := (f_intRadioMenuAutoSort1 ? 1 : (f_intRadioMenuAutoSort2 ? 2 : (f_intRadioMenuAutoSort3 ? 3
-				: (f_intRadioMenuAutoSort4 ? 4 : (f_intRadioMenuAutoSort5 ? 5 : 0)))))
+			Loop, 8
+			{
+				GuiControlGet, blnRadioButtonValue, , % "f_intRadioMenuAutoSort" . A_Index
+				if (blnRadioButtonValue)
+				{
+					intMenuAutoSort := A_Index
+					break
+				}
+			}
 			o_EditedFavorite.AA.strFavoriteGroupSettings := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; 2 descending else 1 ascending
 		}
 		else
@@ -13842,6 +13850,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	strExpandedNewFavoriteLocation := ""
 	oExternalMenu := ""
 	oDuplicateFavorite := ""
+	blnRadioButtonValue := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
@@ -14647,6 +14656,7 @@ GuiSortContainer8:
 GuiSortContainerEditMenu:
 ;------------------------------------------------------------
 ; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
+; A_ThisMenu: menuSortAutomatic, menuSortManual or menuSortMainMenu
 
 varSortContainerCriteria := StrReplace(A_ThisLabel, "GuiSortContainer")
 
@@ -14657,17 +14667,11 @@ if (varSortContainerCriteria = "EditMenu")
 }
 ; else continue
 
-intPreviousSortContainerCriteria := g_intSortContainerCriteria
-g_intSortContainerCriteria := varSortContainerCriteria
+intPreviousSortContainerCriteria := o_MenuInGui.AA.intCurrentSortCriteria
+o_MenuInGui.AA.intCurrentSortCriteria := varSortContainerCriteria
 
-if (g_intSortContainerCriteria = Abs(intPreviousSortContainerCriteria))
-	g_intSortContainerCriteria := -intPreviousSortContainerCriteria 
-
-if (intPreviousSortContainerCriteria)
-	Menu, %A_ThisMenu%, Icon, % Abs(intPreviousSortContainerCriteria) + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
-Menu, %A_ThisMenu%, Icon, % Abs(g_intSortContainerCriteria) + 1 . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
-	+ (g_intSortContainerCriteria = -1 or g_intSortContainerCriteria >= 5 ? 1 : 0) ; reverse sort (63 or 65)
-	+ (Abs(g_intSortContainerCriteria) >= 5 ? 2 : 0) ; if date or number, sort numeric
+if (o_MenuInGui.AA.intCurrentSortCriteria = Abs(intPreviousSortContainerCriteria))
+	o_MenuInGui.AA.intCurrentSortCriteria := -intPreviousSortContainerCriteria 
 
 gosub, CheckShowSettings
 
@@ -14679,8 +14683,8 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 
 if (A_ThisMenu = "menuSortAutomatic")
 {
-	o_MenuInGui.AA.intMenuAutoSort := g_intSortContainerCriteria
-	o_MenuInGui.AA.oParentMenu.SA[o_MenuInGui.GetPositionOfContainerFavoriteInParentContainer()].AA.strFavoriteGroupSettings := g_intSortContainerCriteria
+	o_MenuInGui.AA.intMenuAutoSort := o_MenuInGui.AA.intCurrentSortCriteria
+	o_MenuInGui.AA.oParentMenu.SA[o_MenuInGui.GetPositionOfContainerFavoriteInParentContainer()].AA.strFavoriteGroupSettings := o_MenuInGui.AA.intCurrentSortCriteria
 	Gosub, EnableSaveAndCancel ; enable save button
 	Gosub, LoadFavoritesInGui
 }
@@ -14709,7 +14713,7 @@ if !(blnManyItemsSelected) ; if one or no row is selected, select all and sort u
 	
 Gosub, GetSelectedRows ; updated strSelectedRows (pipe delimited list of selected row numbers)
 
-if o_MenuInGui.SortContainer(strSelectedRows, g_intSortContainerCriteria, strSortedRows)
+if o_MenuInGui.SortContainer(strSelectedRows, strSortedRows)
 {
 	gosub, LoadFavoritesInGuiNoSort ; refresh menu in gui, avoid double sort for auto sort menus by calling "no sort"
 	
@@ -24194,19 +24198,19 @@ class SpecialFolders
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("%windir%\system32\taskmgr.exe", "", -1, "", "", ""
 			, o_L["MenuTaskManager"], "iconControlPanel"
-			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "CLS", "CLS", "CLS", "CLS", "NEW", "NEW", "CLS"
 			, "2-Power User")
 		this.AddSpecialFolderObject("%windir%\system32\diskmgmt.msc", "", -1, "", "", ""
 			, o_L["MenuDiskManagement"], "iconDrives"
-			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "CLS", "CLS", "CLS", "CLS", "NEW", "NEW", "CLS"
 			, "2-Power User")
 		this.AddSpecialFolderObject("%windir%\system32\compmgmt.msc", "", -1, "", "", ""
 			, o_L["MenuComputerManagement"], "iconMyComputer"
-			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "CLS", "CLS", "CLS", "CLS", "NEW", "NEW", "CLS"
 			, "5-Hardware")
 		this.AddSpecialFolderObject("%windir%\system32\eventvwr.exe", "", -1, "", "", ""
 			, o_L["MenuEventViewer"], "iconMyComputer"
-			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "CLS", "CLS", "CLS", "CLS", "NEW", "NEW", "CLS"
 			, "3-Sysadmin")
 		
 		;---------------------
@@ -26098,7 +26102,7 @@ class Container
 			ToolTip, % o_L["ToolTipBuilding"] . "`n" . this.AA.strMenuPath
 		
 		if (this.AA.intMenuAutoSort)
-			this.SortContainer("", "", strSortedItems)
+			this.SortContainer("", strSortedItems)
 		
 		Loop, % this.SA.MaxIndex()
 		{
@@ -27080,9 +27084,9 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	SortContainer(strItems, intCriteria, ByRef strSortedItems)
+	SortContainer(strItems, ByRef strSortedItems)
 	; if strItems is empty, sort all favorites
-	; if intCriteria is empty, use criteria in AA.intMenuAutoSort, else intCriteria contains the sort criteria for manual sort in gui
+	; if this.AA.intCurrentSortCriteria is empty, use criteria in AA.intMenuAutoSort, else this.AA.intCurrentSortCriteria contains the sort criteria for manual sort in gui
 	; returns the number of sorted items (used as boolean) and byref values
 	;---------------------------------------------------------
 	{
@@ -27094,8 +27098,8 @@ class Container
 		}
 		saItems := StrSplit(strItems, "|")
 		
-		if !(intCriteria)
-			intCriteria := this.AA.intMenuAutoSort ; container auto sort
+		if !(this.AA.intCurrentSortCriteria)
+			this.AA.intCurrentSortCriteria := this.AA.intMenuAutoSort ; container auto sort
 		
 		intItemsToSort := 0 ; counter, sort only if at least 2 items to sort
 		strSortedItems := "" ; keep track of sorted items to re-select only these items
@@ -27105,13 +27109,13 @@ class Container
 		{
 			intItemsToSort++
 			strSortedItems .= saItems[A_Index] . "|"
-			strToSort .= this.GetCriteriaSortContainer(Abs(intCriteria)) . "|" . A_LoopField . "`n" ; name | original order
+			strToSort .= this.GetCriteriaSortContainer() . "|" . A_LoopField . "`n" ; name | original order
 		}
 		
 		if (intItemsToSort > 1) ; sort only if required
 		{
 			strSortedItems := SubStr(strSortedItems, 1, -1) ; trim last char
-			strReverse := (IsBetween(intCriteria, -4, -1) or intCriteria >= 5 ? "R" : "")
+			strReverse := (IsBetween(this.AA.intCurrentSortCriteria, -4, -1) or this.AA.intCurrentSortCriteria >= 5 ? "R" : "")
 			; sort name|position on names using locale
 			Sort, strToSort, % "CL" . strReverse ; no need for N (numeric) sort for usage because criteria is left padded
 			
@@ -27131,14 +27135,13 @@ class Container
 	;---------------------------------------------------------
 	
 	;------------------------------------------------------------
-	GetCriteriaSortContainer(intAbsSortCriteria)
-	; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
+	GetCriteriaSortContainer()
+	; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Last edit date, 6 Created date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 	;------------------------------------------------------------
 	{
-		strFavoriteName := StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "")
-		; sort criteria 1 name, 2 created date, 3 last edit date, 4 last used date, 5 usage, reverse order if negative
-		; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Created date, 6 Last edit date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
+		strFavoriteName := StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "") ; used as 2nd sort criteria for empty or identical primary sort criteria
 		
+		intAbsSortCriteria := Abs(this.AA.intCurrentSortCriteria)
 		if (intAbsSortCriteria = "1")
 			strCriteria := strFavoriteName
 		else if (intAbsSortCriteria = "2")
