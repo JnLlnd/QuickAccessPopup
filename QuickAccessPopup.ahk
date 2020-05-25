@@ -9786,12 +9786,16 @@ if !SearchIsVisible()
 {
 	strThisSortMenu := (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"] ? "menuSortMainMenu" : (o_MenuInGui.AA.intMenuAutoSort ? "menuSortAutomatic" : "menuSortManual"))
 	intNbItemsInSortMenu := 4 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
-	Loop, %intNbItemsInSortMenu% ; remove previous icon, if any
+	
+	; remove previous icon, if any
+	Loop, %intNbItemsInSortMenu%
 		Menu, %strThisSortMenu%, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+	
+	; set current sort icon
 	if (o_MenuInGui.AA.intCurrentSortCriteria)
 		Menu, %strThisSortMenu%, Icon, % Abs(o_MenuInGui.AA.intCurrentSortCriteria) + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 			, % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
-				+ (IsBetween(o_MenuInGui.AA.intCurrentSortCriteria, -4, -1) or o_MenuInGui.AA.intCurrentSortCriteria > 4 ? 1 : 0) ; +1 for reverse sort (63 or 65)
+				+ (o_MenuInGui.GetSortOrder() ? 0 : 1) ; +1 for reverse sort (63 or 65)
 				+ (Abs(o_MenuInGui.AA.intCurrentSortCriteria) > 4 ? 2 : 0) ; +2 if date or number, sort numeric
 }
 
@@ -13653,11 +13657,19 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 					break
 				}
 			}
-			o_EditedFavorite.AA.strFavoriteGroupSettings := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; 2 descending else 1 ascending
+			intMenuAutoSort := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; 2 descending else 1 ascending
+			
+			if (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) > 4 and !o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+				or (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) > 6 and !g_blnUsageDbEnabled)
+				Oops(2, o_L["OopsSortOnHiddenColumns"], o_L["OptionsSearchWithStats"])
 		}
 		else
-			o_EditedFavorite.AA.strFavoriteGroupSettings := 0 ; manual, no auto sorting
-		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := o_EditedFavorite.AA.strFavoriteGroupSettings ; update menu object
+			intMenuAutoSort := 0 ; manual, no auto sorting
+		
+		o_EditedFavorite.AA.strFavoriteGroupSettings := intMenuAutoSort ; value saved to settings file
+		; use o_EditedFavorite.AA.oSubMenu.AA because when this menu is edited from sort menu, o_MenuInGui contains the menu's parent menu
+		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := intMenuAutoSort ; for when refreshing this menu
+		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := intMenuAutoSort ; for future load of this menu before relaunching QAP
 	}
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
@@ -27115,9 +27127,8 @@ class Container
 		if (intItemsToSort > 1) ; sort only if required
 		{
 			strSortedItems := SubStr(strSortedItems, 1, -1) ; trim last char
-			strReverse := (IsBetween(this.AA.intCurrentSortCriteria, -4, -1) or this.AA.intCurrentSortCriteria >= 5 ? "R" : "")
 			; sort name|position on names using locale
-			Sort, strToSort, % "CL" . strReverse ; no need for N (numeric) sort for usage because criteria is left padded
+			Sort, strToSort, % "CL" . (this.GetSortOrder() ? "" : "R") ; no need for N (numeric) sort for usage because criteria is left padded
 			
 			; get copies of items to move
 			aaItemsToSortCopies := Object()
@@ -27172,6 +27183,17 @@ class Container
 	}
 	;------------------------------------------------------------
 
+	;------------------------------------------------------------
+	GetSortOrder()
+	; returns true for forward sort order and false for reverse order
+	;------------------------------------------------------------
+	{
+		; in auto-sorted menu, sort reverse value is negative
+		; in manual sort menu, if value is positive sort reverse dates and numeric columns, and if negative sort reverse text columns
+		return (this.AA.intMenuAutoSort ? (this.AA.intCurrentSortCriteria < 0 ? false : true)
+			: (IsBetween(this.AA.intCurrentSortCriteria, -4, -1) or this.AA.intCurrentSortCriteria >= 5 ? false : true))
+	}
+	
 	;------------------------------------------------------------
 	OopsMenuIsSorted()
 	;------------------------------------------------------------
