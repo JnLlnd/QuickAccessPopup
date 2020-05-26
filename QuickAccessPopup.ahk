@@ -10891,8 +10891,6 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		g_saGroupInGuiSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 		g_saGroupInGuiSettings := "" ; value not used if not a group
-	
-	o_EditedFavorite.AA.strFavoriteDateModified := A_NowUTC
 }
 else ; add favorite
 {
@@ -11040,9 +11038,6 @@ else ; add favorite
 		; set default values for open subfolder option
 		o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0 ; folder itself
 	}
-
-	o_EditedFavorite.AA.strFavoriteDateCreated := A_NowUTC
-	o_EditedFavorite.AA.strFavoriteDateModified := o_EditedFavorite.AA.strFavoriteDateCreated
 }
 
 blnIsGroupMember := (o_MenuInGui.AA.strMenuType = "Group")
@@ -11274,19 +11269,21 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (o_EditedFavorite.AA.strFavoriteGroupSettings ? "checked" : "")
 		, % o_L["DialogMenuSortEnable"]
 		
-	Gui, 2:Add, Text, y+5 x260 section vf_lblMenuAutoSortOrder, % o_L["DialogSortOrder"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder1 group" . (o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? " checked" : ""), % o_L["DialogAscending"]
-	Gui, 2:Add, Radio, % "y+5 x260 vf_intRadioMenuAutoSortOrder2" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? " checked" : ""), % o_L["DialogDescending"]
+	Gui, 2:Add, Text, y+5 x340 w150 section vf_lblMenuAutoSortOrder, % o_L["DialogSortOrder"] . ":"
+	Gui, 2:Add, Radio, % "y+5 x340 w150 vf_intRadioMenuAutoSortOrder1 group" . (o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? " checked" : ""), % o_L["DialogAscending"]
+	Gui, 2:Add, Radio, % "y+5 x340 w150 vf_intRadioMenuAutoSortOrder2" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? " checked" : ""), % o_L["DialogDescending"]
 
 	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria, % o_L["DialogSortBy"] . ":"
 	
 	saSortCriteria := StrSplit(o_L["GuiLvFavoritesHeader"], "|") ; Name|Type|Hotkey|Location or content
-	saSortCriteria.Push(o_L["DialogMenuSortCreated"])
 	saSortCriteria.Push(o_L["DialogMenuSortLastModified"])
+	saSortCriteria.Push(o_L["DialogMenuSortCreated"])
 	saSortCriteria.Push(o_L["DialogMenuSortLastUsed"])
 	saSortCriteria.Push(o_L["DialogMenuSortUsage"])
+	
 	for intKey, strCriteria in saSortCriteria
-		Gui, 2:Add, Radio, % "y+5 x20 vf_intRadioMenuAutoSort" . intKey . (intKey = 1 ? " section" : "") . (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = intKey ? " checked" : ""), %strCriteria%
+		Gui, 2:Add, Radio, % (intKey = 5 ? "ys" : "y+5") . " x" . (intKey <= 4 ? 20 : 180) . " w150 vf_intRadioMenuAutoSort" . intKey . (intKey = 1 ? " section" : "") 
+			. (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = intKey ? " checked" : ""), %strCriteria%
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -13821,7 +13818,11 @@ else ; update listview
 	
 	g_intNewItemPos := "" ; delete it for next use
 }
-	
+
+o_EditedFavorite.AA.strFavoriteDateModified := A_NowUTC
+if !InStr("GuiEditFavoriteSave|GuiMoveOneFavoriteSave|", strThisLabel . "|") ; item modified: GuiEditFavoriteSave, GuiMoveOneFavoriteSave (for all others, item is created)
+	o_EditedFavorite.AA.strFavoriteDateCreated := A_NowUTC
+
 ; if favorite's original or destination menu are in an external settings file, flag that they need to be saved
 if o_Containers.AA[strDestinationMenu].FavoriteIsUnderExternalMenu(oExternalMenu)
 	oExternalMenu.AA.blnNeedSave := true
@@ -27310,8 +27311,8 @@ class Container
 			this.InsertItemValue("strFavoriteHotstring", StrReplace(saFavorite[21], g_strEscapePipe, "|")) ; (changed in v8.7.1.96) hotstring to launch this favorite (AHK format: ":option:trigger")
 			this.InsertItemValue("strFavoriteFolderLiveSort", saFavorite[22]) ; two chars: sort order A or D and sort criteria 1 file name, 2 extension, 3 size or 4 modified date
 			this.InsertItemValue("strFavoriteSoundLocation", StrReplace(saFavorite[23], g_strEscapePipe, "|")) ; path and file of sound to play when launching the favorite
-			this.InsertItemValue("strFavoriteDateCreated", saFavorite[24]) ; UTC date of creation of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
-			this.InsertItemValue("strFavoriteDateModified", saFavorite[25]) ; UTC date of last modification of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
+			this.InsertItemValue("strFavoriteDateCreated", (StrLen(saFavorite[24]) ? saFavorite[24] : A_NowUTC)) ; UTC date of creation of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
+			this.InsertItemValue("strFavoriteDateModified", (StrLen(saFavorite[25]) ? saFavorite[25] : A_NowUTC)) ; UTC date of last modification of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
 			this.InsertItemValue("intFavoriteUsageDb", saFavorite[26]) ; level of usage of this favorite (TBD - combo of occurrences in Recent Items and launches from QAP menu) (to be added in v9.2)
 			this.InsertItemValue("blnFavoriteFolderLiveHideIcons", (StrLen(saFavorite[27]) ? saFavorite[27] : false)) ; hide icons in live folders, pre-existing and default false
 			this.InsertItemValue("blnFavoriteFolderLiveShowHidden", (StrLen(saFavorite[28]) ? Mod(saFavorite[28], 2) : false)) ; show hidden files, true if value is unpair, default false
@@ -29052,7 +29053,7 @@ class Utc2LocalTime
 	__New()
 	;---------------------------------------------------------
 	{
-		intMinutesUtcOffset := A_Now
+		intMinutes := A_Now
 
 		EnvSub, intMinutes, A_NowUTC, Minutes
 		this.intMinutesUtcOffset := intMinutes
