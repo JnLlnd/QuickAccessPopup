@@ -26,7 +26,7 @@ lControlToolTipOpenMenuContainingSearchItem	Abrir o submenu ou grupo contendo o 
 lControlToolTipParentMenu	Ir para o menu principal
 lControlToolTipPreviousMenu	Voltar para o menu anterior
 lControlToolTipSearchBoxClear	Limpa a caixa de pesquisa e exibe todos os favoritos
-lControlToolTipSearchBoxExtended	Pesquisa a partir do menu atual por nomes de favoritos *e* v√°rias propriedades
+lControlToolTipSearchBoxExtended	Pesquisa a partir do menu atual por nomes de favoritos *e* v·rias propriedades
 lControlToolTipSearchButton	Pesquisa por favoritos
 lControlToolTipSeparator	Inserir um separador no menu
 lControlToolTipShowContainerInGui	Exibir um menu com favoritos na janela Personalizar
@@ -269,7 +269,7 @@ lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir Ìcone padr„o
 lDialogIconsManageTitle	Gerenciar Õcones - ~1~ ~2~
 lDialogIconsSelectPrompt	Clique em um Ìcone para selecion·-lo.
-lDialogIconsSelectTitle	Selecionar √çcone - ~1~ ~2~
+lDialogIconsSelectTitle	Selecionar Õcone - ~1~ ~2~
 lDialogInputExample	Input Exemplo
 lDialogInputParameter	Par‚metro de entrada - ~1~
 lDialogInvalidHotkey	Com o layout de teclado atual do sistema, a tecla de atalho "~1~" n„o pode ser usada como disparador para o menu popup (erro 'n„o È uma tecla v·lida').`n`nPor favor, abra a janela "Personalizar" pelo menu da ¡rea de NotificaÁ„o e clique em "OpÁıes". Nesta caixa de di·logo, escolha outro atalho para "~2~".
@@ -303,7 +303,7 @@ lDialogMouseButtonsTextShort	Mouse Esquerdo|Mouse Meio|Mouse Direito|Mouse Espec
 lDialogMoveFavoritesTitle	Mover Favoritos - ~1~ ~2~
 lDialogMoveFavoriteTitle	Mover Favorito - ~1~ ~2~
 lDialogMoveSettingsFail	Ocorreu um erro ao copiar a pasta de configuraÁıes.`n`nMover pasta de configuraÁıes cancelado.
-lDialogMoveSettingsNotDefault	Voc√™ n√£o pode mover a Pasta Configura√ß√µes quando um arquivo de configura√ß√µes alternativo est√° carregado.`n`nPor favor, recarregue o arquivo de configura√ß√µes padr√£o e tente novamente.
+lDialogMoveSettingsNotDefault	VocÍ n„o pode mover a Pasta ConfiguraÁıes quando um arquivo de configuraÁıes alternativo est· carregado.`n`nPor favor, recarregue o arquivo de configuraÁıes padr„o e tente novamente.
 lDialogMoveSettingsReload	O ~1~ precisa ser reiniciado...
 lDialogMoveSettingsSuccess	Arquivos de configuraÁ„o copiados com sucesso.`n`nPasta antiga:`n~1~`n`nNova pasta: `n~2~`n`nOs arquivos na pasta antiga n„o foram excluÌdos. Exclua-os quando quiser apÛs fechar o ~3~.
 lDialogMoveSettingsUnder	VocÍ n„o pode mover a pasta de configuraÁıes para ela mesma. Escolha outro destino.
@@ -473,11 +473,11 @@ lGuiOptionsDescription	Exibe a caixa de di·logo "OpÁıes" para fazer o QAP funcio
 lGuiPassword	Senha
 lGuiPasswordNotEncripted	Nota: a senha N√O ser· criptografada ao ser enviada pela Internet.
 lGuiQuickAddNewSnippet	este novo recorte
-lGuiQuickAddSnippet	Adicionar Recorte R√°pido
-lGuiQuickAddSnippetDescription	Cria rapidamente um Recorte favorito e seu disparador de Texto de Substitui√ß√£o na mesma caixa de di√°logo. Se a √Årea de Transfer√™ncia do Windows conter texto, ele ser√° usado nos valores padr√£o. Use a caixa de di√°logo "Editar Favorito" regular para definir mais op√ß√µes avan√ßadas.
+lGuiQuickAddSnippet	Adicionar Recorte R·pido
+lGuiQuickAddSnippetDescription	Cria rapidamente um Recorte favorito e seu disparador de Texto de SubstituiÁ„o na mesma caixa de di·logo. Se a ¡rea de TransferÍncia do Windows conter texto, ele ser· usado nos valores padr„o. Use a caixa de di·logo "Editar Favorito" regular para definir mais opÁıes avanÁadas.
 lGuiQuickAddSnippetExample	Digite ~1~ no editor de texto para expandi-lo.
 lGuiQuickAddSnippetExampleName	Exemplo de Recorte
-lGuiQuickAddSnippetTitle	Adicionar Recorte R√°pido - ~1~ ~2~
+lGuiQuickAddSnippetTitle	Adicionar Recorte R·pido - ~1~ ~2~
 lGuiRemoveFavorite	Remover
 lGuiResetDefault	Redefinir tecla de atalho padr„o
 lGuiSave	Salvar
@@ -486,8 +486,8 @@ lGuiSaving	Salvando
 lGuiSubmenuDropdownLabel	Menu ou grupo para editar:
 lGuiTitle	Personalizar - ~1~ ~2~
 lHelpMenuKnowledgeBase	Base de Conhecimento
-lHelpMenuQuickStart	In√≠cio R√°pido
-lHelpMenuSupportForum	F√≥rum de Suporte
+lHelpMenuQuickStart	InÌcio R·pido
+lHelpMenuSupportForum	FÛrum de Suporte
 lHelpTabAddingFavorite	Adicionando Favoritos
 lHelpTabGettingStarted	ComeÁando
 lHelpTabQAPFeatures	Recursos do QAP
@@ -617,7 +617,7 @@ lMenuMySpecialMenu	Minhas Pastas Especiais
 lMenuMyVideo	Meus VÌdeos
 lMenuMyWindowsAppsMenu	Meus Aplicativos do Windows
 lMenuNoCurrentFolder	Nenhuma pasta aberta atualmente...
-lMenuOpenBackupDirectory	Abrir Pasta de Backup das Configura√ß√µes do QAP
+lMenuOpenBackupDirectory	Abrir Pasta de Backup das ConfiguraÁıes do QAP
 lMenuOpenWorkingDirectory	Abrir Pasta de ConfiguraÁıes do QAP
 lMenuOptions	OpÁıes
 lMenuPictures	Imagens
@@ -679,8 +679,8 @@ lMessengerHelp	Pesquise por "Messenger" em www.QuickAccessPopup.com para ajuda.
 lNavigateFileError	Ocorreu um erro ao abrir a pasta:`n~1~.
 lNavigateSpecialError	Ocorreu um erro ao abrir a pasta especial #~1~.
 lOopsAddThisFolderTip	Para melhores resultados com o comando "Adicionar Pasta Ativa ou P·gina da Web":`n`n1) Ative a janela ~1~ contendo a pasta ou link para adicionar ao seu menu.`n2) Abra o menu popup menu usando ~2~.`n3) Selecione "Adicionar Pasta Ativa ou P·gina da Web" e salve seu novo favorito.
-lOopsAlternativeMenuModifiersDuplicates	O Modificador do Menu Alternativo "~1~" √© usado duas vezes.`n`nPor favor, certifique-se de que cada modificador √© usado somente uma vez.
-lOopsAlternativeNotSupported	O comando do menu Alternativo "~1~" n√£o √© suportado para favoritos do tipo "~2~".
+lOopsAlternativeMenuModifiersDuplicates	O Modificador do Menu Alternativo "~1~" È usado duas vezes.`n`nPor favor, certifique-se de que cada modificador È usado somente uma vez.
+lOopsAlternativeNotSupported	O comando do menu Alternativo "~1~" n„o È suportado para favoritos do tipo "~2~".
 lOopsAmpersandInName	O 'e' comercial "&" em nomes do menu do Windows È usado para definir atalhos de teclado. Para exibir um 'e' comercial no nome do menu, entre "&&".`n`nPara mais informaÁıes, pesquise "ampersand" no FAQ do site do QAP.
 lOopsCannotCopyFavorite	Favoritos do tipo "~1~" n„o podem ser copiados.
 lOopsCannotMoveToSelf	VocÍ n„o pode mover favoritos para o seu local atual. Por favor, selecione outro destino.
@@ -701,7 +701,7 @@ lOopsExternalNotAllowedUnderExternal	Menus compartilhados n„o s„o permitidos den
 lOopsExternalReadOnlyAlert	Menus compartilhados do tipo "Centralizado" somente podem ser editados pelo(s) usu·rio(s) no campo "~1~" (ou abrindo o arquivo ini no disco compartilhado usando um editor de texto).`n`nSeu nome de usu·rio È: "~2~".`nO nome do computador È: "~3~".
 lOopsExternalReadOnlyAlertUsernameAdded	Seu nome de usu·rio foi adicionado automaticamente ‡ lista de "Usu·rios com acesso de escrita".
 lOopsExternalSelectType	Por favor, selecione o tipo de menu Compartilhado na aba "Menu compartilhado".
-lOopsExternalUnderExternalError	O seguinte menu compartilhado inclui um menu compartilhado:`n~1~`n`nMenus compartilhados n√£o podem incluir submenus compartilhados. Por favor, edite este menu compartilhado para remover o seu submenu compartilhado.
+lOopsExternalUnderExternalError	O seguinte menu compartilhado inclui um menu compartilhado:`n~1~`n`nMenus compartilhados n„o podem incluir submenus compartilhados. Por favor, edite este menu compartilhado para remover o seu submenu compartilhado.
 lOopsFavoritesCopied	~1~ favoritos copiados.
 lOopsFileExpandedFrom	Expandido de
 lOopsFileNotFound	Este local n„o existe
@@ -729,7 +729,7 @@ lOopsOptionsPathTrayIcon	Arquivo de Ìcone da ¡rea de NotificaÁ„o
 lOopsOSVerrsionError	O ~1~ necessita do Window 7 ou sistema operacional mais recente. Usu·rios do Windows Vista e XP podem usar o Folders Popup, que È compatÌvel com estas versıes.`n`nDeseja visitar o site do Folders Popup?
 lOopsSelectedItemDialogBoxes	O item selecionado n„o pÙde ser detectado nas caixas de di·logo.
 lOopsSelectedItemTotalCommander	O item selecionado n„o pÙde ser detectado nas janelas do Total Commander.
-lOopsSortUpToSeparator	Classifica√ß√£o feita at√© o primeiro separador.
+lOopsSortUpToSeparator	ClassificaÁ„o feita atÈ o primeiro separador.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	Ocorreu um erro ao tentar abrir este favorito. Por favor, tente novamente...
 lOopsUsageDbSQLiteMissing	Arquivos de recursos SQLite faltando:`n`n~1~`nN„o foi possÌvel criar os menus de Itens Frequentes.
@@ -897,8 +897,8 @@ lReloadPrompt	~1~ foi alterado para ~2~. Deseja recarregar ~3~ em ~2~ agora? Alt
 lSponsoredName	Este software È gentilmente patrocinador por ~1~
 lSponsoredNone	Por favor, clique aqui para patrocinar este software
 lSponsoredUpdate	Por favor, atualize seu cÛdigo de doaÁ„o (n„o È necess·rio doar novamente)
-lSponsorRemove	Remover c√≥digo do patrocinador
-lSponsorRemoved	C√≥digo do patrocinador removido
+lSponsorRemove	Remover cÛdigo do patrocinador
+lSponsorRemoved	CÛdigo do patrocinador removido
 lTCMenuName	Lista de Acesso de Pastas do TC
 lTCMenuNameDescription	Para usu·rios do Total Commander (TC), exibe um menu din‚mico criado com os favoritos adicionados na hotlist do TC como encontrados no arquivo wincdm.ini.`n`nDefina o local do arquivo wincdm.ini em "OpÁıes", aba "Gerenciadores de Arquivos". Se o TC estava selecionado quando vocÍ instalou o QAP, a hotlist de Pastas foi automaticamente adicionada ao seu menu.
 lTCWinCmdLocation	Local do WinCmd.ini
