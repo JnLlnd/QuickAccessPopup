@@ -31,8 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: v10.4.9.4 (2020-05-??)
-- update language file for French
+Version BETA: v10.4.9.4 (2020-05-26)
+- allow sorting on columns "Type", "Hotkey" and "Location or content" in favorites list (both for manual and automatic sorting)
+- display an alert message if setting automatic sorting on a column not displayed in the favorites list (see "Display dates and stats" in "Options, Customize Window")
+- fix various bugs related using the "Sort" popup menu to sort favorites in menus
+- fix bug when opening the new Special folders "Task Mamaner", "Disk Management", "Computer Management" and "Event Viewer" in Total Commander and Directory Opus
+- fix bug updating the created date and last modified date when saving favorites
+- fix bug when converting UTC time to local time
+- fix file encoding errors in PT-BR translation
+- update French, Korean, Portuguese, Brazilian Portuguese, Russian, German, Italian, Dutch and Chinese language files for v10.5
 
 Version BETA: v10.4.9.3 (2020-05-21)
 - add six new entries to QAP Special Folders in
@@ -17984,11 +17991,11 @@ strLatestVersionBeta := objLatestVersions[2]
 strLatestVersionAlpha := objLatestVersions[3]
 
 ; DEGUG VALUES
-; g_strCurrentVersion := "9.9.0.8"
+; g_strCurrentVersion := "10.4.9.3"
 ; strLatestVersionAlpha := "9.3.1"
 ; strLatestUsedAlpha := "1.1"
 ; strLatestSkippedAlpha := "9.3.2"
-; strLatestVersionBeta := "9.3.2"
+; strLatestVersionBeta := "10.4.9.3"
 ; strLatestUsedBeta := "1.1"
 ; strLatestSkippedBeta := "9.3.1"
 ; strLatestVersionProd := "9.2"
