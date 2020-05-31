@@ -10848,11 +10848,10 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		o_MenuInGui := o_MenuInGui.AA.oParentMenu ; switch o_MenuInGui with parent container (switched back after item is saved)
 	}
 	else
-		if !(g_blnOriginalMenuPositionKeep)
-		{
+		if !(g_blnOriginalMenuPositionKeep) ; avoid overwriting the position set in AlternativeEditFavorite
 			g_intOriginalMenuPosition := LV_GetNext()
-			g_blnOriginalMenuPositionKeep := false
-		}
+		else
+			g_blnOriginalMenuPositionKeep := false ; reset the flag for next uses
 
 	if !(g_intOriginalMenuPosition)
 	{
