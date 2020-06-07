@@ -3973,7 +3973,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.4.9.4
+;@Ahk2Exe-SetVersion 10.4.9.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4087,7 +4087,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.4.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.4.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -5790,8 +5790,8 @@ return
 CleanUpBeforeExit:
 ;-----------------------------------------------------------
 
-; if (o_Settings.Launch.blnDiagMode.IniValue)
-	; Diag("ListLines", ScriptInfo("ListLines"))
+if (o_Settings.Launch.blnDiagMode.IniValue)
+	Diag("ListLines", ScriptInfo("ListLines"), "")
 
 DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while restoring windo
 
@@ -21455,7 +21455,7 @@ ScriptInfo(Command)
 ; From Lexikos (https://autohotkey.com/boards/viewtopic.php?t=9656)
 ; Returns the text that would have been shown in AutoHotkey's main window if you had called Command
 ; Used to retreive last Lines excuted when exiting if diag mode Enabled
-; Test script (retain About 400 last Lines fo code):
+; Test script (retain about 400 last Lines fo code):
 	; #InstallKeybdHook
 	; Loop, 1000
 		; A := A_Index
