@@ -1,7 +1,7 @@
 ;
 ; DO NOT RUN FROM INNO SETUP EDITOR
 ; THIS SCRIPT REQUIRES ENVIRONMENT VARIABLES FROM BATCH
-; E:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Compile-v8.bat
+; C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Compile-v8.bat
 ;
 
 #define MyBetaProd GetEnv('QAPBETAPROD')
@@ -55,10 +55,10 @@ AppUpdatesURL={#MyAppURL}
 AppCopyright={#MyAppCopyright}{#MyDateYearString}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-LicenseFile=E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\license.txt
+LicenseFile=C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\license.txt
 OutputDir=C:\temp\InnoSetup-OutputDir\
 OutputBaseFilename={#MyAppNameLower}-setup{#MyBetaProd}
-SetupIconFile=E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#MyAppNameNoSpace}{#MyBetaProd}.ico
+SetupIconFile=C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#MyAppNameNoSpace}{#MyBetaProd}.ico
 Compression=lzma
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64
@@ -97,17 +97,17 @@ Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
 Name: "{commonappdata}\{#MyAppName}" 
 
 [Files]
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\build-v8{#MyBetaProd}\{#MyAppNameNoSpace}-64-bit.exe"; DestDir: "{app}"; DestName: "{#MyAppNameNoSpace}.exe"; Check: IsWin64; Flags: 64bit ignoreversion signonce
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\build-v8{#MyBetaProd}\{#MyAppNameNoSpace}-32-bit.exe"; DestDir: "{app}"; DestName: "{#MyAppNameNoSpace}.exe"; Check: "not IsWin64"; Flags: 32bit ignoreversion signonce
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#QAPmessengerVersionFileName}"; DestDir: "{app}"; DestName: "QAPmessenger.exe"; Flags: ignoreversion signonce
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\Setup-Only\_do_not_remove_or_rename.txt"; DestDir: "{app}"; DestName: "_do_not_remove_or_rename.txt"; Flags: ignoreversion
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#MyAppNameNoSpace}.ico"; DestDir: "{app}"; DestName: "{#MyAppNameNoSpace}.ico"; Flags: ignoreversion
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#JLicons}"; DestDir: "{commonappdata}\{#JLdir}"; DestName: "JLicons.dll"; Flags: sharedfile ignoreversion signonce
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\Setup-Only\_JeanLalonde_read-me.txt"; DestDir: "{commonappdata}\{#JLdir}"; DestName: "_read-me.txt"; Flags: sharedfile ignoreversion
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-64-bit.dll"; DestDir: "{app}"; DestName: "{#SQLite}.dll"; Check: IsWin64; Flags: 64bit ignoreversion signonce
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-32-bit.dll"; DestDir: "{app}"; DestName: "{#SQLite}.dll"; Check: not IsWin64; Flags: 32bit ignoreversion signonce
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-64-bit.def"; DestDir: "{app}"; DestName: "{#SQLite}.def"; Check: IsWin64; Flags: 64bit ignoreversion
-Source: "E:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-32-bit.def"; DestDir: "{app}"; DestName: "{#SQLite}.def"; Check: not IsWin64; Flags: 32bit ignoreversion
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\build-v8{#MyBetaProd}\{#MyAppNameNoSpace}-64-bit.exe"; DestDir: "{app}"; DestName: "{#MyAppNameNoSpace}.exe"; Check: IsWin64; Flags: 64bit ignoreversion signonce
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\build-v8{#MyBetaProd}\{#MyAppNameNoSpace}-32-bit.exe"; DestDir: "{app}"; DestName: "{#MyAppNameNoSpace}.exe"; Check: "not IsWin64"; Flags: 32bit ignoreversion signonce
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#QAPmessengerVersionFileName}"; DestDir: "{app}"; DestName: "QAPmessenger.exe"; Flags: ignoreversion signonce
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\Setup-Only\_do_not_remove_or_rename.txt"; DestDir: "{app}"; DestName: "_do_not_remove_or_rename.txt"; Flags: ignoreversion
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#MyAppNameNoSpace}.ico"; DestDir: "{app}"; DestName: "{#MyAppNameNoSpace}.ico"; Flags: ignoreversion
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#JLicons}"; DestDir: "{commonappdata}\{#JLdir}"; DestName: "JLicons.dll"; Flags: sharedfile ignoreversion signonce
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\Setup-Only\_JeanLalonde_read-me.txt"; DestDir: "{commonappdata}\{#JLdir}"; DestName: "_read-me.txt"; Flags: sharedfile ignoreversion
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-64-bit.dll"; DestDir: "{app}"; DestName: "{#SQLite}.dll"; Check: IsWin64; Flags: 64bit ignoreversion signonce
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-32-bit.dll"; DestDir: "{app}"; DestName: "{#SQLite}.dll"; Check: not IsWin64; Flags: 32bit ignoreversion signonce
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-64-bit.def"; DestDir: "{app}"; DestName: "{#SQLite}.def"; Check: IsWin64; Flags: 64bit ignoreversion
+Source: "C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#SQLite}-32-bit.def"; DestDir: "{app}"; DestName: "{#SQLite}.def"; Check: not IsWin64; Flags: 32bit ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [INI]
