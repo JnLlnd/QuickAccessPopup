@@ -11773,6 +11773,12 @@ OpenSubFolderClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
+if (f_blnOpenSubFolder and o_EditedFavorite.AA.intFavoriteOpenSubFolder = 0)
+{
+	GuiControl, , f_intRadioOpenSubFolderOrder1, 1
+	GuiControl, , f_intRadioOpenSubFolder1, 1
+}
+
 GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_lblOpenSubFolder
 GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolderOrder1
 GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolderOrder2
