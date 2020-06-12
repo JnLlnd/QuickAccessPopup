@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: v10.4.9.5 (2020-06-12)
+- fix bug adding protection against main quickaccesspopup.ini settings file containing (by error after testing, for example) the value "LastModified" that is normally found only in shared menu files
+
 Version BETA: v10.4.9.4 (2020-05-26)
 - allow sorting on columns "Type", "Hotkey" and "Location or content" in favorites list (both for manual and automatic sorting)
 - display an alert message if setting automatic sorting on a column not displayed in the favorites list (see "Display dates and stats" in "Options, Customize Window")
@@ -26600,7 +26603,7 @@ class Container
 	{
 		for intKey, oItem in this.SA
 		{
-			if oItem.IsContainer() and oItem.AA.oSubMenu.ExternalMenuModifiedSinceLoaded()
+			if oItem.IsContainer() and (oItem.AA.strMenuType = "External") and oItem.AA.oSubMenu.ExternalMenuModifiedSinceLoaded()
 			{
 				oItem.AA.oSubMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
 				oItem.AA.oSubMenu.BuildMenu()
