@@ -4088,7 +4088,7 @@ Gosub, InitFileInstall
 ; --- Global variables
 
 global g_strCurrentVersion := "10.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
 
