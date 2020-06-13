@@ -31,6 +31,45 @@ limitations under the License.
 HISTORY
 =======
 
+Version: v10.5 (2020-06-12)
+ 
+Six new Windows Special Folders favorites
+- new QAP Special Folders entries...
+  in "Basic" section: "Windows Search"
+  in "Power User" section: "Notification Area Icons", "Task Manager", "Disk Management"
+  in "Sysadmin" section: "Event Viewer" and
+  in "Hardware" section: "Computer Management"
+- to use these new items, add them to your menu by adding a favorite of type "Special Folder" (https://www.quickaccesspopup.com/how-do-i-add-windows-special-folders-to-my-menu/)
+ 
+Automatic sorting of submenus (in "Edit Favorite" dialog box for iems of types "Menu" or "Shared menu")
+- new option allowing to automatically sort favorites in the menu
+- sort by "Name", "Type", "Hotkey", "Location or content", "Created date", "Modified date" and, if the QAP database is enabled, by "Last used date" or "Usage" level
+- for more info: https://www.quickaccesspopup.com/can-i-sort-the-favorites-in-my-menu/
+ 
+Open a subfolder automaticaly (in "Edit Favorite" dialog box, "Advanced Settings" tab)
+- new option for favorites of type "Folder" to open automatically one of its subfolder based on its date
+- open the most recently or most anciently created, modified or accessed subfolder
+- for more info: https://www.quickaccesspopup.com/what-are-the-advanced-options-for-favorite-folders/
+ 
+Favorites list in Customize window
+- in "Options, Customize Window", a new option to display additional columns in the favorites list: last modification date, creation date, last usage date and usage level (the same options also applies to the search result list)
+- a new "Sort" button on the left side of the "Customize" window opens a popup menu allowing to sort the favorites in the displayed menu by any column (this does a one-time sorting in regular submenus or change the sort criteria in automatically sorted menus)
+- in the "Sort" menu, two additional entries allow to edit the current menu and access the "Customize Window" options
+- right-clicking in the favorites list, open the "Sort" menu allowing to sort the items or access the "Edit this menu" or "Customize Window Options" dialog boxes
+ 
+Various bug fixes
+- fix a bug in the installer (setup mode only) when checking for the Explorer context menu option
+- when adding a favorite with the "Add Active Folder or Web page Express" command or with the context menu entries "Add Folder/File to QAP menu Express", make the ampersands "&" visibles automatically in favorite name by doubling them ("&&")
+- fix bug when setting the submenu for items added from context menu entries "Add Folder/File to QAP menu Express" or other QAPmessenger commands
+- fix bug updating the created date and last modified date when saving favorites and when converting UTC time to local time (and, at load time, fill the empty dates with current date-time for items that were not filled previously because of this bug)
+ 
+Various improvements
+- add support for ConEmu (a console emulator) similar to support for Windows Console (command line) and PowerShell (https://www.quickaccesspopup.com/can-i-change-folder-in-windows-command-line-cmd-or-powershell/)
+- new JLicon.DLL icon file v1.6 with icons used in "Customize" window "Sort" popup menu to flag the current sort criteria
+- in "Options", the "Show QAP menu" option from "Customize Window" option was moved to the "Menu Advanced Options" section
+- feature removed: "Starting number" option in Shared menus files is now not supported (this option has been deprecated since v8.1.9.1)
+- update French, Korean, Portuguese, Brazilian Portuguese (fix some file encoding errors in this language), Russian, German, Italian, Dutch and Chinese language files for v10.5
+
 Version BETA: v10.4.9.5 (2020-06-12)
 - fix bug adding protection against main quickaccesspopup.ini settings file containing (by error after testing, for example) the value "LastModified" that is normally found only in shared menu files
 
