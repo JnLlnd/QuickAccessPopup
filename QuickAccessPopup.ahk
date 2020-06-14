@@ -20481,12 +20481,15 @@ LocationIsDocument(strLocation)
 GetLocationPathName(strLocation)
 ;------------------------------------------------------------
 {
-	SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
-	strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
-	if !StrLen(strName) ; we are probably at the root of a drive
-		return strDrive
-	else
-		return strName
+	strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
+	if !StrLen(strName)
+	{
+		SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
+		strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
+		if !StrLen(strName) ; we are probably at the root of a drive
+			return strDrive
+	}
+	return strName
 }
 ;------------------------------------------------------------
 
