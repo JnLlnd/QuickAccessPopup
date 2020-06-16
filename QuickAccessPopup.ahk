@@ -2355,7 +2355,7 @@ Unicode conversion
 - the dialog box includes a link to a FAQ web page for explanation and help (https://www.quickaccesspopup.com/why-converting-the-settings-file-to-unicode-and-conversion-troubleshooting/)
  
 Various
-- the option "Always open folders in current file manager window" in Options, "Files mamagers" tab is added to always change folder in the current Explorer, Total Commander or Directory Opus window, except when using the Alternative menu "Open in new window"; this applies to favorites of types Folder, Special Folder and FTP
+- the option "Always open folders in current file manager window" in Options, "Files managers" tab is added to always change folder in the current Explorer, Total Commander or Directory Opus window, except when using the Alternative menu "Open in new window"; this applies to favorites of types Folder, Special Folder and FTP
 - improve visibility of the "Explorer context menu" option in Options "Menu" tab
 - new value SendToConsoleWithAlt in Global settings, default 1 (true), to use the ALT+0nnn ASCII codes when changing folder in a command-line window (CMD)
 - partial update of all language files (complete updates in next versions), full update of the French language file
@@ -7938,44 +7938,58 @@ loop, % o_FileManagers.SA.Length()
 		. (o_FileManagers.P_intActiveFileManager = A_Index ? " checked" : ""), % o_FileManagers.SA[A_Index].AA.strDisplayName
 
 ; --- bottom ---
+; see ...\QuickAccessPopup\Divers\options-layout-filemanagers.xlsx
+; line 1
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+25 x%g_intGroupItemsTab2X% w500 vf_lnkFileManagerHelp hidden
 Gui, 2:Font
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w500 vf_lblFileManagerDetail hidden
 
+; line 2
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w500 vf_lblFileManagerDetail hidden
 ; Windows Explorer OpenFavoritesOnActiveMonitor
 Gui, 2:Add, CheckBox, yp x%g_intGroupItemsTab2X% w500 vf_blnOpenFavoritesOnActiveMonitor gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenFavoritesOnActiveMonitor"]
 GuiControl, , f_blnOpenFavoritesOnActiveMonitor, % (g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor = true)
 
-; DirectoryOpusPath
-; TotalCommanderPath
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblFileManagerPrompt hidden, % o_L["DialogApplicationLabel"] . ":"
-Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidden ; gLabel after Gosub that changes the value below
-
+; line 3
 ; QAPconnectFileManager
-Gui, 2:Add, DropDownList, xp yp w300 vf_drpQAPconnectFileManager hidden Sort gGuiOptionsGroupChanged
+Gui, 2:Add, DropDownList, y+10 x%g_intGroupItemsTab3X% w300 vf_drpQAPconnectFileManager hidden Sort gGuiOptionsGroupChanged
 if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
 	GuiControl, ChooseString, f_drpQAPconnectFileManager gGuiOptionsGroupChanged, % g_aaFileManagerQAPconnect.strQAPconnectFileManager
+
+; DirectoryOpusPath
+; TotalCommanderPath
+Gui, 2:Add, Text, yp x%g_intGroupItemsTab2X% w100 vf_lblFileManagerPrompt hidden, % o_L["DialogApplicationLabel"] . ":"
+Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidden ; gLabel after Gosub that changes the value below
 Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath hidden, % o_L["DialogBrowseButton"]
 
-; DirectoryOpusUseTabs
-; DirectoryOpusNewTabOrWindow (not in Gui)
-; TotalCommanderUseTabs
-; TotalCommanderNewTabOrWindow (not in Gui)
-Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerUseTabs gFileManagerNavigateClicked hidden, % o_L["OptionsThirdPartyUseTabs"]
-
-; QAPconnectFileManager buttons (must be after UseTabs checkbox)
-Gui, 2:Add, Button, x%g_intGroupItemsTab3X% yp vf_btnQAPconnectEdit gShowQAPconnectIniFile hidden, % L(o_L["MenuEditIniFile"], "QAPconnect.ini")
-Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedInit hidden, % o_L["OptionsRefreshQAPconnectList"] ; ActiveFileManagerClickedInit will refresh the dropdown list
-
+; line 4
 ; TotalCommanderWinCmd
-Gui, 2:Add, Text, y+5 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd gGuiOptionsGroupChanged hidden ; gGuiOptionsGroupChanged
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
-Gui, 2:Add, Checkbox, yp-5 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusLayoutsName"])
+Gui, 2:Add, Checkbox, yp x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusLayoutsName"])
 GuiControl, , f_blnFileManagerDirectoryOpusShowLayouts, % (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts = true)
+
+; QAPconnectFileManager buttons (must be after UseTabs checkbox)
+Gui, 2:Add, Button, yp x%g_intGroupItemsTab3X% vf_btnQAPconnectEdit gShowQAPconnectIniFile hidden, % L(o_L["MenuEditIniFile"], "QAPconnect.ini")
+Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedInit hidden, % o_L["OptionsRefreshQAPconnectList"] ; ActiveFileManagerClickedInit will refresh the dropdown list
+
+; line 5
+; DirectoryOpusUseTabs
+; DirectoryOpusNewTabOrWindow (not in Gui)
+; TotalCommanderUseTabs
+; TotalCommanderNewTabOrWindow (not in Gui)
+Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerUseTabs gFileManagerUseTabsClicked hidden, % o_L["OptionsThirdPartyUseTabs"]
+
+; line 6
+; FileManagerNewTabSide
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab3X%  vf_lblFileManagerNewTabSide, % L(o_L["GuiFileManagerNewTabSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
+Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideLeft "
+	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue <> "R" ? "checked" : ""), % o_L["DialogWindowPositionLeft"] ; if "L" or ""
+Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideRight "
+	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "checked" : ""), % o_L["DialogWindowPositionRight"]
 
 Gosub, ActiveFileManagerClickedInit
 Gosub, FileManagerNavigateClickedInit
@@ -8483,7 +8497,8 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 {
 	o_Settings.FileManagers["str" . strClickedFileManagerSystemName . "Path"].WriteIni(f_strFileManagerPath)
 	o_Settings.FileManagers["bln" . strClickedFileManagerSystemName . "UseTabs"].WriteIni(f_blnFileManagerUseTabs)
-	
+	o_Settings.FileManagers.strFileManagerNewTabSide.WriteIni(!f_intFileManagerNewTabSideRight ? "L" : "R")
+
 	if (g_intClickedFileManager = 2) ; DirectoryOpus
 	{
 		if (f_blnFileManagerUseTabs)
@@ -8885,6 +8900,9 @@ strShowHideCommand := (f_radActiveFileManager1 or f_radActiveFileManager4 or g_s
 GuiControl, %strShowHideCommand%, f_blnFileManagerUseTabs
 GuiControl, %strShowHideCommand%, f_btnFileManagerPath
 GuiControl, %strShowHideCommand%, f_strFileManagerPath
+GuiControl, %strShowHideCommand%, f_lblFileManagerNewTabSide
+GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideLeft
+GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideRight
 
 strShowHideCommand := (!f_radActiveFileManager2 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show")
 GuiControl, %strShowHideCommand%, f_blnFileManagerDirectoryOpusShowLayouts
@@ -8955,11 +8973,34 @@ if !(f_radActiveFileManager1) ; DirectoryOpus, TotalCommander or QAPconnect
 }
 
 if (A_ThisLabel <> "ActiveFileManagerClickedGroupButton")
+{
 	Gosub, % StrReplace(A_ThisLabel, "ActiveFileManager", "FileManagerNavigate") ; ActiveFileManagerClickedInit -> FileManagerNavigateClickedInit
+	Gosub, FileManagerUseTabsClickedInit
+}
 
 strHelpUrl := ""
 strQAPconnectFileManagersList := ""
 strShowHideCommand := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+FileManagerUseTabsClicked:
+FileManagerUseTabsClickedInit:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+if (A_ThisLabel = "FileManagerUseTabsClicked")
+	Gosub, GuiOptionsGroupChanged
+
+strEnableDisableCommand := (f_blnFileManagerUseTabs ? "Enable" : "Disable")
+GuiControl, %strEnableDisableCommand%, f_lblFileManagerNewTabSide
+GuiControl, %strEnableDisableCommand%, f_intFileManagerNewTabSideLeft
+GuiControl, %strEnableDisableCommand%, f_intFileManagerNewTabSideRight
+
+strEnableDisableCommand := ""
 
 return
 ;------------------------------------------------------------
@@ -20481,12 +20522,15 @@ LocationIsDocument(strLocation)
 GetLocationPathName(strLocation)
 ;------------------------------------------------------------
 {
-	SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
-	strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
-	if !StrLen(strName) ; we are probably at the root of a drive
-		return strDrive
-	else
-		return strName
+	strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
+	if !StrLen(strName)
+	{
+		SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
+		strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
+		if !StrLen(strName) ; we are probably at the root of a drive
+			return strDrive
+	}
+	return strName
 }
 ;------------------------------------------------------------
 
@@ -22205,12 +22249,37 @@ BuildMonitorsList(intDefault)
 
 
 ;------------------------------------------------------------
+GetLocalizedNameFromDesktopIni(strFolderPath)
+;------------------------------------------------------------
+{
+	strDesktopIniFileName := strFolderPath . "\" . "desktop.ini"
+	if FileExist(strDesktopIniFileName)
+	{
+		strLocalizedResourceName := o_Settings.ReadIniValue("LocalizedResourceName", " ", ".ShellClassInfo", strDesktopIniFileName)
+		return GetNameForLocalizedResourceName(strLocalizedResourceName)
+	}
+	else
+		return ""
+}
+;------------------------------------------------------------
+	
+
+;------------------------------------------------------------
 GetLocalizedNameForClassId(strClassId)
 ;------------------------------------------------------------
 {
 	RegRead, strLocalizedString, HKEY_CLASSES_ROOT, CLSID\%strClassId%, LocalizedString
 	; strLocalizedString example: "@%SystemRoot%\system32\shell32.dll,-9216"
 
+	return GetNameForLocalizedResourceName(strLocalizedString)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetNameForLocalizedResourceName(strLocalizedString)
+;------------------------------------------------------------
+{
 	saLocalizedString := StrSplit(strLocalizedString, ",")
 	intDllNameStart := InStr(saLocalizedString[1], "\", , 0)
 	; was StringRight, strDllFile, saLocalizedString[1], % StrLen(saLocalizedString[1]) - intDllNameStart
@@ -23581,6 +23650,8 @@ TODO
 		o_Settings.ReadIniOption("FileManagers", "blnAlwaysNavigate", "FileManagerAlwaysNavigate", 0
 			, "FileManagers", "f_lblFileManagersIntro|f_lblFileManagerNavigateTitle|f_lblFileManagerNavigate|f_radFileManagerNavigateCurrent|f_radFileManagerNavigateNew|f_lblradActiveFileManager") ; default false
 		; in main script, use o_FileManagers.P_intActiveFileManager instead of o_Settings.FileManagers.intActiveFileManager.IniValue
+		
+		o_Settings.ReadIniOption("FileManagers", "strFileManagerNewTabSide", "FileManagerNewTabSide", "L", "FileManagers", "70") ; used for DirectoryOpus and TotalCommander
 	}
 	;---------------------------------------------------------
 
@@ -26371,10 +26442,15 @@ class Container
 			g_intNbLiveFolderItems++
 			if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 				Break
+			
+			strFavoriteName := GetLocalizedNameFromDesktopIni(A_LoopFileLongPath) ; if desktop.ini exists, try to retrieve the localized name resource
+			if !StrLen(strFavoriteName)
+				strFavoriteName := A_LoopFileName
+			
 			if !(InStr(A_LoopFileAttrib, "H") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if folder is hidden and include hidden items is false
 				and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if folder is system and include system items is false
 			{
-				strFolders .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . A_LoopFileName . "`t" . A_LoopFileLongPath . "`t"
+				strFolders .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . strFavoriteName . "`t" . A_LoopFileLongPath . "`t"
 					. (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveHideIcons ? "iconNoIcon" : GetFolderIcon(A_LoopFileLongPath)) . "`n"
 				aaMenuNameCheckDuplicates[A_LoopFileName] := "foo" ; no need to check for duplicates among folder names but take note to check for duplicates with file names or live folder name
 			}
