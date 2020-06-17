@@ -7986,8 +7986,10 @@ Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerUseTabs
 ; line 6
 ; FileManagerNewTabSide
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab3X%  vf_lblFileManagerNewTabSide, % L(o_L["GuiFileManagerNewTabSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
+Gui, 2:Add, Radio, % "x" . g_intGroupItemsTab3X . " y+5 gGuiOptionsGroupChanged vf_intFileManagerNewTabSideActive "
+	. (!StrLen(o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) ? "checked" : ""), % o_L["GuiFileManagerNewTabSideActive"] ; if "L" or ""
 Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideLeft "
-	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue <> "R" ? "checked" : ""), % o_L["DialogWindowPositionLeft"] ; if "L" or ""
+	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "L" ? "checked" : ""), % o_L["DialogWindowPositionLeft"] ; if "L" or ""
 Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideRight "
 	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "checked" : ""), % o_L["DialogWindowPositionRight"]
 
@@ -8497,7 +8499,7 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 {
 	o_Settings.FileManagers["str" . strClickedFileManagerSystemName . "Path"].WriteIni(f_strFileManagerPath)
 	o_Settings.FileManagers["bln" . strClickedFileManagerSystemName . "UseTabs"].WriteIni(f_blnFileManagerUseTabs)
-	o_Settings.FileManagers.strFileManagerNewTabSide.WriteIni(!f_intFileManagerNewTabSideRight ? "L" : "R")
+	o_Settings.FileManagers.strFileManagerNewTabSide.WriteIni(f_intFileManagerNewTabSideLeft ? "L" : (f_intFileManagerNewTabSideRight ? "R" : ""))
 
 	if (g_intClickedFileManager = 2) ; DirectoryOpus
 	{
@@ -23651,7 +23653,7 @@ TODO
 			, "FileManagers", "f_lblFileManagersIntro|f_lblFileManagerNavigateTitle|f_lblFileManagerNavigate|f_radFileManagerNavigateCurrent|f_radFileManagerNavigateNew|f_lblradActiveFileManager") ; default false
 		; in main script, use o_FileManagers.P_intActiveFileManager instead of o_Settings.FileManagers.intActiveFileManager.IniValue
 		
-		o_Settings.ReadIniOption("FileManagers", "strFileManagerNewTabSide", "FileManagerNewTabSide", "L", "FileManagers", "70") ; used for DirectoryOpus and TotalCommander
+		o_Settings.ReadIniOption("FileManagers", "strFileManagerNewTabSide", "FileManagerNewTabSide", "", "FileManagers", "70") ; used for DirectoryOpus and TotalCommander
 	}
 	;---------------------------------------------------------
 
@@ -28053,7 +28055,8 @@ class Container
 					{
 						strTabParameter := g_aaFileManagerDirectoryOpus.strNewTabOrWindow
 						if (g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
-							strTabParameter .= " " . (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "OPENINRIGHT" : "OPENINLEFT")
+							strTabParameter .= " " . (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "L" ? "OPENINLEFT"
+								: (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "OPENINRIGHT" : ""))
 					}
 					
 					strTabParameter := StrReplace(strTabParameter, "NEWTAB", "NEWTAB=tofront") ; instead of activating by QAP as in previous versions
@@ -28076,6 +28079,9 @@ class Container
 						else
 							strSideParameter := "L"
 					}
+					else
+						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+							strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
 						
 					if IsInteger(this.aaTemp.strFullLocation)
 					{
@@ -28088,11 +28094,11 @@ class Container
 							Sleep, 200 ; wait additional time to improve SendMessage reliability in OpenFavoriteNavigateTotalCommander
 						}
 						
-						if (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and StrLen(strSideParameter)) ; if empty, open on active side
 						{
 							if (strSideParameter = "L")
 								intTCCommandFocus := 4001 ; cm_FocusLeft
-							else
+							else ; R
 								intTCCommandFocus := 4002 ; cm_FocusRight
 							Sleep, 100 ; wait to improve SendMessage reliability
 							SendMessage, 0x433, %intTCCommandFocus%, , , ahk_class TTOTAL_CMD
@@ -28106,7 +28112,7 @@ class Container
 						}
 						Sleep, 100 ; wait to improve SendMessage reliability in OpenFavoriteNavigateTotalCommander
 						this.aaTemp.strHotkeyTypeDetected := "Navigate"
-						this.OpenFolder() 
+						this.OpenFolder()
 						; ??? check this:
 						; Since this.aaTemp.strFullLocation is integer, OpenFavoriteNavigateTotalCommander is doing:
 						; SendMessage, 0x433, %intTCCommand%, , , ahk_class TTOTAL_CMD
@@ -28124,7 +28130,10 @@ class Container
 						{
 							; g_aaFileManagerTotalCommander.strNewTabOrWindow should contain "/O /T" to open in an new tab of the existing file list (default), or "/N" to open in a new file list
 							strTabParameter := g_aaFileManagerTotalCommander.strNewTabOrWindow
-							strSideParameter := ""
+							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+								strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
+							else
+								strSideParameter := ""
 						}
 						
 						if StrLen(strSideParameter)
