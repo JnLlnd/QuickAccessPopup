@@ -6007,43 +6007,91 @@ saSortMenusItems := StrSplit( o_L["GuiLvFavoritesHeader"] . "|"
 	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredDates"] . "|" : "")
 	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" : ""), "|")
 
-for intKeyMenuName, strMenuName in saSortMenusNames ; 4 sort menus variants
+loop, 2 ; 1 for menu from sort icon, 2 for context menu
 {
-	for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; menus items
-	{
-		if (intKeyMenuItem = 1) ; menu header
-		{
-			Menu, %strMenuName%, Add, % saSortMenusHeaders[intKeyMenuName], DoNothing
-			Menu, %strMenuName%, Disable, % saSortMenusHeaders[intKeyMenuName]
-		}
-		Menu, %strMenuName%, Add, %strSortMenusItem%, % "GuiSortContainer" . intKeyMenuItem
-	}
+	intMenuType := A_Index
 	
-	if (strMenuName <> "menuSortMainMenu") ; add Edit this menu
+	for intKeyMenuName, strMenuName in saSortMenusNames ; 4 sort menus with 2 variants (from sort button and from context menu)
 	{
-		Menu, %strMenuName%, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
+		if (intMenuType = 2)
+		{
+			strMenuName .= "ContextMenu"
+			
+			Menu, %strMenuName%, Add, % "-- " . o_L["MenuFavorite"] . " --", DoNothing
+			Menu, %strMenuName%, Disable, % "-- " . o_L["MenuFavorite"] . " --"
+			Menu, %strMenuName%, Add, % o_L["DialogEdit"], GuiEditFavorite
+			Menu, %strMenuName%, Add ; separator
+/*
+aaFavoriteL := o_L.InsertAmpersand(true, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "GuiMove", "DialogCopy"
+	, "ControlToolTipMoveUp", "ControlToolTipMoveDown", "ControlToolTipSortFavorites", "ControlToolTipSeparator"
+	, "ControlToolTipColumnBreak", "ControlToolTipTextSeparator", "MenuSelectAll")
+saMenuItemsTable := Object()
+saMenuItemsTable.Push(["GuiAddFavoriteSelectType", aaFavoriteL["DialogAdd"] . g_strEllipse . "`tCtrl+N", "", "iconNoIcon"])
+saMenuItemsTable.Push(["SettingsCtrlE", aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E", "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+; to avoid conflicts with the Search text box, do not use shortcuts Del or Ctrl+C, use Ctrl+R (Remove) and Ctrl+Y (Copy)
+saMenuItemsTable.Push(["SettingsCtrlR", aaFavoriteL["GuiRemoveFavorite"] . "`tCtrl+R", "", "iconNoIcon"])
+saMenuItemsTable.Push(["SettingsCtrlY", aaFavoriteL["DialogCopy"] . g_strEllipse . "`tCtrl+Y", "", "iconNoIcon"])
+saMenuItemsTable.Push(["SettingsCtrlM", aaFavoriteL["GuiMove"] . g_strEllipse . "`tCtrl+M", "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["SettingsCtrlUp", aaFavoriteL["ControlToolTipMoveUp"] . "`tCtrl+Up", "", "iconNoIcon"])
+saMenuItemsTable.Push(["SettingsCtrlDown", aaFavoriteL["ControlToolTipMoveDown"] . "`tCtrl+Down", "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["GuiAddSeparator", aaFavoriteL["ControlToolTipSeparator"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiAddColumnBreak", aaFavoriteL["ControlToolTipColumnBreak"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiAddTextSeparator", aaFavoriteL["ControlToolTipTextSeparator"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["GuiSortFavoritesMenu", aaFavoriteL["ControlToolTipSortFavorites"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A", "", "iconNoIcon"])
+o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
+o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+*/
+}
+		
+		for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; menus items
+		{
+			if (intKeyMenuItem = 1) ; menu header
+			{
+				Menu, %strMenuName%, Add, % saSortMenusHeaders[intKeyMenuName], DoNothing
+				Menu, %strMenuName%, Disable, % saSortMenusHeaders[intKeyMenuName]
+			}
+			Menu, %strMenuName%, Add, %strSortMenusItem%, % "GuiSortContainer" . intKeyMenuItem
+		}
+		
+		if !InStr(strMenuName, "menuSortMainMenu") ; add Edit this menu
+		{
+			Menu, %strMenuName%, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
+			Menu, %strMenuName%, Add ; separator
+		}
+		Menu, %strMenuName%, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
+	}
+
+	; build menu for Sort search result button
+	strMenuName := "menuSortSearchResult" . (intMenuType = 2 ? "ContextMenu" : "")
+	if (intMenuType = 2)
+	{
+		Menu, %strMenuName%, Add, % L(o_L["MenuEditIniFile"], o_L["MenuFavorite"]), GuiEditFavorite
 		Menu, %strMenuName%, Add ; separator
 	}
+	
+	; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
+	Menu, %strMenuName%, Add, % "-- " . o_L["DialogMenuSortHeaderSearch"] . " --", DoNothing
+	Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
+		Menu, %strMenuName%, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
+	if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+	{
+		Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredDates"], | ; Last Modified|Created
+			Menu, %strMenuName%, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 6 ; col 7-8
+		if (g_blnUsageDbEnabled)
+			Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredStats"], | ; Last Used|Usage
+				Menu, %strMenuName%, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 8 ; 9-10
+	}
+	Menu, %strMenuName%, Add ; separator
+	Menu, %strMenuName%, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
+	Menu, %strMenuName%, Add
 	Menu, %strMenuName%, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 }
-
-; build menu for Sort search result button
-; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
-Menu, menuSortSearchResult, Add, % "-- " . o_L["DialogMenuSortHeaderSearch"] . " --", DoNothing
-Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
-	Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-{
-	Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredDates"], | ; Last Modified|Created
-		Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 6 ; col 7-8
-	if (g_blnUsageDbEnabled)
-		Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredStats"], | ; Last Used|Usage
-			Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 8 ; 9-10
-}
-Menu, menuSortSearchResult, Add ; separator
-Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
-Menu, menuSortSearchResult, Add
-Menu, menuSortSearchResult, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 saSortMenusNames := ""
 saSortMenusHeaders := ""
@@ -10198,7 +10246,7 @@ GuiContextMenu:
 ;------------------------------------------------------------
 
 if InStr("f_lvFavoritesList|f_lvFavoritesListSearch|", A_GuiControl . "|")
-	Gosub, GuiSortFavoritesMenu
+	Gosub, GuiSortFavoritesMenuContextMenu
 
 return
 ;------------------------------------------------------------
@@ -14683,6 +14731,7 @@ return
 
 ;------------------------------------------------------------
 GuiSortFavoritesMenu:
+GuiSortFavoritesMenuContextMenu:
 ;------------------------------------------------------------
 
 if (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"])
@@ -14694,6 +14743,9 @@ else if !(o_MenuInGui.AA.intMenuAutoSort)
 else ; o_MenuInGui.AA.intMenuAutoSort <> 0
 	strSortMenu := "menuSortAutomatic"
 
+if (A_ThisLabel = "GuiSortFavoritesMenuContextMenu")
+	strSortMenu .= "ContextMenu"
+	
 Menu, %strSortMenu%, Show
 
 strSortMenu := ""
