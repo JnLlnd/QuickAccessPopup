@@ -6005,36 +6005,26 @@ loop, % saSortMenusHeaders.Length()
 saSortMenusItems := Object()
 saSortMenusItems := StrSplit( o_L["GuiLvFavoritesHeader"] . "|"
 	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredDates"] . "|" : "")
-	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" : "")
-	. "|" . o_L["DialogMenuSortSettingsOptions"], "|")
-
-intEditMenu := 5 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
-	+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
+	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" : ""), "|")
 
 for intKeyMenuName, strMenuName in saSortMenusNames ; 4 sort menus variants
 {
-	for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; 4 sort menus variants
+	for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; menus items
 	{
 		if (intKeyMenuItem = 1) ; menu header
 		{
 			Menu, %strMenuName%, Add, % saSortMenusHeaders[intKeyMenuName], DoNothing
 			Menu, %strMenuName%, Disable, % saSortMenusHeaders[intKeyMenuName]
 		}
-		
-		if (intKeyMenuItem = intEditMenu) and InStr("menuSortAutomatic|menuSortManual", strMenuName) ; insert Edit this menu header menu header
-		{
-			Menu, %strMenuName%, Add ; separator
-			Menu, %strMenuName%, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
-		}
-		
-		if (intKeyMenuItem = intEditMenu)
-			strMenuAction := ""
-		else if (intKeyMenuItem = 10)
-			strMenuAction := "GuiOptionsGroupSettingsWindow"
-		else
-			strMenuAction := "GuiSortContainer" . intKeyMenuItem
-		Menu, %strMenuName%, Add, %strSortMenusItem%, %strMenuAction%
+		Menu, %strMenuName%, Add, %strSortMenusItem%, % "GuiSortContainer" . intKeyMenuItem
 	}
+	
+	if (strMenuName <> "menuSortMainMenu") ; add Edit this menu
+	{
+		Menu, %strMenuName%, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
+		Menu, %strMenuName%, Add ; separator
+	}
+	Menu, %strMenuName%, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 }
 
 ; build menu for Sort search result button
@@ -9816,6 +9806,7 @@ if (saSettingsPosition[1] <> -1)
 }
 
 GuiControl, Focus, f_lvFavoritesList
+
 saSettingsPosition := ""
 saDonateButtons := ""
 strTextColor := ""
