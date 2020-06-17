@@ -28050,7 +28050,11 @@ class Container
 						}
 					}
 					else
+					{
 						strTabParameter := g_aaFileManagerDirectoryOpus.strNewTabOrWindow
+						if (g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
+							strTabParameter .= " " . (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "OPENINRIGHT" : "OPENINLEFT")
+					}
 					
 					strTabParameter := StrReplace(strTabParameter, "NEWTAB", "NEWTAB=tofront") ; instead of activating by QAP as in previous versions
 					o_FileManagers.SA[2].RunDOpusRt("/acmd Go ", this.aaTemp.strFullLocation, " " . strTabParameter) ; open in a new lister or tab, left or right
