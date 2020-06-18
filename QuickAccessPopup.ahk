@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: v10.5.1 (2020-06-19)
+- when building Live folders, retrieve localized sub folders names (if it exists in desktop.ini file)
+- when adding a folder and retrieving suggested "Short name for menu", retrieve localized sub folders name (if it exists in desktop.ini file)
+- when checking for an update on QAP website, improve caching and error checking
+- fix bug in "Sort" menus when selecting the "Customize Window Options" item
+- fix bug causing an error message when disabling the "Display dates and stats" checkbox in "Options, Customize Window"
+- fix other bugs when sorting menus
+
 Version: v10.5 (2020-06-12)
  
 Six new Windows Special Folders favorites
