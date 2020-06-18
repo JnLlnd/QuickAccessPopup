@@ -6003,6 +6003,7 @@ BuildSortMenus:
 
 saSortMenusNames := Object()
 saSortMenusNames := StrSplit("menuSortAutomatic|menuSortManual|menuSortMainMenu", "|")
+; building also menuSortAutomaticContextMenu, menuSortManualContextMenu and menuSortMainMenuContextMenu
 
 saSortMenusHeaders := Object()
 saSortMenusHeaders := StrSplit("DialogMenuSortHeaderAutomatic|DialogMenuSortHeaderManual|DialogMenuSortHeaderMainMenu", "|")
@@ -6027,34 +6028,22 @@ loop, 2 ; 1 for menu from sort icon, 2 for context menu
 			
 			Menu, %strMenuName%, Add, % "-- " . o_L["MenuFavorite"] . " --", DoNothing
 			Menu, %strMenuName%, Disable, % "-- " . o_L["MenuFavorite"] . " --"
-			Menu, %strMenuName%, Add, % o_L["DialogEdit"], GuiEditFavorite
+			Menu, %strMenuName%, Add, % aaFavoriteL["DialogAdd"] . g_strEllipse, GuiAddFavoriteSelectType
+			Menu, %strMenuName%, Add, % aaFavoriteL["DialogEdit"] . g_strEllipse, SettingsCtrlE
 			Menu, %strMenuName%, Add ; separator
-/*
-aaFavoriteL := o_L.InsertAmpersand(true, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "GuiMove", "DialogCopy"
-	, "ControlToolTipMoveUp", "ControlToolTipMoveDown", "ControlToolTipSortFavorites", "ControlToolTipSeparator"
-	, "ControlToolTipColumnBreak", "ControlToolTipTextSeparator", "MenuSelectAll")
-saMenuItemsTable := Object()
-saMenuItemsTable.Push(["GuiAddFavoriteSelectType", aaFavoriteL["DialogAdd"] . g_strEllipse . "`tCtrl+N", "", "iconNoIcon"])
-saMenuItemsTable.Push(["SettingsCtrlE", aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E", "", "iconNoIcon"])
-saMenuItemsTable.Push(["X"])
-; to avoid conflicts with the Search text box, do not use shortcuts Del or Ctrl+C, use Ctrl+R (Remove) and Ctrl+Y (Copy)
-saMenuItemsTable.Push(["SettingsCtrlR", aaFavoriteL["GuiRemoveFavorite"] . "`tCtrl+R", "", "iconNoIcon"])
-saMenuItemsTable.Push(["SettingsCtrlY", aaFavoriteL["DialogCopy"] . g_strEllipse . "`tCtrl+Y", "", "iconNoIcon"])
-saMenuItemsTable.Push(["SettingsCtrlM", aaFavoriteL["GuiMove"] . g_strEllipse . "`tCtrl+M", "", "iconNoIcon"])
-saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["SettingsCtrlUp", aaFavoriteL["ControlToolTipMoveUp"] . "`tCtrl+Up", "", "iconNoIcon"])
-saMenuItemsTable.Push(["SettingsCtrlDown", aaFavoriteL["ControlToolTipMoveDown"] . "`tCtrl+Down", "", "iconNoIcon"])
-saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiAddSeparator", aaFavoriteL["ControlToolTipSeparator"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiAddColumnBreak", aaFavoriteL["ControlToolTipColumnBreak"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiAddTextSeparator", aaFavoriteL["ControlToolTipTextSeparator"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiSortFavoritesMenu", aaFavoriteL["ControlToolTipSortFavorites"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A", "", "iconNoIcon"])
-o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
-*/
+			Menu, %strMenuName%, Add, % aaFavoriteL["GuiRemoveFavorite"] . g_strEllipse, SettingsCtrlR
+			Menu, %strMenuName%, Add, % aaFavoriteL["DialogCopy"] . g_strEllipse, SettingsCtrlY
+			Menu, %strMenuName%, Add, % aaFavoriteL["GuiMove"] . g_strEllipse, SettingsCtrlM
+			Menu, %strMenuName%, Add ; separator
+			Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipMoveUp"] . g_strEllipse, SettingsCtrlUp
+			Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipMoveDown"] . g_strEllipse, SettingsCtrlDown
+			Menu, %strMenuName%, Add ; separator
+			Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipSeparator"] . g_strEllipse, GuiAddSeparator
+			Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipColumnBreak"] . g_strEllipse, GuiAddColumnBreak
+			Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipTextSeparator"] . g_strEllipse, GuiAddTextSeparator
+			Menu, %strMenuName%, Add ; separator
+			Menu, %strMenuName%, Add, % aaFavoriteL["MenuSelectAll"] . g_strEllipse, SettingsCtrlA
+			Menu, %strMenuName%, Add ; separator
 }
 		
 		for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; menus items
