@@ -20466,12 +20466,15 @@ LocationIsDocument(strLocation)
 GetLocationPathName(strLocation)
 ;------------------------------------------------------------
 {
-	SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
-	strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
-	if !StrLen(strName) ; we are probably at the root of a drive
-		return strDrive
-	else
-		return strName
+	strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
+	if !StrLen(strName)
+	{
+		SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
+		strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
+		if !StrLen(strName) ; we are probably at the root of a drive
+			return strDrive
+	}
+	return strName
 }
 ;------------------------------------------------------------
 
@@ -22190,12 +22193,37 @@ BuildMonitorsList(intDefault)
 
 
 ;------------------------------------------------------------
+GetLocalizedNameFromDesktopIni(strFolderPath)
+;------------------------------------------------------------
+{
+	strDesktopIniFileName := strFolderPath . "\" . "desktop.ini"
+	if FileExist(strDesktopIniFileName)
+	{
+		strLocalizedResourceName := o_Settings.ReadIniValue("LocalizedResourceName", " ", ".ShellClassInfo", strDesktopIniFileName)
+		return GetNameForLocalizedResourceName(strLocalizedResourceName)
+	}
+	else
+		return ""
+}
+;------------------------------------------------------------
+	
+
+;------------------------------------------------------------
 GetLocalizedNameForClassId(strClassId)
 ;------------------------------------------------------------
 {
 	RegRead, strLocalizedString, HKEY_CLASSES_ROOT, CLSID\%strClassId%, LocalizedString
 	; strLocalizedString example: "@%SystemRoot%\system32\shell32.dll,-9216"
 
+	return GetNameForLocalizedResourceName(strLocalizedString)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetNameForLocalizedResourceName(strLocalizedString)
+;------------------------------------------------------------
+{
 	saLocalizedString := StrSplit(strLocalizedString, ",")
 	intDllNameStart := InStr(saLocalizedString[1], "\", , 0)
 	; was StringRight, strDllFile, saLocalizedString[1], % StrLen(saLocalizedString[1]) - intDllNameStart
@@ -26356,10 +26384,15 @@ class Container
 			g_intNbLiveFolderItems++
 			if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 				Break
+			
+			strFavoriteName := GetLocalizedNameFromDesktopIni(A_LoopFileLongPath) ; if desktop.ini exists, try to retrieve the localized name resource
+			if !StrLen(strFavoriteName)
+				strFavoriteName := A_LoopFileName
+			
 			if !(InStr(A_LoopFileAttrib, "H") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if folder is hidden and include hidden items is false
 				and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if folder is system and include system items is false
 			{
-				strFolders .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . A_LoopFileName . "`t" . A_LoopFileLongPath . "`t"
+				strFolders .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . strFavoriteName . "`t" . A_LoopFileLongPath . "`t"
 					. (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveHideIcons ? "iconNoIcon" : GetFolderIcon(A_LoopFileLongPath)) . "`n"
 				aaMenuNameCheckDuplicates[A_LoopFileName] := "foo" ; no need to check for duplicates among folder names but take note to check for duplicates with file names or live folder name
 			}
