@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: v10.5.1 (2020-06-19)
+- when building Live folders, retrieve localized sub folders names (if it exists in desktop.ini file)
+- when adding a folder and retrieving suggested "Short name for menu", retrieve localized sub folders name (if it exists in desktop.ini file)
+- when checking for an update on QAP website, improve caching and error checking
+- fix bug in "Sort" menus when selecting the "Customize Window Options" item
+- fix bug causing an error message when disabling the "Display dates and stats" checkbox in "Options, Customize Window"
+- fix other bugs when sorting menus
+
 Version: v10.5 (2020-06-12)
  
 Six new Windows Special Folders favorites
@@ -8586,7 +8594,6 @@ if (intUsageDbIntervalSecondsPrev <> o_Settings.Database.intUsageDbIntervalSecon
 
 ; preprocess these dynamic menus
 Gosub, DynamicMenusPreProcess ; in case the number of items in Frequent and Recent menus was changed in Options
-Gosub, LoadFavoritesInGui ; in case show popularity index changed
 
 intUsageDbIntervalSecondsPrev := ""
 intUsageDbDaysInPopularPrev := ""
@@ -8746,6 +8753,8 @@ Gosub, BuildGuiMenuBar
 
 Gosub, BuildTrayMenuRefresh
 ToggleRunAtStartup(f_blnOptionsRunAtStartup) ; must be after BuildTrayMenuRefresh
+
+Gosub, LoadFavoritesInGui ; in case show popularity index changed
 
 g_blnGroupChanged := false
 Gosub, 2GuiClose
@@ -14874,13 +14883,12 @@ GuiSortRemoveIndicator:
 ;------------------------------------------------------------
 ; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
 
-if (o_MenuInGui.AA.intCurrentSortColumn) ; remove previous icon
-	Menu, menuSortSearchResult, Icon, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 8
-		+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
-		+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
-		: Abs(o_MenuInGui.AA.intCurrentSortColumn)) . "&" ; & identify position
-else
-	o_MenuInGui.AA.intCurrentSortColumn := 1 ; original order in first invisible column
+intNbMenuItemsBasic := 8
+intNbMenuItemsExtended := (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
+
+; remove previous icon, if any
+Loop, % intNbMenuItemsBasic + intNbMenuItemsExtended
+	Menu, menuSortSearchResult, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 
 if (A_ThisLabel = "GuiSortRemoveIndicator")
 	return
@@ -14893,12 +14901,7 @@ if (intCol)
 	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -intCol : intCol) ; reverse order
 	o_MenuInGui.AA.intCurrentSortColumn := (o_MenuInGui.AA.intCurrentSortColumn = -1 ? 1 : o_MenuInGui.AA.intCurrentSortColumn) ; if original order, do not reverse
 	
-	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 8 : Abs(o_MenuInGui.AA.intCurrentSortColumn))
-	if (intMenuPosition = 8) ; original order
-		intMenuPosition += (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
-			+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
-	else
-		intMenuPosition := (o_MenuInGui.AA.intCurrentSortColumn < 0 ? -intMenuPosition : intMenuPosition)
+	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? intNbMenuItemsBasic + intNbMenuItemsExtended : Abs(o_MenuInGui.AA.intCurrentSortColumn))
 	
 	Menu, menuSortSearchResult, Icon, % Abs(intMenuPosition) . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
 		+ (o_MenuInGui.AA.intCurrentSortColumn < 0 ? 1 : 0) ; reverse sort (63 or 65)
@@ -20524,12 +20527,15 @@ LocationIsDocument(strLocation)
 GetLocationPathName(strLocation)
 ;------------------------------------------------------------
 {
-	SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
-	strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
-	if !StrLen(strName) ; we are probably at the root of a drive
-		return strDrive
-	else
-		return strName
+	strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
+	if !StrLen(strName)
+	{
+		SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
+		strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
+		if !StrLen(strName) ; we are probably at the root of a drive
+			return strDrive
+	}
+	return strName
 }
 ;------------------------------------------------------------
 
@@ -20762,7 +20768,7 @@ Url2Var(strUrl)
 				; . "`nHeader: " . oHttpRequest.GetAllResponseHeaders()
 				; , g_strAppNameText)
 				
-		if (oHttpRequest.StatusText() = "OK")
+		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
 			break
 	}
 
@@ -22248,12 +22254,37 @@ BuildMonitorsList(intDefault)
 
 
 ;------------------------------------------------------------
+GetLocalizedNameFromDesktopIni(strFolderPath)
+;------------------------------------------------------------
+{
+	strDesktopIniFileName := strFolderPath . "\" . "desktop.ini"
+	if FileExist(strDesktopIniFileName)
+	{
+		strLocalizedResourceName := o_Settings.ReadIniValue("LocalizedResourceName", " ", ".ShellClassInfo", strDesktopIniFileName)
+		return GetNameForLocalizedResourceName(strLocalizedResourceName)
+	}
+	else
+		return ""
+}
+;------------------------------------------------------------
+	
+
+;------------------------------------------------------------
 GetLocalizedNameForClassId(strClassId)
 ;------------------------------------------------------------
 {
 	RegRead, strLocalizedString, HKEY_CLASSES_ROOT, CLSID\%strClassId%, LocalizedString
 	; strLocalizedString example: "@%SystemRoot%\system32\shell32.dll,-9216"
 
+	return GetNameForLocalizedResourceName(strLocalizedString)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetNameForLocalizedResourceName(strLocalizedString)
+;------------------------------------------------------------
+{
 	saLocalizedString := StrSplit(strLocalizedString, ",")
 	intDllNameStart := InStr(saLocalizedString[1], "\", , 0)
 	; was StringRight, strDllFile, saLocalizedString[1], % StrLen(saLocalizedString[1]) - intDllNameStart
@@ -26414,10 +26445,15 @@ class Container
 			g_intNbLiveFolderItems++
 			if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 				Break
+			
+			strFavoriteName := GetLocalizedNameFromDesktopIni(A_LoopFileLongPath) ; if desktop.ini exists, try to retrieve the localized name resource
+			if !StrLen(strFavoriteName)
+				strFavoriteName := A_LoopFileName
+			
 			if !(InStr(A_LoopFileAttrib, "H") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if folder is hidden and include hidden items is false
 				and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if folder is system and include system items is false
 			{
-				strFolders .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . A_LoopFileName . "`t" . A_LoopFileLongPath . "`t"
+				strFolders .= this.GetCriteriaSortLiveFolder(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort) . "`tFolder" . "`t" . strFavoriteName . "`t" . A_LoopFileLongPath . "`t"
 					. (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveHideIcons ? "iconNoIcon" : GetFolderIcon(A_LoopFileLongPath)) . "`n"
 				aaMenuNameCheckDuplicates[A_LoopFileName] := "foo" ; no need to check for duplicates among folder names but take note to check for duplicates with file names or live folder name
 			}
@@ -27219,7 +27255,7 @@ class Container
 		{
 			intItemsToSort++
 			strSortedItems .= saItems[A_Index] . "|"
-			strToSort .= this.GetCriteriaSortContainer() . "|" . A_LoopField . "`n" ; name | original order
+			strToSort .= this.GetCriteriaSortContainer(A_LoopField) . "|" . A_LoopField . "`n" ; name | original order
 		}
 		
 		if (intItemsToSort > 1) ; sort only if required
@@ -27244,40 +27280,24 @@ class Container
 	;---------------------------------------------------------
 	
 	;------------------------------------------------------------
-	GetCriteriaSortContainer()
+	GetCriteriaSortContainer(intItem)
 	; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Last edit date, 6 Created date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 	;------------------------------------------------------------
 	{
-		strFavoriteName := StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "") ; used as 2nd sort criteria for empty or identical primary sort criteria
+		intPosition := 0 ; (not used here)
+		saValues := this.SA[intItem].GetGuiLineValues(this.AA.strMenuType, intItem)
+		strFavoriteName := StrReplace(saValues[1], "&", "") ; used as 2nd sort criteria for empty or identical primary sort criteria
 		
 		intAbsSortCriteria := Abs(this.AA.intCurrentSortCriteria)
-		if (intAbsSortCriteria = "1")
-			strCriteria := strFavoriteName
-		else if (intAbsSortCriteria = "2")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteType
-		else if (intAbsSortCriteria = "3")
-			strCriteria := this.SA[A_LoopField].GetHotkeyColumnContent()
-		else if (intAbsSortCriteria = "4")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteLocation
-		else if (intAbsSortCriteria = "5")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateModified
-		else if (intAbsSortCriteria = "6")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateCreated
-		else if (intAbsSortCriteria = "7")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateLastUsed
-		else ; intAbsSortCriteria = 8
-			strCriteria := this.SA[A_LoopField].AA.intFavoriteUsageDb
+		strCriteria := saValues[intAbsSortCriteria]
 		
-		if (intAbsSortCriteria = 7) ; date format YYYY-MM-DD hh:mm:ss
-			strCriteria := (StrLen(this.SA[A_LoopField].AA.strFavoriteDateLastUsed) ? this.SA[A_LoopField].AA.strFavoriteDateLastUsed : "0000-00-00 00:00:00") . " " . strFavoriteName
+		if (intAbsSortCriteria = 7) and !StrLen(saValues[7])
+			strCriteria := "0000-00-00 00:00:00"
 		else if (intAbsSortCriteria >  5) ; for AHK formatted dates or numeric citeria, pad left to 14 chars (prevent empty dates and make sort numerical for usage)
-		{
 			while StrLen(strCriteria) < 14
 				strCriteria := "0" . strCriteria
-			strCriteria .= " " . strFavoriteName
-		}
-		
-		return strCriteria
+			
+		return strCriteria . " " . strFavoriteName
 	}
 	;------------------------------------------------------------
 
@@ -29004,6 +29024,21 @@ class Container
 		; in menu of other types, intPosition indicates if the line must be inserted (else, it it added at the end of the list)
 		;------------------------------------------------------------
 		{
+			saValues := this.GetGuiLineValues(strMenuType, intPosition)
+			
+			if (intPosition)
+				intRow := LV_Insert(intPosition, strOptions)
+			else
+				intRow := LV_Add(strOptions)
+			for intKey, strValue in saValues
+				LV_Modify(intRow, "Col" . intKey, strValue)
+		}
+		;------------------------------------------------------------
+		
+		;------------------------------------------------------------
+		GetGuiLineValues(strMenuType, ByRef intPosition)
+		;------------------------------------------------------------
+		{
 			saValues := Object()
 			; regular -> 1: name, 2: type, 3: hotkey, 4: content
 			; search  -> 1: name, 2: parent menu, 3: type, 4: hotkey, 5: content
@@ -29077,12 +29112,7 @@ class Container
 				}
 			}
 			
-			if (intPosition)
-				intRow := LV_Insert(intPosition, strOptions)
-			else
-				intRow := LV_Add(strOptions)
-			for intKey, strValue in saValues
-				LV_Modify(intRow, "Col" . intKey, strValue)
+			return saValues
 		}
 		;------------------------------------------------------------
 		
