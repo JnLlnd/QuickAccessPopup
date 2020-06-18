@@ -20704,7 +20704,7 @@ Url2Var(strUrl)
 				; . "`nHeader: " . oHttpRequest.GetAllResponseHeaders()
 				; , g_strAppNameText)
 				
-		if (oHttpRequest.StatusText() = "OK")
+		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
 			break
 	}
 
