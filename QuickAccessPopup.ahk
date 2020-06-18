@@ -8548,7 +8548,6 @@ if (intUsageDbIntervalSecondsPrev <> o_Settings.Database.intUsageDbIntervalSecon
 
 ; preprocess these dynamic menus
 Gosub, DynamicMenusPreProcess ; in case the number of items in Frequent and Recent menus was changed in Options
-Gosub, LoadFavoritesInGui ; in case show popularity index changed
 
 intUsageDbIntervalSecondsPrev := ""
 intUsageDbDaysInPopularPrev := ""
@@ -8708,6 +8707,8 @@ Gosub, BuildGuiMenuBar
 
 Gosub, BuildTrayMenuRefresh
 ToggleRunAtStartup(f_blnOptionsRunAtStartup) ; must be after BuildTrayMenuRefresh
+
+Gosub, LoadFavoritesInGui ; in case show popularity index changed
 
 g_blnGroupChanged := false
 Gosub, 2GuiClose
@@ -14831,13 +14832,12 @@ GuiSortRemoveIndicator:
 ;------------------------------------------------------------
 ; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
 
-if (o_MenuInGui.AA.intCurrentSortColumn) ; remove previous icon
-	Menu, menuSortSearchResult, Icon, % (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 8
-		+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
-		+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
-		: Abs(o_MenuInGui.AA.intCurrentSortColumn)) . "&" ; & identify position
-else
-	o_MenuInGui.AA.intCurrentSortColumn := 1 ; original order in first invisible column
+intNbMenuItemsBasic := 8
+intNbMenuItemsExtended := (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
+
+; remove previous icon, if any
+Loop, % intNbMenuItemsBasic + intNbMenuItemsExtended
+	Menu, menuSortSearchResult, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 
 if (A_ThisLabel = "GuiSortRemoveIndicator")
 	return
@@ -14850,12 +14850,7 @@ if (intCol)
 	o_MenuInGui.AA.intCurrentSortColumn := (intCol = o_MenuInGui.AA.intCurrentSortColumn ? -intCol : intCol) ; reverse order
 	o_MenuInGui.AA.intCurrentSortColumn := (o_MenuInGui.AA.intCurrentSortColumn = -1 ? 1 : o_MenuInGui.AA.intCurrentSortColumn) ; if original order, do not reverse
 	
-	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? 8 : Abs(o_MenuInGui.AA.intCurrentSortColumn))
-	if (intMenuPosition = 8) ; original order
-		intMenuPosition += (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0)
-			+ (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
-	else
-		intMenuPosition := (o_MenuInGui.AA.intCurrentSortColumn < 0 ? -intMenuPosition : intMenuPosition)
+	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? intNbMenuItemsBasic + intNbMenuItemsExtended : Abs(o_MenuInGui.AA.intCurrentSortColumn))
 	
 	Menu, menuSortSearchResult, Icon, % Abs(intMenuPosition) . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
 		+ (o_MenuInGui.AA.intCurrentSortColumn < 0 ? 1 : 0) ; reverse sort (63 or 65)
