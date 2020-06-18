@@ -27176,7 +27176,7 @@ class Container
 		{
 			intItemsToSort++
 			strSortedItems .= saItems[A_Index] . "|"
-			strToSort .= this.GetCriteriaSortContainer() . "|" . A_LoopField . "`n" ; name | original order
+			strToSort .= this.GetCriteriaSortContainer(A_LoopField) . "|" . A_LoopField . "`n" ; name | original order
 		}
 		
 		if (intItemsToSort > 1) ; sort only if required
@@ -27201,40 +27201,24 @@ class Container
 	;---------------------------------------------------------
 	
 	;------------------------------------------------------------
-	GetCriteriaSortContainer()
+	GetCriteriaSortContainer(intItem)
 	; sort criteria: 1 Name, 2 Type, 3 Hotkey, 4 Location or content + 5 Last edit date, 6 Created date, + 7 Last used date, 8 Usage, if select same again negative to reverse order
 	;------------------------------------------------------------
 	{
-		strFavoriteName := StrReplace(this.SA[A_LoopField].AA.strFavoriteName, "&", "") ; used as 2nd sort criteria for empty or identical primary sort criteria
+		intPosition := 0 ; (not used here)
+		saValues := this.SA[intItem].GetGuiLineValues(this.AA.strMenuType, intItem)
+		strFavoriteName := StrReplace(saValues[1], "&", "") ; used as 2nd sort criteria for empty or identical primary sort criteria
 		
 		intAbsSortCriteria := Abs(this.AA.intCurrentSortCriteria)
-		if (intAbsSortCriteria = "1")
-			strCriteria := strFavoriteName
-		else if (intAbsSortCriteria = "2")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteType
-		else if (intAbsSortCriteria = "3")
-			strCriteria := this.SA[A_LoopField].GetHotkeyColumnContent()
-		else if (intAbsSortCriteria = "4")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteLocation
-		else if (intAbsSortCriteria = "5")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateModified
-		else if (intAbsSortCriteria = "6")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateCreated
-		else if (intAbsSortCriteria = "7")
-			strCriteria := this.SA[A_LoopField].AA.strFavoriteDateLastUsed
-		else ; intAbsSortCriteria = 8
-			strCriteria := this.SA[A_LoopField].AA.intFavoriteUsageDb
+		strCriteria := saValues[intAbsSortCriteria]
 		
-		if (intAbsSortCriteria = 7) ; date format YYYY-MM-DD hh:mm:ss
-			strCriteria := (StrLen(this.SA[A_LoopField].AA.strFavoriteDateLastUsed) ? this.SA[A_LoopField].AA.strFavoriteDateLastUsed : "0000-00-00 00:00:00") . " " . strFavoriteName
+		if (intAbsSortCriteria = 7) and !StrLen(saValues[7])
+			strCriteria := "0000-00-00 00:00:00"
 		else if (intAbsSortCriteria >  5) ; for AHK formatted dates or numeric citeria, pad left to 14 chars (prevent empty dates and make sort numerical for usage)
-		{
 			while StrLen(strCriteria) < 14
 				strCriteria := "0" . strCriteria
-			strCriteria .= " " . strFavoriteName
-		}
-		
-		return strCriteria
+			
+		return strCriteria . " " . strFavoriteName
 	}
 	;------------------------------------------------------------
 
@@ -28961,6 +28945,21 @@ class Container
 		; in menu of other types, intPosition indicates if the line must be inserted (else, it it added at the end of the list)
 		;------------------------------------------------------------
 		{
+			saValues := this.GetGuiLineValues(strMenuType, intPosition)
+			
+			if (intPosition)
+				intRow := LV_Insert(intPosition, strOptions)
+			else
+				intRow := LV_Add(strOptions)
+			for intKey, strValue in saValues
+				LV_Modify(intRow, "Col" . intKey, strValue)
+		}
+		;------------------------------------------------------------
+		
+		;------------------------------------------------------------
+		GetGuiLineValues(strMenuType, ByRef intPosition)
+		;------------------------------------------------------------
+		{
 			saValues := Object()
 			; regular -> 1: name, 2: type, 3: hotkey, 4: content
 			; search  -> 1: name, 2: parent menu, 3: type, 4: hotkey, 5: content
@@ -29034,12 +29033,7 @@ class Container
 				}
 			}
 			
-			if (intPosition)
-				intRow := LV_Insert(intPosition, strOptions)
-			else
-				intRow := LV_Add(strOptions)
-			for intKey, strValue in saValues
-				LV_Modify(intRow, "Col" . intKey, strValue)
+			return saValues
 		}
 		;------------------------------------------------------------
 		
