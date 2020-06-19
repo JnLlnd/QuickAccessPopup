@@ -31,15 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
-Version: v10.5.1 (2020-06-19)
+Version: 10.5.1 (2020-06-19)
 - when building Live folders, retrieve localized sub folders names (if it exists in desktop.ini file)
 - when adding a folder and retrieving suggested "Short name for menu", retrieve localized sub folders name (if it exists in desktop.ini file)
 - when checking for an update on QAP website, improve caching and error checking
+- add diagnostic code when checking for a newer version (contact me on the forum if you experienced issues with the "Check for update" command not reporting a newer release)
 - fix bug in "Sort" menus when selecting the "Customize Window Options" item
 - fix bug causing an error message when disabling the "Display dates and stats" checkbox in "Options, Customize Window"
 - fix other bugs when sorting menus
 
-Version: v10.5 (2020-06-12)
+Version: 10.5 (2020-06-12)
  
 Six new Windows Special Folders favorites
 - new QAP Special Folders entries...
@@ -78,10 +79,10 @@ Various improvements
 - feature removed: "Starting number" option in Shared menus files is now not supported (this option has been deprecated since v8.1.9.1)
 - update French, Korean, Portuguese, Brazilian Portuguese (fix some file encoding errors in this language), Russian, German, Italian, Dutch and Chinese language files for v10.5
 
-Version BETA: v10.4.9.5 (2020-06-12)
+Version BETA: 10.4.9.5 (2020-06-12)
 - fix bug adding protection against main quickaccesspopup.ini settings file containing (by error after testing, for example) the value "LastModified" that is normally found only in shared menu files
 
-Version BETA: v10.4.9.4 (2020-05-26)
+Version BETA: 10.4.9.4 (2020-05-26)
 - allow sorting on columns "Type", "Hotkey" and "Location or content" in favorites list (both for manual and automatic sorting)
 - display an alert message if setting automatic sorting on a column not displayed in the favorites list (see "Display dates and stats" in "Options, Customize Window")
 - fix various bugs related using the "Sort" popup menu to sort favorites in menus
@@ -91,14 +92,14 @@ Version BETA: v10.4.9.4 (2020-05-26)
 - fix file encoding errors in PT-BR translation
 - update French, Korean, Portuguese, Brazilian Portuguese, Russian, German, Italian, Dutch and Chinese language files for v10.5
 
-Version BETA: v10.4.9.3 (2020-05-21)
+Version BETA: 10.4.9.3 (2020-05-21)
 - add six new entries to QAP Special Folders in
   "Basic" section: "Windows Search"
   "Power User" section: "Notification Area Icons", "Task Manager", "Disk Management")
   "Sysadmin" section: "Event Viewer" and
   "Hardware" section: "Computer Management"
 
-Version BETA: v10.4.9.2 (2020-05-17)
+Version BETA: 10.4.9.2 (2020-05-17)
 - add support for ConEmu (console emulator) similar to support for cmd.exe and PowerShell
 - when changing folder in Console window, add /D parameter and send chars using ALT keys only when using Cmd.exe
 - avoid enabling "Live Folder" and "Open a folder automatically" options simultaneously for the same favorite folder
@@ -107,7 +108,7 @@ Version BETA: v10.4.9.2 (2020-05-17)
 - fix bug right align numbers in "Usage" column of the favorites list in the "Customize" window
 - fix a bug in the installer (setup mode only) when checking for the Explorer context menu option
 
-Version BETA: v10.4.9.1 (2020-05-10)
+Version BETA: 10.4.9.1 (2020-05-10)
 - a new option to open automatically the most recently or most anciently created, modified or accessed subfolder of the favorite folder's location (in "Edit Favorite" dialog box, "Advanced Settings" tab)
 - a new option allowing to automatically sort favorites in the menu by name, by created or modified date and, if the QAP database is enabled, by last used date or by usage level (in "Edit Favorite" dialog box for menus or shared menus)
 - a new option to display additional columns modified date, created date, last used date and by usage level in favorites list (merging this with the similar option that existed for search results)
@@ -4023,7 +4024,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5
+;@Ahk2Exe-SetVersion 10.5.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4137,7 +4138,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
