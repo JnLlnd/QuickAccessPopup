@@ -5840,17 +5840,25 @@ return
 CleanUpBeforeExit:
 ;-----------------------------------------------------------
 
-if (o_Settings.Launch.blnDiagMode.IniValue)
-	Diag("ListLines", ScriptInfo("ListLines"), "")
+; if (o_Settings.Launch.blnDiagMode.IniValue)
+	; Diag("ListLines", ScriptInfo("ListLines"), "")
+
+; display MsgBox is not working for an unknown reason
+; if (o_Settings.Launch.blnDiagMode.IniValue)
+; {
+	; MsgBox, % 52 + 256, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
+	; IfMsgBox, Yes
+		; Run, %g_strDiagFile%
+; }
 
 DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while restoring windo
-
 if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to create a fresh one, this avoids creating an ini file with just this value
 {
 	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strGui1Hwnd)
 	IniWrite, % GetScreenConfiguration(), % o_Settings.strIniFile, Global, LastScreenConfiguration
 	IniDelete, % o_Settings.strIniFile, Global, ExternalErrorMessageExclusions ; delete value created to avoid (in this session only) repetitive error messages for unfound external menus
 }
+DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 
 FileRemoveDir, %g_strTempDir%, 1 ; Remove all files and subdirectories
 
@@ -5879,14 +5887,6 @@ if IsObject(o_UsageDb) ; use IsObject instead of g_blnUsageDbEnabled in case it 
 		FileCopy, %g_strUsageDbFile%, % StrReplace(g_strUsageDbFile, ".DB", ".DB-BK"), 1
 }
 
-if (o_Settings.Launch.blnDiagMode.IniValue)
-{
-	MsgBox, % 52 + 256, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
-	IfMsgBox, Yes
-		Run, %g_strDiagFile%
-}
-
-DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 ExitApp
 ;-----------------------------------------------------------
 
@@ -6257,7 +6257,7 @@ RefreshPopularMenus:
 if !(g_blnUsageDbEnabled)
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 loop, parse, % "Folders|Files", |
 {
@@ -6270,7 +6270,7 @@ loop, parse, % "Folders|Files", |
 	strUsageDbSQL := "SELECT Popular" . strFoldersOrFiles .  "MenuData FROM zMetadata;"
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
-		Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
+		; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
 		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 		g_blnUsageDbEnabled := false
 		return
@@ -6307,7 +6307,7 @@ o_MetadataRecordSet := ""
 saOneLine := ""
 saMenuItemsTable := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -6338,7 +6338,7 @@ RefreshClipboardMenu:
 if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Clipboard}") ; we don't have this QAP feature in at least one menu
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 strContentsInClipboard := ""
 if (StrLen(Clipboard) <= o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue) ; Clipboard is too large - 22 000 bytes of AHK code took close to 2 seconds
@@ -6406,7 +6406,7 @@ saOneLine := ""
 saMenuItemsTable := ""
 strFavoriteLocationSwap := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -6498,7 +6498,7 @@ RefreshDrivesMenu:
 if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Drives}")) ; we don't have this QAP features in at least one menu
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 ; prepare data source
 if (g_blnUsageDbEnabled) ; use SQLite usage database
@@ -6506,7 +6506,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	strUsageDbSQL := "SELECT DrivesMenuData FROM zMetadata;"
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
-		Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
+		; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
 		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 	}
 	o_MetadataRecordSet.Next(o_MetadataRow)
@@ -6538,7 +6538,7 @@ o_MetadataRecordSet := ""
 saOneLine := ""
 saMenuItemsTable := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 
 return
 ;------------------------------------------------------------
@@ -6573,7 +6573,7 @@ if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Recent Folders}") and !o_QAPfeat
 	; we don't have Recent Folders or Recent Files QAP features in at least one menu
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 ; prepare data source
 
@@ -6585,7 +6585,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 			strUsageDbSQL := "SELECT Recent" . A_LoopField . "MenuData FROM zMetadata;" ; RecentFoldersMenuData and RecentFilesMenuData
 			if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 			{
-				Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
+				; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
 				Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
 			}
 			o_MetadataRecordSet.Next(o_MetadataRow)
@@ -6620,7 +6620,7 @@ Loop, Parse, % "Folders|Files", |
 g_strMenuItemsListRecentFolders := ""
 g_strMenuItemsListRecentFiles := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -6712,7 +6712,7 @@ if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Current Folders}") or o_QAPfeat
 	; we don't have one of these QAP features in at least one menu
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 ; Gather Explorer windows, DOpus listers and TC current folder
 
@@ -6922,7 +6922,7 @@ strWinTitlesWinApps := ""
 strFolderIcon := ""
 strFavoriteType := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -7159,7 +7159,7 @@ if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{TC Directory hotlist}")
     ; we don't have this QAP featuree in at least one menu
     return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 ; Init TC Directory hotlist if wincmd.ini file exists
 
@@ -7170,7 +7170,7 @@ If o_FileManagers.SA[3].TotalCommanderWinCmdIniFileExist() ; TotalCommander sett
 	ToolTip
 }
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -7243,7 +7243,7 @@ if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Last Actions}")) ; we don't hav
 	or !StrLen(g_strLastActionsOrderedKeys) ; we don't have actions to repeat
 	return
 
-Diag(A_ThisLabel, "", "START")
+; Diag(A_ThisLabel, "", "START")
 
 ; prepare data for new Container
 saMenuItemsTable := Object()
@@ -7256,7 +7256,7 @@ o_Containers.AA[o_L["MenuLastActions"]].BuildMenu()
 
 saMenuItemsTable := ""
 
-Diag(A_ThisLabel, "", "STOP")
+; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
 
@@ -7609,11 +7609,11 @@ if (!g_blnPortableMode)
 	if StrLen(o_CommandLineParameters.AA["Working"])
 		Gui, 2:Add, Text, y+2 x%g_intGroupItemsTab3X% w400 vf_lblWorkingFolderDisabled hidden, % o_L["OopsWorkingFolderDisabled"]
 	strWorkingFolderDebug := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
-	Diag(A_ThisLabel, "strWorkingFolderDebug", strWorkingFolderDebug)
+	; Diag(A_ThisLabel, "strWorkingFolderDebug", strWorkingFolderDebug)
 	if !StrLen(strWorkingFolderDebug) ; in case GetRegistry returns nothing (re: bug reported by Toastman 2019-11-04)
 	{
 		strWorkingFolderDebug := A_WorkingDir
-		Diag(A_ThisLabel, "strWorkingFolderDebug filled with A_WorkingDir", strWorkingFolderDebug)
+		; Diag(A_ThisLabel, "strWorkingFolderDebug filled with A_WorkingDir", strWorkingFolderDebug)
 	}
 	GuiControl, 2:, f_strWorkingFolder, %strWorkingFolderDebug%
 	GuiControl, 2:+gGuiOptionsGroupChanged, f_strWorkingFolder
@@ -8251,11 +8251,11 @@ if (!g_blnPortableMode) ; Working folder prep (only for Setup installation)
 {
 	strWorkingFolderNew := EnvVars(f_strWorkingFolder) ; do not PathCombine, save expanded to registry
 	strWorkingFolderPrev := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "WorkingFolder")
-	Diag(A_ThisLabel, "strWorkingFolderPrev", strWorkingFolderPrev)
+	; Diag(A_ThisLabel, "strWorkingFolderPrev", strWorkingFolderPrev)
 	if !StrLen(strWorkingFolderPrev) ; in case GetRegistry returns nothing (re: bug reported by Toastman 2019-11-04)
 	{
 		strWorkingFolderPrev := A_WorkingDir
-		Diag(A_ThisLabel, "strWorkingFolderPrev filled with A_WorkingDir", strWorkingFolderPrev)
+		; Diag(A_ThisLabel, "strWorkingFolderPrev filled with A_WorkingDir", strWorkingFolderPrev)
 	}
 	if (strWorkingFolderNew <> strWorkingFolderPrev and o_Settings.strIniFile <> o_Settings.strIniFileDefault) ; check that the settings file has not been switched
 	{
@@ -16441,7 +16441,7 @@ if (!g_blnMenuReady or g_blnChangeShortcutInProgress or g_blnChangeHotstringInPr
 
 g_strMenuTriggerLabel := A_ThisLabel
 
-Diag(g_strMenuTriggerLabel, "", "START-SHOW")
+; Diag(g_strMenuTriggerLabel, "", "START-SHOW")
 
 if (g_blnGetWinInfo)
 {
@@ -16502,8 +16502,8 @@ ToolTip ; clear tooltip after refresh
 if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see NavigateFromMsg and LaunchFromMsg)
 	g_strShowMenu := o_L["MainMenuName"]
 
-Diag(g_strMenuTriggerLabel, "menu name", g_strShowMenu)
-Diag(g_strMenuTriggerLabel, "", "STOP-SHOW") ; must be before Menu Show
+; Diag(g_strMenuTriggerLabel, "menu name", g_strShowMenu)
+; Diag(g_strMenuTriggerLabel, "", "STOP-SHOW") ; must be before Menu Show
 
 SetWaitCursor(false) 
 
@@ -20708,13 +20708,11 @@ Url2Var(strUrl)
 		oHttpRequest.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
 		oHttpRequest.Send()
 		
-		; if (oHttpRequest.Status() <> 200 or oHttpRequest.StatusText() <> "OK") ; #### temporary test for beta users
-			; Oops("~1~ could not access its web server with XmlHttp. Please, report this error at support@quickaccesspopup.com:`n"
-				; . "`nURL: " . (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl)
-				; . "`nRequest status: " . oHttpRequest.Status() . " (" . oHttpRequest.StatusText() . ")"
-				; . "`nHeader: " . oHttpRequest.GetAllResponseHeaders()
-				; , g_strAppNameText)
-				
+		Diag(A_ThisFunc, (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl), "")
+		Diag(A_LoopField . " Status" , oHttpRequest.Status(), "")
+		Diag(A_LoopField . " StatusText" , oHttpRequest.StatusText(), "")
+		Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
+		
 		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
 			break
 	}
