@@ -12297,7 +12297,12 @@ if InStr("|Folder|Document|Application", "|" . o_EditedFavorite.AA.strFavoriteTy
 {
 	if RegExMatch(f_strFavoriteLocation, """.*""") ; trim unneeded double quotes if location is enclosed with double quotes
 		GuiControl, 2:, f_strFavoriteLocation, % Trim(f_strFavoriteLocation, """")
-	gosub, GuiFavoriteIconDefault
+	
+	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
+		g_strNewFavoriteIconResource := GetFolderIcon(f_strFavoriteLocation)
+	
+	if !StrLen(g_strNewFavoriteIconResource)
+		gosub, GuiFavoriteIconDefault
 }
 
 if (A_ThisLabel = "EditFavoriteExternalLocationChanged")
