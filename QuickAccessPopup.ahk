@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.5.2 (2020-06-??)
+- 
+
 Version: 10.5.1 (2020-06-19)
 - when building Live folders, retrieve localized sub folders names (if it exists in desktop.ini file)
 - when adding a folder and retrieving suggested "Short name for menu", retrieve localized sub folders name (if it exists in desktop.ini file)
@@ -4024,7 +4027,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.1
+;@Ahk2Exe-SetVersion 10.5.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4138,7 +4141,7 @@ Gosub, InitFileInstall
 
 ; --- Global variables
 
-global g_strCurrentVersion := "10.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "v1.5"
@@ -13079,16 +13082,6 @@ GuiShowFromAddSnippetAndHotstring:
 GuiShowNeverCalled:
 ;------------------------------------------------------------
 
-; if gui already visible, just activate the window
-DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
-blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
-DetectHiddenWindows, On ; revert to app default
-if (blnExist) ; keep the gui as-is if it is not closed
-{
-	WinActivate, %g_strGuiFullTitle%
-	return
-}
-
 if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|", A_ThisLabel . "|") ; menu object already set in these cases
 	or !IsObject(o_MenuInGui.AA) ; or in some situation at startup where o_MenuInGui is not defined
 {
@@ -13122,6 +13115,17 @@ o_MainMenuBK := o_MainMenu.BackupContainer() ; backup menu content
 ; ###_V("o_MainMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName", ###avant1, ###apres1, ###avant2, ###apres2
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName)
+
+; if gui already visible, just activate the window
+DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
+blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
+DetectHiddenWindows, On ; revert to app default
+if (blnExist) ; keep the gui as-is if it is not closed
+{
+	WinActivate, %g_strGuiFullTitle%
+	return
+}
+; else continue
 
 Gosub, LoadFavoritesInGui
 
