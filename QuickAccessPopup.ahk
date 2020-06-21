@@ -5381,6 +5381,7 @@ return
 
 ;------------------------------------------------------------
 AddToIniWindowsAppsDefaultMenu:
+AddToIniWindowsAppsDefaultMenuFirstLaunch:
 ; Technical debt: this menu is created with IDs found in Windows 10 Version 1803 (same as in 1709) as-of 2018-08-01.
 ; We have no way to check if these IDs are OK on users' system (IDs in future releases may change). 
 ;------------------------------------------------------------
@@ -5389,9 +5390,11 @@ Gosub, ButtonRefreshWindowsAppsListAtStartup
 
 g_strAddThisMenuName := o_L["MenuMyWindowsAppsMenu"]
 Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if g_strAddThisMenuName menu name exists
-g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main menu marker
-
-AddToIniOneDefaultMenu("", "", "X")
+if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
+{
+	g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main menu marker
+	AddToIniOneDefaultMenu("", "", "X")
+}
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 
 AddToIniOneDefaultMenu("{Add Favorite - WindowsApp}", "", "QAP", true)
@@ -5412,7 +5415,8 @@ AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel", "Immersive Control Panel", "WindowsApp")
 AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 
-AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
+if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
+	AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
 
 IniWrite, 1, % o_Settings.strIniFile, Global, DefaultWindowsAppsMenuBuilt
 
@@ -5425,13 +5429,16 @@ return
 
 ;------------------------------------------------------------
 AddToIniSnippetsDefaultMenu:
+AddToIniSnippetsDefaultMenuFirstLaunch:
 ;------------------------------------------------------------
 
 g_strAddThisMenuName := o_L["MenuMySnippetsMenu"]
 Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if g_strAddThisMenuName menu name exists
-g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main menu marker
-
-AddToIniOneDefaultMenu("", "", "X")
+if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
+{
+	g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main menu marker
+	AddToIniOneDefaultMenu("", "", "X")
+}
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 
 AddToIniOneDefaultMenu("{Add Snippet and Hotstring}", "", "QAP", true)
@@ -5440,7 +5447,8 @@ AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu(L(o_L["GuiQuickAddSnippetExample"], """#snippet#"""), o_L["GuiQuickAddSnippetExampleName"], "Snippet", false, "", ":*:#snippet#")
 AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 
-AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
+if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
+	AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
 
 IniWrite, 1, % o_Settings.strIniFile, Global, SnippetsDefaultMenuBuilt
 
@@ -5490,6 +5498,9 @@ AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{21EC2020-3AEA-1069-A2DD-08002B30309D}", "", "Special") ; Control Panel
 AddToIniOneDefaultMenu("{645FF040-5081-101B-9F08-00AA002F954E}", "", "Special") ; Recycle Bin
 AddToIniOneDefaultMenu("", "", "Z") ; close special menu
+
+Gosub, AddToIniSnippetsDefaultMenuFirstLaunch ; modify the ini file Favorites section before reading it
+Gosub, AddToIniWindowsAppsDefaultMenuFirstLaunch ; modify the ini file Favorites section before reading it
 
 g_strAddThisMenuName := o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[o_L["MenuSettings"]] ; QAP feature code used here for comparison only, not for menu name
 Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if the QAP feature exist in this menu
