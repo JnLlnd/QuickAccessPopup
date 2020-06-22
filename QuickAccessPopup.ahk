@@ -25700,7 +25700,7 @@ class Container
 			for intKey, oItem in this.SA
 			{
 				oCopy.SA[intKey] := oItem.BackupItem()
-				oCopy.SA[intKey].AA.oParentMenu  := oCopy
+				oCopy.SA[intKey].AA.oParentMenu := oCopy
 				if oItem.IsContainer()
 					oCopy.SA[intKey].AA.oSubMenu := oItem.AA.oSubMenu.BackupContainer() ; recursive
 			}
@@ -25718,7 +25718,10 @@ class Container
 		
 		for intKey, oItem in this.SA
 			if oItem.IsContainer()
+			{
+				oItem.AA.oSubMenu.AA.oParentMenu := this
 				oItem.AA.oSubMenu.RestoreContainersIndex() ; recursive
+			}
 	}
 	;---------------------------------------------------------
 
