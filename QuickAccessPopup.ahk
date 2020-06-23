@@ -25975,7 +25975,10 @@ class Container
 			s_intIniLineLoadTC++
 			
 			if (strWinCmdItemName = "--")
-				return, "EOM" ; end of menu
+				if (blnRoot) 
+					continue ; disregard end of menu indicator in main menu, continue with next line
+				else
+					return, "EOM" ; end of menu
 		
 			blnItemIsMenu := SubStr(strWinCmdItemName, 1, 1) = "-" and StrLen(strWinCmdItemName) > 1 ; begin a submenu "-MenuName", not "-"
 			
