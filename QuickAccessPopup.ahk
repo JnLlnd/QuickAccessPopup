@@ -6095,16 +6095,9 @@ Menu, %strMenuName%, Add, % aaFavoriteL["GuiRemoveFavorite"] . g_strEllipse, Set
 Menu, %strMenuName%, Add, % aaFavoriteL["DialogCopy"] . g_strEllipse, SettingsCtrlY
 Menu, %strMenuName%, Add, % aaFavoriteL["GuiMove"] . g_strEllipse, SettingsCtrlM
 Menu, %strMenuName%, Add ; separator
-Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipMoveUp"] . g_strEllipse, SettingsCtrlUp
-Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipMoveDown"] . g_strEllipse, SettingsCtrlDown
-Menu, %strMenuName%, Add ; separator
-Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipSeparator"] . g_strEllipse, GuiAddSeparator
-Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipColumnBreak"] . g_strEllipse, GuiAddColumnBreak
-Menu, %strMenuName%, Add, % aaFavoriteL["ControlToolTipTextSeparator"] . g_strEllipse, GuiAddTextSeparator
-Menu, %strMenuName%, Add ; separator
 Menu, %strMenuName%, Add, % aaFavoriteL["MenuSelectAll"] . g_strEllipse, SettingsCtrlA
 Menu, %strMenuName%, Add ; separator
-g_intNbItemsInContextMenuFavoritesSection := 17
+g_intNbItemsInContextMenuFavoritesSection := 10
 
 return
 ;------------------------------------------------------------
