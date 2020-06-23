@@ -4318,11 +4318,11 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 }
 
 ; Build main menus
-Gosub, BuildMainMenu
+Gosub, BuildMainMenuInit
 Gosub, BuildAlternativeMenu
 
 ; Build menu used in Settings Gui
-Gosub, BuildGuiMenuBar ; must be before BuildMainMenu
+Gosub, BuildGuiMenuBar ; must be before BuildMainMenuInit
 Gosub, BuildTrayMenu
 Gosub, BuildSortMenus
 
@@ -7324,9 +7324,10 @@ return
 
 
 ;------------------------------------------------------------
-BuildMainMenu:
+BuildMainMenuInit:
 BuildMainMenuWithStatus:
 BuildMainMenuScheduled:
+BuildMainMenuWithStatusManualRefresh:
 ;------------------------------------------------------------
 
 Menu, % o_L["MainMenuName"], Add
@@ -7346,7 +7347,7 @@ g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
-o_MainMenu.BuildMenu(A_ThisLabel = "BuildMainMenuWithStatus") ; recurse for submenus
+o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if (A_ThisLabel = "BuildMainMenuWithStatus")
 	ToolTip
 
@@ -7449,7 +7450,7 @@ for strMenuName, o_ThisContainer in o_Containers.AA
 			or !(o_ThisContainer.AA.blnMenuExternalLoaded)
 		{
 			o_ThisContainer.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
-			o_ThisContainer.BuildMenu()
+			o_ThisContainer.BuildMenu(, , true) ; last param for blnInitOrManualRefresh
 		}
 
 if (A_ThisLabel <> "RefreshQAPMenuExternalOnly")
@@ -7463,7 +7464,7 @@ if (A_ThisLabel <> "RefreshQAPMenuExternalOnly")
 	{
 		Gosub, RefreshTotalCommanderHotlist
 		Gosub, RefreshDirectoryOpusFavorites
-		Gosub, BuildMainMenuWithStatus ; only here we load hotkeys, when user save favorites
+		Gosub, BuildMainMenuWithStatusManualRefresh ; only here we load hotkeys, when user save favorites
 	}
 
 g_blnMenuReady := true
@@ -26173,7 +26174,7 @@ class Container
 	;-----------------------------------------------------
 
 	;------------------------------------------------------------
-	BuildMenu(blnWorkingToolTip := false, blnMenuShortcutAlreadyInserted := false) ; build menu and recurse in submenus
+	BuildMenu(blnWorkingToolTip := false, blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false) ; build menu and recurse in submenus
 	;------------------------------------------------------------
 	{
 		this.s_intMenuShortcutNumber := 0
@@ -26250,13 +26251,13 @@ class Container
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
 					and !(g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 			{
-				if (aaThisFavorite.intFavoriteFolderLiveLevels)
+				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
 					o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
 				
-				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted) ; RECURSIVE - build the submenu first
+				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh) ; RECURSIVE - build the submenu first
 				
 				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
@@ -27382,6 +27383,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveShowSystem", (StrLen(saFavorite[28]) ? saFavorite[28] >= 2 : false)) ; show system files, true if value is 2 or 3, default false
 			this.InsertItemValue("blnFavoriteFolderLiveHideExtensions", (StrLen(saFavorite[29]) ? saFavorite[29] : false)) ; hide file extensions in live folders, pre-existing and default false
 			this.InsertItemValue("intFavoriteOpenSubFolder", (StrLen(saFavorite[30]) ? saFavorite[30] : 0)) ; folder to open, 0 folder itself, most recently(+)/anciently(-) 1 created, 2 modified or 3 accessed subfolder
+			this.InsertItemValue("blnFavoriteFolderLiveRefreshManual", 1) ; ##### saFavorite[31]) ; refresh live folder only when using the Refresh Live Folders command
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
