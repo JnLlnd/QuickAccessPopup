@@ -23070,7 +23070,7 @@ class JLicons
 	;---------------------------------------------------------
 	{
 		FileGetVersion, strVersion, % this.strFileLocation
-		if FirstVsSecondIs(g_strJLiconsVersion, strVersion) ; if JLicons.dll file loaded is outdated
+		if FirstVsSecondIs(strVersion, g_strJLiconsVersion) < 0 ; JLicons.dll file loaded is outdated (0 or > 0 are OK)
 		{
 			Oops(0, o_L["OopsJLiconsOutdated"], this.strFileLocation, g_strJLiconsVersion, g_strAppNameText)
 			ExitApp
