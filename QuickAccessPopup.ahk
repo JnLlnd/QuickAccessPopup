@@ -27344,7 +27344,7 @@ class Container
 			; this is a regular favorite, add it to the current menu
 			this.InsertItemValue("strFavoriteType", saFavorite[1]) ; see Favorite Types
 			this.InsertItemValue("strFavoriteName", StrReplace(saFavorite[2], g_strEscapePipe, "|")) ; display name of this menu item
-			if (this.AA.blnCheckDuplicates and StrLen(this.AA.oParentMenu.AA.strMenuPath) and StrLen(this.AA.strFavoriteName))
+			if (this.AA.oParentMenu.AA.blnCheckDuplicates and StrLen(this.AA.oParentMenu.AA.strMenuPath) and StrLen(this.AA.strFavoriteName))
 			; if this menu needs to be checked, if parent menu exists and if favorite name is not empty, check that favorite name is unique in this menu
 			{
 				strUniqueName := this.AA.strFavoriteName
