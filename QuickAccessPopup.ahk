@@ -13102,6 +13102,14 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 	o_MenuInGui := o_Containers.AA[strThisMenu] ; A_ThisMenu is "Main" or "Main > Submenu"...
 }
 
+if (A_ThisLabel = "GuiShowRestoreDefaultPosition" or ScreenConfigurationChanged())
+{
+	Gui, 1:Show, % "center w" . g_intGuiDefaultWidth . " h" . g_intGuiDefaultHeight
+	if (A_ThisLabel = "GuiShowRestoreDefaultPosition")
+		return
+	; else continue
+}
+
 Gosub, RefreshQAPMenuExternalOnly
 
 ; to test backup/restore
@@ -13134,18 +13142,13 @@ if (blnExist) ; keep the gui as-is if it is not closed
 
 Gosub, LoadFavoritesInGui
 
-if (A_ThisLabel = "GuiShowRestoreDefaultPosition" or ScreenConfigurationChanged())
-	Gui, 1:Show, % "center w" . g_intGuiDefaultWidth . " h" . g_intGuiDefaultHeight
-else
-{
-	GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
-	if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
-		and GetWindowPositionOnActiveMonitor("ahk_id " . g_strGui1Hwnd, intActiveX, intActiveY, intPositionX, intPositionY))
-		; display at center of active monitor
-		Gui, 1:Show, % "x" . intPositionX . " y" . intPositionY
-	else ; keep existing position
-		Gui, 1:Show
-}
+GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
+if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
+	and GetWindowPositionOnActiveMonitor("ahk_id " . g_strGui1Hwnd, intActiveX, intActiveY, intPositionX, intPositionY))
+	; display at center of active monitor
+	Gui, 1:Show, % "x" . intPositionX . " y" . intPositionY
+else ; keep existing position
+	Gui, 1:Show
 
 GuiShowCleanup:
 blnSaveEnabled := ""
@@ -25702,7 +25705,7 @@ class Container
 			for intKey, oItem in this.SA
 			{
 				oCopy.SA[intKey] := oItem.BackupItem()
-				oCopy.SA[intKey].AA.oParentMenu  := oCopy
+				oCopy.SA[intKey].AA.oParentMenu := oCopy
 				if oItem.IsContainer()
 					oCopy.SA[intKey].AA.oSubMenu := oItem.AA.oSubMenu.BackupContainer() ; recursive
 			}
@@ -25720,7 +25723,10 @@ class Container
 		
 		for intKey, oItem in this.SA
 			if oItem.IsContainer()
+			{
+				oItem.AA.oSubMenu.AA.oParentMenu := this
 				oItem.AA.oSubMenu.RestoreContainersIndex() ; recursive
+			}
 	}
 	;---------------------------------------------------------
 
