@@ -31,9 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.5.2 (2020-06-??)
-- 
-
+Version: 10.5.2 (2020-06-27)
+- when adding a favorite, retrieve custom folder icon in hidden file desktop.ini if it exists
+- for portable installation, check icons file JLicons.dll version and display error message if the file is outdated
+- fix bug when adding an item from a QAP feature in submenu
+- fix bug checking for duplicates when loading favorites
+- fix bug when using the command "Restore Customize window position"
+- fix bug when items in Total Commander Hotlist menu contain ampersand (&)
+- when building TC Hotlist menu, disregard end of menu indicator ("--") in main menu (as TC tolerates this syntax error)
+- fix internal bug when restoring favorites after user cancelled changes in the "Customize" window
+ 
 Version: 10.5.1 (2020-06-19)
 - when building Live folders, retrieve localized sub folders names (if it exists in desktop.ini file)
 - when adding a folder and retrieving suggested "Short name for menu", retrieve localized sub folders name (if it exists in desktop.ini file)
@@ -4092,7 +4099,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6"
