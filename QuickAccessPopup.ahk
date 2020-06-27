@@ -4090,6 +4090,14 @@ ListLines, On
 OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure deletion of temporary files
 
 ;---------------------------------
+; Version global variables
+
+global g_strCurrentVersion := "10.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
+global g_strJLiconsVersion := "1.6"
+
+;---------------------------------
 ; Init class for JLicons
 if (g_blnPortableMode)
 	global o_JLicons := new JLIcons(A_ScriptDir . "\JLicons.dll") ; in portable mode, same folder as QAP exe file or script directory in developement environment
@@ -4139,23 +4147,17 @@ SetTimer, RemoveOldTemporaryFolders, -10000, -100 ; run once in 10 seconds, low 
 
 Gosub, InitFileInstall
 
-; --- Global variables
-
-global g_strCurrentVersion := "10.5.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
-global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
-global g_strJLiconsVersion := "v1.5"
-
-global g_strDiagFile := A_WorkingDir . "\" . g_strAppNameFile . "-DIAG.txt"
-
 ;---------------------------------
 ; Init language variables (must be after g_strCurrentBranch init)
+
 global g_strEscapeReplacement := "!r4nd0mt3xt!"
 global o_L := new Language
 o_Settings.InitOptionsGroupsLabelNames() ; init options groups labels after language is initialized
 
 ;---------------------------------
 ; Init global variables
+
+global g_strDiagFile := A_WorkingDir . "\" . g_strAppNameFile . "-DIAG.txt"
 
 global g_intGuiDefaultWidth := 636
 global g_intGuiDefaultHeight := 496 ; was 601
@@ -4260,6 +4262,11 @@ if InStr(A_ScriptDir, A_Temp) ; must be positioned after g_strAppNameFile is cre
 ; Keep gosubs in this order
 Gosub, InitLanguageArrays
 Gosub, InitGuiControls
+
+;---------------------------------
+; Check JLicons.dll version (now that language file is available)
+if (g_blnPortableMode)
+	o_JLicons.CheckVersion() ; quits if icon file is outdated
 
 ;---------------------------------
 ; Init class for Triggers (must be before LoadIniFile)
@@ -23081,6 +23088,19 @@ class JLicons
 	}
 	;---------------------------------------------------------
 	
+	;---------------------------------------------------------
+	CheckVersion()
+	;---------------------------------------------------------
+	{
+		FileGetVersion, strVersion, % this.strFileLocation
+		if FirstVsSecondIs(strVersion, g_strJLiconsVersion) < 0 ; JLicons.dll file loaded is outdated (0 or > 0 are OK)
+		{
+			Oops(0, o_L["OopsJLiconsOutdated"], this.strFileLocation, g_strJLiconsVersion, g_strAppNameText)
+			ExitApp
+		}
+	}
+	;---------------------------------------------------------
+
 	;---------------------------------------------------------
 	AddIcon(strKey, strFileIndex) ; to add DOpus and Total Commander icons
 	;---------------------------------------------------------

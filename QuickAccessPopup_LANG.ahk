@@ -715,6 +715,7 @@ this["OopsHttpLocationTransformed"] := "The http location (URL format) has been 
 this["OopsInvalidWinCmdIni"] := "Total Commander settings file ""wincmd.ini"" not found.`n`nSelect the file in ""Options"", ""File managers"" tab."
 this["OopsInvalidWindowPosition"] := "Invalid window position value(s)."
 this["OopsJLiconsError"] := "QAP tray icon not found. Make sure you updated the JLicons.dll file to ~1~."
+this["OopsJLiconsOutdated"] := "The following file needs to be updated:`n`n~1~`n`nReplace it with JLicons.dll version ~2~ from the latest portable installation ZIP file and restart ~3~."
 this["OopsLaunchWithNotFound"] := """Launch with this application"" file not found:`n`n~1~`n`nCheck the favorite's advanced settings."
 this["OopsMaxLiveFolder"] := "The maximum number of items in Live folders (~1~) has been exceeded. Please reduce the number of levels of Live folders.`n`nYou could also raise this limit but be careful: a too-large number can produce unpredictable results. Change the value in ""Options"", section ""Menu Advanced Options""."
 this["OopsMenuExternalCentralized"] := "centralized shared menu"
