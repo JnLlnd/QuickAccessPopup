@@ -12549,7 +12549,7 @@ if (g_blnUseColors)
 	Gui, 3:Color, %g_strGuiWindowColor%
 
 Gui, 3:Add, Text, x10 y10, % o_L["DialogFileName"] . ":"
-Gui, 3:Add, Edit, x+5 yp w500 h20 vf_strIconFile
+Gui, 3:Add, Edit, x+5 yp w500 h20 ReadOnly vf_strIconFile
 ParseIconResource(g_strNewFavoriteIconResource, g_strCurrentIconFile, intIconIndex)
 GuiControl, 3:, f_strIconFile, %g_strCurrentIconFile%
 Gui, 3:Add, Button, x+5 yp w100 gButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
