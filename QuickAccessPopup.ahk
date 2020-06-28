@@ -4494,6 +4494,8 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
+gosub, GuiMultipleAdd ; #####
+
 return
 
 ;========================================================================================================================
@@ -4643,7 +4645,6 @@ return
 ;========================================================================================================================
 ; END OF GUI HOTKEYS
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -5855,7 +5856,6 @@ return
 ;------------------------------------------------------------
 
 
-
 ;========================================================================================================================
 ; END OF INITIALIZATION
 ;========================================================================================================================
@@ -5923,7 +5923,6 @@ ExitApp
 ;========================================================================================================================
 ; END OF EXIT
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -7555,11 +7554,9 @@ return
 ;------------------------------------------------------------
 
 
-
 ;========================================================================================================================
 ; END OF BUILD
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -9710,7 +9707,6 @@ ControlSetText, Button2, % o_L["DialogNew"]
 
 return
 ;------------------------------------------------------------
-
 
 
 ;========================================================================================================================
@@ -13540,6 +13536,86 @@ return
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+GuiMultipleAdd:
+;------------------------------------------------------------
+
+aaL := o_L.InsertAmpersand(false, "GuiAddFavorite", "GuiCancel")
+
+gosub, CheckShowSettings
+
+g_strMultipleGuiTitle := L(o_L["GuiMultipleAdd"], g_strAppNameText, g_strAppVersion)
+
+Gui, 2:New, +Hwndg_strGui2Hwnd, %g_strMultipleGuiTitle%
+if (g_blnUseColors)
+	Gui, 2:Color, %g_strGuiWindowColor%
+Gui, 2:+Owner1
+Gui, 2:+OwnDialogs
+
+Gui, 2:Font, w600, Verdana
+Gui, 2:Add, Text, x10 y10 w595 center vf_lblMultipleGuiTitle, % o_L["GuiMultipleAddPrompt"]
+Gui, 2:Font
+
+Gui, 2:Add, DropDownList, x10 y+10 gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource, % o_L["DialogFolderLabel"] . "||"
+
+Gui, 2:Add, Text, vf_lblSourceFolder x10 y+10 hidden, % o_L["DialogFolderLabel"]
+Gui, 2:Add, Edit, vf_strSourceFolder x+10 w300 hidden ReadOnly
+Gui, 2:Add, Button, x+5 yp w100 gButtonSourceFolder vf_btnSourceFolder hidden, % o_L["DialogBrowseButton"]
+
+
+Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAdd gGuiMultipleAddAdd disabled Default, % aaL["GuiAddFavorite"]
+Gui, 2:Add, Button, yp vf_btnGuiMultipleAddCancel gGuiMultipleAddCancel, % aaL["GuiCancel"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGuiMultipleAddAdd", "f_btnGuiMultipleAddCancel")
+
+Gui, 2:Add, Text
+; GuiControl, Focus, 
+
+Gosub, GuiMultipleAddSourceChanged
+Gosub, ShowGui2AndDisableGui1
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ButtonSourceFolder:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strSourceFolder := ChooseFolder([g_strGui2Hwnd, o_L["GuiMultipleAddSelectFoder"]], f_strSourceFolder)
+if (strSourceFolder) ; false if user cancelled ChooseFolder
+	GuiControl, , f_strSourceFolder, %strSourceFolder%
+
+strSourceFolder := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSourceChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strShowHide := (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"] ? "Show" : "Hide")
+loop, Parse, % "f_lblSourceFolder|f_strSourceFolder|f_btnSourceFolder", |
+	GuiControl, 2:%strShowHide%, %A_LoopField%
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddAdd:
+GuiMultipleAddCancel:
+;------------------------------------------------------------
+
+Gosub, 2GuiClose
+
+return
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF FAVORITE_GUI
 ;========================================================================================================================
@@ -16182,7 +16258,6 @@ HotstringValidate(strActualHotstring, strNewHotstring)
 !_050_GUI_CLOSE-CANCEL-BK_OBJECTS:
 ;========================================================================================================================
 
-
 ;------------------------------------------------------------
 ShowGui2AndDisableGui1:
 ShowGui2AndDisableGui1KeepPosition:
@@ -16698,11 +16773,9 @@ DialogBoxParentExcluded(strTargetWinId)
 ;------------------------------------------------------------
 
 
-
 ;========================================================================================================================
 ; END OF POPUP MENU
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -16851,7 +16924,6 @@ WindowIsQuickAccessPopup(strClass)
 ;========================================================================================================================
 ; END OF CLASS
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -17804,11 +17876,9 @@ return
 ;------------------------------------------------------------
 
 
-
 ;========================================================================================================================
 ; END OF MENU ACTIONS
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -17878,11 +17948,9 @@ http://ahkscript.org/boards/viewtopic.php?f=5&t=526&start=20#p4673
 ;------------------------------------------------------------
 
 
-
 ;========================================================================================================================
 ; END OF NAVIGATE
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -18660,11 +18728,9 @@ return
 ;------------------------------------------------------------
 
 
-
 ;========================================================================================================================
 ; END OF TRAY MENU ACTIONS
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -18995,11 +19061,9 @@ return
 ;------------------------------------------------------------
 
 
-
 ;========================================================================================================================
 ; END OF ABOUT-DONATE-HELP
 ;========================================================================================================================
-
 
 
 ;========================================================================================================================
@@ -19636,7 +19700,6 @@ return
 !_090_VARIOUS_COMMANDS:
 return
 ;========================================================================================================================
-
 
 ;------------------------------------------------------------
 GetCurrentLocation(strClass, strWinID)
@@ -22711,6 +22774,130 @@ IsBetween(intIs, intLow, intHigh)
 ;---------------------------------------------------------
 
 
+;------------------------------------------------
+ChooseFolder(Owner, StartingFolder := "", CustomPlaces := "", Options := 0)
+; from Flipeador (https://www.autohotkey.com/boards/viewtopic.php?p=231879&sid=3ed0e84a86d16a175b2c524a4d211efd#p231879)
+;------------------------------------------------
+{
+/*
+    Displays a standard dialog that allows the user to select folder(s).
+    Parameters:
+        Owner / Title:
+            The identifier of the window that owns this dialog. This value can be zero.
+            An Array with the identifier of the owner window and the title. If the title is an empty string, it is set to the default.
+        StartingFolder:
+            The path to the directory selected by default. If the directory does not exist, it searches in higher directories.
+        CustomPlaces:
+            Specify an Array with the custom directories that will be displayed in the left pane. Missing directories will be omitted.
+            To specify the location in the list, specify an Array with the directory and its location (0 = Lower, 1 = Upper).
+        Options:
+            Determines the behavior of the dialog. This parameter must be one or more of the following values.
+            0x00000200 (FOS_ALLOWMULTISELECT) = Enables the user to select multiple items in the open dialog.
+            0x00040000 (FOS_HIDEPINNEDPLACES) = Hide items shown by default in the view's navigation pane.
+            0x02000000  (FOS_DONTADDTORECENT) = Do not add the item being opened or saved to the recent documents list (SHAddToRecentDocs).
+            0x10000000  (FOS_FORCESHOWHIDDEN) = Include hidden and system items.
+            You can check all available values ??at https://msdn.microsoft.com/en-us/library/windows/desktop/dn457282(v=vs.85).aspx.
+    Return:
+        Returns zero if the user canceled the dialog, otherwise returns the path of the selected directory. The directory never ends with "\".
+*/
+    ; IFileOpenDialog interface
+    ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb775834(v=vs.85).aspx
+    local IFileOpenDialog := ComObjCreate("{DC1C5A9C-E88A-4DDE-A5A1-60F82A20AEF7}", "{D57C7288-D4AD-4768-BE02-9D969532D960}")
+        ,           Title := IsObject(Owner) ? Owner[2] . "" : ""
+        ,           Flags := 0x20 | Options    ; FILEOPENDIALOGOPTIONS enumeration (https://msdn.microsoft.com/en-us/library/windows/desktop/dn457282(v=vs.85).aspx)
+        ,      IShellItem := PIDL := 0         ; PIDL recibe la dirección de memoria a la estructura ITEMIDLIST que debe ser liberada con la función CoTaskMemFree
+        ,             Obj := {}, foo := bar := ""
+    Owner := IsObject(Owner) ? Owner[1] : (WinExist("ahk_id" . Owner) ? Owner : 0)
+    CustomPlaces := IsObject(CustomPlaces) || CustomPlaces == "" ? CustomPlaces : [CustomPlaces]
+
+    while (InStr(StartingFolder, "\") && !DirExist(StartingFolder))    ; si el directorio no existe buscamos directorios superiores
+        StartingFolder := SubStr(StartingFolder, 1, InStr(StartingFolder, "\",, -1) - 1)
+    if ( DirExist(StartingFolder) )
+    {
+        DllCall("Shell32.dll\SHParseDisplayName", "UPtr", &StartingFolder, "Ptr", 0, "UPtrP", PIDL, "UInt", 0, "UInt", 0)
+        DllCall("Shell32.dll\SHCreateShellItem", "Ptr", 0, "Ptr", 0, "UPtr", PIDL, "UPtrP", IShellItem)
+        ObjRawSet(Obj, IShellItem, PIDL)    ; guardamos la interfaz «IShellItem» y la estructura «PIDL» para liberarlas al final
+        ; IFileDialog::SetFolder method
+        ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb761828(v=vs.85).aspx
+        DllCall(NumGet(NumGet(IFileOpenDialog+0)+12*A_PtrSize), "Ptr", IFileOpenDialog, "UPtr", IShellItem)
+    }
+
+    if ( IsObject(CustomPlaces) )
+    {
+        local Directory := ""
+        For foo, Directory in CustomPlaces    ; foo = index
+        {
+            foo := IsObject(Directory) ? Directory[2] : 0    ; FDAP enumeration (https://msdn.microsoft.com/en-us/library/windows/desktop/bb762502(v=vs.85).aspx)
+            if ( DirExist(Directory := IsObject(Directory) ? Directory[1] : Directory) )
+            {
+                DllCall("Shell32.dll\SHParseDisplayName", "UPtr", &Directory, "Ptr", 0, "UPtrP", PIDL, "UInt", 0, "UInt", 0)
+                DllCall("Shell32.dll\SHCreateShellItem", "Ptr", 0, "Ptr", 0, "UPtr", PIDL, "UPtrP", IShellItem)
+                ObjRawSet(Obj, IShellItem, PIDL)
+                ; IFileDialog::AddPlace method
+                ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb775946(v=vs.85).aspx
+                DllCall(NumGet(NumGet(IFileOpenDialog+0)+21*A_PtrSize), "UPtr", IFileOpenDialog, "UPtr", IShellItem, "UInt", foo)
+            }
+        }
+    }
+
+    ; IFileDialog::SetTitle method
+    ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb761834(v=vs.85).aspx
+    DllCall(NumGet(NumGet(IFileOpenDialog+0)+17*A_PtrSize), "UPtr", IFileOpenDialog, "UPtr", Title == "" ? 0 : &Title)
+
+    ; IFileDialog::SetOptions method
+    ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb761832(v=vs.85).aspx
+    DllCall(NumGet(NumGet(IFileOpenDialog+0)+9*A_PtrSize), "UPtr", IFileOpenDialog, "UInt", Flags)
+
+    ; IModalWindow::Show method
+    ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb761688(v=vs.85).aspx
+    local Result := []
+    if ( !DllCall(NumGet(NumGet(IFileOpenDialog+0)+3*A_PtrSize), "UPtr", IFileOpenDialog, "Ptr", Owner, "UInt") )
+    {
+        ; IFileOpenDialog::GetResults method
+        ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb775831(v=vs.85).aspx
+        local IShellItemArray := 0    ; IShellItemArray interface (https://msdn.microsoft.com/en-us/library/windows/desktop/bb761106(v=vs.85).aspx)
+        DllCall(NumGet(NumGet(IFileOpenDialog+0)+27*A_PtrSize), "UPtr", IFileOpenDialog, "UPtrP", IShellItemArray)
+		
+        ; IShellItemArray::GetCount method
+        ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb761098(v=vs.85).aspx
+        local Count := 0    ; pdwNumItems
+        DllCall(NumGet(NumGet(IShellItemArray+0)+7*A_PtrSize), "UPtr", IShellItemArray, "UIntP", Count)
+		
+        local Buffer := ""
+        VarSetCapacity(Buffer, 32767 * 2)
+        loop % Count
+        {
+            ; IShellItemArray::GetItemAt method
+            ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb761100(v=vs.85).aspx
+            DllCall(NumGet(NumGet(IShellItemArray+0)+8*A_PtrSize), "UPtr", IShellItemArray, "UInt", A_Index-1, "UPtrP", IShellItem)
+            DllCall("Shell32.dll\SHGetIDListFromObject", "UPtr", IShellItem, "UPtrP", PIDL)
+            DllCall("Shell32.dll\SHGetPathFromIDListEx", "UPtr", PIDL, "Str", Buffer, "UInt", 32767, "UInt", 0)
+            ObjRawSet(Obj, IShellItem, PIDL), ObjPush(Result, RTrim(Buffer, "\"))
+        }
+		
+        ObjRelease(IShellItemArray)
+    }
+
+    for foo, bar in Obj    ; foo = IShellItem interface (ptr)  |  bar = PIDL structure (ptr)
+        ObjRelease(foo), DllCall("Ole32.dll\CoTaskMemFree", "UPtr", bar)
+    ObjRelease(IFileOpenDialog)
+
+    return ObjLength(Result) ? ( Options & 0x200 ? Result : Result[1] ) : FALSE
+}
+;------------------------------------------------
+
+
+;------------------------------------------------
+DirExist(DirName)
+; used by ChooseFolder
+;------------------------------------------------
+{
+    loop Files, % DirName, D
+        return A_LoopFileAttrib
+}
+;------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -22720,7 +22907,6 @@ IsBetween(intIs, intLow, intHigh)
 !_098_ONMESSAGE_FUNCTIONS:
 return
 ;========================================================================================================================
-
 
 ;------------------------------------------------
 WM_MOUSEMOVE(wParam, lParam)
@@ -22934,7 +23120,6 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 !_700_CLASSES:
 return
 ;========================================================================================================================
-
 
 ;-------------------------------------------------------------
 class CommandLineParameters
