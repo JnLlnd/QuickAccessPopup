@@ -4227,6 +4227,7 @@ global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
+global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -11056,13 +11057,7 @@ else ; add favorite
 	}
 	else if InStr("GuiAddFromDropFiles|GuiAddThisFileFromMsg|GuiAddThisFileFromMsgXpress|GuiAddShortcutFromMsg", strGuiFavoriteLabel)
 	{
-		strExtension := GetFileExtension(g_strNewLocation)
-		if StrLen(strExtension) and InStr("exe|com|bat|ahk|vbs|cmd", strExtension)
-			o_EditedFavorite.AA.strFavoriteType := "Application"
-		else if LocationIsDocument(g_strNewLocation)
-			o_EditedFavorite.AA.strFavoriteType := "Document"
-		else
-			o_EditedFavorite.AA.strFavoriteType := "Folder"
+		o_EditedFavorite.AA.strFavoriteType := GetFavoriteType4Extension(g_strNewLocation)
 		
 		if (strGuiFavoriteLabel = "GuiAddThisFileFromMsgXpress")
 		{
@@ -13540,6 +13535,11 @@ return
 GuiMultipleAdd:
 ;------------------------------------------------------------
 
+intCol1Width := 90
+intCol2X := intCol1Width + 15
+intCol2Width := 300
+intGuiContentWidth := 500
+
 aaL := o_L.InsertAmpersand(false, "GuiAddFavorite", "GuiCancel")
 
 gosub, CheckShowSettings
@@ -13553,19 +13553,30 @@ Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 
 Gui, 2:Font, w600, Verdana
-Gui, 2:Add, Text, x10 y10 w595 center vf_lblMultipleGuiTitle, % o_L["GuiMultipleAddPrompt"]
+Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth . " center vf_lblMultipleGuiTitle", % o_L["GuiMultipleAddPrompt"]
 Gui, 2:Font
 
-Gui, 2:Add, DropDownList, x10 y+10 gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource, % o_L["DialogFolderLabel"] . "||"
+Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+10 w" . intCol1Width . " right", % o_L["MenuMenu"]
+Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGuiMultipleAddMenu"
+	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
 
-Gui, 2:Add, Text, vf_lblSourceFolder x10 y+10 hidden, % o_L["DialogFolderLabel"]
-Gui, 2:Add, Edit, vf_strSourceFolder x+10 w300 hidden ReadOnly
-Gui, 2:Add, Button, x+5 yp w100 gButtonSourceFolder vf_btnSourceFolder hidden, % o_L["DialogBrowseButton"]
+Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
+Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource", % o_L["DialogFolderLabel"] . "||"
 
+Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right hidden", % o_L["DialogFolderLabel"]
+Gui, 2:Add, Edit, % "vf_strMultipleAddSourceFolder gGuiMultipleAddSourceFolderChanged x" . intCol2X . " yp w" . intCol2Width . " hidden ReadOnly"
+Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourceFolder vf_btnMultipleAddSourceFolder hidden, % o_L["DialogBrowseButton"]
 
-Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAdd gGuiMultipleAddAdd disabled Default, % aaL["GuiAddFavorite"]
-Gui, 2:Add, Button, yp vf_btnGuiMultipleAddCancel gGuiMultipleAddCancel, % aaL["GuiCancel"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGuiMultipleAddAdd", "f_btnGuiMultipleAddCancel")
+Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
+Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
+
+saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|")
+Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents"
+	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5]
+
+Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddAddFavorites disabled Default, % aaL["GuiAddFavorite"]
+Gui, 2:Add, Button, yp vf_btnGuiMultipleAddCancel gButtonMultipleAddCancel, % aaL["GuiCancel"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGuiMultipleAddAddFavorites", "f_btnGuiMultipleAddCancel")
 
 Gui, 2:Add, Text
 ; GuiControl, Focus, 
@@ -13578,15 +13589,78 @@ return
 
 
 ;------------------------------------------------------------
-ButtonSourceFolder:
+GuiMultipleAddListEvents:
+;------------------------------------------------------------
+
+if (A_GuiEvent = "C")
+	GuiControl, % (LV_GetNext(0, "C") ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if at least one row is checked enable the Add button
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ButtonMultipleAddSourceFolder:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-strSourceFolder := ChooseFolder([g_strGui2Hwnd, o_L["GuiMultipleAddSelectFoder"]], f_strSourceFolder)
-if (strSourceFolder) ; false if user cancelled ChooseFolder
-	GuiControl, , f_strSourceFolder, %strSourceFolder%
+strMultipleAddSourceFolder := ChooseFolder([g_strGui2Hwnd, o_L["GuiMultipleAddSelectFoder"]], f_strMultipleAddSourceFolder)
+if (strMultipleAddSourceFolder) ; false if user cancelled ChooseFolder
+	GuiControl, , f_strMultipleAddSourceFolder, %strMultipleAddSourceFolder%
 
-strSourceFolder := ""
+strMultipleAddSourceFolder := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ButtonMultipleAddCancel:
+;------------------------------------------------------------
+
+Gosub, 2GuiClose
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ButtonMultipleAddAddFavorites:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+g_strMultipleAddDestinationMenu := f_drpGuiMultipleAddMenu
+
+intRow := 0
+Loop
+{
+	intRow := LV_GetNext(intRow, "C")
+	if !(intRow)
+		break
+	LV_GetText(strFavoriteName, intRow, 1)
+	LV_GetText(strFavoriteType, intRow, 2)
+	LV_GetText(strFavoriteLocation, intRow, 3)
+	if (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"])
+		strFavoriteLocation := f_strMultipleAddSourceFolder . "\" . strFavoriteLocation
+	
+	o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
+	gosub, GuiAddFavoriteSaveFromMultipleAdd
+}
+
+Gosub, 2GuiClose
+
+Gosub, LoadFavoritesInGui
+
+if SearchIsVisible()
+{
+	LV_Modify(0, "-Select")
+	LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus Vis")
+}
+Gosub, EnableSaveAndCancel
+	
+intRow := ""
+strFavoriteName := ""
+strFavoriteLocation := ""
 
 return
 ;------------------------------------------------------------
@@ -13598,7 +13672,7 @@ GuiMultipleAddSourceChanged:
 Gui, 2:Submit, NoHide
 
 strShowHide := (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"] ? "Show" : "Hide")
-loop, Parse, % "f_lblSourceFolder|f_strSourceFolder|f_btnSourceFolder", |
+loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnMultipleAddSourceFolder", |
 	GuiControl, 2:%strShowHide%, %A_LoopField%
 
 return
@@ -13606,11 +13680,35 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAddAdd:
-GuiMultipleAddCancel:
+GuiMultipleAddFilterChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+; ###_V(A_ThisLabel, f_strMultipleAddFilter) ; ##### if wildcards, reload with wildcards, else filter by text
+
+gosub, GuiMultipleAddSourceFolderChanged
+
+return
 ;------------------------------------------------------------
 
-Gosub, 2GuiClose
+
+;------------------------------------------------------------
+GuiMultipleAddSourceFolderChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+LV_Delete()
+strFilesFilter := f_strMultipleAddSourceFolder
+if InStr(f_strMultipleAddFilter, "*") or InStr(f_strMultipleAddFilter, "?")
+	strFilesFilter .= "\" . f_strMultipleAddFilter
+else
+	strFilesFilter .= "\*.*"
+
+Loop, Files, %strFilesFilter%, DF
+	LV_Add(, GetLocationPathName(A_LoopFileLongPath), StrReplace(o_Favorites.GetFavoriteTypeObject(GetFavoriteType4Extension(A_LoopFileLongPath)).strFavoriteTypeLabel, "&", ""), A_LoopFileName)
+LV_ModifyCol()
+
+strFilesFilter := ""
 
 return
 ;------------------------------------------------------------
@@ -13702,6 +13800,7 @@ GuiMoveOneFavoriteSave:
 GuiCopyFavoriteSave:
 GuiAddExternalSave:
 GuiQuickAddSnippetSave:
+GuiAddFavoriteSaveFromMultipleAdd:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -13912,7 +14011,7 @@ if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is proces
 
 ; alert user if an existing favorite has the same location + parameters
 
-if InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|")
+if InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd
 {
 	oDuplicateFavorite := o_MainMenu.FoundIdenticalFavorite(o_EditedFavorite)
 	if (oDuplicateFavorite) ; FoundIdenticalFavorite returned false if not duplicate
@@ -13961,7 +14060,7 @@ else if (strGuiFavoriteLabel = "GuiEditMenuFromGui") ; switch back o_MenuInGui
 	
 	Gosub, EnableSaveAndCancel
 }
-else ; update listview
+else if (strThisLabel <> "GuiAddFavoriteSaveFromMultipleAdd") ; update listview
 {
 	if (strThisLabel = "GuiAddExternalSave")
 		g_blnExternalMenusAdded := true
@@ -14165,19 +14264,21 @@ else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromM
 if (strThisLabel = "GuiAddExternalSave")
 	strExternalMenuName := o_Settings.ReadIniValue("MenuName", " ", "Global", o_EditedFavorite.AA.strFavoriteAppWorkingDir) ; empty if not found
 
-if InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|", strThisLabel . "|")
+if InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|", strThisLabel . "|")
 {
 	strNewFavoriteShortName := (StrLen(o_EditedFavorite.AA.strFavoriteName) ? o_EditedFavorite.AA.strFavoriteName : strExternalMenuName)
 	strNewFavoriteLocation := o_EditedFavorite.AA.strFavoriteLocation
 	strFavoriteAppWorkingDir := o_EditedFavorite.AA.strFavoriteAppWorkingDir ; for external menu from catalogue
 	strNewFavoriteWindowPosition := g_strNewFavoriteWindowPosition
 	
-	if InStr(strThisLabel, "GuiAddFavoriteSaveXpress") ; include GuiAddFavoriteSaveXpressFromMsg
+	if (strThisLabel = "GuiAddFavoriteSaveFromMultipleAdd") or InStr(strThisLabel, "GuiAddFavoriteSaveXpress") ; include GuiAddFavoriteSaveXpressFromMsg
 	{
 		strNewFavoriteShortName := StrReplace(strNewFavoriteShortName, "&", "&&") ; double ampersand automatically to make it visible
 		; add new favorite in first or last position of menu where the XPress command was used
 		if InStr(strThisLabel, "FromMsg")
 			strDestinationMenu := o_L["MainMenuName"] ; for GuiAddFavoriteSaveXpressFromMsg favorite is added from context menu (no A_ThisMenu)
+		else if (strThisLabel = "GuiAddFavoriteSaveFromMultipleAdd")
+			strDestinationMenu := g_strMultipleAddDestinationMenu
 		else
 			strDestinationMenu := A_ThisMenu
 		g_intNewItemPos := (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? 1 : o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1) ; 
@@ -14439,7 +14540,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
-blnRename := InStr("GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|", strThisLabel . "|")
+blnRename := InStr("GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|", strThisLabel . "|")
 if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, blnRename)
 {
 	Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
@@ -20559,6 +20660,21 @@ RecentLocationIsDocument(strLocation, strSource)
 	return LocationIsDocument(strLocation)
 }
 ;------------------------------------------------------------
+
+
+;------------------------------------------------
+GetFavoriteType4Extension(strFilePathName)
+;------------------------------------------------
+{
+	strExtension := GetFileExtension(strFilePathName)
+	if StrLen(strExtension) and InStr("exe|com|bat|ahk|vbs|cmd", strExtension)
+		return "Application"
+	else if LocationIsDocument(strFilePathName)
+		return "Document"
+	else
+		return "Folder"
+}
+;------------------------------------------------
 
 
 ;------------------------------------------------------------
