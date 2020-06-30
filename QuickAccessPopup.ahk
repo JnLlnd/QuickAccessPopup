@@ -13685,10 +13685,8 @@ GuiMultipleAddFilterChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-; ###_V(A_ThisLabel, f_strMultipleAddFilter) ; ##### if wildcards, reload with wildcards, else filter by text
-
 gosub, GuiMultipleAddSourceFolderChanged
-
+	
 return
 ;------------------------------------------------------------
 
@@ -13698,18 +13696,22 @@ GuiMultipleAddSourceFolderChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-LV_Delete()
+blnWildcards := InStr(f_strMultipleAddFilter, "*") or InStr(f_strMultipleAddFilter, "?")
 strFilesFilter := f_strMultipleAddSourceFolder
-if InStr(f_strMultipleAddFilter, "*") or InStr(f_strMultipleAddFilter, "?")
+
+if (blnWildcards)
 	strFilesFilter .= "\" . f_strMultipleAddFilter
 else
 	strFilesFilter .= "\*.*"
 
+LV_Delete()
 Loop, Files, %strFilesFilter%, DF
-	LV_Add(, GetLocationPathName(A_LoopFileLongPath), StrReplace(o_Favorites.GetFavoriteTypeObject(GetFavoriteType4Extension(A_LoopFileLongPath)).strFavoriteTypeLabel, "&", ""), A_LoopFileName)
+	if (blnWildcards or InStr(A_LoopFileName, f_strMultipleAddFilter) or !StrLen(f_strMultipleAddFilter))
+		LV_Add(, GetLocationPathName(A_LoopFileLongPath), StrReplace(o_Favorites.GetFavoriteTypeObject(GetFavoriteType4Extension(A_LoopFileLongPath)).strFavoriteTypeLabel, "&", ""), A_LoopFileName)
 LV_ModifyCol()
 
 strFilesFilter := ""
+blnWildcards := ""
 
 return
 ;------------------------------------------------------------
