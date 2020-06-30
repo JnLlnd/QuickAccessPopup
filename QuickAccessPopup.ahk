@@ -9338,8 +9338,9 @@ else
 }
 
 strPreviousFolderExpand := PathCombine(A_WorkingDir, EnvVars(%strControlName%))
-FileSelectFolder, strNewFolder, *%strPreviousFolderExpand%, 3, %strPrompt%
-if !StrLen(strNewFolder)
+strNewFolder := ChooseFolder([g_strGui2Hwnd, strPrompt], strPreviousFolderExpand)
+
+if !(strNewFolder) ; ChooseFolder returns 0 if escaped
 	return
 
 Gosub, GuiOptionsGroupChanged
@@ -12430,7 +12431,7 @@ else ; ButtonSelectLaunchWith or ButtonSelectFavoriteSoundLocation
 }
 
 if (strType = "Folder")
-	FileSelectFolder, strNewLocation, *%strDefault%, 3, % o_L["DialogAddFolderSelect"]
+	strNewLocation := ChooseFolder([g_strGui2Hwnd, o_L["DialogAddFolderSelect"]], strDefault)
 else if (strType = "File")
 	; do not use option "S" because it gives an error message on read-only supports
 	FileSelectFile, strNewLocation, 3, %strDefault%, % o_L["DialogAddFileSelect"]
@@ -12444,7 +12445,7 @@ else ; IniFile
 		strNewLocation .= ".ini"
 }
 
-if (!StrLen(strNewLocation) or strNewLocation = ".ini")
+if (!StrLen(strNewLocation) or strNewLocation = ".ini" or !strNewLocation) ; FileSelectFile returns empty string if escaped, ChooseFolder returns 0 if escaped
 {
 	gosub, ButtonSelectFavoriteLocationCleanup
 	return
@@ -13604,7 +13605,7 @@ ButtonMultipleAddSourceFolder:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-strMultipleAddSourceFolder := ChooseFolder([g_strGui2Hwnd, o_L["GuiMultipleAddSelectFoder"]], f_strMultipleAddSourceFolder)
+strMultipleAddSourceFolder := ChooseFolder([g_strGui2Hwnd, o_L["DialogSelectFolder"]], f_strMultipleAddSourceFolder)
 if (strMultipleAddSourceFolder) ; false if user cancelled ChooseFolder
 	GuiControl, , f_strMultipleAddSourceFolder, %strMultipleAddSourceFolder%
 
@@ -16949,7 +16950,7 @@ DialogHasRequiredControle(strWinId)
 WindowIsTreeview(strWinId)
 ; Disable popup menu in folder select dialog boxes (like those displayed by FileSelectFolder)
 ; because their Edit1 control does not react as expected in NavigateDialog.
-; Signature: contains both SysTreeView321 and SHBrowseForFolder controls (tested on Win7 only)
+; Signature: contains both SysTreeView321 and SHBrowseForFolder controls (tested on Win7 and Win10)
 ; but NOT 100% sure this is a unique signature...
 ;------------------------------------------------------------
 {
@@ -23004,11 +23005,11 @@ ChooseFolder(Owner, StartingFolder := "", CustomPlaces := "", Options := 0)
 
 
 ;------------------------------------------------
-DirExist(DirName)
-; used by ChooseFolder
+DirExist(strDirName)
+; used by ChooseFolder, from Flipeador
 ;------------------------------------------------
 {
-    loop Files, % DirName, D
+    loop Files, % strDirName, D
         return A_LoopFileAttrib
 }
 ;------------------------------------------------
