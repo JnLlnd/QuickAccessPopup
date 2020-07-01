@@ -22711,6 +22711,58 @@ IsBetween(intIs, intLow, intHigh)
 ;---------------------------------------------------------
 
 
+;---------------------------------------------------------
+GetDefaultBrowserPath(strUrl)
+;---------------------------------------------------------
+; see https://forum.quickaccesspopup.com/showthread.php?tid=1101
+; https://stackoverflow.com/questions/32354861/how-to-find-the-default-browser-via-the-registry-on-windows-10
+; returns something like "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -- "%1"
+{
+; 1st:
+; HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\Shell\Associations\URLAssociations\http\UserChoice\Progid (for HTTP protocol)
+; or
+; HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\Shell\Associations\URLAssociations\https\UserChoice\Progid (for HTTPS)
+; returns a "ProgIdVariable" (for example "ChromeHTML", "FirefoxURL", "MSEdgeHTM")
+;
+; 2nd:
+; HKEY_CLASSES_ROOT\%ProgIdVariable%\Shell\open\command
+; returns the path to the default browser
+; for example:
+  ; Chrome: "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" -- "%1"
+  ; Edge: "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -- "%1"
+  ; Firefox: "C:\Program Files (x86)\Mozilla Firefox\firefox.exe" -osint -url "%1"
+;
+; In the path, replace %1 with the URL and add the parameter.
+
+	intPosProtocolEnd := InStr(strUrl, "://")
+	if !(intPosProtocolEnd)
+		return
+	
+	strProtocol := SubStr(strUrl, 1, intPosProtocolEnd - 1)
+	RegRead, strProgId, HKEY_CURRENT_USER, SOFTWARE\Microsoft\Windows\Shell\Associations\URLAssociations\%strProtocol%\UserChoice, ProgId
+	if !StrLen(strProgId)
+		return
+	
+	RegRead, strBrowserPath, HKEY_CLASSES_ROOT, %strProgId%\Shell\open\command
+	
+	if (SubStr(strBrowserPath, 1, 1) = """")
+	{
+		strPathEnd := InStr(SubStr(strBrowserPath, 2), """") - 1
+		strPathStart := 2
+	}
+	else
+	{
+		strPathEnd := InStr(strBrowserPath, " ") - 1 ; if no double-quotes, end at first space
+		strPathStart := 1
+	}
+	
+	strBrowserPath := SubStr(strBrowserPath, strPathStart, strPathEnd)
+	
+	return strBrowserPath
+}
+;---------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -27653,7 +27705,7 @@ class Container
 				blnOpenOK := true
 			}
 			; DOCUMENTS and LINK
-			else if InStr("Document|URL", this.AA.strFavoriteType)
+			else if (InStr("Document|URL", this.AA.strFavoriteType) and !this.aaTemp.blnProcessAsApp)
 			{
 				this.LaunchFullLocation()
 				blnOpenOK := true
@@ -27683,7 +27735,7 @@ class Container
 				}
 				
 				; APPLICATION
-				if (this.AA.strFavoriteType = "Application")
+				if (this.AA.strFavoriteType = "Application" or this.aaTemp.blnProcessAsApp)
 				{
 					this.LaunchApplication()
 					blnOpenOK := true
@@ -28631,11 +28683,21 @@ class Container
 					this.aaTemp.strFullLocation := this.aaTemp.strExpandedLaunchWith . " """ . this.aaTemp.strFullLocation . """" ; enclose document path in double-quotes
 				
 				if StrLen(this.AA.strFavoriteArguments)
+				{
+					if (this.AA.strFavoriteType = "URL")
+						strBrowserLocation := GetDefaultBrowserPath(this.aaTemp.strFullLocation) ; get path of default browser using URL (before changing strFullLocation)
+					
 					; let user enter double-quotes as required by his arguments
 					this.aaTemp.strFullLocation .= " " . ExpandPlaceholders(this.AA.strFavoriteArguments, this.aaTemp.strFullLocation
 						, (InStr(this.AA.strFavoriteArguments, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
 						, (InStr(this.AA.strFavoriteArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
-				
+						
+					if (this.AA.strFavoriteType = "URL") ; if it is an URL with arguments, process it as an App
+					{
+						this.aaTemp.strFullLocation := strBrowserLocation . " " . this.aaTemp.strFullLocation ; insert browser's path before the URL and arguments
+						this.aaTemp.blnProcessAsApp := true ; will be considered as Application favorite with path and arguments in strFullLocation
+					}
+				}
 			}
 			
 			return StrLen(this.aaTemp.strFullLocation) ; if empty, SetFullLocation was aborted, return false, else return true
