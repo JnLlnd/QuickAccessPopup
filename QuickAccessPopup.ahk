@@ -12549,7 +12549,7 @@ if (g_blnUseColors)
 	Gui, 3:Color, %g_strGuiWindowColor%
 
 Gui, 3:Add, Text, x10 y10, % o_L["DialogFileName"] . ":"
-Gui, 3:Add, Edit, x+5 yp w500 h20 ReadOnly vf_strIconFile
+Gui, 3:Add, Edit, x+5 yp w500 h20 vf_strIconFile
 ParseIconResource(g_strNewFavoriteIconResource, g_strCurrentIconFile, intIconIndex)
 GuiControl, 3:, f_strIconFile, %g_strCurrentIconFile%
 Gui, 3:Add, Button, x+5 yp w100 gButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
@@ -12583,11 +12583,25 @@ Gosub, PickIconLoad
 Gui, 3:Show, AutoSize
 Gui, 2:+Disabled
 
+GuiControl, +gIconFileChanged, f_strIconFile ; set g-command after control's initial content is set
+
 aaL := ""
 intIconIndex := ""
 intTop := ""
 intLeft := ""
 intRow := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+IconFileChanged:
+;------------------------------------------------------------
+Gui, 3:Submit, NoHide
+
+Gosub, GetIconsCount
+Gosub, PickIconLoad
 
 return
 ;------------------------------------------------------------
