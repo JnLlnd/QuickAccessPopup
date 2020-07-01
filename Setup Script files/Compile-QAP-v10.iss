@@ -20,7 +20,7 @@
 #define MyAppDescription "Quick Access Popup (Windows software)"
 #define QAPmessengerVersionFileName "QAPmessenger-1_4-32-bit.exe"
 #define JLdir "JeanLalonde"
-#define JLicons "JLicons-1_6.dll"
+#define JLicons "JLicons-1_6_1.dll"
 #define SQLite "sqlite3"
 
 [CustomMessages]
