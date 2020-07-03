@@ -4227,7 +4227,7 @@ global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
-
+global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 ;---------------------------------
 ; Used in OpenFavorite
 global g_blnAlternativeMenu
@@ -6032,6 +6032,7 @@ BuildSortMenus:
 
 saSortMenusNames := Object()
 saSortMenusNames := StrSplit("menuSortAutomatic|menuSortManual|menuSortMainMenu", "|")
+; building also menuSortAutomaticContextMenu, menuSortManualContextMenu and menuSortMainMenuContextMenu
 
 saSortMenusHeaders := Object()
 saSortMenusHeaders := StrSplit("DialogMenuSortHeaderAutomatic|DialogMenuSortHeaderManual|DialogMenuSortHeaderMainMenu", "|")
@@ -6044,43 +6045,58 @@ saSortMenusItems := StrSplit( o_L["GuiLvFavoritesHeader"] . "|"
 	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? o_L["GuiLvFavoritesHeaderFilteredDates"] . "|" : "")
 	. (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? o_L["GuiLvFavoritesHeaderFilteredStats"] . "|" : ""), "|")
 
-for intKeyMenuName, strMenuName in saSortMenusNames ; 4 sort menus variants
+loop, 2 ; 1 for menu from sort icon, 2 for context menu
 {
-	for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; menus items
-	{
-		if (intKeyMenuItem = 1) ; menu header
-		{
-			Menu, %strMenuName%, Add, % saSortMenusHeaders[intKeyMenuName], DoNothing
-			Menu, %strMenuName%, Disable, % saSortMenusHeaders[intKeyMenuName]
-		}
-		Menu, %strMenuName%, Add, %strSortMenusItem%, % "GuiSortContainer" . intKeyMenuItem
-	}
+	intMenuType := A_Index
 	
-	if (strMenuName <> "menuSortMainMenu") ; add Edit this menu
+	for intKeyMenuName, strMenuName in saSortMenusNames ; 4 sort menus with 2 variants (from sort button and from context menu)
 	{
-		Menu, %strMenuName%, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
-		Menu, %strMenuName%, Add ; separator
+		if (intMenuType = 2)
+		{
+			strMenuName .= "ContextMenu"
+			Gosub, BuildSortMenusFavoriteSection
+		}
+		
+		for intKeyMenuItem, strSortMenusItem in saSortMenusItems ; menus items
+		{
+			if (intKeyMenuItem = 1) ; menu header
+			{
+				Menu, %strMenuName%, Add, % saSortMenusHeaders[intKeyMenuName], DoNothing
+				Menu, %strMenuName%, Disable, % saSortMenusHeaders[intKeyMenuName]
+			}
+			Menu, %strMenuName%, Add, %strSortMenusItem%, % "GuiSortContainer" . intKeyMenuItem
+		}
+		
+		if !InStr(strMenuName, "menuSortMainMenu") ; add Edit this menu
+		{
+			Menu, %strMenuName%, Add, % o_L["DialogMenuSortEditMenu"], GuiSortContainerEditMenu
+			Menu, %strMenuName%, Add ; separator
+		}
+		Menu, %strMenuName%, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 	}
+
+	; build menu for Sort search result button
+	strMenuName := "menuSortSearchResult" . (intMenuType = 2 ? "ContextMenu" : "")
+	if (intMenuType = 2)
+		Gosub, BuildSortMenusFavoriteSection
+	
+	; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
+	Menu, %strMenuName%, Add, % "-- " . o_L["DialogMenuSortHeaderSearch"] . " --", DoNothing
+	Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
+		Menu, %strMenuName%, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
+	if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+	{
+		Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredDates"], | ; Last Modified|Created
+			Menu, %strMenuName%, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 6 ; col 7-8
+		if (g_blnUsageDbEnabled)
+			Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredStats"], | ; Last Used|Usage
+				Menu, %strMenuName%, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 8 ; 9-10
+	}
+	Menu, %strMenuName%, Add ; separator
+	Menu, %strMenuName%, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
+	Menu, %strMenuName%, Add
 	Menu, %strMenuName%, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 }
-
-; build menu for Sort search result button
-; sort criteria: 1 # + 2 Name, 3 Menu, 4 Type, 5 Hotkey, 6 Location or content + 7 Last Modified, 8 Created + 9 Last Used, 10 Usage
-Menu, menuSortSearchResult, Add, % "-- " . o_L["DialogMenuSortHeaderSearch"] . " --", DoNothing
-Loop, Parse, % o_L["GuiLvFavoritesHeaderFiltered"], | ; Name|Menu|Type|Hotkey|Location or content
-	Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 1 ; col 2-6
-if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-{
-	Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredDates"], | ; Last Modified|Created
-		Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 6 ; col 7-8
-	if (g_blnUsageDbEnabled)
-		Loop, Parse, % o_L["GuiLvFavoritesHeaderFilteredStats"], | ; Last Used|Usage
-			Menu, menuSortSearchResult, Add, %A_LoopField%, % "GuiSortSearchResult" . A_Index + 8 ; 9-10
-}
-Menu, menuSortSearchResult, Add ; separator
-Menu, menuSortSearchResult, Add, % o_L["MenuSearchOrder"], GuiSortSearchResult1 ; col 1 (hidden)
-Menu, menuSortSearchResult, Add
-Menu, menuSortSearchResult, Add, % o_L["DialogMenuSortSettingsOptions"], GuiOptionsGroupSettingsWindow
 
 saSortMenusNames := ""
 saSortMenusHeaders := ""
@@ -6090,6 +6106,27 @@ intKeyMenuName := ""
 strMenuName := ""
 intKeyMenuItem := ""
 strSortMenusItem := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+BuildSortMenusFavoriteSection:
+;------------------------------------------------------------
+
+Menu, %strMenuName%, Add, % "-- " . o_L["MenuFavorite"] . " --", DoNothing
+Menu, %strMenuName%, Disable, % "-- " . o_L["MenuFavorite"] . " --"
+Menu, %strMenuName%, Add, % aaFavoriteL["DialogAdd"] . g_strEllipse, GuiAddFavoriteSelectType
+Menu, %strMenuName%, Add, % aaFavoriteL["DialogEdit"] . g_strEllipse, SettingsCtrlE
+Menu, %strMenuName%, Add ; separator
+Menu, %strMenuName%, Add, % aaFavoriteL["GuiRemoveFavorite"] . g_strEllipse, SettingsCtrlR
+Menu, %strMenuName%, Add, % aaFavoriteL["DialogCopy"] . g_strEllipse, SettingsCtrlY
+Menu, %strMenuName%, Add, % aaFavoriteL["GuiMove"] . g_strEllipse, SettingsCtrlM
+Menu, %strMenuName%, Add ; separator
+Menu, %strMenuName%, Add, % aaFavoriteL["MenuSelectAll"] . g_strEllipse, SettingsCtrlA
+Menu, %strMenuName%, Add ; separator
+g_intNbItemsInContextMenuFavoritesSection := 10
 
 return
 ;------------------------------------------------------------
@@ -9844,6 +9881,7 @@ if (saSettingsPosition[1] <> -1)
 }
 
 GuiControl, Focus, f_lvFavoritesList
+
 saSettingsPosition := ""
 saDonateButtons := ""
 strTextColor := ""
@@ -9865,15 +9903,18 @@ if !SearchIsVisible()
 	intNbItemsInSortMenu := 4 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
 	
 	; remove previous icon, if any
-	Loop, %intNbItemsInSortMenu%
-		Menu, %strThisSortMenu%, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+	Loop, Parse, % "|ContextMenu", | ; 1st loop for regular menu, 2nd loop for ...ContextMenu menus
+		Loop, % intNbItemsInSortMenu + (A_LoopField = "ContextMenu" ? g_intNbItemsInContextMenuFavoritesSection : 0)
+			Menu, % strThisSortMenu . A_LoopField, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 	
 	; set current sort icon
-	if (o_MenuInGui.AA.intCurrentSortCriteria)
-		Menu, %strThisSortMenu%, Icon, % Abs(o_MenuInGui.AA.intCurrentSortCriteria) + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
-			, % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
-				+ (o_MenuInGui.GetSortOrder() ? 0 : 1) ; +1 for reverse sort (63 or 65)
-				+ (Abs(o_MenuInGui.AA.intCurrentSortCriteria) > 4 ? 2 : 0) ; +2 if date or number, sort numeric
+	Loop, Parse, % "|ContextMenu", | ; 1st loop for regular menu, 2nd loop for ...ContextMenu menus
+		if (o_MenuInGui.AA.intCurrentSortCriteria)
+			; & identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+			Menu, % strThisSortMenu . A_LoopField, Icon, % Abs(o_MenuInGui.AA.intCurrentSortCriteria) + 1 + (A_LoopField = "ContextMenu" ? g_intNbItemsInContextMenuFavoritesSection : 0) . "&"
+				, % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
+					+ (o_MenuInGui.GetSortOrder() ? 0 : 1) ; +1 for reverse sort (63 or 65)
+					+ (Abs(o_MenuInGui.AA.intCurrentSortCriteria) > 4 ? 2 : 0) ; +2 if date or number, sort numeric
 }
 
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already loaded
@@ -10235,7 +10276,7 @@ GuiContextMenu:
 ;------------------------------------------------------------
 
 if InStr("f_lvFavoritesList|f_lvFavoritesListSearch|", A_GuiControl . "|")
-	Gosub, GuiSortFavoritesMenu
+	Gosub, GuiSortFavoritesMenuContextMenu
 
 return
 ;------------------------------------------------------------
@@ -14729,6 +14770,7 @@ return
 
 ;------------------------------------------------------------
 GuiSortFavoritesMenu:
+GuiSortFavoritesMenuContextMenu:
 ;------------------------------------------------------------
 
 if (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"])
@@ -14740,6 +14782,9 @@ else if !(o_MenuInGui.AA.intMenuAutoSort)
 else ; o_MenuInGui.AA.intMenuAutoSort <> 0
 	strSortMenu := "menuSortAutomatic"
 
+if (A_ThisLabel = "GuiSortFavoritesMenuContextMenu")
+	strSortMenu .= "ContextMenu"
+	
 Menu, %strSortMenu%, Show
 
 strSortMenu := ""
@@ -14872,8 +14917,9 @@ intNbMenuItemsBasic := 8
 intNbMenuItemsExtended := (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
 
 ; remove previous icon, if any
-Loop, % intNbMenuItemsBasic + intNbMenuItemsExtended
-	Menu, menuSortSearchResult, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
+Loop, Parse, % "|ContextMenu", | ; 1st loop for regular menu, 2nd loop for ...ContextMenu menus
+	Loop, % intNbMenuItemsBasic + intNbMenuItemsExtended + (A_LoopField = "ContextMenu" ? g_intNbItemsInContextMenuFavoritesSection : 0)
+		Menu, % "menuSortSearchResult" . A_LoopField, Icon, % A_Index + 1 . "&" ; identify an item by its position followed by an ampersand (ie 1& indicates the first item)
 
 if (A_ThisLabel = "GuiSortRemoveIndicator")
 	return
@@ -14888,9 +14934,11 @@ if (intCol)
 	
 	intMenuPosition := (Abs(o_MenuInGui.AA.intCurrentSortColumn) = 1 ? intNbMenuItemsBasic + intNbMenuItemsExtended : Abs(o_MenuInGui.AA.intCurrentSortColumn))
 	
-	Menu, menuSortSearchResult, Icon, % Abs(intMenuPosition) . "&", % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
-		+ (o_MenuInGui.AA.intCurrentSortColumn < 0 ? 1 : 0) ; reverse sort (63 or 65)
-		+ (IsBetween(Abs(o_MenuInGui.AA.intCurrentSortColumn), 7, 10) ? 2 : 0) ; if date or number, sort numeric
+	Loop, Parse, % "|ContextMenu", | ; 1st loop for regular menu, 2nd loop for ...ContextMenu menus
+		Menu, % "menuSortSearchResult" . A_LoopField, Icon, % Abs(intMenuPosition) + (A_LoopField = "ContextMenu" ? g_intNbItemsInContextMenuFavoritesSection : 0) . "&"
+			, % o_JLicons.strFileLocation, % 62 ; 62 is sort alpha ascending
+			+ (o_MenuInGui.AA.intCurrentSortColumn < 0 ? 1 : 0) ; reverse sort (63 or 65)
+			+ (IsBetween(Abs(o_MenuInGui.AA.intCurrentSortColumn), 7, 10) ? 2 : 0) ; if date or number, sort numeric
 }
 ; else keep existing sort column
 
