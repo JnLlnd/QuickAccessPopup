@@ -34,6 +34,27 @@ HISTORY
 Version: 10.5.3 (2020-07-??)
 - new JLicon.dll file v1.6.1 fixing wrong icon (for portable version users, extract this file from the ZIP file and replace the previous one in QAP folder)
 
+Version BETA: 10.5.9.1 (2020-07-03)
+ 
+Add Multiple Favorites
+- add a new dialog box "Add Multiple Favorites" to add multiple items in one click from these various sources: folders, applications and folders current open (and in future releases: list of QAP features, list of Special folders, Frequent and Recent Folders and Files from the QAP database)
+- add a filter in the dialog box "Add Multiple Favorites" to restrict the list of candidate items using text filter or, when the source is "Folder", wildcards * and ?
+- add the "Add Multiple Favorites" QAP feature in the section "Menu Editing" of QAP Features list
+- add the "Add Multiple Favorites" entry to "Favorite" menu in the "Customize" window menu bar
+- add a button in the "Add Favorite - Select type" dialog box to open the "Add Multiple Favorites" dialog box
+ 
+Various improvements
+- add entries to the favorites list context menu to "Add", "Edit", "Remove", "Copy" or "Move" the selected favorite
+- replace the old (an unfriendly) Windows "Select Folder" dialog box with a more workable dialog box (thanks to Flipeador) allowing to change folder with the QAP menu
+- add an option in "Options, File Managers" section to set the default side (lister or pane) for new tabs in Directory Opus and Total Commander to "Left" (or top), "Right" (or botton) or "Active side"
+- get localized name from desktop.ini (when available) to set the default "Short name for menu" when adding a folder or to set folders name in Live folders
+- for favorites folders with "Live folder" option enabled, add the option "Refresh this Live Folder menu only with the command 'Refresh Live Folders'"
+- allow "Live folder" option in favorite folders inside groups
+ 
+Bug fixes to be released in v10.5.3
+- support "Parameters" (in Advanced Settings") for "Link" favorites (for example for parameter -incognito with Chrome)
+- new JLicons.dll file v1.6.1 fixing a missing icon for Live folders (postable users must update the JLicons.dll file in their QAP folder)
+
 Version: 10.5.2 (2020-06-27)
 - when adding a favorite, retrieve custom folder icon in hidden file desktop.ini if it exists
 - for portable installation, check icons file JLicons.dll version and display error message if the file is outdated
@@ -4037,7 +4058,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.3
+;@Ahk2Exe-SetVersion 10.5.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4102,8 +4123,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "10.5.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
@@ -4498,8 +4519,6 @@ if (g_blnUsageDbEnabled)
 
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
-
-gosub, GuiMultipleAdd ; #####
 
 return
 
@@ -25193,7 +25212,7 @@ class QAPfeatures
 			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", "", "sponsoring")
 		this.AddQAPFeatureObject("MultipleAdd",				o_L["GuiMultipleAdd"],						"", "GuiMultipleAdd",						"1-Featured~3-QAPMenuEditing"
 			, o_L["GuiMultipleAddDescription"], 0, "iconAddThisFolder", ""
-			, "#####")
+			, "can-i-add-multiple-favorites-in-one-click/")
 
 		; Close computer various command features
 		
