@@ -10878,7 +10878,7 @@ BuildTabsList(strFavoriteType)
 	; 1 Basic Settings, 2 Menu Options, 3 Window Options, 4 Advanced Settings
 	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . g_objFavoriteGuiTabs[2]
 	
-	if (strFavoriteType = "Folder") and !(blnIsGroupMember)
+	if (strFavoriteType = "Folder")
 		strTabsList .= " | " . o_L["DialogAddFavoriteTabsLive"]
 	if (InStr(g_strTypesForTabWindowOptions, "|" . strFavoriteType)
 		and ((o_FileManagers.P_intActiveFileManager = 1 or o_FileManagers.P_intActiveFileManager = 3) or o_Settings.Execution.blnTryWindowPosition.IniValue)) ; Explorer or Total Commander
@@ -28244,16 +28244,28 @@ class Container
 			{
 				if !(o_GroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
 				{
-					If InStr("Folder|Special|FTP", o_GroupMember.AA.strFavoriteType)
-						intFolderItemsCount++ ; do it that way because first member could be other than a folder
-					o_GroupMember.aaTemp.blnFirstFolderOfGroup := (intFolderItemsCount = 1) ; was g_blnFirstFolderOfGroup
-					
-					g_strNewWindowId := "" ; start fresh for next group member if it is another Folder
-					
 					Sleep, % o_GroupMember.AA.intGroupRestoringDelay + 200 ; add 200 ms as minimal default delay
-					o_GroupMember.OpenFavorite(this.aaTemp.strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel
-						, "" ; never use target window when launched in a group
-						, "Launch") ; all favorites in group are for Launch, never navigate
+					
+					if (o_GroupMember.AA.strFavoriteType = "Folder" and o_GroupMember.AA.intFavoriteFolderLiveLevels)
+					{
+						oGroupLiveFolderMenu := new Container("Menu", "GroupLiveFolderMenu") ; create a temporary container
+						oGroupLiveFolderMenu.SA[1] := o_GroupMember ; attach to it the live folder menu to build and display
+						oGroupLiveFolderMenu.BuildLiveFolderMenu(o_GroupMember, "GroupLiveFolderMenu", 0) ; build the live folder menu
+						oGroupLiveFolderMenu.BuildMenu() ; build the temporary menu and its children live folder menu
+						Menu, % oGroupLiveFolderMenu.AA.strMenuPath . " > " . o_GroupMember.AA.strFavoriteName, Show
+					}
+					else 
+					{
+						If InStr("Folder|Special|FTP", o_GroupMember.AA.strFavoriteType)
+							intFolderItemsCount++ ; do it that way because first member could be other than a folder
+						o_GroupMember.aaTemp.blnFirstFolderOfGroup := (intFolderItemsCount = 1) ; was g_blnFirstFolderOfGroup
+						
+						g_strNewWindowId := "" ; start fresh for next group member if it is another Folder
+						
+						o_GroupMember.OpenFavorite(this.aaTemp.strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel
+							, "" ; never use target window when launched in a group
+							, "Launch") ; all favorites in group are for Launch, never navigate
+					}
 				}
 			}
 		}
