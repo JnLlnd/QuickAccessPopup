@@ -2374,7 +2374,7 @@ Unicode conversion
 - the dialog box includes a link to a FAQ web page for explanation and help (https://www.quickaccesspopup.com/why-converting-the-settings-file-to-unicode-and-conversion-troubleshooting/)
  
 Various
-- the option "Always open folders in current file manager window" in Options, "Files mamagers" tab is added to always change folder in the current Explorer, Total Commander or Directory Opus window, except when using the Alternative menu "Open in new window"; this applies to favorites of types Folder, Special Folder and FTP
+- the option "Always open folders in current file manager window" in Options, "Files managers" tab is added to always change folder in the current Explorer, Total Commander or Directory Opus window, except when using the Alternative menu "Open in new window"; this applies to favorites of types Folder, Special Folder and FTP
 - improve visibility of the "Explorer context menu" option in Options "Menu" tab
 - new value SendToConsoleWithAlt in Global settings, default 1 (true), to use the ALT+0nnn ASCII codes when changing folder in a command-line window (CMD)
 - partial update of all language files (complete updates in next versions), full update of the French language file
@@ -8002,44 +8002,60 @@ loop, % o_FileManagers.SA.Length()
 		. (o_FileManagers.P_intActiveFileManager = A_Index ? " checked" : ""), % o_FileManagers.SA[A_Index].AA.strDisplayName
 
 ; --- bottom ---
+; see ...\QuickAccessPopup\Divers\options-layout-filemanagers.xlsx
+; line 1
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+25 x%g_intGroupItemsTab2X% w500 vf_lnkFileManagerHelp hidden
 Gui, 2:Font
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w500 vf_lblFileManagerDetail hidden
 
+; line 2
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w500 vf_lblFileManagerDetail hidden
 ; Windows Explorer OpenFavoritesOnActiveMonitor
 Gui, 2:Add, CheckBox, yp x%g_intGroupItemsTab2X% w500 vf_blnOpenFavoritesOnActiveMonitor gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenFavoritesOnActiveMonitor"]
 GuiControl, , f_blnOpenFavoritesOnActiveMonitor, % (g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor = true)
 
-; DirectoryOpusPath
-; TotalCommanderPath
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblFileManagerPrompt hidden, % o_L["DialogApplicationLabel"] . ":"
-Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidden ; gLabel after Gosub that changes the value below
-
+; line 3
 ; QAPconnectFileManager
-Gui, 2:Add, DropDownList, xp yp w300 vf_drpQAPconnectFileManager hidden Sort gGuiOptionsGroupChanged
+Gui, 2:Add, DropDownList, y+10 x%g_intGroupItemsTab3X% w300 vf_drpQAPconnectFileManager hidden Sort gGuiOptionsGroupChanged
 if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
 	GuiControl, ChooseString, f_drpQAPconnectFileManager gGuiOptionsGroupChanged, % g_aaFileManagerQAPconnect.strQAPconnectFileManager
+
+; DirectoryOpusPath
+; TotalCommanderPath
+Gui, 2:Add, Text, yp x%g_intGroupItemsTab2X% w100 vf_lblFileManagerPrompt hidden, % o_L["DialogApplicationLabel"] . ":"
+Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidden ; gLabel after Gosub that changes the value below
 Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath hidden, % o_L["DialogBrowseButton"]
 
-; DirectoryOpusUseTabs
-; DirectoryOpusNewTabOrWindow (not in Gui)
-; TotalCommanderUseTabs
-; TotalCommanderNewTabOrWindow (not in Gui)
-Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerUseTabs gFileManagerNavigateClicked hidden, % o_L["OptionsThirdPartyUseTabs"]
-
-; QAPconnectFileManager buttons (must be after UseTabs checkbox)
-Gui, 2:Add, Button, x%g_intGroupItemsTab3X% yp vf_btnQAPconnectEdit gShowQAPconnectIniFile hidden, % L(o_L["MenuEditIniFile"], "QAPconnect.ini")
-Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedInit hidden, % o_L["OptionsRefreshQAPconnectList"] ; ActiveFileManagerClickedInit will refresh the dropdown list
-
+; line 4
 ; TotalCommanderWinCmd
-Gui, 2:Add, Text, y+5 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd gGuiOptionsGroupChanged hidden ; gGuiOptionsGroupChanged
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
-Gui, 2:Add, Checkbox, yp-5 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusLayoutsName"])
+Gui, 2:Add, Checkbox, yp x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusLayoutsName"])
 GuiControl, , f_blnFileManagerDirectoryOpusShowLayouts, % (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts = true)
+
+; QAPconnectFileManager buttons (must be after UseTabs checkbox)
+Gui, 2:Add, Button, yp x%g_intGroupItemsTab3X% vf_btnQAPconnectEdit gShowQAPconnectIniFile hidden, % L(o_L["MenuEditIniFile"], "QAPconnect.ini")
+Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedInit hidden, % o_L["OptionsRefreshQAPconnectList"] ; ActiveFileManagerClickedInit will refresh the dropdown list
+
+; line 5
+; DirectoryOpusUseTabs
+; DirectoryOpusNewTabOrWindow (not in Gui)
+; TotalCommanderUseTabs
+; TotalCommanderNewTabOrWindow (not in Gui)
+Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerUseTabs gFileManagerUseTabsClicked hidden, % o_L["OptionsThirdPartyUseTabs"]
+
+; line 6
+; FileManagerNewTabSide
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab3X%  vf_lblFileManagerNewTabSide, % L(o_L["GuiFileManagerNewTabSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
+Gui, 2:Add, Radio, % "x" . g_intGroupItemsTab3X . " y+5 gGuiOptionsGroupChanged vf_intFileManagerNewTabSideActive "
+	. (!StrLen(o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) ? "checked" : ""), % o_L["GuiFileManagerNewTabSideActive"] ; if "L" or ""
+Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideLeft "
+	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "L" ? "checked" : ""), % o_L["DialogWindowPositionLeft"] ; if "L" or ""
+Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideRight "
+	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "checked" : ""), % o_L["DialogWindowPositionRight"]
 
 Gosub, ActiveFileManagerClickedInit
 Gosub, FileManagerNavigateClickedInit
@@ -8547,7 +8563,8 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 {
 	o_Settings.FileManagers["str" . strClickedFileManagerSystemName . "Path"].WriteIni(f_strFileManagerPath)
 	o_Settings.FileManagers["bln" . strClickedFileManagerSystemName . "UseTabs"].WriteIni(f_blnFileManagerUseTabs)
-	
+	o_Settings.FileManagers.strFileManagerNewTabSide.WriteIni(f_intFileManagerNewTabSideLeft ? "L" : (f_intFileManagerNewTabSideRight ? "R" : ""))
+
 	if (g_intClickedFileManager = 2) ; DirectoryOpus
 	{
 		if (f_blnFileManagerUseTabs)
@@ -8950,6 +8967,9 @@ strShowHideCommand := (f_radActiveFileManager1 or f_radActiveFileManager4 or g_s
 GuiControl, %strShowHideCommand%, f_blnFileManagerUseTabs
 GuiControl, %strShowHideCommand%, f_btnFileManagerPath
 GuiControl, %strShowHideCommand%, f_strFileManagerPath
+GuiControl, %strShowHideCommand%, f_lblFileManagerNewTabSide
+GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideLeft
+GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideRight
 
 strShowHideCommand := (!f_radActiveFileManager2 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show")
 GuiControl, %strShowHideCommand%, f_blnFileManagerDirectoryOpusShowLayouts
@@ -9020,11 +9040,34 @@ if !(f_radActiveFileManager1) ; DirectoryOpus, TotalCommander or QAPconnect
 }
 
 if (A_ThisLabel <> "ActiveFileManagerClickedGroupButton")
+{
 	Gosub, % StrReplace(A_ThisLabel, "ActiveFileManager", "FileManagerNavigate") ; ActiveFileManagerClickedInit -> FileManagerNavigateClickedInit
+	Gosub, FileManagerUseTabsClickedInit
+}
 
 strHelpUrl := ""
 strQAPconnectFileManagersList := ""
 strShowHideCommand := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+FileManagerUseTabsClicked:
+FileManagerUseTabsClickedInit:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+if (A_ThisLabel = "FileManagerUseTabsClicked")
+	Gosub, GuiOptionsGroupChanged
+
+strEnableDisableCommand := (f_blnFileManagerUseTabs ? "Enable" : "Disable")
+GuiControl, %strEnableDisableCommand%, f_lblFileManagerNewTabSide
+GuiControl, %strEnableDisableCommand%, f_intFileManagerNewTabSideLeft
+GuiControl, %strEnableDisableCommand%, f_intFileManagerNewTabSideRight
+
+strEnableDisableCommand := ""
 
 return
 ;------------------------------------------------------------
@@ -23699,6 +23742,8 @@ TODO
 		o_Settings.ReadIniOption("FileManagers", "blnAlwaysNavigate", "FileManagerAlwaysNavigate", 0
 			, "FileManagers", "f_lblFileManagersIntro|f_lblFileManagerNavigateTitle|f_lblFileManagerNavigate|f_radFileManagerNavigateCurrent|f_radFileManagerNavigateNew|f_lblradActiveFileManager") ; default false
 		; in main script, use o_FileManagers.P_intActiveFileManager instead of o_Settings.FileManagers.intActiveFileManager.IniValue
+		
+		o_Settings.ReadIniOption("FileManagers", "strFileManagerNewTabSide", "FileManagerNewTabSide", "", "FileManagers", "70") ; used for DirectoryOpus and TotalCommander
 	}
 	;---------------------------------------------------------
 
@@ -28087,7 +28132,12 @@ class Container
 						}
 					}
 					else
+					{
 						strTabParameter := g_aaFileManagerDirectoryOpus.strNewTabOrWindow
+						if (g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
+							strTabParameter .= " " . (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "L" ? "OPENINLEFT"
+								: (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "OPENINRIGHT" : ""))
+					}
 					
 					strTabParameter := StrReplace(strTabParameter, "NEWTAB", "NEWTAB=tofront") ; instead of activating by QAP as in previous versions
 					o_FileManagers.SA[2].RunDOpusRt("/acmd Go ", this.aaTemp.strFullLocation, " " . strTabParameter) ; open in a new lister or tab, left or right
@@ -28109,6 +28159,9 @@ class Container
 						else
 							strSideParameter := "L"
 					}
+					else
+						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+							strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
 						
 					if IsInteger(this.aaTemp.strFullLocation)
 					{
@@ -28121,11 +28174,11 @@ class Container
 							Sleep, 200 ; wait additional time to improve SendMessage reliability in OpenFavoriteNavigateTotalCommander
 						}
 						
-						if (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and StrLen(strSideParameter)) ; if empty, open on active side
 						{
 							if (strSideParameter = "L")
 								intTCCommandFocus := 4001 ; cm_FocusLeft
-							else
+							else ; R
 								intTCCommandFocus := 4002 ; cm_FocusRight
 							Sleep, 100 ; wait to improve SendMessage reliability
 							SendMessage, 0x433, %intTCCommandFocus%, , , ahk_class TTOTAL_CMD
@@ -28139,7 +28192,7 @@ class Container
 						}
 						Sleep, 100 ; wait to improve SendMessage reliability in OpenFavoriteNavigateTotalCommander
 						this.aaTemp.strHotkeyTypeDetected := "Navigate"
-						this.OpenFolder() 
+						this.OpenFolder()
 						; ??? check this:
 						; Since this.aaTemp.strFullLocation is integer, OpenFavoriteNavigateTotalCommander is doing:
 						; SendMessage, 0x433, %intTCCommand%, , , ahk_class TTOTAL_CMD
@@ -28157,7 +28210,10 @@ class Container
 						{
 							; g_aaFileManagerTotalCommander.strNewTabOrWindow should contain "/O /T" to open in an new tab of the existing file list (default), or "/N" to open in a new file list
 							strTabParameter := g_aaFileManagerTotalCommander.strNewTabOrWindow
-							strSideParameter := ""
+							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+								strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
+							else
+								strSideParameter := ""
 						}
 						
 						if StrLen(strSideParameter)
