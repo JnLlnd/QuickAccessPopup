@@ -4335,11 +4335,11 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 }
 
 ; Build main menus
-Gosub, BuildMainMenu
+Gosub, BuildMainMenuInit
 Gosub, BuildAlternativeMenu
 
 ; Build menu used in Settings Gui
-Gosub, BuildGuiMenuBar ; must be before BuildMainMenu
+Gosub, BuildGuiMenuBar ; must be before BuildMainMenuInit
 Gosub, BuildTrayMenu
 Gosub, BuildSortMenus
 
@@ -7389,9 +7389,10 @@ return
 
 
 ;------------------------------------------------------------
-BuildMainMenu:
+BuildMainMenuInit:
 BuildMainMenuWithStatus:
 BuildMainMenuScheduled:
+BuildMainMenuWithStatusManualRefresh:
 ;------------------------------------------------------------
 
 Menu, % o_L["MainMenuName"], Add
@@ -7411,7 +7412,7 @@ g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
-o_MainMenu.BuildMenu(A_ThisLabel = "BuildMainMenuWithStatus") ; recurse for submenus
+o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if (A_ThisLabel = "BuildMainMenuWithStatus")
 	ToolTip
 
@@ -7514,7 +7515,7 @@ for strMenuName, o_ThisContainer in o_Containers.AA
 			or !(o_ThisContainer.AA.blnMenuExternalLoaded)
 		{
 			o_ThisContainer.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
-			o_ThisContainer.BuildMenu()
+			o_ThisContainer.BuildMenu(, , true) ; last param for blnInitOrManualRefresh
 		}
 
 if (A_ThisLabel <> "RefreshQAPMenuExternalOnly")
@@ -7528,7 +7529,7 @@ if (A_ThisLabel <> "RefreshQAPMenuExternalOnly")
 	{
 		Gosub, RefreshTotalCommanderHotlist
 		Gosub, RefreshDirectoryOpusFavorites
-		Gosub, BuildMainMenuWithStatus ; only here we load hotkeys, when user save favorites
+		Gosub, BuildMainMenuWithStatusManualRefresh ; only here we load hotkeys, when user save favorites
 	}
 
 g_blnMenuReady := true
@@ -11664,16 +11665,19 @@ Gui, 2:Add, Checkbox, % "x+5 yp vf_blnFavoriteFolderLiveHideIcons hidden " . (o_
 Gui, 2:Add, Checkbox, % "x+5 yp vf_blnFavoriteFolderLiveHideExtensions hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveHideExtensions ? "checked" : "")
 	, % o_L["DialogFavoriteFolderLiveHideExtensions"]
 
-Gui, 2:Add, Edit, x20 y+15 w51 h22 vf_intFavoriteFolderLiveColumnsEdit number limit3 center hidden
-Gui, 2:Add, UpDown, vf_intFavoriteFolderLiveColumns Range0-999, % o_EditedFavorite.AA.intFavoriteFolderLiveColumns
-Gui, 2:Add, Text, x+5 yp w385 vf_lblFavoriteFolderLiveColumns hidden, % o_L["DialogFavoriteFolderLiveColumns"]
-
-Gui, 2:Add, Text, y+20 x20 vf_lblLiveFolderShowItems hidden, % o_L["DialogFavoriteFolderLiveShowItems"] . ":"
+Gui, 2:Add, Text, y+10 x20 vf_lblLiveFolderShowItems hidden, % o_L["DialogFavoriteFolderLiveShowItems"] . ":"
 Gui, 2:Add, Checkbox, % "x+5 yp vf_blnFavoriteFolderLiveShowHidden hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveShowHidden ? "checked" : "")
 	, % o_L["DialogFavoriteFolderLiveShowHidden"]
 Gui, 2:Add, Checkbox, % "x+5 yp vf_blnFavoriteFolderLiveShowSystem hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem ? "checked" : "")
 	, % o_L["DialogFavoriteFolderLiveShowSystem"]
-	
+
+Gui, 2:Add, Edit, x20 y+15 w51 h22 vf_intFavoriteFolderLiveColumnsEdit number limit3 center hidden
+Gui, 2:Add, UpDown, vf_intFavoriteFolderLiveColumns Range0-999, % o_EditedFavorite.AA.intFavoriteFolderLiveColumns
+Gui, 2:Add, Text, x+5 yp w385 vf_lblFavoriteFolderLiveColumns hidden, % o_L["DialogFavoriteFolderLiveColumns"]
+
+Gui, 2:Add, Checkbox, % "x20 y+20 w400 vf_blnFavoriteFolderLiveRefreshManual hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveRefreshManual ? "checked" : "")
+	, % L(o_L["DialogFavoriteFolderLiveRefreshManual"], o_L["MenuRefreshMenu"])
+
 Gui, 2:Add, Checkbox, % "x20 y+15 w400 vf_blnFavoriteFolderLiveDocuments gCheckboxFolderLiveDocumentsClicked hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveDocuments ? "checked" : "")
 	, % o_L["DialogFavoriteFolderLiveDocuments"]
 Gui, 2:Add, Radio, % "x20 y+10 vf_radFavoriteFolderLiveInclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "checked" : ""), % o_L["DialogFavoriteFolderLiveInclude"]
@@ -12886,6 +12890,7 @@ GuiControl, %strShowHideCommand%, f_lblLiveFolderShowItems
 GuiControl, %strShowHideCommand%, f_blnFavoriteFolderLiveShowHidden
 GuiControl, %strShowHideCommand%, f_blnFavoriteFolderLiveShowSystem
 GuiControl, %strShowHideCommand%, f_blnFavoriteFolderLiveDocuments
+GuiControl, %strShowHideCommand%, f_blnFavoriteFolderLiveRefreshManual
 
 ; GuiControl, % (f_blnFavoriteFolderLive ? "Disable" : "Enable"), f_blnUseDefaultWindowPosition
 
@@ -13872,6 +13877,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.AA.intFavoriteFolderLiveColumns := (f_intFavoriteFolderLiveColumns = 0 ? "" : f_intFavoriteFolderLiveColumns)
 		o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude := f_radFavoriteFolderLiveInclude
 		o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := f_strFavoriteFolderLiveExtensions
+		o_EditedFavorite.AA.blnFavoriteFolderLiveRefreshManual := f_blnFavoriteFolderLiveRefreshManual
 		
 		strLoopCriteria := 0
 		loop
@@ -14095,6 +14101,7 @@ f_intFavoriteFolderLiveColumns := ""
 f_radFavoriteFolderLiveInclude := ""
 f_radFavoriteFolderLiveExclude := ""
 f_strFavoriteFolderLiveExtensions := ""
+f_blnFavoriteFolderLiveRefreshManual := ""
 objExternalMenu := ""
 strItemSelectedName := ""
 strGuiFavoriteLabel := ""
@@ -25861,7 +25868,7 @@ class Container
 			; 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude, 19 strFavoriteFolderLiveExtensions,
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
-			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder
+			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder 31 blnFavoriteFolderLiveRefreshManual
 
 	;---------------------------------------------------------
 	{
@@ -26322,7 +26329,7 @@ class Container
 	;-----------------------------------------------------
 
 	;------------------------------------------------------------
-	BuildMenu(blnWorkingToolTip := false, blnMenuShortcutAlreadyInserted := false) ; build menu and recurse in submenus
+	BuildMenu(blnWorkingToolTip := false, blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false) ; build menu and recurse in submenus
 	;------------------------------------------------------------
 	{
 		this.s_intMenuShortcutNumber := 0
@@ -26399,13 +26406,13 @@ class Container
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
 					and !(g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 			{
-				if (aaThisFavorite.intFavoriteFolderLiveLevels)
+				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
 					o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
 				
-				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted) ; RECURSIVE - build the submenu first
+				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh) ; RECURSIVE - build the submenu first
 				
 				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
@@ -26681,6 +26688,7 @@ class Container
 				oNewItem.AA.blnFavoriteFolderLiveIncludeExclude := o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveIncludeExclude
 				oNewItem.AA.strFavoriteFolderLiveExtensions := o_FavoriteLiveFolder.AA.strFavoriteFolderLiveExtensions
 				oNewItem.AA.strFavoriteFolderLiveSort := o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort
+				oNewItem.AA.blnFavoriteFolderLiveRefreshManual := o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveRefreshManual
 			}
 			if (oNewItem.AA.strFavoriteType = "Menu") ; this is a submenu favorite, link to the submenu object
 				oNewItem.AA.oSubMenu := oNewSubMenu
@@ -27083,6 +27091,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveShowHidden + (oItem.AA.blnFavoriteFolderLiveShowSystem ? 2 : 0) . "|" ; 28 / hidden (+1) + system (+2) items, default 0+0
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveHideExtensions . "|" ; 29
 			strIniLine .= oItem.AA.intFavoriteOpenSubFolder . "|" ; 30
+			strIniLine .= oItem.AA.blnFavoriteFolderLiveRefreshManual . "|" ; 31
 
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -27460,7 +27469,7 @@ class Container
 			; 15 intFavoriteFolderLiveLevels, 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude,
 			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
-			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder
+			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -27531,6 +27540,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveShowSystem", (StrLen(saFavorite[28]) ? saFavorite[28] >= 2 : false)) ; show system files, true if value is 2 or 3, default false
 			this.InsertItemValue("blnFavoriteFolderLiveHideExtensions", (StrLen(saFavorite[29]) ? saFavorite[29] : false)) ; hide file extensions in live folders, pre-existing and default false
 			this.InsertItemValue("intFavoriteOpenSubFolder", (StrLen(saFavorite[30]) ? saFavorite[30] : 0)) ; folder to open, 0 folder itself, most recently(+)/anciently(-) 1 created, 2 modified or 3 accessed subfolder
+			this.InsertItemValue("blnFavoriteFolderLiveRefreshManual", saFavorite[31]) ; refresh live folder only when using the Refresh Live Folders command
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
