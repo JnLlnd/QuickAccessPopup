@@ -6130,9 +6130,9 @@ Menu, menuBarFile, Disable, % aaMenuFileL["GuiSave"] . "`tCtrl+S"
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSaveAndClose"]
 ; Menu, menuBarFile, Disable, % aaMenuFileL["GuiClose"] . "`tEsc"
 
-aaFavoriteL := o_L.InsertAmpersand(true, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "GuiMove", "DialogCopy"
-	, "ControlToolTipMoveUp", "ControlToolTipMoveDown", "ControlToolTipSortFavorites", "ControlToolTipSeparator"
-	, "ControlToolTipColumnBreak", "ControlToolTipTextSeparator", "MenuSelectAll")
+aaFavoriteL := o_L.InsertAmpersand(true, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "DialogCopy", "GuiMove"
+	, "ControlToolTipMoveUp", "ControlToolTipMoveDown", "ControlToolTipSeparator", "ControlToolTipColumnBreak"
+	, "ControlToolTipTextSeparator", "ControlToolTipSortFavorites", "MenuSelectAll", "GuiMultipleAdd")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiAddFavoriteSelectType", aaFavoriteL["DialogAdd"] . g_strEllipse . "`tCtrl+N", "", "iconNoIcon"])
 saMenuItemsTable.Push(["SettingsCtrlE", aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E", "", "iconNoIcon"])
@@ -6152,6 +6152,8 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiSortFavoritesMenu", aaFavoriteL["ControlToolTipSortFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A", "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["GuiMultipleAdd", aaFavoriteL["GuiMultipleAdd"], "", "iconNoIcon"])
 o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
@@ -6733,6 +6735,7 @@ return
 ;------------------------------------------------------------
 RefreshSwitchFolderOrAppMenu:
 RefreshReopenFolderMenu:
+RefreshSwitchForMultipleAdd:
 ; This command build two menus: "Reopen a Folder" and "Switch".
 ; The first part of "Switch" has the same items as "Reopen a Folder" but with the OpenSwitchFolderOrApp command instead of "OpenFavorite".
 ;------------------------------------------------------------
@@ -6916,6 +6919,9 @@ if (intWindowsIdIndex)
 }
 else
 	saSwitchFolderOrAppTable.Push(["GuiShowNeverCalled", o_L["MenuNoCurrentFolder"], "", "iconNoContent"])
+
+if (A_ThisLabel = "RefreshSwitchForMultipleAdd")
+	return
 
 if !(blnWeHaveFolders)
 	saCurrentFoldersTable.Push(["GuiShowNeverCalled", o_L["MenuNoCurrentFolder"], "", "iconNoContent"])
@@ -10449,12 +10455,14 @@ Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeGroup gFavoriteSelectTypeRadioButto
 
 Gui, 2:Add, Radio, xs y+15 vf_intRadioFavoriteTypeText gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Text").strFavoriteTypeLabel
 
-Gui, 2:Add, Button, x+20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavoriteSelectTypeContinue default, % o_L["DialogContinue"]
+Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavoriteSelectTypeContinue default, % o_L["DialogContinue"]
 Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, % o_L["GuiCancel"]
+Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteMultiple gGuiMultipleAdd, % o_L["GuiMultipleAdd"]
 Gui, Add, Text
 Gui, 2:Add, Text, xs+120 ys vf_lblAddFavoriteTypeHelp w250 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSelectTypeContinue", "f_btnAddFavoriteSelectTypeCancel")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteMultiple")
 Gosub, ShowGui2AndDisableGui1
 
 o_ExternalMenu := ""
@@ -13539,13 +13547,13 @@ GuiMultipleAdd:
 intCol1Width := 90
 intCol2X := intCol1Width + 15
 intCol2Width := 300
-intGuiContentWidth := 500
+intGuiContentWidth := 700
 
 aaL := o_L.InsertAmpersand(false, "GuiAddFavorite", "GuiCancel")
 
 gosub, CheckShowSettings
 
-g_strMultipleGuiTitle := L(o_L["GuiMultipleAdd"], g_strAppNameText, g_strAppVersion)
+g_strMultipleGuiTitle := L(o_L["GuiMultipleAdd"] . " - ~1~ ~2~", g_strAppNameText, g_strAppVersion)
 
 Gui, 2:New, +Hwndg_strGui2Hwnd, %g_strMultipleGuiTitle%
 if (g_blnUseColors)
@@ -13554,22 +13562,23 @@ Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 
 Gui, 2:Font, w600, Verdana
-Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth . " center vf_lblMultipleGuiTitle", % o_L["GuiMultipleAddPrompt"]
+Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth, % o_L["GuiMultipleAdd"]
 Gui, 2:Font
+Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, % o_L["GuiMultipleAddIntro"]
 
-Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+10 w" . intCol1Width . " right", % o_L["MenuMenu"]
+Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+15 w" . intCol1Width . " right", % o_L["MenuMenu"]
 Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGuiMultipleAddMenu"
 	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
-Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource", % o_L["DialogFolderLabel"] . "||"
-
-Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right hidden", % o_L["DialogFolderLabel"]
-Gui, 2:Add, Edit, % "vf_strMultipleAddSourceFolder gGuiMultipleAddSourceFolderChanged x" . intCol2X . " yp w" . intCol2Width . " hidden ReadOnly"
-Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourceFolder vf_btnMultipleAddSourceFolder hidden, % o_L["DialogBrowseButton"]
+Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource", % o_L["DialogFolderLabel"] . "||" . o_L["MenuSwitchFolderOrApp"] . "|"
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
 Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
+
+Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_L["DialogFolderLabel"]
+Gui, 2:Add, Edit, % "vf_strMultipleAddSourceFolder gGuiMultipleAddSourceFolderChanged x" . intCol2X . " yp w" . intCol2Width
+Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourceFolder vf_btnMultipleAddSourceFolder, % o_L["DialogBrowseButton"]
 
 saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|")
 Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents"
@@ -13639,12 +13648,13 @@ Loop
 	if !(intRow)
 		break
 	LV_GetText(strFavoriteName, intRow, 1)
-	LV_GetText(strFavoriteType, intRow, 2)
+	LV_GetText(strFavoriteType, intRow, 2) ; Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|Text
 	LV_GetText(strFavoriteLocation, intRow, 3)
 	if (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"])
 		strFavoriteLocation := f_strMultipleAddSourceFolder . "\" . strFavoriteLocation
 	
 	o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
+	g_strNewFavoriteIconResource := "" ; avoid variable re-use when saving
 	gosub, GuiAddFavoriteSaveFromMultipleAdd
 }
 
@@ -13672,9 +13682,14 @@ GuiMultipleAddSourceChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-strShowHide := (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"] ? "Show" : "Hide")
+LV_Delete()
+
+strEnableDisable := (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"] ? "Enable" : "Disable")
 loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnMultipleAddSourceFolder", |
-	GuiControl, 2:%strShowHide%, %A_LoopField%
+	GuiControl, 2:%strEnableDisable%, %A_LoopField%
+
+if (f_drpGuiMultipleAddSource = o_L["MenuSwitchFolderOrApp"])
+	gosub, GuiMultipleAddFilterChanged
 
 return
 ;------------------------------------------------------------
@@ -13685,8 +13700,14 @@ GuiMultipleAddFilterChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-gosub, GuiMultipleAddSourceFolderChanged
+if (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"])
 	
+	gosub, GuiMultipleAddSourceFolderChanged
+	
+else if (f_drpGuiMultipleAddSource = o_L["MenuSwitchFolderOrApp"])
+	
+	gosub, GuiMultipleAddSourceCurrentWindowsLoad
+
 return
 ;------------------------------------------------------------
 
@@ -13712,6 +13733,49 @@ LV_ModifyCol()
 
 strFilesFilter := ""
 blnWildcards := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSourceCurrentWindowsLoad:
+;------------------------------------------------------------
+
+gosub, RefreshSwitchForMultipleAdd
+
+LV_Delete()
+for intKey, oItem in saSwitchFolderOrAppTable
+{
+	saContent := StrSplit(oItem[3], "|")
+	if (oItem[1] = "X") ; separator
+		continue
+	if InStr("EX|DO|TC", saContent[1]) ; this is a folder
+	{
+		strName := GetLocationPathName(oItem[2])
+		strType := "Folder"
+		strPath := oItem[2]
+	}
+	else ; always APP?
+	{
+		WinGet, strPath, ProcessPath, % "ahk_id " . saContent[2]
+		SplitPath, strPath, , , , strName
+		strType := "Application"
+	}
+	
+	if !StrLen(f_strMultipleAddFilter) or InStr(strName . "|" . strPath, f_strMultipleAddFilter)
+		LV_Add(, strName, StrReplace(o_Favorites.GetFavoriteTypeObject(strType).strFavoriteTypeLabel, "&", ""), strPath)
+	
+}
+LV_ModifyCol()
+
+saSwitchFolderOrAppTable := ""
+strName := ""
+strType := ""
+strPath := ""
+saContent := ""
+oItem := ""
+intKey := ""
 
 return
 ;------------------------------------------------------------
@@ -24935,7 +24999,7 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Last Action", 			o_L["MenuLastAction"],						"", "RepeatLastActionShortcut",				"6-Utility"
 			, o_L["MenuLastActionDescription"], 0, "iconReload", ""
 			, "can-i-reopen-one-of-the-last-favorites-i-selected-recently")
-		this.AddQAPFeatureObject("Close All Windows", 		o_L["MenuCloseAllWindows"] . g_strEllipse,	"", "CloseAllWindows",						"1-Featured~4-WindowManagement"
+		this.AddQAPFeatureObject("Close All Windows", 		o_L["MenuCloseAllWindows"] . g_strEllipse,	"", "CloseAllWindows",						"4-WindowManagement"
 			, o_L["MenuCloseAllWindowsDescription"], 0, "iconDesktop", ""
 			, "can-i-close-all-running-applications-and-windows-in-one-click")
 		this.AddQAPFeatureObject("Reopen in New Window", 	o_L["MenuReopenInNewWindow"],				"", "OpenReopenInNewWindow",				"4-WindowManagement"
@@ -24957,10 +25021,13 @@ class QAPfeatures
 			, "can-i-make-the-active-window-always-on-top")
 		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiQuickAddSnippet"] . g_strEllipse, "", "GuiQuickAddSnippet",					"1-Featured~3-QAPMenuEditing"
 			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", "", "sponsoring")
+		this.AddQAPFeatureObject("MultipleAdd",				o_L["GuiMultipleAdd"],						"", "GuiMultipleAdd",						"1-Featured~3-QAPMenuEditing"
+			, o_L["GuiMultipleAddDescription"], 0, "iconAddThisFolder", ""
+			, "#####")
 
 		; Close computer various command features
 		
-		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",			"1-Featured~5.1-CloseComputer"
+		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",			"5.1-CloseComputer"
 			, o_L["DialogCloseComputerControlDescription"], 0, "iconExit", ""
 			, "can-i-control-how-my-computer-is-closed-with-qap")
 		strQAPFeatureName := StrReplace(o_L["DialogCloseComputerShutdown"], "&")
