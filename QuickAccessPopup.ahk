@@ -9000,6 +9000,7 @@ GuiControl, %strShowHideCommand%, f_blnFileManagerUseTabs
 GuiControl, %strShowHideCommand%, f_btnFileManagerPath
 GuiControl, %strShowHideCommand%, f_strFileManagerPath
 GuiControl, %strShowHideCommand%, f_lblFileManagerNewTabSide
+GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideActive
 GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideLeft
 GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideRight
 
@@ -9096,6 +9097,7 @@ if (A_ThisLabel = "FileManagerUseTabsClicked")
 
 strEnableDisableCommand := (f_blnFileManagerUseTabs ? "Enable" : "Disable")
 GuiControl, %strEnableDisableCommand%, f_lblFileManagerNewTabSide
+GuiControl, %strEnableDisableCommand%, f_intFileManagerNewTabSideActive
 GuiControl, %strEnableDisableCommand%, f_intFileManagerNewTabSideLeft
 GuiControl, %strEnableDisableCommand%, f_intFileManagerNewTabSideRight
 
