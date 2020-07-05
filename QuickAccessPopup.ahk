@@ -10868,7 +10868,7 @@ if (strGuiFavoriteLabel = "GuiAddFavorite")
 
 strGuiTitle := L(o_L["DialogAddEditFavoriteTitle"]
 	, (InStr(strGuiFavoriteLabel, "GuiEditFavorite") ? o_L["DialogEdit"] : (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_L["DialogCopy"] : o_L["DialogAdd"]))
-	, g_strAppNameText, g_strAppVersion, StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", ""))
+	, g_strAppNameText, g_strAppVersion, o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand)
 Gui, 2:New, +Resize -MaximizeBox +MinSize560x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
@@ -11263,7 +11263,7 @@ blnFolderInAGroupWithSide := InStr("Folder|Special|FTP", o_EditedFavorite.AA.str
 Gui, 2:Tab, % ++intTabNumber
 
 Gui, 2:Font, w700
-Gui, 2:Add, Text, x20 y50 w500, % o_L["DialogFavoriteType"] . ": " . o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel
+Gui, 2:Add, Text, x20 y50 w500, % o_L["DialogFavoriteType"] . ": " . o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 Gui, 2:Font
 
 Gui, 2:Add, Text, x20 y+10 w500 vf_TypeHelp, % "> " . StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeHelp, "`n`n", "`n> ")
@@ -13703,19 +13703,23 @@ Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGu
 	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
-Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource", % o_L["DialogFolderLabel"] . "|" . o_L["MenuSwitchFolderOrApp"] . "|" . o_L["HelpTabQAPFeatures"] . "||"
+Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
+	, % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand . "|"
+		. o_L["MenuSwitchFolderOrApp"] . "|" . o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
+		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "||"
 Gui, 2:Add, Text, % "vf_lblMultipleAddSourceHelp x+10 yp+5 hidden", % o_L["GuiMultipleAddHelp"]
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
 Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
 
-Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_L["DialogFolderLabel"]
+Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
 Gui, 2:Add, Edit, % "vf_strMultipleAddSourceFolder gGuiMultipleAddSourceFolderChanged x" . intCol2X . " yp w" . intCol2Width
 Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourceFolder vf_btnMultipleAddSourceFolder, % o_L["DialogBrowseButton"]
 
 saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|")
 Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents"
-	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)" . "|Help (hidden)"
+	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)|Favorite Code (hidden)|Help (hidden)"
+	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 
 Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddAddFavorites disabled Default, % aaL["GuiAddFavorite"]
 Gui, 2:Add, Button, yp vf_btnGuiMultipleAddCancel gButtonMultipleAddCancel, % aaL["GuiCancel"]
@@ -13738,10 +13742,12 @@ if (A_GuiEvent = "C")
 	GuiControl, % (LV_GetNext(0, "C") ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if at least one row is checked enable the Add button
 else if (A_GuiEvent = "DoubleClick")
 {
-	LV_GetText(strTitle, LV_GetNext(0), 1)
 	LV_GetText(strHelp, LV_GetNext(0), 5)
 	if StrLen(strHelp)
+	{
+		LV_GetText(strTitle, LV_GetNext(0), 1)
 		MsgBox, , %strTitle%, %strHelp%
+	}
 }
 
 strTitle := ""
@@ -13789,19 +13795,20 @@ Loop
 	intRow := LV_GetNext(intRow, "C")
 	if !(intRow)
 		break
+	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 	LV_GetText(strFavoriteName, intRow, 1)
 	LV_GetText(strFavoriteType, intRow, 2) ; localized name (not Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|Text)
 	LV_GetText(strFavoriteLocation, intRow, 3)
-	if (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"])
-	{
+	LV_GetText(strFavoriteType, intRow, 4)
+	
+	if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
 		strFavoriteLocation := f_strMultipleAddSourceFolder . "\" . strFavoriteLocation
-		strType := "Folder" ; do not use the localized type in col 2
-	}
-	else if (f_drpGuiMultipleAddSource = o_L["HelpTabQAPFeatures"])
-		strFavoriteType := "QAP" ; do not use the localized type in col 2
+	else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand)
+		LV_GetText(strFavoriteLocation, intRow, 5)
 	
 	o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
 	g_strNewFavoriteIconResource := "" ; avoid variable re-use when saving
+	
 	gosub, GuiAddFavoriteSaveFromMultipleAdd
 }
 
@@ -13831,13 +13838,13 @@ Gui, 2:Submit, NoHide
 
 LV_Delete()
 
-strEnableDisable := (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"] ? "Enable" : "Disable")
+strEnableDisable := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand ? "Enable" : "Disable")
 loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnMultipleAddSourceFolder", |
 	GuiControl, 2:%strEnableDisable%, %A_LoopField%
 
-GuiControl, % (f_drpGuiMultipleAddSource = o_L["HelpTabQAPFeatures"] ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
+GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
 
-if (f_drpGuiMultipleAddSource <> o_L["DialogFolderLabel"])
+if (f_drpGuiMultipleAddSource <> o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
 	gosub, GuiMultipleAddFilterChanged
 
 return
@@ -13851,7 +13858,7 @@ Gui, 2:Submit, NoHide
 
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-if (f_drpGuiMultipleAddSource = o_L["DialogFolderLabel"])
+if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
 	
 	gosub, GuiMultipleAddSourceFolderChanged
 	
@@ -13859,9 +13866,13 @@ else if (f_drpGuiMultipleAddSource = o_L["MenuSwitchFolderOrApp"])
 	
 	gosub, GuiMultipleAddSourceCurrentWindowsLoad
 
-else if (f_drpGuiMultipleAddSource = o_L["HelpTabQAPFeatures"])
+else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand)
 	
 	gosub, GuiMultipleAddSourceQAPFeaturesLoad
+
+else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand)
+	
+	gosub, GuiMultipleAddSourceSpecialLoad
 
 LV_ModifyCol(4, 0) ; hide internal type column
 LV_ModifyCol(5, 0) ; hide help column
@@ -13890,7 +13901,8 @@ Loop, Files, %strFilesFilter%, DF
 	if (blnWildcards or InStr(A_LoopFileName, f_strMultipleAddFilter) or !StrLen(f_strMultipleAddFilter))
 	{
 		strInternalType := GetFavoriteType4Extension(A_LoopFileLongPath)
-		LV_Add(, GetLocationPathName(A_LoopFileLongPath), StrReplace(o_Favorites.GetFavoriteTypeObject(strInternalType).strFavoriteTypeLabel, "&", ""), A_LoopFileName, strInternalType)
+		LV_Add(, GetLocationPathName(A_LoopFileLongPath), o_Favorites.GetFavoriteTypeObject(strInternalType).strFavoriteTypeLabelNoAmpersand, A_LoopFileName, strInternalType)
+		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 	}
 LV_ModifyCol()
 
@@ -13911,8 +13923,28 @@ LV_Delete()
 
 for strCode, oQAPFeature in o_QAPfeatures.AA
 	if !StrLen(f_strMultipleAddFilter) or InStr(oQAPFeature.strLocalizedName . "|" . oQAPFeature.strQAPFeatureDescription, f_strMultipleAddFilter)
-		LV_Add(, oQAPFeature.strLocalizedName, StrReplace(o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabel, "&", "")
-		, SubStr(oQAPFeature.strQAPFeatureDescription, 1, 65) . (StrLen(oQAPFeature.strQAPFeatureDescription) > 65 ? g_strEllipse : ""), strCode, oQAPFeature.strQAPFeatureDescription)
+		LV_Add(, oQAPFeature.strLocalizedName, o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand
+		, SubStr(oQAPFeature.strQAPFeatureDescription, 1, 65) . (StrLen(oQAPFeature.strQAPFeatureDescription) > 65 ? g_strEllipse : "")
+		, "QAP", strCode, oQAPFeature.strQAPFeatureDescription)
+		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
+
+LV_ModifyCol()
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSourceSpecialLoad:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+LV_Delete()
+
+for strCode, oSpecialFolder in o_SpecialFolders.AA
+	if !StrLen(f_strMultipleAddFilter) or InStr(oSpecialFolder.strDefaultName, f_strMultipleAddFilter)
+		LV_Add(, oSpecialFolder.strDefaultName, o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand, strCode, "Special")
+		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 
 LV_ModifyCol()
 
@@ -13939,7 +13971,7 @@ for intKey, oItem in saSwitchFolderOrAppTable
 		strType := "Folder"
 		strPath := oItem[2]
 	}
-	else ; always APP?
+	else
 	{
 		WinGet, strPath, ProcessPath, % "ahk_id " . saContent[2]
 		SplitPath, strPath, , , , strName
@@ -13947,8 +13979,8 @@ for intKey, oItem in saSwitchFolderOrAppTable
 	}
 	
 	if !StrLen(f_strMultipleAddFilter) or InStr(strName . "|" . strPath, f_strMultipleAddFilter)
-		LV_Add(, strName, StrReplace(o_Favorites.GetFavoriteTypeObject(strType).strFavoriteTypeLabel, "&", ""), strPath, strType)
-	
+		LV_Add(, strName, o_Favorites.GetFavoriteTypeObject(strType).strFavoriteTypeLabel, strPath, strType)
+		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 }
 LV_ModifyCol()
 
@@ -14620,7 +14652,7 @@ if (o_Containers.AA[strDestinationMenu].AA.strMenuType = "Group" and InStr("Menu
 	or (o_Containers.AA[strDestinationMenu].AA.strMenuType = "External" and o_EditedFavorite.AA.strFavoriteType = "External")
 {
 	if (o_Containers.AA[strDestinationMenu].AA.strMenuType = "Group")
-		Oops(2, o_L["DialogFavoriteNameNotAllowed"], StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", ""))
+		Oops(2, o_L["DialogFavoriteNameNotAllowed"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand)
 	else
 		Oops(2, o_L["OopsExternalNotAllowedUnderExternal"])
 	if (strThisLabel = "GuiMoveOneFavoriteSave")
@@ -14709,7 +14741,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 	if  InStr("|Special|QAP", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(strNewFavoriteLocation)
 	{
-		Oops(2, o_L["DialogFavoriteDropdownEmpty"], StrReplace(o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel, "&", "")
+		Oops(2, o_L["DialogFavoriteDropdownEmpty"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel
 			, (o_EditedFavorite.AA.strFavoriteType = "Special" ? o_L["DialogDropDown"] : o_L["DialogTreeView"]))
 		g_blnAbortSave := true
 		return
@@ -25521,6 +25553,7 @@ FAVORITE TYPES REPLACED
 	;---------------------------------------------------------
 	{
 		saFavoriteTypes := StrSplit("Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|External|Text|WindowsApp", "|")
+		saFavoriteTypesLabelsNoAmpersand := StrSplit(o_L["DialogFavoriteTypesLabels"], "|")
 		saFavoriteTypesLabels := StrSplit(o_L.InsertAmpersandInString(o_L["DialogFavoriteTypesLabels"]), "|") ; insert ampersands in string
 		saFavoriteTypesShortNames := StrSplit(o_L["DialogFavoriteTypesShortNames"], "|")
 		saFavoriteTypesLocationLabels := StrSplit(o_L["DialogFavoriteTypesLocationLabels"], "|")
@@ -25528,8 +25561,9 @@ FAVORITE TYPES REPLACED
 		
 		Loop, % saFavoriteTypes.Length()
 		{
-			this.s_SA[A_Index] := new Favorites.Type(saFavoriteTypes[A_Index], saFavoriteTypesLabels[A_Index], saFavoriteTypesShortNames[A_Index]
-				, saFavoriteTypesLocationLabels[A_Index], saFavoriteTypesLocationLabelsNoAmpersand[A_Index], o_L["DialogFavoriteTypesHelp" . A_Index])
+			this.s_SA[A_Index] := new Favorites.Type(saFavoriteTypes[A_Index], saFavoriteTypesLabelsNoAmpersand[A_Index], saFavoriteTypesLabels[A_Index]
+				, saFavoriteTypesShortNames[A_Index], saFavoriteTypesLocationLabels[A_Index], saFavoriteTypesLocationLabelsNoAmpersand[A_Index]
+				, o_L["DialogFavoriteTypesHelp" . A_Index])
 			this.s_saFavoriteTypesByName[saFavoriteTypes[A_Index]] := this.s_SA[A_Index]
 		}
 	}
@@ -25560,10 +25594,11 @@ FAVORITE TYPES REPLACED
 		;---------------------------------------------------------
 
 		;-----------------------------------------------------
-		__New(strThisSystemName, strThisLabel, strThisShortName, strThisLocationLabel, strThisLocationLabelNoAmpersand, strThisHelp)
+		__New(strThisSystemName, strThisLabelNoAmpersand, strThisLabel, strThisShortName, strThisLocationLabel, strThisLocationLabelNoAmpersand, strThisHelp)
 		;-----------------------------------------------------
 		{
 			this.strFavoriteTypeSystemName := strThisSystemName
+			this.strFavoriteTypeLabelNoAmpersand := strThisLabelNoAmpersand
 			this.strFavoriteTypeLabel := strThisLabel
 			this.strFavoriteTypeShortName := strThisShortName
 			this.strFavoriteTypeLocationLabel := strThisLocationLabel
