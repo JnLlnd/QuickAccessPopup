@@ -52,7 +52,6 @@ Various improvements
 - add entries to the favorites list context menu to "Add", "Edit", "Remove", "Copy" or "Move" the selected favorite
 - replace the old (an unfriendly) Windows "Select Folder" dialog box with a more workable dialog box (thanks to Flipeador) allowing to change folder with the QAP menu
 - add an option in "Options, File Managers" section to set the default side (lister or pane) for new tabs in Directory Opus and Total Commander to "Left" (or top), "Right" (or botton) or "Active side"
-- get localized name from desktop.ini (when available) to set the default "Short name for menu" when adding a folder or to set folders name in Live folders
 - for favorites folders with "Live folder" option enabled, add the option "Refresh this Live Folder menu only with the command 'Refresh Live Folders'"
 - allow "Live folder" option in favorite folders inside groups
  
@@ -7451,7 +7450,7 @@ g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
-if (A_ThisLabel = "BuildMainMenuWithStatus")
+if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
 
 return
