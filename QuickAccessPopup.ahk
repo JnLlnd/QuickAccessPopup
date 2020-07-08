@@ -34,6 +34,9 @@ HISTORY
 Version: 10.5.3 (2020-07-??)
 - new JLicon.dll file v1.6.1 fixing wrong icon (for portable version users, extract this file from the ZIP file and replace the previous one in QAP folder)
 
+Version BETA: 10.5.9.3 (2020-07-??)
+- 
+
 Version BETA: 10.5.9.2 (2020-07-05)
 - fix bug refreshing multiple add list with current windows
 - add to "Add Multiple Favorites" the sources "QAP Features" (with help with double-click) and "Special Folders"
@@ -4062,7 +4065,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.9.2
+;@Ahk2Exe-SetVersion 10.5.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4127,7 +4130,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4523,8 +4526,6 @@ if (g_blnUsageDbEnabled)
 
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
-
-; gosub, GuiMultipleAdd
 
 return
 
@@ -13708,10 +13709,15 @@ Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGu
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
 Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
-	, % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_L["MenuSwitchFolderOrApp"] . "|" . o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "||"
-Gui, 2:Add, Text, % "vf_lblMultipleAddSourceHelp x+10 yp+5 hidden", % o_L["GuiMultipleAddHelp"]
+	, %  o_L["MenuRecentFolders"] . "||" . o_L["MenuRecentFiles"] . "|"
+		. (g_blnUsageDbEnabled ? o_L["MenuPopularMenusFolders"] . "|" . o_L["MenuPopularMenusFiles"] . "|" : "")
+		. o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand . "|"
+		. o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
+		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "|"
+		. o_L["MenuSwitchFolderOrApp"]
+		
+Gui, 2:Add, Text, vf_lblMultipleAddSourceHelp x+10 yp+5 hidden section, % o_L["GuiMultipleAddHelp"]
+Gui, 2:Add, Checkbox, xs ys vf_blnMultipleAddExcludeExisting gGuiMultipleAddFilterChanged checked hidden, % o_L["GuiMultipleAddExcludeExisting"]
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
 Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
@@ -13746,7 +13752,7 @@ if (A_GuiEvent = "C")
 	GuiControl, % (LV_GetNext(0, "C") ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if at least one row is checked enable the Add button
 else if (A_GuiEvent = "DoubleClick")
 {
-	LV_GetText(strHelp, LV_GetNext(0), 5)
+	LV_GetText(strHelp, LV_GetNext(0), 6)
 	if StrLen(strHelp)
 	{
 		LV_GetText(strTitle, LV_GetNext(0), 1)
@@ -13845,6 +13851,8 @@ LV_Delete()
 strEnableDisable := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand ? "Enable" : "Disable")
 loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnMultipleAddSourceFolder", |
 	GuiControl, 2:%strEnableDisable%, %A_LoopField%
+GuiControl, % "2:" . (InStr(o_L["MenuPopularMenusFolders"] . "|" . o_L["MenuPopularMenusFiles"] . "|" . o_L["MenuRecentFolders"]
+	. "|" . o_L["MenuRecentFiles"] . "|", f_drpGuiMultipleAddSource . "|") ? "Show" : "Hide"), f_blnMultipleAddExcludeExisting
 
 GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
 
@@ -13878,8 +13886,18 @@ else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Special"
 	
 	gosub, GuiMultipleAddSourceSpecialLoad
 
+else if InStr(o_L["MenuPopularMenusFiles"] . "|" . o_L["MenuPopularMenusFolders"], f_drpGuiMultipleAddSource)
+	
+	gosub, GuiMultipleAddSourcePopularLoad
+	
+else if InStr(o_L["MenuRecentFiles"] . "|" . o_L["MenuRecentFolders"], f_drpGuiMultipleAddSource)
+	
+	gosub, GuiMultipleAddSourceRecentLoad
+	
+LV_ModifyCol()
 LV_ModifyCol(4, 0) ; hide internal type column
-LV_ModifyCol(5, 0) ; hide help column
+LV_ModifyCol(5, 0) ; hide favorite code column
+LV_ModifyCol(6, 0) ; hide help column
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 
@@ -13908,7 +13926,11 @@ Loop, Files, %strFilesFilter%, DF
 		LV_Add(, GetLocationPathName(A_LoopFileLongPath), o_Favorites.GetFavoriteTypeObject(strInternalType).strFavoriteTypeLabelNoAmpersand, A_LoopFileName, strInternalType)
 		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 	}
+
 LV_ModifyCol()
+LV_ModifyCol(4, 0) ; hide internal type column
+LV_ModifyCol(5, 0) ; hide favorite code column
+LV_ModifyCol(6, 0) ; hide help column
 
 strFilesFilter := ""
 blnWildcards := ""
@@ -13932,8 +13954,6 @@ for strCode, oQAPFeature in o_QAPfeatures.AA
 		, "QAP", strCode, oQAPFeature.strQAPFeatureDescription)
 		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 
-LV_ModifyCol()
-
 return
 ;------------------------------------------------------------
 
@@ -13946,11 +13966,9 @@ Gui, 2:Submit, NoHide
 LV_Delete()
 
 for strCode, oSpecialFolder in o_SpecialFolders.AA
-	if !StrLen(f_strMultipleAddFilter) or InStr(oSpecialFolder.strDefaultName, f_strMultipleAddFilter)
+	if !StrLen(f_strMultipleAddFilter) or InStr(oSpecialFolder.strDefaultName . " " . strCode, f_strMultipleAddFilter)
 		LV_Add(, oSpecialFolder.strDefaultName, o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand, strCode, "Special")
 		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
-
-LV_ModifyCol()
 
 return
 ;------------------------------------------------------------
@@ -13983,10 +14001,9 @@ for intKey, oItem in saSwitchFolderOrAppTable
 	}
 	
 	if !StrLen(f_strMultipleAddFilter) or InStr(strName . "|" . strPath, f_strMultipleAddFilter)
-		LV_Add(, strName, o_Favorites.GetFavoriteTypeObject(strType).strFavoriteTypeLabel, strPath, strType)
+		LV_Add(, strName, o_Favorites.GetFavoriteTypeObject(strType).strFavoriteTypeLabelNoAmpersand, strPath, strType)
 		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 }
-LV_ModifyCol()
 
 saSwitchFolderOrAppTable := ""
 strName := ""
@@ -13995,6 +14012,84 @@ strPath := ""
 saContent := ""
 oItem := ""
 intKey := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSourcePopularLoad:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strInternalType := (f_drpGuiMultipleAddSource = o_L["MenuPopularMenusFolders"] ? "Folder" : "File")
+
+o_RecordSet := GetRecordSetPopular(strInternalType)
+
+if (strInternalType = "File")
+	strInternalType := "Document"
+
+LV_Delete()
+Loop
+{
+	if (o_RecordSet.Next(o_Row) = -1) ; end of recordset		
+		break
+	; o_Row: 1 path, 2 nb
+	
+	if (o_Row[2] > 1) and FileExist(o_Row[1]) ; skip if not enough frequent of if file does not exist anymore
+		and (!StrLen(f_strMultipleAddFilter) or InStr(o_Row[1], f_strMultipleAddFilter))
+	{
+		oPopularFavorite := new Container.Item([strInternalType, GetLocationPathName(o_Row[1]), o_Row[1]]) ; type, name, path
+		if (f_blnMultipleAddExcludeExisting)
+			blnKeepItem := (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oPopularFavorite) : false) ; if found, returns an object (not used here) used here as a boolean value
+		else
+			blnKeepItem := true
+		if (blnKeepItem)
+			LV_Add(, oPopularFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oPopularFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
+				,  oPopularFavorite.AA.strFavoriteLocation, oPopularFavorite.AA.strFavoriteType)
+	}
+}
+o_RecordSet.Free()
+
+strInternalType := ""
+oPopularFavorite := ""
+blnKeepItem := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSourceRecentLoad:
+;------------------------------------------------------------
+
+gosub, GetMenusListRecentItemsPreprocessForMultipleAdd ; update g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
+strFoldersOrFiles := (f_drpGuiMultipleAddSource = o_L["MenuRecentFolders"] ? "Folders" : "Files")
+
+LV_Delete()
+Loop, Parse, g_strMenuItemsListRecent%strFoldersOrFiles%, `n ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
+	if StrLen(A_LoopField)
+	{
+		; 1)Recent Folders/Files|2)Path|3)FavoriteType|4)Icon
+		saOneLine := StrSplit(A_LoopField, "|") 
+		if FileExist(saOneLine[2]) ; skip if file does not exist anymore
+			and (!StrLen(f_strMultipleAddFilter) or InStr(saOneLine[2], f_strMultipleAddFilter))
+		{
+			oRecentFavorite := new Container.Item([saOneLine[3], GetLocationPathName(saOneLine[2]), saOneLine[2]]) ; type, name, path
+			if (f_blnMultipleAddExcludeExisting)
+				blnKeepItem := (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oRecentFavorite) : true) ; if found, returns an object (not used here) used here as a boolean value
+			else
+				blnKeepItem := true
+			if (blnKeepItem)
+				LV_Add(, oRecentFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oRecentFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
+					, oRecentFavorite.AA.strFavoriteLocation, oRecentFavorite.AA.strFavoriteType)
+		}
+	}
+
+strFoldersOrFiles := ""
+saOneLine := ""
+oRecentFavorite := ""
+blnKeepItem := ""
 
 return
 ;------------------------------------------------------------
@@ -19816,18 +19911,9 @@ loop, parse, % "Folders|Files", |
 	strFoldersOrFilesMenuNameLocalized .= (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)
 
 	; SQLite GetTable
-	; Parse table
-	strUsageDbSQL := "SELECT TargetPath, COUNT(TargetPath) AS 'Nb' FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-		. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
-	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
-	{
-		; Diag(A_ThisLabel, "SQLite QUERY POPULAR MENUS Error", "STOP")
-		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
-		g_blnUsageDbEnabled := false
-		return
-	}
-	; Diag(A_ThisLabel . ":After SQLiteQuery", o_RecordSet.HasRows, "ELAPSED")
+	o_RecordSet := GetRecordSetPopular(strTargetType)
 
+	; Parse table
 	intPopularItemsCount := 0
 	Loop
 	{
@@ -19906,7 +19992,6 @@ if StrLen(strDynamicDbSQL) ; if menu does not contain Drives, Popular or Recent 
 strPath := ""
 strMenuItemName := ""
 strIcon := ""
-strUsageDbSQL := ""
 o_RecordSet := ""
 o_Row := ""
 strTargetType := ""
@@ -19975,6 +20060,7 @@ return
 ;------------------------------------------------------------
 GetMenusListRecentItemsPreprocess:
 GetMenusListRecentItemsRefresh:
+GetMenusListRecentItemsPreprocessForMultipleAdd:
 ;------------------------------------------------------------
 
 if (g_blnUsageDbEnabled) ; use SQLite usage database
@@ -20047,21 +20133,24 @@ Loop
 
 	strMenuName := strTargetPath
 	strIcon := (strTargetType = "Folder" ? GetFolderIcon(strTargetPath) : GetIcon4Location(strTargetPath))
-	if (strTargetType = "Folder") and (intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue)
+	if (strTargetType = "Folder")
+		and ((intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or (A_ThisLabel = "GetMenusListRecentItemsPreprocessForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFolders .= o_L["MenuRecentFolders"] . "|" . strMenuName . "|Folder|" . strIcon . "`n"
 		intRecentFoldersCount++
 		; Diag(A_ThisLabel . ":ProcessingFinish-Folder", intRecentFoldersCount, "ELAPSED")
 	}
 	; do not "else"
-	if (strTargetType = "File") and (intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue)
+	if (strTargetType = "File")
+		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or (A_ThisLabel = "GetMenusListRecentItemsPreprocessForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
 		intRecentFilesCount++
 		; Diag(A_ThisLabel . ":ProcessingFinish-File", intRecentFoldersCount, "ELAPSED")
 	}
 
-	if (intRecentFoldersCount >= o_Settings.Menu.intRecentFoldersMax.IniValue) and (intRecentFilesCount >= o_Settings.Menu.intRecentFoldersMax.IniValue)
+	if (A_ThisLabel <> "GetMenusListRecentItemsPreprocessForMultipleAdd")
+		and (intRecentFoldersCount >= o_Settings.Menu.intRecentFoldersMax.IniValue) and (intRecentFilesCount >= o_Settings.Menu.intRecentFoldersMax.IniValue)
 		break ; both Folders and Files menus are complete
 }
 if (g_blnUsageDbEnabled) ; use SQLite usage database
@@ -22490,6 +22579,26 @@ ConvertUsageDbDateFormat(strDate)
 		. SubStr(strDate, 9, 2) . ":"
 		. SubStr(strDate, 11, 2) . ":"
 		. SubStr(strDate, 13, 2))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetRecordSetPopular(strTargetType)
+;------------------------------------------------------------
+{
+	strUsageDbSQL := "SELECT TargetPath, COUNT(TargetPath) AS 'Nb' FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
+		. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
+
+	if !o_UsageDb.Query(strUsageDbSQL, oRecordSet)
+	{
+		; Diag(A_ThisLabel, "SQLite QUERY POPULAR MENUS Error", "STOP")
+		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		g_blnUsageDbEnabled := false
+		return
+	}
+	
+	return oRecordSet
 }
 ;------------------------------------------------------------
 
