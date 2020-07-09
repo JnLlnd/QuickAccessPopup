@@ -4527,6 +4527,8 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
+gosub, GuiMultipleAdd ; #####
+
 return
 
 ;========================================================================================================================
@@ -13715,9 +13717,7 @@ Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged v
 		. o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
 		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "|"
 		. o_L["MenuSwitchFolderOrApp"]
-		
-Gui, 2:Add, Text, vf_lblMultipleAddSourceHelp x+10 yp+5 hidden section, % o_L["GuiMultipleAddHelp"]
-Gui, 2:Add, Checkbox, xs ys vf_blnMultipleAddExcludeExisting gGuiMultipleAddFilterChanged checked hidden, % o_L["GuiMultipleAddExcludeExisting"]
+Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["GuiMultipleAddExcludeExisting"]
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
 Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
@@ -13851,8 +13851,6 @@ LV_Delete()
 strEnableDisable := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand ? "Enable" : "Disable")
 loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnMultipleAddSourceFolder", |
 	GuiControl, 2:%strEnableDisable%, %A_LoopField%
-GuiControl, % "2:" . (InStr(o_L["MenuPopularMenusFolders"] . "|" . o_L["MenuPopularMenusFiles"] . "|" . o_L["MenuRecentFolders"]
-	. "|" . o_L["MenuRecentFiles"] . "|", f_drpGuiMultipleAddSource . "|") ? "Show" : "Hide"), f_blnMultipleAddExcludeExisting
 
 GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
 
@@ -13920,12 +13918,17 @@ else
 
 LV_Delete()
 Loop, Files, %strFilesFilter%, DF
+{
+	strInternalType := GetFavoriteType4Extension(A_LoopFileLongPath)
+	oMultipleAddFavorite := new Container.Item([GetFavoriteType4Extension(A_LoopFileLongPath), GetLocationPathName(A_LoopFileLongPath), A_LoopFileLongPath]) ; type, name, path
 	if (blnWildcards or InStr(A_LoopFileName, f_strMultipleAddFilter) or !StrLen(f_strMultipleAddFilter))
+		and (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
 	{
-		strInternalType := GetFavoriteType4Extension(A_LoopFileLongPath)
-		LV_Add(, GetLocationPathName(A_LoopFileLongPath), o_Favorites.GetFavoriteTypeObject(strInternalType).strFavoriteTypeLabelNoAmpersand, A_LoopFileName, strInternalType)
-		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
+		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
+			, A_LoopFileName, oMultipleAddFavorite.AA.strFavoriteType)
+		; Name, Type Label, Location (only file name here), Internal type (hidden), Favorite code (hidden), Help (hidden)
 	}
+}
 
 LV_ModifyCol()
 LV_ModifyCol(4, 0) ; hide internal type column
@@ -13946,13 +13949,8 @@ GuiMultipleAddSourceQAPFeaturesLoad:
 Gui, 2:Submit, NoHide
 
 LV_Delete()
-
-for strCode, oQAPFeature in o_QAPfeatures.AA
-	if !StrLen(f_strMultipleAddFilter) or InStr(oQAPFeature.strLocalizedName . "|" . oQAPFeature.strQAPFeatureDescription, f_strMultipleAddFilter)
-		LV_Add(, oQAPFeature.strLocalizedName, o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand
-		, SubStr(oQAPFeature.strQAPFeatureDescription, 1, 65) . (StrLen(oQAPFeature.strQAPFeatureDescription) > 65 ? g_strEllipse : "")
-		, "QAP", strCode, oQAPFeature.strQAPFeatureDescription)
-		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
+for strLocalizedName, strCode in o_QAPfeatures.aaQAPFeaturesCodeByDefaultName
+	GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName, o_QAPFeatures.AA[strCode].strQAPFeatureDescription)
 
 return
 ;------------------------------------------------------------
@@ -13964,11 +13962,8 @@ GuiMultipleAddSourceSpecialLoad:
 Gui, 2:Submit, NoHide
 
 LV_Delete()
-
-for strCode, oSpecialFolder in o_SpecialFolders.AA
-	if !StrLen(f_strMultipleAddFilter) or InStr(oSpecialFolder.strDefaultName . " " . strCode, f_strMultipleAddFilter)
-		LV_Add(, oSpecialFolder.strDefaultName, o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand, strCode, "Special")
-		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
+for strDefaultName, strLocation in o_SpecialFolders.aaClassIdOrPathByDefaultName
+	GuiMultipleAddSourceLoadLV("Special", strLocation, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strDefaultName)
 
 return
 ;------------------------------------------------------------
@@ -13978,6 +13973,8 @@ return
 GuiMultipleAddSourceCurrentWindowsLoad:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
+
+aaLoadedLocations := Object()
 
 gosub, RefreshSwitchForMultipleAdd
 
@@ -14000,12 +13997,15 @@ for intKey, oItem in saSwitchFolderOrAppTable
 		strType := "Application"
 	}
 	
-	if !StrLen(f_strMultipleAddFilter) or InStr(strName . "|" . strPath, f_strMultipleAddFilter)
-		LV_Add(, strName, o_Favorites.GetFavoriteTypeObject(strType).strFavoriteTypeLabelNoAmpersand, strPath, strType)
-		; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
+	if aaLoadedLocations.HasKey(strPath)
+		continue
+	aaLoadedLocations[strPath] := "foo"
+	
+	GuiMultipleAddSourceLoadLV(strType, strPath, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true)
 }
 
 saSwitchFolderOrAppTable := ""
+aaLoadedLocations := ""
 strName := ""
 strType := ""
 strPath := ""
@@ -14035,25 +14035,13 @@ Loop
 	if (o_RecordSet.Next(o_Row) = -1) ; end of recordset		
 		break
 	; o_Row: 1 path, 2 nb
-	
-	if (o_Row[2] > 1) and FileExist(o_Row[1]) ; skip if not enough frequent of if file does not exist anymore
-		and (!StrLen(f_strMultipleAddFilter) or InStr(o_Row[1], f_strMultipleAddFilter))
-	{
-		oPopularFavorite := new Container.Item([strInternalType, GetLocationPathName(o_Row[1]), o_Row[1]]) ; type, name, path
-		if (f_blnMultipleAddExcludeExisting)
-			blnKeepItem := (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oPopularFavorite) : false) ; if found, returns an object (not used here) used here as a boolean value
-		else
-			blnKeepItem := true
-		if (blnKeepItem)
-			LV_Add(, oPopularFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oPopularFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-				,  oPopularFavorite.AA.strFavoriteLocation, oPopularFavorite.AA.strFavoriteType)
-	}
+	GuiMultipleAddSourceLoadLV(strInternalType, o_Row[1], f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, (o_Row[2] > 1) and FileExist(o_Row[1]))
 }
 o_RecordSet.Free()
 
 strInternalType := ""
-oPopularFavorite := ""
-blnKeepItem := ""
+o_RecordSet := ""
+o_Row := ""
 
 return
 ;------------------------------------------------------------
@@ -14063,35 +14051,46 @@ return
 GuiMultipleAddSourceRecentLoad:
 ;------------------------------------------------------------
 
-gosub, GetMenusListRecentItemsPreprocessForMultipleAdd ; update g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
 strFoldersOrFiles := (f_drpGuiMultipleAddSource = o_L["MenuRecentFolders"] ? "Folders" : "Files")
+gosub, % "GetMenusListRecentItemsForMultipleAdd" . strFoldersOrFiles ; update g_strMenuItemsListRecentFolders or g_strMenuItemsListRecentFiles
 
 LV_Delete()
 Loop, Parse, g_strMenuItemsListRecent%strFoldersOrFiles%, `n ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
 	if StrLen(A_LoopField)
 	{
 		; 1)Recent Folders/Files|2)Path|3)FavoriteType|4)Icon
-		saOneLine := StrSplit(A_LoopField, "|") 
-		if FileExist(saOneLine[2]) ; skip if file does not exist anymore
-			and (!StrLen(f_strMultipleAddFilter) or InStr(saOneLine[2], f_strMultipleAddFilter))
-		{
-			oRecentFavorite := new Container.Item([saOneLine[3], GetLocationPathName(saOneLine[2]), saOneLine[2]]) ; type, name, path
-			if (f_blnMultipleAddExcludeExisting)
-				blnKeepItem := (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oRecentFavorite) : true) ; if found, returns an object (not used here) used here as a boolean value
-			else
-				blnKeepItem := true
-			if (blnKeepItem)
-				LV_Add(, oRecentFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oRecentFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-					, oRecentFavorite.AA.strFavoriteLocation, oRecentFavorite.AA.strFavoriteType)
-		}
+		saOneLine := StrSplit(A_LoopField, "|")
+		GuiMultipleAddSourceLoadLV(saOneLine[3], saOneLine[2], f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, FileExist(saOneLine[2]))
 	}
 
 strFoldersOrFiles := ""
 saOneLine := ""
-oRecentFavorite := ""
-blnKeepItem := ""
 
 return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "", strDescription := "")
+;------------------------------------------------------------
+{
+	strFilterSearchIn := (strInternalType = "QAP" ? strDescription . "|" . strName : strLocation . "|" . strName)
+	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
+		return
+	
+	if !StrLen(strName)
+		strName := GetLocationPathName(strLocation)
+	
+	oMultipleAddFavorite := new Container.Item([strInternalType, strName, strLocation]) ; type, name, path
+	if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
+		if (strInternalType = "QAP")
+			LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
+				,  SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : ""), oMultipleAddFavorite.AA.strFavoriteType
+				, strLocation, strDescription)
+		else
+			LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
+				,  oMultipleAddFavorite.AA.strFavoriteLocation, oMultipleAddFavorite.AA.strFavoriteType)
+}
 ;------------------------------------------------------------
 
 
@@ -20060,12 +20059,24 @@ return
 ;------------------------------------------------------------
 GetMenusListRecentItemsPreprocess:
 GetMenusListRecentItemsRefresh:
-GetMenusListRecentItemsPreprocessForMultipleAdd:
+GetMenusListRecentItemsForMultipleAddFolders:
+GetMenusListRecentItemsForMultipleAddFiles:
 ;------------------------------------------------------------
+
+if InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd")
+	strOnlyFileOrFolder := SubStr(StrReplace(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd", ""), 1, -1) ; SubStr to remove ending "s"
+else
+	strOnlyFileOrFolder := ""
 
 if (g_blnUsageDbEnabled) ; use SQLite usage database
 {
-	strUsageDbSQL := "SELECT TargetPath, TargetType FROM Usage WHERE (TargetType='Folder' OR TargetType='File') ORDER BY CollectDateTime DESC;"
+	if StrLen(strOnlyFileOrFolder)
+		strWhere := "TargetType='" . strOnlyFileOrFolder . "'"
+	else
+		strWhere := "TargetType='Folder' OR TargetType='File'"
+	
+	strUsageDbSQL := "SELECT TargetPath, TargetType FROM Usage WHERE (" . strWhere . ") ORDER BY CollectDateTime DESC;"
+	
 	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY Build menu Error", "STOP")
@@ -20120,21 +20131,24 @@ Loop
 		strShortcutFullPath := saShortcutFullPath[2]
 		
 		FileGetShortcut, %strShortcutFullPath%, strTargetPath
-		
 		if (ErrorLevel) ; hidden or system files (like desktop.ini) returns an error
 			continue
+		
+		; RecentLocationIsDocument to check if on an offline server
+		strTargetType := (RecentLocationIsDocument(strTargetPath, A_ThisLabel) ? "File" : "Folder")
+		if StrLen(strOnlyFileOrFolder) and (strOnlyFileOrFolder <> strTargetType)
+			continue
+		
 		; RecentFileExist to check if on an offline server
 		if !RecentFileExist(strTargetPath, A_ThisLabel) ; if folder/document was deleted, on a removable drive or offline server
 			continue
-		; RecentLocationIsDocument to check if on an offline server
-		strTargetType := (RecentLocationIsDocument(strTargetPath, A_ThisLabel) ? "File" : "Folder")
 	}
 	; Diag(A_ThisLabel . ":ProcessingStart", strTargetPath . " " . strTargetType, "ELAPSED")
 
 	strMenuName := strTargetPath
-	strIcon := (strTargetType = "Folder" ? GetFolderIcon(strTargetPath) : GetIcon4Location(strTargetPath))
+	strIcon := (InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd") ? "" : (strTargetType = "Folder" ? GetFolderIcon(strTargetPath) : GetIcon4Location(strTargetPath)))
 	if (strTargetType = "Folder")
-		and ((intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or (A_ThisLabel = "GetMenusListRecentItemsPreprocessForMultipleAdd"))
+		and ((intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFolders .= o_L["MenuRecentFolders"] . "|" . strMenuName . "|Folder|" . strIcon . "`n"
 		intRecentFoldersCount++
@@ -20142,14 +20156,14 @@ Loop
 	}
 	; do not "else"
 	if (strTargetType = "File")
-		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or (A_ThisLabel = "GetMenusListRecentItemsPreprocessForMultipleAdd"))
+		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
 		intRecentFilesCount++
 		; Diag(A_ThisLabel . ":ProcessingFinish-File", intRecentFoldersCount, "ELAPSED")
 	}
 
-	if (A_ThisLabel <> "GetMenusListRecentItemsPreprocessForMultipleAdd")
+	if !InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd")
 		and (intRecentFoldersCount >= o_Settings.Menu.intRecentFoldersMax.IniValue) and (intRecentFilesCount >= o_Settings.Menu.intRecentFoldersMax.IniValue)
 		break ; both Folders and Files menus are complete
 }
@@ -20171,6 +20185,8 @@ strShortcutFullPath := ""
 strNumericShortcut := ""
 strMenuName := ""
 strIcon := ""
+strOnlyFileOrFolder := ""
+strWhere := ""
 
 return
 ;------------------------------------------------------------
@@ -21027,7 +21043,7 @@ GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVert
 
 ;------------------------------------------------------------
 RecentLocationIsDocument(strLocation, strSource)
-; check atrtributes except if on network offline check file extension
+; check attributes except if on network offline check file extension
 ;------------------------------------------------------------
 {
 	if (SubStr(strLocation, 1, 2) = "\\")
