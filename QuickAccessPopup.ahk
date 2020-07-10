@@ -4527,8 +4527,6 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-gosub, GuiMultipleAdd ; #####
-
 return
 
 ;========================================================================================================================
@@ -13711,24 +13709,24 @@ Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGu
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
 Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
-	, %  o_L["MenuRecentFolders"] . "||" . o_L["MenuRecentFiles"] . "|"
+	, % o_L["MenuSwitchFolderOrApp"] . "||" . o_L["MenuRecentFolders"] . "|" . o_L["MenuRecentFiles"] . "|"
 		. (g_blnUsageDbEnabled ? o_L["MenuPopularMenusFolders"] . "|" . o_L["MenuPopularMenusFiles"] . "|" : "")
 		. o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand . "|"
 		. o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_L["MenuSwitchFolderOrApp"]
+		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
+	
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["GuiMultipleAddExcludeExisting"]
-
-Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
-Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
 Gui, 2:Add, Edit, % "vf_strMultipleAddSourceFolder gGuiMultipleAddSourceFolderChanged x" . intCol2X . " yp w" . intCol2Width
 Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourceFolder vf_btnMultipleAddSourceFolder, % o_L["DialogBrowseButton"]
 
+Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
+Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
+
 saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|")
 Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents"
-	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)|Favorite Code (hidden)|Help (hidden)"
+	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)|Favorite Code (hidden)"
 	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 
 Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddAddFavorites disabled Default, % aaL["GuiAddFavorite"]
@@ -13747,21 +13745,26 @@ return
 ;------------------------------------------------------------
 GuiMultipleAddListEvents:
 ;------------------------------------------------------------
+Gui, 2:+OwnDialogs
 
 if (A_GuiEvent = "C")
 	GuiControl, % (LV_GetNext(0, "C") ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if at least one row is checked enable the Add button
 else if (A_GuiEvent = "DoubleClick")
 {
-	LV_GetText(strHelp, LV_GetNext(0), 6)
-	if StrLen(strHelp)
+	LV_GetText(strCode, LV_GetNext(0), 5)
+	if StrLen(strCode)
 	{
 		LV_GetText(strTitle, LV_GetNext(0), 1)
-		MsgBox, , %strTitle%, %strHelp%
+		strTitle := o_L["HelpTabQAPFeatures"] . ": " . strTitle
+		MsgBox, % (StrLen(o_QAPFeatures.AA[strCode].strQAPFeatureURL) ? 4 : 0), %strTitle%, % strTitle . "`n`n"
+			. o_QAPFeatures.AA[strCode].strQAPFeatureDescription . (StrLen(o_QAPFeatures.AA[strCode].strQAPFeatureURL) ? "`n`n" . o_L["DialogQAPFeaturesHelpLink"] . "?" : "")
+		IfMsgBox, Yes
+			Run, % "https://www.quickaccesspopup.com/" . o_QAPFeatures.AA[strCode].strQAPFeatureURL
 	}
 }
 
 strTitle := ""
-strHelp := ""
+strCode := ""
 
 return
 ;------------------------------------------------------------
@@ -13853,8 +13856,11 @@ loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnM
 	GuiControl, 2:%strEnableDisable%, %A_LoopField%
 
 GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
+; GuiControl, , f_strMultipleAddFilter ; this is causing potential infinite loop or other issues, keep filter when changing source
 
-if (f_drpGuiMultipleAddSource <> o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
+if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
+	gosub, GuiMultipleAddSourceFolderChanged
+else
 	gosub, GuiMultipleAddFilterChanged
 
 return
@@ -13908,6 +13914,9 @@ GuiMultipleAddSourceFolderChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
+if !StrLen(f_strMultipleAddSourceFolder)
+	return
+
 blnWildcards := InStr(f_strMultipleAddFilter, "*") or InStr(f_strMultipleAddFilter, "?")
 strFilesFilter := f_strMultipleAddSourceFolder
 
@@ -13915,6 +13924,8 @@ if (blnWildcards)
 	strFilesFilter .= "\" . f_strMultipleAddFilter
 else
 	strFilesFilter .= "\*.*"
+
+DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
 LV_Delete()
 Loop, Files, %strFilesFilter%, DF
@@ -13935,6 +13946,8 @@ LV_ModifyCol(4, 0) ; hide internal type column
 LV_ModifyCol(5, 0) ; hide favorite code column
 LV_ModifyCol(6, 0) ; hide help column
 
+DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
+
 strFilesFilter := ""
 blnWildcards := ""
 strInternalType := ""
@@ -13950,7 +13963,7 @@ Gui, 2:Submit, NoHide
 
 LV_Delete()
 for strLocalizedName, strCode in o_QAPfeatures.aaQAPFeaturesCodeByDefaultName
-	GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName, o_QAPFeatures.AA[strCode].strQAPFeatureDescription)
+	GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
 
 return
 ;------------------------------------------------------------
@@ -14022,6 +14035,7 @@ GuiMultipleAddSourcePopularLoad:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
+SetWaitCursor(true)
 strInternalType := (f_drpGuiMultipleAddSource = o_L["MenuPopularMenusFolders"] ? "Folder" : "File")
 
 o_RecordSet := GetRecordSetPopular(strInternalType)
@@ -14038,6 +14052,7 @@ Loop
 	GuiMultipleAddSourceLoadLV(strInternalType, o_Row[1], f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, (o_Row[2] > 1) and FileExist(o_Row[1]))
 }
 o_RecordSet.Free()
+SetWaitCursor(false)
 
 strInternalType := ""
 o_RecordSet := ""
@@ -14051,6 +14066,7 @@ return
 GuiMultipleAddSourceRecentLoad:
 ;------------------------------------------------------------
 
+SetWaitCursor(true)
 strFoldersOrFiles := (f_drpGuiMultipleAddSource = o_L["MenuRecentFolders"] ? "Folders" : "Files")
 gosub, % "GetMenusListRecentItemsForMultipleAdd" . strFoldersOrFiles ; update g_strMenuItemsListRecentFolders or g_strMenuItemsListRecentFiles
 
@@ -14062,6 +14078,7 @@ Loop, Parse, g_strMenuItemsListRecent%strFoldersOrFiles%, `n ; g_strMenuItemsLis
 		saOneLine := StrSplit(A_LoopField, "|")
 		GuiMultipleAddSourceLoadLV(saOneLine[3], saOneLine[2], f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, FileExist(saOneLine[2]))
 	}
+SetWaitCursor(false)
 
 strFoldersOrFiles := ""
 saOneLine := ""
@@ -14071,7 +14088,7 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "", strDescription := "")
+GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "")
 ;------------------------------------------------------------
 {
 	strFilterSearchIn := (strInternalType = "QAP" ? strDescription . "|" . strName : strLocation . "|" . strName)
@@ -14082,14 +14099,11 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 		strName := GetLocationPathName(strLocation)
 	
 	oMultipleAddFavorite := new Container.Item([strInternalType, strName, strLocation]) ; type, name, path
+	strDescription := o_QAPFeatures.AA[strLocation].strQAPFeatureDescription
 	if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
-		if (strInternalType = "QAP")
-			LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-				,  SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : ""), oMultipleAddFavorite.AA.strFavoriteType
-				, strLocation, strDescription)
-		else
-			LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-				,  oMultipleAddFavorite.AA.strFavoriteLocation, oMultipleAddFavorite.AA.strFavoriteType)
+		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
+			,  (strInternalType = "QAP" ? SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "") : oMultipleAddFavorite.AA.strFavoriteLocation)
+			, oMultipleAddFavorite.AA.strFavoriteType, (strInternalType = "QAP" ? strLocation : "")
 }
 ;------------------------------------------------------------
 
