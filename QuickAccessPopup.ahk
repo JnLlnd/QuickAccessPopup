@@ -14103,7 +14103,7 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 	if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			,  (strInternalType = "QAP" ? SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "") : oMultipleAddFavorite.AA.strFavoriteLocation)
-			, oMultipleAddFavorite.AA.strFavoriteType, (strInternalType = "QAP" ? strLocation : "")
+			, oMultipleAddFavorite.AA.strFavoriteType, (strInternalType = "QAP" ? strLocation : ""))
 }
 ;------------------------------------------------------------
 
