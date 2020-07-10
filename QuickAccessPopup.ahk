@@ -13226,7 +13226,7 @@ GuiControlGet, strSetWindowsFolderIconLabel, , f_lblSetWindowsFolderIcon
 blnSet := (strSetWindowsFolderIconLabel = "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>") ; else o_L["DialogWindowsFolderIconRemove"]
 
 strFolder := PathCombine(A_WorkingDir, EnvVars(f_strFavoriteLocation))
-strFolderDesktopIni := strFolder . "\desktop.ini" 
+strFolderDesktopIni := StripFolderEndingBackslash(strFolder) . "\desktop.ini" 
 strDesktopIniAttrib := FileExist(strFolderDesktopIni)
 blnDesktopIniExist := StrLen(strDesktopIniAttrib)
 SplitPath, strFolderDesktopIni, , strDir, , , strDrive
@@ -13711,7 +13711,9 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
 	else
 	{
-		if (o_EditedFavorite.AA.strFavoriteType = "WindowsApp") and (f_drpWindowsAppsList = "* " . o_L["DialogWindowsAppsListCustom"])
+		if (o_EditedFavorite.AA.strFavoriteType = "Folder") ; remove ending backslash in folder location
+			strNewFavoriteLocation := StripFolderEndingBackslash(strNewFavoriteLocation)
+		else if (o_EditedFavorite.AA.strFavoriteType = "WindowsApp") and (f_drpWindowsAppsList = "* " . o_L["DialogWindowsAppsListCustom"])
 			strNewFavoriteLocation := "Custom:" . strNewFavoriteLocation
 		o_EditedFavorite.AA.strFavoriteLocation := strNewFavoriteLocation
 	}
@@ -19228,6 +19230,8 @@ Loop, parse, strUsageDbItemsList, `n
 	FileGetShortcut, %strUsageDbShortcutPath%, strUsageDbTargetPath
 	; RecentGetUsageDbTargetFileInfo to check if on an offline server
 	RecentGetUsageDbTargetFileInfo(strUsageDbTargetPath, strUsageDbTargetAttributes, strUsageDbTargetType, strUsageDbTargetDateTime, strUsageDbTargetExtension, A_ThisLabel)
+	if (strUsageDbTargetType = "Folder") ; remove ending backslash in folder location
+		strUsageDbTargetPath := StripFolderEndingBackslash(strUsageDbTargetPath)
 	
 	if StrLen(strUsageDbTargetAttributes)
 	{
@@ -20512,6 +20516,7 @@ LocationIsDocument(strLocation)
 GetLocationPathName(strLocation)
 ;------------------------------------------------------------
 {
+	strLocation := StripFolderEndingBackslash(strLocation) ; remove ending backslash in folder location
 	strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
 	if !StrLen(strName)
 	{
@@ -20521,6 +20526,19 @@ GetLocationPathName(strLocation)
 			return strDrive
 	}
 	return strName
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+StripFolderEndingBackslash(strFolder)
+;------------------------------------------------------------
+{
+	if SubStr(strFolder, 0, 1) = "\") ; if last char is backslash, remove it
+		strFolder := SubStr(strFolder, 1, -1)
+	if SubStr(strFolder, 0, 1) = ":") ; restore ending backslash for drive root like C:\
+		strFolder .= "\"
+	return strFolder
 }
 ;------------------------------------------------------------
 
@@ -27403,6 +27421,8 @@ class Container
 					this.AA.strFavoriteName := strUniqueName
 				}
 			}
+			if (saFavorite[1] = "Folder") ; strip ending backslash if folder location (for items saved before v10.5.3)
+				saFavorite[3] := StripFolderEndingBackslash(saFavorite[3])
 			this.InsertItemValue("strFavoriteLocation", StrReplace(saFavorite[3], g_strEscapePipe, "|")) ; path, URL or menu path (without "Main") for this menu item
 			this.InsertItemValue("strFavoriteIconResource", saFavorite[4]) ; icon resource in format "iconfile,iconindex" or JLicons index "iconXYZ"
 			this.InsertItemValue("strFavoriteArguments", StrReplace(saFavorite[5], g_strEscapePipe, "|")) ; application arguments
@@ -28887,7 +28907,8 @@ class Container
 			strUsageDbMenuHotkeyTypeDetected := g_strHotkeyTypeDetected
 			strUsageDbMenuTargetAppName := this.aaTemp.strTargetAppName
 			
-			strUsageDbTargetPathExpanded := this.AA.strFavoriteLocation
+			strUsageDbTargetPathExpanded := (this.AA.strFavoriteType = "Folder" ? StripFolderEndingBackslash(this.AA.strFavoriteLocation) : this.AA.strFavoriteLocation)
+			
 			if InStr("|Folder|Special|Document|Application", "|" . this.AA.strFavoriteType)
 				; for files, check if in path, check envars and relative path; strUsageDbTargetAttributes will be updated again in GetUsageDbTargetFileInfo
 				strUsageDbTargetAttributes := FileExistInPath(strUsageDbTargetPathExpanded) ; FileExistInPath expands strUsageDbTargetPathExpanded and returns the file's atributes
