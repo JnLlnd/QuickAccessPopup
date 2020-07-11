@@ -31,9 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.5.3 (2020-07-??)
-- new JLicon.dll file v1.6.1 fixing wrong icon (for portable version users, extract this file from the ZIP file and replace the previous one in QAP folder)
-
+Version: 10.5.3 (2020-07-11)
+- fix bug to support favorite Link's "Parameters" option allowing, for example, to add the "-incognito" Chrome's parameter to open a window
+- remove ending backslash of folders path when saving favorite folders them to settings file or to database, except if folder is a root like "C:\"
+- also remove ending backslash when loading them from ini file (for folder saved before this release)
+- fix bug when suggesting a favorite short name for menu when folder's path ends with backslash
+- allow to edit or paste the icons file path when selecting a favorite's icon
+- new JLicon.dll file v1.6.1 fixing wrong icon for live folders
+  (NOTE for portable version users: extract this icon file from the ZIP file and replace the previous one in QAP folder)
+ 
 Version: 10.5.2 (2020-06-27)
 - when adding a favorite, retrieve custom folder icon in hidden file desktop.ini if it exists
 - for portable installation, check icons file JLicons.dll version and display error message if the file is outdated
@@ -20551,9 +20557,9 @@ GetLocationPathName(strLocation)
 StripFolderEndingBackslash(strFolder)
 ;------------------------------------------------------------
 {
-	if SubStr(strFolder, 0, 1) = "\") ; if last char is backslash, remove it
+	if (SubStr(strFolder, 0, 1) = "\") ; if last char is backslash, remove it
 		strFolder := SubStr(strFolder, 1, -1)
-	if SubStr(strFolder, 0, 1) = ":") ; restore ending backslash for drive root like C:\
+	if (SubStr(strFolder, 0, 1) = ":") ; restore ending backslash for drive root like C:\
 		strFolder .= "\"
 	return strFolder
 }
