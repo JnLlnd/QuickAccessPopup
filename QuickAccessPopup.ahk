@@ -31,8 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.5.9.3 (2020-07-??)
-- 
+Version BETA: 10.5.9.3 (2020-07-12)
+- fix bug not removing the small statut popup window when using the "Refresh Live Folders and Shared menus" command
+- add sources to multiple add: "Frequent folders", "Frequent files", "Recent folders" and Recent files"
+- add a checkbox to exclude existing favorites
+- remove duplicates in current windows source
+- sort "QAP Features" and "Special folder" by their default names
+- move filter text field below the folder text field
+- improve QAP features help dialog box and add link to help page (open the page if user clicks Yes)
+- display "wait" mouse cursor when loading from Frequent or Recent sources
 
 Version: 10.5.3 (2020-07-11)
 - fix bug to support favorite Link's "Parameters" option allowing, for example, to add the "-incognito" Chrome's parameter to open a window
