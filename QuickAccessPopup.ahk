@@ -13741,9 +13741,10 @@ Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " righ
 Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
 
 saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|")
-Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents"
+Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section hidden"
 	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)|Favorite Code (hidden)"
 	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
+Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r10 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents" ; ##### hidden
 
 Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddAddFavorites disabled Default, % aaL["GuiAddFavorite"]
 Gui, 2:Add, Button, yp vf_btnGuiMultipleAddCancel gButtonMultipleAddCancel, % aaL["GuiCancel"]
@@ -13916,7 +13917,7 @@ else if InStr(o_L["MenuRecentFiles"] . "|" . o_L["MenuRecentFolders"], f_drpGuiM
 	
 else if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
 	
-	gosub, GuiMultipleAddSourceSettingsFile
+	gosub, GuiMultipleAddSourceSettingsFileLoad
 	
 LV_ModifyCol()
 LV_ModifyCol(4, 0) ; hide internal type column
@@ -14108,15 +14109,17 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAddSourceSettingsFile:
+GuiMultipleAddSourceSettingsFileLoad:
 ;------------------------------------------------------------
 
-oMultipleAddMain := new Container("Menu", o_L["MainMenuName"], false, "", "multiple", false, false)
+oMultipleAddMain := new Container("Menu", "Multiple Add Main", false, "", "multiple", false, false)
 strSettingsBK := o_Settings.strIniFile
 o_Settings.strIniFile := A_ScriptDir . "\multiple.ini"
 if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, true) <> "EOM") ; last true for blnMultipleAdd
 	Oops(2, "An erorr occurred while loading the Settings file for Multiple Add.")
 o_Settings.strIniFile := strSettingsBK
+
+oMultipleAddMain.LoadInTreeView()
 
 oMultipleAddMain := ""
 strSettingsBK := ""
@@ -14124,6 +14127,21 @@ strSettingsBK := ""
 return
 ;------------------------------------------------------------
 
+
+;------------------------------------------------------------
+GuiMultipleAddTreeEvents:
+;------------------------------------------------------------
+
+if (A_GuiEvent = "Normal")
+{
+	strChecked := TV_Get(A_EventInfo, "C")
+	strParentId := TV_GetParent(A_EventInfo)
+	TV_GetText(strText, A_EventInfo)
+	###_V(A_ThisLabel, A_EventInfo, A_GuiEvent, strText, (strChecked ? "Checked" : "no"), strParentId)
+}
+
+return
+;------------------------------------------------------------
 
 ;------------------------------------------------------------
 GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "")
@@ -28187,6 +28205,42 @@ class Container
 			if (this.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . this.AA.oParentMenu.SA[A_Index].AA.strFavoriteName
 				. (this.AA.oParentMenu.SA[A_Index].AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "") = this.AA.strMenuPath)
 				return A_Index
+	}
+	;------------------------------------------------------------
+
+/*
+	;------------------------------------------------------------
+	LoadInGui()
+	;------------------------------------------------------------
+	{
+		for intKey, oItem in this.SA
+		{
+			if oItem.IsContainer() and (oItem.AA.strMenuType = "External") and oItem.AA.oSubMenu.ExternalMenuModifiedSinceLoaded()
+			{
+				oItem.AA.oSubMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+				oItem.AA.oSubMenu.BuildMenu()
+			}
+			
+			oItem.LoadLineInGui(this.AA.strMenuType, intKey)
+		}
+	}
+	;------------------------------------------------------------
+
+*/
+	;------------------------------------------------------------
+	LoadInTreeView(strContainerUniqueId := "")
+	;------------------------------------------------------------
+	{
+		for intKey, oItem in this.SA
+		{
+			if oItem.IsContainer()
+			{
+				strItemUniqueId := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
+				oItem.AA.oSubMenu.LoadInTreeView(strItemUniqueId) ; RECURSIVE
+			}
+			else
+				strItemUniqueId := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
+		}
 	}
 	;------------------------------------------------------------
 
