@@ -4540,6 +4540,8 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
+gosub, GuiMultipleAdd ; #####
+
 return
 
 ;========================================================================================================================
@@ -13722,11 +13724,12 @@ Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGu
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
 Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
-	, % o_L["MenuSwitchFolderOrApp"] . "||" . o_L["MenuRecentFolders"] . "|" . o_L["MenuRecentFiles"] . "|"
+	, % o_L["MenuSwitchFolderOrApp"] . "|" . o_L["MenuRecentFolders"] . "|" . o_L["MenuRecentFiles"] . "|" ; ##### MenuSwitchFolderOrApp ||
 		. (g_blnUsageDbEnabled ? o_L["MenuPopularMenusFolders"] . "|" . o_L["MenuPopularMenusFiles"] . "|" : "")
 		. o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand . "|"
 		. o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
+		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "|"
+		. o_L["GuiMultipleAddSettingsFile"] . "||"
 	
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["GuiMultipleAddExcludeExisting"]
 
@@ -13910,6 +13913,10 @@ else if InStr(o_L["MenuPopularMenusFiles"] . "|" . o_L["MenuPopularMenusFolders"
 else if InStr(o_L["MenuRecentFiles"] . "|" . o_L["MenuRecentFolders"], f_drpGuiMultipleAddSource)
 	
 	gosub, GuiMultipleAddSourceRecentLoad
+	
+else if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+	
+	gosub, GuiMultipleAddSourceSettingsFile
 	
 LV_ModifyCol()
 LV_ModifyCol(4, 0) ; hide internal type column
@@ -14095,6 +14102,24 @@ SetWaitCursor(false)
 
 strFoldersOrFiles := ""
 saOneLine := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSourceSettingsFile:
+;------------------------------------------------------------
+
+oMultipleAddMain := new Container("Menu", o_L["MainMenuName"], false, "", "multiple", false, false)
+strSettingsBK := o_Settings.strIniFile
+o_Settings.strIniFile := A_ScriptDir . "\multiple.ini"
+if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, true) <> "EOM") ; last true for blnMultipleAdd
+	Oops(2, "An erorr occurred while loading the Settings file for Multiple Add.")
+o_Settings.strIniFile := strSettingsBK
+
+oMultipleAddMain := ""
+strSettingsBK := ""
 
 return
 ;------------------------------------------------------------
@@ -26609,7 +26634,7 @@ class Container
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	LoadFavoritesFromIniFile(blnWorkingToolTip := false, blnRefreshExternal := false, blnRoot := true)
+	LoadFavoritesFromIniFile(blnWorkingToolTip := false, blnRefreshExternal := false, blnRoot := true, blnMultipleAdd := false)
 	; return "EOM" if no error (or managed external file error) or "EOF" if end of file not expected error
 	;---------------------------------------------------------
 	{
@@ -26627,7 +26652,7 @@ class Container
 			this.AA.blnNeedSave := false
 		}
 		
-		if !StrLen(s_strIniFile)
+		if !StrLen(s_strIniFile) or (blnMultipleAdd)
 			s_strIniFile := o_Settings.strIniFile
 		
 		if (blnWorkingToolTip)
@@ -26700,6 +26725,7 @@ class Container
 			
 			if (saThisFavorite[1] = "Z") ; container loaded without error
 			{
+				; ##### what if in a external file submenu? sould be onl if in root?
 				if (blnRefreshExternal) ; reset the main ini file
 					s_strIniFile := o_Settings.strIniFile
 				
