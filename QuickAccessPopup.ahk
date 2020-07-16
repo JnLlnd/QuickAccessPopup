@@ -24955,6 +24955,9 @@ class QAPfeatures
 	{
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
 			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, , "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
+		
+		if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and o_FileManagers.SA[2].DirectoryOpusLayoutsFileExist())
+			new Container("Menu", o_L["DOpusLayoutsName"]) ; init DOpus Layouts sub menu of DOpus Favorites menu
 	}
 	;---------------------------------------------------------
 }
