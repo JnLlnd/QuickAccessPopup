@@ -4540,7 +4540,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-gosub, GuiMultipleAdd ; #####
+; gosub, GuiMultipleAdd ; #####
 
 return
 
@@ -13744,7 +13744,7 @@ saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"]
 Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section hidden"
 	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)|Favorite Code (hidden)"
 	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
-Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r10 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents" ; ##### hidden
+Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents hidden"
 
 Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddAddFavorites disabled Default, % aaL["GuiAddFavorite"]
 Gui, 2:Add, Button, yp vf_btnGuiMultipleAddCancel gButtonMultipleAddCancel, % aaL["GuiCancel"]
@@ -13782,6 +13782,24 @@ else if (A_GuiEvent = "DoubleClick")
 
 strTitle := ""
 strCode := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddTreeEvents:
+;------------------------------------------------------------
+
+if (A_GuiEvent = "Normal")
+{
+	GuiControl, % (TV_GetNext(, "Checked") ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if at least one node is checked enable the Add button
+	strChecked := TV_Get(A_EventInfo, "C")
+	strParentId := TV_GetParent(A_EventInfo)
+	TV_GetText(strText, A_EventInfo)
+	intChecked := TV_GetNext(, "Checked")
+	###_V(A_ThisLabel, A_EventInfo, A_GuiEvent, strText, (strChecked ? "Checked" : "no"), strParentId, intChecked)
+}
 
 return
 ;------------------------------------------------------------
@@ -13866,14 +13884,15 @@ GuiMultipleAddSourceChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-LV_Delete()
-
 strEnableDisable := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand ? "Enable" : "Disable")
 loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnMultipleAddSourceFolder", |
 	GuiControl, 2:%strEnableDisable%, %A_LoopField%
 
 GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
-; GuiControl, , f_strMultipleAddFilter ; this is causing potential infinite loop or other issues, keep filter when changing source
+; (don't) GuiControl, , f_strMultipleAddFilter ; this is causing potential infinite loop or other issues, keep filter when changing source
+
+GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Hide" : "Show"), f_lvMultipleAddList
+GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Show" : "Hide"), f_tvMultipleAddList
 
 if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
 	gosub, GuiMultipleAddSourceFolderChanged
@@ -13890,6 +13909,11 @@ GuiMultipleAddFilterChanged:
 Gui, 2:Submit, NoHide
 
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
+
+if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+	TV_Delete()	
+else
+	LV_Delete()
 
 if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
 	
@@ -13948,7 +13972,6 @@ else
 
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-LV_Delete()
 Loop, Files, %strFilesFilter%, DF
 {
 	strInternalType := GetFavoriteType4Extension(A_LoopFileLongPath)
@@ -13982,7 +14005,6 @@ GuiMultipleAddSourceQAPFeaturesLoad:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-LV_Delete()
 for strLocalizedName, strCode in o_QAPfeatures.aaQAPFeaturesCodeByDefaultName
 	GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
 
@@ -13995,7 +14017,6 @@ GuiMultipleAddSourceSpecialLoad:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-LV_Delete()
 for strDefaultName, strLocation in o_SpecialFolders.aaClassIdOrPathByDefaultName
 	GuiMultipleAddSourceLoadLV("Special", strLocation, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strDefaultName)
 
@@ -14012,7 +14033,6 @@ aaLoadedLocations := Object()
 
 gosub, RefreshSwitchForMultipleAdd
 
-LV_Delete()
 for intKey, oItem in saSwitchFolderOrAppTable
 {
 	saContent := StrSplit(oItem[3], "|")
@@ -14064,7 +14084,6 @@ o_RecordSet := GetRecordSetPopular(strInternalType)
 if (strInternalType = "File")
 	strInternalType := "Document"
 
-LV_Delete()
 Loop
 {
 	if (o_RecordSet.Next(o_Row) = -1) ; end of recordset		
@@ -14091,7 +14110,6 @@ SetWaitCursor(true)
 strFoldersOrFiles := (f_drpGuiMultipleAddSource = o_L["MenuRecentFolders"] ? "Folders" : "Files")
 gosub, % "GetMenusListRecentItemsForMultipleAdd" . strFoldersOrFiles ; update g_strMenuItemsListRecentFolders or g_strMenuItemsListRecentFiles
 
-LV_Delete()
 Loop, Parse, g_strMenuItemsListRecent%strFoldersOrFiles%, `n ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
 	if StrLen(A_LoopField)
 	{
@@ -14111,15 +14129,13 @@ return
 ;------------------------------------------------------------
 GuiMultipleAddSourceSettingsFileLoad:
 ;------------------------------------------------------------
+Gui, 2:Submit, NoHide
 
 oMultipleAddMain := new Container("Menu", "Multiple Add Main", false, "", "multiple", false, false)
-strSettingsBK := o_Settings.strIniFile
-o_Settings.strIniFile := A_ScriptDir . "\multiple.ini"
-if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, true) <> "EOM") ; last true for blnMultipleAdd
-	Oops(2, "An erorr occurred while loading the Settings file for Multiple Add.")
-o_Settings.strIniFile := strSettingsBK
 
-oMultipleAddMain.LoadInTreeView()
+strMultipleAddSourceSettingsFile := A_ScriptDir . "\multiple.ini" ; #####
+if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, strMultipleAddSourceSettingsFile) = "EOM")
+	oMultipleAddMain.LoadInTreeView(f_strMultipleAddFilter)
 
 oMultipleAddMain := ""
 strSettingsBK := ""
@@ -14127,21 +14143,6 @@ strSettingsBK := ""
 return
 ;------------------------------------------------------------
 
-
-;------------------------------------------------------------
-GuiMultipleAddTreeEvents:
-;------------------------------------------------------------
-
-if (A_GuiEvent = "Normal")
-{
-	strChecked := TV_Get(A_EventInfo, "C")
-	strParentId := TV_GetParent(A_EventInfo)
-	TV_GetText(strText, A_EventInfo)
-	###_V(A_ThisLabel, A_EventInfo, A_GuiEvent, strText, (strChecked ? "Checked" : "no"), strParentId)
-}
-
-return
-;------------------------------------------------------------
 
 ;------------------------------------------------------------
 GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "")
@@ -26167,6 +26168,38 @@ TODO
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
+	BackupIniFile(strIniFile, blnIsExternal := false)
+	; call as base class function Settings.BackupIniFile() only, not as an instance method
+	; (because various ini files are not instances of this class - could be done later)
+	;---------------------------------------------------------
+	{
+		SplitPath, strIniFile, strIniFileFilename, strIniFileFolder
+		
+		strThisBackupFolder := o_Settings.ReadIniValue("BackupFolder", "", "Global", strIniFile) ; can be main ini file, alternative ini or external ini file backup folder
+		if !StrLen(strThisBackupFolder) ; if no backup folder in ini file, backup in ini file's folder
+			strThisBackupFolder := strIniFileFolder
+		
+		strThisBackupFolder := PathCombine(A_WorkingDir, EnvVars(strThisBackupFolder))
+		
+		; delete old backup files (keep only 5/10 most recent files)
+		strIniBackupFile := strThisBackupFolder . "\" . StrReplace(strIniFileFilename, ".ini", "-backup-????????.ini")
+		Loop, %strIniBackupFile%
+			strFilesList .= A_LoopFileFullPath . "`n"
+		Sort, strFilesList, R ; reverse alphabetical order - most recent first 
+		intNumberOfBackups := (g_strCurrentBranch <> "prod" ? 10 : 5)
+		Loop, Parse, strFilesList, `n
+			if (A_Index > intNumberOfBackups)
+				if StrLen(A_LoopField)
+					FileDelete, %A_LoopField%
+
+		; create a daily backup of the ini file
+		strIniBackupFile := StrReplace(strIniBackupFile, "????????", SubStr(A_Now, 1, 8))
+		; always keep the most recent backup for a given day
+		FileCopy, %strIniFile%, %strIniBackupFile%, 1
+	}
+	;---------------------------------------------------------
+
+	;---------------------------------------------------------
 	class IniValue
 	;---------------------------------------------------------
 	{
@@ -26210,38 +26243,6 @@ TODO
 	}
 	;---------------------------------------------------------
 	
-	;---------------------------------------------------------
-	BackupIniFile(strIniFile, blnIsExternal := false)
-	; call as base class function Settings.BackupIniFile() only, not as an instance method
-	; (because various ini files are not instances of this class - could be done later)
-	;---------------------------------------------------------
-	{
-		SplitPath, strIniFile, strIniFileFilename, strIniFileFolder
-		
-		strThisBackupFolder := o_Settings.ReadIniValue("BackupFolder", "", "Global", strIniFile) ; can be main ini file, alternative ini or external ini file backup folder
-		if !StrLen(strThisBackupFolder) ; if no backup folder in ini file, backup in ini file's folder
-			strThisBackupFolder := strIniFileFolder
-		
-		strThisBackupFolder := PathCombine(A_WorkingDir, EnvVars(strThisBackupFolder))
-		
-		; delete old backup files (keep only 5/10 most recent files)
-		strIniBackupFile := strThisBackupFolder . "\" . StrReplace(strIniFileFilename, ".ini", "-backup-????????.ini")
-		Loop, %strIniBackupFile%
-			strFilesList .= A_LoopFileFullPath . "`n"
-		Sort, strFilesList, R ; reverse alphabetical order - most recent first 
-		intNumberOfBackups := (g_strCurrentBranch <> "prod" ? 10 : 5)
-		Loop, Parse, strFilesList, `n
-			if (A_Index > intNumberOfBackups)
-				if StrLen(A_LoopField)
-					FileDelete, %A_LoopField%
-
-		; create a daily backup of the ini file
-		strIniBackupFile := StrReplace(strIniBackupFile, "????????", SubStr(A_Now, 1, 8))
-		; always keep the most recent backup for a given day
-		FileCopy, %strIniFile%, %strIniBackupFile%, 1
-	}
-	;---------------------------------------------------------
-
 	;---------------------------------------------------------
 	class IniValueExclusionMouseList extends Settings.IniValue
 	;---------------------------------------------------------
@@ -26652,7 +26653,7 @@ class Container
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	LoadFavoritesFromIniFile(blnWorkingToolTip := false, blnRefreshExternal := false, blnRoot := true, blnMultipleAdd := false)
+	LoadFavoritesFromIniFile(blnWorkingToolTip := false, blnRefreshExternal := false, blnRoot := true, strMultipleAddIniFile := "")
 	; return "EOM" if no error (or managed external file error) or "EOF" if end of file not expected error
 	;---------------------------------------------------------
 	{
@@ -26669,8 +26670,10 @@ class Container
 			s_strIniFile := this.AA.strMenuExternalSettingsPath
 			this.AA.blnNeedSave := false
 		}
+		if StrLen(strMultipleAddIniFile) ; do not pass this value when recursing
+			s_strIniFile := strMultipleAddIniFile
 		
-		if !StrLen(s_strIniFile) or (blnMultipleAdd)
+		if !StrLen(s_strIniFile)
 			s_strIniFile := o_Settings.strIniFile
 		
 		if (blnWorkingToolTip)
@@ -26698,6 +26701,7 @@ class Container
 					IfMsgBox, No
 						IniWrite, % strExternalErrorMessageExclusions . s_strIniFile . "|", % o_Settings.strIniFile, Global, ExternalErrorMessageExclusions
 				}
+				s_strIniFile := "" ; reset default ini path
 				return, "EOM" ; end of menu because of known error (external settings file unavailable) - error is noted in .MenuExternalLoaded false - external menu will be empty
 			}
 			
@@ -26722,10 +26726,11 @@ class Container
 			
 			if (strLoadIniLine = "ERROR")
 			{
-				if (blnRefreshExternal) ; reset the main ini file
-					s_strIniFile := o_Settings.strIniFile
-				
 				Oops(0, o_L["OopsErrorReadingIniFile"] . "`n`n" . s_strIniFile . "`nFavorite" . s_intIniLineLoad . "=")
+				
+				if (blnRefreshExternal) or StrLen(strMultipleAddIniFile) ; we exit from root
+					s_strIniFile := "" ; reset the main ini file
+				
 				if (this.AA.strMenuType = "External")
 				{
 					this.AA.blnMenuExternalLoaded := false
@@ -26743,9 +26748,8 @@ class Container
 			
 			if (saThisFavorite[1] = "Z") ; container loaded without error
 			{
-				; ##### what if in a external file submenu? sould be onl if in root?
-				if (blnRefreshExternal) ; reset the main ini file
-					s_strIniFile := o_Settings.strIniFile
+				if (blnRefreshExternal) or StrLen(strMultipleAddIniFile) ; we are exiting root
+					s_strIniFile := "" ; reset the main ini file
 				
 				return "EOM" ; end of menu
 			}
@@ -28228,15 +28232,20 @@ class Container
 
 */
 	;------------------------------------------------------------
-	LoadInTreeView(strContainerUniqueId := "")
+	LoadInTreeView(strFilter, strContainerUniqueId := "")
 	;------------------------------------------------------------
 	{
+	; strFilterSearchIn := (strInternalType = "QAP" ? strDescription . "|" . strName : strLocation . "|" . strName)
+	; if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
+		; return
 		for intKey, oItem in this.SA
 		{
+			if (StrLen(strFilter) and !InStr(oItem.AA.strFavoriteName, strFilter))
+				continue
 			if oItem.IsContainer()
 			{
 				strItemUniqueId := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
-				oItem.AA.oSubMenu.LoadInTreeView(strItemUniqueId) ; RECURSIVE
+				oItem.AA.oSubMenu.LoadInTreeView(strFilter, strItemUniqueId) ; RECURSIVE
 			}
 			else
 				strItemUniqueId := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
