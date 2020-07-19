@@ -4540,7 +4540,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAdd ; #####
+gosub, GuiMultipleAdd ; #####
 
 return
 
@@ -13733,9 +13733,10 @@ Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged v
 	
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["GuiMultipleAddExcludeExisting"]
 
-Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-Gui, 2:Add, Edit, % "vf_strMultipleAddSourceFolder gGuiMultipleAddSourceFolderChanged x" . intCol2X . " yp w" . intCol2Width
-Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourceFolder vf_btnMultipleAddSourceFolder, % o_L["DialogBrowseButton"]
+Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right section", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
+Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFile xs ys w" . intCol1Width . " right", % o_L["MenuFile"]
+Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddSourcePathChanged x" . intCol2X . " yp w" . intCol2Width
+Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
 Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
@@ -13806,15 +13807,19 @@ return
 
 
 ;------------------------------------------------------------
-ButtonMultipleAddSourceFolder:
+ButtonMultipleAddSourcePath:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-strMultipleAddSourceFolder := ChooseFolder([g_strGui2Hwnd, o_L["DialogSelectFolder"]], f_strMultipleAddSourceFolder)
-if (strMultipleAddSourceFolder) ; false if user cancelled ChooseFolder
-	GuiControl, , f_strMultipleAddSourceFolder, %strMultipleAddSourceFolder%
+if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+	FileSelectFile, strMultipleAddSourcePath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSwitchSettings"], *.ini
+else
+	strMultipleAddSourcePath := ChooseFolder([g_strGui2Hwnd, o_L["DialogSelectFolder"]], f_strMultipleAddSourcePath)
 
-strMultipleAddSourceFolder := ""
+if (strMultipleAddSourcePath) ; false if user cancelled ChooseFolder
+	GuiControl, , f_strMultipleAddSourcePath, %strMultipleAddSourcePath%
+
+strMultipleAddSourcePath := ""
 
 return
 ;------------------------------------------------------------
@@ -13850,7 +13855,7 @@ Loop
 	LV_GetText(strFavoriteType, intRow, 4)
 	
 	if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
-		strFavoriteLocation := f_strMultipleAddSourceFolder . "\" . strFavoriteLocation
+		strFavoriteLocation := f_strMultipleAddSourcePath . "\" . strFavoriteLocation
 	else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand)
 		LV_GetText(strFavoriteLocation, intRow, 5)
 	
@@ -13884,9 +13889,15 @@ GuiMultipleAddSourceChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-strEnableDisable := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand ? "Enable" : "Disable")
-loop, Parse, % "f_lblMultipleAddSourceFolder|f_strMultipleAddSourceFolder|f_btnMultipleAddSourceFolder", |
-	GuiControl, 2:%strEnableDisable%, %A_LoopField%
+strCommand := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
+	or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Enable" : "Disable")
+loop, Parse, % "f_lblMultipleAddSourceFolder|f_lblMultipleAddSourceFile|f_strMultipleAddSourcePath|f_btnMultipleAddSourcePath", |
+	GuiControl, %strCommand%, %A_LoopField%
+if (strCommand = "Enable")
+{
+	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Hide" : "Show"), f_lblMultipleAddSourceFolder
+	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Show" : "Hide"), f_lblMultipleAddSourceFile
+}
 
 GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
 ; (don't) GuiControl, , f_strMultipleAddFilter ; this is causing potential infinite loop or other issues, keep filter when changing source
@@ -13895,9 +13906,12 @@ GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "
 GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Show" : "Hide"), f_tvMultipleAddList
 
 if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
-	gosub, GuiMultipleAddSourceFolderChanged
+	or (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+	gosub, GuiMultipleAddSourcePathChanged
 else
 	gosub, GuiMultipleAddFilterChanged
+
+strCommand := ""
 
 return
 ;------------------------------------------------------------
@@ -13916,8 +13930,9 @@ else
 	LV_Delete()
 
 if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
+	or (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
 	
-	gosub, GuiMultipleAddSourceFolderChanged
+	gosub, GuiMultipleAddSourcePathChanged
 	
 else if (f_drpGuiMultipleAddSource = o_L["MenuSwitchFolderOrApp"])
 	
@@ -13939,10 +13954,6 @@ else if InStr(o_L["MenuRecentFiles"] . "|" . o_L["MenuRecentFolders"], f_drpGuiM
 	
 	gosub, GuiMultipleAddSourceRecentLoad
 	
-else if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
-	
-	gosub, GuiMultipleAddSourceSettingsFileLoad
-	
 LV_ModifyCol()
 LV_ModifyCol(4, 0) ; hide internal type column
 LV_ModifyCol(5, 0) ; hide favorite code column
@@ -13955,15 +13966,22 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAddSourceFolderChanged:
+GuiMultipleAddSourcePathChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-if !StrLen(f_strMultipleAddSourceFolder)
+if !StrLen(f_strMultipleAddSourcePath)
 	return
 
+if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+{
+	gosub, GuiMultipleAddSourceSettingsFileLoad
+	return
+}
+; else continue
+
 blnWildcards := InStr(f_strMultipleAddFilter, "*") or InStr(f_strMultipleAddFilter, "?")
-strFilesFilter := f_strMultipleAddSourceFolder
+strFilesFilter := f_strMultipleAddSourcePath
 
 if (blnWildcards)
 	strFilesFilter .= "\" . f_strMultipleAddFilter
@@ -14133,7 +14151,7 @@ Gui, 2:Submit, NoHide
 
 oMultipleAddMain := new Container("Menu", "Multiple Add Main", false, "", "multiple", false, false)
 
-strMultipleAddSourceSettingsFile := A_ScriptDir . "\multiple.ini" ; #####
+strMultipleAddSourceSettingsFile := f_strMultipleAddSourcePath
 if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, strMultipleAddSourceSettingsFile) = "EOM")
 	oMultipleAddMain.LoadInTreeView(f_strMultipleAddFilter)
 
