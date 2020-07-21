@@ -6030,7 +6030,7 @@ Menu, Tray, Add
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
-Menu, Tray, Default, % g_aaMenuTrayL["MenuSettings"]
+Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-click
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
