@@ -31,9 +31,22 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.5.3 (2020-07-??)
-- new JLicon.dll file v1.6.1 fixing wrong icon (for portable version users, extract this file from the ZIP file and replace the previous one in QAP folder)
-
+Version: 10.5.4 (2020-07-21)
+- fix bug when loading the Alternative menus modifiers (default modifiers remained active even after they were changed in Options)
+- add a button in "Options, "Alternative Menu Hotkeys" to reset the default Alternative menu modifiers and an help link about Alternative menu modifiers
+- fix bug with Directory Opus Favorites "Layouts" submenu
+- stop opening the "Customize" window when double-clicking the QAP icon in the Notification zone
+- fix bug in the installer when QAP working folder path included something between curly brackets {...}
+ 
+Version: 10.5.3 (2020-07-11)
+- fix bug to support favorite Link's "Parameters" option allowing, for example, to add the "-incognito" Chrome's parameter to open a window
+- remove ending backslash of folders path when saving favorite folders them to settings file or to database, except if folder is a root like "C:\"
+- also remove ending backslash when loading them from ini file (for folder saved before this release)
+- fix bug when suggesting a favorite short name for menu when folder's path ends with backslash
+- allow to edit or paste the icons file path when selecting a favorite's icon
+- new JLicon.dll file v1.6.1 fixing wrong icon for live folders
+  (NOTE for portable version users: extract this icon file from the ZIP file and replace the previous one in QAP folder)
+ 
 Version BETA: 10.5.9.1 (2020-07-03)
  
 Add Multiple Favorites
@@ -5181,7 +5194,7 @@ o_Settings.ReadIniOption("MenuPopup", "blnRightControlDoublePressed", "RightCont
 
 ; Group PopupHotkeysAlternative
 o_Settings.ReadIniOption("MenuPopup", "blnAlternativeMenuShowNotification", "AlternativeMenuShowNotification", 1, "PopupHotkeysAlternative"
-	, "f_lblAlternativeMenu|f_blnAlternativeMenuShowNotification") ; g_blnAlternativeMenuShowNotification
+	, "f_lblAlternativeMenu|f_blnAlternativeMenuShowNotification|f_btnAlternativeMenuResetModifiers|f_btnAlternativeMenuModifiersHelp") ; g_blnAlternativeMenuShowNotification
 
 ; Group Filemanagers
 ; load ini values when init instance of FileManagers (must be after init of o_JLicons)
@@ -5736,11 +5749,16 @@ for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 }
 
 ; Update QAP Alternative Menu with menu modifiers
+o_QAPfeatures.aaQAPfeaturesMenuNamesByModifierCodes := Object() ; re-init modifiers codes object
 for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
+{
 	; if modifier empty (including not "None") and not used by custom modifier, assigne default modifier
 	if !StrLen(o_QAPfeatures.AA[strCode].strCurrentModifier) and !InStr(strUsedModifiers, "|" . o_QAPfeatures.AA[strCode].strDefaultShortcut . "|")
 		; for Alternative Menu QAP features, .strDefaultShortcut contains the default strModifier
 		o_QAPfeatures.AA[strCode].strCurrentModifier := o_QAPfeatures.AA[strCode].strDefaultShortcut
+	; update the menu modifiers object
+	o_QAPfeatures.aaQAPfeaturesMenuNamesByModifierCodes[o_QAPfeatures.AA[strCode].strCurrentModifier] := o_QAPfeatures.AA[strCode].strLocalizedName
+}
 
 strCode := ""
 objThisQAPFeature := ""
@@ -6039,7 +6057,7 @@ Menu, Tray, Add
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
-Menu, Tray, Default, % g_aaMenuTrayL["MenuSettings"]
+Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-click
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
@@ -8000,8 +8018,11 @@ for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeBy
 intHotkeysAlternativeX := ""
 
 ; AlternativeMenuShowNotification
-Gui, 2:Add, CheckBox, y+30 x%g_intGroupItemsX% vf_blnAlternativeMenuShowNotification gGuiOptionsGroupChanged hidden, % o_L["OptionsAlternativeMenuShowNotification"]
+Gui, 2:Add, CheckBox, y+30 x%g_intGroupItemsX% vf_blnAlternativeMenuShowNotification gGuiOptionsGroupChanged w240 hidden, % o_L["OptionsAlternativeMenuShowNotification"]
 GuiControl, , f_blnAlternativeMenuShowNotification, % (o_Settings.MenuPopup.blnAlternativeMenuShowNotification.IniValue = true)
+
+Gui, 2:Add, Button, yp x%g_intGroupItemsTab6X% vf_btnAlternativeMenuResetModifiers gGuiOptionsAlternativeMenuResetModifiersClicked hidden, % o_L["OptionsAlternativeMenuResetModifiers"]
+Gui, 2:Add, Link, yp+5 x+10 vf_btnAlternativeMenuModifiersHelp hidden, % "<a href=""https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/"">" . o_L["GuiHelp"] . "</a>"
 
 GuiControlGet, arrPos, Pos, f_blnAlternativeMenuShowNotification
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -8969,6 +8990,19 @@ ButtonOptionsCancel:
 ;------------------------------------------------------------
 
 Gosub, 2GuiClose
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiOptionsAlternativeMenuResetModifiersClicked:
+;------------------------------------------------------------
+
+Gosub, GuiOptionsGroupChanged
+
+for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
+	GuiControl, , f_strAlternativeModifiers%intOrder%, % o_QAPfeatures.GetAlternativeMenuModifiersDropdownList(o_QAPfeatures.AA[strAlternativeCode].strCurrentModifier)
 
 return
 ;------------------------------------------------------------
@@ -13352,7 +13386,7 @@ GuiControlGet, strSetWindowsFolderIconLabel, , f_lblSetWindowsFolderIcon
 blnSet := (strSetWindowsFolderIconLabel = "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>") ; else o_L["DialogWindowsFolderIconRemove"]
 
 strFolder := PathCombine(A_WorkingDir, EnvVars(f_strFavoriteLocation))
-strFolderDesktopIni := strFolder . "\desktop.ini" 
+strFolderDesktopIni := StripFolderEndingBackslash(strFolder) . "\desktop.ini" 
 strDesktopIniAttrib := FileExist(strFolderDesktopIni)
 blnDesktopIniExist := StrLen(strDesktopIniAttrib)
 SplitPath, strFolderDesktopIni, , strDir, , , strDrive
@@ -14079,7 +14113,9 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
 	else
 	{
-		if (o_EditedFavorite.AA.strFavoriteType = "WindowsApp") and (f_drpWindowsAppsList = "* " . o_L["DialogWindowsAppsListCustom"])
+		if (o_EditedFavorite.AA.strFavoriteType = "Folder") ; remove ending backslash in folder location
+			strNewFavoriteLocation := StripFolderEndingBackslash(strNewFavoriteLocation)
+		else if (o_EditedFavorite.AA.strFavoriteType = "WindowsApp") and (f_drpWindowsAppsList = "* " . o_L["DialogWindowsAppsListCustom"])
 			strNewFavoriteLocation := "Custom:" . strNewFavoriteLocation
 		o_EditedFavorite.AA.strFavoriteLocation := strNewFavoriteLocation
 	}
@@ -19595,6 +19631,8 @@ Loop, parse, strUsageDbItemsList, `n
 	FileGetShortcut, %strUsageDbShortcutPath%, strUsageDbTargetPath
 	; RecentGetUsageDbTargetFileInfo to check if on an offline server
 	RecentGetUsageDbTargetFileInfo(strUsageDbTargetPath, strUsageDbTargetAttributes, strUsageDbTargetType, strUsageDbTargetDateTime, strUsageDbTargetExtension, A_ThisLabel)
+	if (strUsageDbTargetType = "Folder") ; remove ending backslash in folder location
+		strUsageDbTargetPath := StripFolderEndingBackslash(strUsageDbTargetPath)
 	
 	if StrLen(strUsageDbTargetAttributes)
 	{
@@ -20893,6 +20931,7 @@ LocationIsDocument(strLocation)
 GetLocationPathName(strLocation)
 ;------------------------------------------------------------
 {
+	strLocation := StripFolderEndingBackslash(strLocation) ; remove ending backslash in folder location
 	strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
 	if !StrLen(strName)
 	{
@@ -20902,6 +20941,19 @@ GetLocationPathName(strLocation)
 			return strDrive
 	}
 	return strName
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+StripFolderEndingBackslash(strFolder)
+;------------------------------------------------------------
+{
+	if (SubStr(strFolder, 0, 1) = "\") ; if last char is backslash, remove it
+		strFolder := SubStr(strFolder, 1, -1)
+	if (SubStr(strFolder, 0, 1) = ":") ; restore ending backslash for drive root like C:\
+		strFolder .= "\"
+	return strFolder
 }
 ;------------------------------------------------------------
 
@@ -25422,6 +25474,9 @@ class QAPfeatures
 	{
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
 			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, , "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
+		
+		if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and o_FileManagers.SA[2].DirectoryOpusLayoutsFileExist())
+			new Container("Menu", o_L["DOpusLayoutsName"]) ; init DOpus Layouts sub menu of DOpus Favorites menu
 	}
 	;---------------------------------------------------------
 }
@@ -27965,6 +28020,8 @@ class Container
 					this.AA.strFavoriteName := strUniqueName
 				}
 			}
+			if (saFavorite[1] = "Folder") ; strip ending backslash if folder location (for items saved before v10.5.3)
+				saFavorite[3] := StripFolderEndingBackslash(saFavorite[3])
 			this.InsertItemValue("strFavoriteLocation", StrReplace(saFavorite[3], g_strEscapePipe, "|")) ; path, URL or menu path (without "Main") for this menu item
 			this.InsertItemValue("strFavoriteIconResource", saFavorite[4]) ; icon resource in format "iconfile,iconindex" or JLicons index "iconXYZ"
 			this.InsertItemValue("strFavoriteArguments", StrReplace(saFavorite[5], g_strEscapePipe, "|")) ; application arguments
@@ -29483,7 +29540,8 @@ class Container
 			strUsageDbMenuHotkeyTypeDetected := g_strHotkeyTypeDetected
 			strUsageDbMenuTargetAppName := this.aaTemp.strTargetAppName
 			
-			strUsageDbTargetPathExpanded := this.AA.strFavoriteLocation
+			strUsageDbTargetPathExpanded := (this.AA.strFavoriteType = "Folder" ? StripFolderEndingBackslash(this.AA.strFavoriteLocation) : this.AA.strFavoriteLocation)
+			
 			if InStr("|Folder|Special|Document|Application", "|" . this.AA.strFavoriteType)
 				; for files, check if in path, check envars and relative path; strUsageDbTargetAttributes will be updated again in GetUsageDbTargetFileInfo
 				strUsageDbTargetAttributes := FileExistInPath(strUsageDbTargetPathExpanded) ; FileExistInPath expands strUsageDbTargetPathExpanded and returns the file's atributes

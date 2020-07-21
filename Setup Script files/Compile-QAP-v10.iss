@@ -282,12 +282,12 @@ var
   WorkingFolder: String;
 begin
   // function RegQueryStringValue(const RootKey: Integer; const SubKeyName, ValueName: String; var ResultStr: String): Boolean;
-  if RegQueryStringValue(HKEY_CURRENT_USER, ExpandConstant('Software\Jean Lalonde\{#MyAppName}'), 'WorkingFolder', WorkingFolder) then
+  if RegQueryStringValue(HKEY_CURRENT_USER, 'Software\Jean Lalonde\{#MyAppName}', 'WorkingFolder', WorkingFolder) then
   begin
   // function GetIniString(const Section, Key, Default, Filename: String): String;
   // setup Explorer context menus if ExplorerContextMenus is 1 (or is not found) for both quickaccesspopup.ini file in current Settings Folder and in commonappdata
   // (in other words, do not setup context menus if either of these files include ExplorerContextMenus with value "0")
-    Result := (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant(WorkingFolder + '\{#MyAppNameNoSpace}.ini')) = '1') and (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant('{commonappdata}\{#MyAppName}\{#MyAppNameNoSpace}.ini')) = '1')
+    Result := (GetIniString('Global', 'ExplorerContextMenus', '1', AddBackslash(WorkingFolder) + '{#MyAppNameNoSpace}.ini') = '1') and (GetIniString('Global', 'ExplorerContextMenus', '1', ExpandConstant('{commonappdata}\{#MyAppName}\{#MyAppNameNoSpace}.ini')) = '1')
   end
   else
   begin
@@ -303,12 +303,12 @@ var
   DonorCode: String;
 begin
   // function RegQueryStringValue(const RootKey: Integer; const SubKeyName, ValueName: String; var ResultStr: String): Boolean;
-  if RegQueryStringValue(HKEY_CURRENT_USER, ExpandConstant('Software\Jean Lalonde\{#MyAppName}'), 'WorkingFolder', WorkingFolder) then
+  if RegQueryStringValue(HKEY_CURRENT_USER, 'Software\Jean Lalonde\{#MyAppName}', 'WorkingFolder', WorkingFolder) then
   begin
     // WorkingFolder key found, user is upgrading
     // function GetIniString(const Section, Key, Default, Filename: String): String;
-    Donor := GetIniString('Global', 'Donor', 'ERROR', ExpandConstant(WorkingFolder + '\{#MyAppNameNoSpace}.ini'))
-    DonorCode := GetIniString('Global', 'DonorCode', 'ERROR', ExpandConstant(WorkingFolder + '\{#MyAppNameNoSpace}.ini'))
+    Donor := GetIniString('Global', 'Donor', 'ERROR', AddBackslash(WorkingFolder) + '{#MyAppNameNoSpace}.ini')
+    DonorCode := GetIniString('Global', 'DonorCode', 'ERROR', AddBackslash(WorkingFolder) + '{#MyAppNameNoSpace}.ini')
     // MsgBox('WorkingFolder: ' + WorkingFolder + ' / Donor: ' + Donor + ' / DonorCode: ' + DonorCode, mbInformation, MB_OK)
     if (Donor <> 'ERROR') or (DonorCode <> 'ERROR') then
     begin
