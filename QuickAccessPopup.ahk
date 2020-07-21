@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.5.4 (2020-07-21)
+- fix bug when loading the Alternative menus modifiers (default modifiers remained active even after they were changed in Options)
+- add a button in "Options, "Alternative Menu Hotkeys" to reset the default Alternative menu modifiers and an help link about Alternative menu modifiers
+- fix bug with Directory Opus Favorites "Layouts" submenu
+- stop opening the "Customize" window when double-clicking the QAP icon in the Notification zone
+- fix bug in the installer when QAP working folder path included something between curly brackets {...}
+ 
 Version: 10.5.3 (2020-07-11)
 - fix bug to support favorite Link's "Parameters" option allowing, for example, to add the "-incognito" Chrome's parameter to open a window
 - remove ending backslash of folders path when saving favorite folders them to settings file or to database, except if folder is a root like "C:\"
@@ -4043,7 +4050,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.3
+;@Ahk2Exe-SetVersion 10.5.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4108,7 +4115,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
