@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.5.4 (2020-07-21)
+- fix bug when loading the Alternative menus modifiers (default modifiers remained active even after they were changed in Options)
+- add a button in "Options, "Alternative Menu Hotkeys" to reset the default Alternative menu modifiers and an help link about Alternative menu modifiers
+- fix bug with Directory Opus Favorites "Layouts" submenu
+- stop opening the "Customize" window when double-clicking the QAP icon in the Notification zone
+- fix bug in the installer when QAP working folder path included something between curly brackets {...}
+ 
 Version BETA: 10.5.9.3 (2020-07-12)
 - fix bug not removing the small statut popup window when using the "Refresh Live Folders and Shared menus" command
 - add sources to multiple add: "Frequent folders", "Frequent files", "Recent folders" and Recent files"
@@ -5203,7 +5210,7 @@ o_Settings.ReadIniOption("MenuPopup", "blnRightControlDoublePressed", "RightCont
 
 ; Group PopupHotkeysAlternative
 o_Settings.ReadIniOption("MenuPopup", "blnAlternativeMenuShowNotification", "AlternativeMenuShowNotification", 1, "PopupHotkeysAlternative"
-	, "f_lblAlternativeMenu|f_blnAlternativeMenuShowNotification") ; g_blnAlternativeMenuShowNotification
+	, "f_lblAlternativeMenu|f_blnAlternativeMenuShowNotification|f_btnAlternativeMenuResetModifiers|f_btnAlternativeMenuModifiersHelp") ; g_blnAlternativeMenuShowNotification
 
 ; Group Filemanagers
 ; load ini values when init instance of FileManagers (must be after init of o_JLicons)
@@ -5758,11 +5765,16 @@ for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 }
 
 ; Update QAP Alternative Menu with menu modifiers
+o_QAPfeatures.aaQAPfeaturesMenuNamesByModifierCodes := Object() ; re-init modifiers codes object
 for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
+{
 	; if modifier empty (including not "None") and not used by custom modifier, assigne default modifier
 	if !StrLen(o_QAPfeatures.AA[strCode].strCurrentModifier) and !InStr(strUsedModifiers, "|" . o_QAPfeatures.AA[strCode].strDefaultShortcut . "|")
 		; for Alternative Menu QAP features, .strDefaultShortcut contains the default strModifier
 		o_QAPfeatures.AA[strCode].strCurrentModifier := o_QAPfeatures.AA[strCode].strDefaultShortcut
+	; update the menu modifiers object
+	o_QAPfeatures.aaQAPfeaturesMenuNamesByModifierCodes[o_QAPfeatures.AA[strCode].strCurrentModifier] := o_QAPfeatures.AA[strCode].strLocalizedName
+}
 
 strCode := ""
 objThisQAPFeature := ""
@@ -6061,7 +6073,7 @@ Menu, Tray, Add
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
-Menu, Tray, Default, % g_aaMenuTrayL["MenuSettings"]
+Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-click
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
@@ -8024,8 +8036,11 @@ for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeBy
 intHotkeysAlternativeX := ""
 
 ; AlternativeMenuShowNotification
-Gui, 2:Add, CheckBox, y+30 x%g_intGroupItemsX% vf_blnAlternativeMenuShowNotification gGuiOptionsGroupChanged hidden, % o_L["OptionsAlternativeMenuShowNotification"]
+Gui, 2:Add, CheckBox, y+30 x%g_intGroupItemsX% vf_blnAlternativeMenuShowNotification gGuiOptionsGroupChanged w240 hidden, % o_L["OptionsAlternativeMenuShowNotification"]
 GuiControl, , f_blnAlternativeMenuShowNotification, % (o_Settings.MenuPopup.blnAlternativeMenuShowNotification.IniValue = true)
+
+Gui, 2:Add, Button, yp x%g_intGroupItemsTab6X% vf_btnAlternativeMenuResetModifiers gGuiOptionsAlternativeMenuResetModifiersClicked hidden, % o_L["OptionsAlternativeMenuResetModifiers"]
+Gui, 2:Add, Link, yp+5 x+10 vf_btnAlternativeMenuModifiersHelp hidden, % "<a href=""https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/"">" . o_L["GuiHelp"] . "</a>"
 
 GuiControlGet, arrPos, Pos, f_blnAlternativeMenuShowNotification
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -8993,6 +9008,19 @@ ButtonOptionsCancel:
 ;------------------------------------------------------------
 
 Gosub, 2GuiClose
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiOptionsAlternativeMenuResetModifiersClicked:
+;------------------------------------------------------------
+
+Gosub, GuiOptionsGroupChanged
+
+for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
+	GuiControl, , f_strAlternativeModifiers%intOrder%, % o_QAPfeatures.GetAlternativeMenuModifiersDropdownList(o_QAPfeatures.AA[strAlternativeCode].strCurrentModifier)
 
 return
 ;------------------------------------------------------------
@@ -25789,6 +25817,9 @@ class QAPfeatures
 	{
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
 			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, , "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
+		
+		if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and o_FileManagers.SA[2].DirectoryOpusLayoutsFileExist())
+			new Container("Menu", o_L["DOpusLayoutsName"]) ; init DOpus Layouts sub menu of DOpus Favorites menu
 	}
 	;---------------------------------------------------------
 }
