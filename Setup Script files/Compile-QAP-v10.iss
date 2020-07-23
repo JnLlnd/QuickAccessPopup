@@ -262,7 +262,7 @@ begin
       end;
       IDOK:
       begin
-        Exec(ExpandConstant('{cmd}'), '/C taskkill /im "{#MyAppExeName}" /f', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+        Exec(ExpandConstant('{sys}\taskkill.exe'), '/im "{#MyAppExeName}" /f', '', SW_HIDE, ewWaitUntilTerminated, ResultCode); 
         if ResultCode = 0 then
         begin
           Result := True;
