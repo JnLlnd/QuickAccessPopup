@@ -4282,6 +4282,7 @@ global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listvie
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd
 
 global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsFileLoad
+global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -13750,6 +13751,7 @@ Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, % o_L["GuiMultipleAddIntro
 Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+15 w" . intCol1Width . " right", % o_L["MenuMenu"]
 Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGuiMultipleAddMenu"
 	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
+GuiControl, Choose, f_drpGuiMultipleAddMenu, 2 ; #####
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
 Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
@@ -14098,7 +14100,7 @@ g_aaTreeViewItemsByIDs := Object() ; reset objects in TreeView
 if !StrLen(f_strMultipleAddSourcePath)
 	return
 
-oMultipleAddMain := new Container("Menu", "Multiple Add Main", false, "", "multiple", false, false)
+oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "", "init", false, false)
 
 strMultipleAddSourceSettingsFile := f_strMultipleAddSourcePath
 if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, strMultipleAddSourceSettingsFile) = "EOM")
@@ -14351,33 +14353,39 @@ return
 GuiMultipleAddFromTreeView:
 ;------------------------------------------------------------
 
+for intIndex, oItem in o_Containers.AA[g_strMultipleAddMainMenuName].SA
+{
+	; ###_O(intIndex . "`n", oItem.AA)
+	if oItem.IsContainer() ; process submenu objects
+		; UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy, blnMultipleAdd)
+		oItem.UpdateMenusPathAndLocation(f_drpGuiMultipleAddMenu, true, true)
+	else ; update
+		oItem.AA.oParentMenu := o_Containers.AA[f_drpGuiMultipleAddMenu]
+}
+
 strItemId := 0
-oParentMenu := o_Containers.AA[f_drpGuiMultipleAddMenu]
-###_O("oParentMenu.AA", oParentMenu.AA)
 Loop
 {
-	strItemId := TV_GetNext(strItemId, "Checked")
+	strItemId := TV_GetNext(strItemId, "Checked") ; get next checked item
 	if !(strItemId)
 		break
-	###_V(A_ThisLabel, g_aaTreeViewItemsByIDs[strItemId].AA.strFavoriteName, g_aaTreeViewItemsByIDs[strItemId].AA.strFavoriteType)
-	###_V("AVANT g_aaTreeViewItemsByIDs[strItemId].AA.strFavoriteLocation", g_aaTreeViewItemsByIDs[strItemId].AA.strFavoriteLocation)
-	; update strFavoriteLocation - what?
-	; g_aaTreeViewItemsByIDs[strItemId].AA.strFavoriteLocation := f_drpGuiMultipleAddMenu . g_strMenuPathSeparatorWithSpaces
-		; . g_aaTreeViewItemsByIDs[strItemId].AA.strFavoriteLocation
-	g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu := oParentMenu
-	oParentMenu.SA.Push(g_aaTreeViewItemsByIDs[strItemId])
-	if g_aaTreeViewItemsByIDs[strItemId].IsContainer()
+	
+	###_V("", g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.AA.strMenuPath)
+	o_Containers.AA[g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.AA.strMenuPath].SA.Push(g_aaTreeViewItemsByIDs[strItemId])
+	
+	; ##### adding item in f_drpGuiMultipleAddMenu is Ok / adding an item in a sub menu is not...	
+	
+	if g_aaTreeViewItemsByIDs[strItemId].IsContainer() ; process new menu
 	{
-		oParentMenu := g_aaTreeViewItemsByIDs[strItemId]
-		oParentMenu.SA := Object() ; reset container
-		; update oParentMenu.AA.strMenuPath - what?
-		; oParentMenu.AA.strMenuPath := f_drpGuiMultipleAddMenu . g_strMenuPathSeparatorWithSpaces . oParentMenu.AA.strMenuPath
-		###_O("oParentMenu.AA", oParentMenu.AA)
+		g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu := Object() ; reset submenu
+		o_Containers.AA[g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu.AA.strMenuPath] := g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu
 	}
 }
 
 strItemId := ""
+strParentMenuPath := ""
 oParentMenu := ""
+strNewMenuPath := ""
 
 return
 ;------------------------------------------------------------
@@ -26801,7 +26809,7 @@ class Container
 			}
 		}
 		
-		if (strAction <> "backup") ; avoid updating containers index when creating a backup of the menu objects
+		if (strAction = "init") ; avoid updating containers index when creating a backup of the menu objects or temporary container
 			o_Containers.AA[this.AA.strMenuPath] := this
 	}
 	;---------------------------------------------------------
@@ -30000,7 +30008,7 @@ class Container
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
-		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy)
+		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy, blnMultipleAdd := false)
 		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
 		;---------------------------------------------------------
 		{
@@ -30014,7 +30022,8 @@ class Container
 			this.AA.oSubMenu.AA.oParentMenu.AA.strMenuPath := strNewDestinationMenu ; update submenu's parent path
 			
 			this.AA.oSubMenu.AA.strMenuPath := strNewMenuPath ; update menu path
-			o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
+			if !(blnMultipleAdd)
+				o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
 			
 			if SubStr(strNewMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
 				this.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", , , 1) ; menu path without main menu localized name
@@ -30027,7 +30036,7 @@ class Container
 			if (o_EditedFavorite.AA.strFavoriteType <> "Group") ; groups have no submenu
 				for intKey, oItem in this.AA.oSubMenu.SA
 					if oItem.IsContainer()
-						oItem.UpdateMenusPathAndLocation(strNewMenuPath, blnCopy) ; RECURSIVE
+						oItem.UpdateMenusPathAndLocation(strNewMenuPath, blnCopy, blnMultipleAdd) ; RECURSIVE
 		}
 		;---------------------------------------------------------
 		
