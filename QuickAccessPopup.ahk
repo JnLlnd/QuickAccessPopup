@@ -14353,6 +14353,7 @@ return
 GuiMultipleAddFromTreeView:
 ;------------------------------------------------------------
 
+; ###_O("o_Containers.AA", o_Containers.AA)
 for intIndex, oItem in o_Containers.AA[g_strMultipleAddMainMenuName].SA
 {
 	; ###_O(intIndex . "`n", oItem.AA)
@@ -14369,17 +14370,15 @@ Loop
 	strItemId := TV_GetNext(strItemId, "Checked") ; get next checked item
 	if !(strItemId)
 		break
-	
-	###_V("", g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.AA.strMenuPath)
-	o_Containers.AA[g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.AA.strMenuPath].SA.Push(g_aaTreeViewItemsByIDs[strItemId])
-	
-	; ##### adding item in f_drpGuiMultipleAddMenu is Ok / adding an item in a sub menu is not...	
-	
+
+	; if !g_aaTreeViewItemsByIDs[strItemId].IsContainer()
+		; continue
+
+	; ###_V("", g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.AA.strMenuPath)
+	g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.SA.Push(g_aaTreeViewItemsByIDs[strItemId])
+
 	if g_aaTreeViewItemsByIDs[strItemId].IsContainer() ; process new menu
-	{
-		g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu := Object() ; reset submenu
-		o_Containers.AA[g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu.AA.strMenuPath] := g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu
-	}
+		g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu.SA := Object() ; reset submenu
 }
 
 strItemId := ""
