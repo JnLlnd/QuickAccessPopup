@@ -13808,8 +13808,8 @@ loop, Parse, % "f_strMultipleAddFilter|f_btnMultipleAddClearFilter", |
 
 if (blnUsePath) ; if a source with a path is selected, reset the path and show right lable
 {
-	GuiControl, , f_strMultipleAddSourcePath, %A_ScriptDir%\multiple.ini
-	; ##### GuiControl, , f_strMultipleAddSourcePath ; reset file path, triggers GuiMultipleAddSourcePathChanged
+	; GuiControl, , f_strMultipleAddSourcePath, %A_ScriptDir%\multiple.ini
+	GuiControl, , f_strMultipleAddSourcePath ; reset file path, triggers GuiMultipleAddSourcePathChanged
 	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Hide" : "Show"), f_lblMultipleAddSourceFolder
 	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Show" : "Hide"), f_lblMultipleAddSourceFile
 }
@@ -14104,7 +14104,7 @@ oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "
 
 strMultipleAddSourceSettingsFile := f_strMultipleAddSourcePath
 if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, strMultipleAddSourceSettingsFile) = "EOM")
-	oMultipleAddMain.LoadInTreeView() ; assign items objects to g_aaTreeViewItemsByIDs
+	oMultipleAddMain.LoadInTreeView(f_blnMultipleAddExcludeExisting) ; assign items objects to g_aaTreeViewItemsByIDs
 
 oMultipleAddMain := ""
 strSettingsBK := ""
@@ -14121,10 +14121,14 @@ Gui, 2:Submit, NoHide
 if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
 	FileSelectFile, strMultipleAddSourcePath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSwitchSettings"], *.ini
 else
+{
 	strMultipleAddSourcePath := ChooseFolder([g_strGui2Hwnd, o_L["DialogSelectFolder"]], f_strMultipleAddSourcePath)
+	; strMultipleAddSourcePath is false if user cancelled ChooseFolder
+	strMultipleAddSourcePath := (strMultipleAddSourcePath ? strMultipleAddSourcePath . "\*.*" : "")
+}
 
-if (strMultipleAddSourcePath) ; false if user cancelled ChooseFolder
-	GuiControl, , f_strMultipleAddSourcePath, %strMultipleAddSourcePath%\*.*
+if StrLen(strMultipleAddSourcePath)
+	GuiControl, , f_strMultipleAddSourcePath, %strMultipleAddSourcePath%
 
 strMultipleAddSourcePath := ""
 
@@ -14335,7 +14339,10 @@ Loop
 	LV_GetText(strFavoriteType, intRow, 4)
 	
 	if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
-		strFavoriteLocation := f_strMultipleAddSourcePath . "\" . strFavoriteLocation
+	{
+		SplitPath, f_strMultipleAddSourcePath, , strMultipleAddSourcePath ; path without wildcards or filename
+		strFavoriteLocation := strMultipleAddSourcePath . "\" . strFavoriteLocation
+	}
 	else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand)
 		LV_GetText(strFavoriteLocation, intRow, 5)
 	
@@ -14353,40 +14360,72 @@ return
 GuiMultipleAddFromTreeView:
 ;------------------------------------------------------------
 
-; ###_O("o_Containers.AA", o_Containers.AA)
-for intIndex, oItem in o_Containers.AA[g_strMultipleAddMainMenuName].SA
-{
-	; ###_O(intIndex . "`n", oItem.AA)
-	if oItem.IsContainer() ; process submenu objects
-		; UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy, blnMultipleAdd)
-		oItem.UpdateMenusPathAndLocation(f_drpGuiMultipleAddMenu, true, true)
-	else ; update
-		oItem.AA.oParentMenu := o_Containers.AA[f_drpGuiMultipleAddMenu]
-}
-
 strItemId := 0
 Loop
 {
-	strItemId := TV_GetNext(strItemId, "Checked") ; get next checked item
-	if !(strItemId)
+	if !(strItemId := TV_GetNext(strItemId, "Checked")) ; get next checked item
 		break
-
-	; if !g_aaTreeViewItemsByIDs[strItemId].IsContainer()
-		; continue
-
-	; ###_V("", g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.AA.strMenuPath)
-	g_aaTreeViewItemsByIDs[strItemId].AA.oParentMenu.SA.Push(g_aaTreeViewItemsByIDs[strItemId])
-
-	if g_aaTreeViewItemsByIDs[strItemId].IsContainer() ; process new menu
-		g_aaTreeViewItemsByIDs[strItemId].AA.oSubMenu.SA := Object() ; reset submenu
+	
+	strMenuPath := f_drpGuiMultipleAddMenu . GetMenuPath(strItemId) ; get current container path
+	oParentMenu := o_Containers.AA[strMenuPath] ; get parent menu object
+	
+	oAddedItem := g_aaTreeViewItemsByIDs[strItemId] ; get item object
+	
+	strUniqueName := oAddedItem.AA.strFavoriteName
+	oAddedItem.GetUniqueName(strUniqueName, "", strMenuPath, true) ; last true for blnRename
+	if (strUniqueName <> oAddedItem.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+	{
+		Oops(1, o_L["OopsErrorIniFileDuplicateNames"], oAddedItem.AA.strFavoriteName
+			, oParentMenu.AA.strMenuPath, strUniqueName)
+		oAddedItem.AA.strFavoriteName := strUniqueName ; rename favorite name
+		TV_Modify(strItemId, , strUniqueName) ; rename in treeview in case it is used in GetMenuPath()
+	}
+	
+	oAddedItem.AA.oParentMenu := oParentMenu ; set item's parent menu
+	oParentMenu.SA.Push(oAddedItem) ; add new item to parent menu object simple array
+	
+	if oAddedItem.IsContainer()
+	{
+		strNewMenuPath := strMenuPath . g_strMenuPathSeparatorWithSpaces . oAddedItem.AA.strFavoriteName ; build container's path
+		if !o_Containers.AA.HasKey(strNewMenuPath) ; this is a new container
+		{
+			; update item object and its container object
+			oAddedItem.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", "")
+			oAddedItem.AA.oSubMenu.AA.strMenuPath := strNewMenuPath
+			oAddedItem.AA.oSubMenu.AA.strMenuType := "Menu"
+			oAddedItem.AA.oSubMenu.AA.oParentMenu := oParentMenu
+			oAddedItem.AA.oSubMenu.SA := Object() ; reset submenu (items will be re-inserted if they are selected
+			
+			o_Containers.AA[strNewMenuPath] := oAddedItem.AA.oSubMenu ; add new menu to containers list
+		}
+	}
 }
 
 strItemId := ""
-strParentMenuPath := ""
+strMenuPath := ""
 oParentMenu := ""
+oAddedItem := ""
+strUniqueName := ""
 strNewMenuPath := ""
 
 return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetMenuPath(strChildId)
+; returns the pat in fthe format "> Sub1 > Sub2"
+;------------------------------------------------------------
+{
+	while strParentId := TV_GetParent(strChildId)
+	{
+		TV_GetText(strText, strParentId)
+		strPath := strText . g_strMenuPathSeparatorWithSpaces . strPath
+		strChildId := strParentId
+	}
+	
+	return (StrLen(strPath) ? g_strMenuPathSeparatorWithSpaces . SubStr(strPath, 1, -3) : "")
+}
 ;------------------------------------------------------------
 
 
@@ -28452,7 +28491,7 @@ class Container
 	;------------------------------------------------------------
 
 	;------------------------------------------------------------
-	LoadInTreeView(strContainerUniqueId := "")
+	LoadInTreeView(blnMultipleAddExcludeExisting, strContainerUniqueId := "")
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
@@ -28462,12 +28501,17 @@ class Container
 			if oItem.IsContainer()
 			{
 				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId, "Expand Bold")
-				oItem.AA.oSubMenu.LoadInTreeView(strTreeViewID) ; RECURSIVE
+				; TV_Modify(strTreeViewID, , oItem.AA.strFavoriteName . " (" . strTreeViewID . ")")
+				oItem.AA.oSubMenu.LoadInTreeView(blnMultipleAddExcludeExisting, strTreeViewID) ; RECURSIVE
+				g_aaTreeViewItemsByIDs[strTreeViewID] := oItem
 			}
-			else
+			else if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oItem) : true)
+			{
 				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
+				; TV_Modify(strTreeViewID, , oItem.AA.strFavoriteName . " (" . strTreeViewID . ")")
+				g_aaTreeViewItemsByIDs[strTreeViewID] := oItem
+			}
 			
-			g_aaTreeViewItemsByIDs[strTreeViewID] := oItem
 		}
 	}
 	;------------------------------------------------------------
@@ -30007,12 +30051,12 @@ class Container
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
-		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy, blnMultipleAdd := false)
+		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy)
 		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
 		;---------------------------------------------------------
 		{
 			strNewMenuPath := strNewDestinationMenu . g_strMenuPathSeparatorWithSpaces . this.AA.strFavoriteName
-				. (o_EditedFavorite.AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
+				. (this.AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
 			
 			if !(blnCopy)
 				o_Containers.AA.Delete(this.AA.oSubMenu.AA.strMenuPath) ; remove old path from o_Containers
@@ -30021,21 +30065,24 @@ class Container
 			this.AA.oSubMenu.AA.oParentMenu.AA.strMenuPath := strNewDestinationMenu ; update submenu's parent path
 			
 			this.AA.oSubMenu.AA.strMenuPath := strNewMenuPath ; update menu path
-			if !(blnMultipleAdd)
-				o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
+			o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
+			
+			for intKey, oItem in this.AA.oSubMenu.SA
+				oItem.AA.oParentMenu := this
 			
 			if SubStr(strNewMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
 				this.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", , , 1) ; menu path without main menu localized name
 			else
 				this.AA.strFavoriteLocation := strNewMenuPath
 			
-			this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu]
+			if StrLen(strNewDestinationMenu) ; for safety
+				this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu]
 			
 			; update submenus (recursive)
-			if (o_EditedFavorite.AA.strFavoriteType <> "Group") ; groups have no submenu
+			if (this.AA.strFavoriteType <> "Group") ; groups have no submenu
 				for intKey, oItem in this.AA.oSubMenu.SA
 					if oItem.IsContainer()
-						oItem.UpdateMenusPathAndLocation(strNewMenuPath, blnCopy, blnMultipleAdd) ; RECURSIVE
+						oItem.UpdateMenusPathAndLocation(strNewMenuPath, blnCopy) ; RECURSIVE
 		}
 		;---------------------------------------------------------
 		
