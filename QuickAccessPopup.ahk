@@ -14429,7 +14429,13 @@ if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinatio
 }
 ; in case strUniqueName has been modified by GetUniqueName()
 if (blnRename)
+{
+	if (strUniqueName <> o_EditedFavorite.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+		and InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+		Oops(1, o_L["OopsErrorIniFileDuplicateNames"], o_EditedFavorite.AA.strFavoriteName, strDestinationMenu, strUniqueName)
+
 	o_EditedFavorite.AA.strFavoriteName := strUniqueName
+}
 strNewFavoriteShortName := strUniqueName ; update regardless of blnRename (bug fixed v10.4.1)
 
 ; check that a menu cannot be moved under itself when part of a multiple move (not when copy because menu cannot be copied)
