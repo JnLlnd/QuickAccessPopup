@@ -12364,7 +12364,11 @@ if InStr("|Folder|Document|Application", "|" . o_EditedFavorite.AA.strFavoriteTy
 		GuiControl, 2:, f_strFavoriteLocation, % Trim(f_strFavoriteLocation, """")
 	
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
-		g_strNewFavoriteIconResource := GetFolderIcon(f_strFavoriteLocation)
+		strFolderIcon := GetFolderIcon(f_strFavoriteLocation)
+	if !(strFolderIcon = "iconFolder" and StrLen(g_strNewFavoriteIconResource))
+		; if favorite has a custom icon and there is no icon folder, keep custom icon
+		; else use the folder icon
+		g_strNewFavoriteIconResource := strFolderIcon
 	
 	if !StrLen(g_strNewFavoriteIconResource)
 		gosub, GuiFavoriteIconDefault
@@ -12381,6 +12385,8 @@ if (A_ThisLabel = "EditFavoriteExternalLocationChanged")
 			GuiControl, 2:, f_strFavoriteShortName, %strExternalMenuName%
 	}
 }
+
+strFolderIcon := ""
 
 return
 ;------------------------------------------------------------
