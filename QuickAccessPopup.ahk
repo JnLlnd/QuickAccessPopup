@@ -16119,17 +16119,14 @@ if HasShortcut(o_EditedFavorite.AA.strFavoriteShortcut)
 	g_aaItemsByShortcutToRemoveWhenBuildingMenu[o_EditedFavorite.AA.strFavoriteShortcut] := "foo" ; to disable the shortcut when reloading the menu; only key is used, the value is ignored
 }
 
-if (A_ThisLabel = "UpdateFavoriteObjectSaveShortcutList")
-{
-	GuiControl, 1:Enable, f_btnGuiSaveAndCloseFavorites
-	GuiControl, 1:Enable, f_btnGuiSaveAndStayFavorites
-	GuiControl, 1:, f_btnGuiCancel, % aaSettingsL["GuiCancel"]
-}
-
+; update favorite object
 o_EditedFavorite.AA.strFavoriteShortcut := (HasShortcut(g_strNewFavoriteShortcut) ? g_strNewFavoriteShortcut : "")
 
 if (A_ThisLabel = "UpdateFavoriteObjectSaveShortcutList")
+{
+	Gosub, EnableSaveAndCancel
 	Gosub, HotkeysManageListLoad
+}
 
 return
 ;-----------------------------------------------------------
@@ -16159,10 +16156,7 @@ o_EditedFavorite.AA.strFavoriteHotstring := g_strNewFavoriteHotstring
 
 if (A_ThisLabel = "UpdateFavoriteObjectSaveHotstringList")
 {
-	GuiControl, 1:Enable, f_btnGuiSaveAndCloseFavorites
-	GuiControl, 1:Enable, f_btnGuiSaveAndStayFavorites
-	GuiControl, 1:, f_btnGuiCancel, % aaSettingsL["GuiCancel"]
-	
+	Gosub, EnableSaveAndCancel
 	Gosub, HotkeysManageListLoad
 }
 
