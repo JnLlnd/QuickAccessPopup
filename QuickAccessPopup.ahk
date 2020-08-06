@@ -12504,9 +12504,9 @@ else if (A_ThisLabel = "ButtonSelectFavoriteSoundLocation")
 	GuiControl, %strParentGui%:, f_strFavoriteSoundLocation, %strNewLocation%
 else if (A_ThisLabel = "ButtonSelectIconFile")
 {
-	GuiControl, %strParentGui%:, f_strIconFile, %strNewLocation%
-	Gosub, GetIconsCount
-	Gosub, PickIconLoad
+	GuiControl, %strParentGui%:, f_strIconFile, %strNewLocation% ; triggers GetIconsCount and PickIconLoad
+	if GetFileExtension(strNewLocation) = "ico"
+		Gosub, PickIconIcoFileSelected
 }
 else ; ButtonSelectFavoriteLocation
 {
@@ -12712,9 +12712,10 @@ return
 
 ;------------------------------------------------------------
 PickIconClicked:
+PickIconIcoFileSelected:
 ;------------------------------------------------------------
 
-strTempNewFavoriteIconResource := f_strIconFile . "," . StrReplace(A_GuiControl, "f_picIcon") + g_intIconsManageStartingIcon
+strTempNewFavoriteIconResource := f_strIconFile . "," . (A_ThisLabel = "PickIconIcoFileSelected" ? 1 : StrReplace(A_GuiControl, "f_picIcon") + g_intIconsManageStartingIcon)
 g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
 
 Gosub, 3GuiClose
