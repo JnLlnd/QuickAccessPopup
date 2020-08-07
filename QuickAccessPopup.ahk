@@ -18773,7 +18773,7 @@ Gui, 2:Add, Link, x10 w185 y+10 vf_lnkWhySponsor, % L(o_L["DonateText2"], "https
 GuiControlGet, arrPos, Pos, f_lnkWhySponsor
 g_intLnkWhySponsorWidth := arrPosW
 
-loop, Parse, % "5|1|2|3", |
+loop, Parse, % "5|1|2", | ; removed option 3 for CAD and 4 for monthly
 {
 	if (A_Index = 1)
 		Gui, 2:Add, Button, y+20 Default vbtnDonateDefault5 xm w150 gButtonDonate5, % o_L["DonatePlatformName" . 5] ; #1 is Stripe #5

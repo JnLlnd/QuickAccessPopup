@@ -24,12 +24,12 @@
 #define SQLite "sqlite3"
 
 [CustomMessages]
-HelpMePayExpenses=&HELP me pay EXPENSES for making QAP%n(credit card USD, EUR or CAD)
-PayPal=With PayPal
-dutch.HelpMePayExpenses=&Help me om de uitgaven te betalen om QAP%n(kredietkaart USD, EUR of CAD)
-dutch.PayPal=Met PayPal
-french.HelpMePayExpenses=&Aidez-moi à payer mes frais%n(carte de crédit USD, EUR ou CAD)
-french.PayPal=Avec PayPal
+HelpMePayExpenses=&HELP me pay EXPENSES for making QAP%n(credit card USD or Euros)
+PayPal=With PayPal (USD or Euros)
+dutch.HelpMePayExpenses=&Help me om de uitgaven te betalen om QAP%n(kredietkaart USD of Euros)
+dutch.PayPal=Met PayPal (USD of Euros)
+french.HelpMePayExpenses=&Aidez-moi à payer mes frais%n(carte de crédit USD ou Euros)
+french.PayPal=Avec PayPal (USD ou Euros)
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -195,7 +195,6 @@ Root: HKLM; Subkey: "Software\Classes\lnkfile\shell\Import Shortcut to Quick Acc
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{commonappdata}\{#MyAppName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: waituntilidle postinstall skipifsilent
-; Filename: "{app}\ImportFPsettings.exe"; WorkingDir: "{commonappdata}\{#MyAppName}"; Parameters: "/calledfromsetup"; Tasks: importfpsettings; Flags: runhidden waituntilterminated
 Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec; Check: ExecuteSponsoringTask()
 Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec unchecked; Check: NotExecuteSponsoringTask()
 Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/#PayPal"; Description: "{cm:PayPal}"; Flags: postinstall shellexec unchecked
