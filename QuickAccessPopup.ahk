@@ -16132,17 +16132,14 @@ if HasShortcut(o_EditedFavorite.AA.strFavoriteShortcut)
 	g_aaItemsByShortcutToRemoveWhenBuildingMenu[o_EditedFavorite.AA.strFavoriteShortcut] := "foo" ; to disable the shortcut when reloading the menu; only key is used, the value is ignored
 }
 
-if (A_ThisLabel = "UpdateFavoriteObjectSaveShortcutList")
-{
-	GuiControl, 1:Enable, f_btnGuiSaveAndCloseFavorites
-	GuiControl, 1:Enable, f_btnGuiSaveAndStayFavorites
-	GuiControl, 1:, f_btnGuiCancel, % aaSettingsL["GuiCancel"]
-}
-
+; update favorite object
 o_EditedFavorite.AA.strFavoriteShortcut := (HasShortcut(g_strNewFavoriteShortcut) ? g_strNewFavoriteShortcut : "")
 
 if (A_ThisLabel = "UpdateFavoriteObjectSaveShortcutList")
+{
+	Gosub, EnableSaveAndCancel
 	Gosub, HotkeysManageListLoad
+}
 
 return
 ;-----------------------------------------------------------
@@ -16172,10 +16169,7 @@ o_EditedFavorite.AA.strFavoriteHotstring := g_strNewFavoriteHotstring
 
 if (A_ThisLabel = "UpdateFavoriteObjectSaveHotstringList")
 {
-	GuiControl, 1:Enable, f_btnGuiSaveAndCloseFavorites
-	GuiControl, 1:Enable, f_btnGuiSaveAndStayFavorites
-	GuiControl, 1:, f_btnGuiCancel, % aaSettingsL["GuiCancel"]
-	
+	Gosub, EnableSaveAndCancel
 	Gosub, HotkeysManageListLoad
 }
 
@@ -18811,19 +18805,18 @@ Gui, 2:+Owner1
 Gui, 2:Font, s12 w700, Verdana
 Gui, 2:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
 Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Link, x10 w185 y+10 vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/sponsoring/") ; will be centered by 2GuiSize
+Gui, 2:Add, Link, x10 w185 y+10 vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/why-sponsoring-this-software/") ; will be centered by 2GuiSize
 GuiControlGet, arrPos, Pos, f_lnkWhySponsor
 g_intLnkWhySponsorWidth := arrPosW
 
-loop, Parse, % "1|2|3|4", |
+loop, Parse, % "5|1|2", | ; removed option 3 for CAD and 4 for monthly
 {
-	Gui, 2:Add, Button, % (A_Index = 1 ? "y+20 Default vbtnDonateDefault " : "") . " xm w150 gButtonDonate" . A_LoopField, % o_L["DonatePlatformName" . A_LoopField]
-	Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment" . A_LoopField]
+	if (A_Index = 1)
+		Gui, 2:Add, Button, y+20 Default vbtnDonateDefault5 xm w150 gButtonDonate5, % o_L["DonatePlatformName" . 5] ; #1 is Stripe #5
+	else
+		Gui, 2:Add, Button, % (A_LoopField = 2 ? "" : "") . " xm w150 gButtonDonate" . A_LoopField, % o_L["DonatePlatformName" . A_LoopField] ; same link and text numbers
+	Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment" . (A_Index = 1 ? 5 : A_LoopField)]
 }
-; Gui, 2:Add, Button, y+10 Default vbtnDonateDefault xm w150 gButtonDonate2, % o_L["DonatePlatformName2"] ; Patreon out
-; Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment2"] ; Patreon out
-; Gui, 2:Add, Button, y+10 Default xm w150 gButtonDonate1, % o_L["DonatePlatformName1"]
-; Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment1"]
 
 Gui, 2:Add, Link, xm y+15 w420, % L(o_L["DonateCheckPrompt2"], o_L["DonateCheckPrompt4"] . " " . o_L["DonateCheckPrompt5"])
 
@@ -18832,20 +18825,27 @@ Gui, 2:Add, Link, xm y+20 w420, % o_L["DonateText3"]
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Link, xm y+10 w420 Section, % L(o_L["DonateText4"], g_strAppNameText)
 
-strDonateReviewUrlLeft1 := "http://download.cnet.com/Quick-Access-Popup/3000-2344_4-76475848.html"
+strDonateReviewUrlLeft1 := "https://alternativeto.net/software/quick-access-popup/"
 strDonateReviewUrlLeft2 := "http://www.portablefreeware.com/index.php?id=2765"
 strDonateReviewUrlLeft3 := "http://www.softpedia.com/get/System/OS-Enhancements/FoldersPopup.shtml"
 strDonateReviewUrlRight1 := "http://fileforum.betanews.com/detail/Quick-Access-Popup/1455462511/1"
 strDonateReviewUrlRight2 := "http://www.filecluster.com/System-Utilities/Launchers-Task-Manager-Utilities/Download-Quick-Access-Popup.html"
 strDonateReviewUrlRight3 := "http://freewares-tutos.blogspot.ca/2016/05/quick-access-popup-accedez-rapidement.html"
 
-loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x25 w150", % "<a href=""" . strDonateReviewUrlLeft%A_Index% . """>" . o_L["DonateReviewNameLeft" . A_Index] . "</a>"
+strDonateReviewTextLeft1 := "AlternativeTo.com"
+strDonateReviewTextLeft2 := "PortableFreeware.com"
+strDonateReviewTextLeft3 := "Softpedia.com"
+strDonateReviewTextRight1 := "BetaNews.com"
+strDonateReviewTextRight2 := "FileCluster.com"
+strDonateReviewTextRight3 := "Freewares && Tutos (FR)"
 
 loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x175 w150", % "<a href=""" . strDonateReviewUrlRight%A_Index% . """>" . o_L["DonateReviewNameRight" . A_Index] . "</a>"
+	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x25 w150", % "<a href=""" . strDonateReviewUrlLeft%A_Index% . """>" . strDonateReviewTextLeft%A_Index% . "</a>"
 
-Gui, 2:Add, Link, y+10 x10 vf_lnkSendLink, % "<a href=""https://www.quickaccesspopup.com/sponsoring/"">" . o_L["DonateText5"] . "</a>"
+loop, 3
+	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x175 w150", % "<a href=""" . strDonateReviewUrlRight%A_Index% . """>" . strDonateReviewTextRight%A_Index% . "</a>"
+
+Gui, 2:Add, Link, y+10 x10 vf_lnkSendLink, % "<a href=""mailto:jeanlalonde@quickaccesspopup.com"">" . o_L["DonateText5"] . "</a>"
 GuiControlGet, arrPos, Pos, f_lnkSendLink
 g_intLnkSendLink := arrPosW
 
@@ -18879,12 +18879,14 @@ ButtonDonate1:
 ButtonDonate2:
 ButtonDonate3:
 ButtonDonate4:
+ButtonDonate5:
 ;------------------------------------------------------------
 
 strDonatePlatformUrl1 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TE8TR28QKM3Z8"
 strDonatePlatformUrl2 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y9VVGCBNJK5DQ"
 strDonatePlatformUrl3 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DV4E4DYVWC5GC"
-strDonatePlatformUrl4 := "https://www.quickaccesspopup.com/sponsoring/"
+; strDonatePlatformUrl4 := "https://www.quickaccesspopup.com/why-sponsoring-this-software/"
+strDonatePlatformUrl5 := "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175" ; Stripe
 
 intButton := StrReplace(A_ThisLabel, "ButtonDonate")
 Run, % strDonatePlatformUrl%intButton%
