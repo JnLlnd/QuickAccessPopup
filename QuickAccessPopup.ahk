@@ -31,6 +31,21 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.5.5 (2020-08-12)
+ 
+** You can now make your QAP Sponsoring donation using your CREDIT CARD directly
+** on the QAP secured website (no need to go to PayPal anymore).
+** More info here: https://www.quickaccesspopup.com/why-sponsoring-this-software/
+ 
+- in the "Sponsor this software" dialog box, add a button for credit cart sponsoring payment (as an alternative to PayPal)
+- in Setup program final screen, add a checkbox for credit card sponsoring payment (as an alternative to PayPal)
+- in "Edit Favorite", when changing folder location for a favorite already having a custom icon, preserve this icon except if the folder has a Windows custom icon configured (in desktop.ini)
+- in "Edit Favorite", when selecting an icon, if the selected file is an .ico file, select the icon automatically (instead of showing a list of "one" icon)
+- enable the "File, Save" and "File, Save & Close" menu items after changing shortcuts or hotstrings in the "Manage Shortcuts/Hotstrings" lists
+- add a message to user if a moved or copied favorite has been renamed because a favorite with the same name existed in the destination menu
+- in "Import/Export" dialog box, validate that the export destination folder exists and, if not, offer to create the destination folder (plus other minor improvements in this dialog box)
+- fix internal bug when moving a group to another submenu
+
 Version: 10.5.4 (2020-07-21)
 - fix bug when loading the Alternative menus modifiers (default modifiers remained active even after they were changed in Options)
 - add a button in "Options, "Alternative Menu Hotkeys" to reset the default Alternative menu modifiers and an help link about Alternative menu modifiers
@@ -12494,7 +12509,11 @@ if InStr("|Folder|Document|Application", "|" . o_EditedFavorite.AA.strFavoriteTy
 		GuiControl, 2:, f_strFavoriteLocation, % Trim(f_strFavoriteLocation, """")
 	
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
-		g_strNewFavoriteIconResource := GetFolderIcon(f_strFavoriteLocation)
+		strFolderIcon := GetFolderIcon(f_strFavoriteLocation)
+	if !(strFolderIcon = "iconFolder" and StrLen(g_strNewFavoriteIconResource))
+		; if favorite has a custom icon and there is no icon folder, keep custom icon
+		; else use the folder icon
+		g_strNewFavoriteIconResource := strFolderIcon
 	
 	if !StrLen(g_strNewFavoriteIconResource)
 		gosub, GuiFavoriteIconDefault
@@ -12511,6 +12530,8 @@ if (A_ThisLabel = "EditFavoriteExternalLocationChanged")
 			GuiControl, 2:, f_strFavoriteShortName, %strExternalMenuName%
 	}
 }
+
+strFolderIcon := ""
 
 return
 ;------------------------------------------------------------
@@ -12634,9 +12655,9 @@ else if (A_ThisLabel = "ButtonSelectFavoriteSoundLocation")
 	GuiControl, %strParentGui%:, f_strFavoriteSoundLocation, %strNewLocation%
 else if (A_ThisLabel = "ButtonSelectIconFile")
 {
-	GuiControl, %strParentGui%:, f_strIconFile, %strNewLocation%
-	Gosub, GetIconsCount
-	Gosub, PickIconLoad
+	GuiControl, %strParentGui%:, f_strIconFile, %strNewLocation% ; triggers GetIconsCount and PickIconLoad
+	if GetFileExtension(strNewLocation) = "ico"
+		Gosub, PickIconIcoFileSelected
 }
 else ; ButtonSelectFavoriteLocation
 {
@@ -12842,9 +12863,10 @@ return
 
 ;------------------------------------------------------------
 PickIconClicked:
+PickIconIcoFileSelected:
 ;------------------------------------------------------------
 
-strTempNewFavoriteIconResource := f_strIconFile . "," . StrReplace(A_GuiControl, "f_picIcon") + g_intIconsManageStartingIcon
+strTempNewFavoriteIconResource := f_strIconFile . "," . (A_ThisLabel = "PickIconIcoFileSelected" ? 1 : StrReplace(A_GuiControl, "f_picIcon") + g_intIconsManageStartingIcon)
 g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
 
 Gosub, 3GuiClose
@@ -15272,7 +15294,13 @@ if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinatio
 }
 ; in case strUniqueName has been modified by GetUniqueName()
 if (blnRename)
+{
+	if (strUniqueName <> o_EditedFavorite.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+		and InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+		Oops(1, o_L["OopsErrorIniFileDuplicateNames"], o_EditedFavorite.AA.strFavoriteName, strDestinationMenu, strUniqueName)
+
 	o_EditedFavorite.AA.strFavoriteName := strUniqueName
+}
 strNewFavoriteShortName := strUniqueName ; update regardless of blnRename (bug fixed v10.4.1)
 
 ; check that a menu cannot be moved under itself when part of a multiple move (not when copy because menu cannot be copied)
@@ -16969,17 +16997,14 @@ if HasShortcut(o_EditedFavorite.AA.strFavoriteShortcut)
 	g_aaItemsByShortcutToRemoveWhenBuildingMenu[o_EditedFavorite.AA.strFavoriteShortcut] := "foo" ; to disable the shortcut when reloading the menu; only key is used, the value is ignored
 }
 
-if (A_ThisLabel = "UpdateFavoriteObjectSaveShortcutList")
-{
-	GuiControl, 1:Enable, f_btnGuiSaveAndCloseFavorites
-	GuiControl, 1:Enable, f_btnGuiSaveAndStayFavorites
-	GuiControl, 1:, f_btnGuiCancel, % aaSettingsL["GuiCancel"]
-}
-
+; update favorite object
 o_EditedFavorite.AA.strFavoriteShortcut := (HasShortcut(g_strNewFavoriteShortcut) ? g_strNewFavoriteShortcut : "")
 
 if (A_ThisLabel = "UpdateFavoriteObjectSaveShortcutList")
+{
+	Gosub, EnableSaveAndCancel
 	Gosub, HotkeysManageListLoad
+}
 
 return
 ;-----------------------------------------------------------
@@ -17009,10 +17034,7 @@ o_EditedFavorite.AA.strFavoriteHotstring := g_strNewFavoriteHotstring
 
 if (A_ThisLabel = "UpdateFavoriteObjectSaveHotstringList")
 {
-	GuiControl, 1:Enable, f_btnGuiSaveAndCloseFavorites
-	GuiControl, 1:Enable, f_btnGuiSaveAndStayFavorites
-	GuiControl, 1:, f_btnGuiCancel, % aaSettingsL["GuiCancel"]
-	
+	Gosub, EnableSaveAndCancel
 	Gosub, HotkeysManageListLoad
 }
 
@@ -19252,44 +19274,44 @@ if SettingsUnsaved()
 }
 
 strGuiTitle := L(o_L["ImpExpTitle"], g_strAppNameText)
-Gui, ImpExp:New, +Hwndg_strGui3Hwnd, %strGuiTitle%
+Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:+Owner1
+Gui, 2:+OwnDialogs
 if (g_blnUseColors)
-	Gui, ImpExp:Color, %g_strGuiWindowColor%
+	Gui, 2:Color, %g_strGuiWindowColor%
 
-Gui, ImpExp:Font, w700
+Gui, 2:Font, w700
 ; f_radImpExpExport: Export / f_radImpExpImport: Import
-Gui, ImpExp:Add, Radio, y+20 x10 w130 vf_radImpExpExport gImpExpClicked Checked Group, % o_L["ImpExpExport"]
-Gui, ImpExp:Add, Radio, x150 yp w130 vf_radImpExpImport gImpExpClicked, % o_L["ImpExpImport"]
+Gui, 2:Add, Radio, y+20 x10 w130 vf_radImpExpExport gImpExpClicked Checked Group, % o_L["ImpExpExport"]
+Gui, 2:Add, Radio, x150 yp w130 vf_radImpExpImport gImpExpClicked, % o_L["ImpExpImport"]
 
-Gui, ImpExp:Font, w700
-Gui, ImpExp:Add, Text, y+20 x10 w400 vf_lblImpExpFile, % L(o_L["ImpExpFile"], o_L["ImpExpDestination"])
-Gui, ImpExp:Font
-Gui, ImpExp:Add, Edit, x10 w320 h20 vf_strImpExpFile
-Gui, ImpExp:Add, Button, x+10 yp vf_btnImpExpFile gButtonImpExpFile, % o_L["DialogBrowseButton"]
+Gui, 2:Font, w700
+Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpFile, % L(o_L["ImpExpFile"], o_L["ImpExpDestination"])
+Gui, 2:Font
+Gui, 2:Add, Edit, x10 w320 h20 vf_strImpExpFile
+Gui, 2:Add, Button, x+10 yp vf_btnImpExpFile gButtonImpExpFile, % o_L["DialogBrowseButton"]
 
-Gui, ImpExp:Font, w700
-Gui, ImpExp:Add, Text, y+20 x10 w400 vf_lblImpExpOptions, % o_L["ImpExpExport"]
-Gui, ImpExp:Font
+Gui, 2:Font, w700
+Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpOptions, % o_L["ImpExpExport"]
+Gui, 2:Font
 
-Gui, ImpExp:Add, CheckBox, y+10 x10 w400 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
-Gui, ImpExp:Add, Checkbox, y+10 x10 w400 vf_blnImpExpGlobal Checked, % o_L["ImpExpFileGlobal"]
-Gui, ImpExp:Add, CheckBox, y+10 x10 w400 vf_blnImpExpAlternative Checked, % o_L["ImpExpOptionAlternative"]
-Gui, ImpExp:Add, Checkbox, y+10 x10 w400 vf_blnImpExpThemes Checked, % o_L["ImpExpFileThemes"]
+Gui, 2:Add, CheckBox, y+10 x10 w400 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
+Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpGlobal Checked, % o_L["ImpExpFileGlobal"]
+Gui, 2:Add, CheckBox, y+10 x10 w400 vf_blnImpExpAlternative Checked, % o_L["ImpExpOptionAlternative"]
+Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpThemes Checked, % o_L["ImpExpFileThemes"]
 
 aaImportExportL := o_L.InsertAmpersand(false, "ImpExpImport", "ImpExpExport", "GuiClose")
 
-Gui, ImpExp:Add, Button, y+20 x10 vf_btnImpExpGo gButtonImpExpGo default, % aaImportExportL["ImpExpExport"]
-Gui, ImpExp:Add, Button, yp x+20 vf_btnImpExpClose gButtonImpExpClose, % aaImportExportL["GuiClose"]
-GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnImpExpGo", "f_btnImpExpClose")
-Gui, ImpExp:Add, Text
+Gui, 2:Add, Button, y+20 x10 vf_btnImpExpGo gButtonImpExpGo default, % aaImportExportL["ImpExpExport"]
+Gui, 2:Add, Button, yp x+20 vf_btnImpExpClose gButtonImpExpClose, % aaImportExportL["GuiClose"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnImpExpGo", "f_btnImpExpClose")
+Gui, 2:Add, Text
 
 ; GuiControl, Focus, f_btnCheck4UpdateDialogDownloadSetup
 gosub, ImpExpClicked
-CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
-Gui, ImpExp:Show, AutoSize x%intX% y%intY%
+CalculateTopGuiPosition(g_strGui2Hwnd, g_strGui1Hwnd, intX, intY)
+Gosub, ShowGui2AndDisableGui1
 
-intX := ""
-intY := ""
 strGuiTitle := ""
 
 return
@@ -19300,7 +19322,7 @@ return
 ImpExpClicked:
 ; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
-Gui, ImpExp:Submit, NoHide
+Gui, 2:Submit, NoHide
 
 GuiControl, , f_lblImpExpFile, % L(o_L["ImpExpFile"], (f_radImpExpExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))
 GuiControl, , f_lblImpExpOptions, % L(f_radImpExpExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"])
@@ -19320,8 +19342,8 @@ return
 ButtonImpExpFile:
 ; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
-Gui, ImpExp:Submit, NoHide
-Gui, ImpExp:+OwnDialogs
+Gui, 2:Submit, NoHide
+Gui, 2:+OwnDialogs
 
 strImpExpFolder := o_Settings.ReadIniValue("Last" . (f_radImpExpExport ? "Ex" : "Im") . "portFolder", A_WorkingDir)
 
@@ -19332,7 +19354,7 @@ if !(StrLen(strImpExpSelectedFile))
 if !StrLen(GetFileExtension(strImpExpSelectedFile))
 	strImpExpSelectedFile .= ".ini"
 
-GuiControl, ImpExp:, f_strImpExpFile, %strImpExpSelectedFile%
+GuiControl, 2:, f_strImpExpFile, %strImpExpSelectedFile%
 
 strImpExpFolder := ""
 strImpExpSelectedFile := ""
@@ -19345,8 +19367,8 @@ return
 ButtonImpExpGo:
 ; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
-Gui, ImpExp:Submit, NoHide
-Gui, ImpExp:+OwnDialogs
+Gui, 2:Submit, NoHide
+Gui, 2:+OwnDialogs
 
 if !StrLen(f_strImpExpFile)
 {
@@ -19363,12 +19385,35 @@ if (f_radImpExpExport)
 else
 	strImpExpFile := f_strImpExpFile
 
-g_strImpExpSourceFile := (f_radImpExpExport ? o_Settings.strIniFile : strImpExpFile)
-g_strImpExpDestinationFile := (f_radImpExpExport ? strImpExpFile : o_Settings.strIniFile)
+g_strImpExpSourceFile := (f_radImpExpExport ? o_Settings.strIniFile : strImpExpFile) ; settings file or other file
+g_strImpExpDestinationFile := (f_radImpExpExport ? strImpExpFile : o_Settings.strIniFile) ; other file or settings file
 
 SplitPath, g_strImpExpDestinationFile, , strImpExpFolder, strImpExpExt
 if !StrLen(strImpExpExt) ; add ini to destination file
 	g_strImpExpDestinationFile .= ".ini"
+
+if (f_radImpExpExport) ; if export, check destination folder
+	while !FileExist(strImpExpFolder)
+	{
+		MsgBox, 547, % o_L["ImpExpMenu"] . " " o_L["ImpExpFavorites"] . " - " . g_strAppNameText, % L(o_L["DialogOptionsPathNotExist"], strImpExpFolder) ; Option 2 Yes-No-Cancel + 5 question icon + 512 cancel default
+		IfMsgBox, Yes
+		{
+			FileCreateDir, %strImpExpFolder%
+			if !(ErrorLevel)
+				continue
+			; else an error occurred
+			Oops("ImpExp", o_L["ImpExpInvalidDestinationFolder"], strImpExpFolder)
+		}
+		; else leave blnAbort := false
+		return
+	}
+else ; if import, check if source file exists
+	if !FileExist(g_strImpExpSourceFile)
+	{
+		Oops("ImpExp", o_L["OopsFileNotFound"] . ":`n`n" . g_strImpExpSourceFile)
+		return ; leave blnAbort := false
+	}
+	
 strImEx := (f_radImpExpExport ? "Ex" : "Im")
 IniWrite, %strImpExpFolder%, % o_Settings.strIniFile, Global, Last%strImEx%portFolder
 if (f_radImpExpExport)
@@ -19389,7 +19434,7 @@ if !(blnAbort) and (f_blnImpExpFavorites)
 			blnReplace := true
 		IfMsgBox, Cancel
 			return
-
+		
 		if (blnReplace)
 			intLastFavorite := 0
 		else ; append, get last index number
@@ -19503,7 +19548,7 @@ WriteIniSection(strSectionName, strDescription, ByRef blnAbort, ByRef blnContent
 
 	if StrLen(strDestIniSection) and (strSourceIniSection <> strDestIniSection)
 	{
-		Gui, ImpExp:+OwnDialogs
+		Gui, 2:+OwnDialogs
 		MsgBox, 3, % o_L["ImpExpMenu"] . " - " . g_strAppNameText, % L(o_L["ImpExpReplaceSection"], g_strImpExpDestinationFile, strSectionName, SubStr(strDestIniSection, 1, 200) . (StrLen(strDestIniSection) > 200 ? "`n..." : ""))
 		IfMsgBox, Yes
 			blnReplaceOK := true
@@ -19532,7 +19577,7 @@ WriteIniSection(strSectionName, strDescription, ByRef blnAbort, ByRef blnContent
 ButtonImpExpClose:
 ;------------------------------------------------------------
 
-Gui, ImpExp:Destroy
+Gosub, 2GuiClose
 
 return
 ;------------------------------------------------------------
@@ -19615,19 +19660,18 @@ Gui, 2:+Owner1
 Gui, 2:Font, s12 w700, Verdana
 Gui, 2:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
 Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Link, x10 w185 y+10 vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/sponsoring/") ; will be centered by 2GuiSize
+Gui, 2:Add, Link, x10 w185 y+10 vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/why-sponsoring-this-software/") ; will be centered by 2GuiSize
 GuiControlGet, arrPos, Pos, f_lnkWhySponsor
 g_intLnkWhySponsorWidth := arrPosW
 
-loop, Parse, % "1|2|3|4", |
+loop, Parse, % "5|1|2", | ; removed option 3 for CAD and 4 for monthly
 {
-	Gui, 2:Add, Button, % (A_Index = 1 ? "y+20 Default vbtnDonateDefault " : "") . " xm w150 gButtonDonate" . A_LoopField, % o_L["DonatePlatformName" . A_LoopField]
-	Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment" . A_LoopField]
+	if (A_Index = 1)
+		Gui, 2:Add, Button, y+20 Default vbtnDonateDefault5 xm w150 gButtonDonate5, % o_L["DonatePlatformName" . 5] ; #1 is Stripe #5
+	else
+		Gui, 2:Add, Button, % (A_LoopField = 2 ? "" : "") . " xm w150 gButtonDonate" . A_LoopField, % o_L["DonatePlatformName" . A_LoopField] ; same link and text numbers
+	Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment" . (A_Index = 1 ? 5 : A_LoopField)]
 }
-; Gui, 2:Add, Button, y+10 Default vbtnDonateDefault xm w150 gButtonDonate2, % o_L["DonatePlatformName2"] ; Patreon out
-; Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment2"] ; Patreon out
-; Gui, 2:Add, Button, y+10 Default xm w150 gButtonDonate1, % o_L["DonatePlatformName1"]
-; Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment1"]
 
 Gui, 2:Add, Link, xm y+15 w420, % L(o_L["DonateCheckPrompt2"], o_L["DonateCheckPrompt4"] . " " . o_L["DonateCheckPrompt5"])
 
@@ -19636,20 +19680,27 @@ Gui, 2:Add, Link, xm y+20 w420, % o_L["DonateText3"]
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Link, xm y+10 w420 Section, % L(o_L["DonateText4"], g_strAppNameText)
 
-strDonateReviewUrlLeft1 := "http://download.cnet.com/Quick-Access-Popup/3000-2344_4-76475848.html"
+strDonateReviewUrlLeft1 := "https://alternativeto.net/software/quick-access-popup/"
 strDonateReviewUrlLeft2 := "http://www.portablefreeware.com/index.php?id=2765"
 strDonateReviewUrlLeft3 := "http://www.softpedia.com/get/System/OS-Enhancements/FoldersPopup.shtml"
 strDonateReviewUrlRight1 := "http://fileforum.betanews.com/detail/Quick-Access-Popup/1455462511/1"
 strDonateReviewUrlRight2 := "http://www.filecluster.com/System-Utilities/Launchers-Task-Manager-Utilities/Download-Quick-Access-Popup.html"
 strDonateReviewUrlRight3 := "http://freewares-tutos.blogspot.ca/2016/05/quick-access-popup-accedez-rapidement.html"
 
-loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x25 w150", % "<a href=""" . strDonateReviewUrlLeft%A_Index% . """>" . o_L["DonateReviewNameLeft" . A_Index] . "</a>"
+strDonateReviewTextLeft1 := "AlternativeTo.com"
+strDonateReviewTextLeft2 := "PortableFreeware.com"
+strDonateReviewTextLeft3 := "Softpedia.com"
+strDonateReviewTextRight1 := "BetaNews.com"
+strDonateReviewTextRight2 := "FileCluster.com"
+strDonateReviewTextRight3 := "Freewares && Tutos (FR)"
 
 loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x175 w150", % "<a href=""" . strDonateReviewUrlRight%A_Index% . """>" . o_L["DonateReviewNameRight" . A_Index] . "</a>"
+	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x25 w150", % "<a href=""" . strDonateReviewUrlLeft%A_Index% . """>" . strDonateReviewTextLeft%A_Index% . "</a>"
 
-Gui, 2:Add, Link, y+10 x10 vf_lnkSendLink, % "<a href=""https://www.quickaccesspopup.com/sponsoring/"">" . o_L["DonateText5"] . "</a>"
+loop, 3
+	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x175 w150", % "<a href=""" . strDonateReviewUrlRight%A_Index% . """>" . strDonateReviewTextRight%A_Index% . "</a>"
+
+Gui, 2:Add, Link, y+10 x10 vf_lnkSendLink, % "<a href=""mailto:jeanlalonde@quickaccesspopup.com"">" . o_L["DonateText5"] . "</a>"
 GuiControlGet, arrPos, Pos, f_lnkSendLink
 g_intLnkSendLink := arrPosW
 
@@ -19683,12 +19734,14 @@ ButtonDonate1:
 ButtonDonate2:
 ButtonDonate3:
 ButtonDonate4:
+ButtonDonate5:
 ;------------------------------------------------------------
 
 strDonatePlatformUrl1 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TE8TR28QKM3Z8"
 strDonatePlatformUrl2 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y9VVGCBNJK5DQ"
 strDonatePlatformUrl3 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DV4E4DYVWC5GC"
-strDonatePlatformUrl4 := "https://www.quickaccesspopup.com/sponsoring/"
+; strDonatePlatformUrl4 := "https://www.quickaccesspopup.com/why-sponsoring-this-software/"
+strDonatePlatformUrl5 := "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6289" ; Stripe
 
 intButton := StrReplace(A_ThisLabel, "ButtonDonate")
 Run, % strDonatePlatformUrl%intButton%
@@ -30052,7 +30105,9 @@ class Container
 		
 		;---------------------------------------------------------
 		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy)
-		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
+		; for favorite of type Menu, Group or External
+		; update to the new path of this favorite: .AA values strFavoriteLocation, oParentMenu and oSubMenu,
+		; .AA.oSubMenu.SA items oParentMenu and update o_Containers
 		;---------------------------------------------------------
 		{
 			strNewMenuPath := strNewDestinationMenu . g_strMenuPathSeparatorWithSpaces . this.AA.strFavoriteName
@@ -30068,7 +30123,7 @@ class Container
 			o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
 			
 			for intKey, oItem in this.AA.oSubMenu.SA
-				oItem.AA.oParentMenu := this
+				oItem.AA.oParentMenu := this ; update children's parent menu
 			
 			if SubStr(strNewMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
 				this.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", , , 1) ; menu path without main menu localized name
@@ -30076,7 +30131,7 @@ class Container
 				this.AA.strFavoriteLocation := strNewMenuPath
 			
 			if StrLen(strNewDestinationMenu) ; for safety
-				this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu]
+				this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu] ; update item's parent menu
 			
 			; update submenus (recursive)
 			if (this.AA.strFavoriteType <> "Group") ; groups have no submenu

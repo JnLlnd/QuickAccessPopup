@@ -24,21 +24,12 @@
 #define SQLite "sqlite3"
 
 [CustomMessages]
-PaypalCredit=(Paypal account or credit cards)
-HelpMePayExpenses=&HELP me pay EXPENSES for making QAP%nSee all SPONSORING options
-US=US $
-Euros=Euros €
-CDN=CDN $
-dutch.PaypalCredit=(Paypal of creditcards)
-dutch.HelpMePayExpenses=&Help me om de uitgaven te betalen om QAP%nte ontwikkelen in US $
-dutch.Euros=Of in Euro’s €
-dutch.CDN=Of in CDN $
-dutch.Monthly=Of wat denk je van een maandelijkse donatie?%nIs QAP een koffie per maand waard?
-french.PaypalCredit=(Paypal ou cartes de crédit)
-french.HelpMePayExpenses=&Aidez-moi à payer mes frais%nen US $
-french.Euros=en Euros €
-french.CDN=ou en CAN $
-french.Monthly=Don MENSUEL:%nQAP ne vaut-il pas un café par mois?
+HelpMePayExpenses=&HELP me pay EXPENSES for making QAP%n(credit card USD or Euros)
+PayPal=With PayPal (USD or Euros)
+dutch.HelpMePayExpenses=&Help me om de uitgaven te betalen om QAP%n(kredietkaart USD of Euros)
+dutch.PayPal=Met PayPal (USD of Euros)
+french.HelpMePayExpenses=&Aidez-moi à payer mes frais%n(carte de crédit USD ou Euros)
+french.PayPal=Avec PayPal (USD ou Euros)
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -204,12 +195,9 @@ Root: HKLM; Subkey: "Software\Classes\lnkfile\shell\Import Shortcut to Quick Acc
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{commonappdata}\{#MyAppName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: waituntilidle postinstall skipifsilent
-; Filename: "{app}\ImportFPsettings.exe"; WorkingDir: "{commonappdata}\{#MyAppName}"; Parameters: "/calledfromsetup"; Tasks: importfpsettings; Flags: runhidden waituntilterminated
-Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec; Check: ExecuteSponsoringTask()
-Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec unchecked; Check: NotExecuteSponsoringTask()
-Filename: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TE8TR28QKM3Z8"; Description: "{cm:US} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
-Filename: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y9VVGCBNJK5DQ"; Description: "{cm:Euros} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
-Filename: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DV4E4DYVWC5GC"; Description: "{cm:CDN} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
+Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec; Check: ExecuteSponsoringTask()
+Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec unchecked; Check: NotExecuteSponsoringTask()
+Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/#PayPal"; Description: "{cm:PayPal}"; Flags: postinstall shellexec unchecked
 
 [Tasks]
 Name: startmenu; Description: "Create a Start Menu folder";
