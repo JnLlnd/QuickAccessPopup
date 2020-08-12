@@ -14430,7 +14430,13 @@ if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinatio
 }
 ; in case strUniqueName has been modified by GetUniqueName()
 if (blnRename)
+{
+	if (strUniqueName <> o_EditedFavorite.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+		and InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+		Oops(1, o_L["OopsErrorIniFileDuplicateNames"], o_EditedFavorite.AA.strFavoriteName, strDestinationMenu, strUniqueName)
+
 	o_EditedFavorite.AA.strFavoriteName := strUniqueName
+}
 strNewFavoriteShortName := strUniqueName ; update regardless of blnRename (bug fixed v10.4.1)
 
 ; check that a menu cannot be moved under itself when part of a multiple move (not when copy because menu cannot be copied)
@@ -28973,11 +28979,13 @@ class Container
 		
 		;---------------------------------------------------------
 		UpdateMenusPathAndLocation(strNewDestinationMenu, blnCopy)
-		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
+		; for favorite of type Menu, Group or External
+		; update to the new path of this favorite: .AA values strFavoriteLocation, oParentMenu and oSubMenu,
+		; .AA.oSubMenu.SA items oParentMenu and update o_Containers
 		;---------------------------------------------------------
 		{
 			strNewMenuPath := strNewDestinationMenu . g_strMenuPathSeparatorWithSpaces . this.AA.strFavoriteName
-				. (o_EditedFavorite.AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
+				. (this.AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "")
 			
 			if !(blnCopy)
 				o_Containers.AA.Delete(this.AA.oSubMenu.AA.strMenuPath) ; remove old path from o_Containers
@@ -28988,15 +28996,19 @@ class Container
 			this.AA.oSubMenu.AA.strMenuPath := strNewMenuPath ; update menu path
 			o_Containers.AA[strNewMenuPath] := this.AA.oSubMenu ; add new path to o_Containers
 			
+			for intKey, oItem in this.AA.oSubMenu.SA
+				oItem.AA.oParentMenu := this ; update children's parent menu
+			
 			if SubStr(strNewMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
 				this.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", , , 1) ; menu path without main menu localized name
 			else
 				this.AA.strFavoriteLocation := strNewMenuPath
 			
-			this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu]
+			if StrLen(strNewDestinationMenu) ; for safety
+				this.AA.oParentMenu := o_Containers.AA[strNewDestinationMenu] ; update item's parent menu
 			
 			; update submenus (recursive)
-			if (o_EditedFavorite.AA.strFavoriteType <> "Group") ; groups have no submenu
+			if (this.AA.strFavoriteType <> "Group") ; groups have no submenu
 				for intKey, oItem in this.AA.oSubMenu.SA
 					if oItem.IsContainer()
 						oItem.UpdateMenusPathAndLocation(strNewMenuPath, blnCopy) ; RECURSIVE
