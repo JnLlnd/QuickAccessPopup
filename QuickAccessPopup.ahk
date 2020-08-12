@@ -31,6 +31,21 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 10.5.5 (2020-08-12)
+ 
+** You can now make your QAP Sponsoring donation using your CREDIT CARD directly
+** on the QAP secured website (no need to go to PayPal anymore).
+** More info here: https://www.quickaccesspopup.com/why-sponsoring-this-software/
+ 
+- in the "Sponsor this software" dialog box, add a button for credit cart sponsoring payment (as an alternative to PayPal)
+- in Setup program final screen, add a checkbox for credit card sponsoring payment (as an alternative to PayPal)
+- in "Edit Favorite", when changing folder location for a favorite already having a custom icon, preserve this icon except if the folder has a Windows custom icon configured (in desktop.ini)
+- in "Edit Favorite", when selecting an icon, if the selected file is an .ico file, select the icon automatically (instead of showing a list of "one" icon)
+- enable the "File, Save" and "File, Save & Close" menu items after changing shortcuts or hotstrings in the "Manage Shortcuts/Hotstrings" lists
+- add a message to user if a moved or copied favorite has been renamed because a favorite with the same name existed in the destination menu
+- in "Import/Export" dialog box, validate that the export destination folder exists and, if not, offer to create the destination folder (plus other minor improvements in this dialog box)
+- fix internal bug when moving a group to another submenu
+
 Version: 10.5.4 (2020-07-21)
 - fix bug when loading the Alternative menus modifiers (default modifiers remained active even after they were changed in Options)
 - add a button in "Options, "Alternative Menu Hotkeys" to reset the default Alternative menu modifiers and an help link about Alternative menu modifiers
@@ -4050,7 +4065,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.4
+;@Ahk2Exe-SetVersion 10.5.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4115,7 +4130,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -18886,7 +18901,7 @@ strDonatePlatformUrl1 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&ho
 strDonatePlatformUrl2 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y9VVGCBNJK5DQ"
 strDonatePlatformUrl3 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DV4E4DYVWC5GC"
 ; strDonatePlatformUrl4 := "https://www.quickaccesspopup.com/why-sponsoring-this-software/"
-strDonatePlatformUrl5 := "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175" ; Stripe
+strDonatePlatformUrl5 := "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6289" ; Stripe
 
 intButton := StrReplace(A_ThisLabel, "ButtonDonate")
 Run, % strDonatePlatformUrl%intButton%
