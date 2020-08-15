@@ -12527,7 +12527,10 @@ else if (A_ThisLabel = "ButtonSelectIconFile")
 {
 	GuiControl, %strParentGui%:, f_strIconFile, %strNewLocation% ; triggers GetIconsCount and PickIconLoad
 	if GetFileExtension(strNewLocation) = "ico"
+	{
+		Sleep, 100 ; delay to allow event execution of IconFileChanged triggered by GuiControl
 		Gosub, PickIconIcoFileSelected
+	}
 }
 else ; ButtonSelectFavoriteLocation
 {
