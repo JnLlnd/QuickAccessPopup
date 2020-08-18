@@ -4296,7 +4296,7 @@ global g_intNbLiveFolderItems ; number of items added to live folders (vs maximu
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd
 
-global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsFileLoad
+global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
 
 ;---------------------------------
@@ -13773,16 +13773,16 @@ Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, % o_L["GuiMultipleAddIntro
 Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+15 w" . intCol1Width . " right", % o_L["MenuMenu"]
 Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGuiMultipleAddMenu"
 	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
-GuiControl, Choose, f_drpGuiMultipleAddMenu, 2 ; #####
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
-Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
-	, % o_L["MenuSwitchFolderOrApp"] . "|" . o_L["MenuRecentFolders"] . "|" . o_L["MenuRecentFiles"] . "|"
+Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " w200 gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
+	, % o_L["MenuSwitchFolderOrApp"] . "||" . o_L["MenuRecentFolders"] . "|" . o_L["MenuRecentFiles"] . "|"
 		. (g_blnUsageDbEnabled ? o_L["MenuPopularMenusFolders"] . "|" . o_L["MenuPopularMenusFiles"] . "|" : "")
 		. o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
 		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "|"
 		. o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_L["GuiMultipleAddSettingsFile"] . "||" ; ##### change default to current windows
+		. o_L["GuiMultipleAddSettingsFileItems"] . "|"
+		. o_L["GuiMultipleAddSettingsFileMenus"] . "|"
 	
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["GuiMultipleAddExcludeExisting"]
 
@@ -13820,27 +13820,29 @@ GuiMultipleAddSourceChanged:
 Gui, 2:Submit, NoHide
 
 blnUsePath := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-	or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+	or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"])
 
 ; enable/disable fields for sources with path
 loop, Parse, % "f_lblMultipleAddSourceFolder|f_lblMultipleAddSourceFile|f_strMultipleAddSourcePath|f_btnMultipleAddSourcePath", |
 	GuiControl, % (blnUsePath ? "Enable" : "Disable" ), %A_LoopField%
 loop, Parse, % "f_strMultipleAddFilter|f_btnMultipleAddClearFilter", |
-	GuiControl, % (blnUsePath ? "Disable" : "Enable"), %A_LoopField%
+	GuiControl, % (blnUsePath and f_drpGuiMultipleAddSource <> o_L["GuiMultipleAddSettingsFileItems"] ? "Disable" : "Enable"), %A_LoopField%
 
-if (blnUsePath) ; if a source with a path is selected, reset the path and show right lable
+if (blnUsePath and f_drpGuiMultipleAddSource <> o_L["GuiMultipleAddSettingsFileItems"]) ; if a source with a path is selected, reset the path and show right label
 {
 	; GuiControl, , f_strMultipleAddSourcePath, %A_ScriptDir%\multiple.ini
 	GuiControl, , f_strMultipleAddSourcePath ; reset file path, triggers GuiMultipleAddSourcePathChanged
-	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Hide" : "Show"), f_lblMultipleAddSourceFolder
-	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Show" : "Hide"), f_lblMultipleAddSourceFile
+	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"]
+		 or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"] ? "Hide" : "Show"), f_lblMultipleAddSourceFolder
+	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"]
+		 or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"] ? "Show" : "Hide"), f_lblMultipleAddSourceFile
 }
 else
 	GuiControl, , f_strMultipleAddFilter ; reset filter, triggers GuiMultipleAddFilterChanged
 	
 ; show the treeview if source settings file, else show listview
-GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Hide" : "Show"), f_lvMultipleAddList
-GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"] ? "Show" : "Hide"), f_tvMultipleAddList
+GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] ? "Hide" : "Show"), f_lvMultipleAddList
+GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] ? "Show" : "Hide"), f_tvMultipleAddList
 	
 ; show QAP help link
 GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
@@ -13860,7 +13862,7 @@ Critical, On ; avoid interruptin while loading
 SetWaitCursor(true)
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
 	TV_Delete()	
 else
 	LV_Delete()
@@ -13890,12 +13892,16 @@ else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder")
 	
 	gosub, GuiMultipleAddSourceFolderLoad
 	
-else if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
-	and StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath) and GetFileExtension(f_strMultipleAddSourcePath) = "ini"
-	
-	gosub, GuiMultipleAddSourceSettingsFileLoad
+else if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath) and GetFileExtension(f_strMultipleAddSourcePath) = "ini"
+	if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
+		gosub, GuiMultipleAddSourceSettingsMenusLoad
+	else ; o_L["GuiMultipleAddSettingsFileItems"]
+		gosub, GuiMultipleAddSourceSettingsItemsLoad
 
-LV_ModifyCol()
+if (LV_GetCount())
+	LV_ModifyCol()
+else
+	LV_ModifyCol(0, "AutoHdr")
 LV_ModifyCol(4, 0) ; hide internal type column
 LV_ModifyCol(5, 0) ; hide favorite code column
 LV_ModifyCol(6, 0) ; hide help column
@@ -13917,16 +13923,22 @@ Critical, On ; avoid interruptin while loading
 SetWaitCursor(true)
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
 	TV_Delete()	
 else
 	LV_Delete()
 
 if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
-	if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+	if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
 	{
 		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
-			gosub, GuiMultipleAddSourceSettingsFileLoad
+			gosub, GuiMultipleAddSourceSettingsMenusLoad
+		; no else, enclose in curly brackets
+	}
+	else if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"])
+	{
+		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
+			gosub, GuiMultipleAddSourceSettingsItemsLoad
 		; no else, enclose in curly brackets
 	}
 	else ; o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
@@ -14114,7 +14126,8 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 
 
 ;------------------------------------------------------------
-GuiMultipleAddSourceSettingsFileLoad:
+GuiMultipleAddSourceSettingsMenusLoad:
+GuiMultipleAddSourceSettingsItemsLoad:
 ;------------------------------------------------------------
 
 g_aaTreeViewItemsByIDs := Object() ; reset objects in TreeView
@@ -14125,8 +14138,12 @@ if !StrLen(f_strMultipleAddSourcePath)
 oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "", "init", false, false)
 
 strMultipleAddSourceSettingsFile := f_strMultipleAddSourcePath
+
 if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, strMultipleAddSourceSettingsFile) = "EOM")
-	oMultipleAddMain.LoadInTreeView(f_blnMultipleAddExcludeExisting) ; assign items objects to g_aaTreeViewItemsByIDs
+	if (A_ThisLabel = "GuiMultipleAddSourceSettingsMenusLoad")
+		oMultipleAddMain.LoadInTreeViewMenus(f_blnMultipleAddExcludeExisting) ; assign items objects to g_aaTreeViewItemsByIDs
+	else ; GuiMultipleAddSourceSettingsItemsLoad
+		oMultipleAddMain.LoadInListViewItems(f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter) ; assign items objects to g_aaTreeViewItemsByIDs
 
 oMultipleAddMain := ""
 strSettingsBK := ""
@@ -14140,7 +14157,7 @@ ButtonMultipleAddSourcePath:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"])
 	FileSelectFile, strMultipleAddSourcePath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSwitchSettings"], *.ini
 else
 {
@@ -14316,7 +14333,7 @@ Gui, 2:Submit, NoHide
 
 g_strMultipleAddDestinationMenu := f_drpGuiMultipleAddMenu
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFile"])
+if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
 
 	gosub, GuiMultipleAddFromTreeView
 
@@ -28544,7 +28561,35 @@ class Container
 	;------------------------------------------------------------
 
 	;------------------------------------------------------------
-	LoadInTreeView(blnMultipleAddExcludeExisting, strContainerUniqueId := "")
+	LoadInTreeViewMenus(blnMultipleAddExcludeExisting, strContainerUniqueId := "")
+	;------------------------------------------------------------
+	{
+		for intKey, oItem in this.SA
+		{
+			if oItem.IsContainer()
+			{
+				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId, "Expand Bold")
+				; TV_Modify(strTreeViewID, , oItem.AA.strFavoriteName . " (" . strTreeViewID . ")")
+				oItem.AA.oSubMenu.LoadInTreeViewMenus(blnMultipleAddExcludeExisting, strTreeViewID) ; RECURSIVE
+				g_aaTreeViewItemsByIDs[strTreeViewID] := oItem
+			}
+			else if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oItem) : true)
+			{
+				if (oItem.AA.strfavoriteType = "X")
+					oItem.AA.strFavoriteName := g_strGuiMenuSeparatorShort . " > " . oItem.AA.strfavoriteType
+				else if (oItem.AA.strfavoriteType = "K")
+					oItem.AA.strFavoriteName := g_strGuiDoubleLine . " > " . oItem.AA.strfavoriteType
+				
+				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
+				
+				g_aaTreeViewItemsByIDs[strTreeViewID] := oItem
+			}
+		}
+	}
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	LoadInListViewItems(blnMultipleAddExcludeExisting, strMultipleAddFilter)
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
@@ -28552,19 +28597,9 @@ class Container
 			if !StrLen(oItem.AA.strfavoriteName)
 				continue
 			if oItem.IsContainer()
-			{
-				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId, "Expand Bold")
-				; TV_Modify(strTreeViewID, , oItem.AA.strFavoriteName . " (" . strTreeViewID . ")")
-				oItem.AA.oSubMenu.LoadInTreeView(blnMultipleAddExcludeExisting, strTreeViewID) ; RECURSIVE
-				g_aaTreeViewItemsByIDs[strTreeViewID] := oItem
-			}
+				oItem.AA.oSubMenu.LoadInListViewItems(blnMultipleAddExcludeExisting, strMultipleAddFilter) ; RECURSIVE
 			else if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oItem) : true)
-			{
-				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
-				; TV_Modify(strTreeViewID, , oItem.AA.strFavoriteName . " (" . strTreeViewID . ")")
-				g_aaTreeViewItemsByIDs[strTreeViewID] := oItem
-			}
-			
+				GuiMultipleAddSourceLoadLV(oItem.AA.strFavoriteType, oItem.AA.strFavoriteLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, true, oItem.AA.strFavoriteName)
 		}
 	}
 	;------------------------------------------------------------
