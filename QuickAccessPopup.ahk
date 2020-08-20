@@ -6056,8 +6056,8 @@ Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-cli
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
-	. (o_Settings.Launch.blnDonorCode.IniValue ? L(g_aaMenuTrayL["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : g_aaMenuTrayL["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
-
+	. (o_Settings.Launch.blnDonorCode.IniValue ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
+	
 return
 ;------------------------------------------------------------
 
