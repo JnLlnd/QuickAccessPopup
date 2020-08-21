@@ -4088,6 +4088,7 @@ StringCaseSense, Off
 ComObjError(False) ; we will do our own error handling
 
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
+#Include %A_ScriptDir%\..\EDD\EDDLicense.ahk ; by Jean Lalonde (Aug. 2020)
 
 ; avoid error message when shortcut destination is missing
 ; see http://ahkscript.org/boards/viewtopic.php?f=5&t=4477&p=25239#p25236
@@ -4284,6 +4285,7 @@ if InStr("WIN_VISTA|WIN_2003|WIN_XP|WIN_2000", A_OSVersion)
 	MsgBox, 4, %g_strAppNameText%, % L(o_L["OopsOSVerrsionError"], g_strAppNameText)
 	IfMsgBox, Yes
 		Run, http://code.jeanlalonde.ca/folderspopup/
+	OnExit ; disable exit subroutine
 	ExitApp
 }
 
@@ -4291,6 +4293,7 @@ if InStr("WIN_VISTA|WIN_2003|WIN_XP|WIN_2000", A_OSVersion)
 if InStr(A_ScriptDir, A_Temp) ; must be positioned after g_strAppNameFile is created
 {
 	Oops(0, o_L["OopsZipFileError"], g_strAppNameFile)
+	OnExit ; disable exit subroutine
 	ExitApp
 }
 
@@ -4365,6 +4368,9 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 	strLaunchSettingsFolderDiag := ""
 }
 
+; Init Sponsor code
+Gosub, ProcessSponsorCode
+
 ; Build main menus
 Gosub, BuildMainMenu
 Gosub, BuildAlternativeMenu
@@ -4381,7 +4387,7 @@ if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
-if (g_blnPortableMode and g_strCurrentBranch = "prod" and !o_Settings.Launch.blnDonorCode.IniValue
+if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
 	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
 {
 	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
@@ -4823,6 +4829,7 @@ if StrLen(strWorkingFolder)
 else ; This could happen if the working folder registry value exist but is empty. Ask user to re-install QAP and quit.
 {
 	Oops(0, "The Quick Access Popup settings folder could not be found.`n`nPlease, re-install Quick Access Popup.") ; language file is not available yet
+	OnExit ; disable exit subroutine
 	ExitApp
 }
 
@@ -5248,7 +5255,7 @@ o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 Gosub, UpdateDonorIniValues
 o_Settings.ReadIniOption("Launch", "blnDonorCode", "DonorCode", 0)
 o_Settings.ReadIniOption("Launch", "strSponsorName", "SponsorName", " ")
-Gosub, ProcessSponsorName
+o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
 
 o_Settings.ReadIniOption("Launch", "strUserBanner", "UserBanner", " ") ; g_strUserBanner
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
@@ -5342,28 +5349,88 @@ return
 
 
 ;------------------------------------------------------------
-ProcessSponsorName:
+ProcessSponsorCode:
 ;------------------------------------------------------------
 
-if (o_Settings.Launch.blnDonorCode.IniValue = 1) ; equals exact 1
-; donor code need to be updated
+global g_SponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/"
+global g_strSponsorEditionId := "80"
+global g_strFreeEditionId := "97"
+global g_blnSponsor := false ; replacing o_Settings.Launch.blnDonorCode.IniValue
+
+loop, parse, % g_strSponsorEditionId . "|" . g_strFreeEditionId, |
 {
-    g_SponsoredMessage := "<a id=""update"">" . o_L["SponsoredUpdate"] . "</a>"
-    o_Settings.Launch.blnDonorCode.IniValue := 0 ; boolean value used later
+	SetWaitCursor(true)
+	o_EDDLicense := new EDDLicense(g_SponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue)
+	SetWaitCursor(false)
+	
+	if (o_EDDLicense.oLicense.license = "valid")
+	{
+		o_EDDLicense.strProduct := (A_LoopField = g_strSponsorEditionId ? "Sponsor" : "Free")
+		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
+		break
+	}
+	else if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
+		continue
+	else if (o_EDDLicense.oLicense.license = "expired")
+	{
+		MsgBox, 4, Quick Access Popup code expired, Your Quick Access Popup yearly code expired.`n`nDo you want to renew your code now? ; #####
+		IfMsgBox, Yes
+		{
+			if (o_EDDLicense.strItemId = g_strSponsorEditionId) ; Sponsor
+				Run, % o_EDDLicense.RenewLink()
+			else
+				Run, http://edd-sandbox.jeanlalonde.ca/downloads/quickaccesspopup-sponsoring/ ; #####
+		}
+		break
+	}
+	else if (o_EDDLicense.oLicense.activations_left = "0")
+	{
+		MsgBox, No activations left ; #####
+		continue
+	}
+	else ; the license is invalid or missing
+		break
 }
-else if SponsorNameOK(o_Settings.Launch.strSponsorName.IniValue, o_Settings.Launch.blnDonorCode.IniValue)
-; donor code matches MD5 of sponsor name
+
+; ###_O2("EDD", o_EDDLicense, o_EDDLicense.oLicense)
+
+g_SponsoredMessage := (g_blnSponsor ? (StrLen(o_Settings.Launch.strSponsorName.IniValue)
+	? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "") : "<a id=""none"">" . o_L["SponsoredNone"] . "</a>")
+if StrLen(g_SponsoredMessage)
+	g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
+	
+if (o_EDDLicense.oLicense.license = "expired")
 {
-	g_SponsoredMessage := L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue)
-	o_Settings.Launch.blnDonorCode.IniValue := 1 ; boolean value used later
+	MsgBox, Please, restart Quick Access Popup after your code renewal. ; #####
+	blnExitApp := true
 }
-else
-; no donor code or donor code not matching the sponsor name
+else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
-	g_SponsoredMessage := "<a id=""none"">" . o_L["SponsoredNone"] . "</a>"
-	o_Settings.Launch.blnDonorCode.IniValue := 0 ; boolean value used later
+	MsgBox, ERROR IN CODE: Bad item numbers
+	blnExitApp := true
 }
-g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
+else if (o_EDDLicense.oLicense.license <> "valid") ; no license
+{
+	MsgBox, 3, %g_strAppNameText%, % L("Do you have ~1~ Sponsor code or Free Edition code?`n`nIf yes, enter your code and restart ~1~.`n`nIf not, please get your free or sponsor code on ~1~ website.", g_strAppNameText) ; #####
+	IfMsgBox, Yes
+	{
+		Gosub, GuiDonateCodeInput
+		return
+	}
+	IfMsgBox, No
+	{
+		MsgBox, Please, restart Quick Access Popup after your got your code. ; #####
+		Run, http://edd-sandbox.jeanlalonde.ca/downloads/quickaccesspopup-sponsoring/
+	}
+	IfMsgBox, Cancel
+		blnExitApp := true
+}
+
+if (blnExitApp)
+{
+	OnExit ; disable exit subroutine
+	ExitApp
+}
 
 return
 ;------------------------------------------------------------
@@ -5410,6 +5477,7 @@ LoadFavoritesFromIniWithStatus:
 if !FileExist(o_Settings.strIniFile)
 {
 	Oops(0, o_L["OopsWriteProtectedError"], g_strAppNameText)
+	OnExit ; disable exit subroutine
 	ExitApp
 }
 else
@@ -5418,7 +5486,10 @@ else
 	o_QAPfeatures.InitDynamicMenus()
 	
 	if (o_MainMenu.LoadFavoritesFromIniFile((A_ThisLabel = "LoadFavoritesFromIniWithStatus")) <> "EOM")
+	{
+		OnExit ; disable exit subroutine
 		ExitApp
+	}
 	if (A_ThisLabel = "LoadFavoritesFromIniWithStatus")
 		ToolTip ; clear tooltip after refresh
 }
@@ -5916,7 +5987,7 @@ CleanUpBeforeExit:
 		; Run, %g_strDiagFile%
 ; }
 
-DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while restoring windo
+DllCall("LockWindowUpdate", Uint, g_strGui1Hwnd) ; lock QAP window while restoring window
 if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to create a fresh one, this avoids creating an ini file with just this value
 {
 	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strGui1Hwnd)
@@ -6041,7 +6112,7 @@ if (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue > 1) ; 1 Customize menu bar
 Menu, Tray, Add
 Menu, Tray, Add, % g_aaMenuTrayL["MenuRunAtStartup"], ToggleRunAtStartup ; function ToggleRunAtStartup replaces RunAtStartup
 Menu, Tray, Add, % g_aaMenuTrayL["MenuExitApp@" . g_strAppNameText], GuiCancelAndExitApp
-if (!o_Settings.Launch.blnDonorCode.IniValue)
+if (!g_blnSponsor)
 {
 	Menu, Tray, Add
 	Menu, Tray, Add, % g_aaMenuTrayL["GuiDonate"] . g_strEllipse, GuiDonate
@@ -6056,7 +6127,7 @@ Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-cli
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
-	. (o_Settings.Launch.blnDonorCode.IniValue ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
+	. (g_blnSponsor ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
 	
 return
 ;------------------------------------------------------------
@@ -6240,7 +6311,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuSupportForum"
-	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "GuiDonateCodeInput", "MenuAbout")
+	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "GuiDonateCodeInputHelp", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -6254,7 +6325,7 @@ saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiDonate", aaHelpL["GuiDonate"] . g_strEllipse, "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiDonateCodeInput", aaHelpL["GuiDonateCodeInput"] . g_strEllipse, "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiDonateCodeInputHelp", aaHelpL["GuiDonateCodeInput"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -8854,9 +8925,9 @@ g_intOptionsFooterY += 20 ; place buttons below highest options group
 
 Gui, 2:Add, Button, x10 y%g_intOptionsFooterY% vf_btnOptionsSave gGuiOptionsGroupSave disabled Default, % aaL["GuiSave"]
 Gui, 2:Add, Button, yp vf_btnOptionsCancel gButtonOptionsCancel, % aaL["GuiCancel"]
-if (!o_Settings.Launch.blnDonorCode.IniValue)
+if (!g_blnSponsor)
 	Gui, 2:Add, Button, yp vf_btnOptionsDonate gGuiDonate, % o_L["DonateButton"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel", (!o_Settings.Launch.blnDonorCode.IniValue ? "f_btnOptionsDonate" : ""))
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel", (!g_blnSponsor ? "f_btnOptionsDonate" : ""))
 
 Gui, 2:Add, Text
 GuiControl, Focus, f_btnOptionsSave
@@ -9874,9 +9945,12 @@ Gui, 1:Add, Button, vf_btnGuiCancel gGuiCancel Default x500 yp w100 h35, % aaSet
 
 Gui, 1:Font, s8 w400 c404040 normal, Verdana
 
-Gui, 1:Add, Link, vf_lnkSponsoredBy x0 y+1 gSponsoredByClicked, %g_SponsoredMessage% ; SysLink, center option not working for links
-GuiControlGet, arrPos, Pos, f_lnkSponsoredBy
-g_intLnkSponsoredByWidth := arrPosW
+if StrLen(g_SponsoredMessage)
+{
+	Gui, 1:Add, Link, vf_lnkSponsoredBy x0 y+1 gSponsoredByClicked, %g_SponsoredMessage% ; SysLink, center option not working for links
+	GuiControlGet, arrPos, Pos, f_lnkSponsoredBy
+	g_intLnkSponsoredByWidth := arrPosW
+}
 
 GetSavedSettingsWindowPosition(saSettingsPosition) ; format: x|y|w|h with optional |M if maximized
 
@@ -10092,7 +10166,8 @@ GuiControl, 1:Move, f_blnFavoritesListFilterExtended, % "y" . arrFavoritesListFi
 GuiControl, 1:Move, f_btnFavoritesListNoFilter, % "y" . arrFavoritesListFilterPosY . " x" . arrFavoritesListFilterPosX + arrFavoritesListFilterPosW + arrFavoritesListFilterExtendedPosW + 16
 GuiControl, 1:Move, f_lvFavoritesList, w%g_intListW% h%intListH%
 GuiControl, 1:Move, f_lvFavoritesListSearch, w%g_intListW% h%intListH%
-GuiControl, 1:Move, f_lnkSponsoredBy, % "x" . (A_GuiWidth - g_intLnkSponsoredByWidth) // 2
+if StrLen(g_SponsoredMessage)
+	GuiControl, 1:Move, f_lnkSponsoredBy, % "x" . (A_GuiWidth - g_intLnkSponsoredByWidth) // 2
 
 Gosub, AdjustColumnsWidth
 
@@ -18103,7 +18178,7 @@ strLatestVersions := Url2Var(strUrlCheck4Update
 	. "&os=" . GetOSVersion()
 	. "&is64=" . A_Is64bitOS
 	. "&setup=" . (blnSetup)
-				+ (2 * (o_Settings.Launch.blnDonorCode.IniValue ? 1 : 0))
+				+ (2 * (g_blnSponsor ? 1 : 0))
 				+ (4 * (o_FileManagers.P_intActiveFileManager = 2 ? 1 : 0)) ; DirectoryOpus
 				+ (8 * (o_FileManagers.P_intActiveFileManager = 3 ? 1 : 0)) ; TotalCommander
 				+ (16 * (o_FileManagers.P_intActiveFileManager = 4 ? 1 : 0)) ; QAPconnect
@@ -18867,7 +18942,7 @@ g_intLnkSendLink := arrPosW
 aaL := o_L.InsertAmpersand(false, "GuiDonateCodeInput", "GuiClose")
 
 Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Button, x175 y+20 gGuiDonateCodeInput vf_btnDonateCodeInuput, % aaL["GuiDonateCodeInput"] . g_strEllipse
+Gui, 2:Add, Button, x175 y+20 gGuiDonateCodeInputHelp vf_btnDonateCodeInuput, % aaL["GuiDonateCodeInput"] . g_strEllipse
 Gui, 2:Add, Button, x175 yp g2GuiClose vf_btnDonateClose, % aaL["GuiClose"]
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateCodeInuput", "f_btnDonateClose")
 Gui, 2:Add, Text
@@ -18911,42 +18986,45 @@ return
 
 
 ;------------------------------------------------------------
+GuiDonateCodeInputHelp:
+;------------------------------------------------------------
+
+###_D(A_ThisLabel)
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GuiDonateCodeInput:
 ;------------------------------------------------------------
-Gui, 1:Submit, NoHide
 
 strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
-Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, New, +Hwndg_strGui1Hwnd, %strGuiTitle%
 if (g_blnUseColors)
-	Gui, 2:Color, %g_strGuiWindowColor%
-Gui, 2:+Owner1
-Gui, 2:Font, s12 w700, Verdana
-Gui, 2:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
-Gui, 2:Font, s8 w400, Verdana
+	Gui, 1:Color, %g_strGuiWindowColor%
+Gui, 1:Font, s12 w700, Verdana
+Gui, 1:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
+Gui, 1:Font, s8 w400, Verdana
 
-Gui, 2:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
-Gui, 2:Add, Edit, y+10 w200 vf_strDonorCode
+Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
+Gui, 1:Add, Edit, y+10 w300 vf_strSponsorCode
 
-Gui, 2:Add, Text, y+20, % o_L["GuiDonateCodeInputSponsorLabel"]
-Gui, 2:Add, Edit, y+10 w200 vf_strSponsorName
+Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputSponsorLabel"]
+Gui, 1:Add, Edit, y+10 w300 vf_strSponsorName
 
 aaL := o_L.InsertAmpersand(false, "GuiSave", "DialogCancelButton")
 
-Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Button, x175 y+20 gGuiDonateCodeInputSave vf_btnDonateCodeInputSave, % aaL["GuiSave"]
-Gui, 2:Add, Button, x175 yp g2GuiClose vf_btnDonateCodeInputCancel, % aaL["DialogCancelButton"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateCodeInputSave", "f_btnDonateCodeInputCancel")
-if (o_Settings.Launch.blnDonorCode.IniValue)
-{
-	Gui, 2:Add, Link, y+15 gGuiDonateCodeInputRemove vf_lnkSponsorRemove, % "<a>" . o_L["SponsorRemove"] . "</a>"
-	GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_lnkSponsorRemove")
-}
-Gui, 2:Add, Text
+Gui, 1:Font, s8 w400, Verdana
+Gui, 1:Add, Button, x175 y+20 gGuiDonateCodeInputSave vf_btnDonateCodeInputSave, % aaL["GuiSave"]
+Gui, 1:Add, Button, x175 yp g2GuiClose vf_btnDonateCodeInputCancel, % aaL["DialogCancelButton"]
+GuiCenterButtons(g_strGui1Hwnd, 10, 5, 20, "f_btnDonateCodeInputSave", "f_btnDonateCodeInputCancel")
+Gui, 1:Add, Text
+
+; ##### add Help button opening GuiDonateCodeInputHelp
 
 GuiControl, Focus, btnDonateDefault
-Gosub, ShowGui2AndDisableGui1
-
-aaL := ""
+Gui, 1:Show
 
 return
 ;------------------------------------------------------------
@@ -18954,50 +19032,28 @@ return
 
 ;------------------------------------------------------------
 GuiDonateCodeInputSave:
-GuiDonateCodeInputRemove:
 ;------------------------------------------------------------
-Gui, 2:Submit, NoHide
-Gui, 2:+OwnDialogs
+Gui, 1:Submit, NoHide
 
-if (A_ThisLabel = "GuiDonateCodeInputSave")
+strSponsorCode := Trim(f_strSponsorCode)
+strSponsorName := Trim(f_strSponsorName)
+
+; Donor code must contain only numbers and lowercase letters and be 32 digits
+if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
+	or RegExMatch(strSponsorCode, "[^a-z^0-9]") ; sponsor code must be made only of digits in ranges a-z (lowercase) and 0-9
 {
-	strDonorCode := Trim(f_strDonorCode)
-	strSponsorName := Trim(f_strSponsorName)
-
-	; Donor code must contain only numbers and capital letters and be 8 digits
-	if !StrLen(strSponsorName) ; sponsor name must not be empty
-		or StrLen(strDonorCode) <> 8 ; donor code must be 8 characters
-		or RegExMatch(strDonorCode, "[^A-Z^0-9]") ; donor code must be made only of digits in ranges A-Z and 0-9
-		or !SponsorNameOK(strSponsorName, strDonorCode) ; and donor code must match MD5 of sponsor name
-	{
-		Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
-		return
-	}
-
-	o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
-	o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
-
-	MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyou"], strSponsorName), 10
-}
-else
-{
-	IniDelete, % o_Settings.strIniFile, Global, DonorCode
-	IniDelete, % o_Settings.strIniFile, Global, SponsorName
-	o_Settings.Launch.blnDonorCode.IniValue := 0
-	
-	MsgBox, 0, %g_strAppNameText%, % L(o_L["SponsorRemoved"], strSponsorName), 10
+	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
+	return
 }
 
-Gosub, 2GuiClose
-Gosub, BuildGui
-o_MenuInGui := o_MainMenu
+; o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
+o_Settings.Launch.strSponsorCode.WriteIni(strSponsorCode)
+o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
 
-Gosub, ProcessSponsorName
-GuiControl, , f_lnkSponsoredBy, %g_SponsoredMessage%
-Gosub, GuiShowFromGuiOutside
+MsgBox, 0, %g_strAppNameText%, Thank you - QAP will restart 
 
-strDonorCode := ""
-strSponsorName := ""
+OnExit ; disable exit subroutine
+Reload
 
 return
 ;------------------------------------------------------------
@@ -26593,7 +26649,7 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
-		if !(o_Settings.Launch.blnDonorCode.IniValue) and (this.AA.strMenuPath = o_L["MainMenuName"])
+		if !(g_blnSponsor) and (this.AA.strMenuPath = o_L["MainMenuName"])
 		{
 			this.AddMenuIcon("", "", "")
 			this.AddMenuIcon(o_L["DonateMenu"] . g_strEllipse, "GuiDonate", "iconDonate")
