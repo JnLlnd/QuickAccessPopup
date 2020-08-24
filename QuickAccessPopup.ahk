@@ -19495,7 +19495,8 @@ loop, parse, % "Folders|Files", |
 		if (strTargetNb <= 1) ; skip if not enough frequent
 			continue
 		
-		if (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue) ; if not blnRetrieveIconInFrequentMenus, consider that file exists
+		; if (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue) ; if not blnRetrieveIconInFrequentMenus, consider that file exists
+		if (SubStr(strPath, 1, 2) <> "\\") ; if this is an UNC path, consider that file exists
 			and !RecentFileExistInPath(strPath, A_ThisLabel) ; skip if not exist
 				continue
 		
@@ -19503,10 +19504,9 @@ loop, parse, % "Folders|Files", |
 		strMenuItemName := strPath
 		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue)
 			strMenuItemName .= " [" . strTargetNb . "]"
-		if (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue)
-			strIcon := (strFoldersOrFiles = "Folders" ? GetFolderIcon(strPath) : GetIcon4Location(strPath))
-		else
-			strIcon := (strFoldersOrFiles = "Folders" ? "iconFolder" : "iconDocuments")
+		; for location with UNC path "\\", GetFolderIcon() and GetIcon4Location() return generic icons for folder or documents
+		strIcon := (strFoldersOrFiles = "Folders" ? GetFolderIcon(strPath) : GetIcon4Location(strPath))
+		
 		strMenuItemsList%strFoldersOrFiles% .= strFoldersOrFilesMenuNameLocalized . "|" . strMenuItemName
 			. (strFoldersOrFiles = "Folders" ? "|Folder|" : "|Document|") . strIcon . "`n"
 		; Diag(A_ThisLabel . ":Processing Stop", intPopularItemsCount, "ELAPSED")
@@ -20520,9 +20520,10 @@ GetIcon4Location(strLocation)
 ; get icon, extract from kiu http://www.autohotkey.com/board/topic/8616-kiu-icons-manager-quickly-change-icon-files/
 ;------------------------------------------------------------
 {
-	if (SubStr(strLocation, 1, 2) <> "\\") ;  for files not on a server, search in path
-		FileExistInPath(strLocation) ; expand strLocation and search in PATH
-
+	if (SubStr(strLocation, 1, 2) = "\\") ; returns generic document icon for files on a server
+		return "iconDocuments"
+		
+	FileExistInPath(strLocation) ; expand strLocation and search in PATH
 	if !StrLen(strLocation)
 		return "iconUnknown"
 	
