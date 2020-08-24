@@ -31,11 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.5.5 (2020-08-12)
+Version: 10.5.6 (2020-08-24)
  
-** You can now make your QAP Sponsoring donation using your CREDIT CARD directly
-** on the QAP secured website (no need to go to PayPal anymore).
-** More info here: https://www.quickaccesspopup.com/why-sponsoring-this-software/
+*** This small release is the last one until I'm back from vacations in two weeks.
+ 
+- fix bug when selecting an .ico file in "Edit Favorite"
+- fix error in startup message fpor sponsor users
+
+Version: 10.5.5 (2020-08-12)
  
 - in the "Sponsor this software" dialog box, add a button for credit cart sponsoring payment (as an alternative to PayPal)
 - in Setup program final screen, add a checkbox for credit card sponsoring payment (as an alternative to PayPal)
@@ -4065,7 +4068,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.5
+;@Ahk2Exe-SetVersion 10.5.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4130,7 +4133,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
