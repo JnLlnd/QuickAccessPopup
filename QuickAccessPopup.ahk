@@ -4391,7 +4391,7 @@ if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
 	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
 {
 	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		, % L(o_L["DonateCheckPrompt"] . "`n`n" . L(o_L["DonateCheckPrompt2"], o_L["DonateCheckPrompt3"] . " " . o_L["DonateCheckPrompt5"]), g_strAppNameText, intStartups)
+		, % L(o_L["DonateCheckPrompt"] . "`n`n" . L(o_L["DonateCheckPrompt2"], o_L["DonateCheckPrompt3"]), g_strAppNameText, intStartups)
 	IfMsgBox, Yes
 		Gosub, GuiDonate
 }
