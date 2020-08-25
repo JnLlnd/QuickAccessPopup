@@ -4098,7 +4098,7 @@ ComObjError(False) ; we will do our own error handling
 DllCall("SetErrorMode", "uint", SEM_FAILCRITICALERRORS := 1)
 
 ; make sure the default system mouse pointer are used after a QAP reload
-SetWaitCursor(false)
+SetCursor(false)
 
 ;---------------------------------
 ; App Name
@@ -5360,9 +5360,7 @@ global g_blnSponsor := false ; replacing o_Settings.Launch.blnDonorCode.IniValue
 
 loop, parse, % g_strSponsorEditionId . "|" . g_strFreeEditionId, |
 {
-	SetWaitCursor(true)
 	o_EDDLicense := new EDDLicense(g_SponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue)
-	SetWaitCursor(false)
 	
 	if (o_EDDLicense.oLicense.license = "valid")
 	{
@@ -6371,14 +6369,14 @@ PopularFilesMenuShortcut:
 if !(g_blnUsageDbEnabled)
 	return
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshPopularMenus
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % (A_ThisLabel = "PopularFoldersMenuShortcut" ? o_L["MenuPopularMenusFolders"] : o_L["MenuPopularMenusFiles"]) . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)
 	, Show, %g_intMenuPosX%, %g_intMenuPosY%
@@ -6453,14 +6451,14 @@ return
 ClipboardMenuShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshClipboardMenu
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["MenuClipboard"], Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -6613,14 +6611,14 @@ return
 DrivesMenuShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshDrivesMenu
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["MenuDrives"] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse), Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -6686,14 +6684,14 @@ RecentFoldersMenuShortcut:
 RecentFilesMenuShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshRecentItemsMenus
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % (A_ThisLabel = "RecentFoldersMenuShortcut" ? o_L["MenuRecentFolders"] : o_L["MenuRecentFiles"]) . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)
 	, Show, %g_intMenuPosX%, %g_intMenuPosY%
@@ -6766,14 +6764,14 @@ return
 ReopenFolderMenuShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshReopenFolderMenu
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["MenuCurrentFolders"], Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -6785,14 +6783,14 @@ return
 RepeatLastActionsShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshLastActionsMenu
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["MenuLastActions"], Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -6804,14 +6802,14 @@ return
 ContainerInGuiShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshContainerInGuiFromShortcut
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["MenuContainerInGui"], Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -6823,14 +6821,14 @@ return
 SwitchFolderOrAppMenuShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshSwitchFolderOrAppMenu
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["MenuSwitchFolderOrApp"], Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -7272,14 +7270,14 @@ CollectExplorers(pExplorers)
 TotalCommanderHotlistMenuShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshTotalCommanderHotlist
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["TCMenuName"], Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -7316,14 +7314,14 @@ return
 DirectoryOpusFavoritesMenuShortcut:
 ;------------------------------------------------------------
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 Gosub, RefreshDirectoryOpusFavorites
 
 Gosub, SetMenuPosition
 CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Window" : "Screen")
 
-SetWaitCursor(false)
+SetCursor(false)
 
 Menu, % o_L["DOpusMenuName"], Show, %g_intMenuPosX%, %g_intMenuPosY%
 
@@ -16641,7 +16639,7 @@ if (g_blnGetWinInfo)
 	return
 }
 
-SetWaitCursor(true)
+SetCursor(true, "wait")
 
 g_blnAlternativeMenu := (g_strMenuTriggerLabel = "LaunchFromAlternativeMenu")
 g_blnLaunchFromTrayIcon := (g_strMenuTriggerLabel = "LaunchFromTrayIcon") ; make sure it is initialized true or false
@@ -16697,7 +16695,7 @@ if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see NavigateFromM
 ; Diag(g_strMenuTriggerLabel, "menu name", g_strShowMenu)
 ; Diag(g_strMenuTriggerLabel, "", "STOP-SHOW") ; must be before Menu Show
 
-SetWaitCursor(false) 
+SetCursor(false) 
 
 ; o_FileManagers.CopyClassStructure() ; #### used in dev to copy class structure to clipboard
 Menu, %g_strShowMenu%, Show, %g_intMenuPosX%, %g_intMenuPosY% ; at mouse pointer if option 1, 20x20 offset of active window if option 2 and fix location if option 3
@@ -18079,7 +18077,7 @@ if !InStr("ReloadQAPAsAdmin|ReloadQAPDontSave|", A_ThisLabel . "|") and Settings
 ; use the same behavior as Reload.
 
 ; make sure the default system mouse pointer are reset before reloading QAP
-SetWaitCursor(false)
+SetCursor(false)
 
 if (A_ThisLabel = "ReloadQAPSwitch")
 	; update Settings param
@@ -21500,20 +21498,25 @@ IsProcessElevated(ProcessID)
 
 
 ;------------------------------------------------------------
-SetWaitCursor(blnOnOff)
+SetCursor(blnOnOff, strCursorName)
 ; from Gio in https://autohotkey.com/boards/viewtopic.php?f=5&t=13284
 ;------------------------------------------------------------
 {
 	static s_blnCursorWaitAlreadyOn
 	static s_oWaitCursor
 	
+	if (strCursorName = "wait")
+		strCursorCode := 32514
+	else
+		return
+	
 	if (blnOnOff)
 		if (s_blnCursorWaitAlreadyOn)
 			return
 		else
 		{
-			; The line of code below loads a cursor from the system set (specifically, the wait cursor - 32514).
-			s_oWaitCursor :=  DllCall("LoadImage", "Uint", 0, "Uint", 32514, "Uint", 2, "Uint", 0, "Uint", 0, "Uint", 0x8000)
+			; The line of code below loads a cursor from the system set
+			s_oWaitCursor :=  DllCall("LoadImage", "Uint", 0, "Uint", strCursorCode, "Uint", 2, "Uint", 0, "Uint", 0, "Uint", 0x8000)
 
 			; And then we set all the default system cursors to be our choosen cursor. CopyImage is necessary as SetSystemCursor destroys the cursor we pass to it after using it.
 			strCursors := "32650,32512,32515,32649,32651,32513,32648,32646,32643,32645,32642,32644,32516,32514"
