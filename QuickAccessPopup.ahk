@@ -4182,7 +4182,7 @@ global g_strTempDir := g_strTempDirParent . "\_QAP_temp_" . RandomBetween()
 FileCreateDir, %g_strTempDir%
 
 ; remove temporary folders older than 7 days
-SetTimer, RemoveOldTemporaryFolders, -10000, -100 ; run once in 10 seconds, low priority -100
+SetTimer, RemoveOldTemporaryFolders, -10000, -100 ; run once in 60 seconds, low priority -100
 
 ;---------------------------------
 ; Init temporary folder
@@ -4428,9 +4428,7 @@ if (g_blnUsageDbEnabled) ;  repeat if because g_blnUsageDbEnabled could change i
 {
 	; collect recent items and dynamic menus data
 	Gosub, UsageDbCollectMenuData
-
-	; Update FavoriteUsageDb properties with data from UsageDb
-	o_MainMenu.UpdateUsageDbFrequency() ; was UsageDbUpdateFavorites
+	SetTimer, UsageDbUpdateFavorites, -2000, -50 ; run once in 2 seconds, low priority -50
 }
 
 if !StrLen(o_Settings.UserVariables.strUserVariablesList.IniValue)
@@ -5225,8 +5223,8 @@ o_Settings.ReadIniOption("Database", "intUsageDbDaysInPopular", "UsageDbDaysInPo
 o_Settings.ReadIniOption("Database", "fltUsageDbMaximumSize", "UsageDbMaximumSize", 3, "Database", "f_lblUsageDbMaximumSize|f_fltUsageDbMaximumSize|f_btnUsageDbFlush") ; g_fltUsageDbMaximumSize
 o_Settings.ReadIniOption("Database", "blnUsageDbShowPopularityIndex", "UsageDbShowPopularityIndex", 0, "Database", "f_blnUsageDbShowPopularityIndex") ; g_blnUsageDbShowPopularityIndex
 o_Settings.ReadIniOption("Database", "intUsageDbDebug", "UsageDbDebug", 0, "Database", "") ; g_intUsageDbDebug (not in Gui)
-global g_blnUsageDbDebug := (g_intUsageDbDebug > 0)
-global g_blnUsageDbDebugBeep := (g_intUsageDbDebug > 1)
+global g_blnUsageDbDebug := (o_Settings.Database.intUsageDbDebug.IniValue > 0)
+global g_blnUsageDbDebugBeep := (o_Settings.Database.intUsageDbDebug.IniValue > 1)
 
 ; Group MenuAdvanced
 o_Settings.ReadIniOption("MenuAdvanced", "intShowQAPmenu", "ShowQAPmenu", 3, "MenuAdvanced", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
@@ -19354,7 +19352,17 @@ Sort, strUsageDbItemsList, R
 ; Diag(A_ThisLabel . ":strUsageDbItemsList (after)", "", "ELAPSED")
 
 if (g_blnUsageDbDebug or o_Settings.Launch.blnDiagMode.IniValue)
+{
 	strUsageDbReport := ""
+	if (g_blnUsageDbDebug)
+	{
+		ToolTip, UsageDbCollectMenuData START
+		if (g_blnUsageDbDebugBeep)
+			SoundBeep, 300
+		Sleep, 1000
+		intCollectMenuData := A_TickCount
+	}
+}
 
 intUsageDbtNbItems := 0
 
@@ -19428,8 +19436,8 @@ strUsageDbSQL := SubStr(strUsageDbSQL, 1, StrLen(strUsageDbSQL) - 2) ; remove la
 ; Diag(A_ThisLabel . ":strUsageDbSQL (last)", StringLeftDotDotDot(strUsageDbSQL, 1000))
 ; Diag(A_ThisLabel . ":intUsageDbtNbItems", intUsageDbtNbItems, "ELAPSED")
 
-if (g_blnUsageDbDebug)
-	ToolTip, % StringLeftDotDotDot(strUsageDbSQL, 5000)
+; if (g_blnUsageDbDebug)
+	; ToolTip, % StringLeftDotDotDot(strUsageDbSQL, 5000)
 
 o_UsageDb.Exec("BEGIN TRANSACTION;")
 If (intUsageDbtNbItems) and !o_UsageDb.Exec(strUsageDbSQL)
@@ -19459,9 +19467,9 @@ o_UsageDb.Exec("COMMIT;")
 if (g_blnUsageDbDebug)
 {
 	if (g_blnUsageDbDebugBeep)
-		SoundBeep, 300
-	ToolTip, % "Items added: " . intUsageDbtNbItems . "`n`n" . StringLeftDotDotDot(strUsageDbReport, 2000)
-	Sleep, % (intUsageDbtNbItems = 0 ? 300 : 2000)
+		SoundBeep, 1200
+	ToolTip, % "UsageDbCollectMenuData STOP`nItems added: " . intUsageDbtNbItems . "`nDuration: " . A_TickCount - intCollectMenuData " ms`n`n" . StringLeftDotDotDot(strUsageDbReport, 2000)
+	Sleep, % (intUsageDbtNbItems = 0 ? 1000 : 3000)
 	ToolTip
 }
 
@@ -19486,6 +19494,34 @@ strUsageDbTargetExtension := ""
 strUsageDbPreviousLatestCollected := ""
 
 ; Diag(A_ThisLabel, "", "STOP-COLLECT")
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+UsageDbUpdateFavorites:
+; Update FavoriteUsageDb properties with data from UsageDb
+;------------------------------------------------------------
+
+if (g_blnUsageDbDebug)
+{
+	ToolTip, UpdateUsageDbFrequency START
+	if (g_blnUsageDbDebugBeep)
+		SoundBeep, 300
+	intUpdateFavorites := A_TickCount
+}
+
+o_MainMenu.UpdateUsageDbFrequency() ; was UsageDbUpdateFavorites
+
+if (g_blnUsageDbDebug)
+{
+	ToolTip, % "UpdateUsageDbFrequency STOP`nDuration: " . A_TickCount - intUpdateFavorites " ms"
+	if (g_blnUsageDbDebugBeep)
+		SoundBeep, 1200
+	Sleep, 5000
+	ToolTip
+}
 
 return
 ;------------------------------------------------------------
@@ -27355,15 +27391,6 @@ class Container
 			}
 			if oItem.IsContainer()
 				oItem.AA.oSubMenu.UpdateUsageDbFrequency() ; RECURSIVE
-		}
-		
-		if (g_blnUsageDbDebug)
-		{
-			ToolTip, %A_ThisLabel%: done...
-			if (g_blnUsageDbDebugBeep)
-				SoundBeep, 1200
-			Sleep, 2000
-			ToolTip
 		}
 		
 		; Diag(A_ThisFunc, "", "STOP")
