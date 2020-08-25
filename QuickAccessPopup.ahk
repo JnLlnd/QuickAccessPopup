@@ -21498,7 +21498,7 @@ IsProcessElevated(ProcessID)
 
 
 ;------------------------------------------------------------
-SetCursor(blnOnOff, strCursorName)
+SetCursor(blnOnOff, strCursorName := "")
 ; from Gio in https://autohotkey.com/boards/viewtopic.php?f=5&t=13284
 ;------------------------------------------------------------
 {
