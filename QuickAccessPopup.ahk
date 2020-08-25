@@ -31,11 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.5.5 (2020-08-12)
+Version: 10.5.6 (2020-08-24)
  
-** You can now make your QAP Sponsoring donation using your CREDIT CARD directly
-** on the QAP secured website (no need to go to PayPal anymore).
-** More info here: https://www.quickaccesspopup.com/why-sponsoring-this-software/
+*** This small release is the last one until I'm back from vacations in two weeks.
+ 
+- fix bug when selecting an .ico file in "Edit Favorite"
+- fix error in startup message fpor sponsor users
+
+Version: 10.5.5 (2020-08-12)
  
 - in the "Sponsor this software" dialog box, add a button for credit cart sponsoring payment (as an alternative to PayPal)
 - in Setup program final screen, add a checkbox for credit card sponsoring payment (as an alternative to PayPal)
@@ -6095,8 +6098,8 @@ Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-cli
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
-	. (o_Settings.Launch.blnDonorCode.IniValue ? L(g_aaMenuTrayL["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : g_aaMenuTrayL["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
-
+	. (o_Settings.Launch.blnDonorCode.IniValue ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
+	
 return
 ;------------------------------------------------------------
 
@@ -12657,7 +12660,10 @@ else if (A_ThisLabel = "ButtonSelectIconFile")
 {
 	GuiControl, %strParentGui%:, f_strIconFile, %strNewLocation% ; triggers GetIconsCount and PickIconLoad
 	if GetFileExtension(strNewLocation) = "ico"
+	{
+		Sleep, 100 ; delay to allow event execution of IconFileChanged triggered by GuiControl
 		Gosub, PickIconIcoFileSelected
+	}
 }
 else ; ButtonSelectFavoriteLocation
 {
