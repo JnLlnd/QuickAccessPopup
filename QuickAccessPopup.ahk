@@ -4394,7 +4394,7 @@ if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
 	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
 {
 	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		, % L(o_L["DonateCheckPrompt"] . "`n`n" . L(o_L["DonateCheckPrompt2"], o_L["DonateCheckPrompt3"]), g_strAppNameText, intStartups)
+		, % L(o_L["DonateCheckPrompt"] . "`n`n" . o_L["DonateCheckPrompt2"], g_strAppNameText, intStartups)
 	IfMsgBox, Yes
 		Gosub, GuiDonate
 }
@@ -5361,6 +5361,8 @@ global g_blnSponsor := false ; replacing o_Settings.Launch.blnDonorCode.IniValue
 loop, parse, % g_strSponsorEditionId . "|" . g_strFreeEditionId, |
 {
 	o_EDDLicense := new EDDLicense(g_SponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue)
+	o_EDDLicense.oLicense.activations_left := "0" ; #####
+	o_EDDLicense.oLicense.license := "invalid" ; #####
 	
 	if (o_EDDLicense.oLicense.license = "valid")
 	{
@@ -5372,7 +5374,7 @@ loop, parse, % g_strSponsorEditionId . "|" . g_strFreeEditionId, |
 		continue
 	else if (o_EDDLicense.oLicense.license = "expired")
 	{
-		MsgBox, 4, Quick Access Popup code expired, Your Quick Access Popup yearly code expired.`n`nDo you want to renew your code now? ; #####
+		MsgBox, 4, % L(o_L["DonateCodeExpiredTitle"], g_strAppNameText), % L(o_L["DonateCodeExpiredMessage"], g_strAppNameText)
 		IfMsgBox, Yes
 		{
 			if (o_EDDLicense.strItemId = g_strSponsorEditionId) ; Sponsor
@@ -5384,14 +5386,16 @@ loop, parse, % g_strSponsorEditionId . "|" . g_strFreeEditionId, |
 	}
 	else if (o_EDDLicense.oLicense.activations_left = "0")
 	{
-		MsgBox, No activations left ; #####
-		continue
+		MsgBox, 4, % L(o_L["DonateCodeNoActivationTitle"], g_strAppNameText), % L(o_L["DonateCodeNoActivationMessage"], o_EDDLicense.oLicense.site_count)
+		IfMsgBox, Yes
+			Run, % "http://edd-sandbox.jeanlalonde.ca/checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id
+		break ; or continue or OnExit ; disable exit subroutine + ExitApp?
 	}
 	else ; the license is invalid or missing
 		break
 }
 
-; ###_O2("EDD", o_EDDLicense, o_EDDLicense.oLicense)
+###_O2("EDD", o_EDDLicense, o_EDDLicense.oLicense)
 
 g_SponsoredMessage := (g_blnSponsor ? (StrLen(o_Settings.Launch.strSponsorName.IniValue)
 	? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "") : "<a id=""none"">" . o_L["SponsoredNone"] . "</a>")
@@ -18910,7 +18914,7 @@ loop, Parse, % "5|1|2", | ; removed option 3 for CAD and 4 for monthly
 	Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment" . (A_Index = 1 ? 5 : A_LoopField)]
 }
 
-Gui, 2:Add, Link, xm y+15 w420, % L(o_L["DonateCheckPrompt2"], o_L["DonateCheckPrompt4"] . " " . o_L["DonateCheckPrompt5"])
+Gui, 2:Add, Link, xm y+15 w420, % o_L["DonateCheckPrompt2"]
 
 Gui, 2:Font, s10 w700, Verdana
 Gui, 2:Add, Link, xm y+20 w420, % o_L["DonateText3"]
@@ -22524,20 +22528,6 @@ GetIconForClassId(strClassId)
 {
 	RegRead, strDefaultIcon, HKEY_CLASSES_ROOT, CLSID\%strClassId%\DefaultIcon
     return strDefaultIcon
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-SponsorNameOK(strSponsorName, strDonorCode)
-;------------------------------------------------------------
-{
-	strSponsorNameLower := StrLower(strSponsorName)
-	
-	return Exclamation_bcrypt_md5(strSponsorNameLower) = strDonorCode ; supports UTF-8, case change, no pipe bug, used starting 2019-11-11 (v10.2.2)
-		or Exclamation_MD5(strSponsorNameLower) = strDonorCode ; avoid pipe bug but not UTF-8, used from 2019-11-04 to 2019-11-10 (pink in XL)
-		or PipeLower_MD5(strSponsorNameLower) = strDonorCode ; has pipe bug, not UTF-8, but allow case change, used from 2019-06-27 to 2019-11-03 (green in XL)
-		or PipeNoLower_MD5(strSponsorName) = strDonorCode ; has pipe bug, no UTF-8 and does not allow case change, used before 2019-06-27 (orange in XL)
 }
 ;------------------------------------------------------------
 
