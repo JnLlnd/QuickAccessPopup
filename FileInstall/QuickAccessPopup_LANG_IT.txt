@@ -21,15 +21,15 @@ lControlToolTipAlwaysOnTopOn	Mantieni questa finestra sempre in primo piano
 lControlToolTipColumnBreak	Inserisci un separatore di colonna
 lControlToolTipMoveDown	Sposta in giú il preferito selezionato/i
 lControlToolTipMoveUp	Sposta in su il preferito selezionato/i
-lControlToolTipNextMenu	Torna al menÃ¹ successivo
-lControlToolTipOpenMenuContainingSearchItem	Apri il sottomenÃ¹ o il gruppo contenente il preferito selezionato
+lControlToolTipNextMenu	Torna al menù successivo
+lControlToolTipOpenMenuContainingSearchItem	Apri il sottomenù o il gruppo contenente il preferito selezionato
 lControlToolTipParentMenu	Vai al menú superiore
 lControlToolTipPreviousMenu	Ritorna al menú precedente
 lControlToolTipSearchBoxClear	Svuota la casella di ricerca e mostra tutti i preferiti
 lControlToolTipSearchBoxExtended	Cerca a partire dal menù corrente nomi dei preferiti *e* varie proprietà
 lControlToolTipSearchButton	Cerca preferiti
 lControlToolTipSeparator	Inserisci un separatore di menú
-lControlToolTipShowContainerInGui	Mostra un menÃ¹ con preferiti nella finestra Personalizza
+lControlToolTipShowContainerInGui	Mostra un menù con preferiti nella finestra Personalizza
 lControlToolTipSortFavorites	Ordina tutti i Preferiti, o solo quelli selezionati nella lista
 lControlToolTipSortSearchResult	Ordina i preferiti nei risultati di ricerca
 lControlToolTipTextSeparator	Inserisci un separatore di menu testuale
@@ -283,13 +283,13 @@ lDialogMaximized	Massimizzata
 lDialogMenuKey	Tasto del Menú
 lDialogMenuNotMoveUnderItself	Il menù "~1~" non può essere posizionato sotto se stesso.
 lDialogMenuSortCreated	Data di Creazione
-lDialogMenuSortEditMenu	Modifica questo menÃ¹
-lDialogMenuSortEnable	Ordina il menÃ¹ automaticamente
+lDialogMenuSortEditMenu	Modifica questo menù
+lDialogMenuSortEnable	Ordina il menù automaticamente
 lDialogMenuSortFavoriteName	Nome del Preferito
-lDialogMenuSortHeaderAutomatic	Ordina il menÃ¹ automaticamente per...
+lDialogMenuSortHeaderAutomatic	Ordina il menù automaticamente per...
 lDialogMenuSortHeaderFiltered	Ordina i risultati di ricerca per...
-lDialogMenuSortHeaderMainMenu	Ordina il MenÃ¹ Principale per...
-lDialogMenuSortHeaderManual	Ordina il menÃ¹ manualmente per...
+lDialogMenuSortHeaderMainMenu	Ordina il Menù Principale per...
+lDialogMenuSortHeaderManual	Ordina il menù manualmente per...
 lDialogMenuSortHeaderSearch	Ordina i risultati di ricerca per...
 lDialogMenuSortLastModified	Data di Modifica
 lDialogMenuSortLastUsed	Data di Ultimo utilizzo
@@ -319,8 +319,8 @@ lDialogOpenSubFolderCreated	creata
 lDialogOpenSubFolderEnable	Apri una sottocartella automaticamente
 lDialogOpenSubFolderLabel	Seleziona la cartella da aprire:
 lDialogOpenSubFolderModified	modificata
-lDialogOpenSubFolderMostAnciently	la piÃ¹ vecchia
-lDialogOpenSubFolderMostRecently	la piÃ¹ recentemente
+lDialogOpenSubFolderMostAnciently	la più vecchia
+lDialogOpenSubFolderMostRecently	la più recentemente
 lDialogOpenThisGroup	Apri questo gruppo
 lDialogOpenThisMenu	Apri questo menù
 lDialogOptionsPathNotExist	Questa cartella non esiste:`n~1~`n`nVuoi crearla?
@@ -567,7 +567,7 @@ lMenuCommonStartMenu	Menù Avvio (pubblico)
 lMenuCommonStartupMenu	Esecuzione Automatica (pubblico)
 lMenuComputerManagement	Gestione Computer
 lMenuContainerInGui	Preferiti nella finestra Personalizza
-lMenuContainerInGuiDescription	Mostra un menÃ¹ con i preferiti visualizzati nella finestra Personalizza, anche nel caso contenga risultati di ricerca. Nei risultati di ricerca, nomi di menÃ¹ duplicati vengono appesi col suffisso "[!]" per renderli unici.
+lMenuContainerInGuiDescription	Mostra un menù con i preferiti visualizzati nella finestra Personalizza, anche nel caso contenga risultati di ricerca. Nei risultati di ricerca, nomi di menù duplicati vengono appesi col suffisso "[!]" per renderli unici.
 lMenuCookies	Cookies
 lMenuCopyLocation	Copia URL o Percorso del Preferito
 lMenuCurrentFolders	Cartelle Correnti
@@ -675,11 +675,11 @@ lOopsAmpersandInName	L'ampersand "&" viene riservato per assegnare scorciatoie d
 lOopsCannotCopyFavorite	Preferiti di tipo "~1~" non possono essere copiati.
 lOopsCannotMoveToSelf	Non puoi spostare preferiti nella loro attuale posizione. Per favore, seleziona una destinazione differente.
 lOopsChangeFolderInDialogAlert	Hai intenzione di cambiare cartella da questa casella di dialogo? Per poter navigare all'interno di una casella di dialogo, è necessario abilitare un'opzione nel gruppo impostazioni "Generale".`n`nVuoi aprire la finestra delle Opzioni?
-lOopsContainerInGui	Il menÃ¹ dinamico "~1~" puÃ² essere inserito soltanto nel menÃ¹: ~2~
+lOopsContainerInGui	Il menù dinamico "~1~" può essere inserito soltanto nel menù: ~2~
 lOopsCouldNotOpenSpecialFolder	~1~ non è riuscito ad aprire la Cartella Speciale: "~2~".
 lOopsEmpty	vuoto
 lOopsErrorIniFileDisplayErrorMessage	Vuoi visualizzare di nuovo questo messaggio di errore per questo Menù Condiviso?
-lOopsErrorIniFileDuplicateNames	Il preferito "~1~" nel menÃ¹ "~2~" non Ã¨ unico ed Ã¨ stato temporaneamente rinominato in "~3~".`n`nSi prega di modificare questo preferito per dargli un nome unico.
+lOopsErrorIniFileDuplicateNames	Il preferito "~1~" nel menù "~2~" non è unico ed è stato temporaneamente rinominato in "~3~".`n`nSi prega di modificare questo preferito per dargli un nome unico.
 lOopsErrorIniFileModified	Questo menù condiviso è stato modificato dopo essere stato aperto. Il menù verrà aggiornato con le modifiche apportate, che però NON saranno salvate e verranno perse.
 lOopsErrorIniFileReadOnly	Questo file delle impostazioni del menù condiviso o questa posizione è di SOLA-LETTURA.
 lOopsErrorIniFileRetry	Se il file delle impostazioni si trova su un disco di rete, prova a ricaricare ~1~ quando il disco di rete sarà disponibile.
@@ -711,8 +711,8 @@ lOopsMenuExternalCentralized	menù condiviso centralizzato
 lOopsMenuExternalCollaborative	menù condiviso collaborativo
 lOopsMenuExternalPersonalChangedBy	Questo menù personale condiviso è attualmente in corso di MODIFICHE o ci sono modifiche ancora NON SALVATE sul computer: ~1~.`n`nSe salvi delle modifiche a questo menù qui, le modifiche non ancora salvate sull'altro computer saranno perse e dovresti annullare tali modifiche quando ritorni su quel computer.
 lOopsMenuExternalReservedBy	Questo ~1~ è RISERVATO dall'utente: ~2~.`n`nAspetta che tale utente rilasci il menù condiviso o contatta l'amministratore di sistema.
-lOopsMenuSorted	Questo comando non puÃ² essere eseguito perchÃ¨ questo menÃ¹ Ã¨ ordinato automaticamente.
-lOopsMultipleContainersError	MenÃ¹, gruppi e menÃ¹ condivisi possono essere copiati o spostati solo individualmente. Questi elementi saranno saltati.
+lOopsMenuSorted	Questo comando non può essere eseguito perchè questo menù è ordinato automaticamente.
+lOopsMultipleContainersError	Menù, gruppi e menù condivisi possono essere copiati o spostati solo individualmente. Questi elementi saranno saltati.
 lOopsNotAdmin	Non é stato possibile ~1~ come Amministratore.`n`nE' pertanto in esecuzione in modalitá Normale.
 lOopsOptionsPathNotExist	~1~ non esiste:`n~2~`n`nPer favore, seleziona un percorso valido.
 lOopsOptionsPathTrayIcon	File dell'icona nell'area notifiche
@@ -829,11 +829,11 @@ lOptionsRunAsAdminChanged	Nuova impostazione "Esegui come amministratore" salvat
 lOptionsRunAsAdminShort	Ammin.
 lOptionsRunAtStartup	Esegui all'avvio
 lOptionsSearchFrom	Ambito di ricerca
-lOptionsSearchFromCurrent	Cerca dal menÃ¹ o gruppo corrente
-lOptionsSearchFromMain	Ricerca sempre dal menù Principale
+lOptionsSearchFromCurrent	Cerca dal menù o gruppo corrente
+lOptionsSearchFromMain	Ricerca sempre dal menù Principaleu
 lOptionsSearchResults	Risultati di Ricerca
 lOptionsSearchWithLocale	Ricerca usando le impostazioni del linguaggio locale (per esempio, "é" considerata come "e")
-lOptionsSearchWithStats	Visualizza date e statistiche in colonna nella lista di Preferiti e Risultati di ricerca
+lOptionsSearchWithStats	Risultati di ricerca con data di modifica e statistiche in colonna
 lOptionsSelectBackupFolder	Seleziona la cartella di backup del file delle Impostazioni principali
 lOptionsSelectCatalogueRoot	Seleziona la cartella radice del Catalogo dei Menù Condivisi
 lOptionsSelectQAPTempFolder	Crea la Cartella Temporanea in:
