@@ -5259,6 +5259,7 @@ Gosub, UpdateDonorIniValues
 o_Settings.ReadIniOption("Launch", "blnDonorCode", "DonorCode", 0)
 o_Settings.ReadIniOption("Launch", "strSponsorName", "SponsorName", " ")
 o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
+o_Settings.ReadIniOption("Launch", "strSponsorProductId", "SponsorProductId", " ")
 
 o_Settings.ReadIniOption("Launch", "strUserBanner", "UserBanner", " ") ; g_strUserBanner
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
@@ -5362,7 +5363,9 @@ strSponsorEditionId := "80"
 strSponsorMonthlyEditionId := "428"
 strFreeEditionId := "97"
 
-loop, parse, % strSponsorEditionId . "|" . strSponsorMonthlyEditionId . "|" . strFreeEditionId, |
+loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
+	: strSponsorEditionId . "|" . strSponsorMonthlyEditionId . "|" . strFreeEditionId, |
+; if we have the product id, check license for this product, else, check for all products in order 1) sponsor, 2) monthly, 3) free
 {
 	o_EDDLicense := new EDDLicense(strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue)
 	
@@ -5378,6 +5381,7 @@ loop, parse, % strSponsorEditionId . "|" . strSponsorMonthlyEditionId . "|" . st
 		o_EDDLicense.strProduct := (A_LoopField <> strFreeEditionId ? "Sponsor" : "Free")
 		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		strPossibleBadNumber := ""
+		o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
 		break
 	}
 	else if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
@@ -5425,7 +5429,7 @@ if (o_EDDLicense.oLicense.license = "expired")
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
-	MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item numbers #" . strPossibleBadNumber
+	MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
 	blnExitApp := true
 }
 else if (o_EDDLicense.oLicense.license <> "valid") ; no license
