@@ -16692,6 +16692,8 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 ; "ProgMan" -> Desktop
 ; "WorkerW" -> Desktop
 ; "ConsoleWindowClass" -> Console (CMD) or PowerShell
+; "VirtualConsoleClass" -> ConEmu
+; "CASCADIA_HOSTING_WINDOW_CLASS" -> Windows Terminal (Windows App)
 ; "#32770" -> Dialog
 ; "bosa_sdm_" (...) -> Dialog MS Office under WinXP
 ;------------------------------------------------------------
@@ -16820,9 +16822,13 @@ WindowIsTray(strClass)
 
 ;------------------------------------------------------------
 WindowIsConsole(strClass)
+; "ConsoleWindowClass" -> Console (CMD) or PowerShell
+; "VirtualConsoleClass" -> ConEmu
+; "CASCADIA_HOSTING_WINDOW_CLASS" -> Windows Terminal (Windows App)
+
 ;------------------------------------------------------------
 {
-	return (strClass = "ConsoleWindowClass" or strClass = "VirtualConsoleClass")
+	return (strClass = "ConsoleWindowClass" or strClass = "VirtualConsoleClass" or strClass = "CASCADIA_HOSTING_WINDOW_CLASS")
 }
 ;------------------------------------------------------------
 
