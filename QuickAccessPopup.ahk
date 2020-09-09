@@ -5382,6 +5382,9 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		strPossibleBadNumber := ""
 		o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
+		Loop, Parse, A_NowUTC
+			strOnline := Asc(A_LoopField) . strOnline
+		SetRegistry(strOnline, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
 		break
 	}
 	else if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
@@ -5412,10 +5415,35 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 		break ; or continue or OnExit ; disable exit subroutine + ExitApp?
 	}
 	else ; the license is invalid or missing
-		break
+	{
+		strOnline := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+		if StrLen(strOnline)
+		{
+			Loop, % StrLen(strOnline) / 2
+			{
+				strDecoded := Chr(SubStr(strOnline, 1, 2)) . strDecoded
+				strOnline := SubStr(strOnline, 3)
+			}
+			; strOnline := "20200822181414" ; test datetime
+			EnvSub, strOnline, A_NowUTC, D
+			intDaysAlert := 14
+			intDaysExit := 21
+			if (strOnline < -intDaysAlert)
+				Oops(1, o_L["DonateOnline"], intDaysAlert)
+			if (strOnline < -intDaysExit)
+			{
+				OnExit ; disable exit subroutine
+				ExitApp
+			}
+			o_EDDLicense.strProduct := (A_LoopField <> strFreeEditionId ? "Sponsor" : "Free")
+			o_EDDLicense.oLicense.license := "valid" ; for temporary offline usage
+			g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
+		}
+		else
+			break
+	}
 }
-
-###_O2("EDD", o_EDDLicense, o_EDDLicense.oLicense)
+; ###_O2("EDD", o_EDDLicense, o_EDDLicense.oLicense)
 
 g_SponsoredMessage := (g_blnSponsor ? (StrLen(o_Settings.Launch.strSponsorName.IniValue)
 	? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "") : "<a id=""none"">" . o_L["SponsoredNone"] . "</a>")
@@ -5454,6 +5482,16 @@ if (blnExitApp)
 	OnExit ; disable exit subroutine
 	ExitApp
 }
+
+strSponsorCodeSiteURL := ""
+strSponsorEditionId := ""
+strSponsorMonthlyEditionId := ""
+strFreeEditionId := ""
+strPossibleBadNumber := ""
+strOnline := ""
+blnExitApp := ""
+intDaysAlert := ""
+intDaysExit := ""
 
 return
 ;------------------------------------------------------------
