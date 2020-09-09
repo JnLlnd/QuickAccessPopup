@@ -6334,7 +6334,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuSupportForum"
-	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "GuiDonateCodeInputHelp", "MenuAbout")
+	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -6348,7 +6348,6 @@ saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiDonate", aaHelpL["GuiDonate"] . g_strEllipse, "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiDonateCodeInputHelp", aaHelpL["GuiDonateCodeInput"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -18965,12 +18964,11 @@ Gui, 2:Add, Link, y+10 x10 vf_lnkSendLink, % "<a href=""mailto:jeanlalonde@quick
 GuiControlGet, arrPos, Pos, f_lnkSendLink
 g_intLnkSendLink := arrPosW
 
-aaL := o_L.InsertAmpersand(false, "GuiDonateCodeInput", "GuiClose")
+aaL := o_L.InsertAmpersand(false, "GuiHelp", "GuiClose")
 
 Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Button, x175 y+20 gGuiDonateCodeInputHelp vf_btnDonateCodeInuput, % aaL["GuiDonateCodeInput"] . g_strEllipse
-Gui, 2:Add, Button, x175 yp g2GuiClose vf_btnDonateClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateCodeInuput", "f_btnDonateClose")
+Gui, 2:Add, Button, x175 y+20 g2GuiClose vf_btnDonateClose, % aaL["GuiClose"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateClose")
 Gui, 2:Add, Text
 
 GuiControl, Focus, btnDonateDefault
@@ -19006,16 +19004,6 @@ strDonatePlatformUrl5 := "https://www.quickaccesspopup.com/?asp_action=show_pp&p
 
 intButton := StrReplace(A_ThisLabel, "ButtonDonate")
 Run, % strDonatePlatformUrl%intButton%
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiDonateCodeInputHelp:
-;------------------------------------------------------------
-
-###_D(A_ThisLabel)
 
 return
 ;------------------------------------------------------------
@@ -24939,8 +24927,6 @@ class QAPfeatures
 			, "how-can-i-edit-the-file-quickaccesspopup-ini")
 		this.AddQAPFeatureObject("List Applications", 		o_L["MenuListApplications"],				"", "ListApplications",						"7-QAPManagement"
 			, o_L["MenuListApplicationsDescription"], 0, "iconDesktop", "", "")
-		this.AddQAPFeatureObject("Donor Code Input", 		o_L["GuiDonateCodeInput"] . g_strEllipse,	"", "GuiDonateCodeInput",					"7-QAPManagement"
-			, o_L["GuiDonateCodeInputDescription"], 0, "iconDonate", "", "sponsoring")
 		this.AddQAPFeatureObject("Window Always on Top",	o_L["MenuWindowAlwaysonTop"],				"", "WindowsAlwaysOnTop",					"1-Featured~4-WindowManagement"
 			, o_L["MenuWindowAlwaysonTopDescription"], 0, "iconDesktop", ""
 			, "can-i-make-the-active-window-always-on-top")
