@@ -4,6 +4,8 @@ this["AboutText3"] := "~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache Lice
 this["AboutText4"] := "Support on <a href=""http://www.quickaccesspopup.com"">www.quickaccesspopup.com</a>"
 this["AboutTitle"] := "About - ~1~ ~2~"
 this["AboutUserComputerName"] := "User name: ~1~`nComputer: ~2~"
+this["AboutLicense"] := "QAP User code: ~1~`nInstallation: ~2~"
+this["AboutLicenseCopy"] := "Your QAP User and Installation codes will be copied to the Clipboard."
 this["AlternativeMenuTrayTipCopyLocation"] := "Select the favorite to copy"
 this["AlternativeMenuTrayTipEditFavorite"] := "Select the favorite to edit"
 this["AlternativeMenuTrayTipNewWindow"] := "Select the folder to open in a new window"
