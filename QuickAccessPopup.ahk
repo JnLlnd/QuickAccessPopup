@@ -4297,7 +4297,7 @@ global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
-global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd
+global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
 global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
@@ -4568,7 +4568,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-gosub, GuiMultipleAdd ; #####
+; gosub, GuiMultipleAddSelectSource ; #####
 
 return
 
@@ -6245,11 +6245,13 @@ Menu, menuBarFile, Disable, % aaMenuFileL["GuiSave"] . "`tCtrl+S"
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSaveAndClose"]
 ; Menu, menuBarFile, Disable, % aaMenuFileL["GuiClose"] . "`tEsc"
 
-aaFavoriteL := o_L.InsertAmpersand(true, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "DialogCopy", "GuiMove"
+aaFavoriteL := o_L.InsertAmpersand(true, "DialogAdd", "DialogMultipleAdd", "DialogEdit", "GuiRemoveFavorite", "DialogCopy", "GuiMove"
 	, "ControlToolTipMoveUp", "ControlToolTipMoveDown", "ControlToolTipSeparator", "ControlToolTipColumnBreak"
-	, "ControlToolTipTextSeparator", "ControlToolTipSortFavorites", "MenuSelectAll", "GuiMultipleAdd")
+	, "ControlToolTipTextSeparator", "ControlToolTipSortFavorites", "MenuSelectAll")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiAddFavoriteSelectType", aaFavoriteL["DialogAdd"] . g_strEllipse . "`tCtrl+N", "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiMultipleAddSelectSource", aaFavoriteL["DialogMultipleAdd"] . g_strEllipse, "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["SettingsCtrlE", aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 ; to avoid conflicts with the Search text box, do not use shortcuts Del or Ctrl+C, use Ctrl+R (Remove) and Ctrl+Y (Copy)
@@ -6267,8 +6269,6 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiSortFavoritesMenu", aaFavoriteL["ControlToolTipSortFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A", "", "iconNoIcon"])
-saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiMultipleAdd", aaFavoriteL["GuiMultipleAdd"], "", "iconNoIcon"])
 o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
@@ -10640,7 +10640,7 @@ Gui, 2:Add, Radio, xs y+15 vf_intRadioFavoriteTypeText gFavoriteSelectTypeRadioB
 
 Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavoriteSelectTypeContinue default, % o_L["DialogContinue"]
 Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, % o_L["GuiCancel"]
-Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteMultiple gGuiMultipleAdd, % o_L["GuiMultipleAdd"]
+Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteMultiple gGuiMultipleAddSelectSource, % o_L["DialogMultipleAdd"]
 Gui, Add, Text
 Gui, 2:Add, Text, xs+120 ys vf_lblAddFavoriteTypeHelp w250 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 
@@ -13751,61 +13751,189 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAdd:
+GuiMultipleAddSelectSource:
+GuiMultipleAddSelectSourceFromQAPFeature:
 ;------------------------------------------------------------
 
-intCol1Width := 90
+; list of available sources
+oMultipleAddSourcesIndex := ["CurrentWindows", "RecentFolders", "RecentFiles", "FrequentFolders", "FrequentFiles"
+	, "QAP", "Special", "Folder", "SettingsFileItems", "SettingsFileMenus"]
+oMultipleAddSources := {CurrentWindows: o_L["MenuSwitchFolderOrApp"], RecentFolders: o_L["MenuRecentFolders"]
+	, RecentFiles: o_L["MenuRecentFiles"], FrequentFolders: o_L["MenuPopularMenusFolders"], FrequentFiles: o_L["MenuPopularMenusFiles"]
+	, QAP: o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand, Special: o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
+	, Folder: o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand, SettingsFileItems: o_L["DialogMultipleAddSettingsFileItems"]
+	, SettingsFileMenus: o_L["DialogMultipleAddSettingsFileMenus"]}
+
+if (A_ThisLabel = "GuiMultipleAddSelectSourceFromQAPFeature")
+	gosub, GuiShowFromGuiAddFavoriteQAPFeature
+
+if SearchIsVisible()
+	gosub, GuiGotoMenuPrev
+
+if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock()
+	return
+	
+Gui, 1:Submit, NoHide
+
+strGuiTitle := L(o_L["DialogMultipleAdd"] . " - ~1~ ~2~", g_strAppNameText, g_strAppVersion)
+Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:+Owner1
+Gui, 2:+OwnDialogs
+if (g_blnUseColors)
+	Gui, 2:Color, %g_strGuiWindowColor%
+
+Gui, 2:Add, Text, x10 y+20, % o_L["DialogMultipleAddSelectSource"] . " " . o_L["DialogMultipleAddSelectSourceNext"]
+Gui, 2:Add, Text, x10 w400, % o_L["DialogMultipleAddIntro1"]
+Gui, 2:Add, Text, x10 y+2 w400, % o_L["DialogMultipleAddIntro2"]
+Gui, 2:Add, Text, x10 y+2 w400, % o_L["DialogMultipleAddIntro3"]
+
+Gui, 2:Add, Text, x50 y+20, % o_L["DialogMultipleAddFrom"] . ":"
+Gui, 2:Add, Text, x+20 yp section
+
+for intSourceKey, strSourceKey in oMultipleAddSourcesIndex
+	if !(!g_blnUsageDbEnabled and InStr(strSourceKey, "Frequent"))
+		Gui, 2:Add, Radio, % (A_Index = 1 ? "yp" : "") . "xs gGuiMultipleAddSelectSourceRadioButtonsChanged vf_intRadioSource" . strSourceKey, % oMultipleAddSources[strSourceKey]
+
+Gui, 2:Add, Button, x20 y+20 vf_btnAddMultipleFavoriteSelectTypeContinue gGuiMultipleAddSelectSourceContinue default, % o_L["DialogContinue"]
+Gui, 2:Add, Button, yp vf_btnAddMultipleFavoriteSelectTypeCancel gGuiAddMultipleFavoriteCancel, % o_L["GuiCancel"]
+Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSingle gGuiAddFavoriteSelectType, % o_L["DialogAddSingle"]
+Gui, Add, Text
+
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddMultipleFavoriteSelectTypeContinue", "f_btnAddMultipleFavoriteSelectTypeCancel")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSingle")
+Gosub, ShowGui2AndDisableGui1
+
+o_ExternalMenu := ""
+strGuiTitle := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSelectSourceRadioButtonsChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+if (A_GuiEvent = "DoubleClick")
+	Gosub, GuiMultipleAddSelectSourceContinue
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSelectSourceContinue:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+for intKey, strSourceKey in oMultipleAddSourcesIndex
+{
+	GuiControlGet, blnThisType, , % "f_intRadioSource" . strSourceKey
+	if (blnThisType)
+	{
+		g_strAddMultipleSourceKey := strSourceKey
+		break
+	}
+}
+
+if !StrLen(g_strAddMultipleSourceKey)
+{
+	Oops(2, o_L["DialogMultipleAddSelectSource"])
+	return
+}
+
+Gosub, % "GuiMultipleAdd" . g_strAddMultipleSourceKey ; e.g. GuiMultipleAddFolder
+
+oMultipleAddSourcesIndex := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiAddMultipleFavoriteCancel:
+;------------------------------------------------------------
+
+Gosub, 2GuiClose
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddFolder:
+GuiMultipleAddSettingsFileMenus:
+GuiMultipleAddSettingsFileItems:
+GuiMultipleAddCurrentWindows:
+GuiMultipleAddRecentFiles:
+GuiMultipleAddRecentFolders:
+GuiMultipleAddFrequentFiles:
+GuiMultipleAddFrequentFolders:
+GuiMultipleAddQAP:
+GuiMultipleAddSpecial:
+;------------------------------------------------------------
+
+g_strMultipleAddSourceKey := StrReplace(A_ThisLabel, "GuiMultipleAdd", "")
+blnUsePath := InStr("Folder|SettingsFileMenus|SettingsFileItems", g_strMultipleAddSourceKey)
+
+intCol1Width := 80
 intCol2X := intCol1Width + 15
-intCol2Width := 500
+intCol2Width := 300
 intGuiContentWidth := 700
 
 aaL := o_L.InsertAmpersand(false, "GuiAddFavorite", "GuiCancel")
 
 gosub, CheckShowSettings
 
-g_strMultipleGuiTitle := L(o_L["GuiMultipleAdd"] . " - ~1~ ~2~", g_strAppNameText, g_strAppVersion)
+g_strMultipleGuiTitle := L(o_L["DialogMultipleAdd"] . " - ~1~ ~2~", g_strAppNameText, g_strAppVersion)
 
-Gui, 2:New, +Hwndg_strGui2Hwnd, %g_strMultipleGuiTitle%
+Gui, 2:New, +Hwndg_strGui2Hwnd, % g_strMultipleGuiTitle
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 
 Gui, 2:Font, w600, Verdana
-Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth, % o_L["GuiMultipleAdd"]
+Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth, % o_L["DialogMultipleAdd"] . " - " . oMultipleAddSources[g_strMultipleAddSourceKey]
 Gui, 2:Font
-Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, % o_L["GuiMultipleAddIntro"]
+Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro1"] . " " .  o_L["DialogMultipleAddIntro1a"]
+Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro2"] . " " .  o_L["DialogMultipleAddIntro2a"]
+Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro3"]
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+15 w" . intCol1Width . " right", % o_L["MenuMenu"]
-Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intCol2Width . " vf_drpGuiMultipleAddMenu"
+Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intGuiContentWidth - intCol1Width - 5 . " vf_drpGuiMultipleAddMenu"
 	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
 
-Gui, 2:Add, Text, % "vf_lblMultipleAddSource x10 y+10 w" . intCol1Width . " right", % o_L["ImpExpSource"]
-Gui, 2:Add, DropDownList, % "yp x" . intCol2X . " w200 gGuiMultipleAddSourceChanged vf_drpGuiMultipleAddSource"
-	, % o_L["MenuSwitchFolderOrApp"] . "||" . o_L["MenuRecentFolders"] . "|" . o_L["MenuRecentFiles"] . "|"
-		. (g_blnUsageDbEnabled ? o_L["MenuPopularMenusFolders"] . "|" . o_L["MenuPopularMenusFiles"] . "|" : "")
-		. o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand . "|"
-		. o_L["GuiMultipleAddSettingsFileItems"] . "|"
-		. o_L["GuiMultipleAddSettingsFileMenus"] . "|"
-	
-Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["GuiMultipleAddExcludeExisting"]
+if (blnUsePath)
+{
+	if InStr("SettingsFileMenus|SettingsFileItems", g_strMultipleAddSourceKey)
+		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFile x10 y+10 w" . intCol1Width . " right", % o_L["MenuFile"]
+	else
+		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
+	Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddSourcePathChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
+}
 
-Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right section", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFile xs ys w" . intCol1Width . " right", % o_L["MenuFile"]
-Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddSourcePathChanged x" . intCol2X . " yp w" . intCol2Width
-Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
+if !(blnUsePath and g_strMultipleAddSourceKey <> "SettingsFileItems")
+{
+	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
+	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Add, Button, x+5 yp gButtonMultipleAddClearFilter vf_btnMultipleAddClearFilter, X
+}
 
-Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["GuiMultipleAddFilter"]
-Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
-Gui, 2:Add, Button, x+5 yp gButtonMultipleAddClearFilter vf_btnMultipleAddClearFilter, X
+Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["DialogMultipleAddExcludeExisting"]
 
-saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|")
-Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section hidden"
-	, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)|Favorite Code (hidden)"
-	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
-Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents hidden"
+if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+	Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
+else
+{
+	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
+	Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
+		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
+		. (g_strMultipleAddSourceKey = "QAP" ? "|Favorite Code (hidden)" : "")
+		; Favorite Name, Type, Favorite Location or Content, Internal type (hidden), Favorite code (hidden) for QAP Features only
+}
 
 Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddFavorites disabled Default, % aaL["GuiAddFavorite"]
 Gui, 2:Add, Button, yp vf_btnGuiMultipleAddCancel gButtonMultipleAddCancel, % aaL["GuiCancel"]
@@ -13813,47 +13941,12 @@ GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGuiMultipleAddAddFavorites", "f
 
 Gui, 2:Add, Text
 
-Gosub, GuiMultipleAddSourceChanged
+Gosub, GuiMultipleAddFilterChanged
+
 Gosub, ShowGui2AndDisableGui1
 
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiMultipleAddSourceChanged:
-;------------------------------------------------------------
-Gui, 2:Submit, NoHide
-
-blnUsePath := (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-	or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"])
-
-; enable/disable fields for sources with path
-loop, Parse, % "f_lblMultipleAddSourceFolder|f_lblMultipleAddSourceFile|f_strMultipleAddSourcePath|f_btnMultipleAddSourcePath", |
-	GuiControl, % (blnUsePath ? "Enable" : "Disable" ), %A_LoopField%
-loop, Parse, % "f_strMultipleAddFilter|f_btnMultipleAddClearFilter", |
-	GuiControl, % (blnUsePath and f_drpGuiMultipleAddSource <> o_L["GuiMultipleAddSettingsFileItems"] ? "Disable" : "Enable"), %A_LoopField%
-
-if (blnUsePath and f_drpGuiMultipleAddSource <> o_L["GuiMultipleAddSettingsFileItems"]) ; if a source with a path is selected, reset the path and show right label
-{
-	; GuiControl, , f_strMultipleAddSourcePath, %A_ScriptDir%\multiple.ini
-	GuiControl, , f_strMultipleAddSourcePath ; reset file path, triggers GuiMultipleAddSourcePathChanged
-	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"]
-		 or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"] ? "Hide" : "Show"), f_lblMultipleAddSourceFolder
-	GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"]
-		 or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"] ? "Show" : "Hide"), f_lblMultipleAddSourceFile
-}
-else
-	GuiControl, , f_strMultipleAddFilter ; reset filter, triggers GuiMultipleAddFilterChanged
-	
-; show the treeview if source settings file, else show listview
-GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] ? "Hide" : "Show"), f_lvMultipleAddList
-GuiControl, % (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] ? "Show" : "Hide"), f_tvMultipleAddList
-	
-; show QAP help link
-GuiControl, % (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand ? "Show" : "Hide"), f_lblMultipleAddSourceHelp
-
-strCommand := ""
+blnUsePath := ""
+oMultipleAddSources := ""
 
 return
 ;------------------------------------------------------------
@@ -13868,49 +13961,52 @@ Critical, On ; avoid interruptin while loading
 SetWaitCursor(true)
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
+if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 	TV_Delete()	
 else
 	LV_Delete()
 
-if (f_drpGuiMultipleAddSource = o_L["MenuSwitchFolderOrApp"])
+if (g_strMultipleAddSourceKey = "CurrentWindows")
 	
 	gosub, GuiMultipleAddSourceCurrentWindowsLoad
 
-else if InStr(o_L["MenuRecentFiles"] . "|" . o_L["MenuRecentFolders"] . "|", f_drpGuiMultipleAddSource . "|")
+else if InStr("RecentFiles|RecentFolders|", g_strMultipleAddSourceKey . "|")
 	
 	gosub, GuiMultipleAddSourceRecentLoad
 
-else if InStr(o_L["MenuPopularMenusFiles"] . "|" . o_L["MenuPopularMenusFolders"] . "|", f_drpGuiMultipleAddSource . "|")
+else if InStr("FrequentFiles|FrequentFolders|", g_strMultipleAddSourceKey . "|")
 	
 	gosub, GuiMultipleAddSourcePopularLoad
 	
-else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand)
+else if (g_strMultipleAddSourceKey = "QAP")
 	
 	gosub, GuiMultipleAddSourceQAPFeaturesLoad
 
-else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand)
+else if (g_strMultipleAddSourceKey = "Special")
 	
 	gosub, GuiMultipleAddSourceSpecialLoad
 
-else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
+else if (g_strMultipleAddSourceKey = "Folder")
 	and StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
 	
 	gosub, GuiMultipleAddSourceFolderLoad
 	
 else if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath) and GetFileExtension(f_strMultipleAddSourcePath) = "ini"
-	if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
+	if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 		gosub, GuiMultipleAddSourceSettingsMenusLoad
-	else ; o_L["GuiMultipleAddSettingsFileItems"]
+	else ; SettingsFileItems
 		gosub, GuiMultipleAddSourceSettingsItemsLoad
 
-if (LV_GetCount())
-	LV_ModifyCol()
-else
-	LV_ModifyCol(0, "AutoHdr")
-LV_ModifyCol(4, 0) ; hide internal type column
-LV_ModifyCol(5, 0) ; hide favorite code column
-LV_ModifyCol(6, 0) ; hide help column
+if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
+{
+	if (LV_GetCount())
+		LV_ModifyCol()
+	else
+		LV_ModifyCol(0, "AutoHdr")
+	LV_ModifyCol(4, 0) ; hide internal type column
+	if (g_strMultipleAddSourceKey = "QAP")
+		LV_ModifyCol(5, 0) ; hide favorite code column
+}
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 SetWaitCursor(false)
@@ -13929,19 +14025,19 @@ Critical, On ; avoid interruptin while loading
 SetWaitCursor(true)
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
+if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 	TV_Delete()	
 else
 	LV_Delete()
 
 if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
-	if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
+	if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 	{
 		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
 			gosub, GuiMultipleAddSourceSettingsMenusLoad
 		; no else, enclose in curly brackets
 	}
-	else if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"])
+	else if (g_strMultipleAddSourceKey = "SettingsFileItems")
 	{
 		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
 			gosub, GuiMultipleAddSourceSettingsItemsLoad
@@ -14008,7 +14104,7 @@ return
 GuiMultipleAddSourceRecentLoad:
 ;------------------------------------------------------------
 
-strFoldersOrFiles := (f_drpGuiMultipleAddSource = o_L["MenuRecentFolders"] ? "Folders" : "Files")
+strFoldersOrFiles := (g_strMultipleAddSourceKey = "RecentFolders" ? "Folders" : "Files")
 gosub, % "GetMenusListRecentItemsForMultipleAdd" . strFoldersOrFiles ; update g_strMenuItemsListRecentFolders or g_strMenuItemsListRecentFiles
 
 Loop, Parse, g_strMenuItemsListRecent%strFoldersOrFiles%, `n ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
@@ -14030,7 +14126,7 @@ return
 GuiMultipleAddSourcePopularLoad:
 ;------------------------------------------------------------
 
-strInternalType := (f_drpGuiMultipleAddSource = o_L["MenuPopularMenusFolders"] ? "Folder" : "File")
+strInternalType := (g_strMultipleAddSourceKey = "FrequentFolders" ? "Folder" : "File")
 
 o_RecordSet := GetRecordSetPopular(strInternalType)
 
@@ -14093,7 +14189,7 @@ Loop, Files, %f_strMultipleAddSourcePath%, DF
 	{
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			, A_LoopFileName, oMultipleAddFavorite.AA.strFavoriteType)
-		; Name, Type Label, Location (only file name here), Internal type (hidden), Favorite code (hidden), Help (hidden)
+		; Favorite Name, Type, Favorite Location or Content (only file name here), Internal type (hidden)
 	}
 }
 
@@ -14114,7 +14210,6 @@ return
 GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "")
 ;------------------------------------------------------------
 {
-	strFilterSearchIn := (strInternalType = "QAP" ? strDescription . "|" . strName : strLocation . "|" . strName)
 	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
 		return
 	
@@ -14122,11 +14217,14 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 		strName := GetLocationPathName(strLocation)
 	
 	oMultipleAddFavorite := new Container.Item([strInternalType, strName, strLocation]) ; type, name, path
-	strDescription := o_QAPFeatures.AA[strLocation].strQAPFeatureDescription
+	
+	strDescription := (strInternalType = "QAP" ? o_QAPFeatures.AA[strLocation].strQAPFeatureDescription : "")
+	strFilterSearchIn := (strInternalType = "QAP" ? strName . "|" . strDescription : strName . "|" . strLocation)
 	if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-			,  (strInternalType = "QAP" ? SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "") : oMultipleAddFavorite.AA.strFavoriteLocation)
+			, (strInternalType = "QAP" ? SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "") : oMultipleAddFavorite.AA.strFavoriteLocation)
 			, oMultipleAddFavorite.AA.strFavoriteType, (strInternalType = "QAP" ? strLocation : ""))
+		; Favorite Name, Type, Favorite Location or Content (Description for QAP Features), Internal type (hidden), Favorite code (hidden) (for QAP Features only)
 }
 ;------------------------------------------------------------
 
@@ -14143,9 +14241,9 @@ if !StrLen(f_strMultipleAddSourcePath)
 
 oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "", "init", false, false)
 
-strMultipleAddSourceSettingsFile := f_strMultipleAddSourcePath
+g_strMultipleAddSourceKeySettingsFile := f_strMultipleAddSourcePath
 
-if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, strMultipleAddSourceSettingsFile) = "EOM")
+if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, g_strMultipleAddSourceKeySettingsFile) = "EOM")
 	if (A_ThisLabel = "GuiMultipleAddSourceSettingsMenusLoad")
 		oMultipleAddMain.LoadInTreeViewMenus(f_blnMultipleAddExcludeExisting) ; assign items objects to g_aaTreeViewItemsByIDs
 	else ; GuiMultipleAddSourceSettingsItemsLoad
@@ -14163,19 +14261,19 @@ ButtonMultipleAddSourcePath:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"] or f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileItems"])
-	FileSelectFile, strMultipleAddSourcePath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSwitchSettings"], *.ini
+if (g_strMultipleAddSourceKey = "SettingsFileMenus" or g_strMultipleAddSourceKey = "SettingsFileItems")
+	FileSelectFile, g_strMultipleAddSourceKeyPath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSwitchSettings"], *.ini
 else
 {
-	strMultipleAddSourcePath := ChooseFolder([g_strGui2Hwnd, o_L["DialogSelectFolder"]], f_strMultipleAddSourcePath)
-	; strMultipleAddSourcePath is false if user cancelled ChooseFolder
-	strMultipleAddSourcePath := (strMultipleAddSourcePath ? strMultipleAddSourcePath . "\*.*" : "")
+	g_strMultipleAddSourceKeyPath := ChooseFolder([g_strGui2Hwnd, o_L["DialogSelectFolder"]], f_strMultipleAddSourcePath)
+	; g_strMultipleAddSourceKeyPath is false if user cancelled ChooseFolder
+	g_strMultipleAddSourceKeyPath := (g_strMultipleAddSourceKeyPath ? g_strMultipleAddSourceKeyPath . "\*.*" : "")
 }
 
-if StrLen(strMultipleAddSourcePath)
-	GuiControl, , f_strMultipleAddSourcePath, %strMultipleAddSourcePath%
+if StrLen(g_strMultipleAddSourceKeyPath)
+	GuiControl, , f_strMultipleAddSourcePath, %g_strMultipleAddSourceKeyPath%
 
-strMultipleAddSourcePath := ""
+g_strMultipleAddSourceKeyPath := ""
 
 return
 ;------------------------------------------------------------
@@ -14339,14 +14437,13 @@ Gui, 2:Submit, NoHide
 
 g_strMultipleAddDestinationMenu := f_drpGuiMultipleAddMenu
 
-if (f_drpGuiMultipleAddSource = o_L["GuiMultipleAddSettingsFileMenus"])
+if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 
 	gosub, GuiMultipleAddFromTreeView
 
 else
 
 	gosub, GuiMultipleAddFromListView
-
 
 Gosub, 2GuiClose
 
@@ -14383,12 +14480,12 @@ Loop
 	LV_GetText(strFavoriteLocation, intRow, 3)
 	LV_GetText(strFavoriteType, intRow, 4)
 	
-	if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand)
+	if (g_strMultipleAddSourceKey = "Folder")
 	{
-		SplitPath, f_strMultipleAddSourcePath, , strMultipleAddSourcePath ; path without wildcards or filename
-		strFavoriteLocation := strMultipleAddSourcePath . "\" . strFavoriteLocation
+		SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
+		strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
 	}
-	else if (f_drpGuiMultipleAddSource = o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand)
+	else if (g_strMultipleAddSourceKey = "QAP")
 		LV_GetText(strFavoriteLocation, intRow, 5)
 	
 	o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
@@ -25857,9 +25954,9 @@ class QAPfeatures
 			, "can-i-make-the-active-window-always-on-top")
 		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiQuickAddSnippet"] . g_strEllipse, "", "GuiQuickAddSnippet",					"1-Featured~3-QAPMenuEditing"
 			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", "", "sponsoring")
-		this.AddQAPFeatureObject("MultipleAdd",				o_L["GuiMultipleAdd"],						"", "GuiMultipleAdd",						"1-Featured~3-QAPMenuEditing"
-			, o_L["GuiMultipleAddDescription"], 0, "iconAddThisFolder", ""
-			, "can-i-add-multiple-favorites-in-one-click/")
+		this.AddQAPFeatureObject("Add Multiple Favorite",	o_L["DialogMultipleAdd"] . g_strEllipse,		"", "GuiMultipleAddSelectSourceFromQAPFeature", "3-QAPMenuEditing"
+			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
+			, "can-i-add-multiple-favorites-in-one-click")
 
 		; Close computer various command features
 		
