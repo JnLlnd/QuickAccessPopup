@@ -5389,6 +5389,11 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 	}
 	else if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
 	{
+		if (o_Settings.Launch.strSponsorProductId.IniValue = o_EDDLicense.oLicense.item_id) ; number in registry is invalid
+		{
+			IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
+			blnInvalidProductIdRemoved := true
+		}
 		strPossibleBadNumber := A_LoopField
 		continue
 	}
@@ -5457,7 +5462,10 @@ if (o_EDDLicense.oLicense.license = "expired")
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
-	MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
+	if (blnInvalidProductIdRemoved)
+		MsgBox, % "An error occurred while validating your licence. Please try again."
+	else
+		MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
 	blnExitApp := true
 }
 else if (o_EDDLicense.oLicense.license <> "valid") ; no license
@@ -16519,13 +16527,8 @@ else if WindowIsToMenuDialogBox(strThisTitle)
 }
 strThisTitle := ""
 
-; resizing GuiDonate
-if (g_intLnkWhySponsorWidth) 
-	GuiControl, 2:Move, f_lnkWhySponsor, % "x" . (A_GuiWidth - g_intLnkWhySponsorWidth) // 2
-
 if (g_intLnkSendLink) ; resizing GuiDonate
 	GuiControl, 2:Move, f_lnkSendLink, % "x" . (A_GuiWidth - g_intLnkSendLink) // 2
-g_intLnkWhySponsorWidth := ""
 g_intLnkSendLink := ""
 
 return
@@ -18971,23 +18974,18 @@ Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 Gui, 2:+Owner1
+
 Gui, 2:Font, s12 w700, Verdana
 Gui, 2:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
-Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Link, x10 w185 y+10 vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/why-sponsoring-this-software/") ; will be centered by 2GuiSize
-GuiControlGet, arrPos, Pos, f_lnkWhySponsor
-g_intLnkWhySponsorWidth := arrPosW
+Gui, 2:Font, s10 w600, Verdana
+Gui, 2:Add, Button, y+20 Default vbtnDonateDefault w160 h80 gButtonDonate, % o_L["DonateMenu"]
+; GuiCenterButtons(g_strGui2Hwnd, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, "btnDonateDefault")
+GuiCenterButtons(g_strGui2Hwnd, 20, 20, 0, "btnDonateDefault")
+Gui, 2:Font, s8 w400 c404040 normal, Verdana
 
-loop, Parse, % "5|1|2", | ; removed option 3 for CAD and 4 for monthly
-{
-	if (A_Index = 1)
-		Gui, 2:Add, Button, y+20 Default vbtnDonateDefault5 xm w150 gButtonDonate5, % o_L["DonatePlatformName" . 5] ; #1 is Stripe #5
-	else
-		Gui, 2:Add, Button, % (A_LoopField = 2 ? "" : "") . " xm w150 gButtonDonate" . A_LoopField, % o_L["DonatePlatformName" . A_LoopField] ; same link and text numbers
-	Gui, 2:Add, Link, x+10 w235 yp, % o_L["DonatePlatformComment" . (A_Index = 1 ? 5 : A_LoopField)]
-}
+Gui, 2:Add, Link, x10 w420 y+40 center vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/why-sponsoring-this-software/") ; will be centered by 2GuiSize
 
-Gui, 2:Add, Link, xm y+15 w420, % o_L["DonateCheckPrompt2"]
+Gui, 2:Add, Link, x10 y+15 w420, % o_L["DonateCheckPrompt2"]
 
 Gui, 2:Font, s10 w700, Verdana
 Gui, 2:Add, Link, xm y+20 w420, % o_L["DonateText3"]
@@ -19043,21 +19041,10 @@ return
 
 
 ;------------------------------------------------------------
-ButtonDonate1:
-ButtonDonate2:
-ButtonDonate3:
-ButtonDonate4:
-ButtonDonate5:
+ButtonDonate:
 ;------------------------------------------------------------
 
-strDonatePlatformUrl1 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TE8TR28QKM3Z8"
-strDonatePlatformUrl2 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y9VVGCBNJK5DQ"
-strDonatePlatformUrl3 := "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DV4E4DYVWC5GC"
-; strDonatePlatformUrl4 := "https://www.quickaccesspopup.com/why-sponsoring-this-software/"
-strDonatePlatformUrl5 := "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6289" ; Stripe
-
-intButton := StrReplace(A_ThisLabel, "ButtonDonate")
-Run, % strDonatePlatformUrl%intButton%
+Run, http://edd-sandbox.jeanlalonde.ca/downloads/quickaccesspopup-sponsoring/ ; ##### URL
 
 return
 ;------------------------------------------------------------
@@ -19085,12 +19072,11 @@ aaL := o_L.InsertAmpersand(false, "GuiSave", "GuiHelp", "DialogCancelButton")
 
 Gui, 1:Font, s8 w400, Verdana
 Gui, 1:Add, Button, x175 y+20 gGuiDonateCodeInputSave vf_btnDonateCodeInputSave, % aaL["GuiSave"]
-Gui, 1:Add, Button, x175 yp gGuiDonateCodeInputHelp vf_btnDonateCodeInputHelp, % aaL["GuiHelp"]
 Gui, 1:Add, Button, x175 yp gGuiDonateCodeInputCancel vf_btnDonateCodeInputCancel, % aaL["DialogCancelButton"]
 Gui, 1:Add, Text
 GuiCenterButtons(strGuiDonateCodeInputHwnd, 10, 5, 20, "f_btnDonateCodeInputSave", "f_btnDonateCodeInputHelp", "f_btnDonateCodeInputCancel")
 
-GuiControl, Focus, btnDonateDefault
+GuiControl, Focus, f_btnDonateCodeInputSave
 Gui, 1:Show
 
 return
