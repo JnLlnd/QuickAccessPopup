@@ -5359,13 +5359,14 @@ ProcessSponsorCode:
 global g_blnSponsor := false ; replacing o_Settings.Launch.blnDonorCode.IniValue
 
 strSponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/" ; #####
-strSponsorEditionId := "80"
-strSponsorMonthlyEditionId := "428"
-strFreeEditionId := "97"
+strProductIdYearly := "481"
+strProductIdMonthly := "428"
+strProductIdLifeTime := "518"
+strProductIdFree := "97"
 
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
-	: strSponsorEditionId . "|" . strSponsorMonthlyEditionId . "|" . strFreeEditionId, |
-; if we have the product id, check license for this product, else, check for all products in order 1) sponsor, 2) monthly, 3) free
+	: strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdFree, |
+; if we have the product id, check license for this product, else, check for all products in order 1) yearly, 2) monthly, 3) lifetim, 4) free
 {
 	o_EDDLicense := new EDDLicense(strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue)
 	
@@ -5378,7 +5379,7 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 	
 	if (o_EDDLicense.oLicense.license = "valid")
 	{
-		o_EDDLicense.strProduct := (A_LoopField <> strFreeEditionId ? "Sponsor" : "Free")
+		o_EDDLicense.strProduct := (A_LoopField <> strProductIdFree ? "Sponsor" : "Free")
 		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		strPossibleBadNumber := ""
 		o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
@@ -5402,7 +5403,7 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 		MsgBox, 4, % L(o_L["DonateCodeExpiredTitle"], g_strAppNameText), % L(o_L["DonateCodeExpiredMessage"], g_strAppNameText)
 		IfMsgBox, Yes
 		{
-			if (o_EDDLicense.strItemId = strSponsorEditionId) ; Sponsor
+			if (o_EDDLicense.strItemId = strProductIdYearly) ; Sponsor
 				; Run, % "firefox.exe", o_EDDLicense.RenewLink()
 				Run, % "firefox.exe -url " . o_EDDLicense.RenewLink() ; ##### force tests with Firefox
 			else
@@ -5440,7 +5441,7 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 				OnExit ; disable exit subroutine
 				ExitApp
 			}
-			o_EDDLicense.strProduct := (A_LoopField <> strFreeEditionId ? "Sponsor" : "Free")
+			o_EDDLicense.strProduct := (A_LoopField <> strProductIdFree ? "Sponsor" : "Free")
 			o_EDDLicense.oLicense.license := "valid" ; for temporary offline usage
 			g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		}
@@ -5492,9 +5493,10 @@ if (blnExitApp)
 }
 
 strSponsorCodeSiteURL := ""
-strSponsorEditionId := ""
-strSponsorMonthlyEditionId := ""
-strFreeEditionId := ""
+strProductIdYearly := ""
+strProductIdMonthly := ""
+strProductIdLifeTime := ""
+strProductIdFree := ""
 strPossibleBadNumber := ""
 strOnline := ""
 blnExitApp := ""
