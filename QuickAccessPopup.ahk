@@ -4343,6 +4343,11 @@ intStartups := o_Settings.ReadIniValue("Startups", 1)
 global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
 
 ;---------------------------------
+; Contacts for EDD license
+global g_strProcessorId := Get_ProcessorId()
+global strSponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/" ; #####
+
+;---------------------------------
 ; Load Settings file
 
 Gosub, LoadIniFile ; load options, load/enable popup hotkeys, load favorites to menu object
@@ -5358,7 +5363,6 @@ ProcessSponsorCode:
 
 global g_blnSponsor := false ; replacing o_Settings.Launch.blnDonorCode.IniValue
 
-strSponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/" ; #####
 strProductIdYearly := "481"
 strProductIdMonthly := "428"
 strProductIdLifeTime := "518"
@@ -5368,29 +5372,30 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 	: strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdFree, |
 ; if we have the product id, check license for this product, else, check for all products in order 1) yearly, 2) monthly, 3) lifetim, 4) free
 {
-	o_EDDLicense := new EDDLicense(strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue)
+	o_EDDLicense := new EDDLicense(strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
+	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
+	
+	; QAP offline or website down
+	; o_EDDLicense.oLicense := ""
 	
 	; expired
 	; o_EDDLicense.oLicense.activations_left := "0" ; #####
-	; o_EDDLicense.oLicense.license := "invalid" ; #####
+	; o_EDDLicense.oLicense.license := "expired" ; #####
+	; missing renew link
+	
+	; no activation left
+	; o_EDDLicense.oLicense.activations_left := "0" ; #####
+	; o_EDDLicense.oLicense.license := "valid" ; #####
 	
 	; new license
 	; o_EDDLicense.oLicense.license := "invalid" ; #####
 	
-	if (o_EDDLicense.oLicense.license = "valid")
+	; valid license
+	; o_EDDLicense.oLicense.license := "valid" ; #####
+	
+	if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
 	{
-		o_EDDLicense.strProduct := (A_LoopField <> strProductIdFree ? "Sponsor" : "Free")
-		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
-		strPossibleBadNumber := ""
-		o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
-		Loop, Parse, A_NowUTC
-			strOnline := Asc(A_LoopField) . strOnline
-		SetRegistry(strOnline, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
-		break
-	}
-	else if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
-	{
-		if (o_Settings.Launch.strSponsorProductId.IniValue = o_EDDLicense.oLicense.item_id) ; number in registry is invalid
+		if (o_Settings.Launch.strSponsorProductId.IniValue = o_EDDLicense.oLicense.item_id) ; product in registry is invalid, delete it
 		{
 			IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
 			blnInvalidProductIdRemoved := true
@@ -5398,68 +5403,32 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 		strPossibleBadNumber := A_LoopField
 		continue
 	}
-	else if (o_EDDLicense.oLicense.license = "expired")
-	{
-		MsgBox, 4, % L(o_L["DonateCodeExpiredTitle"], g_strAppNameText), % L(o_L["DonateCodeExpiredMessage"], g_strAppNameText)
-		IfMsgBox, Yes
-		{
-			if (o_EDDLicense.strItemId = strProductIdYearly) ; Sponsor
-				; Run, % "firefox.exe", o_EDDLicense.RenewLink()
-				Run, % "firefox.exe -url " . o_EDDLicense.RenewLink() ; ##### force tests with Firefox
-			else
-				; Run, % strSponsorCodeSiteURL . "downloads/quickaccesspopup-sponsoring/"
-				Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "downloads/quickaccesspopup-sponsoring/" ; ##### force tests with Firefox
-		}
+	else ; the license is either valid, invalid, expired or missing
+		
 		break
-	}
-	else if (o_EDDLicense.oLicense.activations_left = "0")
-	{
-		MsgBox, 4, % L(o_L["DonateCodeNoActivationTitle"], g_strAppNameText), % L(o_L["DonateCodeNoActivationMessage"], o_EDDLicense.oLicense.site_count)
-		IfMsgBox, Yes
-			; Run, % strSponsorCodeSiteURL . "checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id
-			Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id ; ##### force tests with Firefox
-		break ; or continue or OnExit ; disable exit subroutine + ExitApp?
-	}
-	else ; the license is invalid or missing
-	{
-		strOnline := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
-		if StrLen(strOnline)
-		{
-			Loop, % StrLen(strOnline) / 2
-			{
-				strDecoded := Chr(SubStr(strOnline, 1, 2)) . strDecoded
-				strOnline := SubStr(strOnline, 3)
-			}
-			; strOnline := "20200822181414" ; test datetime
-			EnvSub, strOnline, A_NowUTC, D
-			intDaysAlert := 14
-			intDaysExit := 21
-			if (strOnline < -intDaysAlert)
-				Oops(1, o_L["DonateOnline"], intDaysAlert)
-			if (strOnline < -intDaysExit)
-			{
-				OnExit ; disable exit subroutine
-				ExitApp
-			}
-			o_EDDLicense.strProduct := (A_LoopField <> strProductIdFree ? "Sponsor" : "Free")
-			o_EDDLicense.oLicense.license := "valid" ; for temporary offline usage
-			g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
-		}
-		else
-			break
-	}
+		
 }
 ; ###_O2("EDD", o_EDDLicense, o_EDDLicense.oLicense)
 
-g_SponsoredMessage := (g_blnSponsor ? (StrLen(o_Settings.Launch.strSponsorName.IniValue)
-	? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "") : "<a id=""none"">" . o_L["SponsoredNone"] . "</a>")
-if StrLen(g_SponsoredMessage)
-	g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
-	
-if (o_EDDLicense.oLicense.license = "expired")
+; set the status before asking user for next action
+
+if (o_EDDLicense.oLicense.license = "valid")
 {
-	MsgBox, % o_L["DonateRenewal"]
-	blnExitApp := true
+	if (o_EDDLicense.oLicense.activations_left = "0")
+		
+		strSponsorCodeError := "no_activation_left"
+		
+	else ; license is good, set values and continue
+	{
+		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
+		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
+		strPossibleBadNumber := ""
+		o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
+		Loop, Parse, A_NowUTC
+			strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
+		SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+		strSponsorCodeError := "" ; QAP will launch
+	}
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
@@ -5467,43 +5436,356 @@ else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 		MsgBox, % "An error occurred while validating your licence. Please try again."
 	else
 		MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
-	blnExitApp := true
-}
-else if (o_EDDLicense.oLicense.license <> "valid") ; no license
-{
-	MsgBox, 3, %g_strAppNameText%, % L(o_L["DonateEnterCode"], g_strAppNameText) ; #####
-	IfMsgBox, Yes
-	{
-		Gosub, GuiDonateCodeInput
-		return
-	}
-	blnExitApp := true ; if No or Cancel
-	IfMsgBox, No
-	{
-		MsgBox, % o_L["DonateGetCode"]
-		; Run, % strSponsorCodeSiteURL . "downloads/quickaccesspopup-sponsoring/"
-		Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "downloads/quickaccesspopup-sponsoring/" ; ##### force tests with Firefox
-	}
-}
-
-if (blnExitApp)
-{
 	OnExit ; disable exit subroutine
 	ExitApp
 }
+else if (o_EDDLicense.oLicense.license = "expired")
 
-strSponsorCodeSiteURL := ""
+	strSponsorCodeError := "expired"
+
+else ; the license is invalid or missing
+{
+	if CheckValidLicenseTrace() <> "exit"
+	{
+		if CheckValidLicenseTrace() = "alert"
+			Oops(1, o_L["DonateOnline"], intDaysAlert)
+		; consider license is good, set values and continue
+		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
+		o_EDDLicense.oLicense := Object() ; for temporary offline usage
+		o_EDDLicense.oLicense.license := "valid"
+		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
+		strSponsorCodeError := "" ; QAP will launch
+	}
+	else
+	{
+		strSponsorCodeError := "invalid"
+	}
+}
+
+if StrLen(strSponsorCodeError)
+{
+	Gosub, GuiManageLicenseFromProcess
+	
+	if (strSponsorCodeAction <> "save-key")
+	{
+		OnExit ; disable exit subroutine
+		ExitApp
+	}
+}
+; else launch QAP
+
+g_SponsoredMessage := (g_blnSponsor ? (StrLen(o_Settings.Launch.strSponsorName.IniValue)
+	? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "") : "<a id=""none"">" . o_L["SponsoredNone"] . "</a>")
+if StrLen(g_SponsoredMessage)
+	g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
+
 strProductIdYearly := ""
 strProductIdMonthly := ""
 strProductIdLifeTime := ""
 strProductIdFree := ""
 strPossibleBadNumber := ""
-strOnline := ""
-blnExitApp := ""
+strSponsorOnlineTrace := ""
 intDaysAlert := ""
 intDaysExit := ""
+strSponsorCodeError := ""
+strSponsorCodeAction := ""
+blnInvalidProductIdRemoved := ""
+ 
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+CheckValidLicenseTrace()
+;------------------------------------------------------------
+{
+	strSponsorOnlineTrace := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+	if StrLen(strSponsorOnlineTrace)
+	{
+		Loop, % StrLen(strSponsorOnlineTrace) / 2
+		{
+			strDecoded := Chr(SubStr(strSponsorOnlineTrace, 1, 2)) . strDecoded
+			strSponsorOnlineTrace := SubStr(strSponsorOnlineTrace, 3)
+		}
+		; strSponsorOnlineTrace := "20200822181414" ; datetime example
+		EnvSub, strSponsorOnlineTrace, A_NowUTC, D
+		intDaysAlert := 14
+		intDaysExit := 21
+		if (strSponsorOnlineTrace < -intDaysAlert) ; between alert day and exit day
+			return "alert"
+		else if (strSponsorOnlineTrace < -intDaysExit) ; passed exit day
+			return "exit"
+		else ; before alert day
+			return "ok"
+	}
+	else ; no online trace
+		return "exit"
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiManageLicense:
+GuiManageLicenseFromProcess:
+;------------------------------------------------------------
+
+strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? strSponsorCodeError : "valid"), A_ThisLabel)
+; ###_V("strSponsorCodeStatus", strSponsorCodeStatus, strSponsorCodeAction)
+
+if (strSponsorCodeAction = "renew-key")
+{
+	MsgBox, % L(o_L["DonateActionRenewConfirm"], g_strAppNameText)
+	if (o_EDDLicense.strProductId = strProductIdFree)
+		; Run, % strSponsorCodeSiteURL . "products"
+		Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
+	else
+		; Run, % "firefox.exe", o_EDDLicense.RenewLink()
+		Run, % "firefox.exe -url " . o_EDDLicense.RenewLink() ; ##### force tests with Firefox
+}
+else if (strSponsorCodeAction = "get-new-key")
+{
+	if (A_ThisLabel = "GuiManageLicenseFromProcess")
+		MsgBox, % L(o_L["DonateActionNewLicenseConfirm"], g_strAppNameText)
+	; Run, % strSponsorCodeSiteURL . "products/"
+	Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
+}
+else if (strSponsorCodeAction = "manage-key")
+	
+	Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "checkout/purchase-history" ; ##### force tests with Firefox
+	
+else if (strSponsorCodeAction = "save-key")
+	
+	Gosub, GuiSponsorCodeInput
+	
+else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
+{
+	o_EDDLicense.Deactivate()
+	IniDelete, % o_Settings.strIniFile, Global, SponsorCode
+	IniDelete, % o_Settings.strIniFile, Global, SponsorName
+	IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
+	RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+	MsgBox, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strProcessorId, g_strAppNameText)
+}
+; else (if empty) do nothing
 
 return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetSponsorAction(GSA_strStatus, strFromLabel)
+;------------------------------------------------------------
+; GSA_strStatus: "valid", "invalid, "expired", "no_activation_left"
+{
+	; To create a global variable inside a function without knowing in advance what the variable's name is, the function must be assume-global. (Lexikos)
+	; (https://autohotkey.com/board/topic/84822-error-when-creating-gui-with-global-var-as-a-name/#entry540615)
+	; Use GSA_ prefix in local variable names to avoid conflicts outside the function and empty these variable because the function will not do it.
+	
+	global
+
+	if (GSA_strStatus = "invalid")
+	{
+		GSA_strGuiTitle := L(o_L["DonateButton"])
+		GSA_strPrompt := L(o_L["DonateCodeInvalidMessage"], g_strAppNameText)
+	}
+	else if (GSA_strStatus = "expired")
+	{
+		GSA_strGuiTitle := L(o_L["DonateCodeExpiredTitle"], g_strAppNameText)
+		GSA_strPrompt := L(o_L["DonateCodeExpiredMessage"], g_strAppNameText)
+	}
+	else if (GSA_strStatus = "no_activation_left")
+	{
+		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationTitle"], g_strAppNameText)
+		GSA_strPrompt := L(o_L["DonateCodeNoActivationMessage"], o_EDDLicense.oLicense.site_count, g_strAppNameText)
+	}
+	else if (GSA_strStatus = "valid")
+	{
+		GSA_strGuiTitle := L(o_L["DonateButton"])
+		GSA_strPrompt := L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
+	}
+	else
+		return
+
+	if (strFromLabel = "GuiManageLicense")
+		Gui, 1:Submit, NoHide
+
+	; every control in this Gui has the -Group option to allow the non-contiguous radio buttons to considered as one group
+	; https://autohotkey.com/board/topic/64482-tip-non-contiguous-radio-group/
+	
+	Gui, 2:New, +HwndstrGuiSponsorActionHwnd, %GSA_strGuiTitle%
+	if (strFromLabel = "GuiManageLicense")
+	{
+		Gui, 2:+Owner1
+		Gui, 2:+OwnDialogs
+	}
+	if (g_blnUseColors)
+		Gui, 2:Color, %g_strGuiWindowColor%
+	Gui, 2:Font, w700
+	Gui, 2:Add, Text, -Group, % (StrLen(o_EDDLicense.oLicense.item_name) ? o_EDDLicense.oLicense.item_name : g_strAppNameText)
+	Gui, 2:Font
+	
+	Gui, 2:Add, Link, -Group y+10 w420, %GSA_strPrompt%
+
+	Gui, 2:Font, w700
+	Gui, 2:Add, Text, -Group y+10, % o_L["DonateActionGroupWebsite"]
+	Gui, 2:Font
+	if (GSA_strStatus = "expired")
+		Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
+	
+	Gui, 2:Font, w700
+	Gui, 2:Add, Text, -Group y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
+	Gui, 2:Font
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
+
+	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
+
+	Gui, 2:Font, s8 w400, Verdana
+	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue, % aaL["DialogContinue"]
+	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionClose vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
+
+	Gui, 2:Add, Link, -Group w400 x10 y+15 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
+		. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
+	
+	GuiCenterButtons(strGuiSponsorActionHwnd, 10, 5, 20, "f_btnSponsorActionContinue", "f_btnSponsorActionCancel")
+	
+	if (GSA_strStatus = "invalid")
+		GuiControl, , f_blnSponsorActionNewLicense, 1
+	else if (GSA_strStatus = "expired")
+		GuiControl, , f_blnSponsorActionRenew, 1
+	else ; "no_activation_left" or "valid"
+		GuiControl, , f_blnSponsorActionManageLicense, 1
+
+	GuiControl, Focus, f_btnSponsorActionContinue
+	
+	Gui, 2:Show
+
+	WinWaitClose, %GSA_strGuiTitle% ; waiting for Gui to close
+	
+	return GSA_strAction ; returning value
+	
+	;------------------------------------------------------------
+	
+	;------------------------------------------------------------
+	ButtonSponsorActionContinue:
+	;------------------------------------------------------------
+	GuiControlGet, GSA_blnRadioSponsorActionRenew, , f_blnSponsorActionRenew
+	GuiControlGet, GSA_blnRadioSponsorActionNewLicense, , f_blnSponsorActionNewLicense
+	GuiControlGet, GSA_blnRadioSponsorActionManage, , f_blnSponsorActionManageLicense
+	GuiControlGet, GSA_blnRadioSponsorActionEnterLicense, , f_blnSponsorActionEnterLicense
+	GuiControlGet, GSA_blnRadioSponsorActionRemove, , f_blnSponsorActionRemoveLicense
+
+	if (GSA_blnRadioSponsorActionRenew)
+		GSA_strAction := "renew-key"
+	else if (GSA_blnRadioSponsorActionNewLicense)
+		GSA_strAction := "get-new-key"
+	else if (GSA_blnRadioSponsorActionManage)
+		GSA_strAction := "manage-key"
+	else if (GSA_blnRadioSponsorActionEnterLicense)
+		GSA_strAction := "save-key"
+	else if (GSA_blnRadioSponsorActionRemove)
+		GSA_strAction := "remove-key"
+	else
+	{
+		Oops(1, o_L["DonateActionChoose"])
+		return ; do not destroy window
+	}
+	
+	; closing the window will trigger the function return value
+	gosub, ButtonSponsorActionClose
+	
+	return
+	;------------------------------------------------------------
+	
+	;------------------------------------------------------------
+	ButtonSponsorActionCancel:
+	ButtonSponsorActionClose:
+	;------------------------------------------------------------
+	
+	if (A_ThisLabel = "ButtonSponsorActionCancel")
+		GSA_strAction := ""
+	
+	if (strFromLabel = "GuiManageLicense")
+		gosub, 2GuiClose
+	else
+		Gui, 2:Destroy
+	
+	return
+	;------------------------------------------------------------
+	
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSponsorCodeInput:
+;------------------------------------------------------------
+
+strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
+Gui, 1:New, +HwndstrGuiSponsorCodeInputHwnd, %strGuiTitle%
+if (g_blnUseColors)
+	Gui, 1:Color, %g_strGuiWindowColor%
+Gui, 1:Font, s12 w700, Verdana
+Gui, 1:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
+Gui, 1:Font, s8 w400, Verdana
+
+Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
+Gui, 1:Add, Edit, y+10 w300 vf_strSponsorCode
+
+Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputSponsorLabel"]
+Gui, 1:Add, Edit, y+10 w300 vf_strSponsorName
+
+aaL := o_L.InsertAmpersand(false, "GuiSave", "GuiHelp", "DialogCancelButton")
+
+Gui, 1:Font, s8 w400, Verdana
+Gui, 1:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave, % aaL["GuiSave"]
+Gui, 1:Add, Button, x175 yp gGuiSponsorCodeInputCancel vf_btnSponsorCodeInputCancel, % aaL["DialogCancelButton"]
+Gui, 1:Add, Text
+GuiCenterButtons(strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInputSave", "f_btnSponsorCodeInputCancel")
+
+GuiControl, Focus, f_btnSponsorCodeInputSave
+Gui, 1:Show
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSponsorCodeInputSave:
+;------------------------------------------------------------
+Gui, 1:Submit, NoHide
+
+strSponsorCode := Trim(f_strSponsorCode)
+strSponsorName := Trim(f_strSponsorName)
+
+; Donor code must contain only numbers and lowercase letters and be 32 digits
+if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
+	or RegExMatch(strSponsorCode, "[^a-z^0-9]") ; sponsor code must be made only of digits in ranges a-z (lowercase) and 0-9
+{
+	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
+	return
+}
+
+; o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
+o_Settings.Launch.strSponsorCode.WriteIni(strSponsorCode)
+o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
+
+MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyouRestart"], g_strAppNameText)
+
+OnExit ; disable exit subroutine
+Reload
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSponsorCodeInputCancel:
+;------------------------------------------------------------
+OnExit ; disable exit subroutine
+ExitApp
 ;------------------------------------------------------------
 
 
@@ -6382,7 +6664,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuSupportForum"
-	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "MenuAbout")
+	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -6396,6 +6678,7 @@ saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiDonate", aaHelpL["GuiDonate"] . g_strEllipse, "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -18929,17 +19212,16 @@ Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
 FormatTime, strYear, , yyyy ; current time
 Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear)
 Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
-Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
-	. " (<a>" . StrLower(o_L["DialogCopy"]) . "</a>)"
+Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
+	. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
 Gui, 2:Font, s10 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
 Gui, 2:Font, s8 w400, Verdana
 
 aaL := o_L.InsertAmpersand(false, "GuiClose", "DonateButton")
 
-Gui, 2:Add, Button, y+20 vf_btnAboutDonate gGuiDonate, % aaL["DonateButton"]
-Gui, 2:Add, Button, yp vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutDonate", "f_btnAboutClose")
+Gui, 2:Add, Button, y+20 vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
 
 GuiControl, Focus, f_btnAboutClose
 Gosub, ShowGui2AndDisableGui1
@@ -18956,7 +19238,7 @@ return
 GuiAboutCopyLicense:
 ;------------------------------------------------------------
 
-MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopy"]
+MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
 IfMsgBox, Cancel
 	return
 
@@ -18980,7 +19262,7 @@ Gui, 2:+Owner1
 Gui, 2:Font, s12 w700, Verdana
 Gui, 2:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
 Gui, 2:Font, s10 w600, Verdana
-Gui, 2:Add, Button, y+20 Default vbtnDonateDefault w160 h80 gButtonDonate, % o_L["DonateMenu"]
+Gui, 2:Add, Button, y+20 Default vbtnDonateDefault w220 h50 gButtonDonate, % o_L["DonateMenu"]
 ; GuiCenterButtons(g_strGui2Hwnd, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, "btnDonateDefault")
 GuiCenterButtons(g_strGui2Hwnd, 20, 20, 0, "btnDonateDefault")
 Gui, 2:Font, s8 w400 c404040 normal, Verdana
@@ -19046,79 +19328,9 @@ return
 ButtonDonate:
 ;------------------------------------------------------------
 
-Run, http://edd-sandbox.jeanlalonde.ca/downloads/quickaccesspopup-sponsoring/ ; ##### URL
+Run, http://edd-sandbox.jeanlalonde.ca/products ; ##### URL
 
 return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiDonateCodeInput:
-;------------------------------------------------------------
-
-strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
-Gui, 1:New, +HwndstrGuiDonateCodeInputHwnd, %strGuiTitle%
-if (g_blnUseColors)
-	Gui, 1:Color, %g_strGuiWindowColor%
-Gui, 1:Font, s12 w700, Verdana
-Gui, 1:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
-Gui, 1:Font, s8 w400, Verdana
-
-Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
-Gui, 1:Add, Edit, y+10 w300 vf_strSponsorCode
-
-Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputSponsorLabel"]
-Gui, 1:Add, Edit, y+10 w300 vf_strSponsorName
-
-aaL := o_L.InsertAmpersand(false, "GuiSave", "GuiHelp", "DialogCancelButton")
-
-Gui, 1:Font, s8 w400, Verdana
-Gui, 1:Add, Button, x175 y+20 gGuiDonateCodeInputSave vf_btnDonateCodeInputSave, % aaL["GuiSave"]
-Gui, 1:Add, Button, x175 yp gGuiDonateCodeInputCancel vf_btnDonateCodeInputCancel, % aaL["DialogCancelButton"]
-Gui, 1:Add, Text
-GuiCenterButtons(strGuiDonateCodeInputHwnd, 10, 5, 20, "f_btnDonateCodeInputSave", "f_btnDonateCodeInputHelp", "f_btnDonateCodeInputCancel")
-
-GuiControl, Focus, f_btnDonateCodeInputSave
-Gui, 1:Show
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiDonateCodeInputSave:
-;------------------------------------------------------------
-Gui, 1:Submit, NoHide
-
-strSponsorCode := Trim(f_strSponsorCode)
-strSponsorName := Trim(f_strSponsorName)
-
-; Donor code must contain only numbers and lowercase letters and be 32 digits
-if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
-	or RegExMatch(strSponsorCode, "[^a-z^0-9]") ; sponsor code must be made only of digits in ranges a-z (lowercase) and 0-9
-{
-	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
-	return
-}
-
-; o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
-o_Settings.Launch.strSponsorCode.WriteIni(strSponsorCode)
-o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
-
-MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyouRestart"], g_strAppNameText)
-
-OnExit ; disable exit subroutine
-Reload
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiDonateCodeInputCancel:
-;------------------------------------------------------------
-OnExit ; disable exit subroutine
-ExitApp
 ;------------------------------------------------------------
 
 
@@ -23030,6 +23242,21 @@ GetDefaultBrowserPath(strUrl)
 	strBrowserPath := SubStr(strBrowserPath, strPathStart, strPathEnd)
 	
 	return strBrowserPath
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Get_ProcessorId()
+; info: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor
+;---------------------------------------------------------
+{
+	strComputer := "."
+	objWMIService := ComObjGet("winmgmts:\\" . strComputer . "\root\cimv2")
+	WQLQuery := "Select * From Win32_Processor"
+	colCPU := objWMIService.ExecQuery(WQLQuery)._NewEnum
+	while colCPU[objCPU]
+		return objCPU.ProcessorId
 }
 ;---------------------------------------------------------
 
