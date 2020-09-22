@@ -1,6 +1,6 @@
 # Quick Access Popup - Read me
 
-Freeware launcher for Windows.
+Launcher for Windows.
 
 Written using AHKScript (http://www.ahkscript.org)  
 By JnLlnd on [AHKScript forum](http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=66)
