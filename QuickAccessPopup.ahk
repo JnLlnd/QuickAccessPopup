@@ -31,18 +31,39 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 10.5.6.1 (2020-08-24)
-- private test release for UNC drive offline: return generic icons for folders and documents for all files on an UNC drive (if test positive, remove option RetrieveIconInFrequentMenus)
+Version BETA: 10.5.9.4 (2020-09-??)
+ 
+New Licensing system
+- implement a new licensing system replacing the sponsor codes; new licenses are available for a modest price and a free edition is albo available
+- when a user launch QAP without a valid license, offer to get a license on QAP website or to enter the license in a dialog box
+- allow user to manage the licens on QAP website (using a password sent when getting the license), remove installations, etc.
+- optionaly display the sponsor's name in the Customize window
+- under the "Help" menu, replace menu item "Enter sponsor code" with "Manage your license"
+- display the license info in the "About" dialog box with link to copy the info to the Clipboard
+ 
+Adding Multiple Favorites in one dialog box
+- under the "Favorite" menu, new menu item "Add Multiple Favorites" allowing to add favorites to a menu or group ini one step
+- filter by keywords items or sort to be imported in the "Add Multiple Favorites" dialog box
+- automatically exclude from the list the favorites already found in your menu
+- add multiple favorites (folders or applications) from the "Current Windows" to a menu or a group
+- add multiple items from the "Recent Folders" or the "Recent Files" to a menu or a group
+- add multiple items from the "Frequent Folders" or the "Frequent Files" to a menu or a group
+- add multiple QAP Features or Special Folders to a menu or a group
+- add multiple favorites (folders, documents or applications) from a selected folder to a menu or group
+? add multiple favorites of any type with all their properties from a selected QAP Settings file
+? import a menu and its content from a selected QAP Settings file
+ 
+Various improvements and small bug fixes
+- add support for the Windows app "Windows Terminal" (with same features as for CMD or PowerShell)
+- optimize menu creation when items are on an offline network drive (UNC) and remove unnecessary option "Retrieve icons when refreshing Frequent menus
+- Italian translation typos and enconding issue fixed
+- other changes in production release v10.5.3, v10.5.4 and v10.5.5
 
 Version: 10.5.6 (2020-08-24)
- 
-*** This small release is the last one until I'm back from vacations in two weeks.
- 
 - fix bug when selecting an .ico file in "Edit Favorite"
 - fix error in startup message fpor sponsor users
 
 Version: 10.5.5 (2020-08-12)
- 
 - in the "Sponsor this software" dialog box, add a button for credit cart sponsoring payment (as an alternative to PayPal)
 - in Setup program final screen, add a checkbox for credit card sponsoring payment (as an alternative to PayPal)
 - in "Edit Favorite", when changing folder location for a favorite already having a custom icon, preserve this icon except if the folder has a Windows custom icon configured (in desktop.ini)
@@ -4386,9 +4407,9 @@ intStartups := o_Settings.ReadIniValue("Startups", 1)
 global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
 
 ;---------------------------------
-; Contacts for EDD license
+; Constants for EDD license
 global g_strProcessorId := Get_ProcessorId()
-global strSponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/" ; #####
+global g_strSponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/" ; ####
 
 ;---------------------------------
 ; Load Settings file
@@ -4420,9 +4441,26 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 }
 
 ; Init Sponsor code
-Gosub, ProcessSponsorCode
-if (o_EDDLicense.oLicense.license <> "valid")
-	return
+
+;@Ahk2Exe-IgnoreBegin
+; Start of code for developement phase only - won't be compiled
+blnDoNotCheckLicense := false ; true ; #####
+; / End of code for developement phase only - won't be compiled
+;@Ahk2Exe-IgnoreEnd
+
+if (blnDoNotCheckLicense)
+{
+	o_EDDLicense := Object()
+	o_EDDLicense.oLicense := Object()
+	o_EDDLicense.oLicense.license := "valid"
+	g_blnSponsor := true
+}
+else
+{
+	Gosub, ProcessSponsorCode
+	if (o_EDDLicense.oLicense.license <> "valid")
+		return
+}
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -5415,26 +5453,26 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 	: strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdFree, |
 ; if we have the product id, check license for this product, else, check for all products in order 1) yearly, 2) monthly, 3) lifetim, 4) free
 {
-	o_EDDLicense := new EDDLicense(strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
+	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
 	
 	; QAP offline or website down
 	; o_EDDLicense.oLicense := ""
 	
 	; expired
-	; o_EDDLicense.oLicense.activations_left := "0" ; #####
-	; o_EDDLicense.oLicense.license := "expired" ; #####
+	; o_EDDLicense.oLicense.activations_left := "0" ; ####
+	; o_EDDLicense.oLicense.license := "expired" ; ####
 	; missing renew link
 	
 	; no activation left
-	; o_EDDLicense.oLicense.activations_left := "0" ; #####
-	; o_EDDLicense.oLicense.license := "valid" ; #####
+	; o_EDDLicense.oLicense.activations_left := "0" ; ####
+	; o_EDDLicense.oLicense.license := "valid" ; ####
 	
 	; new license
-	; o_EDDLicense.oLicense.license := "invalid" ; #####
+	; o_EDDLicense.oLicense.license := "invalid" ; ####
 	
 	; valid license
-	; o_EDDLicense.oLicense.license := "valid" ; #####
+	; o_EDDLicense.oLicense.license := "valid" ; ####
 	
 	if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
 	{
@@ -5575,12 +5613,14 @@ GuiManageLicenseFromProcess:
 strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? strSponsorCodeError : "valid"), A_ThisLabel)
 ; ###_V("strSponsorCodeStatus", strSponsorCodeStatus, strSponsorCodeAction)
 
+strMsgBoxTitle := g_strAppNameText . " - " . g_strAppVersion
+
 if (strSponsorCodeAction = "renew-key")
 {
-	MsgBox, % L(o_L["DonateActionRenewConfirm"], g_strAppNameText)
+	MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionRenewConfirm"], g_strAppNameText)
 	if (o_EDDLicense.strProductId = strProductIdFree)
-		; Run, % strSponsorCodeSiteURL . "products"
-		Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
+		; Run, % g_strSponsorCodeSiteURL . "products"
+		Run, % "firefox.exe -url " . g_strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
 	else
 		; Run, % "firefox.exe", o_EDDLicense.RenewLink()
 		Run, % "firefox.exe -url " . o_EDDLicense.RenewLink() ; ##### force tests with Firefox
@@ -5588,13 +5628,13 @@ if (strSponsorCodeAction = "renew-key")
 else if (strSponsorCodeAction = "get-new-key")
 {
 	if (A_ThisLabel = "GuiManageLicenseFromProcess")
-		MsgBox, % L(o_L["DonateActionNewLicenseConfirm"], g_strAppNameText)
-	; Run, % strSponsorCodeSiteURL . "products/"
-	Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
+		MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionNewLicenseConfirm"], g_strAppNameText)
+	; Run, % g_strSponsorCodeSiteURL . "products/"
+	Run, % "firefox.exe -url " . g_strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
 }
 else if (strSponsorCodeAction = "manage-key")
 	
-	Run, % "firefox.exe -url " . strSponsorCodeSiteURL . "checkout/purchase-history" ; ##### force tests with Firefox
+	Run, % "firefox.exe -url " . g_strSponsorCodeSiteURL . "checkout/purchase-history" ; ##### force tests with Firefox
 	
 else if (strSponsorCodeAction = "save-key")
 	
@@ -5602,14 +5642,20 @@ else if (strSponsorCodeAction = "save-key")
 	
 else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 {
-	o_EDDLicense.Deactivate()
-	IniDelete, % o_Settings.strIniFile, Global, SponsorCode
-	IniDelete, % o_Settings.strIniFile, Global, SponsorName
-	IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
-	RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
-	MsgBox, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strProcessorId, g_strAppNameText)
+	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strProcessorId, g_strAppNameText)
+	
+	ifMsgBox, Yes
+	{
+		o_EDDLicense.Deactivate()
+		IniDelete, % o_Settings.strIniFile, Global, SponsorCode
+		IniDelete, % o_Settings.strIniFile, Global, SponsorName
+		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
+		RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+	}
 }
 ; else (if empty) do nothing
+
+strMsgBoxTitle := ""
 
 return
 ;------------------------------------------------------------
@@ -5687,7 +5733,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 
 	Gui, 2:Font, s8 w400, Verdana
 	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue, % aaL["DialogContinue"]
-	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionClose vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
+	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionCancel vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
 
 	Gui, 2:Add, Link, -Group w400 x10 y+15 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
 		. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
@@ -5815,7 +5861,7 @@ if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
 o_Settings.Launch.strSponsorCode.WriteIni(strSponsorCode)
 o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
 
-MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyouRestart"], g_strAppNameText)
+MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyouRestart"], g_strAppNameText), 5
 
 OnExit ; disable exit subroutine
 Reload
@@ -14175,7 +14221,7 @@ GuiMultipleAddSelectSourceFromQAPFeature:
 
 ; list of available sources
 oMultipleAddSourcesIndex := ["CurrentWindows", "RecentFolders", "RecentFiles", "FrequentFolders", "FrequentFiles"
-	, "QAP", "Special", "Folder", "SettingsFileItems", "SettingsFileMenus"]
+	, "QAP", "Special", "Folder"] ; to be added: "SettingsFileItems", "SettingsFileMenus"]
 oMultipleAddSources := {CurrentWindows: o_L["MenuSwitchFolderOrApp"], RecentFolders: o_L["MenuRecentFolders"]
 	, RecentFiles: o_L["MenuRecentFiles"], FrequentFolders: o_L["MenuPopularMenusFolders"], FrequentFiles: o_L["MenuPopularMenusFiles"]
 	, QAP: o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand, Special: o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
@@ -14281,8 +14327,6 @@ return
 
 ;------------------------------------------------------------
 GuiMultipleAddFolder:
-GuiMultipleAddSettingsFileMenus:
-GuiMultipleAddSettingsFileItems:
 GuiMultipleAddCurrentWindows:
 GuiMultipleAddRecentFiles:
 GuiMultipleAddRecentFolders:
@@ -14290,6 +14334,8 @@ GuiMultipleAddFrequentFiles:
 GuiMultipleAddFrequentFolders:
 GuiMultipleAddQAP:
 GuiMultipleAddSpecial:
+GuiMultipleAddSettingsFileItems:
+GuiMultipleAddSettingsFileMenus:
 ;------------------------------------------------------------
 
 g_strMultipleAddSourceKey := StrReplace(A_ThisLabel, "GuiMultipleAdd", "")
@@ -14376,7 +14422,7 @@ GuiMultipleAddFilterChanged:
 Gui, 2:Submit, NoHide
 
 Critical, On ; avoid interruptin while loading
-SetWaitCursor(true)
+SetCursor(true, "wait")
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
 if (g_strMultipleAddSourceKey = "SettingsFileMenus")
@@ -14427,7 +14473,7 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 }
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
-SetWaitCursor(false)
+SetCursor(false)
 Critical, Off
 
 return
@@ -14440,7 +14486,7 @@ GuiMultipleAddSourcePathChanged:
 Gui, 2:Submit, NoHide
 
 Critical, On ; avoid interruptin while loading
-SetWaitCursor(true)
+SetCursor(true, "wait")
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
 if (g_strMultipleAddSourceKey = "SettingsFileMenus")
@@ -14465,7 +14511,7 @@ if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
 		gosub, GuiMultipleAddSourceFolderLoad
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
-SetWaitCursor(false)
+SetCursor(false)
 Critical, Off
 
 return
@@ -14628,16 +14674,16 @@ return
 GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "")
 ;------------------------------------------------------------
 {
-	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
-		return
-	
 	if !StrLen(strName)
 		strName := GetLocationPathName(strLocation)
+	strFilterSearchIn := (strInternalType = "QAP" ? strName . "|" . strDescription : strName . "|" . strLocation)
+	
+	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
+		return
 	
 	oMultipleAddFavorite := new Container.Item([strInternalType, strName, strLocation]) ; type, name, path
 	
 	strDescription := (strInternalType = "QAP" ? o_QAPFeatures.AA[strLocation].strQAPFeatureDescription : "")
-	strFilterSearchIn := (strInternalType = "QAP" ? strName . "|" . strDescription : strName . "|" . strLocation)
 	if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			, (strInternalType = "QAP" ? SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "") : oMultipleAddFavorite.AA.strFavoriteLocation)
@@ -20281,7 +20327,7 @@ return
 ButtonDonate:
 ;------------------------------------------------------------
 
-Run, http://edd-sandbox.jeanlalonde.ca/products ; ##### URL
+Run, %g_strSponsorCodeSiteURL%/products
 
 return
 ;------------------------------------------------------------
@@ -22754,17 +22800,17 @@ SetCursor(blnOnOff, strCursorName := "")
 	static s_blnCursorWaitAlreadyOn
 	static s_oWaitCursor
 	
-	if StrLen(strCursorName)
-		if (strCursorName = "wait")
-			strCursorCode := 32514
-		else
-			return
-	
 	if (blnOnOff)
 		if (s_blnCursorWaitAlreadyOn)
 			return
 		else
 		{
+			if StrLen(strCursorName)
+				if (strCursorName = "wait")
+					strCursorCode := 32514
+				else
+					return
+			
 			; The line of code below loads a cursor from the system set
 			s_oWaitCursor :=  DllCall("LoadImage", "Uint", 0, "Uint", strCursorCode, "Uint", 2, "Uint", 0, "Uint", 0, "Uint", 0x8000)
 
