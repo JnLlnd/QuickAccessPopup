@@ -5156,7 +5156,6 @@ o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLoc
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "intIconSize", "IconSize", 32, "MenuIcons", "f_lblIconSize|f_drpIconSize") ; g_intIconSize
 o_Settings.ReadIniOption("MenuIcons", "intIconsManageRowsSettings", "IconsManageRows", 0, "MenuIcons", "f_intIconsManageRowsSettingsEdit|f_intIconsManageRowsSettings|f_lblIconsManageRows") ; g_intIconsManageRowsSettings
-o_Settings.ReadIniOption("MenuIcons", "blnRetrieveIconInFrequentMenus", "RetrieveIconInFrequentMenus", 1, "MenuIcons", "f_blnRetrieveIconInFrequentMenus") ; avoid offline delay when retrieving icons for Frequent items menus
 o_Settings.ReadIniOption("MenuIcons", "strIconReplacementList", "IconReplacementList", " ", "MenuIcons", "f_lnkIconReplacementList1|f_lnkIconReplacementList2|f_strIconReplacementList") ; g_strIconReplacementList
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
@@ -7769,14 +7768,10 @@ GuiControl, ChooseString, f_drpIconSize, % o_Settings.MenuIcons.intIconSize.IniV
 GuiControl, 2:+gGuiOptionsGroupChanged, f_drpIconSize
 
 ; IconsManageRows
-Gui, 2:Add, Edit, % "y+10 x" . g_intGroupItemsX . " w51 h22 vf_intIconsManageRowsSettingsEdit number center hidden" . (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? "" : "Disabled")
+Gui, 2:Add, Edit, % "y+10 x" . g_intGroupItemsX . " w51 h22 vf_intIconsManageRowsSettingsEdit number center hidden"
 Gui, 2:Add, UpDown, vf_intIconsManageRowsSettings Range0-9999 gGuiOptionsGroupChanged hidden, % o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue
-Gui, 2:Add, Text, % "yp x+10 w400 hidden vf_lblIconsManageRows" . (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? "" : " Disabled"), % o_L["OptionsIconsManageRows"]
+Gui, 2:Add, Text, % "yp x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsIconsManageRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intIconsManageRowsSettingsEdit
-
-; RetrieveIconInFrequentMenus
-Gui, 2:Add, CheckBox, y+20 x%g_intGroupItemsX% w500 vf_blnRetrieveIconInFrequentMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsIconsRetrieveInFrequentMenus"]
-GuiControl, , f_blnRetrieveIconInFrequentMenus, % (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue = true)
 gosub, DisplayIconsClickedInit
 
 ; strIconReplacementList
@@ -8440,7 +8435,6 @@ o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 o_Settings.MenuIcons.blnDisplayIcons.WriteIni(f_blnDisplayIcons)
 o_Settings.MenuIcons.intIconSize.WriteIni(f_drpIconSize)
 o_Settings.MenuIcons.intIconsManageRowsSettings.WriteIni(f_intIconsManageRowsSettings)
-o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.WriteIni(f_blnRetrieveIconInFrequentMenus)
 o_Settings.MenuIcons.strIconReplacementList.WriteIni(OptionsListCleanup(f_strIconReplacementList))
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
@@ -9082,10 +9076,6 @@ if (A_ThisLabel = "DisplayIconsClicked")
 strEnableDisableCommand := (f_blnDisplayIcons ? "Enable" : "Disable")
 GuiControl, %strEnableDisableCommand%, f_lblIconSize
 GuiControl, %strEnableDisableCommand%, f_drpIconSize
-GuiControl, %strEnableDisableCommand%, f_intIconsManageRowsSettingsEdit
-GuiControl, %strEnableDisableCommand%, f_intIconsManageRowsSettings
-GuiControl, %strEnableDisableCommand%, f_lblIconsManageRows
-GuiControl, %strEnableDisableCommand%, f_blnRetrieveIconInFrequentMenus
 strEnableDisableCommand := ""
 
 return
@@ -19498,7 +19488,6 @@ loop, parse, % "Folders|Files", |
 		if (strTargetNb <= 1) ; skip if not enough frequent
 			continue
 		
-		; if (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue) ; if not blnRetrieveIconInFrequentMenus, consider that file exists
 		if (SubStr(strPath, 1, 2) <> "\\") ; if this is an UNC path, consider that file exists
 			and !RecentFileExistInPath(strPath, A_ThisLabel) ; skip if not exist
 				continue
