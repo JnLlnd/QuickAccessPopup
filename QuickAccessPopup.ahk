@@ -57,6 +57,7 @@ Various improvements and small bug fixes
 - add support for the Windows app "Windows Terminal" (with same features as for CMD or PowerShell)
 - optimize menu creation when items are on an offline network drive (UNC) and remove unnecessary option "Retrieve icons when refreshing Frequent menus
 - Italian translation typos and enconding issue fixed
+- fix bug when saving changes to the properties of a shared menu
 - other changes in production release v10.5.3, v10.5.4 and v10.5.5
 
 Version: 10.5.6 (2020-08-24)
@@ -15139,18 +15140,19 @@ if (g_blnAbortSave)
 
 if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalSave|", strThisLabel . "|"))
 {
-	global o_EditedFavoriteMenu := new Container(o_EditedFavorite.AA.strFavoriteType, strNewFavoriteShortName, , o_Containers.AA[strDestinationMenu]) ; class instance for the new menu or group
+	oNewFavoriteMenu := new Container(o_EditedFavorite.AA.strFavoriteType, strNewFavoriteShortName, , o_Containers.AA[strDestinationMenu]) ; class instance for the new menu or group
 
-	if (o_EditedFavoriteMenu.AA.strMenuType = "External")
+	if (oNewFavoriteMenu.AA.strMenuType = "External")
 	{
-		o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath := PathCombine(A_WorkingDir, EnvVars(strFavoriteAppWorkingDir))
-		o_EditedFavoriteMenu.AA.blnMenuExternalLoaded := true ; consider as loaded since it is new and empty
+		oNewFavoriteMenu.AA.strMenuExternalSettingsPath := PathCombine(A_WorkingDir, EnvVars(strFavoriteAppWorkingDir))
+		oNewFavoriteMenu.AA.blnMenuExternalLoaded := true ; consider as loaded since it is new and empty
 	}
 
-	o_EditedFavorite.AA.oSubmenu := o_EditedFavoriteMenu
+	o_EditedFavorite.AA.oSubmenu := oNewFavoriteMenu
+	o_EditedFavorite.AA.oParentMenu := o_Containers.AA[strDestinationMenu]
 }
-else
-	o_EditedFavoriteMenu := o_EditedFavorite.AA.oParentMenu
+
+o_EditedFavoriteMenu := o_EditedFavorite.AA.oParentMenu
 
 ; update menu object except if we multiple move or copy favorites
 if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
@@ -15158,39 +15160,39 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	; if external menu file exists, load the submenu from the external settings ini file
 	if (o_EditedFavorite.AA.strFavoriteType = "External")
 	{
-		if FileExist(o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath) ; file path exists
-			; load the external menu to menu instance o_EditedFavoriteMenu created earlier
-			o_EditedFavoriteMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+		if FileExist(o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath) ; file path exists
+			; load the external menu to menu instance oNewFavoriteMenu created earlier
+			o_EditedFavorite.AA.oSubMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
 		else ; if external settings file does not exist, create empty [Favorites] section
 		{
 			Gui, 2:+OwnDialogs
-			MsgBox, 4, %g_strAppNameText%, % L(o_L["DialogExternalMenuNotExist"], o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath)
+			MsgBox, 4, %g_strAppNameText%, % L(o_L["DialogExternalMenuNotExist"], o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath)
 			IfMsgBox, No
 			{
 				gosub, GuiAddFavoriteSaveCleanup
 				return
 			}
-			IniWrite, Z, % o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath, Favorites, Favorite1
+			IniWrite, Z, % o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath, Favorites, Favorite1
 			Sleep, 20 ; for safety
 		}
 		
 		; if external settings file is not read-only, write [Global] values to external settings file
-		if !ExternalMenuIsReadOnly(o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath)
+		if !ExternalMenuIsReadOnly(o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath)
 		{
-			if !(g_blnExternalLocationChanged) and !(strThisLabel = "GuiAddExternalSave") ; only if external menu created with dialog box
+			if !(g_blnExternalLocationChanged) and (strThisLabel = "GuiAddFavoriteSave") ; only if external menu created with dialog box
 			{
 				intMenuExternalType := (f_radExternalMenuType1 ? 1 : (f_radExternalMenuType2 ? 2 : 3))
-				IniWrite, %intMenuExternalType%, % o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath, Global, MenuType
-				IniWrite, %f_strExternalMenuName%, % o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath, Global, MenuName
-				IniWrite, %f_strExternalWriteAccessUsers%, % o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath, Global, WriteAccessUsers
-				IniWrite, %f_strExternalWriteAccessMessage%, % o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath, Global, WriteAccessMessage
+				IniWrite, %intMenuExternalType%, % o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath, Global, MenuType
+				IniWrite, %f_strExternalMenuName%, % o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath, Global, MenuName
+				IniWrite, %f_strExternalWriteAccessUsers%, % o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath, Global, WriteAccessUsers
+				IniWrite, %f_strExternalWriteAccessMessage%, % o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath, Global, WriteAccessMessage
 				; update last modified value in ini file because values requiring update by other users were changed
-				IniWrite, % (f_radExternalSourceCloud = 1), % o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath, Global, LastModifiedFromSystem
-				strLastModified := ExternalMenuGetModifiedDateTime(o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath)
-				IniWrite, %strLastModified%, % o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath, Global, LastModified
+				IniWrite, % (f_radExternalSourceCloud = 1), % o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath, Global, LastModifiedFromSystem
+				strLastModified := ExternalMenuGetModifiedDateTime(o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath)
+				IniWrite, %strLastModified%, % o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath, Global, LastModified
 			}
 			else
-				strLastModified := ExternalMenuGetModifiedDateTime(o_EditedFavoriteMenu.AA.strMenuExternalSettingsPath)
+				strLastModified := ExternalMenuGetModifiedDateTime(o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath)
 				; else, no need to save values from advanced tab because they were not updated yet by GuiAddFavoriteTabChanged
 			
 			; update object's last modified dates anyway
@@ -15454,6 +15456,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	oExternalMenu := ""
 	oDuplicateFavorite := ""
 	blnRadioButtonValue := ""
+	oNewFavoriteMenu := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
