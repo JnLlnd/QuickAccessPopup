@@ -31,34 +31,32 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.5.9.4 (2020-09-??)
+Version BETA: 10.5.9.4 (2020-09-24)
  
 New Licensing system
-- implement a new licensing system replacing the sponsor codes; new licenses are available for a modest price and a free edition is albo available
-- when a user launch QAP without a valid license, offer to get a license on QAP website or to enter the license in a dialog box
-- allow user to manage the licens on QAP website (using a password sent when getting the license), remove installations, etc.
+- implement a new licensing system replacing the sponsor codes; new licenses are available for a modest price and a free edition is also available
+  (more info: https://forum.quickaccesspopup.com/showthread.php?tid=1208)
+- when users launch QAP without a valid license, offer to get a license on QAP website or to enter the license they received in a dialog box
+- under the "Help" menu, replace menu item "Enter sponsor code" with "Manage your license" allowing to manage the license on QAP website (using a password sent when getting the license), remove installations, etc.
 - optionaly display the sponsor's name in the Customize window
-- under the "Help" menu, replace menu item "Enter sponsor code" with "Manage your license"
 - display the license info in the "About" dialog box with link to copy the info to the Clipboard
  
 Adding Multiple Favorites in one dialog box
-- under the "Favorite" menu, new menu item "Add Multiple Favorites" allowing to add favorites to a menu or group ini one step
-- filter by keywords items or sort to be imported in the "Add Multiple Favorites" dialog box
-- automatically exclude from the list the favorites already found in your menu
+- under the "Favorite" menu, new menu item "Add Multiple Favorites" allowing to add favorites to a menu or group in one step
+- filter items to be imported by keywords or sort them in the "Add Multiple Favorites" dialog box
+- optionaly exclude from the list the favorites already found in the QAP menu
 - add multiple favorites (folders or applications) from the "Current Windows" to a menu or a group
-- add multiple items from the "Recent Folders" or the "Recent Files" to a menu or a group
-- add multiple items from the "Frequent Folders" or the "Frequent Files" to a menu or a group
-- add multiple QAP Features or Special Folders to a menu or a group
-- add multiple favorites (folders, documents or applications) from a selected folder to a menu or group
-? add multiple favorites of any type with all their properties from a selected QAP Settings file
-? import a menu and its content from a selected QAP Settings file
+- add multiple items from the "Recent Folders" or the "Recent Files"
+- add multiple items from the "Frequent Folders" or the "Frequent Files"
+- add multiple QAP Features or Special Folders
+- add multiple favorites (folders, documents or applications) from a selected folder
  
 Various improvements and small bug fixes
-- add support for the Windows app "Windows Terminal" (with same features as for CMD or PowerShell)
-- optimize menu creation when items are on an offline network drive (UNC) and remove unnecessary option "Retrieve icons when refreshing Frequent menus
+- add support for the Windows app "Windows Terminal" (with same features as for CMD command line or PowerShell)
+- optimize menu creation when items are on an offline network drive (UNC) and remove unnecessary option "Retrieve icons when refreshing Frequent menus"
+- fix bug when saving changes to the properties of a Shared menu
 - Italian translation typos and enconding issue fixed
-- fix bug when saving changes to the properties of a shared menu
-- other changes in production release v10.5.3, v10.5.4 and v10.5.5
+- other changes in production release v10.5.3 to v10.5.6
 
 Version: 10.5.6 (2020-08-24)
 - fix bug when selecting an .ico file in "Edit Favorite"
@@ -76,13 +74,13 @@ Version: 10.5.5 (2020-08-12)
 
 Version: 10.5.4 (2020-07-21)
 - fix bug when loading the Alternative menus modifiers (default modifiers remained active even after they were changed in Options)
-- add a button in "Options, "Alternative Menu Hotkeys" to reset the default Alternative menu modifiers and an help link about Alternative menu modifiers
+- add a button in "Options, Alternative Menu Hotkeys" to reset the default Alternative menu modifiers and an help link about Alternative menu modifiers
 - fix bug with Directory Opus Favorites "Layouts" submenu
 - stop opening the "Customize" window when double-clicking the QAP icon in the Notification zone
 - fix bug in the installer when QAP working folder path included something between curly brackets {...}
  
 Version BETA: 10.5.9.3 (2020-07-12)
-- fix bug not removing the small statut popup window when using the "Refresh Live Folders and Shared menus" command
+- fix bug not removing the small status popup window when using the "Refresh Live Folders and Shared menus" command
 - add sources to multiple add: "Frequent folders", "Frequent files", "Recent folders" and Recent files"
 - add a checkbox to exclude existing favorites
 - remove duplicates in current windows source
@@ -4128,7 +4126,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.9.3
+;@Ahk2Exe-SetVersion 10.5.9.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4184,7 +4182,7 @@ Gosub, SetQAPWorkingDirectory
 ; see http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 SetWorkingDir, %A_ScriptDir%
 ListLines, On
-; #### BuildUserAhkApi(A_ScriptFullPath,1) ; used for index of type ahead? From Joe Glines
+; ### BuildUserAhkApi(A_ScriptFullPath,1) ; used for index of type ahead? From Joe Glines
 ; to test user data directory: SetWorkingDir, %A_AppData%\Quick Access Popup
 ; / End of code for developement enviuronment only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -4194,7 +4192,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "10.5.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4445,7 +4443,8 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true ; #####
+blnDoNotCheckLicense := false ; true / false ; ####
+global g_strEnvironment := "-dev"
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -4621,7 +4620,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAddSelectSource ; #####
+; gosub, GuiMultipleAddSelectSource ; ####
 
 return
 
@@ -5508,7 +5507,7 @@ if (o_EDDLicense.oLicense.license = "valid")
 		o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
 		Loop, Parse, A_NowUTC
 			strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
-		SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+		SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
 		strSponsorCodeError := "" ; QAP will launch
 	}
 }
@@ -5527,11 +5526,12 @@ else if (o_EDDLicense.oLicense.license = "expired")
 
 else ; the license is invalid or missing
 {
-	if CheckValidLicenseTrace() <> "exit"
+	if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and CheckValidLicenseTrace() <> "exit"
 	{
 		if CheckValidLicenseTrace() = "alert"
 			Oops(1, o_L["DonateOnline"], intDaysAlert)
 		; consider license is good, set values and continue
+		o_EDDLicense := Object() ; for temporary offline usage
 		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
 		o_EDDLicense.oLicense := Object() ; for temporary offline usage
 		o_EDDLicense.oLicense.license := "valid"
@@ -5581,7 +5581,7 @@ return
 CheckValidLicenseTrace()
 ;------------------------------------------------------------
 {
-	strSponsorOnlineTrace := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+	strSponsorOnlineTrace := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
 	if StrLen(strSponsorOnlineTrace)
 	{
 		Loop, % StrLen(strSponsorOnlineTrace) / 2
@@ -5620,22 +5620,19 @@ if (strSponsorCodeAction = "renew-key")
 {
 	MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionRenewConfirm"], g_strAppNameText)
 	if (o_EDDLicense.strProductId = strProductIdFree)
-		; Run, % g_strSponsorCodeSiteURL . "products"
-		Run, % "firefox.exe -url " . g_strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
+		Run, % g_strSponsorCodeSiteURL . "products"
 	else
-		; Run, % "firefox.exe", o_EDDLicense.RenewLink()
-		Run, % "firefox.exe -url " . o_EDDLicense.RenewLink() ; ##### force tests with Firefox
+		Run, % o_EDDLicense.RenewLink()
 }
 else if (strSponsorCodeAction = "get-new-key")
 {
 	if (A_ThisLabel = "GuiManageLicenseFromProcess")
 		MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionNewLicenseConfirm"], g_strAppNameText)
-	; Run, % g_strSponsorCodeSiteURL . "products/"
-	Run, % "firefox.exe -url " . g_strSponsorCodeSiteURL . "products" ; ##### force tests with Firefox
+	Run, % g_strSponsorCodeSiteURL . "products"
 }
 else if (strSponsorCodeAction = "manage-key")
 	
-	Run, % "firefox.exe -url " . g_strSponsorCodeSiteURL . "checkout/purchase-history" ; ##### force tests with Firefox
+	Run, % g_strSponsorCodeSiteURL . "checkout/purchase-history"
 	
 else if (strSponsorCodeAction = "save-key")
 	
@@ -5651,7 +5648,7 @@ else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 		IniDelete, % o_Settings.strIniFile, Global, SponsorCode
 		IniDelete, % o_Settings.strIniFile, Global, SponsorName
 		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
-		RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online")
+		RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
 	}
 }
 ; else (if empty) do nothing
@@ -5720,15 +5717,15 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	Gui, 2:Add, Text, -Group y+10, % o_L["DonateActionGroupWebsite"]
 	Gui, 2:Font
 	if (GSA_strStatus = "expired")
-		Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
+		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
 	
 	Gui, 2:Font, w700
 	Gui, 2:Add, Text, -Group y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
 	Gui, 2:Font
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
+	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
 
 	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
 
@@ -5756,6 +5753,16 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	
 	return GSA_strAction ; returning value
 	
+	;------------------------------------------------------------
+	
+	;------------------------------------------------------------
+	GetSponsorActionRadioButtonsChanged:
+	;------------------------------------------------------------
+
+	if (A_GuiEvent = "DoubleClick")
+		Gosub, ButtonSponsorActionContinue
+
+	return
 	;------------------------------------------------------------
 	
 	;------------------------------------------------------------
