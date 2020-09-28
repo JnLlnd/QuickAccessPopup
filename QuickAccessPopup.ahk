@@ -31,20 +31,20 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.5.9.4 (2020-09-24)
+Version BETA: 10.5.9.4 (2020-09-28)
  
-New Licensing system
+License processing
 - implement a new licensing system replacing the sponsor codes; new licenses are available for a modest price and a free edition is also available
   (more info: https://forum.quickaccesspopup.com/showthread.php?tid=1208)
-- when users launch QAP without a valid license, offer to get a license on QAP website or to enter the license they received in a dialog box
+- when users launch QAP without a valid license, display the "Manage License" dialog box, where users can get a license on QAP website or to enter the license they received in a dialog box
 - under the "Help" menu, replace menu item "Enter sponsor code" with "Manage your license" allowing to manage the license on QAP website (using a password sent when getting the license), remove installations, etc.
-- optionaly display the sponsor's name in the Customize window
+- optionally display the sponsor's name in the "Customize" window
 - display the license info in the "About" dialog box with link to copy the info to the Clipboard
  
 Adding Multiple Favorites in one dialog box
 - under the "Favorite" menu, new menu item "Add Multiple Favorites" allowing to add favorites to a menu or group in one step
-- filter items to be imported by keywords or sort them in the "Add Multiple Favorites" dialog box
-- optionaly exclude from the list the favorites already found in the QAP menu
+- filter items to import by keywords or sort them in the "Add Multiple Favorites" dialog box
+- optionally exclude from the list the favorites already found in the QAP menu
 - add multiple favorites (folders or applications) from the "Current Windows" to a menu or a group
 - add multiple items from the "Recent Folders" or the "Recent Files"
 - add multiple items from the "Frequent Folders" or the "Frequent Files"
@@ -55,7 +55,7 @@ Various improvements and small bug fixes
 - add support for the Windows app "Windows Terminal" (with same features as for CMD command line or PowerShell)
 - optimize menu creation when items are on an offline network drive (UNC) and remove unnecessary option "Retrieve icons when refreshing Frequent menus"
 - fix bug when saving changes to the properties of a Shared menu
-- Italian translation typos and enconding issue fixed
+- Italian translation typos and encoding issue fixed
 - other changes in production release v10.5.3 to v10.5.6
 
 Version: 10.5.6 (2020-08-24)
@@ -5456,23 +5456,25 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
 	
+	; TEST VALUES
+	
 	; QAP offline or website down
 	; o_EDDLicense.oLicense := ""
 	
 	; expired
-	; o_EDDLicense.oLicense.activations_left := "0" ; ####
-	; o_EDDLicense.oLicense.license := "expired" ; ####
+	; o_EDDLicense.oLicense.activations_left := "0"
+	; o_EDDLicense.oLicense.license := "expired"
 	; missing renew link
 	
 	; no activation left
-	; o_EDDLicense.oLicense.activations_left := "0" ; ####
-	; o_EDDLicense.oLicense.license := "valid" ; ####
+	; o_EDDLicense.oLicense.activations_left := "0"
+	; o_EDDLicense.oLicense.license := "valid"
 	
 	; new license
-	; o_EDDLicense.oLicense.license := "invalid" ; ####
+	; o_EDDLicense.oLicense.license := "invalid"
 	
 	; valid license
-	; o_EDDLicense.oLicense.license := "valid" ; ####
+	; o_EDDLicense.oLicense.license := "valid"
 	
 	if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
 	{
@@ -5495,21 +5497,14 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 
 if (o_EDDLicense.oLicense.license = "valid")
 {
-	if (o_EDDLicense.oLicense.activations_left = "0")
-		
-		strSponsorCodeError := "no_activation_left"
-		
-	else ; license is good, set values and continue
-	{
-		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
-		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
-		strPossibleBadNumber := ""
-		o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
-		Loop, Parse, A_NowUTC
-			strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
-		SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
-		strSponsorCodeError := "" ; QAP will launch
-	}
+	o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
+	g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
+	strPossibleBadNumber := ""
+	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
+	Loop, Parse, A_NowUTC
+		strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
+	SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
+	strSponsorCodeError := "" ; QAP will launch
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
@@ -5524,9 +5519,13 @@ else if (o_EDDLicense.oLicense.license = "expired")
 
 	strSponsorCodeError := "expired"
 
-else ; the license is invalid or missing
+else ; the license is site_inactive, invalid or missing
 {
-	if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and CheckValidLicenseTrace() <> "exit"
+	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0)
+		
+		strSponsorCodeError := "no_activation_left"
+		
+	else if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and CheckValidLicenseTrace() <> "exit"
 	{
 		if CheckValidLicenseTrace() = "alert"
 			Oops(1, o_L["DonateOnline"], intDaysAlert)
@@ -5539,9 +5538,9 @@ else ; the license is invalid or missing
 		strSponsorCodeError := "" ; QAP will launch
 	}
 	else
-	{
+		
 		strSponsorCodeError := "invalid"
-	}
+		
 }
 
 if StrLen(strSponsorCodeError)
@@ -5612,7 +5611,6 @@ GuiManageLicenseFromProcess:
 ;------------------------------------------------------------
 
 strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? strSponsorCodeError : "valid"), A_ThisLabel)
-; ###_V("strSponsorCodeStatus", strSponsorCodeStatus, strSponsorCodeAction)
 
 strMsgBoxTitle := g_strAppNameText . " - " . g_strAppVersion
 
@@ -5634,6 +5632,11 @@ else if (strSponsorCodeAction = "manage-key")
 	
 	Run, % g_strSponsorCodeSiteURL . "checkout/purchase-history"
 	
+else if (strSponsorCodeAction = "manage-installations")
+{
+	MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionManageInstallationsConfirm"], g_strAppNameText, o_EDDLicense.oLicense.item_name)
+	Run, % g_strSponsorCodeSiteURL . "checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id
+}	
 else if (strSponsorCodeAction = "save-key")
 	
 	Gosub, GuiSponsorCodeInput
@@ -5682,8 +5685,8 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	}
 	else if (GSA_strStatus = "no_activation_left")
 	{
-		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationTitle"], g_strAppNameText)
-		GSA_strPrompt := L(o_L["DonateCodeNoActivationMessage"], o_EDDLicense.oLicense.site_count, g_strAppNameText)
+		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationsTitle"], g_strAppNameText)
+		GSA_strPrompt := L(o_L["DonateCodeNoInstallationsMessage"], o_EDDLicense.oLicense.site_count, g_strAppNameText)
 	}
 	else if (GSA_strStatus = "valid")
 	{
@@ -5720,6 +5723,8 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
+	if (GSA_strStatus = "no_activation_left")
+		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageInstallations, % o_L["DonateActionManageInstallations"]
 	
 	Gui, 2:Font, w700
 	Gui, 2:Add, Text, -Group y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
@@ -5739,9 +5744,11 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	GuiCenterButtons(strGuiSponsorActionHwnd, 10, 5, 20, "f_btnSponsorActionContinue", "f_btnSponsorActionCancel")
 	
 	if (GSA_strStatus = "invalid")
-		GuiControl, , f_blnSponsorActionNewLicense, 1
+		GuiControl, , f_blnSponsorActionEnterLicense, 1
 	else if (GSA_strStatus = "expired")
 		GuiControl, , f_blnSponsorActionRenew, 1
+	else if (GSA_strStatus = "no_activation_left")
+		GuiControl, , f_blnSponsorActionManageInstallations, 1
 	else ; "no_activation_left" or "valid"
 		GuiControl, , f_blnSponsorActionManageLicense, 1
 
@@ -5770,7 +5777,8 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	;------------------------------------------------------------
 	GuiControlGet, GSA_blnRadioSponsorActionRenew, , f_blnSponsorActionRenew
 	GuiControlGet, GSA_blnRadioSponsorActionNewLicense, , f_blnSponsorActionNewLicense
-	GuiControlGet, GSA_blnRadioSponsorActionManage, , f_blnSponsorActionManageLicense
+	GuiControlGet, GSA_blnRadioSponsorActionManageLicense, , f_blnSponsorActionManageLicense
+	GuiControlGet, GSA_blnRadioSponsorActionManageInstallations, , f_blnSponsorActionManageInstallations
 	GuiControlGet, GSA_blnRadioSponsorActionEnterLicense, , f_blnSponsorActionEnterLicense
 	GuiControlGet, GSA_blnRadioSponsorActionRemove, , f_blnSponsorActionRemoveLicense
 
@@ -5778,8 +5786,10 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 		GSA_strAction := "renew-key"
 	else if (GSA_blnRadioSponsorActionNewLicense)
 		GSA_strAction := "get-new-key"
-	else if (GSA_blnRadioSponsorActionManage)
+	else if (GSA_blnRadioSponsorActionManageLicense)
 		GSA_strAction := "manage-key"
+	else if (GSA_blnRadioSponsorActionManageInstallations)
+		GSA_strAction := "manage-installations"
 	else if (GSA_blnRadioSponsorActionEnterLicense)
 		GSA_strAction := "save-key"
 	else if (GSA_blnRadioSponsorActionRemove)
