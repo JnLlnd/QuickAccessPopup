@@ -26390,6 +26390,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Add Multiple Favorite",	o_L["DialogMultipleAdd"] . g_strEllipse,		"", "GuiMultipleAddSelectSourceFromQAPFeature", "3-QAPMenuEditing"
 			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
 			, "can-i-add-multiple-favorites-in-one-click")
+		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
+			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
+			, "can-i-add-multiple-favorites-in-one-click")
 
 		; Close computer various command features
 		
