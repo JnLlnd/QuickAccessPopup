@@ -5341,9 +5341,7 @@ o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusion
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
-Gosub, UpdateDonorIniValues
-o_Settings.ReadIniOption("Launch", "blnDonorCode", "DonorCode", 0)
-o_Settings.ReadIniOption("Launch", "strSponsorName", "SponsorName", " ")
+o_Settings.ReadIniOption("Launch", "strSponsorName", "SponsorNameOptional", " ") ; rename ini name from SponsorName to SponsorNameOptional to avoid overwriting the name associated to the pre-v11 sponsor code
 o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
 o_Settings.ReadIniOption("Launch", "strSponsorProductId", "SponsorProductId", " ")
 
@@ -5412,37 +5410,10 @@ return
 
 
 ;------------------------------------------------------------
-UpdateDonorIniValues:
-; update values in ini file before v9.9.2.9
-; rename ini values "Donor" to "DonorCode" and "Sponsor" to "SponsorName", convert values under old names, if found
-;------------------------------------------------------------
-
-strOldDonor := o_Settings.ReadIniValue("Donor", " ")
-strExistingDonorCode := o_Settings.ReadIniValue("DonorCode", " ")
-
-if StrLen(strOldDonor) ;  old Donor value exists
-{
-	if !StrLen(strExistingDonorCode) ; if DonorCode does not already exist, write Donor value under new name
-		IniWrite, %strOldDonor%, % o_Settings.strIniFile, Global, DonorCode
-	IniDelete, % o_Settings.strIniFile, Global, Donor ; in any case, delete old Donor value
-}
-
-strOldSponsor := o_Settings.ReadIniValue("Sponsor", " ")
-if StrLen(strOldSponsor) ;  if old value exists, write value under new name and delete old value
-{
-	IniWrite, %strOldSponsor%, % o_Settings.strIniFile, Global, SponsorName
-	IniDelete, % o_Settings.strIniFile, Global, Sponsor
-}
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
 ProcessSponsorCode:
 ;------------------------------------------------------------
 
-global g_blnSponsor := false ; replacing o_Settings.Launch.blnDonorCode.IniValue
+global g_blnSponsor := false
 
 strProductIdYearly := "481"
 strProductIdMonthly := "428"
@@ -5649,7 +5620,7 @@ else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 	{
 		o_EDDLicense.Deactivate()
 		IniDelete, % o_Settings.strIniFile, Global, SponsorCode
-		IniDelete, % o_Settings.strIniFile, Global, SponsorName
+		IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
 		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
 		RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
 	}
@@ -5875,7 +5846,6 @@ if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
 	return
 }
 
-; o_Settings.Launch.blnDonorCode.WriteIni(strDonorCode)
 o_Settings.Launch.strSponsorCode.WriteIni(strSponsorCode)
 o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
 
@@ -23860,155 +23830,6 @@ GetIconForClassId(strClassId)
 {
 	RegRead, strDefaultIcon, HKEY_CLASSES_ROOT, CLSID\%strClassId%\DefaultIcon
     return strDefaultIcon
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-Exclamation_bcrypt_md5(strSponsorName)
-;------------------------------------------------------------
-{
-	return SubStrMD5(bcrypt_md5(g_strSponsorHash . Trim4MD5(strSponsorName) . g_strSponsorHash))
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-Exclamation_MD5(strSponsorName)
-;------------------------------------------------------------
-{
-	return SubStrMD5(MD5(g_strSponsorHash . Trim4MD5(strSponsorName) . g_strSponsorHash))
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-PipeLower_MD5(strSponsorName)
-;------------------------------------------------------------
-{
-	return SubStrMD5(MD5(g_strEscapePipe . Trim4MD5(strSponsorName) . g_strEscapePipe))
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-PipeNoLower_MD5(strSponsorName)
-;------------------------------------------------------------
-{
-	return SubStrMD5(MD5(g_strEscapePipe . Trim4MD5(strSponsorName) . g_strEscapePipe))
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-Trim4MD5(str)
-;------------------------------------------------------------
-{
-	return Trim(str, " `t" . chr(160)) ; trim invisible characters space, tab and non-breakable space
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-SubStrMD5(str)
-;------------------------------------------------------------
-{
-	return StrUpper(SubStr(str, 13, 8))
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-MD5(str, blnCase := false)
-; by SKAN | rewritten by jNizM (https://www.autohotkey.com/boards/viewtopic.php?f=76&t=14927&p=75925&hilit=MD5sum#p75944)
-;------------------------------------------------------------
-{
-	static MD5_DIGEST_LENGTH := 16
-	hModule := DllCall("LoadLibrary", "Str", "advapi32.dll", "Ptr")
-		, VarSetCapacity(MD5_CTX, 104, 0), DllCall("advapi32\MD5Init", "Ptr", &MD5_CTX)
-		, DllCall("advapi32\MD5Update", "Ptr", &MD5_CTX, "AStr", str, "UInt", StrLen(str))
-		, DllCall("advapi32\MD5Final", "Ptr", &MD5_CTX)
-	loop % MD5_DIGEST_LENGTH
-		o .= Format("{:02" (blnCase ? "X" : "x") "}", NumGet(MD5_CTX, 87 + A_Index, "UChar"))
-	return o, DllCall("FreeLibrary", "Ptr", hModule)
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-bcrypt_md5(string, encoding := "utf-8")
-; from jNizM (https://www.autohotkey.com/boards/viewtopic.php?t=23413 / https://github.com/jNizM/AHK_CNG/tree/master/src/hash/func)
-;------------------------------------------------------------
-{
-    static BCRYPT_MD5_ALGORITHM := "MD5"
-    static BCRYPT_OBJECT_LENGTH := "ObjectLength"
-    static BCRYPT_HASH_LENGTH   := "HashDigestLength"
-
-	try
-	{
-		; loads the specified module into the address space of the calling process
-		if !(hBCRYPT := DllCall("LoadLibrary", "str", "bcrypt.dll", "ptr"))
-			throw Exception("Failed to load bcrypt.dll", -1)
-		
-		; open an algorithm handle
-		if (NT_STATUS := DllCall("bcrypt\BCryptOpenAlgorithmProvider", "ptr*", hAlg, "ptr", &BCRYPT_MD5_ALGORITHM, "ptr", 0, "uint", 0) != 0)
-			throw Exception("BCryptOpenAlgorithmProvider: " NT_STATUS, -1)
-		
-		; calculate the size of the buffer to hold the hash object
-		if (NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "ptr", hAlg, "ptr", &BCRYPT_OBJECT_LENGTH, "uint*", cbHashObject, "uint", 4, "uint*", cbData, "uint", 0) != 0)
-			throw Exception("BCryptGetProperty: " NT_STATUS, -1)
-		
-		; allocate the hash object
-		VarSetCapacity(pbHashObject, cbHashObject, 0)
-		;	throw Exception("Memory allocation failed", -1)
-		
-		; calculate the length of the hash
-		if (NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "ptr", hAlg, "ptr", &BCRYPT_HASH_LENGTH, "uint*", cbHash, "uint", 4, "uint*", cbData, "uint", 0) != 0)
-			throw Exception("BCryptGetProperty: " NT_STATUS, -1)
-		
-		; allocate the hash buffer
-		VarSetCapacity(pbHash, cbHash, 0)
-		;	throw Exception("Memory allocation failed", -1)
-		
-		; create a hash
-		if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlg, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", 0, "uint", 0, "uint", 0) != 0)
-			throw Exception("BCryptCreateHash: " NT_STATUS, -1)
-		
-		; hash some data
-		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbInput := StrPut(string, &pbInput, encoding) - 1
-		if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
-			throw Exception("BCryptHashData: " NT_STATUS, -1)
-		
-		; close the hash
-		if (NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "ptr", hHash, "ptr", &pbHash, "uint", cbHash, "uint", 0) != 0)
-			throw Exception("BCryptFinishHash: " NT_STATUS, -1)
-		
-		loop % cbHash
-			hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "uchar"))
-	}
-	catch exception
-	{
-		; represents errors that occur during application execution
-		throw Exception
-	}
-	finally
-	{
-		; cleaning up resources
-		if (pbInput)
-			VarSetCapacity(pbInput, 0)
-		if (hHash)
-			DllCall("bcrypt\BCryptDestroyHash", "ptr", hHash)
-		if (pbHash)
-			VarSetCapacity(pbHash, 0)
-		if (pbHashObject)
-			VarSetCapacity(pbHashObject, 0)
-		if (hAlg)
-			DllCall("bcrypt\BCryptCloseAlgorithmProvider", "ptr", hAlg, "uint", 0)
-		if (hBCRYPT)
-			DllCall("FreeLibrary", "ptr", hBCRYPT)
-	}
-
-	return hash
 }
 ;------------------------------------------------------------
 
