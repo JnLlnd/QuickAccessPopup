@@ -4447,7 +4447,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
+blnDoNotCheckLicense := true ; true / false ; ####
 global g_strEnvironment := "-dev"
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -14213,7 +14213,7 @@ GuiMultipleAddSelectSourceFromQAPFeature:
 
 ; list of available sources
 oMultipleAddSourcesIndex := ["CurrentWindows", "RecentFolders", "RecentFiles", "FrequentFolders", "FrequentFiles"
-	, "QAP", "Special", "Folder"] ; to be added: "SettingsFileItems", "SettingsFileMenus"]
+	, "QAP", "Special", "Folder", "SettingsFileItems"] ; to be added: "SettingsFileItems", "SettingsFileMenus"]
 oMultipleAddSources := {CurrentWindows: o_L["MenuSwitchFolderOrApp"], RecentFolders: o_L["MenuRecentFolders"]
 	, RecentFiles: o_L["MenuRecentFiles"], FrequentFolders: o_L["MenuPopularMenusFolders"], FrequentFiles: o_L["MenuPopularMenusFiles"]
 	, QAP: o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand, Special: o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
@@ -14248,7 +14248,7 @@ Gui, 2:Add, Text, x+20 yp section
 
 for intSourceKey, strSourceKey in oMultipleAddSourcesIndex
 	if !(!g_blnUsageDbEnabled and InStr(strSourceKey, "Frequent"))
-		Gui, 2:Add, Radio, % (A_Index = 1 ? "yp" : "") . "xs gGuiMultipleAddSelectSourceRadioButtonsChanged vf_intRadioSource" . strSourceKey, % oMultipleAddSources[strSourceKey]
+		Gui, 2:Add, Radio, % (A_Index = 1 ? "yp" : (InStr("3,5,7", A_Index) ? "y+4" : " y+8")) . "xs gGuiMultipleAddSelectSourceRadioButtonsChanged vf_intRadioSource" . strSourceKey, % oMultipleAddSources[strSourceKey]
 
 Gui, 2:Add, Button, x20 y+20 vf_btnAddMultipleFavoriteSelectTypeContinue gGuiMultipleAddSelectSourceContinue default, % o_L["DialogContinue"]
 Gui, 2:Add, Button, yp vf_btnAddMultipleFavoriteSelectTypeCancel gGuiAddMultipleFavoriteCancel, % o_L["GuiCancel"]
@@ -14387,8 +14387,8 @@ else
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
 	Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
-		. (g_strMultipleAddSourceKey = "QAP" ? "|Favorite Code (hidden)" : "")
-		; Favorite Name, Type, Favorite Location or Content, Internal type (hidden), Favorite code (hidden) for QAP Features only
+		. "|Favorite Code (hidden)"
+		; Favorite Name, Type, Favorite Location or Content, Internal type (hidden), Favorite code (hidden) filled for QAP Features only
 }
 
 Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddFavorites disabled Default, % aaL["GuiAddFavorite"]
@@ -14460,8 +14460,7 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 	else
 		LV_ModifyCol(0, "AutoHdr")
 	LV_ModifyCol(4, 0) ; hide internal type column
-	if (g_strMultipleAddSourceKey = "QAP")
-		LV_ModifyCol(5, 0) ; hide favorite code column
+	LV_ModifyCol(5, 0) ; hide favorite code column
 }
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
@@ -14932,7 +14931,6 @@ Loop
 		break
 	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
 	LV_GetText(strFavoriteName, intRow, 1)
-	LV_GetText(strFavoriteType, intRow, 2) ; localized name (not Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|Text)
 	LV_GetText(strFavoriteLocation, intRow, 3)
 	LV_GetText(strFavoriteType, intRow, 4)
 	
@@ -14941,7 +14939,7 @@ Loop
 		SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
 		strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
 	}
-	else if (g_strMultipleAddSourceKey = "QAP")
+	else if (g_strMultipleAddSourceKey = "QAP" or strFavoriteType = "QAP")
 		LV_GetText(strFavoriteLocation, intRow, 5)
 	
 	o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
