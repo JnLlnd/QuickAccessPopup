@@ -5423,6 +5423,7 @@ strProductIdYearly := "481"
 strProductIdMonthly := "428"
 strProductIdLifeTime := "518"
 strProductIdFree := "97"
+global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F"}
 
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
 	: strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdFree, |
@@ -19503,7 +19504,7 @@ Check4Update:
 Check4UpdateNow:
 ;------------------------------------------------------------
 
-strUrlCheck4Update := "https://www.quickaccesspopup.com/latest/latest-version-4.php"
+strUrlCheck4Update := "https://www.quickaccesspopup.com/latest/latest-version-5.php"
 
 g_strUrlAppLandingPage := "https://www.quickaccesspopup.com" ; must be here if user select Check for update from tray menu
 strBetaLandingPage := "https://www.quickaccesspopup.com/latest/check4update-beta-redirect.html"
@@ -19519,7 +19520,7 @@ blnSetup := (FileExist(A_ScriptDir . "\_do_not_remove_or_rename.txt") = "" ? 0 :
 ; FileGetTime, strShell32Date, %A_WinDir%\System32\shell32.dll
 ; FileGetTime, strImageresDate, %A_WinDir%\System32\imageres.dll
 
-strLatestVersions := Url2Var(strUrlCheck4Update
+strQuery := strUrlCheck4Update
 	. "?v=" . g_strCurrentVersion
 	. "&os=" . GetOSVersion()
 	. "&is64=" . A_Is64bitOS
@@ -19533,7 +19534,9 @@ strLatestVersions := Url2Var(strUrlCheck4Update
 	. "&shd=" . "" ; strShell32Date not needed but keep empty value for MySQL database
 	. "&ird=" . "" ; strImageresDate not needed but keep empty value for MySQL database
 	. "&ini1=" . g_strIniBefore
-	. "&ini2=" . g_strIniAfter)
+	. "&ini2=" . g_strIniAfter
+	. "&eddp=" . g_saEddProduct[o_EDDLicense.strProductId]
+strLatestVersions := Url2Var(strQuery)
 if !StrLen(strLatestVersions)
 	if (A_ThisMenuItem = aaHelpL["MenuUpdate"])
 	{
@@ -19617,6 +19620,7 @@ strLatestSkippedBeta := ""
 strLatestSkippedProd := ""
 strLatestUsedAlpha := ""
 strLatestUsedBeta := ""
+strQuery := ""
 
 return
 ;------------------------------------------------------------
