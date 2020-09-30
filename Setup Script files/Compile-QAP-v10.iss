@@ -195,9 +195,9 @@ Root: HKLM; Subkey: "Software\Classes\lnkfile\shell\Import Shortcut to Quick Acc
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{commonappdata}\{#MyAppName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: waituntilidle postinstall skipifsilent
-Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec; Check: ExecuteSponsoringTask()
-Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec unchecked; Check: NotExecuteSponsoringTask()
-Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/#PayPal"; Description: "{cm:PayPal}"; Flags: postinstall shellexec unchecked
+; Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec; Check: ExecuteSponsoringTask()
+; Filename: "https://www.quickaccesspopup.com/?asp_action=show_pp&product_id=6175"; Description: "{cm:HelpMePayExpenses}"; Flags: postinstall shellexec unchecked; Check: NotExecuteSponsoringTask()
+; Filename: "https://www.quickaccesspopup.com/why-sponsoring-this-software/#PayPal"; Description: "{cm:PayPal}"; Flags: postinstall shellexec unchecked
 
 [Tasks]
 Name: startmenu; Description: "Create a Start Menu folder";
