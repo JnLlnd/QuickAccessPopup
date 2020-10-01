@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 10.5.9.6 (2020-09-29)
+Version BETA: 10.5.9.6 (2020-10-01)
 - Add Multiple Favorites: add favorites from a QAP ini file
 - various adjusments related to license processing
  
