@@ -4447,7 +4447,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
+blnDoNotCheckLicense := true ; true / false ; ####
 global g_strEnvironment := "-dev"
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -15060,7 +15060,7 @@ intNbItems := LV_GetCount("Selected")
 Loop, Parse, g_strFavoritesToCopyOrMove, `n
 {
 	if (intNbItems > 50)
-		ToolTip, % o_L[(blnMove ? "GuiMove" : "GuiCopy")] . ": " . A_Index . " / " . intNbItems
+		ShowToolTip(o_L[(blnMove ? "GuiMove" : "GuiCopy")] . ": " . A_Index . " / " . intNbItems)
 	
 	g_intOriginalMenuPosition := FindItemInMenuInGui(A_LoopField, o_EditedFavorite, o_EditedFavoriteMenu)
 	
@@ -18449,7 +18449,7 @@ OpenGroupOfFavoritesCloseExplorers:
 ;------------------------------------------------------------
 
 intSleepTime := 67 ; for visual effect only...
-ToolTip, % o_L["GuiGroupClosing"]
+ShowToolTip(o_L["GuiGroupClosing"])
 
 if (g_arrGroupSettingsOpen2 = "Other")
 {
@@ -20043,7 +20043,7 @@ if !(blnAbort) and (f_blnImpExpFavorites)
 	Loop
 	{
 		intIniLine++
-		ToolTip, % (f_radImpExpExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"]) . " - " . o_L["ImpExpOptionFavorites"] . ": #" . intIniLine
+		ShowToolTip((f_radImpExpExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"]) . " - " . o_L["ImpExpOptionFavorites"] . ": #" . intIniLine)
 		strAppendFavorite := o_Settings.ReadIniValue("Favorite" . intIniLine, "", "Favorites", g_strImpExpSourceFile) ; ERROR if not found
 		if (strAppendFavorite = "ERROR")
 			Break
@@ -22215,7 +22215,7 @@ EscapeQuote(str)
 GetWebPageTitle(strLocation)
 ;------------------------------------------------------------
 {
-	ToolTip, % o_L["ToolTipRetrievingWebPageTitle"]
+	ShowToolTip(o_L["ToolTipRetrievingWebPageTitle"])
 	strHTML := Url2Var(strLocation)
 	ToolTip
 	
@@ -24272,6 +24272,16 @@ Get_ProcessorId()
 	colCPU := objWMIService.ExecQuery(WQLQuery)._NewEnum
 	while colCPU[objCPU]
 		return objCPU.ProcessorId
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+ShowToolTip(strContent)
+;---------------------------------------------------------
+{
+	ToolTip, %strContent%
+	Sleep, 75 ; make the tooltip minimally visible
 }
 ;---------------------------------------------------------
 
@@ -27390,7 +27400,7 @@ class Container
 			s_strIniFile := o_Settings.strIniFile
 		
 		if (blnWorkingToolTip)
-			ToolTip, % o_L["ToolTipLoading"] . "`n" . this.AA.strMenuPath
+			ShowToolTip(o_L["ToolTipLoading"] . "`n" . this.AA.strMenuPath)
 		
 		if (this.AA.strMenuType = "External")
 		{
@@ -27832,7 +27842,7 @@ class Container
 		intMenuItemsCount := 0 ; counter of items in this menu
 		
 		if (blnWorkingToolTip)
-			ToolTip, % o_L["ToolTipBuilding"] . "`n" . this.AA.strMenuPath
+			ShowToolTip(o_L["ToolTipBuilding"] . "`n" . this.AA.strMenuPath)
 		
 		if (this.AA.intMenuAutoSort)
 			this.SortContainer("", strSortedItems)
@@ -28529,7 +28539,7 @@ class Container
 				IniDelete, %s_strIniFile%, Favorites-backup
 		}
 		
-		ToolTip, % o_L["ToolTipSaving"] . "`n" . this.AA.strMenuPath
+		ShowToolTip(o_L["ToolTipSaving"] . "`n" . this.AA.strMenuPath)
 		
 		for intKey, oItem in this.SA
 		{
