@@ -19506,7 +19506,7 @@ Check4Update:
 Check4UpdateNow:
 ;------------------------------------------------------------
 
-strUrlCheck4Update := "https://www.quickaccesspopup.com/latest/latest-version-5.php"
+strUrlCheck4Update := "https://www.quickaccesspopup.com/latest/latest-version-4.php"
 
 g_strUrlAppLandingPage := "https://www.quickaccesspopup.com" ; must be here if user select Check for update from tray menu
 strBetaLandingPage := "https://www.quickaccesspopup.com/latest/check4update-beta-redirect.html"
