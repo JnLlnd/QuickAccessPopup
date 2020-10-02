@@ -1,3 +1,6 @@
+lAboutLicense	Licence pour: ~1~`nCode de licence: ~2~`nCode d'installation: ~3~
+lAboutLicenseCopy	copier les infos
+lAboutLicenseCopyMessage	Vos codes de licence QAP et d'installation ont été copiés dans le Presse-papiers.
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ est développé par Jean Lalonde`nsur la plateforme <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTraduction française: Jean Lalonde`nTraduction allemande: Edgar "Fast Edi" Hoffmann`nTraduction suédoise: Åke Engelbrektson`nTraduction italienne: Riccardo Leone`nTraduction espagnole: kiketrucker`nTraduction en portugais brésilien: Igor Ruckert`nTraduction en chinois simplifié: ilaoyao`nTraduction en portuguais: Luis Neves`nTraduction en néerlandais: Ric Roggeveen`nTraduction en coréen: Maeng Bong Kyun`nTraduction russe: Wylek.ru`nRévision anglaise: (aide bienvenue)`n`nIcônes par: <a href="https://icons8.com/">Icons8</a>`nInstallateur: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> par jrsoftware.org`nSources AutoHotkey_L v~2~: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
@@ -50,6 +53,7 @@ lDialogAddFileSelect	Choisir un nouveau document:
 lDialogAddFolderManuallyPrompt	Désolé, nous ne pouvons détecter automatiquement le dossier actif dans ce type de fenêtre.`n`nVoulez-vous ajouter un dossier favori manuellement?
 lDialogAddFolderManuallyTitle	Ajouter le dossier actif ou la page web active - ~1~ ~2~
 lDialogAddFolderSelect	Choisir ou créer ce nouveau dossier:
+lDialogAddSingle	Ajouter un seul favori
 lDialogAlt	Alt
 lDialogAltShort	Alt
 lDialogApplicationLabel	Application
@@ -165,6 +169,7 @@ lDialogFavoriteFolderLiveHideIcons	Icônes
 lDialogFavoriteFolderLiveHideInMenu	Masquer dans les menus
 lDialogFavoriteFolderLiveInclude	Inclure
 lDialogFavoriteFolderLiveLevels	Nombre de niveaux de sous-dossiers à inclure dans le Dossier actif
+lDialogFavoriteFolderLiveRefreshManual	Rafraîchir le menu pour ce Dossier actif seulement avec la commande`n"~1~"
 lDialogFavoriteFolderLiveShowHidden	Masqué
 lDialogFavoriteFolderLiveShowItems	Afficher les items
 lDialogFavoriteFolderLiveShowSystem	Système
@@ -293,7 +298,7 @@ lDialogMenuSortHeaderManual	Trier ce menu manuellement par...
 lDialogMenuSortHeaderSearch	Trier le résultat de recherche par...
 lDialogMenuSortLastModified	Date de modification
 lDialogMenuSortLastUsed	Dernière utilisation
-lDialogMenuSortSettingsOptions	Modifier les options de la fenêtre Personaliser
+lDialogMenuSortSettingsOptions	Modifier les options de la fenêtre Personnaliser
 lDialogMenuSortUsage	Utilisation
 lDialogMinimized	Minimisée
 lDialogModifiedDate	Date de modification
@@ -307,6 +312,20 @@ lDialogMoveSettingsNotDefault	Vous ne pouvez pas déplacer le dossier des paramèt
 lDialogMoveSettingsReload	~1~ doit être redémarré...
 lDialogMoveSettingsSuccess	Le dossier des paramètres a été copié avec succès.`n`nAncien emplacement:`n~1~`n`nNouvel emplacement: `n~2~`n`nLes fichiers dans l'ancien emplacement n'ont pas été effacés. Supprimez-les à votre convenance après avoir quitté ~3~.
 lDialogMoveSettingsUnder	Vous ne pouvez pas déplacer l'emplacement des paramètres sous leur emplacement actuel. Choisissez une autre destination.
+lDialogMultipleAdd	Ajouter plusieurs favoris
+lDialogMultipleAddDescription	Ajouter en un seul clic plusieurs favoris dans le sous-menu de votre choix à partir de la liste des fenêtres actuellement ouvertes, des listes des dossiers et fichiers Fréquents ou Récents, des listes des Fonctionnalités QAP ou Dossiers spéciaux, d'un dossier ou d'un fichier de configuration QAP.
+lDialogMultipleAddExcludeExisting	Exclure les favoris existants
+lDialogMultipleAddFilter	Filtrer
+lDialogMultipleAddFrom	Ajouter à partir de
+lDialogMultipleAddIntro1	1) Sélectionner un menu de destination et filtrer la liste si désiré.
+lDialogMultipleAddIntro1a	Pour trier la liste, cliquer sur l'entête d'une colonne
+lDialogMultipleAddIntro2	2) Cliquer la case à cocher des favoris à ajouter.
+lDialogMultipleAddIntro2a	Pour modifier le nom d'un favori, sélectionner sa rangée et appuyer sur F2.
+lDialogMultipleAddIntro3	3) Cliquer "Ajouter" pour insérer les favoris dans le menu de destination et cliquer "Enregistrer" dans la fenêtre "Personnaliser".
+lDialogMultipleAddSelectSource	Sélectionnez la source des favoris à ajouter et cliquez "Poursuivre".
+lDialogMultipleAddSelectSourceNext	Dans la prochaine fenêtre, vous allez:
+lDialogMultipleAddSettingsFileItems	Fichier de configuration QAP (items)
+lDialogMultipleAddSettingsFileMenus	Fichier de configuration QAP (menus)
 lDialogNA	n/d
 lDialogNew	Nouveau
 lDialogNone	Aucun
@@ -323,7 +342,7 @@ lDialogOpenSubFolderMostAnciently	le plus anciennement
 lDialogOpenSubFolderMostRecently	le plus récemment
 lDialogOpenThisGroup	Ouvrir ce groupe
 lDialogOpenThisMenu	Ouvrir ce menu
-lDialogOptionsPathNotExist	Ce dossier n'existe pas:`n~1~`n`nVoulez-vous le créer?
+lDialogOptionsPathNotExist	Ce dossier n'existe pas:`n`n~1~`n`nVoulez-vous le créer?
 lDialogOr	ou
 lDialogPlaceholders	Voir l'<a href="~1~">aide sur les codes de remplacement</a>.
 lDialogPlay	Jouer
@@ -338,6 +357,7 @@ lDialogSameLocartionExistsPrompt	Ce favori a le même contenu:
 lDialogSameLocartionExistsQuestion	Voulez-vous toujours enregistrer ce favori?
 lDialogSearch	Rechercher
 lDialogSearchAllFavorites	Rechercher tous les favoris
+lDialogSelectFolder	Sélectionnez un dossier
 lDialogSelectIcon	Changer l'icône
 lDialogSelectIconJL	Sélectionner dans:
 lDialogSelectIconNo	Pas d'icône
@@ -395,35 +415,41 @@ lDialogWindowsFolderIconSet	Changer l'icône de dossier de Windows
 lDialogWindowsFolderIconUpdate	mettre à jour
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Démarrer dans
-lDonateButton	Parrainez ce logiciel!
-lDonateCheckPrompt	Bienvenue dans cette nouvelle version de ~1~. Ce message n'est affiché qu'une fois jusqu'à ce que vous installiez une nouvelle version.`n`n~1~ n'est pas seulement distribué GRATUITEMENT mais aussi distribué SANS ces attrapes publicitaires dont on ne sait jamais si elles transportent des virus ou encore des logiciels espions ou malveillants.`n`nCela fait maintenant ~2~ fois que ~1~ est lancé pour faciliter votre travail quotidien. Que diriez-vous de parrainer ce logiciel à votre tour?
-lDonateCheckPrompt2	Note: Les utilisateurs qui veulent bien faire une contribution minimale de 5$ ou 5€ (ou toute contribution mensuelle) reçoivent un CODE DE PARRAINAGE qui arrêtera ~1~.
-lDonateCheckPrompt3	l'affichage de ce message
-lDonateCheckPrompt4	l'affichage des rappels à propos du parrainage
-lDonateCheckPrompt5	et affichera un message de parrainage dans la fenêtre "Personnaliser"
+lDonateActionChoose	Veuillez sélectionner une des actions.
+lDonateActionEnterLicense	Enregistrer votre code de licence
+lDonateActionGroupQAP	Dans ~1~:
+lDonateActionGroupWebsite	Sur le site web:
+lDonateActionManageInstallations	Gérer les installations
+lDonateActionManageInstallationsConfirm	~1~ ouvrira la page web "Manage License".`n`nSur cette page, cliquez sur le lien "Manage Installations" dans la rangée pour "~2~"
+lDonateActionManageLicense	Gérer votre licence
+lDonateActionManageLicenseDescription	Ouvre une boîte de dialogue où vous pouvez obtenir une nouvelle licence ou gérer votre licence sur le site web de QAP. Vous pouvez aussi y retirer votre licence afin de pouvoir l'installer sur un autre ordinateur.
+lDonateActionNewLicense	Obtenir une nouvelle licence
+lDonateActionNewLicenseConfirm	Veuillez relancer ~1~ après avoir reçu votre licence.
+lDonateActionOldLicenseRemoved	Votre licence a été retirée
+lDonateActionRemoveLicense	Retirer votre licence
+lDonateActionRemoveLicenseConfirm	Voulez-vous retirer votre licence pour "~1~" de cet ordinateur?`n`nSi oui, l'installation pour cet ordinateur (~2~) sera libérée et deviendra disponible pour un autre ordinateur.`n`nATTENTION: Si vous répondez OUI, vous aurez besoin d'une licence valide pour relancer ~3~.
+lDonateActionRenew	Renouveler votre licence
+lDonateActionRenewConfirm	Veuillez relancer ~1~ après avoir renouvelé votre licence
+lDonateActionSaveLicense	Enregistrer votre code de licence
+lDonateButton	Soutenez le développement de ce logiciel!
+lDonateCheckPrompt	Bienvenue dans cette nouvelle version de ~1~. Ce message n'est affiché qu'une fois jusqu'à ce que vous installiez une nouvelle version.`n`n~1~ n'est pas seulement distribué GRATUITEMENT mais aussi distribué SANS ces attrapes publicitaires dont on ne sait jamais si elles transportent des virus ou encore des logiciels espions ou malveillants.`n`nCela fait maintenant ~2~ fois que ~1~ est lancé pour faciliter votre travail quotidien. Que diriez-vous de soutenir le développement de ce logiciel à votre tour?
 lDonateCheckTitle	~1~ fois! - ~2~
-lDonateMenu	Parrainez ce logiciel!
-lDonatePlatformComment1	Donnez avec votre carte de crédit (pas nécessaire de créer un compte) ou avec votre compte PayPal
-lDonatePlatformComment2	Pour les dons Européens
-lDonatePlatformComment3	Pour les dons Canadiens
-lDonatePlatformComment4	En US $, Euros ou CAD $
-lDonatePlatformName1	Avec Paypal en US $
-lDonatePlatformName2	Avec Paypal en Euros
-lDonatePlatformName3	Avec Paypal en CAD $
-lDonatePlatformName4	Dons mensuel
-lDonateReviewNameLeft1	Download.com
-lDonateReviewNameLeft2	PortableFreeware.com
-lDonateReviewNameLeft3	Softpedia.com
-lDonateReviewNameRight1	BetaNews.com
-lDonateReviewNameRight2	FileCluster.com
-lDonateReviewNameRight3	Freewares && Tutos (FR)
-lDonateText1	Parrainez le développement de ~1~ !
-lDonateText2	<a href="~1~">Pourquoi parrainer ce logiciel?</a>
+lDonateCodeExpiredMessage	Votre licence ~1~ est échue.`n`nVous pouvez la renouveler sur le site web de ~1~.
+lDonateCodeExpiredTitle	Licence échue - ~1~
+lDonateCodeInvalidMessage	Vous avez besoin d'un code de licence pour utiliser cette version de ~1~.`n`nVous pouvez obtenir une licence gratuite ou contribuer au développement de cette application en vous procurant une licence pour un coût modique. Pour plus de renseignements, visitez le site web de ~1~.`n`nSi vous avez reçu votre code de licence, veuillez sélectionner "Enregistrer votre licence".
+lDonateCodeManageMessage	Votre licence est valide.`n`nIl vous reste ~1~/~2~ installation(s) pour cette licence.
+lDonateCodeNoInstallationsMessage	AUCUNE INSTALLATIONS DISPONIBLE`n`nVous avez utilisé les ~1~ installation(s) disponibles pour votre licence.`n`nVous pouvez gérer les installations pour cette licence sur le site web de ~2~.
+lDonateCodeNoInstallationsTitle	Aucune installation disponible - ~1~
+lDonateEnterCode	Avez-vous votre code de licence pour ~1~?`n`nSi oui, enregistrez votre code et relancez ~1~.`n`nSi non, veuillez vous procurer une licence sur le site web de ~1~.
+lDonateMenu	Soutenez le développement de logiciel!
+lDonateOnline	Votre licence n'a pas été vérifiée depuis plus de ~1~ jours.`n`nVeuillez brancher cet ordinateur à Internet pour valider votre code.
+lDonateText1	Soutenez le développement de ~1~ !
 lDonateText3	... ou faites connaître ce logiciel si vous l'appréciez !
 lDonateText4	Rédigez un avis favorable à ~1~ sur :
 lDonateText5	Envoyez-moi votre lien
-lDonateThankyou	Merci de parrainer ce logiciel!
-lDonateTitle	Parrainez ce logiciel! - ~1~ ~2~
+lDonateThankyou	Merci de soutenir le développement de ce logiciel!
+lDonateThankyouRestart	Merci de soutenir le développement de ~1~!`n`nL'application sera relancée dans un moment.
+lDonateTitle	Soutenez le développement de ce logiciel! - ~1~ ~2~
 lDOpusLayoutsName	Dispositions
 lDOpusMenuName	Favoris Directory Opus
 lDopusMenuNameDescription	Pour les utilisateurs de Directory Opus (DOpus), affiche un menu dynamique comportant les dossiers ajoutés aux Favoris de DOpus. Si DOpus était sélectionné quand QAP a été installé, les Favoris Directory Opus ont été automatiquement ajoutés à votre menu.
@@ -434,17 +460,18 @@ lGuiAddFavorite	Ajouter
 lGuiCancel	Annuler
 lGuiClose	Fermer
 lGuiCopy	Copier
-lGuiDonate	Parrainer ce logiciel
-lGuiDonateCodeInput	Entrez votre code de parrainage
-lGuiDonateCodeInputDescription	Entrez le code de parrainage et le nom du parrain/marraine qui vous a été envoyé par courriel après votre contribution.
-lGuiDonateCodeInputDonorInvalid	Code de parrainage invalide.`n`nAssurez-vous de copier exactement les valeurs telles qu'elles apparaissent dans le courriel de parrainage.
-lGuiDonateCodeInputDonorLabel	Entrez votre code de parrainage de 8 caractères (DONOR CODE)
-lGuiDonateCodeInputSponsorLabel	Entrez votre nom de parrain/marraine (SPONSOR NAME)
-lGuiDonateDescription	Afficher la boîte de dialogue "Parrainer ce logiciel".
+lGuiDonate	Soutenir le développement de ce logiciel
+lGuiDonateCodeInput	Entrez votre code de licence
+lGuiDonateCodeInputDonorInvalid	Code de licence invalide.`n`nAssurez-vous de copier le code de licence ("License key") tel qu'il apparaît dans le courriel confirmant l'acquisition de la licence.
+lGuiDonateCodeInputDonorLabel	Entrez votre code de licence de 32 caractères ("License Key")
+lGuiDonateCodeInputSponsorLabel	Entrez votre nom (optionnel)
+lGuiDonateDescription	Afficher la boîte de dialogue "Soutenir le développement de ce logiciel".
 lGuiDropFilesHelp	Aide glisser-déposer
 lGuiDropFilesIncentive	Vous pouvez "glisser-déposer" les types de favoris suivants sur la fenêtre de ~1~:`n`n- ~2~`n- ~3~`n- ~4~
 lGuiDropFilesIncentive2	Pour "glisser-déposer" un ou plusieurs fichier plus facilement, activez l'option "toujours visible" en cliquant sur l'icône de punaise à la gauche de la fenêtre "Personnaliser".
 lGuiEditFavorite	Modifier
+lGuiFileManagerNewTabSide	Ouvrir les nouveaux onglets de quel côté?
+lGuiFileManagerNewTabSideActive	Côté actif
 lGuiGroupClosing	Fermeture des fenêtres de l'Explorateur
 lGuiGroupRestoreDelay	Délai entre la restauration des favoris:
 lGuiGroupRestoreDelayMilliseconds	millisecondes
@@ -530,6 +557,7 @@ lImpExpFileGlobal	Configuration globale et raccourcis du menu principal
 lImpExpFileThemes	Thèmes
 lImpExpFinalReport	Transfert ~1~.`n`nSource:`n~2~`n`nDestination:`n~3~
 lImpExpImport	Importer
+lImpExpInvalidDestinationFolder	Dossier de destination invalide:`n`n~1~
 lImpExpMenu	Importer/exporter la configuration
 lImpExpMenuDescription	Afficher une boîte de dialogue permettant d'exporter les favoris et autres paramètres pour créer une copie de sécurité à l'emplacement voulu.`n`nVous pouvez aussi importer des favoris et paramètres d'un autre ordinateur ou d'un autre utilisateur.
 lImpExpNoThemes	Aucune liste de thèmes dans la valeur "~1~" de la section "~2~".`n`nFichier source:`n~3~
@@ -714,6 +742,7 @@ lOopsHttpLocationTransformed	L'emplacement HTTP (format URL) a été converti en c
 lOopsInvalidWinCmdIni	Le fichier des paramêtres "wincmd.ini" de Total Commander est introuvable.`n`nSélectionnez "Options" et l'onglet "Gestionnaires de fichiers".
 lOopsInvalidWindowPosition	Valeur(s) de position de la fenêtre invalide
 lOopsJLiconsError	Icône de la zone de notification introuvable. Assurez-vous d'avoir mis à jour le fichier JLicons.dll à la version ~1~.
+lOopsJLiconsOutdated	Ce fichier doit être mis à jour:`n`n~1~`n`nRemplacez-le avec le fichier JLicons.dll version ~2~ contenu dans le plus récent fichier d'installation portable (ZIP) et relancez ~3~.
 lOopsLaunchWithNotFound	Le fichier de l'application "Lancer avec cette application" est introuvable:`n`n~1~`n`nVérifiez les réglages avancés ce ce favori.
 lOopsMaxLiveFolder	Le maximum d'items permis dans les Dossiers actifs (~1~) est dépassé. Veuillez réduire le nombre de niveaux des Dossiers actifs.`n`nVous pourriez augmenter le nombre d'items permis mais soyez prudents: un nombre trop élevé pourrait produire des résultats inattendus. Modifiez la valeur dans les "Options", section "Options de menu avancées".
 lOopsMenuExternalCentralized	menu partagé centralisé
@@ -728,6 +757,7 @@ lOopsOptionsPathTrayIcon	Icône dans la zone de notification
 lOopsOSVerrsionError	~1~ nécessite Window 7 ou une version plus récente du système d'exploitation. Les utilisateurs de Windows Vista et XP sont invités à utiliser Folders Popup qui est compatible avec ces versions.`n`nVoulez-vous visiter le site web de Folders Popup?
 lOopsSelectedItemDialogBoxes	L'item sélectionné ne peut pas être détecté dans une boîte de dialogue.
 lOopsSelectedItemTotalCommander	L'item sélectionné ne peut pas être détecté dans Total Commander.
+lOopsSortOnHiddenColumns	Vous avez sélectionné un critère de tri pour une colonne qui n'est pas affichée dans la fenêtre "Personnaliser".`n`nVous devriez activer l'option "~1~" dans "Options, Fenêtre Personnaliser" et activer la base de données de QAP dans "Options, Base de données".
 lOopsSortUpToSeparator	Tri effectué jusqu'au premier séparateur.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	Une erreur s'est produite pendant l'ouverture de ce favori. Veuillez essayer à nouveau...
@@ -745,6 +775,7 @@ lOptionsAdvancedLaunch	Options de démarrage avancées
 lOptionsAdvancedOther	Options avancées diverses
 lOptionsAlternativeMenuFeatures	Menu Alternatif
 lOptionsAlternativeMenuFeaturesIntro	Choisisez les raccourcis des fonctionnalités du menu Alternatif.
+lOptionsAlternativeMenuResetModifiers	Réinitialiser les touches spéciales par défaut
 lOptionsAlternativeMenuShowNotification	Afficher la notification lorsque le Menu Alternatif est utilisé
 lOptionsAlternativeModifiers	Touches spéciales
 lOptionsAlternativeTrayIcon	Icône de remplacement (fichier,index)
@@ -794,7 +825,6 @@ lOptionsIconReplacementList	Remplacements des icônes de QAP
 lOptionsIconReplacementListInstructions	Entrez une instruction de remplacement par ligne. Chaque ligne doit commencer par le nom de l'icône QAP (i.e "iconFolderLive"), suivi du signe égal "=" et du "fichier,index" de l'icône de remplacement. Le "fichier,index" est le chemin et nom du fichier (.ico, .dll or .exe) contenant l'icône et l'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1".
 lOptionsIconSize	Taille des icônes de menu
 lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 pour le maximum possible)
-lOptionsIconsRetrieveInFrequentMenus	Récupérer les icônes lors de l'actualisation des menus "Dossiers fréquemment utilisés" et "Fichiers fréquemment utilisés" (à éviter si certains disques sont hors-ligne)
 lOptionsLanguage	Langue
 lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe
 lOptionsMenuActiveWindow	Dans la fenêtre active
@@ -893,11 +923,8 @@ lOptionsWaitDelayInSnippet	Delai (en ms) lors de l'exécution des Fragments de te
 lOptionsWorkingFolder	Dossier des paramètres
 lPickIconNoLocation	Veuillez d'abord choisisr un favori avant de sélectionner une icône.
 lReloadPrompt	Changement de ~1~ enregistré: ~2~. Voulez-vous relancer ~3~ en ~2~ maintenant? Les changements non sauvegardés dans le menu seront perdus.
-lSponsoredName	Ce logiciel est parrainé par ~1~
-lSponsoredNone	Veuillez cliquer ici pour parrainer ce logiciel
-lSponsoredUpdate	Veuillez mettre à jour votre code de donateur (pas besoin d'un nouveau don)
-lSponsorRemove	Retirer le code de parrainage
-lSponsorRemoved	Code de parrainage retiré.
+lSponsoredName	Le développement de ce logiciel est soutenu par ~1~
+lSponsoredNone	Veuillez cliquer ici pour soutenir le développement de ce logiciel
 lTCMenuName	TC Directory Hotlist
 lTCMenuNameDescription	Pour les utilisateurs de Total Commander (TC), afficher un menu dynamique présentant les favoris ajoutés à la "TC Hotlist" enregistrés dans le fichier wincdm.ini.`n`nSpécifiez l'emplacement du fichier wincdm.ini de TC dans les "Options", onglet "Gestionnaires". Si TC a été sélectionné lorsque vous avez installé QAP, le menu "TC Directory Hotlist" a automatiquement été ajouté à votre menu.
 lTCWinCmdLocation	Emplacement de WinCmd.ini
