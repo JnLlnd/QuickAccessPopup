@@ -4136,7 +4136,7 @@ arrVar	refactror pseudo-array to simple array
 
 ;@Ahk2Exe-SetVersion 10.5.9.6
 ;@Ahk2Exe-SetName Quick Access Popup
-;@Ahk2Exe-SetDescription Quick Access Popup (Windows freeware)
+;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
 ;@Ahk2Exe-SetCopyright (c) Jean Lalonde since 2013
 ;@Ahk2Exe-SetCompanyName Jean Lalonde
