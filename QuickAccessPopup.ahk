@@ -5255,6 +5255,7 @@ o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLoc
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "intIconSize", "IconSize", 32, "MenuIcons", "f_lblIconSize|f_drpIconSize") ; g_intIconSize
 o_Settings.ReadIniOption("MenuIcons", "intIconsManageRowsSettings", "IconsManageRows", 0, "MenuIcons", "f_intIconsManageRowsSettingsEdit|f_intIconsManageRowsSettings|f_lblIconsManageRows") ; g_intIconsManageRowsSettings
+o_Settings.ReadIniOption("MenuIcons", "blnRetrieveIconInFrequentMenus", "RetrieveIconInFrequentMenus", 1, "MenuIcons", "f_blnRetrieveIconInFrequentMenus") ; avoid offline delay when retrieving icons for Frequent items menus
 o_Settings.ReadIniOption("MenuIcons", "strIconReplacementList", "IconReplacementList", " ", "MenuIcons", "f_lnkIconReplacementList1|f_lnkIconReplacementList2|f_strIconReplacementList") ; g_strIconReplacementList
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
@@ -8321,6 +8322,11 @@ Gui, 2:Add, Text, % "yp x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsI
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intIconsManageRowsSettingsEdit
 gosub, DisplayIconsClickedInit
 
+; RetrieveIconInFrequentMenus
+Gui, 2:Add, CheckBox, y+20 x%g_intGroupItemsX% w500 vf_blnRetrieveIconInFrequentMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsIconsRetrieveInFrequentMenus"]
+GuiControl, , f_blnRetrieveIconInFrequentMenus, % (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue = true)
+gosub, DisplayIconsClickedInit
+
 ; strIconReplacementList
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+25 x%g_intGroupItemsX% w500 hidden vf_lnkIconReplacementList1
@@ -8998,6 +9004,7 @@ o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 o_Settings.MenuIcons.blnDisplayIcons.WriteIni(f_blnDisplayIcons)
 o_Settings.MenuIcons.intIconSize.WriteIni(f_drpIconSize)
 o_Settings.MenuIcons.intIconsManageRowsSettings.WriteIni(f_intIconsManageRowsSettings)
+o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.WriteIni(f_blnRetrieveIconInFrequentMenus)
 o_Settings.MenuIcons.strIconReplacementList.WriteIni(OptionsListCleanup(f_strIconReplacementList))
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
@@ -13849,13 +13856,14 @@ return
 
 
 ;------------------------------------------------------------
-GetFolderIcon(strFolderLocation)
+GetFolderIcon(strFolderLocation, blnFrequentMenu := false)
 ;------------------------------------------------------------
 {
-	; do not try to retrieve custom icon if file is on a network (path starting with "\\")
+	; for Frequent menus, do not try to retrieve custom icon if file is on a network (path starting with "\\") or if user exclude icons for Frequent menus
 	; return standard folder icon instead
-	if (SubStr(strFolderLocation, 1, 2) = "\\")
-		return "iconFolder"
+	if (blnFrequentMenu)
+		if (SubStr(strFolderLocation, 1, 2) = "\\" or !o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue)
+			return "iconFolder"
 	
 	; if strFolderLocation has a relative path, make it absolute based on the working directry before reading desktop.ini
 	strFolderDesktopIni := PathCombine(A_WorkingDir, EnvVars(strFolderLocation)) . "\desktop.ini"
@@ -20804,6 +20812,7 @@ if !(g_blnUsageDbEnabled)
 
 ; Diag(A_ThisLabel, "", "START")
 
+; process Frequent menus
 strDynamicDbSQL := ""
 loop, parse, % "Folders|Files", |
 {
@@ -20846,7 +20855,8 @@ loop, parse, % "Folders|Files", |
 		if (strTargetNb <= 1) ; skip if not enough frequent
 			continue
 		
-		if (SubStr(strPath, 1, 2) <> "\\") ; if this is an UNC path, consider that file exists
+        if (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue ; if not, consider that file exists (we won't try to retrieve its icon)
+			and SubStr(strPath, 1, 2) <> "\\") ; if this is an UNC path, consider that file exists (we won't try to retrieve its icon)
 			and !RecentFileExistInPath(strPath, A_ThisLabel) ; skip if not exist
 				continue
 		
@@ -20854,8 +20864,8 @@ loop, parse, % "Folders|Files", |
 		strMenuItemName := strPath
 		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue)
 			strMenuItemName .= " [" . strTargetNb . "]"
-		; for location with UNC path "\\", GetFolderIcon() and GetIcon4Location() return generic icons for folder or documents
-		strIcon := (strFoldersOrFiles = "Folders" ? GetFolderIcon(strPath) : GetIcon4Location(strPath))
+		; for location with UNC path "\\" or when blnRetrieveIconInFrequentMenus is false, GetFolderIcon(, true) and GetIcon4Location(, true) return generic icons for folder or documents
+		strIcon := (strFoldersOrFiles = "Folders" ? GetFolderIcon(strPath, true) : GetIcon4Location(strPath, true))
 		
 		strMenuItemsList%strFoldersOrFiles% .= strFoldersOrFilesMenuNameLocalized . "|" . strMenuItemName
 			. (strFoldersOrFiles = "Folders" ? "|Folder|" : "|Document|") . strIcon . "`n"
@@ -20873,6 +20883,7 @@ loop, parse, % "Folders|Files", |
 }
 ; Diag(A_ThisLabel . ":pre-strDynamicDbSQL", StrReplace(strDynamicDbSQL, "`n", "``n"))
 
+; process Drives menus
 if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Drives}")) ; we have this QAP features in at least one menu
 {
 	gosub, GetDrivesMenuListPreprocess ; update g_strMenuItemsListDrives
@@ -20881,6 +20892,7 @@ if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Drives}")) ; we have this QAP fe
 ; Diag(A_ThisLabel . ":After GetDrivesMenuListPreprocess", intPopularItemsCount, "ELAPSED")
 ; Diag(A_ThisLabel . ":g_strMenuItemsListDrives", StrReplace(g_strMenuItemsListDrives, "`n", "``n"))
 
+; process Recent menus
 ; Diag(A_ThisLabel . ":StartRecent", A_Loopfield, "ELAPSED")
 if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Recent Folders}") or o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Recent Files}")) ; we have one of these QAP features in at least one menu
 {
@@ -21882,14 +21894,17 @@ ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDef
 
 
 ;------------------------------------------------------------
-GetIcon4Location(strLocation)
+GetIcon4Location(strLocation, blnFrequentMenu := false)
 ; returns an icon resource in icongroup format (file,index) or an index of o_JLicons.AA
 ; icongroup will be splitted by ParseIconResource before being used by Menu command
 ; index of o_JLicons.AA will converted to icongroup by ParseIconResource before being splitted
 ; get icon, extract from kiu http://www.autohotkey.com/board/topic/8616-kiu-icons-manager-quickly-change-icon-files/
 ;------------------------------------------------------------
 {
-	if (SubStr(strLocation, 1, 2) = "\\") ; returns generic document icon for files on a server
+	; for Frequent menus, do not try to retrieve custom icon if file is on a network (path starting with "\\") or if user exclude icons for Frequent menus
+	; return generic document icon instead
+	if (blnFrequentMenu)
+		if (SubStr(strLocation, 1, 2) = "\\" or !o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue)
 		return "iconDocuments"
 		
 	FileExistInPath(strLocation) ; expand strLocation and search in PATH
