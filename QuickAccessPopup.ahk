@@ -20209,7 +20209,7 @@ Gui, 2:Add, Link, y10 w380, % L(o_L["AboutText1"], g_strAppNameText, g_strAppVer
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
 FormatTime, strYear, , yyyy ; current time
-Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear)
+Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
 Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
 Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
 	. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
