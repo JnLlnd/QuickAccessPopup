@@ -4490,7 +4490,7 @@ if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
 	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
 {
 	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		, % L(o_L["DonateCheckPrompt"] . "`n`n" . o_L["DonateCheckPrompt2"], g_strAppNameText, intStartups)
+		, % L(o_L["DonateCheckPrompt"], g_strAppNameText, intStartups)
 	IfMsgBox, Yes
 		Gosub, GuiDonate
 }
@@ -20259,19 +20259,15 @@ if (g_blnUseColors)
 Gui, 2:+Owner1
 
 Gui, 2:Font, s12 w700, Verdana
-Gui, 2:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
+Gui, 2:Add, Text, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
 Gui, 2:Font, s10 w600, Verdana
 Gui, 2:Add, Button, y+20 Default vbtnDonateDefault w220 h50 gButtonDonate, % o_L["DonateMenu"]
 ; GuiCenterButtons(g_strGui2Hwnd, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, "btnDonateDefault")
 GuiCenterButtons(g_strGui2Hwnd, 20, 20, 0, "btnDonateDefault")
 Gui, 2:Font, s8 w400 c404040 normal, Verdana
 
-Gui, 2:Add, Link, x10 w420 y+40 center vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/why-sponsoring-this-software/") ; will be centered by 2GuiSize
-
-Gui, 2:Add, Link, x10 y+15 w420, % o_L["DonateCheckPrompt2"]
-
 Gui, 2:Font, s10 w700, Verdana
-Gui, 2:Add, Link, xm y+20 w420, % o_L["DonateText3"]
+Gui, 2:Add, Link, xm y+60 w420, % o_L["DonateText3"]
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Link, xm y+10 w420 Section, % L(o_L["DonateText4"], g_strAppNameText)
 
@@ -20327,7 +20323,7 @@ return
 ButtonDonate:
 ;------------------------------------------------------------
 
-Run, %g_strSponsorCodeSiteURL%/products
+Run, %g_strSponsorCodeSiteURL%products
 
 return
 ;------------------------------------------------------------

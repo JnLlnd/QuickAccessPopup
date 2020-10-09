@@ -1,3 +1,6 @@
+lAboutLicense	Licença para: ~1~`nCódigo de licença: ~2~`nCódigo de instalação: ~3~
+lAboutLicenseCopy	copiar info da licença
+lAboutLicenseCopyMessage	A sua licença QAP e código de instalação serão copiados para a área de transferência.
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ foi escrito por Jean Lalonde usando a`nlinguagem de programação <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução Alemã: Edgar "Fast Edi" Hoffmann`nTradução Francesa: Jean Lalonde`nTradução Italiana: Riccardo Leone`nTradução Espanhola: kiketrucker`nTradução Brasileira: Igor Ruckert`nTradução Chinês: ilaoyao`nTradução Portuguesa: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nRevisão do Inglês: (a ajuda é bem-vinda)`n`nÍcones por: <a href="https://icons8.com/">Icons8</a>`nInstalador: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nAutoHotkey_L v~2~ sources: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
@@ -50,6 +53,7 @@ lDialogAddFileSelect	Escolher um novo documento:
 lDialogAddFolderManuallyPrompt	Lamentamos, não é possível detectar a pasta actual neste tipo de janela.`n`nDeseja adicionar uma pasta favoritos manualmente?
 lDialogAddFolderManuallyTitle	Adicionar Pasta Activa ou página Web - ~1~ ~2~
 lDialogAddFolderSelect	Seleccionar ou criar uma nova pasta:
+lDialogAddSingle	Adicionar apenas um favorito
 lDialogAlt	Alt
 lDialogAltShort	Alt
 lDialogApplicationLabel	Aplicação
@@ -165,6 +169,7 @@ lDialogFavoriteFolderLiveHideIcons	Ícones
 lDialogFavoriteFolderLiveHideInMenu	Ocultar nos menus
 lDialogFavoriteFolderLiveInclude	Incluir
 lDialogFavoriteFolderLiveLevels	Número de níveis de subpastas a incluir no menu Pasta Live
+lDialogFavoriteFolderLiveRefreshManual	Actualize este menu Pasta Live apenas com o comando`n"~1~"
 lDialogFavoriteFolderLiveShowHidden	Oculto
 lDialogFavoriteFolderLiveShowItems	Mostrar itens
 lDialogFavoriteFolderLiveShowSystem	Sistema
@@ -307,6 +312,20 @@ lDialogMoveSettingsNotDefault	Não pode mover a Pasta Definições quando um fichei
 lDialogMoveSettingsReload	O ~1~ necessita ser reiniciado...
 lDialogMoveSettingsSuccess	Os ficheiros de definições foram copiados com êxito.`n`nAntiga pasta:`n~1~`n`nNova pasta: `n~2~`n`nOs ficheiros da antiga pasta não foram eliminados. Elimine-os de for conveniente após sair do ~3~.
 lDialogMoveSettingsUnder	Não pode mover a pasta de definições para si própria. Escolha outro destino.
+lDialogMultipleAdd	Adicionar vários favoritos
+lDialogMultipleAddDescription	Adiciona com apenas um clique vários favoritos ao submenu da sua escolha da lista de janelas actualmente abertas, das pastas e ficheiros Frequentes ou Recentes, das listas de funcionalidades QAP ou da de Pastas Especiais, de uma pasta ou de um ficheiro de definições do QAP.
+lDialogMultipleAddExcludeExisting	Excluir favoritos existentes
+lDialogMultipleAddFilter	Filtrar
+lDialogMultipleAddFrom	Adicionar de
+lDialogMultipleAddIntro1	1) Seleccione um menu de destino e se desejar filtre os favoritos.
+lDialogMultipleAddIntro1a	Para ordenar a lista, clique no cabeçalho das colunas
+lDialogMultipleAddIntro2	2) Clique na caixa de verificação dos favorites a adicionar.
+lDialogMultipleAddIntro2a	Para editar o nome de um favorito seleccione a sua linha e prima F2.
+lDialogMultipleAddIntro3	3) Clique "Adicionar" para inserir os favoritos no menu de destino e clique "Guardar" na janela "Personalizar".
+lDialogMultipleAddSelectSource	Seleccione a origem dos favoritos que pretende adicionar e clique em "Continuar".
+lDialogMultipleAddSelectSourceNext	Na janela seguinte, terá:
+lDialogMultipleAddSettingsFileItems	Ficheiro definições QAP (itens)
+lDialogMultipleAddSettingsFileMenus	Ficheiro definições QAP (menus)
 lDialogNA	n/d
 lDialogNew	Nova
 lDialogNone	Nenhum
@@ -323,7 +342,7 @@ lDialogOpenSubFolderMostAnciently	o mais antigo
 lDialogOpenSubFolderMostRecently	o mais recente
 lDialogOpenThisGroup	Abrir este grupo
 lDialogOpenThisMenu	Abrir este menu
-lDialogOptionsPathNotExist	Esta pasta não existe:`n~1~`n`nDeseja criá-la?
+lDialogOptionsPathNotExist	Esta pasta não existe:`n`n~1~`n`nDeseja criá-la?
 lDialogOr	ou
 lDialogPlaceholders	Ver <a href="~1~">página de ajuda de espaços reservados</a>.
 lDialogPlay	Reproduzir
@@ -338,6 +357,7 @@ lDialogSameLocartionExistsPrompt	Os seguintes favoritos têm o mesmo conteúdo:
 lDialogSameLocartionExistsQuestion	Ainda deseja guardar este favorito?
 lDialogSearch	Procurar
 lDialogSearchAllFavorites	Procurar Todos Favoritos
+lDialogSelectFolder	Seleccionar pasta
 lDialogSelectIcon	Alterar ícone
 lDialogSelectIconJL	Seleccionar em:
 lDialogSelectIconNo	Sem ícone
@@ -395,35 +415,41 @@ lDialogWindowsFolderIconSet	Definir o ícone de pasta Windows
 lDialogWindowsFolderIconUpdate	actualizar
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Iniciar em
-lDonateButton	Patrocine este software
-lDonateCheckPrompt	Bem-vindo a esta nova versão do ~1~.`n`nEsta é uma mensagem ÚNICA que só surge até instalar uma nova versão.`n`nO ~1~ é não só GRÁTIS, mas também ISENTO de publicidade desagradável ou adware que pode ser portador de spyware ou malware.`n`n~2~ até agora, ~1~ ajudou-o no seu trabalho diário. Que tal patrocinar este software agora?
-lDonateCheckPrompt2	Nota: Aos utilizadores que gentilmente fizerem uma doação de 5$ ou 5€ ou mais (ou qualquer doação mensal) será fornecido um CÓDIGO DE PATROCINADOR que irá PARAR ~1~.
-lDonateCheckPrompt3	a exibição desta mensagem
-lDonateCheckPrompt4	a exibição de lembretes de patrocínio
-lDonateCheckPrompt5	e a exibição de mensagem de patrocínio na janela "Personalizar"
+lDonateActionChoose	Por favor, seleccione uma das acções.
+lDonateActionEnterLicense	Guardar o seu código de licença
+lDonateActionGroupQAP	Em ~1~:
+lDonateActionGroupWebsite	No website:
+lDonateActionManageInstallations	Gerir instalações
+lDonateActionManageInstallationsConfirm	~1~ irá abrir a página "Manage License".`n`nNessa página, clique na ligação "Manage Installations" na linha "~2~"
+lDonateActionManageLicense	Gerir a sua licença
+lDonateActionManageLicenseDescription	Abre uma caixa de diálogo onde pode obter uma nova licença ou gerí-la no site do QAP. Pode também usá-la para remover a sua licença permitindo a instalação noutro sistema.
+lDonateActionNewLicense	Obter uma nova licença
+lDonateActionNewLicenseConfirm	Por favor, reinicie o ~1~ após receber o seu código de licença.
+lDonateActionOldLicenseRemoved	A sua licença foi removida
+lDonateActionRemoveLicense	Remover a sua licença
+lDonateActionRemoveLicenseConfirm	Deseja remover a sua licença para o "~1~" deste computador?`n`nSe sim, a instalação neste computador (~2~) será anulada e ficará disponível para outro computador.`n`nCUIDADO: Se responder SIM, irá necessitar de uma licença válida para reiniciar ~3~.
+lDonateActionRenew	Renovar a sua licença
+lDonateActionRenewConfirm	Por favor, reinicie o ~1~ após renovar o seu código de licença.
+lDonateActionSaveLicense	Guardar o seu código de licença
+lDonateButton	Apoie o desenvolvimento deste software
+lDonateCheckPrompt	Bem-vindo a esta nova versão do ~1~.`n`nEsta é uma mensagem ÚNICA que só surge até instalar uma nova versão.`n`nO ~1~ é não só GRÁTIS, mas também ISENTO de publicidade desagradável ou adware que pode ser portador de spyware ou malware.`n`n~2~ até agora, ~1~ ajudou-o no seu trabalho diário. O que acha de apoiar o desenvolvimento do QAP e comprar agora este programa?
 lDonateCheckTitle	~1~ vezes! - ~2~
-lDonateMenu	Patrocine este software!
-lDonatePlatformComment1	Doe com cartão de crédito (não é necessário criar uma conta) ou com a sua conta PayPal
-lDonatePlatformComment2	Para patrocinadores Europeus
-lDonatePlatformComment3	Para patrocinadores Canadianos
-lDonatePlatformComment4	Em $US, Euros e $CAD
-lDonatePlatformName1	Usando Paypal em US $
-lDonatePlatformName2	Usando Paypal em Euros
-lDonatePlatformName3	Usando Paypal em CAD $
-lDonatePlatformName4	Faça doações mensais
-lDonateReviewNameLeft1	Download.com
-lDonateReviewNameLeft2	PortableFreeware.com
-lDonateReviewNameLeft3	Softpedia.com
-lDonateReviewNameRight1	BetaNews.com
-lDonateReviewNameRight2	FileCluster.com
-lDonateReviewNameRight3	Freewares && Tutos (FR)
-lDonateText1	Patrocine o desenvolvimento do ~1~!
-lDonateText2	<a href="~1~">Porquê patrocinar este software?</a>
+lDonateCodeExpiredMessage	A sua licença do ~1~ expirou.`n`nPode renovar a sua licença no site do ~1~.
+lDonateCodeExpiredTitle	Licença expirada - ~1~
+lDonateCodeInvalidMessage	Necessita de um código de licença para usar esta versão do ~1~.`n`nPode obter uma licença gratuíta ou contribuir para o desenvolvimento deste programa, adquirindo uma licença por um preço módico. Para mais informações, visite o site do ~1~.`n`nSe recebeu o seu código de licença, por favor seleccione "Guardar a sua licença".
+lDonateCodeManageMessage	A sua licença é válida.`n`nTem mais ~1~/~2~ instalação(ões) para esta licença.
+lDonateCodeNoInstallationsMessage	NENHUMA INSTALAÇÃO DISPONÍVEL`n`nUsou as instalações ~1~ permitidas à sua licença ~2~.`n`nPode gerir as instalações para esta licença no site ~2~.
+lDonateCodeNoInstallationsTitle	Nenhuma instalação disponível - ~1~
+lDonateEnterCode	Tem o seu código de licença do ~1~?`n`nSe sim, introduza-o e reinicie o ~1~.`n`nSe não, por favor, obtenha o seu código de licença no site do ~1~.
+lDonateMenu	Apoie o desenvolvimento deste software!
+lDonateOnline	A sua licença não é verificada há mais de ~1~ dias.`n`nPor favor, ligue-se à Internet para validar o seu código.
+lDonateText1	Apoie o desenvolvimento do ~1~!
 lDonateText3	... e passe a palavra se gosta deste software!
 lDonateText4	Faça uma avaliação favorável do ~1~ em:
 lDonateText5	Envie-me o seu link
-lDonateThankyou	Obrigado ~1~ por patrocinar este software!
-lDonateTitle	Patrocine este software! - ~1~ ~2~
+lDonateThankyou	Obrigado ~1~ por apoiar este software!
+lDonateThankyouRestart	Obrigado por apoiar o denvolvimento do ~1~!`n`nO programa vai reiniciar em breve.
+lDonateTitle	Apoie o desenvolvimento deste software! - ~1~ ~2~
 lDOpusLayoutsName	Esquemas
 lDOpusMenuName	Favoritos Directory Opus
 lDopusMenuNameDescription	Para utilizadores do Directory Opus (DOpus), exibe um menu dinÃ¢mico construÃ­do com as pastas adicionadas aos Favoritos DOpus. Se o DOpus foi seleccionado quando instalou o QAP, os Favoritos Directory Opus foram adicionados automaticamente ao seu menu.
@@ -434,17 +460,18 @@ lGuiAddFavorite	Adicionar
 lGuiCancel	Cancelar
 lGuiClose	Fechar
 lGuiCopy	Copiar
-lGuiDonate	Patrocine este software
-lGuiDonateCodeInput	Introduza o seu código de doador
-lGuiDonateCodeInputDescription	Introduza o código de doador e nome do patrocinador recebido por email após fazer a doação para patrocinar o desenvolvimento do Quick Access Popup.
-lGuiDonateCodeInputDonorInvalid	Código de doador inválido.`n`nCertifique-se de que copia os valores exactamente como constam do seu email de patrocinador.
-lGuiDonateCodeInputDonorLabel	Introduza o seu código de 8 dígitos (CÓDIGO DE DOADOR)
-lGuiDonateCodeInputSponsorLabel	Introduza o seu nome (NOME DO PATROCINADOR)
-lGuiDonateDescription	Exibe a caixa de diálogo "Patrocine este software".
+lGuiDonate	Apoie o desenvolvimento deste software
+lGuiDonateCodeInput	Introduza o seu código de licença do QAP
+lGuiDonateCodeInputDonorInvalid	Código de licença do QAP inválido.`n`nCertifique-se de que copia o código ("License Key") exactamente como consta do seu email de confirmação de registo.
+lGuiDonateCodeInputDonorLabel	Copie e cole o seu código de 32 dígitos ("License Key")
+lGuiDonateCodeInputSponsorLabel	Introduza o seu nome (opcional)
+lGuiDonateDescription	Exibe a caixa de diálogo "Apoie o desenvolvimento deste software".
 lGuiDropFilesHelp	Ajuda Arrastar && Largar
 lGuiDropFilesIncentive	Pode Arrastar & Largar os seguintes tipos de favoritos para a janela ~1~ :`n`n`t- ~2~`n`t- ~3~`n`t- ~4~
 lGuiDropFilesIncentive2	Para ajudá-lo a arrastar um ou mais ficheiros, pode tornar a janela "Personalizar" "sempre visível" clicando no ícone pin do lado esquerdo da janela.
 lGuiEditFavorite	Editar
+lGuiFileManagerNewTabSide	Abrir novos separadores em que lado do gestor de ficheiros?
+lGuiFileManagerNewTabSideActive	Lado activo
 lGuiGroupClosing	Fechar janelas do Explorador
 lGuiGroupRestoreDelay	Atraso entre os favoritos para restaurar:
 lGuiGroupRestoreDelayMilliseconds	milisegundos
@@ -530,6 +557,7 @@ lImpExpFileGlobal	Definições gerais e teclas de atalho do menu principal
 lImpExpFileThemes	Temas
 lImpExpFinalReport	Transferir ~1~.`n`nOrigem:`n~2~`n`nDestino:`n~3~
 lImpExpImport	Importar
+lImpExpInvalidDestinationFolder	Pasta de destino inválida:`n`n~1~
 lImpExpMenu	Definições de Importação/Exportação
 lImpExpMenuDescription	Exibe uma caixa de diálogo onde pode exportar os seus favoritos e outras definições para criar uma cópia de segurança num local da sua escolha.`n`nTambém pode importar favoritos e definições de outro PC ou utilizador.
 lImpExpNoThemes	Nenhuma lista de temas encontrada no valor "~1~" da secção "~2~".`n`nFicheiro de origem:`n~3~
@@ -715,6 +743,7 @@ lOopsHttpLocationTransformed	A localização http (formato URL) foi transformada n
 lOopsInvalidWinCmdIni	Não foi encontrado o ficheiro de definições do Total Commander "wincmd.ini".`n`nSeleccione o ficheiro em "Opções", separador "Gestores de ficheiros".
 lOopsInvalidWindowPosition	Valor(es) de posição da janela inválido(s)
 lOopsJLiconsError	Ícone QAP não encontrado. Certifique-se que actualizou o ficheiro JLicons.dll para ~1~.
+lOopsJLiconsOutdated	O seguinte ficheiro necessita de ser actualizado:`n`n~1~`n`nSubstituir com a versão JLicons.dll ~2~ do ficheiro ZIP da instalação portátil mais recente e reiniciar ~3~.
 lOopsLaunchWithNotFound	"Abrir com esta aplicação" ficheiro não encontrado:`n`n~1~`n`nVerifique as definições avançadas dos favorito.
 lOopsMaxLiveFolder	O número máximo de itens permitido em pastas Live (~1~) foi excedido. Por favor, reduza o número de níveis de pastas Live.`n`nTambém pode aumentar este limite mas tenha cuidado: um número demasiado elevado pode provocar resultados imprevisíveis. Altere o valor em "Opções", secção "Oções Avançadas de Menus".
 lOopsMenuExternalCentralized	menu partilhado centralizado
@@ -729,6 +758,7 @@ lOopsOptionsPathTrayIcon	Ficheiro do ícone da área de notificação
 lOopsOSVerrsionError	O ~1~ requer o Window 7 ou mais recente. Os utilizadores do Windows Vista e XP users devem usar o Folders Popup que é compatível com essas versões.`n`nDeseja visitar o site do Folders Popup?
 lOopsSelectedItemDialogBoxes	Não é possível detectar o item seleccionado em caixas de diálogo.
 lOopsSelectedItemTotalCommander	Não é possível detectar o item seleccionado nas janelas do Total Commander.
+lOopsSortOnHiddenColumns	Seleccionou um critério de ordenação de uma coluna que não é exibida actualmente na janela "Personalizar".`n`nTem que activar a opção "~1~" em "Opções, Janela Personalizar" e activar a base de dados QAP em "Opções, Base de dados".
 lOopsSortUpToSeparator	OrdenaÃ§Ã£o feita atÃ© o primeiro separador.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	Ocorreu um erro ao tentar abrir este favorito. Por favor, tente de novo...
@@ -746,6 +776,7 @@ lOptionsAdvancedLaunch	Opções Avançadas de Carregamento
 lOptionsAdvancedOther	Opções Avançadas Diversas
 lOptionsAlternativeMenuFeatures	Teclas de Atalho do Menu Alternativo
 lOptionsAlternativeMenuFeaturesIntro	Gerir os atalhos que irão dar acesso às funções do menu Alternativo.
+lOptionsAlternativeMenuResetModifiers	Repor modificadores padrão
 lOptionsAlternativeMenuShowNotification	Exibir Notificação quando usar o Menu Alternativo
 lOptionsAlternativeModifiers	Modificadores
 lOptionsAlternativeTrayIcon	Substituição do ícone da área de notificação do QAP (ficheiro,índice)
@@ -795,7 +826,6 @@ lOptionsIconReplacementList	Substituição de ícones do QAP
 lOptionsIconReplacementListInstructions	Introduza as substituições de ícones do QAP, um por linha. Todas as linhas devem começar com o nome do ícone QAP (p.e. "iconFolderLive"), seguido pelo sinal igual "=" e o "ficheiro,índice" do ícone de substituição. O "ficheiro,índice" é o atalho para o ficheiro (.ico, .dll ou .exe) contendo o ícone e o índice é a posição do ícone neste ficheiro, p.e. "C:\Icons\MyFile.dll,1".
 lOptionsIconSize	Tamanho dos ícones do menu
 lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponível)
-lOptionsIconsRetrieveInFrequentMenus	Recuperar ícones ao actualizar menus de pastas e ficheiros Frequentes (evitar se alguns ficheiros estiverem frequentemente offline)
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela activa
@@ -894,11 +924,8 @@ lOptionsWaitDelayInSnippet	Atrasos (em ms) durante a execução de Snippets
 lOptionsWorkingFolder	Pasta de Definições
 lPickIconNoLocation	Escolha primeiro um favorito antes de escolher um ícone.
 lReloadPrompt	~1~ alterado para ~2~. Deseja recarregar ~3~ em ~2~ agora? As alterações ao menu não guardadas serão perdidas.
-lSponsoredName	Este software é gentilmente patrocinado por ~1~
-lSponsoredNone	Por favor, clique aqui para patrocinar este software
-lSponsoredUpdate	Por favor, actualize o seu código de doador (não é necessária nova doação)
-lSponsorRemove	Removee cÃ³digo de patrocinador
-lSponsorRemoved	O cÃ³digo de patrocinador foi removido
+lSponsoredName	O desenvolvimento deste software é gentilmente apoiado por ~1~
+lSponsoredNone	Por favor, clique aqui para apoiar o desenvolvimento deste software
 lTCMenuName	Lista de Pasta Favoritas do TC
 lTCMenuNameDescription	Para os utilizadores do Total Commander (TC), exibe um menu dinâmico construído com os favoritos adicionados à Hotlist do TC como encontrado no ficheiro wincdm.ini.`n`nDefina a localização do ficheiro wincdm.ini em "Opções", no separador "Gestão de Ficheiros". Se o TC estava seleccionado quando instalou o QAP, a pasta Hotlist foi adicionada automaticamente ao seu menu.
 lTCWinCmdLocation	Localização do WinCmd.ini
