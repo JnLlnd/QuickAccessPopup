@@ -4457,8 +4457,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := true ; true / false ; ####
-global g_strEnvironment := "-dev"
+blnDoNotCheckLicense := false ; true / false ; ####
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -5487,9 +5486,7 @@ if (o_EDDLicense.oLicense.license = "valid")
 	g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 	strPossibleBadNumber := ""
 	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
-	Loop, Parse, A_NowUTC
-		strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
-	SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
+	SetSponsorOnlineTrace(o_EDDLicense.strEddLicense)
 	strSponsorCodeError := "" ; QAP will launch
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
@@ -5507,13 +5504,14 @@ else if (o_EDDLicense.oLicense.license = "expired")
 
 else ; the license is site_inactive, invalid or missing
 {
+	strCheckValidLicenseTrace := CheckValidLicenseTrace(intDaysAlert)
 	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0)
 		
 		strSponsorCodeError := "no_activation_left"
 		
-	else if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and CheckValidLicenseTrace() <> "exit"
+	else if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and (strCheckValidLicenseTrace <> "reject")
 	{
-		if CheckValidLicenseTrace() = "alert"
+		if (strCheckValidLicenseTrace = "alert")
 			Oops(1, o_L["DonateOnline"], intDaysAlert)
 		; consider license is good, set values and continue
 		o_EDDLicense := Object() ; for temporary offline usage
@@ -5563,10 +5561,10 @@ return
 
 
 ;------------------------------------------------------------
-CheckValidLicenseTrace()
+CheckValidLicenseTrace(ByRef intDaysAlert)
 ;------------------------------------------------------------
 {
-	strSponsorOnlineTrace := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
+	strSponsorOnlineTrace := GetSponsorOnlineTrace(o_Settings.Launch.strSponsorCode.IniValue)
 	if StrLen(strSponsorOnlineTrace)
 	{
 		Loop, % StrLen(strSponsorOnlineTrace) / 2
@@ -5574,21 +5572,54 @@ CheckValidLicenseTrace()
 			strDecoded := Chr(SubStr(strSponsorOnlineTrace, 1, 2)) . strDecoded
 			strSponsorOnlineTrace := SubStr(strSponsorOnlineTrace, 3)
 		}
-		; strSponsorOnlineTrace := "20200822181414" ; datetime example
-		EnvSub, strSponsorOnlineTrace, A_NowUTC, D
+		; strDecoded := "20200822181414" ; datetime example
+		if RegExMatch(strDecoded, "[^0-9]")
+			return "reject" ; the trace has been modified, it is not a valid datetime
+		EnvSub, strDecoded, A_NowUTC, D
+		if (strDecoded > 0)
+			return "reject" ; the trace has been modified, it is in the future
 		intDaysAlert := 14
-		intDaysExit := 21
-		if (strSponsorOnlineTrace < -intDaysAlert) ; between alert day and exit day
+		intDaysReject := 21
+		if (strDecoded < -intDaysReject) ; passed Reject day
+			return "reject"
+		else if (strDecoded < -intDaysAlert) ; between Alert day and Reject day
 			return "alert"
-		else if (strSponsorOnlineTrace < -intDaysExit) ; passed exit day
-			return "exit"
-		else ; before alert day
+		else ; before Alert day
 			return "ok"
 	}
 	else ; no online trace
-		return "exit"
+		return "reject"
 }
 ;------------------------------------------------------------
+
+
+;---------------------------------------------------------
+SetSponsorOnlineTrace(strEddLicense)
+;---------------------------------------------------------
+{
+	Loop, Parse, A_NowUTC
+		strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
+	SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+GetSponsorOnlineTrace(strEddLicense)
+;---------------------------------------------------------
+{
+	return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+RemoveSponsorOnlineTrace(strEddLicense)
+;---------------------------------------------------------
+{
+	RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+}
+;---------------------------------------------------------
 
 
 ;------------------------------------------------------------
@@ -5637,7 +5668,7 @@ else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 		IniDelete, % o_Settings.strIniFile, Global, SponsorCode
 		IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
 		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
-		RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
+		RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense)
 	}
 }
 ; else (if empty) do nothing
