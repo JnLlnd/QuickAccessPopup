@@ -5529,6 +5529,8 @@ else ; the license is site_inactive, invalid or missing
 
 if StrLen(strSponsorCodeError)
 {
+	RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense) ; if we had a valide licnece trace, remove it
+	
 	Gosub, GuiManageLicenseFromProcess
 	
 	if (strSponsorCodeAction <> "save-key")
@@ -5599,7 +5601,17 @@ SetSponsorOnlineTrace(strEddLicense)
 {
 	Loop, Parse, A_NowUTC
 		strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
-	SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+	
+	if (g_blnPortableMode)
+	{
+		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		FileSetAttrib, -R-H-S, %strFileName%
+		FileDelete, %strFileName%
+		FileAppend, %strSponsorOnlineTrace%, %strFileName%
+		FileSetAttrib, +R+H+S, %strFileName%
+	}
+	else
+		SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
 }
 ;---------------------------------------------------------
 
@@ -5608,7 +5620,14 @@ SetSponsorOnlineTrace(strEddLicense)
 GetSponsorOnlineTrace(strEddLicense)
 ;---------------------------------------------------------
 {
-	return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+	if (g_blnPortableMode)
+	{
+		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		FileRead, strSponsorOnlineTrace, %strFileName%
+		return %strSponsorOnlineTrace%
+	}
+	else
+		return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
 }
 ;---------------------------------------------------------
 
@@ -5617,7 +5636,15 @@ GetSponsorOnlineTrace(strEddLicense)
 RemoveSponsorOnlineTrace(strEddLicense)
 ;---------------------------------------------------------
 {
-	RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+	if (g_blnPortableMode)
+	{
+		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		FileSetAttrib, -R-H-S, %strFileName%
+		FileDelete, %strFileName%
+	}
+	else
+		if StrLen(strEddLicense) ; safety
+			RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
 }
 ;---------------------------------------------------------
 
