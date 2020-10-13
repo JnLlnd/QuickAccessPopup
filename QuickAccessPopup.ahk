@@ -31,6 +31,55 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0 (2020-10-??)
+ 
+SUMMARY
+- new licensing system replacing the sponsor codes with various paid licenses and a free edition
+- add in one step multiple folders, documents, applications, Special Folders or QAP Features to a specified submenu or group
+- improvements to: Customize window, Livefolders, Windows Terminal support, Directory Opus and Total Commander support
+ 
+License processing
+- implement a new licensing system replacing the sponsor codes; new licenses are available for a modest price and a free edition is also available
+  (more info: https://forum.quickaccesspopup.com/showthread.php?tid=1208)
+- when users launch QAP without a valid license, it displays the "Manage License" dialog box where users can get a license on QAP website or to enter their license they
+- the "Help, Manage your license" menu in the "Customize" window allows to manage the license on QAP website (using a password sent when getting the license), remove installations, etc.
+- the "About" dialog box now displays the license info with a link to copy the info to the Clipboard
+- the new QAP feature "Manage License" allows to insert this feature anywhere in your QAP menu
+- new license text in the "About" dialog box, setup file and portable zip file
+ 
+Add Multiple Favorites
+- a new menu "Favorite, Add Multiple Favorites" in the "Cuszomize" window allows to add various favorites to a menu or group in one step;
+- multiple favorites sources are:
+  - add favorites folders or applications from the "Current Windows";
+  - add items from the "Recent Folders" or the "Recent Files";
+  - add items from the "Frequent Folders" or the "Frequent Files";
+  - add multiple QAP Features or Special Folders;
+  - add folders, documents or applications favorites from a selected folder;
+  - add any favporites from any QAP settings file.
+- the list in the "Add Multiple Favorites" dialog box can be filtered by keywords or sorted
+- optionally a checkbox excludes from the list the favorites already found in the QAP menu
+ 
+Customize window
+- right-click entries in the favorites list of the "Customize" window to open a contextual menu allowing to "Add", "Edit", "Remove", "Copy" or "Move" the selected favorite(s)
+ 
+Live Folders
+- in favorites folders with "Live folder" option enabled, the option "Refresh this Live Folder menu only with the command 'Refresh Live Folders'" will prevent refreshing this live folder menu each time the menu is refreshed
+- allow "Live folder" option in favorite folders inside groups
+ 
+Various improvements
+- replace the old (an unfriendly) Windows "Select Folder" dialog box with a more workable dialog box (thanks to Flipeador) where the folder can be changed with the QAP menu
+- for Directory Opus and Total Commander users, add an option in "Options, File Managers" section to set the default side (lister or pane) for new tabs to "Left" (or top), "Right" (or botton) or "Active side"
+- add support for the Windows app "Windows Terminal" (with same features as for CMD command line or PowerShell)
+- optimize the menu refresh when items are on an offline network drive (UNC)
+- in portable ZIP file, update readme.txt file and merge Update_instructions.txt
+ 
+Small bug fixes
+- fix bug not removing the small status popup window when using the "Refresh Live Folders and Shared menus" command
+- fix bug when saving changes to the properties of a Shared menu
+ 
+Translation
+- German, Italian, Protuguese-Brazil, Portuguese, Korean and French language files update for v11
+
 Version BETA: 10.5.9.7 (2020-10-09)
 - German, Italian, Protuguese-Brazil, Portuguese, Korean and French language files update for v11
 - new license text in the About dialog box, setup file and portable zip file
@@ -4140,7 +4189,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.9.7
+;@Ahk2Exe-SetVersion 11.0
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4206,8 +4255,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.9.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.0" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
@@ -4422,7 +4471,7 @@ global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_st
 ;---------------------------------
 ; Constants for EDD license
 global g_strProcessorId := Get_ProcessorId()
-global g_strSponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/" ; ####
+global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
 
 ;---------------------------------
 ; Load Settings file
@@ -5428,15 +5477,18 @@ ProcessSponsorCode:
 
 global g_blnSponsor := false
 
-strProductIdYearly := "481"
-strProductIdMonthly := "428"
-strProductIdLifeTime := "518"
-strProductIdFree := "97"
+strProductIdFree := "51"
+strProductIdYearly := "62"
+strProductIdMonthly := "59"
+strProductIdLifeTime := "57"
+strProductIdCustomLifetime := "110"
+strProductIdCustomYearly := "112"
 global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F"}
 
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
-	: strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdFree, |
-; if we have the product id, check license for this product, else, check for all products in order 1) yearly, 2) monthly, 3) lifetim, 4) free
+	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
+	; if we have the product id, check license for this product, else, check for all products in order
+	; 1) free (most frequent), 2) yearly, 3) monthly, 4) lifetime, 5) custom lifetime, 6) custom yearly
 {
 	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
