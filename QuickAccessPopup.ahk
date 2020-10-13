@@ -26235,7 +26235,7 @@ class QAPfeatures
 			, "can-i-add-multiple-favorites-in-one-click")
 		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
 			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
-			, "can-i-add-multiple-favorites-in-one-click")
+			, "how-do-i-setup-or-manage-my-qap-license")
 
 		; Close computer various command features
 		
