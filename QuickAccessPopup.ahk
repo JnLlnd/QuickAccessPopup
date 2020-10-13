@@ -14621,7 +14621,8 @@ GuiMultipleAddSourceQAPFeaturesLoad:
 ;------------------------------------------------------------
 
 for strLocalizedName, strCode in o_QAPfeatures.aaQAPFeaturesCodeByDefaultName
-	GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
+	if !(o_QAPFeatures.AA[strCode].intQAPFeatureAlternativeOrder) ; exclude Alternative menus QAP Features
+		GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
 
 return
 ;------------------------------------------------------------
