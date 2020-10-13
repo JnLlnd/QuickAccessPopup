@@ -14679,7 +14679,8 @@ GuiMultipleAddSourceQAPFeaturesLoad:
 ;------------------------------------------------------------
 
 for strLocalizedName, strCode in o_QAPfeatures.aaQAPFeaturesCodeByDefaultName
-	GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
+	if !(o_QAPFeatures.AA[strCode].intQAPFeatureAlternativeOrder) ; exclude Alternative menus QAP Features
+		GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
 
 return
 ;------------------------------------------------------------
@@ -26293,7 +26294,7 @@ class QAPfeatures
 			, "can-i-add-multiple-favorites-in-one-click")
 		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
 			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
-			, "can-i-add-multiple-favorites-in-one-click")
+			, "how-do-i-setup-or-manage-my-qap-license")
 
 		; Close computer various command features
 		
