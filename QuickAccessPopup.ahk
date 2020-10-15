@@ -4506,7 +4506,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
+blnDoNotCheckLicense := true ; true / false ; ####
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -5379,6 +5379,8 @@ global g_blnUsageDbDebugBeep := (o_Settings.Database.intUsageDbDebug.IniValue > 
 
 ; Group MenuAdvanced
 o_Settings.ReadIniOption("MenuAdvanced", "intShowQAPmenu", "ShowQAPmenu", 3, "MenuAdvanced", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
+o_Settings.ReadIniOption("MenuAdvanced", "blnNetworkDrivesAlwaysOnline", "NetworkDrivesAlwaysOnline", 0, "MenuAdvanced", "f_blnNetworkDrivesAlwaysOnline")
+o_Settings.ReadIniOption("MenuAdvanced", "strNetworkDrivesLetters", "NetworkDrivesLetters", " ", "MenuAdvanced", "f_strNetworkDrivesLetters|f_lblNetworkDrivesLetters")
 o_Settings.ReadIniOption("MenuAdvanced", "intNbLiveFolderItemsMax", "NbLiveFolderItemsMax", "", "MenuAdvanced", "f_lblNbLiveFolderItemsMax|f_lblNbLiveFolderItemsMaxDefault|f_intNbLiveFolderItemsMax") ; ERROR if not found
 if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
 	o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(500)
@@ -7082,7 +7084,7 @@ if (StrLen(Clipboard) <= o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue) ;
 		{
 			; 1 Location/Menu name (for sorting), 2 Favorite Type, 3 Icon
 			strContentsInClipboard .= "`n" . A_LoopField
-			strClipboardContentType := (RecentLocationIsDocument(strClipboardLineExpanded, A_ThisLabel) ? "Document" : "Folder")
+			strClipboardContentType := (LocationIsDocument(strClipboardLineExpanded) ? "Document" : "Folder")
 			strContentsInClipboard .= "`t" . strClipboardContentType
 			if (o_Settings.MenuIcons.blnDisplayIcons.IniValue)
 				strContentsInClipboard .= "`t" . (strClipboardContentType = "Document" ? GetIcon4Location(strClipboardLineExpanded) : "iconFolder")
@@ -8834,10 +8836,6 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmen
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu2 gGuiOptionsGroupChanged " . (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue = 2 ? "Checked" : ""), % o_L["OptionsShowQAPmenuSystem"]
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmenu3 gGuiOptionsGroupChanged " . (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue = 3 ? "Checked" : ""), % o_L["OptionsShowQAPmenuBoth"]
 
-; OpenMenuOnTaskbar
-Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnOpenMenuOnTaskbar gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenMenuOnTaskbar"]
-GuiControl, , f_blnOpenMenuOnTaskbar, % (o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue = true)
-
 ; RefreshQAPMenuIntervalSec
 Gui, 2:Add, Checkbox, x%g_intGroupItemsX% y+15 vf_blnRefreshQAPMenuEnable gRefreshQAPMenuEnableClicked hidden, % o_L["OptionsRefreshQAPMenuTitle"]
 GuiControl, , f_blnRefreshQAPMenuEnable, % (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue > 0)
@@ -8852,6 +8850,10 @@ Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w300 vf_blnRefreshQAPMenuDebugBee
 GuiControl, , f_blnRefreshQAPMenuDebugBeep, % (o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.IniValue = true)
 gosub, RefreshQAPMenuEnableClickedInit
 
+; OpenMenuOnTaskbar
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnOpenMenuOnTaskbar gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenMenuOnTaskbar"]
+GuiControl, , f_blnOpenMenuOnTaskbar, % (o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue = true)
+
 ; ClipboardMaxSize
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+20 vf_lblClipboardMaxSize hidden, % o_L["OptionsClipboardMaxSize"]
 Gui, 2:Add, Edit, x+10 yp h20 w65 number vf_intClipboardMaxSize gGuiOptionsGroupChanged hidden, % o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue
@@ -8865,6 +8867,16 @@ Gui, 2:Add, Text, x+5 yp vf_lblNbLiveFolderItemsMaxDefault hidden, % o_L["Option
 GuiControlGet, arrPos, Pos, f_intClipboardMaxSize
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
+
+; NetworkDrivesLetters
+Gui, 2:Add, Link, x%g_intGroupItemsX% y+20 vf_lblNetworkDrivesLetters hidden, % o_L["OptionsNetworkDrivesLetters"] . ":"
+Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters hidden ; gLabel after GuiControl that changes the value below
+GuiControl, 2:, f_strNetworkDrivesLetters, % o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue
+GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
+
+; NetworkDrivesAlwaysOnline
+Gui, 2:Add, CheckBox, y+5 x%g_intGroupItemsX% vf_blnNetworkDrivesAlwaysOnline gGuiOptionsGroupChanged hidden, % o_L["OptionsNetworkDrivesAlwaysOnline"]
+GuiControl, , f_blnNetworkDrivesAlwaysOnline, % (o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue = true)
 
 ; === AdvancedLaunch ===
 
@@ -9322,6 +9334,8 @@ o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.WriteIni(f_blnRefreshQAPMen
 o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.WriteIni(f_blnRefreshQAPMenuDebugBeep)
 o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(f_intNbLiveFolderItemsMax)
 o_Settings.MenuAdvanced.intClipboardMaxSize.WriteIni(f_intClipboardMaxSize)
+o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.WriteIni(f_blnNetworkDrivesAlwaysOnline)
+o_Settings.MenuAdvanced.strNetworkDrivesLetters.WriteIni(f_strNetworkDrivesLetters)
 
 if (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue > 0)
 	SetTimer, RefreshQAPMenuScheduled, % o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue * 1000
@@ -21178,8 +21192,7 @@ Loop
 		if (ErrorLevel) ; hidden or system files (like desktop.ini) returns an error
 			continue
 		
-		; RecentLocationIsDocument to check if on an offline server
-		strTargetType := (RecentLocationIsDocument(strTargetPath, A_ThisLabel) ? "File" : "Folder")
+		strTargetType := (LocationIsDocument(strTargetPath) ? "File" : "Folder")
 		if StrLen(strOnlyFileOrFolder) and (strOnlyFileOrFolder <> strTargetType)
 			continue
 		
@@ -22089,27 +22102,6 @@ GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVert
 ;------------------------------------------------------------
 
 
-;------------------------------------------------------------
-RecentLocationIsDocument(strLocation, strSource)
-; check attributes except if on network offline check file extension
-;------------------------------------------------------------
-{
-	if (SubStr(strLocation, 1, 2) = "\\")
-	{
-		blnOffline := ServerIsOffline(strLocation)
-		; Diag(A_ThisFunc . " check if server is offline, if yes use extension from: " . strSource, strLocation . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
-		if (blnOffline)
-			; if server is offline, we must assume that if there is an extension, it is a file (could be misleading for foler like "\\server\path.ext")
-			return StrLen(GetFileExtension(strLocation)) 
-
-	}
-	; do not else
-	
-	return LocationIsDocument(strLocation)
-}
-;------------------------------------------------------------
-
-
 ;------------------------------------------------
 GetFavoriteType4Extension(strFilePathName)
 ;------------------------------------------------
@@ -22129,8 +22121,14 @@ GetFavoriteType4Extension(strFilePathName)
 LocationIsDocument(strLocation)
 ;------------------------------------------------------------
 {
-    FileGetAttrib, strAttributes, %strLocation%
-    return !InStr(strAttributes, "D") ; not a folder
+	if FileOnServerNotAlwaysOnline(strLocation)
+		; for lack of better info, consider file is document (not folder) if it has an extension
+		StrLen(GetFileExtension(strLocation))
+	else
+	{
+		FileGetAttrib, strAttributes, %strLocation%
+		return !InStr(strAttributes, "D") ; location is not a folder (D for directory)
+	}
 }
 ;------------------------------------------------------------
 
@@ -24414,6 +24412,21 @@ ShowToolTip(strContent)
 	Sleep, 75 ; make the tooltip minimally visible
 }
 ;---------------------------------------------------------
+
+
+;------------------------------------------------------------
+FileOnServerNotAlwaysOnline(strLocation)
+;------------------------------------------------------------
+{
+	blnIsNetwork := SubStr(strLocation, 1, 2) = "\\")
+	if !(blnIsNetwork)
+	{
+		SplitPath, strLocation, , , , , strDrive
+		blnIsNetwork := InStr(o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue, strDrive)
+	}
+	return (blnIsNetwork) and !(o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue)
+}
+;------------------------------------------------------------
 
 
 ;========================================================================================================================
