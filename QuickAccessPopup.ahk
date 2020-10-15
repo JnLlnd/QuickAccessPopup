@@ -5483,7 +5483,7 @@ strProductIdMonthly := "59"
 strProductIdLifeTime := "57"
 strProductIdCustomLifetime := "110"
 strProductIdCustomYearly := "112"
-global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F"}
+global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F", (strProductIdCustomYearly): "CY", (strProductIdCustomLifetime): "CL"}
 
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
 	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
