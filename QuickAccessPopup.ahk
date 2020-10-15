@@ -31,6 +31,61 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0 (2020-10-??)
+ 
+SUMMARY
+- new licensing system replacing the sponsor codes with various paid licenses and a free edition
+- add in one step multiple folders, documents, applications, Special Folders or QAP Features to a specified submenu or group
+- improvements to: Customize window, Livefolders, Windows Terminal support, Directory Opus and Total Commander support
+ 
+License processing
+- implement a new licensing system replacing the sponsor codes; new licenses are available for a modest price and a free edition is also available
+  (more info: https://forum.quickaccesspopup.com/showthread.php?tid=1208)
+- when users launch QAP without a valid license, it displays the "Manage License" dialog box where users can get a license on QAP website or to enter their license they
+- the "Help, Manage your license" menu in the "Customize" window allows to manage the license on QAP website (using a password sent when getting the license), remove installations, etc.
+- the "About" dialog box now displays the license info with a link to copy the info to the Clipboard
+- the new QAP feature "Manage License" allows to insert this feature anywhere in your QAP menu
+- new license text in the "About" dialog box, setup file and portable zip file
+ 
+Add Multiple Favorites
+- a new menu "Favorite, Add Multiple Favorites" in the "Cuszomize" window allows to add various favorites to a menu or group in one step;
+- multiple favorites sources are:
+  - add favorites folders or applications from the "Current Windows";
+  - add items from the "Recent Folders" or the "Recent Files";
+  - add items from the "Frequent Folders" or the "Frequent Files";
+  - add multiple QAP Features or Special Folders;
+  - add folders, documents or applications favorites from a selected folder;
+  - add any favporites from any QAP settings file.
+- the list in the "Add Multiple Favorites" dialog box can be filtered by keywords or sorted
+- optionally a checkbox excludes from the list the favorites already found in the QAP menu
+ 
+Customize window
+- right-click entries in the favorites list of the "Customize" window to open a contextual menu allowing to "Add", "Edit", "Remove", "Copy" or "Move" the selected favorite(s)
+ 
+Live Folders
+- in favorites folders with "Live folder" option enabled, the option "Refresh this Live Folder menu only with the command 'Refresh Live Folders'" will prevent refreshing this live folder menu each time the menu is refreshed
+- allow "Live folder" option in favorite folders inside groups
+ 
+Various improvements
+- replace the old (an unfriendly) Windows "Select Folder" dialog box with a more workable dialog box (thanks to Flipeador) where the folder can be changed with the QAP menu
+- for Directory Opus and Total Commander users, add an option in "Options, File Managers" section to set the default side (lister or pane) for new tabs to "Left" (or top), "Right" (or botton) or "Active side"
+- add support for the Windows app "Windows Terminal" (with same features as for CMD command line or PowerShell)
+- optimize the menu refresh when items are on an offline network drive (UNC)
+- in portable ZIP file, update readme.txt file and merge Update_instructions.txt
+ 
+Small bug fixes
+- fix bug not removing the small status popup window when using the "Refresh Live Folders and Shared menus" command
+- fix bug when saving changes to the properties of a Shared menu
+ 
+Translation
+- German, Italian, Protuguese-Brazil, Portuguese, Korean and French language files update for v11
+
+Version BETA: 10.5.9.7 (2020-10-09)
+- German, Italian, Protuguese-Brazil, Portuguese, Korean and French language files update for v11
+- new license text in the About dialog box, setup file and portable zip file
+- in portable ZIP file, update readme.txt file and merge Update_instructions.txt
+- internal code cleanup
+
 Version BETA: 10.5.9.6 (2020-10-01)
 - Add Multiple Favorites: add favorites from a QAP ini file
 - various adjusments related to license processing
@@ -4134,7 +4189,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 10.5.9.6
+;@Ahk2Exe-SetVersion 11.0
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4200,8 +4255,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "10.5.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.0" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
@@ -4416,7 +4471,7 @@ global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_st
 ;---------------------------------
 ; Constants for EDD license
 global g_strProcessorId := Get_ProcessorId()
-global g_strSponsorCodeSiteURL := "http://edd-sandbox.jeanlalonde.ca/" ; ####
+global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
 
 ;---------------------------------
 ; Load Settings file
@@ -4451,8 +4506,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := true ; true / false ; ####
-global g_strEnvironment := "-dev"
+blnDoNotCheckLicense := false ; true / false ; ####
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -4490,7 +4544,7 @@ if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
 	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
 {
 	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		, % L(o_L["DonateCheckPrompt"] . "`n`n" . o_L["DonateCheckPrompt2"], g_strAppNameText, intStartups)
+		, % L(o_L["DonateCheckPrompt"], g_strAppNameText, intStartups)
 	IfMsgBox, Yes
 		Gosub, GuiDonate
 }
@@ -5424,15 +5478,18 @@ ProcessSponsorCode:
 
 global g_blnSponsor := false
 
-strProductIdYearly := "481"
-strProductIdMonthly := "428"
-strProductIdLifeTime := "518"
-strProductIdFree := "97"
-global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F"}
+strProductIdFree := "51"
+strProductIdYearly := "62"
+strProductIdMonthly := "59"
+strProductIdLifeTime := "57"
+strProductIdCustomLifetime := "110"
+strProductIdCustomYearly := "112"
+global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F", (strProductIdCustomYearly): "CY", (strProductIdCustomLifetime): "CL"}
 
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
-	: strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdFree, |
-; if we have the product id, check license for this product, else, check for all products in order 1) yearly, 2) monthly, 3) lifetim, 4) free
+	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
+	; if we have the product id, check license for this product, else, check for all products in order
+	; 1) free (most frequent), 2) yearly, 3) monthly, 4) lifetime, 5) custom lifetime, 6) custom yearly
 {
 	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
@@ -5482,9 +5539,7 @@ if (o_EDDLicense.oLicense.license = "valid")
 	g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 	strPossibleBadNumber := ""
 	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
-	Loop, Parse, A_NowUTC
-		strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
-	SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
+	SetSponsorOnlineTrace(o_EDDLicense.strEddLicense)
 	strSponsorCodeError := "" ; QAP will launch
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
@@ -5502,13 +5557,14 @@ else if (o_EDDLicense.oLicense.license = "expired")
 
 else ; the license is site_inactive, invalid or missing
 {
+	strCheckValidLicenseTrace := CheckValidLicenseTrace(intDaysAlert)
 	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0)
 		
 		strSponsorCodeError := "no_activation_left"
 		
-	else if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and CheckValidLicenseTrace() <> "exit"
+	else if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and (strCheckValidLicenseTrace <> "reject")
 	{
-		if CheckValidLicenseTrace() = "alert"
+		if (strCheckValidLicenseTrace = "alert")
 			Oops(1, o_L["DonateOnline"], intDaysAlert)
 		; consider license is good, set values and continue
 		o_EDDLicense := Object() ; for temporary offline usage
@@ -5526,6 +5582,8 @@ else ; the license is site_inactive, invalid or missing
 
 if StrLen(strSponsorCodeError)
 {
+	RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense) ; if we had a valide licnece trace, remove it
+	
 	Gosub, GuiManageLicenseFromProcess
 	
 	if (strSponsorCodeAction <> "save-key")
@@ -5558,10 +5616,10 @@ return
 
 
 ;------------------------------------------------------------
-CheckValidLicenseTrace()
+CheckValidLicenseTrace(ByRef intDaysAlert)
 ;------------------------------------------------------------
 {
-	strSponsorOnlineTrace := GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
+	strSponsorOnlineTrace := GetSponsorOnlineTrace(o_Settings.Launch.strSponsorCode.IniValue)
 	if StrLen(strSponsorOnlineTrace)
 	{
 		Loop, % StrLen(strSponsorOnlineTrace) / 2
@@ -5569,21 +5627,79 @@ CheckValidLicenseTrace()
 			strDecoded := Chr(SubStr(strSponsorOnlineTrace, 1, 2)) . strDecoded
 			strSponsorOnlineTrace := SubStr(strSponsorOnlineTrace, 3)
 		}
-		; strSponsorOnlineTrace := "20200822181414" ; datetime example
-		EnvSub, strSponsorOnlineTrace, A_NowUTC, D
+		; strDecoded := "20200822181414" ; datetime example
+		if RegExMatch(strDecoded, "[^0-9]")
+			return "reject" ; the trace has been modified, it is not a valid datetime
+		EnvSub, strDecoded, A_NowUTC, D
+		if (strDecoded > 0)
+			return "reject" ; the trace has been modified, it is in the future
 		intDaysAlert := 14
-		intDaysExit := 21
-		if (strSponsorOnlineTrace < -intDaysAlert) ; between alert day and exit day
+		intDaysReject := 21
+		if (strDecoded < -intDaysReject) ; passed Reject day
+			return "reject"
+		else if (strDecoded < -intDaysAlert) ; between Alert day and Reject day
 			return "alert"
-		else if (strSponsorOnlineTrace < -intDaysExit) ; passed exit day
-			return "exit"
-		else ; before alert day
+		else ; before Alert day
 			return "ok"
 	}
 	else ; no online trace
-		return "exit"
+		return "reject"
 }
 ;------------------------------------------------------------
+
+
+;---------------------------------------------------------
+SetSponsorOnlineTrace(strEddLicense)
+;---------------------------------------------------------
+{
+	Loop, Parse, A_NowUTC
+		strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
+	
+	if (g_blnPortableMode)
+	{
+		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		FileSetAttrib, -R-H-S, %strFileName%
+		FileDelete, %strFileName%
+		FileAppend, %strSponsorOnlineTrace%, %strFileName%
+		FileSetAttrib, +R+H+S, %strFileName%
+	}
+	else
+		SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+GetSponsorOnlineTrace(strEddLicense)
+;---------------------------------------------------------
+{
+	if (g_blnPortableMode)
+	{
+		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		FileRead, strSponsorOnlineTrace, %strFileName%
+		return %strSponsorOnlineTrace%
+	}
+	else
+		return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+RemoveSponsorOnlineTrace(strEddLicense)
+;---------------------------------------------------------
+{
+	if (g_blnPortableMode)
+	{
+		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		FileSetAttrib, -R-H-S, %strFileName%
+		FileDelete, %strFileName%
+	}
+	else
+		if StrLen(strEddLicense) ; safety
+			RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+}
+;---------------------------------------------------------
 
 
 ;------------------------------------------------------------
@@ -5632,7 +5748,7 @@ else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 		IniDelete, % o_Settings.strIniFile, Global, SponsorCode
 		IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
 		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
-		RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, "Online" . g_strEnvironment)
+		RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense)
 	}
 }
 ; else (if empty) do nothing
@@ -14623,7 +14739,8 @@ GuiMultipleAddSourceQAPFeaturesLoad:
 ;------------------------------------------------------------
 
 for strLocalizedName, strCode in o_QAPfeatures.aaQAPFeaturesCodeByDefaultName
-	GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
+	if !(o_QAPFeatures.AA[strCode].intQAPFeatureAlternativeOrder) ; exclude Alternative menus QAP Features
+		GuiMultipleAddSourceLoadLV("QAP", strCode, f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter, true, strLocalizedName)
 
 return
 ;------------------------------------------------------------
@@ -20217,7 +20334,7 @@ Gui, 2:Add, Link, y10 w380, % L(o_L["AboutText1"], g_strAppNameText, g_strAppVer
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
 FormatTime, strYear, , yyyy ; current time
-Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear)
+Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
 Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
 Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
 	. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
@@ -20267,19 +20384,15 @@ if (g_blnUseColors)
 Gui, 2:+Owner1
 
 Gui, 2:Font, s12 w700, Verdana
-Gui, 2:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
+Gui, 2:Add, Text, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
 Gui, 2:Font, s10 w600, Verdana
 Gui, 2:Add, Button, y+20 Default vbtnDonateDefault w220 h50 gButtonDonate, % o_L["DonateMenu"]
 ; GuiCenterButtons(g_strGui2Hwnd, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, "btnDonateDefault")
 GuiCenterButtons(g_strGui2Hwnd, 20, 20, 0, "btnDonateDefault")
 Gui, 2:Font, s8 w400 c404040 normal, Verdana
 
-Gui, 2:Add, Link, x10 w420 y+40 center vf_lnkWhySponsor, % L(o_L["DonateText2"], "https://www.quickaccesspopup.com/why-sponsoring-this-software/") ; will be centered by 2GuiSize
-
-Gui, 2:Add, Link, x10 y+15 w420, % o_L["DonateCheckPrompt2"]
-
 Gui, 2:Font, s10 w700, Verdana
-Gui, 2:Add, Link, xm y+20 w420, % o_L["DonateText3"]
+Gui, 2:Add, Link, xm y+60 w420, % o_L["DonateText3"]
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Link, xm y+10 w420 Section, % L(o_L["DonateText4"], g_strAppNameText)
 
@@ -20335,7 +20448,7 @@ return
 ButtonDonate:
 ;------------------------------------------------------------
 
-Run, %g_strSponsorCodeSiteURL%/products
+Run, %g_strSponsorCodeSiteURL%products
 
 return
 ;------------------------------------------------------------
@@ -26248,7 +26361,7 @@ class QAPfeatures
 			, "can-i-add-multiple-favorites-in-one-click")
 		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
 			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
-			, "can-i-add-multiple-favorites-in-one-click")
+			, "how-do-i-setup-or-manage-my-qap-license")
 
 		; Close computer various command features
 		
