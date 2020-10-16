@@ -50,6 +50,7 @@ lDialogAddFileSelect	Selecteer het nieuwe document:
 lDialogAddFolderManuallyPrompt	Sorry, we kunnen de huidige map niet opvragen in dit venstertype.`n`nWil je de map handmatig toevoegen?
 lDialogAddFolderManuallyTitle	Voeg actieve map of webpagina toe - ~1~ ~2~
 lDialogAddFolderSelect	Selecteer of maak een nieuwe map:
+lDialogAddSingle	Add only one favorite
 lDialogAlt	Alt
 lDialogAltShort	Alt
 lDialogApplicationLabel	Applicatie
@@ -165,6 +166,7 @@ lDialogFavoriteFolderLiveHideIcons	Pictogrammen
 lDialogFavoriteFolderLiveHideInMenu	Verberg in menu's
 lDialogFavoriteFolderLiveInclude	Toevoegen
 lDialogFavoriteFolderLiveLevels	Aantal submap-niveaus in het live menu
+lDialogFavoriteFolderLiveRefreshManual	Refresh this Live Folder menu only with the command`n"~1~"
 lDialogFavoriteFolderLiveShowHidden	Verborgen
 lDialogFavoriteFolderLiveShowItems	Items weergeven
 lDialogFavoriteFolderLiveShowSystem	Systeem
@@ -307,6 +309,20 @@ lDialogMoveSettingsNotDefault	Je kunt de voorkeurenmap niet verplaatsen wanneer 
 lDialogMoveSettingsReload	~1~ dient te worden herstart...
 lDialogMoveSettingsSuccess	Instellingenbestand succesvol gekopieerd.`n`nOude map: ~1~`n`nNieuwe map: ~2~`n`nDe bestanden in de oude map zijn niet verwijderd. Verwijder deze bestanden wanneer je dit wenst na het afsluiten van ~3~.
 lDialogMoveSettingsUnder	Je kunt een voorkeurenmap niet over zichzelf heen kopiëren, kies een andere locatie.
+lDialogMultipleAdd	Add Multiple Favorites
+lDialogMultipleAddDescription	Add in one click multiple favorites to the submenu of your choice from the list of currently open windows, from Frequent or Recent folders and files, from QAP Features or Special Folders lists, from a folder or from a QAP settings file.
+lDialogMultipleAddExcludeExisting	Exclude existing favorites
+lDialogMultipleAddFilter	Filter
+lDialogMultipleAddFrom	Add from
+lDialogMultipleAddIntro1	1) Select a destination menu and filter the favorites if desired.
+lDialogMultipleAddIntro1a	To sort the list, click column headers
+lDialogMultipleAddIntro2	2) Click the checkbox of the favorites to add.
+lDialogMultipleAddIntro2a	To edit the name of a favorite select its row and press F2.
+lDialogMultipleAddIntro3	3) Click "Add" to insert the favorites in the destination menu and click "Save" in the "Customize" window.
+lDialogMultipleAddSelectSource	Select the source of the favorites you want to add and click "Continue".
+lDialogMultipleAddSelectSourceNext	In the next window, you will:
+lDialogMultipleAddSettingsFileItems	QAP Settings File (items)
+lDialogMultipleAddSettingsFileMenus	QAP Settings File (menus)
 lDialogNA	n.v.t.
 lDialogNew	Nieuw
 lDialogNone	Geen
@@ -323,7 +339,7 @@ lDialogOpenSubFolderMostAnciently	de oudste
 lDialogOpenSubFolderMostRecently	de meest recente
 lDialogOpenThisGroup	Open deze groep
 lDialogOpenThisMenu	Open dit menu
-lDialogOptionsPathNotExist	Deze map bestaat niet:`n~1~`n`nWil je deze aanmaken?
+lDialogOptionsPathNotExist	Deze map bestaat niet:`n`n~1~`n`nWil je deze aanmaken?
 lDialogOr	of
 lDialogPlaceholders	Browse naar <a href="~1~">placeholders help page</a>.
 lDialogPlay	Afspelen
@@ -338,6 +354,7 @@ lDialogSameLocartionExistsPrompt	De volgende favoriet heeft dezelfde inhoud:
 lDialogSameLocartionExistsQuestion	Wil je deze favoriet nog steeds opslaan?
 lDialogSearch	Zoeken
 lDialogSearchAllFavorites	Zoek in alle favorieten...
+lDialogSelectFolder	Select Folder
 lDialogSelectIcon	Pictogram wijzigen
 lDialogSelectIconJL	Selecteer in:
 lDialogSelectIconNo	Geen pictogrammen
@@ -395,35 +412,12 @@ lDialogWindowsFolderIconSet	Stel het Windowsmap pictogram in
 lDialogWindowsFolderIconUpdate	update
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Start in
-lDonateButton	Sponsor deze software!
 lDonateCheckPrompt	Welkom bij deze nieuwe versie van ~1~.`n`nDit bericht toont zich slechts bij de installatie van een nieuwe versie.`n`n~1~ is niet alleen GRATIS maar bevat ook GEEN vervelende reclame of adware (waarvan nooit zeker is of deze geen spyware of malware bevatten)`n`nTot nog toe heeft ~1~ je ~2~ maal geassisteerd om tijd te besparen tijdens de dagelijkse werkzaamheden. Zou je ~1~ willen sponsoren?
-lDonateCheckPrompt2	NB: Gebruikers die een minimum donatie storten van €5,- of $5,- (of via een maandelijkse donatie) krijgen een sponsorcode om ~1~ te deactiveren.
-lDonateCheckPrompt3	dit bericht weergeven
-lDonateCheckPrompt4	sponsorherinneringen
-lDonateCheckPrompt5	en het sponsorbericht in het voorkeurenvenster
 lDonateCheckTitle	~1~ keer! - ~2~
-lDonateMenu	Sponsor deze software!
-lDonatePlatformComment1	Doneer met een Kredietkaart (een account is niet nodig) of uw Paypal account.
-lDonatePlatformComment2	Voor Europese sponsors
-lDonatePlatformComment3	Voor Canadese sponsors
-lDonatePlatformComment4	Beschikbaar voor US $, Euros en CAD $
-lDonatePlatformName1	Gebruik Paypal in US $
-lDonatePlatformName2	Gebruik Paypal in Euros
-lDonatePlatformName3	Gebruik Paypal in CAD $
-lDonatePlatformName4	Doneer maandelijks
-lDonateReviewNameLeft1	Download.com
-lDonateReviewNameLeft2	PortableFreeware.com
-lDonateReviewNameLeft3	Softpedia.com
-lDonateReviewNameRight1	BetaNews.com
-lDonateReviewNameRight2	FileCluster.com
-lDonateReviewNameRight3	Freewares && Tutos (FR)
-lDonateText1	Sponsor ~1~ ontwikkeling!
-lDonateText2	<a href="~1~">Waarom deze software sponsoren?</a>
 lDonateText3	... vertel het door als je deze software geweldig vindt!
 lDonateText4	Geef een positieve review over ~1~ op:
 lDonateText5	Stuur mij jouw link
 lDonateThankyou	Dank je ~1~ voor het sponsoren van deze software!
-lDonateTitle	Sponsor deze software! - ~1~ ~2~
 lDOpusLayoutsName	Vensterindelingen
 lDOpusMenuName	Directory Opus Favorieten
 lDopusMenuNameDescription	Voor Directory Opus (DOpus) gebruikers: een dynamisch menu weergeven dat is opgebouwd met de mappen die zijn toegevoegd aan de DOpus-favorieten. Als je DOpus-support tijdens de installatie van QAP hebt geselecteerd dan zijn de Directory Opus-favorieten automatisch aan je menu toegevoegd.
@@ -434,17 +428,13 @@ lGuiAddFavorite	Toevoegen
 lGuiCancel	Annuleren
 lGuiClose	Sluiten
 lGuiCopy	Kopiëren
-lGuiDonate	Sponsor deze software
-lGuiDonateCodeInput	Voer jouw donorcode in
-lGuiDonateCodeInputDescription	Voer de donorcode en de sponsornaam in zoals je hebt ontvangen via de email nadat je een donatie hebt gedaan om Quick Access Popup ontwikkeling te steunen.
-lGuiDonateCodeInputDonorInvalid	De sponsorcode is ongeldig.`n`nZorg ervoor dat de donorcode én sponsornaam exact zijn overgenomen uit de sponsor-email.
-lGuiDonateCodeInputDonorLabel	Voer jouw 8-cijferige code in (DONORCODE):
-lGuiDonateCodeInputSponsorLabel	Voer jouw naam in (SPONSORNAAM):
 lGuiDonateDescription	Geeft het venster "Sponsor deze software" weer.
 lGuiDropFilesHelp	Hulp voor slepen && neerzetten
 lGuiDropFilesIncentive	De volgende type favorieten kunnen worden gesleept naar het ~1~ venster:`n`n- ~2~`n- ~3~`n- ~4~
 lGuiDropFilesIncentive2	Om het verplaatsen van 1 of meerdere bestanden makkelijker te maken kun je het voorkeurenvenster altijd op de voorgrond laten weergeven door linksonder in het voorkeurenvenster op het "pin"-pictogram te klikken.
 lGuiEditFavorite	Wijzigen
+lGuiFileManagerNewTabSide	Open new tabs on which side of the file manager?
+lGuiFileManagerNewTabSideActive	Active side
 lGuiGroupClosing	Windows Explorer sluiten
 lGuiGroupRestoreDelay	Herstelvertraging tussen favorieten:
 lGuiGroupRestoreDelayMilliseconds	milliseconde
@@ -530,6 +520,7 @@ lImpExpFileGlobal	Globale voorkeuren en sneltoetsen voor het hoofdmenu
 lImpExpFileThemes	Thema's
 lImpExpFinalReport	Verplaats ~1~. Bron: `n~2~`n`nBestemming:`n~3~
 lImpExpImport	Importeren
+lImpExpInvalidDestinationFolder	Invalid destination folder:`n`n~1~
 lImpExpMenu	Importeren/Exporteren
 lImpExpMenuDescription	Geeft het venster weer waarin je jouw favorieten en andere voorkeuren kunt exporteren (bijvoorbeeld om een back-up te maken) op een locatie naar keuze.`n`nJe kunt ook favorieten en voorkeuren van een andere computer of een andere gebruiker importeren.
 lImpExpNoThemes	Geen themalijst gevonden in waarde "~1~" van sectie "~2~".`n`nBronbestand:`n~3~
@@ -715,6 +706,7 @@ lOopsHttpLocationTransformed	De http locatie (URL formaat) is aangepast in een n
 lOopsInvalidWinCmdIni	Total Commander bestand "wincmd.ini" is niet gevonden.`n`nSelecteer het bestand in "Opties" onder de tab "Bestandsbeheerders".
 lOopsInvalidWindowPosition	De vensterpositiewaarde(s) zijn ongeldig.
 lOopsJLiconsError	De QAP taakbalk icoon is niet gevonden, zorg ervoor dat je het bestand JLicons.dll hebt geudatet naar ~1~.
+lOopsJLiconsOutdated	The following file needs to be updated:`n`n~1~`n`nReplace it with JLicons.dll version ~2~ from the latest portable installation ZIP file and restart ~3~.
 lOopsLaunchWithNotFound	De applicatie vermeld bij "Starten met deze applicatie" is niet gevonden:`n`n~1~`n`nControleer de "Geavanceerde Opties" in de desbetreffende favoriet.
 lOopsMaxLiveFolder	Het maximale aantal items in Live-mappen (~1~) is bereikt. Reduceer het aantal niveaus van de Live-mappen, of verhoog de maximaal toegestane limiet maar pas hiermee op, een te hoog aantal Live-mappen kan tot onvoorspelbare resultaten leiden! Wijzig de waarde in het "Optie"-menu onder tab: "Geavanceerde menuopties".
 lOopsMenuExternalCentralized	gecentraliseerd openbaar menu
@@ -729,6 +721,7 @@ lOopsOptionsPathTrayIcon	Taakbalk pictogrambestand
 lOopsOSVerrsionError	~1~ kan worden uitgevoerd op Windows 7 of een recentere versie van Windows. Windows Vista en XP gebruikers zijn uitgenodigd om "Folders Popup" te downloaden, dit programma is geschikt voor oudere versies van Windows.`n`nWil je de website bezoeken van Folders Popup?
 lOopsSelectedItemDialogBoxes	De geselecteerde item kan niet worden gevonden in de dialoogvensters.
 lOopsSelectedItemTotalCommander	De geselecteerde item kan niet worden gevonden in Total Commander.
+lOopsSortOnHiddenColumns	You selected a sort criteria for a column that is not currently displayed in the "Customize" window.`n`nYou should enable the "~1~" option in "Options, Customize Window" and enable the QAP database in "Options, Database".
 lOopsSortUpToSeparator	Gesorteerd tot het eerste scheidingsteken.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	Er is een fout opgetreden tijdens het openen van deze favoriet, probeer het alsjeblieft opnieuw...
@@ -746,6 +739,7 @@ lOptionsAdvancedLaunch	Geavanceerde startopties
 lOptionsAdvancedOther	Diverse geavanceerde opties
 lOptionsAlternativeMenuFeatures	Alternatieve sneltoetsen
 lOptionsAlternativeMenuFeaturesIntro	Configureer hier de muisknop(pen) en sneltoets(en) die het QAP-alternatieve menu zal oproepen.
+lOptionsAlternativeMenuResetModifiers	Reset default modifiers
 lOptionsAlternativeMenuShowNotification	Notificatie weergeven bij het gebruik van het alternatieve menu
 lOptionsAlternativeModifiers	Modifiers
 lOptionsAlternativeTrayIcon	Vervanger QAP taakbalkpictogram (file,index)
@@ -795,7 +789,6 @@ lOptionsIconReplacementList	QAP-pictogram vervanger
 lOptionsIconReplacementListInstructions	Hier kan een vervanger voor een QAP-pictogram opgegeven worden.`n`nElke regel dient 1 pictogram te definiëren en te starten met de naam van het QAP-pictogram (b.v. "iconFolderLive") gevolgd met een "="-teken en "bestandslocatie, index" van het vervangende pictogram.`nDe "bestandslocatie" is de locatie van het bestand (.ico, .dll of .exe) waar het nieuwe pictogram zich bevindt en "index" is de positie van het pictogram in het bestand, b.v. "C:\pictogrammen\MijnBestand.dll,1".
 lOptionsIconSize	Pictogramgrootte
 lOptionsIconsManageRows	Beheer de pictogramvenster-regels (0 voor maximaal beschikbare ruimte)
-lOptionsIconsRetrieveInFrequentMenus	Ververs pictogrammen bij updaten van frequente mappen of bestandsmenu's`n(vermijd deze functie als deze bestanden geregeld offline zijn)
 lOptionsLanguage	Taal
 lOptionsLanguageLabels	Engels|Frans|Duits|Spaans|Braziliaans Portugees|Italiaans|Portugees|Nederlands|Korean|Simplified Chinese
 lOptionsMenuActiveWindow	Linksboven in het actieve venster
@@ -895,10 +888,6 @@ lOptionsWorkingFolder	Voorkeurenmap
 lPickIconNoLocation	Selecteer eerst een favoriet alvorens een pictogram te kiezen.
 lReloadPrompt	~1~ gewijzigd in ~2~. Wil je ~3~ herladen naar ~2~? Niet opgeslagen wijzigingen gaan verloren.
 lSponsoredName	Deze software wordt vriendelijk gesponsord door ~1~
-lSponsoredNone	Klik hier om deze software te sponsoren!
-lSponsoredUpdate	Werk jouw donorcode bij alsjeblieft (er is geen nieuwe donatie vereist)
-lSponsorRemove	Verwijder de sponsorcode
-lSponsorRemoved	Sponsorcode verwijdert
 lTCMenuName	TC Directory hotlist
 lTCMenuNameDescription	Deze functie is specifiek bedoelt voor Total Commander (TC)-gebruikers.`nDeze functie geeft een dynamisch menu weer dat is opgebouwd met favorieten vanuit de TC Hotlist (vanuit wincdm.ini).`n`nStel de locatie van het wincdm.ini-bestand in via "Opties" -> "Bestandsbeheerders". Als TC was geselecteerd toen je QAP installeerde dan is de directory-hotlist automatisch aan jouw menu toegevoegd.
 lTCWinCmdLocation	WinCmd.ini locatie
