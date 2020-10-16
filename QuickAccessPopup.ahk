@@ -4464,6 +4464,13 @@ global o_SpecialFolders := new SpecialFolders
 global o_Utc2LocalTime := new Utc2LocalTime
 
 ;---------------------------------
+; Prepare executable extensions list from PATHEXT env variable
+global g_strExeExtensions
+EnvGet, g_strExeExtensions, PathExt ; for example ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC"
+if StrLen(GetRegistry("HKEY_LOCAL_MACHINE\SOFTWARE\AutoHotkey", InstallDir))
+	g_strExeExtensions .= ";.AHK" ; add AutoHotkey scripts extension
+
+;---------------------------------
 ; Init startups and last version used
 intStartups := o_Settings.ReadIniValue("Startups", 1)
 global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
@@ -20735,6 +20742,7 @@ return
 
 ;------------------------------------------------------------
 UsageDbCollectMenuData:
+; repeated timed task to collect recent items and dynamic menus data
 ;------------------------------------------------------------
 
 if !(g_blnUsageDbEnabled)
@@ -20805,8 +20813,7 @@ Loop, parse, strUsageDbItemsList, `n
 		break
 	
 	FileGetShortcut, %strUsageDbShortcutPath%, strUsageDbTargetPath
-	; RecentGetUsageDbTargetFileInfo to check if on an offline server
-	RecentGetUsageDbTargetFileInfo(strUsageDbTargetPath, strUsageDbTargetAttributes, strUsageDbTargetType, strUsageDbTargetDateTime, strUsageDbTargetExtension, A_ThisLabel)
+	GetUsageDbTargetFileInfo(strUsageDbTargetPath, strUsageDbTargetAttributes, strUsageDbTargetType, strUsageDbTargetDateTime, strUsageDbTargetExtension)
 	if (strUsageDbTargetType = "Folder") ; remove ending backslash in folder location
 		strUsageDbTargetPath := StripFolderEndingBackslash(strUsageDbTargetPath)
 	
@@ -20977,14 +20984,13 @@ loop, parse, % "Folders|Files", |
 		strPath := o_Row[1]
 		strTargetNb := o_Row[2]
 		; Diag(A_ThisLabel . ":Processing Start", strPath . " " . strTargetType, "ELAPSED")
-		; RecentFileExistInPath to check if on an offline server
 		
 		if (strTargetNb <= 1) ; skip if not enough frequent
 			continue
 		
         if (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue ; if not, consider that file exists (we won't try to retrieve its icon)
 			and SubStr(strPath, 1, 2) <> "\\") ; if this is an UNC path, consider that file exists (we won't try to retrieve its icon)
-			and !RecentFileExistInPath(strPath, A_ThisLabel) ; skip if not exist
+			and !FileExistInPath(strPath) ; skip if not exist
 				continue
 		
 		intPopularItemsCount++
@@ -21196,8 +21202,7 @@ Loop
 		if StrLen(strOnlyFileOrFolder) and (strOnlyFileOrFolder <> strTargetType)
 			continue
 		
-		; RecentFileExist to check if on an offline server
-		if !RecentFileExist(strTargetPath, A_ThisLabel) ; if folder/document was deleted, on a removable drive or offline server
+		if !FileExistCheckNetworkDrive(strTargetPath) ; if folder/document was deleted, or if file on an unreliable network drive
 			continue
 	}
 	; Diag(A_ThisLabel . ":ProcessingStart", strTargetPath . " " . strTargetType, "ELAPSED")
@@ -22106,8 +22111,7 @@ GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVert
 GetFavoriteType4Extension(strFilePathName)
 ;------------------------------------------------
 {
-	strExtension := GetFileExtension(strFilePathName)
-	if StrLen(strExtension) and InStr("exe|com|bat|ahk|vbs|cmd", strExtension)
+	if ExtensionIsApplication(strFilePathName)
 		return "Application"
 	else if LocationIsDocument(strFilePathName)
 		return "Document"
@@ -22123,12 +22127,11 @@ LocationIsDocument(strLocation)
 {
 	if FileOnServerNotAlwaysOnline(strLocation)
 		; for lack of better info, consider file is document (not folder) if it has an extension
-		StrLen(GetFileExtension(strLocation))
-	else
-	{
-		FileGetAttrib, strAttributes, %strLocation%
-		return !InStr(strAttributes, "D") ; location is not a folder (D for directory)
-	}
+		return StrLen(GetFileExtension(strLocation))
+	; do not else
+
+	FileGetAttrib, strAttributes, %strLocation%
+	return !InStr(strAttributes, "D") ; location is not a folder (D for directory)
 }
 ;------------------------------------------------------------
 
@@ -22707,28 +22710,14 @@ LocationIsHTTP(strLocation)
 
 
 ;------------------------------------------------------------
-RecentFileExistInPath(ByRef strFile, strSource)
-; always return true if file si on an offline network drive
-;------------------------------------------------------------
-{
-	if (SubStr(strFile, 1, 2) = "\\")
-	{
-		blnOffline := ServerIsOffline(strFile)
-		; Diag(A_ThisFunc . " check if server is offline from: " . strSource, strFile . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
-		if (blnOffline)
-			return false
-	}
-	; do not else
-	
-	return FileExistInPath(strFile)
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
 FileExistInPath(ByRef strFile)
 ;------------------------------------------------------------
 {
+	if FileOnServerNotAlwaysOnline(strFile)
+		; consider file exists
+		return true
+	; do not else
+		
 	strFile := EnvVars(strFile) ; expand environment variables like %APPDATA% or %USERPROFILE%, and user variables like {DropBox}
 	if (!StrLen(strFile) or InStr(strFile, "://") or SubStr(strFile, 1, 1) = "{") ; this is not a file - caution some URLs in WhereIs cause an infinite loop
 		return false
@@ -22752,35 +22741,16 @@ FileExistInPath(ByRef strFile)
 
 
 ;------------------------------------------------------------
-RecentFileExist(strPath, strSource)
-; if file is on server, check if server is online
+FileExistCheckNetworkDrive(strPath)
+; if file is on server not always online, assume file exists
 ;------------------------------------------------------------
 {
-	if (SubStr(strPath, 1, 2) = "\\")
-	{
-		blnOffline := ServerIsOffline(strPath)
-		; Diag(A_ThisFunc . " check if server is offline from: " . strSource, strPath . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
-		if (blnOffline)
-			return false
-	}
+	if FileOnServerNotAlwaysOnline(strLocation)
+		; for lack of better info, consider file exists if path not empty
+		return StrLen(strPath)
 	; do not else
 
 	return FileExist(strPath)
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-ServerIsOffline(strPath)
-;------------------------------------------------------------
-{
-	SplitPath, strPath, , strDir ; extract the folder because DriveGet check status for folders, not files
-	; DriveGet Status returns: Unknown (might indicate unformatted/RAW), Ready, NotReady (typical for removable drives that don't contain media),
-	; Invalid (Path does not exist or is a network drive that is presently inaccessible, etc.)
-	DriveGet, strStatus, Status, %strDir%
-	; ###_V(A_ThisFunc, strPath, strDir, strStatus)
-	
-	return (strStatus <> "Ready")
 }
 ;------------------------------------------------------------
 
@@ -22792,11 +22762,8 @@ WhereIs(strThisFile)
 {
 	if !StrLen(GetFileExtension(strThisFile)) ; if file has no extension
 	{
-		; prepare executable extensions list from PATHEXT env variable
-		EnvGet, strExeExtensions, PathExt
-
 		; re-enter WhereIs with each extension until one returns an existing file
-		Loop, Parse, strExeExtensions, `;
+		Loop, Parse, g_strExeExtensions, `; ; for example ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.AHK"
 		{
 			strFoundFile := WhereIs(strThisFile . A_LoopField) ; recurse into WhereIs with a complete filename
 		} until StrLen(strFoundFile)
@@ -23571,64 +23538,33 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 
 
 ;------------------------------------------------------------
-RecentGetUsageDbTargetFileInfo(strPath, ByRef strAttributes, ByRef strType, ByRef strDateTime, ByRef strExtension, strSource)
-;------------------------------------------------------------
-{
-	if (SubStr(strPath, 1, 2) = "\\")
-	; if on network, if server is offline, return data based on path only
-	{
-		blnOffline := ServerIsOffline(strPath)
-		; Diag(A_ThisFunc . " based on extension or dummy data from: " . strSource, strPath . " " . (blnOffline ? "(OFFLINE)" : "(ONLINE)"), "ELAPSED")
-		if (blnOffline)
-		{
-			strAttributes := "???" ; do not leave empty - file will be processed and added to database
-			strExtension := GetFileExtension(strPath)
-			if StrLen(strExtension)
-				if InStr("exe|com|bat|ahk|vbs|cmd", strExtension)
-					strType := "Application"
-				else ; we must assume that if there is an extension, it is a file (could be misleading for foler like "\\server\path.ext")
-					strType := "File"
-			else
-				strType := "Folder"
-			strDateTime := "" ; unknown
-			
-			return
-		}
-	}
-	; do not else
-
-	GetUsageDbTargetFileInfo(strPath, strAttributes, strType, strDateTime, strExtension)
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
 GetUsageDbTargetFileInfo(strPath, ByRef strAttributes, ByRef strType, ByRef strDateTime, ByRef strExtension)
 ;------------------------------------------------------------
 {
-	strAttributes := FileExist(strPath)
-	if StrLen(strAttributes)
-	{
-		strExtension := GetFileExtension(strPath)
-		if StrLen(strExtension) and InStr("exe|com|bat|ahk|vbs|cmd", strExtension)
+	strDateTime := "" ; will be empty if we cannot get it
+	
+	strExtension := GetFileExtension(strPath)
+	if StrLen(strExtension)
+		if ExtensionIsApplication(strPath)
 			strType := "Application"
-		else if LocationIsDocument(strPath)
-			strType := "File"
 		else
-			strType := "Folder"
-		FileGetTime, strDateTime, %strPath%
-	}
+			strType := "File" ; it could be a folder, we will check below if file is on a reliable server
+	else
+		strType := "Folder" ; assume that if there is no extension, it is a folder
+	
+	if FileOnServerNotAlwaysOnline(strPath)
+		; if file on unreliable network drive, we cannot get these infos
+		strAttributes := "???" ; do not leave empty - file will be processed and added to database
 	else
 	{
-		strExtension := ""
-		strType := ""
-		strDateTime := ""
+		strAttributes := FileExist(strPath)
+		if StrLen(strAttributes)
+		{
+			If InStr(strAttributes, "D") ; D for directory
+				strType := "Folder" ; else keep the value set above
+			FileGetTime, strDateTime, %strPath%
+		}
 	}
-	; Diag(A_ThisFunc, strPath . " | "
-		; . strAttributes . " | "
-		; . strType . " | "
-		; . strDateTime . " | "
-		; . "", "ELAPSED")
 }
 ;------------------------------------------------------------
 
@@ -24427,6 +24363,17 @@ FileOnServerNotAlwaysOnline(strLocation)
 	return (blnIsNetwork) and !(o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue)
 }
 ;------------------------------------------------------------
+
+
+;------------------------------------------------
+ExtensionIsApplication(strPath)
+;------------------------------------------------
+{
+	strExtension := GetFileExtension(strFilePathName)
+	; g_strExeExtensions for example ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.AHK"
+	return StrLen(strExtension) and InStr(g_strExeExtensions, "." . strExtension)
+}
+;------------------------------------------------
 
 
 ;========================================================================================================================
