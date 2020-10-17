@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.0 (2020-10-??)
+Version: 11.0 (2020-10-17)
  
 SUMMARY
 - new licensing system replacing the sponsor codes with various paid licenses and a free edition
