@@ -48,16 +48,17 @@ License processing
 - new license text in the "About" dialog box, setup file and portable zip file
  
 Add Multiple Favorites
-- a new menu "Favorite, Add Multiple Favorites" in the "Cuszomize" window allows to add various favorites to a menu or group in one step;
+- a new menu "Favorite, Add Multiple Favorites" in the "Customize" window allows to add various favorites to a menu or group in one step;
 - multiple favorites sources are:
   - add favorites folders or applications from the "Current Windows";
   - add items from the "Recent Folders" or the "Recent Files";
   - add items from the "Frequent Folders" or the "Frequent Files";
   - add multiple QAP Features or Special Folders;
   - add folders, documents or applications favorites from a selected folder;
-  - add any favporites from any QAP settings file.
+  - add any types of favorites from a QAP settings file.
 - the list in the "Add Multiple Favorites" dialog box can be filtered by keywords or sorted
 - optionally a checkbox excludes from the list the favorites already found in the QAP menu
+- for more info see: https://www.quickaccesspopup.com/can-i-add-multiple-favorites-in-one-click/
  
 Customize window
 - right-click entries in the favorites list of the "Customize" window to open a contextual menu allowing to "Add", "Edit", "Remove", "Copy" or "Move" the selected favorite(s)
