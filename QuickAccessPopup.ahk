@@ -20355,11 +20355,15 @@ return
 GuiAboutCopyLicense:
 ;------------------------------------------------------------
 
+blnShift := GetKeyState("LShift")
+
 MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
 IfMsgBox, Cancel
 	return
 
-Clipboard := o_EDDLicense.strUniqueSystemId
+Clipboard := o_EDDLicense.strUniqueSystemId . (blnShift ? "`n" . o_EDDLicense.strEddLicense : "")
+
+blnShift := ""
 
 return
 ;------------------------------------------------------------
