@@ -5835,7 +5835,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue, % aaL["DialogContinue"]
 	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionCancel vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
 
-	Gui, 2:Add, Link, -Group w400 x10 y+15 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
+	Gui, 2:Add, Link, -Group w400 x10 y+15 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId)
 		. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
 	
 	GuiCenterButtons(strGuiSponsorActionHwnd, 10, 5, 20, "f_btnSponsorActionContinue", "f_btnSponsorActionCancel")
@@ -20329,7 +20329,7 @@ Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
 FormatTime, strYear, , yyyy ; current time
 Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
 Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
-Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
+Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId)
 	. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
 Gui, 2:Font, s10 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
@@ -20359,7 +20359,7 @@ MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
 IfMsgBox, Cancel
 	return
 
-Clipboard := o_EDDLicense.strEddLicense . "`n" o_EDDLicense.strUniqueSystemId
+Clipboard := o_EDDLicense.strUniqueSystemId
 
 return
 ;------------------------------------------------------------
