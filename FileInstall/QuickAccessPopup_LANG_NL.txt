@@ -1,3 +1,6 @@
+lAboutLicense	Licentie voor: ~1~`nLicentiecode: ~2~`nInstallatiecode: ~3~
+lAboutLicenseCopy	kopieer licentie-info
+lAboutLicenseCopyMessage	De QAP-licentie en installatiecodes zijn naar het klembord gekopieerd.
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ is ontwikkeld door Jean Lalonde gebruikmakend van de <a href="http://ahkscript.org/">ahk script</a> programmeertaal.`n`nVertalingen: `nBraziliaans Portugees: Igor Ruckert`nChinees (Manderijn): ilaoyao`nDuits: Edgar "Fast Edi" Hoffmann`nFrans: Jean Lalonde`nItaliaans: Riccardo Leone`nPortugees: Luis Neves`nNederlands: Ric Roggeveen`nSpaans: kiketrucker`nKorean translation: Maeng Bong Kyun`nRussisch: Wylek.ru`n`nEngelse grammatica: <a href="http://www.quickaccesspopup.com/quick-access-popup-translation/">(hulp is welkom)</a>`n`nPictogrammen van: <a href="https://icons8.com/">Icons8</a>`nInstallatieprogramma van: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> van jrsoftware.org`nAutoHotkey_L v~2~ bronnen: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup bevat componenten welke onder de Apache Licentie, versie 2.0 vallen. Het gebruik van dit bestand is alleen toegestaan in naleving van de licentie. Tenzij de toepasselijke wetgeving dit vereist of de partijen dit vooraf schriftelijk zijn overeengekomen, wordt de software op een "AS IS" -basis ZONDER WAARBORG OF VOORWAARDEN van welke aard dan ook hetzij uitdrukkelijk of impliciet onder de licentie uitgegeven. Refereer naar de licentie voor de specifieke bevoegdheden en/of beperkingen die de licentie heeft.`nEen kopie (site is in het Engels) van de licentie is te verkrijgen op: <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
@@ -412,12 +415,41 @@ lDialogWindowsFolderIconSet	Stel het Windowsmap pictogram in
 lDialogWindowsFolderIconUpdate	update
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Start in
-lDonateCheckPrompt	Welkom bij deze nieuwe versie van ~1~.`n`nDit bericht toont zich slechts bij de installatie van een nieuwe versie.`n`n~1~ is niet alleen GRATIS maar bevat ook GEEN vervelende reclame of adware (waarvan nooit zeker is of deze geen spyware of malware bevatten)`n`nTot nog toe heeft ~1~ je ~2~ maal geassisteerd om tijd te besparen tijdens de dagelijkse werkzaamheden. Zou je ~1~ willen sponsoren?
+lDonateActionChoose	Selecteer een van de acties.
+lDonateActionEnterLicense	Sla de licentiecode op
+lDonateActionGroupQAP	In ~1~:
+lDonateActionGroupWebsite	Op de website:
+lDonateActionManageInstallations	Beheer jouw installaties
+lDonateActionManageInstallationsConfirm	~1~ zal de webpagina "Manage License" openen.`nKlik op die pagina op de link "Manage Installations" in de rij voor "~2~"
+lDonateActionManageLicense	Beheer licenties
+lDonateActionManageLicenseDescription	Open een dialoogvenster waarin je een nieuwe licentie kunt krijgen of deze op de QAP-website kunt beheren. Je kunt het ook gebruiken om jouw licentie te verwijderen, zodat je het op een ander systeem kunt installeren.
+lDonateActionNewLicense	Koop een nieuwe licentie
+lDonateActionNewLicenseConfirm	Start ~1~ opnieuw op nadat je jouw licentiecode hebt opgeslagen.
+lDonateActionOldLicenseRemoved	De licentie is verwijderd
+lDonateActionRemoveLicense	Verwijder deze licentie
+lDonateActionRemoveLicenseConfirm	Wil je jouw licentie voor "~1~" van deze computer verwijderen?`n`nZo ja, dan wordt de installatie voor deze computer (~2~) vrijgegeven en is deze beschikbaar voor een andere computer.`n`nWAARSCHUWING: Als je antwoordt met "Ja" dan is er een geldige licentie nodig om ~3~ opnieuw te starten.
+lDonateActionRenew	Verleng licentie
+lDonateActionRenewConfirm	Start ~1~ opnieuw op na het vernieuwen van een licentiecode.
+lDonateActionSaveLicense	Sla de licentiecode op
+lDonateButton	Ondersteun de ontwikkeling van deze software!
+lDonateCheckPrompt	Welkom bij deze nieuwe versie van ~1~.`n`nDit bericht toont zich slechts bij de installatie van een nieuwe versie.`n`n~1~ is niet alleen GRATIS maar bevat ook GEEN vervelende reclame of adware (waarvan nooit zeker is of deze geen spyware of malware bevatten)`n`nTot nog toe heeft ~1~ je ~2~ maal geassisteerd om tijd te besparen tijdens de dagelijkse werkzaamheden. Zou je de ontikkeling van ~1~ willen ondersteunen en deze software willen kopen?
 lDonateCheckTitle	~1~ keer! - ~2~
+lDonateCodeExpiredMessage	Jouw ~1~ licentie is verlopen.`n`nJe kunt de licentie verlengen op de ~1~ website.
+lDonateCodeExpiredTitle	Licentie verlopen - ~1~
+lDonateCodeInvalidMessage	Je hebt een licentiecode nodig om deze versie van ~1~ te gebruiken.`n`nJe kunt een gratis licentie ontvangen of bijdragen aan de ontwikkeling van deze applicatie door een licentie te kopen voor een bescheiden prijs. Bezoek de ~1~ website voor meer informatie. Als je jouw licentiecode hebt ontvangen, selecteer dan "Bewaar jouw licentie".
+lDonateCodeManageMessage	Jouw licentie is geldig.`n`nJe hebt nog ~1~/~2~ installatie(s) over voor deze licentie.
+lDonateCodeNoInstallationsMessage	GEEN VRIJE INSTALLATIES MEER BESCHIKBAAR`n`nJe hebt ~1~ installatie(s) gebruikt die zijn toegestaan voor jouw ~2~ licentie`n`nJe kunt het aantal installaties voor deze licentie beheren op de ~2~ website.
+lDonateCodeNoInstallationsTitle	Geen vrije installaties meer beschikbaar - ~1~
+lDonateEnterCode	Heb je een ~1~ licentiecode?`n`nIndien ja, voer dan de code in en start ~1~ (opnieuw).`n`nZo niet, vraag dan jouw licentiecode op via de ~1~ website.
+lDonateMenu	Ondersteun de ontwikkeling van deze software!
+lDonateOnline	De licentie kon al ~1~ dagen niet worden gecontroleerd.`n`nMaak verbinding met internet om de code te valideren.
+lDonateText1	Ondersteuning ~1~ ontwikkeling!
 lDonateText3	... vertel het door als je deze software geweldig vindt!
 lDonateText4	Geef een positieve review over ~1~ op:
 lDonateText5	Stuur mij jouw link
-lDonateThankyou	Dank je ~1~ voor het sponsoren van deze software!
+lDonateThankyou	Bedankt ~1~, voor het ondersteunen van deze software!
+lDonateThankyouRestart	Bedankt voor het ondersteunen van ~1~ ontwikkeling!`n`nDe app wordt zo weer opgestart.
+lDonateTitle	Ondersteun de ontwikkeling van deze software! - ~1~ ~2~
 lDOpusLayoutsName	Vensterindelingen
 lDOpusMenuName	Directory Opus Favorieten
 lDopusMenuNameDescription	Voor Directory Opus (DOpus) gebruikers: een dynamisch menu weergeven dat is opgebouwd met de mappen die zijn toegevoegd aan de DOpus-favorieten. Als je DOpus-support tijdens de installatie van QAP hebt geselecteerd dan zijn de Directory Opus-favorieten automatisch aan je menu toegevoegd.
@@ -428,7 +460,12 @@ lGuiAddFavorite	Toevoegen
 lGuiCancel	Annuleren
 lGuiClose	Sluiten
 lGuiCopy	Kopiëren
-lGuiDonateDescription	Geeft het venster "Sponsor deze software" weer.
+lGuiDonate	Ondersteun de ontwikkeling van deze software
+lGuiDonateCodeInput	Voer de QAP-licentiecode in
+lGuiDonateCodeInputDonorInvalid	De QAP licentiecode is ongeldig.`n`nZorg ervoor dat de code ("License Key") exact is gekopieerd vanuit de registratie-email.
+lGuiDonateCodeInputDonorLabel	Kopieer en plak jouw 32-cijferige code ("License Key")
+lGuiDonateCodeInputSponsorLabel	Voer jouw naam in (optioneel)
+lGuiDonateDescription	Geeft het venster "Ondersteun de ontwikkeling van deze software" weer.
 lGuiDropFilesHelp	Hulp voor slepen && neerzetten
 lGuiDropFilesIncentive	De volgende type favorieten kunnen worden gesleept naar het ~1~ venster:`n`n- ~2~`n- ~3~`n- ~4~
 lGuiDropFilesIncentive2	Om het verplaatsen van 1 of meerdere bestanden makkelijker te maken kun je het voorkeurenvenster altijd op de voorgrond laten weergeven door linksonder in het voorkeurenvenster op het "pin"-pictogram te klikken.
@@ -887,7 +924,8 @@ lOptionsWaitDelayInSnippet	Vertragingen (in ms) voor het uitvoeren van een fragm
 lOptionsWorkingFolder	Voorkeurenmap
 lPickIconNoLocation	Selecteer eerst een favoriet alvorens een pictogram te kiezen.
 lReloadPrompt	~1~ gewijzigd in ~2~. Wil je ~3~ herladen naar ~2~? Niet opgeslagen wijzigingen gaan verloren.
-lSponsoredName	Deze software wordt vriendelijk gesponsord door ~1~
+lSponsoredName	De ontwikkeling van deze software wordt vriendelijk ondersteunt door ~1~
+lSponsoredNone	Klik hier om de ontwikkeling van deze software te ondersteunen!
 lTCMenuName	TC Directory hotlist
 lTCMenuNameDescription	Deze functie is specifiek bedoelt voor Total Commander (TC)-gebruikers.`nDeze functie geeft een dynamisch menu weer dat is opgebouwd met favorieten vanuit de TC Hotlist (vanuit wincdm.ini).`n`nStel de locatie van het wincdm.ini-bestand in via "Opties" -> "Bestandsbeheerders". Als TC was geselecteerd toen je QAP installeerde dan is de directory-hotlist automatisch aan jouw menu toegevoegd.
 lTCWinCmdLocation	WinCmd.ini locatie
