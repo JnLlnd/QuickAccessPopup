@@ -4219,6 +4219,7 @@ ComObjError(False) ; we will do our own error handling
 
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
 #Include %A_ScriptDir%\..\EDD\EDDLicense.ahk ; by Jean Lalonde (Aug. 2020)
+#Include %A_ScriptDir%\Diag.ahk ; by Jean Lalonde (Oct 2020)
 
 ; avoid error message when shortcut destination is missing
 ; see http://ahkscript.org/boards/viewtopic.php?f=5&t=4477&p=25239#p25236
@@ -5491,11 +5492,17 @@ strProductIdCustomLifetime := "110"
 strProductIdCustomYearly := "112"
 global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F", (strProductIdCustomYearly): "CY", (strProductIdCustomLifetime): "CL"}
 
+; Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorProductId.IniValue", o_Settings.Launch.strSponsorProductId.IniValue, "")
+Diag(A_ThisLabel . " g_strSponsorCodeSiteURL", g_strSponsorCodeSiteURL, "")
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCode.IniValue", o_Settings.Launch.strSponsorCode.IniValue, "")
+
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
 	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
 	; if we have the product id, check license for this product, else, check for all products in order
 	; 1) free (most frequent), 2) yearly, 3) monthly, 4) lifetime, 5) custom lifetime, 6) custom yearly
 {
+	Diag(A_ThisLabel . " A_LoopField", A_LoopField, "")
 	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
 	
@@ -5538,6 +5545,9 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 
 ; set the status before asking user for next action
 
+Diag(A_ThisLabel . " o_EDDLicense.oLicense.license", o_EDDLicense.oLicense.license, "")
+Diag(A_ThisLabel . " o_EDDLicense.strProductId", o_EDDLicense.strProductId, "")
+Diag(A_ThisLabel . " o_EDDLicense.oLicense.item_id", o_EDDLicense.oLicense.item_id, "")
 if (o_EDDLicense.oLicense.license = "valid")
 {
 	o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
@@ -5563,6 +5573,7 @@ else if (o_EDDLicense.oLicense.license = "expired")
 else ; the license is site_inactive, invalid or missing
 {
 	strCheckValidLicenseTrace := CheckValidLicenseTrace(intDaysAlert)
+	Diag(A_ThisLabel . " strCheckValidLicenseTrace", strCheckValidLicenseTrace, "")
 	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0)
 		
 		strSponsorCodeError := "no_activation_left"
@@ -5585,11 +5596,13 @@ else ; the license is site_inactive, invalid or missing
 		
 }
 
+Diag(A_ThisLabel . " strSponsorCodeError", strSponsorCodeError, "")
 if StrLen(strSponsorCodeError)
 {
 	RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense) ; if we had a valide licnece trace, remove it
 	
 	Gosub, GuiManageLicenseFromProcess
+	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
 	if (strSponsorCodeAction <> "save-key")
 	{
@@ -6539,8 +6552,9 @@ CleanUpBeforeExit:
 ; if (o_Settings.Launch.blnDiagMode.IniValue)
 	; Diag("ListLines", ScriptInfo("ListLines"), "")
 
+if (o_Settings.Launch.blnDiagMode.IniValue)
+	Run, %g_strDiagFile%
 ; display MsgBox is not working for an unknown reason
-; if (o_Settings.Launch.blnDiagMode.IniValue)
 ; {
 	; MsgBox, % 52 + 256, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
 	; IfMsgBox, Yes
@@ -21906,77 +21920,6 @@ DiagWindowInfo(strName)
 }
 ;------------------------------------------------
 */
-
-
-;------------------------------------------------
-Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
-;------------------------------------------------
-{
-	static s_intStartTick
-	static s_intStartFullTick
-	static s_intStartShowTick
-	static s_intStartCollectTick
-
-	if !(o_Settings.Launch.blnDiagMode.IniValue or blnForceForFirstStartup)
-		return
-	
-	FormatTime, strNow, %A_Now%, yyyyMMdd@HH:mm:ss
-	strDiag := strNow . "." . A_MSec . "`t" . strName . "`t" . strData
-	
-	if StrLen(strStartElapsedStop)
-	{
-		strDiag .= "`t" . strStartElapsedStop . "`t" . A_TickCount
-		
-		if (strStartElapsedStop = "START-REFRESH")
-			s_intStartFullTick := A_TickCount
-		else if (strStartElapsedStop = "START-SHOW")
-			s_intStartShowTick := A_TickCount
-		else if (strStartElapsedStop = "START-COLLECT")
-			s_intStartCollectTick := A_TickCount
-		else if (strStartElapsedStop = "START")
-			s_intStartTick := A_TickCount
-		else if InStr(strStartElapsedStop, "-REFRESH") ; ELAPSED-REFRESH or STOP-REFRESH
-		{
-			intTicksAll := A_TickCount - s_intStartFullTick
-			strDiag .= "`t" . intTicksAll . "`t" . (intTicksAll > 500 ? "*FLAG1*" : "")
-		}
-		else if InStr(strStartElapsedStop, "-SHOW") ; ELAPSED-SHOW or STOP-SHOW
-		{
-			intTicksShow := A_TickCount - s_intStartShowTick
-			strDiag .= "`t" . intTicksShow . "`t" . (intTicksShow > 1000 ? "*FLAG2*" : "")
-		}
-		else if InStr(strStartElapsedStop, "-COLLECT") ; ELAPSED-COLLECT or STOP-COLLECT
-		{
-			intTicksCollect := A_TickCount - s_intStartCollectTick
-			strDiag .= "`t" . intTicksCollect . "`t" . (intTicksCollect > 2000 ? "*FLAG3*" : "")
-		}
-		else ; ELAPSED
-		{
-			intTicks := A_TickCount - s_intStartTick
-			strDiag .= "`t" . intTicks . "`t" . (intTicks > 2000 and strStartElapsedStop <> "ELAPSED" ? "*FLAG4*" : "")
-		}
-	}
-
-	; g_strDiagFile := A_WorkingDir . "\" . g_strAppNameFile . "-DIAG.txt"
-	strDiagFile := (blnForceForFirstStartup ? StrReplace(g_strDiagFile, "DIAG", "1st_STARTUP") : g_strDiagFile)
-	loop
-	{
-		FileAppend, %strDiag%`n, %strDiagFile%
-		if ErrorLevel
-			Sleep, 20
-	}
-	until !ErrorLevel or (A_Index > 50) ; after 1 second (20ms x 50), we have a problem
-	
-	if (strStartElapsedStop = "STOP")
-		s_intStartTick := ""
-	else if (strStartElapsedStop = "STOP-REFRESH")
-		s_intStartFullTick := ""
-	else if (strStartElapsedStop = "STOP-SHOW")
-		s_intStartShowTick := ""
-	else if (strStartElapsedStop = "STOP-COLLECT")
-		s_intStartCollectTick := ""
-}
-;------------------------------------------------
 
 
 ;------------------------------------------------------------
