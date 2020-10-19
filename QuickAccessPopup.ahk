@@ -4480,7 +4480,7 @@ global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_st
 
 ;---------------------------------
 ; Constants for EDD license
-global g_strProcessorId := Get_ProcessorId()
+global g_strUniqueSystemId := Get_UniqueSystemId()
 global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
 
 ;---------------------------------
@@ -5506,7 +5506,7 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 	; 1) free (most frequent), 2) yearly, 3) monthly, 4) lifetime, 5) custom lifetime, 6) custom yearly
 {
 	Diag(A_ThisLabel . " A_LoopField", A_LoopField, "")
-	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
+	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strUniqueSystemId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
 	
 	; TEST VALUES
@@ -5761,7 +5761,7 @@ else if (strSponsorCodeAction = "save-key")
 	
 else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 {
-	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strProcessorId, g_strAppNameText)
+	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strUniqueSystemId, g_strAppNameText)
 	
 	ifMsgBox, Yes
 	{
@@ -24296,16 +24296,46 @@ GetDefaultBrowserPath(strUrl)
 
 
 ;---------------------------------------------------------
-Get_ProcessorId()
-; info: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor
+Get_UniqueSystemId()
 ;---------------------------------------------------------
 {
-	strComputer := "."
-	objWMIService := ComObjGet("winmgmts:\\" . strComputer . "\root\cimv2")
-	WQLQuery := "Select * From Win32_Processor"
-	colCPU := objWMIService.ExecQuery(WQLQuery)._NewEnum
-	while colCPU[objCPU]
-		return objCPU.ProcessorId
+	strUniqueId := Get_MotherboardSerialNumber()
+	if !StrLen(strUniqueId) or !(strUniqueId) or (strUniqueId = "$(DEFAULT_STRING)")
+		; fallback on MAC Address
+		strUniqueId := Get_MACAddress()
+	if !StrLen(strUniqueId)
+		; this should not happen
+		strUniqueId := "Unknown to QAP"
+	
+	return strUniqueId
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Get_MotherboardSerialNumber()
+; source: https://www.autohotkey.com/boards/viewtopic.php?style=1&t=24346
+; info: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor
+; example: 120700577302842
+;---------------------------------------------------------
+{
+	While (ComObjGet("winmgmts:{impersonationLevel=impersonate}!\\" . A_ComputerName . "\root\cimv2")
+		.ExecQuery("Select * From Win32_BaseBoard")._NewEnum)[objMBInfo]
+		return objMBInfo["SerialNumber"]
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Get_MACAddress()
+; source: https://www.autohotkey.com/boards/viewtopic.php?style=1&t=24346
+; example: 30:85:A9:8E:F9:E2
+;---------------------------------------------------------
+{
+	while (ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
+		.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum)[objItem]
+		if objItem.IPAddress[0] = A_IPAddress1
+			return objItem.MACAddress
 }
 ;---------------------------------------------------------
 
