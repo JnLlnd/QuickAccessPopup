@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0.2 (2020-10-19)
+- diagnostic code added for license validation
+ 
 Version: 11.0.1 (2020-10-18)
 - adjustments to "About" and "Manage your license" dialog boxes
 - Chinese language file updated for v11
@@ -4195,7 +4198,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.1
+;@Ahk2Exe-SetVersion 11.0.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4218,8 +4221,8 @@ StringCaseSense, Off
 ComObjError(False) ; we will do our own error handling
 
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
+#Include %A_ScriptDir%\QAPtools.ahk ; by Jean Lalonde
 #Include %A_ScriptDir%\..\EDD\EDDLicense.ahk ; by Jean Lalonde (Aug. 2020)
-#Include %A_ScriptDir%\Diag.ahk ; by Jean Lalonde (Oct 2020)
 
 ; avoid error message when shortcut destination is missing
 ; see http://ahkscript.org/boards/viewtopic.php?f=5&t=4477&p=25239#p25236
@@ -4262,7 +4265,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4547,14 +4550,14 @@ if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 
 ; Must be after BuildGui
 ; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
-if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
-	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
-{
-	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		, % L(o_L["DonateCheckPrompt"], g_strAppNameText, intStartups)
-	IfMsgBox, Yes
-		Gosub, GuiDonate
-}
+; if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
+	; and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
+; {
+	; MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
+		; , % L(o_L["DonateCheckPrompt"], g_strAppNameText, intStartups)
+	; IfMsgBox, Yes
+		; Gosub, GuiDonate
+; }
 
 ; after sponsor message, we can update these values in ini file
 IniWrite, % (intStartups + 1), % o_Settings.strIniFile, Global, Startups
@@ -22298,43 +22301,6 @@ GetWebPageTitle(strLocation)
 	
 	strTitle := NumDecode(Trim(strTitle, Chr(160))) ; Chr(160) to also trim non-breaking spaces
 	return (StrLen(strTitle) ? strTitle : o_L["DialogNA"])
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-Url2Var(strUrl)
-; WinHttp.WinHttpRequest.5.1 and MSXML2.XMLHTTP.6.0 properties:
-; 	.GetAllResponseHeaders()
-; 	.ResponseText()
-; 	.ResponseBody()
-; 	.StatusText()
-; 	.Status() ; numeric value 200 is success
-; see https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttprequest
-; see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=66685
-;------------------------------------------------------------
-{
-	strUrl .= (InStr(strUrl, "?") ? "&" : "?") . "cache-breaker=" . A_NowUTC
-	
-	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
-	{
-		oHttpRequest := ComObjCreate(A_LoopField)
-		oHttpRequest.Open("GET", strUrl)
-		oHttpRequest.SetRequestHeader("Pragma", "no-cache")
-		oHttpRequest.SetRequestHeader("Cache-Control", "no-cache, no-store")
-		oHttpRequest.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
-		oHttpRequest.Send()
-		
-		Diag(A_ThisFunc, (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl), "")
-		Diag(A_LoopField . " Status" , oHttpRequest.Status(), "")
-		Diag(A_LoopField . " StatusText" , oHttpRequest.StatusText(), "")
-		Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
-		
-		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
-			break
-	}
-
-	return oHttpRequest.ResponseText()
 }
 ;------------------------------------------------------------
 

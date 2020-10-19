@@ -1,3 +1,12 @@
+;===============================================
+/*
+
+Library QAPtools.ahk
+
+v1.0 (2020-10-19): Diag and Url2Var
+
+*/
+
 ;------------------------------------------------
 Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
 ;------------------------------------------------
@@ -67,5 +76,43 @@ Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
 		s_intStartCollectTick := ""
 }
 ;------------------------------------------------
+
+
+;------------------------------------------------------------
+Url2Var(strUrl)
+; SAME AS IN QAP SOURCE CODE - INTEGRATE BETTER IF IT SOLVE THE CHECK LICENSE ISSUE
+; WinHttp.WinHttpRequest.5.1 and MSXML2.XMLHTTP.6.0 properties:
+; 	.GetAllResponseHeaders()
+; 	.ResponseText()
+; 	.ResponseBody()
+; 	.StatusText()
+; 	.Status() ; numeric value 200 is success
+; see https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttprequest
+; see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=66685
+;------------------------------------------------------------
+{
+	strUrl .= (InStr(strUrl, "?") ? "&" : "?") . "cache-breaker=" . A_NowUTC
+	
+	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
+	{
+		oHttpRequest := ComObjCreate(A_LoopField)
+		oHttpRequest.Open("GET", strUrl)
+		oHttpRequest.SetRequestHeader("Pragma", "no-cache")
+		oHttpRequest.SetRequestHeader("Cache-Control", "no-cache, no-store")
+		oHttpRequest.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
+		oHttpRequest.Send()
+		
+		Diag(A_ThisFunc, (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl), "")
+		Diag(A_LoopField . " Status" , oHttpRequest.Status(), "")
+		Diag(A_LoopField . " StatusText" , oHttpRequest.StatusText(), "")
+		Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
+		
+		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
+			break
+	}
+
+	return oHttpRequest.ResponseText()
+}
+;------------------------------------------------------------
 
 
