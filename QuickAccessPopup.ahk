@@ -31,7 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0.3 (2020-10-19)
+- encode license code in quickaccesspopup.ini file to prevent copy of the code by end-users without the consent of the license buyer
+- internal adjustments to license code management and installation count (requires re-saving licenses)
+- fix bug (EDD bug?) in deactivate license (installation) trying first by adding / at the system unique id and, it it fails, with the id alone
+- in Manage License dialog box, make Continue button default; in Save license code dialog box, make Save button default
+- remove old forgotten "support this software" dialog box in portable version
+- Dutch language file update
+ 
 Version: 11.0.2 (2020-10-19)
+- fix bug when validating license on some systems (most probably only some Windows 7 versions)
 - diagnostic code added for license validation
  
 Version: 11.0.1 (2020-10-18)
@@ -4198,7 +4207,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.2
+;@Ahk2Exe-SetVersion 11.0.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4265,7 +4274,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -5779,7 +5788,7 @@ else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 {
 	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strUniqueSystemId, g_strAppNameText)
 	
-	ifMsgBox, Yes
+	IfMsgBox, Yes
 	{
 		o_EDDLicense.Deactivate()
 		IniDelete, % o_Settings.strIniFile, Global, SponsorCodeConverted
@@ -5869,7 +5878,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
 
 	Gui, 2:Font, s8 w400, Verdana
-	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue, % aaL["DialogContinue"]
+	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue Default, % aaL["DialogContinue"]
 	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionCancel vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
 
 	Gui, 2:Add, Link, -Group w400 x10 y+15 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId)
@@ -5981,12 +5990,12 @@ Gui, 1:Add, Edit, y+10 w300 vf_strSponsorName
 aaL := o_L.InsertAmpersand(false, "GuiSave", "GuiHelp", "DialogCancelButton")
 
 Gui, 1:Font, s8 w400, Verdana
-Gui, 1:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave, % aaL["GuiSave"]
+Gui, 1:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave Default, % aaL["GuiSave"]
 Gui, 1:Add, Button, x175 yp gGuiSponsorCodeInputCancel vf_btnSponsorCodeInputCancel, % aaL["DialogCancelButton"]
 Gui, 1:Add, Text
 GuiCenterButtons(strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInputSave", "f_btnSponsorCodeInputCancel")
 
-GuiControl, Focus, f_btnSponsorCodeInputSave
+GuiControl, Focus, f_strSponsorCode
 Gui, 1:Show
 
 return
