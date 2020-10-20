@@ -4482,6 +4482,7 @@ global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_st
 ; Constants for EDD license
 global g_strUniqueSystemId := Get_UniqueSystemId()
 global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
+global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294967295 but must stay 890313 forever here)
 
 ;---------------------------------
 ; Load Settings file
@@ -5414,8 +5415,21 @@ o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly"
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 o_Settings.ReadIniOption("Launch", "strSponsorName", "SponsorNameOptional", " ") ; rename ini name from SponsorName to SponsorNameOptional to avoid overwriting the name associated to the pre-v11 sponsor code
-o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
 o_Settings.ReadIniOption("Launch", "strSponsorProductId", "SponsorProductId", " ")
+
+; read the license code and scramble it if neccesary (for codes saved with v11.0, v11.0.1 or v11.0.2)
+o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
+if StrLen(o_Settings.Launch.strSponsorCode.IniValue)
+; this is the license code unscrambled, scramble it under the name SponsorCodeConverted in the ini file
+; and remove the original SponsorCode value from ini file and validation trace in registry or working directory
+{
+	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCode.IniValue) ; remove trace using the unscramlbed license code
+	o_Settings.ReadIniOption("Launch", "strSponsorCodeConverted", "SponsorCodeConverted", Scramble(o_Settings.Launch.strSponsorCode.IniValue)) ; set SponsorCodeConverted ini name with the scrambled value
+	o_Settings.Launch.strSponsorCodeConverted.WriteIni(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; write scrambled value to ini file using the new ini name SponsorCodeConverted
+	IniDelete, % o_Settings.strIniFile, Global, SponsorCode ; remove the old unscrambled value
+	o_Settings.Launch.strSponsorCode.IniValue := ""
+}
+o_Settings.ReadIniOption("Launch", "strSponsorCodeConverted", "SponsorCodeConverted", " ") ; read the scrambled license code
 
 o_Settings.ReadIniOption("Launch", "strUserBanner", "UserBanner", " ") ; g_strUserBanner
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
@@ -5498,7 +5512,8 @@ global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M",
 ; Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
 Diag(A_ThisLabel . " o_Settings.Launch.strSponsorProductId.IniValue", o_Settings.Launch.strSponsorProductId.IniValue, "")
 Diag(A_ThisLabel . " g_strSponsorCodeSiteURL", g_strSponsorCodeSiteURL, "")
-Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCode.IniValue", o_Settings.Launch.strSponsorCode.IniValue, "")
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (descrambled)", Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), "")
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (scrambled)", o_Settings.Launch.strSponsorCodeConverted.IniValue, "")
 
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
 	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
@@ -5506,7 +5521,8 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 	; 1) free (most frequent), 2) yearly, 3) monthly, 4) lifetime, 5) custom lifetime, 6) custom yearly
 {
 	Diag(A_ThisLabel . " A_LoopField", A_LoopField, "")
-	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strUniqueSystemId)
+	; descramble license code before verification
+	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), g_strUniqueSystemId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
 	
 	; TEST VALUES
@@ -5557,7 +5573,7 @@ if (o_EDDLicense.oLicense.license = "valid")
 	g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 	strPossibleBadNumber := ""
 	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
-	SetSponsorOnlineTrace(o_EDDLicense.strEddLicense)
+	SetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
 	strSponsorCodeError := "" ; QAP will launch
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
@@ -5581,7 +5597,7 @@ else ; the license is site_inactive, invalid or missing
 		
 		strSponsorCodeError := "no_activation_left"
 		
-	else if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and (strCheckValidLicenseTrace <> "reject")
+	else if StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue) and (strCheckValidLicenseTrace <> "reject")
 	{
 		if (strCheckValidLicenseTrace = "alert")
 			Oops(1, o_L["DonateOnline"], intDaysAlert)
@@ -5602,7 +5618,7 @@ else ; the license is site_inactive, invalid or missing
 Diag(A_ThisLabel . " strSponsorCodeError", strSponsorCodeError, "")
 if StrLen(strSponsorCodeError)
 {
-	RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense) ; if we had a valide licnece trace, remove it
+	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; if we had a valid license trace, remove it, using scrambled license code
 	
 	Gosub, GuiManageLicenseFromProcess
 	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
@@ -5640,7 +5656,7 @@ return
 CheckValidLicenseTrace(ByRef intDaysAlert)
 ;------------------------------------------------------------
 {
-	strSponsorOnlineTrace := GetSponsorOnlineTrace(o_Settings.Launch.strSponsorCode.IniValue)
+	strSponsorOnlineTrace := GetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
 	if StrLen(strSponsorOnlineTrace)
 	{
 		Loop, % StrLen(strSponsorOnlineTrace) / 2
@@ -5691,17 +5707,17 @@ SetSponsorOnlineTrace(strEddLicense)
 
 
 ;---------------------------------------------------------
-GetSponsorOnlineTrace(strEddLicense)
+GetSponsorOnlineTrace(strEddLicenseConverted)
 ;---------------------------------------------------------
 {
 	if (g_blnPortableMode)
 	{
-		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		strFileName :=  A_WorkingDir . "\" . strEddLicenseConverted . "."
 		FileRead, strSponsorOnlineTrace, %strFileName%
 		return %strSponsorOnlineTrace%
 	}
 	else
-		return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+		return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicenseConverted)
 }
 ;---------------------------------------------------------
 
@@ -5766,10 +5782,10 @@ else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 	ifMsgBox, Yes
 	{
 		o_EDDLicense.Deactivate()
-		IniDelete, % o_Settings.strIniFile, Global, SponsorCode
+		IniDelete, % o_Settings.strIniFile, Global, SponsorCodeConverted
 		IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
 		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
-		RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense)
+		RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
 	}
 }
 ; else (if empty) do nothing
@@ -5793,22 +5809,22 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 
 	if (GSA_strStatus = "invalid")
 	{
-		GSA_strGuiTitle := L(o_L["DonateButton"])
+		GSA_strGuiTitle := o_L["DonateActionManageLicense"] . " - " . g_strAppVersion
 		GSA_strPrompt := L(o_L["DonateCodeInvalidMessage"], g_strAppNameText)
 	}
 	else if (GSA_strStatus = "expired")
 	{
-		GSA_strGuiTitle := L(o_L["DonateCodeExpiredTitle"], g_strAppNameText)
+		GSA_strGuiTitle := L(o_L["DonateCodeExpiredTitle"], g_strAppVersion)
 		GSA_strPrompt := L(o_L["DonateCodeExpiredMessage"], g_strAppNameText)
 	}
 	else if (GSA_strStatus = "no_activation_left")
 	{
-		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationsTitle"], g_strAppNameText)
+		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationsTitle"], g_strAppVersion)
 		GSA_strPrompt := L(o_L["DonateCodeNoInstallationsMessage"], o_EDDLicense.oLicense.site_count, g_strAppNameText)
 	}
 	else if (GSA_strStatus = "valid")
 	{
-		GSA_strGuiTitle := L(o_L["DonateButton"])
+		GSA_strGuiTitle := o_L["DonateActionManageLicense"] . " - " . g_strAppVersion
 		GSA_strPrompt := L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
 	}
 	else
@@ -5993,7 +6009,7 @@ if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
 	return
 }
 
-o_Settings.Launch.strSponsorCode.WriteIni(strSponsorCode)
+o_Settings.Launch.strSponsorCodeConverted.WriteIni(Scramble(strSponsorCode)) ; scramble license code before saving
 o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
 
 MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyouRestart"], g_strAppNameText), 5
@@ -20377,13 +20393,13 @@ return
 GuiAboutCopyLicense:
 ;------------------------------------------------------------
 
-blnShift := GetKeyState("LShift")
+blnShowLicenseCode := GetKeyState("LShift") and GetKeyState("LControl")
 
 MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
 IfMsgBox, Cancel
 	return
 
-Clipboard := o_EDDLicense.strUniqueSystemId . (blnShift ? "`n" . o_EDDLicense.strEddLicense : "")
+Clipboard := o_EDDLicense.strUniqueSystemId . (blnShowLicenseCode ? "`n" . o_EDDLicense.strEddLicense : "") ; only here we can see the unscrambled license code
 
 blnShift := ""
 
@@ -24346,6 +24362,46 @@ ShowToolTip(strContent)
 {
 	ToolTip, %strContent%
 	Sleep, 75 ; make the tooltip minimally visible
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Scramble(strContent)
+; https://autohotkey.com/board/topic/90663-way-to-randomize-a-string-and-be-able-to-restore-it-again-later/#entry573327
+;---------------------------------------------------------
+{
+	Random, , g_LicenseScrambleSeed
+	intLength := StrLen(strContent)
+	Loop, % intLength
+	{
+		Random, intPosition, 1, (intLength - A_Index + 1)
+		strOut .= SubStr(strContent, intPosition, 1)
+		strContent := SubStr(strContent, 1, intPosition - 1) . SubStr(strContent, intPosition + 1)
+	}
+	return strOut
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Descramble(strContent)
+; https://autohotkey.com/board/topic/90663-way-to-randomize-a-string-and-be-able-to-restore-it-again-later/#entry573327
+;---------------------------------------------------------
+{
+	Random, , g_LicenseScrambleSeed
+	intLength := StrLen(strContent)
+	Loop, % intLength
+	{
+		Random, intPosition, 1, (intLength - A_Index + 1)
+		strChar%A_Index% := intPosition
+	}
+	loop, % intLength
+	{
+		strNewString := SubStr(strNewString, 1, strChar%intLength% - 1) . SubStr(strContent, intLength, 1) . SubStr(strNewString, strChar%intLength%)
+		intLength--
+	}
+	return strNewString
 }
 ;---------------------------------------------------------
 
