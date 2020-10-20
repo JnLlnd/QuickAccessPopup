@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.0.3 (2020-10-19)
+Version: 11.0.3 (2020-10-20)
 - encode license code in quickaccesspopup.ini file to prevent copy of the code by end-users without the consent of the license buyer
 - internal adjustments to license code management and installation count (requires re-saving licenses)
 - fix bug (EDD bug?) in deactivate license (installation) trying first by adding / at the system unique id and, it it fails, with the id alone
