@@ -5856,6 +5856,8 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	Gui, 2:Add, Text, -Group, % (StrLen(o_EDDLicense.oLicense.item_name) ? o_EDDLicense.oLicense.item_name : g_strAppNameText)
 	Gui, 2:Font
 	
+	Gui, 2:Add, Link, -Group y+10 gSponsorActionHelp, % "<a>" . o_L["AboutLicenseHelp"] . "</a>"
+	
 	Gui, 2:Add, Link, -Group y+10 w420, %GSA_strPrompt%
 
 	Gui, 2:Font, w700
@@ -5864,29 +5866,31 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	if (GSA_strStatus = "expired")
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
+	if (GSA_strStatus <> "invalid")
+		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
 	if (GSA_strStatus = "no_activation_left")
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageInstallations, % o_L["DonateActionManageInstallations"]
 	
 	Gui, 2:Font, w700
-	Gui, 2:Add, Text, -Group y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
+	Gui, 2:Add, Text, -Group x10 y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
 	Gui, 2:Font
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
+	if (GSA_strStatus <> "invalid")
+		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
 
 	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
 
 	Gui, 2:Font, s8 w400, Verdana
 	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue Default, % aaL["DialogContinue"]
 	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionCancel vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
-
-	Gui, 2:Add, Link, -Group w400 x10 y+15 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId)
-		. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
 	
+	Gui, 2:Add, Text
+	Gui, 2:Add, Text
+
 	GuiCenterButtons(strGuiSponsorActionHwnd, 10, 5, 20, "f_btnSponsorActionContinue", "f_btnSponsorActionCancel")
 	
 	if (GSA_strStatus = "invalid")
-		GuiControl, , f_blnSponsorActionEnterLicense, 1
+		GuiControl, , f_blnSponsorActionNewLicense, 1
 	else if (GSA_strStatus = "expired")
 		GuiControl, , f_blnSponsorActionRenew, 1
 	else if (GSA_strStatus = "no_activation_left")
@@ -5902,6 +5906,15 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	
 	return GSA_strAction ; returning value
 	
+	;------------------------------------------------------------
+	
+	;------------------------------------------------------------
+	SponsorActionHelp:
+	;------------------------------------------------------------
+	
+	Run, https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/
+	
+	return
 	;------------------------------------------------------------
 	
 	;------------------------------------------------------------
@@ -5972,12 +5985,12 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 GuiSponsorCodeInput:
 ;------------------------------------------------------------
 
-strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
+strGuiTitle := g_strAppNameText . " " . g_strAppVersion
 Gui, 1:New, +HwndstrGuiSponsorCodeInputHwnd, %strGuiTitle%
 if (g_blnUseColors)
 	Gui, 1:Color, %g_strGuiWindowColor%
-Gui, 1:Font, s12 w700, Verdana
-Gui, 1:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
+Gui, 1:Font, s10 w700, Verdana
+Gui, 1:Add, Link, y10 w420, % L(o_L["DonateTextSaveLicense"], g_strAppNameText)
 Gui, 1:Font, s8 w400, Verdana
 
 Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
@@ -20375,8 +20388,8 @@ Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
 FormatTime, strYear, , yyyy ; current time
 Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
 Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
-Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId)
-	. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
+Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId
+	, o_L["AboutLicenseCopy"], o_L["AboutLicenseHelp"])
 Gui, 2:Font, s10 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
 Gui, 2:Font, s8 w400, Verdana
@@ -20401,15 +20414,19 @@ return
 GuiAboutCopyLicense:
 ;------------------------------------------------------------
 
-blnShowLicenseCode := GetKeyState("LShift") and GetKeyState("LControl")
+if (A_EventInfo = 1) ; copy
+{
+	blnShowLicenseCode := GetKeyState("LShift") and GetKeyState("LControl")
 
-MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
-IfMsgBox, Cancel
-	return
+	MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
+	IfMsgBox, Cancel
+		return
 
-Clipboard := o_EDDLicense.strUniqueSystemId . (blnShowLicenseCode ? "`n" . o_EDDLicense.strEddLicense : "") ; only here we can see the unscrambled license code
-
-blnShift := ""
+	Clipboard := (blnShowLicenseCode ? o_EDDLicense.strEddLicense . " " : "") . o_EDDLicense.strUniqueSystemId ; only here we can see the unscrambled license code
+	blnShift := ""
+}
+else ; (A_EventInfo = 2) ; help
+	Run, https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/
 
 return
 ;------------------------------------------------------------
@@ -24324,8 +24341,8 @@ Get_UniqueSystemId()
 ;---------------------------------------------------------
 {
 	strUniqueId := Get_MotherboardSerialNumber()
-	if !StrLen(strUniqueId) or !(strUniqueId) or
-		InStr("to be filled by o.e.m.|$(DEFAULT_STRING)|Default string|none", strUniqueId)
+	if !StrLen(strUniqueId) or (strUniqueId = 0)
+		or InStr("to be filled by o.e.m.|$(DEFAULT_STRING)|Default string|none", strUniqueId)
 		; fallback on MAC Address
 		strUniqueId := Get_MACAddress()
 	if !StrLen(strUniqueId)
