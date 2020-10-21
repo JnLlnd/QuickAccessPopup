@@ -463,7 +463,7 @@ lGuiCopy	Copia
 lGuiDonate	Supporta lo sviluppo di questo programma
 lGuiDonateCodeInput	Inserisci il codice licenza di QAP
 lGuiDonateCodeInputDonorInvalid	Codice licenza invalido.`n`nAssicurati di copiarne il valore ("License Key") esattamente come riportato nell'email di conferma registrazione.
-lGuiDonateCodeInputDonorLabel	(OLD version: TRANSLATE next line and DELETE this line) Copia e incolla il codice di 32 caratteri ("License Key").
+lGuiDonateCodeInputDonorLabel	Copia e incolla il codice di 32 caratteri ("License Key").
 lGuiDonateCodeInputSponsorLabel	Inserisci il tuo nome (facoltativo)
 lGuiDonateDescription	Visualizza la casella di dialogo "Supporta lo sviluppo di questo programma".
 lGuiDropFilesHelp	Drag and Drop (promemoria)

@@ -332,20 +332,7 @@ lDialogWindowsFolderIconSet	Establecer icono carpeta Windows
 lDialogWindowsFolderIconUpdate	actualización
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Empezar con
-lDonateCheckPrompt3	mostrar este mensaje 
 lDonateCheckTitle	~1~ vez! - ~2~
-lDonatePlatformComment1	Donar con su tarjeta de crédito (No es necesario crear una cuenta) o con su cuenta de PayPal
-lDonatePlatformComment4	En US $, Euros y CAD $
-lDonatePlatformName1	Con Paypal en US $
-lDonatePlatformName2	Con Paypal en Euros
-lDonatePlatformName3	Con Paypal en CAD $
-lDonatePlatformName4	Hacer donaciones mensuales
-lDonateReviewNameLeft1	Download.com
-lDonateReviewNameLeft2	PortableFreeware.com
-lDonateReviewNameLeft3	Softpedia.com
-lDonateReviewNameRight1	BetaNews.com
-lDonateReviewNameRight2	FileCluster.com
-lDonateReviewNameRight3	Freewares && Tutos (FR)
 lDonateText4	Escribe una opinión a favor ~1~ a :
 lDonateText5	Enviadme vuestro link
 lDOpusLayoutsName	Disposiciones
