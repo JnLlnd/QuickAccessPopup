@@ -5621,7 +5621,6 @@ else ; the license is site_inactive, invalid or missing
 	else
 		
 		strSponsorCodeError := "invalid"
-		
 }
 
 Diag(A_ThisLabel . " strSponsorCodeError", strSponsorCodeError, "")
@@ -24325,7 +24324,8 @@ Get_UniqueSystemId()
 ;---------------------------------------------------------
 {
 	strUniqueId := Get_MotherboardSerialNumber()
-	if !StrLen(strUniqueId) or !(strUniqueId) or (strUniqueId = "$(DEFAULT_STRING)")
+	if !StrLen(strUniqueId) or !(strUniqueId) or
+		InStr("to be filled by o.e.m.|$(DEFAULT_STRING)|Default string|none", strUniqueId)
 		; fallback on MAC Address
 		strUniqueId := Get_MACAddress()
 	if !StrLen(strUniqueId)
