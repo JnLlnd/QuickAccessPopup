@@ -32,13 +32,6 @@ HISTORY
 =======
 
 Version: 11.0.4 (2020-10-21)
- 
-Sorry for the daily updates since the first v11 release. Thanks to useful user feedbacks, QAP licence management is getting more reliable and the user messages clearer with this release. If you get a "NO INSTALLATIONS LEFT" message, please read this post:
-https://forum.quickaccesspopup.com/showthread.php?tid=1256
- 
-See also the improved License Help page at:
-https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/
-  
 - fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
 - remove irrelevant options and info from the "Manage your license" dialog box and add a link to the License help page
 - add a link to the License help in the "Help, About" dialog box
