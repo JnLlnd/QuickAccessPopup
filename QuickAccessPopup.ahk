@@ -31,6 +31,20 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0.4 (2020-10-21)
+ 
+Sorry for the daily updates since the first v11 release. Thanks to useful user feedbacks, QAP licence management is getting more reliable and the user messages clearer with this release. If you get a "NO INSTALLATIONS LEFT" message, please read this post:
+https://forum.quickaccesspopup.com/showthread.php?tid=1256
+ 
+See also the improved License Help page at:
+https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/
+  
+- fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
+- remove irrelevant options and info from the "Manage your license" dialog box and add a link to the License help page
+- add a link to the License help in the "Help, About" dialog box
+- clarify language in "Save your license" and make the "Continue" button the default button (allowing to save the license by pressing Enter)
+- Italian language file update
+
 Version: 11.0.3 (2020-10-20)
 - encode license code in quickaccesspopup.ini file to prevent copy of the code by end-users without the consent of the license buyer
 - internal adjustments to license code management and installation count (requires re-saving licenses)
@@ -4207,7 +4221,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.3
+;@Ahk2Exe-SetVersion 11.0.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4274,7 +4288,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -5856,10 +5870,10 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	Gui, 2:Add, Text, -Group, % (StrLen(o_EDDLicense.oLicense.item_name) ? o_EDDLicense.oLicense.item_name : g_strAppNameText)
 	Gui, 2:Font
 	
-	Gui, 2:Add, Link, -Group y+10 gSponsorActionHelp, % "<a>" . o_L["AboutLicenseHelp"] . "</a>"
-	
 	Gui, 2:Add, Link, -Group y+10 w420, %GSA_strPrompt%
 
+	Gui, 2:Add, Link, -Group y+10 gSponsorActionHelp, % "<a>" . o_L["AboutLicenseHelp"] . "</a>"
+	
 	Gui, 2:Font, w700
 	Gui, 2:Add, Text, -Group y+10, % o_L["DonateActionGroupWebsite"]
 	Gui, 2:Font
