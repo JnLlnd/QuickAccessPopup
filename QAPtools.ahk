@@ -107,6 +107,7 @@ Url2Var(strUrl)
 		Diag(A_LoopField . " Status" , oHttpRequest.Status(), "")
 		Diag(A_LoopField . " StatusText" , oHttpRequest.StatusText(), "")
 		Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
+		Diag(A_LoopField . " ResponseText" , oHttpRequest.ResponseText(), "")
 		
 		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
 			break
