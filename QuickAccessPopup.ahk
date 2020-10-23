@@ -31,8 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.0.5 (2020-10-22)
-- 
+Version: 11.0.5 (2020-10-23)
+- fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
+- remove irrelevant options and info from the "Manage your license" dialog box and add a link to the License help page
+- add a link to the License help in the "Help, About" dialog box
+- clarify language in "Save your license" and make the "Continue" button the default button (allowing to save the license by pressing Enter)
+- Italian language file update
 
 Version: 11.0.4 (2020-10-21)
 - fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
