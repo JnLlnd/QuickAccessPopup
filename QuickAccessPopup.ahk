@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0.5 (2020-10-22)
+- 
+
 Version: 11.0.4 (2020-10-21)
 - fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
 - remove irrelevant options and info from the "Manage your license" dialog box and add a link to the License help page
@@ -4214,7 +4217,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.4
+;@Ahk2Exe-SetVersion 11.0.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4281,7 +4284,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4495,12 +4498,6 @@ intStartups := o_Settings.ReadIniValue("Startups", 1)
 global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
 
 ;---------------------------------
-; Constants for EDD license
-global g_strUniqueSystemId := Get_UniqueSystemId()
-global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
-global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294967295 but must stay 890313 forever here)
-
-;---------------------------------
 ; Load Settings file
 
 Gosub, LoadIniFile ; load options, load/enable popup hotkeys, load favorites to menu object
@@ -4528,6 +4525,12 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 	; Diag("Launch", "strLaunchSettingsFolderDiag", strLaunchSettingsFolderDiag)
 	strLaunchSettingsFolderDiag := ""
 }
+
+;---------------------------------
+; Constants for EDD license - must be after InitDiagMode
+global g_strUniqueSystemId := Get_UniqueSystemId()
+global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
+global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294967295 but must stay 890313 forever here)
 
 ; Init Sponsor code
 
@@ -5528,8 +5531,8 @@ global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M",
 ; Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
 Diag(A_ThisLabel . " o_Settings.Launch.strSponsorProductId.IniValue", o_Settings.Launch.strSponsorProductId.IniValue, "")
 Diag(A_ThisLabel . " g_strSponsorCodeSiteURL", g_strSponsorCodeSiteURL, "")
-Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (descrambled)", Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), "")
 Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (scrambled)", o_Settings.Launch.strSponsorCodeConverted.IniValue, "")
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (descrambled)", Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), "")
 
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
 	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
@@ -20395,8 +20398,8 @@ Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
 FormatTime, strYear, , yyyy ; current time
 Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
 Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
-Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId
-	, o_L["AboutLicenseCopy"], o_L["AboutLicenseHelp"])
+Gui, 2:Add, Link, w380 y+5 , % "<a href=""https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/"">" . o_L["AboutLicenseHelp"] . "</a>"
+Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
 Gui, 2:Font, s10 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
 Gui, 2:Font, s8 w400, Verdana
@@ -20421,19 +20424,15 @@ return
 GuiAboutCopyLicense:
 ;------------------------------------------------------------
 
-if (A_EventInfo = 1) ; copy
-{
-	blnShowLicenseCode := GetKeyState("LShift") and GetKeyState("LControl")
+blnShowLicenseCode := GetKeyState("LShift") and GetKeyState("LControl")
 
-	MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
-	IfMsgBox, Cancel
-		return
+MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
+IfMsgBox, Cancel
+	return
 
-	Clipboard := (blnShowLicenseCode ? o_EDDLicense.strEddLicense . " " : "") . o_EDDLicense.strUniqueSystemId ; only here we can see the unscrambled license code
-	blnShift := ""
-}
-else ; (A_EventInfo = 2) ; help
-	Run, https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/
+Clipboard := (blnShowLicenseCode ? o_EDDLicense.strEddLicense . " " : "") . o_EDDLicense.strUniqueSystemId ; only here we can see the unscrambled license code
+
+blnShift := ""
 
 return
 ;------------------------------------------------------------
@@ -24347,15 +24346,21 @@ GetDefaultBrowserPath(strUrl)
 Get_UniqueSystemId()
 ;---------------------------------------------------------
 {
+	Diag(A_ThisFunc . " START", "", "")
 	strUniqueId := Get_MotherboardSerialNumber()
+	Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
 	if !StrLen(strUniqueId) or (strUniqueId = 0)
-		or InStr("to be filled by o.e.m.|$(DEFAULT_STRING)|Default string|none", strUniqueId)
+		or InStr("to be filled by o.e.m.|$(default_string)|default string|none", strUniqueId) ; case insensitive
 		; fallback on MAC Address
+	{
 		strUniqueId := Get_MACAddress()
+		Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
+	}
 	if !StrLen(strUniqueId)
 		; this should not happen
 		strUniqueId := "Unknown to QAP"
 	
+	Diag(A_ThisFunc . " strUniqueId FINAL", strUniqueId, "")
 	return strUniqueId
 }
 ;---------------------------------------------------------
@@ -24368,6 +24373,7 @@ Get_MotherboardSerialNumber()
 ; example: 120700577302842
 ;---------------------------------------------------------
 {
+	Diag(A_ThisFunc . " START", "", "")
 	While (ComObjGet("winmgmts:{impersonationLevel=impersonate}!\\" . A_ComputerName . "\root\cimv2")
 		.ExecQuery("Select * From Win32_BaseBoard")._NewEnum)[objMBInfo]
 		return objMBInfo["SerialNumber"]
@@ -24381,10 +24387,32 @@ Get_MACAddress()
 ; example: 30:85:A9:8E:F9:E2
 ;---------------------------------------------------------
 {
+	/* In v11.0.4 - hangs or creates an infinite loop on some systems
 	while (ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
 		.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum)[objItem]
 		if objItem.IPAddress[0] = A_IPAddress1
 			return objItem.MACAddress
+	*/
+	/* From Tank
+    winmgmts := ComObjGet("winmgmts:\\.\root\cimv2")
+    ;; https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-baseboard
+    MACAddress := "Select MACAddress from Win32_NetworkAdapter  WHERE NetConnectionStatus = 2"
+    (winmgmts.ExecQuery(MACAddress)._NewEnum)[Win32_NetworkAdapter]
+    return {ProcessorId: Win32_Processor.ProcessorId
+                , SerialNumber: Win32_BaseBoard.SerialNumber
+                , MACAddress: Win32_NetworkAdapter.MACAddress}
+	*/
+	; adapted from Tank's code
+	Diag(A_ThisFunc . " START", "", "")
+    winmgmts := ComObjGet("winmgmts:\\.\root\cimv2")
+    MACAddress := "Select MACAddress from Win32_NetworkAdapter  WHERE NetConnectionStatus = 2"
+		(winmgmts.ExecQuery(MACAddress)._NewEnum)[Win32_NetworkAdapter]
+	strMACAddress := Win32_NetworkAdapter.MACAddress
+	Diag(A_ThisFunc . " Full MAC Address", strMACAddress, "")
+	; for security and confidentiality, keep only two last pairs of values of the MAC adresse, without separator
+	; example, from "30:83:B9:8E:F9:E2" to "F9E2" which is quite unique in the context of a given license code
+	saValues := StrSplit(strMACAddress, ":")
+	return saValues[5] . saValues[6]
 }
 ;---------------------------------------------------------
 
