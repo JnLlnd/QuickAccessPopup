@@ -4540,7 +4540,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
+blnDoNotCheckLicense := true ; true / false ; ####
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -4716,7 +4716,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAddSelectSource ; ####
+gosub, GuiMultipleAddSelectSource ; #####
 
 return
 
@@ -14575,12 +14575,14 @@ if !(blnUsePath and g_strMultipleAddSourceKey <> "SettingsFileItems")
 
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["DialogMultipleAddExcludeExisting"]
 
+Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogMultipleAddSelectAllNone"]
+
 if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 	Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
 else
 {
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
-	Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
+	Gui, 2:Add, ListView, % "x10 y+5 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
 		. "|Favorite Code (hidden)"
 		; Favorite Name, Type, Favorite Location or Content, Internal type (hidden), Favorite code (hidden) filled for QAP Features only
@@ -14598,6 +14600,18 @@ Gosub, ShowGui2AndDisableGui1
 
 blnUsePath := ""
 oMultipleAddSources := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSelectAllNoneClicked:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+Loop, % LV_GetCount()
+	LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
 
 return
 ;------------------------------------------------------------
@@ -14656,6 +14670,8 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 		LV_ModifyCol(0, "AutoHdr")
 	LV_ModifyCol(4, 0) ; hide internal type column
 	LV_ModifyCol(5, 0) ; hide favorite code column
+	
+	GuiControl, , f_blnMultipleAddSelectAllNone, % 0 ; reset select all/none to none
 }
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
