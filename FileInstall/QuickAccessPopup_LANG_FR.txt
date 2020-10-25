@@ -1,9 +1,10 @@
-lAboutLicense	Licence pour: ~1~`nCode de licence: ~2~`nCode d'installation: ~3~
-lAboutLicenseCopy	copier les infos
-lAboutLicenseCopyMessage	Vos codes de licence QAP et d'installation ont été copiés dans le Presse-papiers.
+lAboutLicense	Licence pour: ~1~`nIdentificateur unique (pour le compte des installations):`n~2~ (<a id="copy">~3~</a>)
+lAboutLicenseCopy	copier l'identificateur unique
+lAboutLicenseCopyMessage	Votre identificateur unique (pour le compte des installations) sera copié dans le Presse-papiers.
+lAboutLicenseHelp	Aide pour la gestion de la license
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ est développé par Jean Lalonde`nsur la plateforme <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTraduction française: Jean Lalonde`nTraduction allemande: Edgar "Fast Edi" Hoffmann`nTraduction suédoise: Åke Engelbrektson`nTraduction italienne: Riccardo Leone`nTraduction espagnole: kiketrucker`nTraduction en portugais brésilien: Igor Ruckert`nTraduction en chinois simplifié: ilaoyao`nTraduction en portuguais: Luis Neves`nTraduction en néerlandais: Ric Roggeveen`nTraduction en coréen: Maeng Bong Kyun`nTraduction russe: Wylek.ru`nRévision anglaise: (aide bienvenue)`n`nIcônes par: <a href="https://icons8.com/">Icons8</a>`nInstallateur: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> par jrsoftware.org`nSources AutoHotkey_L v~2~: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
-lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~3~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Soutien en ligne: <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	À propos - ~1~ ~2~
 lAboutUserComputerName	Utilisateur: ~1~`nOrdinateur: ~2~
@@ -317,6 +318,7 @@ lDialogMultipleAddDescription	Ajouter en un seul clic plusieurs favoris dans le 
 lDialogMultipleAddExcludeExisting	Exclure les favoris existants
 lDialogMultipleAddFilter	Filtrer
 lDialogMultipleAddFrom	Ajouter à partir de
+lDialogMultipleAddHelp	Faire un double-clic sur les lignes pour de l'aide sur Fonctionnalités QAP
 lDialogMultipleAddIntro1	1) Sélectionner un menu de destination et filtrer la liste si désiré.
 lDialogMultipleAddIntro1a	Pour trier la liste, cliquer sur l'entête d'une colonne
 lDialogMultipleAddIntro2	2) Cliquer la case à cocher des favoris à ajouter.
@@ -420,7 +422,7 @@ lDonateActionEnterLicense	Enregistrer votre code de licence
 lDonateActionGroupQAP	Dans ~1~:
 lDonateActionGroupWebsite	Sur le site web:
 lDonateActionManageInstallations	Gérer les installations
-lDonateActionManageInstallationsConfirm	~1~ ouvrira la page web "Manage License".`n`nSur cette page, cliquez sur le lien "Manage Installations" dans la rangée pour "~2~"
+lDonateActionManageInstallationsConfirm	~1~ ouvrira la page web "Purchase History". Si nécessaire, identifiez-vous dans la colonne de droite avec le mot de passe envoyé par courriel lorsque vous avez reçu votre licence.`n`nUne fois identifié, cliquez sur le lien "Manage Installations" dans la rangée pour "~2~" et désactivez la ou les installation(s) qui ne sont plus requises.
 lDonateActionManageLicense	Gérer votre licence
 lDonateActionManageLicenseDescription	Ouvre une boîte de dialogue où vous pouvez obtenir une nouvelle licence ou gérer votre licence sur le site web de QAP. Vous pouvez aussi y retirer votre licence afin de pouvoir l'installer sur un autre ordinateur.
 lDonateActionNewLicense	Obtenir une nouvelle licence
@@ -432,7 +434,6 @@ lDonateActionRenew	Renouveler votre licence
 lDonateActionRenewConfirm	Veuillez relancer ~1~ après avoir renouvelé votre licence
 lDonateActionSaveLicense	Enregistrer votre code de licence
 lDonateButton	Soutenez le développement de ce logiciel!
-lDonateCheckPrompt	Bienvenue dans cette nouvelle version de ~1~. Ce message n'est affiché qu'une fois jusqu'à ce que vous installiez une nouvelle version.`n`n~1~ n'est pas seulement distribué GRATUITEMENT mais aussi distribué SANS ces attrapes publicitaires dont on ne sait jamais si elles transportent des virus ou encore des logiciels espions ou malveillants.`n`nCela fait maintenant ~2~ fois que ~1~ est lancé pour faciliter votre travail quotidien. Que diriez-vous de soutenir le développement de ce logiciel à votre tour?
 lDonateCheckTitle	~1~ fois! - ~2~
 lDonateCodeExpiredMessage	Votre licence ~1~ est échue.`n`nVous pouvez la renouveler sur le site web de ~1~.
 lDonateCodeExpiredTitle	Licence échue - ~1~
@@ -447,6 +448,7 @@ lDonateText1	Soutenez le développement de ~1~ !
 lDonateText3	... ou faites connaître ce logiciel si vous l'appréciez !
 lDonateText4	Rédigez un avis favorable à ~1~ sur :
 lDonateText5	Envoyez-moi votre lien
+lDonateTextSaveLicense	Enregistrer votre code de licence pour ~1~
 lDonateThankyou	Merci de soutenir le développement de ce logiciel!
 lDonateThankyouRestart	Merci de soutenir le développement de ~1~!`n`nL'application sera relancée dans un moment.
 lDonateTitle	Soutenez le développement de ce logiciel! - ~1~ ~2~
@@ -749,6 +751,7 @@ lOopsMenuExternalCentralized	menu partagé centralisé
 lOopsMenuExternalCollaborative	menu partagé collaboratif
 lOopsMenuExternalPersonalChangedBy	Ce menu partagé personnel est actuellement MODIFIÉ ou comporte des modifications NON ENREGISTRÉES sur l'ordinateur: ~1~.`n`nSi vous enregistrez ici les modifications à ce menu, les changements non enregistrés sur l'autre ordinateur seront perdus et vous devriez annuler ces changements quand vous serez de retour sur l'autre ordinateur.
 lOopsMenuExternalReservedBy	Ce ~1~ est RÉSERVÉ par l'utilisateur: ~2~.`n`nAttendez que cet utilisateur libère le menu ou contactez votre administrateur de système.
+lOopsMenuNotFound	Le menu "~1~" n'existe pas.
 lOopsMenuSorted	Cette commande ne peut pas être exécutée dans un menu trié automatiquement.
 lOopsMultipleContainersError	Les menus, groupes and menus partagés doivent être copiés ou déplacés individuellement. Ces items de la sélection seront ignorés.
 lOopsNotAdmin	~1~ ne peut être exécuté en tant qu'administrateur.`n`nL'application est maintenant exécutée avec les privilèges normaux.
