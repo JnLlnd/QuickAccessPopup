@@ -4221,7 +4221,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.5
+;@Ahk2Exe-SetVersion 11.0.5.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4288,7 +4288,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -24678,20 +24678,25 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		g_strNewLocation := saData[2]
 		Gosub, AddThisShortcutFromMsg
 	}
-	else if (saData[1] = "ShowMenuNavigate")
-	{
-		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
-		Gosub, NavigateFromMsg
-	}
-	else if (saData[1] = "ShowMenuLaunch")
-	{
-		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
-		Gosub, LaunchFromMsg
-	}
 	else if (saData[1] = "ShowMenuAlternative")
-
+		
 		Gosub, AlternativeHotkeyKeyboard
-
+		
+	else if InStr(saData[1], "ShowMenu")
+	{
+		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
+		
+		if IsObject(o_Containers.AA[g_strShowMenu])
+			if (saData[1] = "ShowMenuNavigate")
+				Gosub, NavigateFromMsg
+			else ; (saData[1] = "ShowMenuLaunch")
+				Gosub, LaunchFromMsg
+		else
+		{
+			Oops(0, o_L["OopsMenuNotFound"], g_strShowMenu)
+			g_strShowMenu := ""
+		}
+	}
 	else
 		return 0
 
