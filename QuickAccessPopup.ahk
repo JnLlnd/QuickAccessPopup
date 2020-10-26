@@ -4572,18 +4572,6 @@ Gosub, BuildGui
 if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
 
-; Must be after BuildGui
-; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
-; if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
-	; and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
-; {
-	; MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		; , % L(o_L["DonateCheckPrompt"], g_strAppNameText, intStartups)
-	; IfMsgBox, Yes
-		; Gosub, GuiDonate
-; }
-
-; after sponsor message, we can update these values in ini file
 IniWrite, % (intStartups + 1), % o_Settings.strIniFile, Global, Startups
 IniWrite, %g_strCurrentVersion%, % o_Settings.strIniFile, Global, % "LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod"))
 
