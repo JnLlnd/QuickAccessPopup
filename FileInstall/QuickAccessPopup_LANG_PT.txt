@@ -1,9 +1,6 @@
-lAboutLicense	Licença para: ~1~`nCódigo de licença: ~2~`nCódigo de instalação: ~3~
-lAboutLicenseCopy	copiar info da licença
-lAboutLicenseCopyMessage	A sua licença QAP e código de instalação serão copiados para a área de transferência.
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ foi escrito por Jean Lalonde usando a`nlinguagem de programação <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução Alemã: Edgar "Fast Edi" Hoffmann`nTradução Francesa: Jean Lalonde`nTradução Italiana: Riccardo Leone`nTradução Espanhola: kiketrucker`nTradução Brasileira: Igor Ruckert`nTradução Chinês: ilaoyao`nTradução Portuguesa: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nRevisão do Inglês: (a ajuda é bem-vinda)`n`nÍcones por: <a href="https://icons8.com/">Icons8</a>`nInstalador: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nAutoHotkey_L v~2~ sources: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
-lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~3~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Suporte em <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	Acerca do - ~1~ ~2~
 lAboutUserComputerName	Utilizador: ~1~`nComputador: ~2~
@@ -420,7 +417,6 @@ lDonateActionEnterLicense	Guardar o seu código de licença
 lDonateActionGroupQAP	Em ~1~:
 lDonateActionGroupWebsite	No website:
 lDonateActionManageInstallations	Gerir instalações
-lDonateActionManageInstallationsConfirm	~1~ irá abrir a página "Manage License".`n`nNessa página, clique na ligação "Manage Installations" na linha "~2~"
 lDonateActionManageLicense	Gerir a sua licença
 lDonateActionManageLicenseDescription	Abre uma caixa de diálogo onde pode obter uma nova licença ou gerí-la no site do QAP. Pode também usá-la para remover a sua licença permitindo a instalação noutro sistema.
 lDonateActionNewLicense	Obter uma nova licença
@@ -432,7 +428,6 @@ lDonateActionRenew	Renovar a sua licença
 lDonateActionRenewConfirm	Por favor, reinicie o ~1~ após renovar o seu código de licença.
 lDonateActionSaveLicense	Guardar o seu código de licença
 lDonateButton	Apoie o desenvolvimento deste software
-lDonateCheckPrompt	Bem-vindo a esta nova versão do ~1~.`n`nEsta é uma mensagem ÚNICA que só surge até instalar uma nova versão.`n`nO ~1~ é não só GRÁTIS, mas também ISENTO de publicidade desagradável ou adware que pode ser portador de spyware ou malware.`n`n~2~ até agora, ~1~ ajudou-o no seu trabalho diário. O que acha de apoiar o desenvolvimento do QAP e comprar agora este programa?
 lDonateCheckTitle	~1~ vezes! - ~2~
 lDonateCodeExpiredMessage	A sua licença do ~1~ expirou.`n`nPode renovar a sua licença no site do ~1~.
 lDonateCodeExpiredTitle	Licença expirada - ~1~
