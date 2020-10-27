@@ -882,6 +882,7 @@ this["OptionsSendToConsoleWithAlt"] := "Use ASCII codes (ALT+0nnn) when changing
 this["OptionsSettingsSearchResults"] := "Search Results"
 this["OptionsSettingsStartup"] := "Open ""Customize"" window at Startup"
 this["OptionsSettingsWindow"] := "Customize Window"
+this["OptionsShowAdvancedSettingsMenusItems"] := "Show advanced Settings file menu items under the ""File"" menu"
 this["OptionsShowQAPmenu"] := "Show QAP menu (File, Favorite, etc.):"
 this["OptionsShowQAPmenuBoth"] := "in both locations"
 this["OptionsShowQAPmenuCustomize"] := "at the top of the Customize window"
