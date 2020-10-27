@@ -4711,7 +4711,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAddSelectSource ; #####
+; gosub, GuiMultipleAddSelectSource ; ####
 
 return
 
