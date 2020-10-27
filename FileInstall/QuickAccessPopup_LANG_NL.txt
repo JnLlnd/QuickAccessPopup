@@ -1,3 +1,7 @@
+lAboutLicense	Licentie voor: ~1~`nUniek systeem-ID (wordt gebruikt om de hoeveelheid installaties te bepalen):`n~2~ (<a id="Kopiëren">~3~</a>)
+lAboutLicenseCopy	Kopieer het unieke ID
+lAboutLicenseCopyMessage	Het unieke QAP systeem-ID (installatiecode) is naar het klembord gekopieerd.
+lAboutLicenseHelp	Hulp voor Licentie Management
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ is ontwikkeld door Jean Lalonde gebruikmakend van de <a href="http://ahkscript.org/">ahk script</a> programmeertaal.`n`nVertalingen: `nBraziliaans Portugees: Igor Ruckert`nChinees (Manderijn): ilaoyao`nDuits: Edgar "Fast Edi" Hoffmann`nFrans: Jean Lalonde`nItaliaans: Riccardo Leone`nPortugees: Luis Neves`nNederlands: Ric Roggeveen`nSpaans: kiketrucker`nKorean translation: Maeng Bong Kyun`nRussisch: Wylek.ru`n`nEngelse grammatica: <a href="http://www.quickaccesspopup.com/quick-access-popup-translation/">(hulp is welkom)</a>`n`nPictogrammen van: <a href="https://icons8.com/">Icons8</a>`nInstallatieprogramma van: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> van jrsoftware.org`nAutoHotkey_L v~2~ bronnen: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~3~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
@@ -314,6 +318,7 @@ lDialogMultipleAddDescription	Add in one click multiple favorites to the submenu
 lDialogMultipleAddExcludeExisting	Exclude existing favorites
 lDialogMultipleAddFilter	Filter
 lDialogMultipleAddFrom	Add from
+lDialogMultipleAddHelp	Dubbelklik op een regel voor hulp over QAP-functionaliteit
 lDialogMultipleAddIntro1	1) Select a destination menu and filter the favorites if desired.
 lDialogMultipleAddIntro1a	To sort the list, click column headers
 lDialogMultipleAddIntro2	2) Click the checkbox of the favorites to add.
@@ -417,6 +422,7 @@ lDonateActionEnterLicense	Sla de licentiecode op
 lDonateActionGroupQAP	In ~1~:
 lDonateActionGroupWebsite	Op de website:
 lDonateActionManageInstallations	Beheer jouw installaties
+lDonateActionManageInstallationsConfirm	~1~ opent de webpagina "Purchase History". Log indien nodig in via het rechterkolom met het wachtwoord dat je bij het verkrijgen van jouw licentie hebt ontvangen.`n`Zodra je bent ingelogd dan klik je op de link "Manage Installations" in de rij voor "~2~", hier kun je installatie(s) verwijderen zodat deze op andere systemen kunnen worden geactiveerd.
 lDonateActionManageLicense	Beheer licenties
 lDonateActionManageLicenseDescription	Open een dialoogvenster waarin je een nieuwe licentie kunt krijgen of deze op de QAP-website kunt beheren. Je kunt het ook gebruiken om jouw licentie te verwijderen, zodat je het op een ander systeem kunt installeren.
 lDonateActionNewLicense	Koop een nieuwe licentie
@@ -442,6 +448,7 @@ lDonateText1	Ondersteuning ~1~ ontwikkeling!
 lDonateText3	... vertel het door als je deze software geweldig vindt!
 lDonateText4	Geef een positieve review over ~1~ op:
 lDonateText5	Stuur mij jouw link
+lDonateTextSaveLicense	Sla jouw ~1~ licentie op
 lDonateThankyou	Bedankt ~1~, voor het ondersteunen van deze software!
 lDonateThankyouRestart	Bedankt voor het ondersteunen van ~1~ ontwikkeling!`n`nDe app wordt zo weer opgestart.
 lDonateTitle	Ondersteun de ontwikkeling van deze software! - ~1~ ~2~
@@ -745,6 +752,7 @@ lOopsMenuExternalCentralized	gecentraliseerd openbaar menu
 lOopsMenuExternalCollaborative	openbaar team menu
 lOopsMenuExternalPersonalChangedBy	Dit persoonlijke Openbare menu wordt GEWIJZIGD of heeft onopgeslagen wijzigingen op computer: ~1~.`n`nAls je jouw wijzigingen opslaat zullen de onopgeslagen wijzigingen van de andere computer verloren gaan, daarnaast zullen wijzigingen op die computer moeten worden geannuleerd.
 lOopsMenuExternalReservedBy	Deze sessie van ~1~ is GERESERVEERD door gebruiker: ~2~.`n`nWacht alsjeblieft totdat deze gebruiker het Openbare menu afsluit of neem contact op met de systeembeheerder.
+lOopsMenuNotFound	Het menu "~1~" bestaat niet.
 lOopsMenuSorted	Deze opdracht kan niet worden uitgevoerd omdat dit menu automatisch wordt gesorteerd.
 lOopsMultipleContainersError	Menu's, groepen en gedeelde menu's kunnen alleen afzonderlijk worden gekopieerd of verplaatst, deze items worden overgeslagen.
 lOopsNotAdmin	~1~ kon niet worden geladen als Administrator.`n`nHet is geladen in de normale modus.
