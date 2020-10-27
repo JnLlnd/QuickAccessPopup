@@ -37,7 +37,7 @@ Version: 11.0.5.1 (2020-10-27)
 - when opening a menu from QAPmessenger, validate that the menu exists and display an error message if does not exist
 - remove obsolete donate message at startup for portable version
 - update FR, DE, IT, KO, PT-BR and PT language files
-
+ 
 Version: 11.0.5 (2020-10-23)
 - fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
 - remove irrelevant options and info from the "Manage your license" dialog box and add a link to the License help page
