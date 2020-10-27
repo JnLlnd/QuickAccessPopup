@@ -1,9 +1,10 @@
-lAboutLicense	Licença para: ~1~`nCódigo da licença: ~2~`nCódigo de instalação: ~3~
-lAboutLicenseCopy	copiar informações da licença
-lAboutLicenseCopyMessage	Sua licença e código de instalação do QAP serão copiados para a Área de Transferência.
+lAboutLicense	Licença para: ~1~`nID único do sistema (usado para contagem de instalações):`n~2~ (<a id="copiar">~3~</a>)
+lAboutLicenseCopy	copiar id único
+lAboutLicenseCopyMessage	Sei ID único do sistema (código de instalação) do QAP será copiado para a Área de Transferência.
+lAboutLicenseHelp	Ajuda do Gerenciamento de Licença
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	O ~1~ é escrito por Jean Lalonde usando a linguagem de programação`n<a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução para o Alemão: Edgar "Fast Edi" Hoffmann`nTradução para o Francês: Jean Lalonde`nTradução para o Holandês: Pieter Dejonghe`nTradução para o Italiano: Riccardo Leone`nTradução para o Espanhol: kiketrucker`nTradução para Português (Brasil): Igor Rückert`nTradução para Chinês Simplificado: ilaoyao`nTradução para Português: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nVerificação do inglês: (ajuda sempre bem-vinda)`n`nÍcones por: <a href="http://www.visualpharm.com">Visual Pharm</a>`nPrograma de instalação: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nFontes AutoHotkey_L v~2~: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
-lAboutText3	~1~ Jean Lalonde 2013-~2~`nLicensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. You may obtain a copy of the License at:`n    http://www.apache.org/licenses/LICENSE-2.0`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~3~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Suporte em <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	Sobre - ~1~ ~2~
 lAboutUserComputerName	Nome de usuário: ~1~`nComputador: ~2~
@@ -317,6 +318,7 @@ lDialogMultipleAddDescription	Adicione em um clique múltiplos favoritos ao subme
 lDialogMultipleAddExcludeExisting	Excluir favoritos existentes
 lDialogMultipleAddFilter	Filtro
 lDialogMultipleAddFrom	Adicionar de
+lDialogMultipleAddHelp	Duplo clique nas linhas para ajuda dos Recursos do QAP
 lDialogMultipleAddIntro1	1) Selecione um menu de destino e filtre os favoritos, se desejado.
 lDialogMultipleAddIntro1a	Para ordenar a lista, clique no cabeçalho das colunas
 lDialogMultipleAddIntro2	2) Clique na caixa de marcação dos favoritos para adicionar.
@@ -420,7 +422,7 @@ lDonateActionEnterLicense	Salvar seu código da licença
 lDonateActionGroupQAP	Em ~1~:
 lDonateActionGroupWebsite	No site:
 lDonateActionManageInstallations	Gerenciar instalações
-lDonateActionManageInstallationsConfirm	O ~1~ irá abrir a página "Manage License".`n`nNesta página, clique no link "Manage Installations" na linha para "~2~"
+lDonateActionManageInstallationsConfirm	O ~1~ irá abrir a página "Purchase History". Se necessário, faça login na coluna à direita usando a senha enviada quando você recebeu sua licença.`n`nApós ter feito login, clique no link "Manage Installations" na linha para "~2~" e desative a(s) instalação(ões) que não são necessárias.
 lDonateActionManageLicense	Gerencia sua licença
 lDonateActionManageLicenseDescription	Abre uma caixa de diálogo onde você pode obter uma nova licença ou gerenciá-la no site do QAP. Você também pode usá-la para remover sua licença, permitindo instalar ela em outra sistema.
 lDonateActionNewLicense	Obter uma nova licença
@@ -432,7 +434,6 @@ lDonateActionRenew	Renovar sua licença
 lDonateActionRenewConfirm	Por favor, reinicie o ~1~ após renovar o código da licença.
 lDonateActionSaveLicense	Salvar seu código da licença
 lDonateButton	Ajude no desenvolvimento deste software
-lDonateCheckPrompt	Bem-vindo à nova versão do ~1~.`nEsta mensagem é exibida UMA VEZ até instalar uma versão mais recente.`nO ~1~ além de poder ser usado GRATUITAMENTE, também LIVRE de publicidade indesejável ou adware, que pode conter spyware ou malware.`n`nAté agora, por ~2~ vezes o ~1~ lhe ajudou no seu trabalho diário. Que tal apoiar o desenvolvimento do QAP e comprar este software agora?
 lDonateCheckTitle	~1~ vezes! - ~2~
 lDonateCodeExpiredMessage	Sua licença do ~1~ expirou.`n`nVocê pode renovar sua licença no site do ~1~.
 lDonateCodeExpiredTitle	Licença expirada - ~1~
@@ -447,6 +448,7 @@ lDonateText1	Ajude no desenvolvimento do ~1~!
 lDonateText3	... e compartilhe se você gosta deste software!
 lDonateText4	Dê uma crítica favorável para o ~1~ em:
 lDonateText5	Envie-me seu link
+lDonateTextSaveLicense	Salvar sia licença ~1~
 lDonateThankyou	Obrigado ~1~ por ajudar este software!
 lDonateThankyouRestart	Obrigado por ajudar no desenvolvimento do ~1~!`n`nO aplicativo será reiniciado em instantes.
 lDonateTitle	Ajude no desenvolvimento deste software! - ~1~ ~2~
@@ -750,6 +752,7 @@ lOopsMenuExternalCentralized	menu compartilhado centralizado
 lOopsMenuExternalCollaborative	menu compartilhado colaborativo
 lOopsMenuExternalPersonalChangedBy	Este menu compartilhado pessoal está sendo EDITADO ou possui alterações NÃO SALVAS no computador: ~1~.`n`nSe você salvar alterações neste menu aqui, as alterações não salvas no  outro computador serão perdidas e pode deve cancelar estas alterações ao retornar para aquele computador.
 lOopsMenuExternalReservedBy	Este ~1~ está RESERVADO pelo usuário: ~2~.`n`nAguarde este usuário liberar o menu compartilhado ou contate o administrador do sistema.
+lOopsMenuNotFound	O menu "~1~" não existe.
 lOopsMenuSorted	Este comando não pode ser executado pois este menu foi classificado automaticamente.
 lOopsMultipleContainersError	Menus, grupos e menus compartilhados somente podem ser copiados ou movidos individualmente. Estes itens serão ignorados.
 lOopsNotAdmin	~1~ não pôde ser iniciado como Administrador.`n`nEle está sendo executado como Normal.

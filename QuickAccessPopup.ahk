@@ -4547,7 +4547,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
+blnDoNotCheckLicense := true ; true / false ; ####
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -4579,18 +4579,6 @@ Gosub, BuildGui
 if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
 
-; Must be after BuildGui
-; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
-; if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
-	; and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
-; {
-	; MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		; , % L(o_L["DonateCheckPrompt"], g_strAppNameText, intStartups)
-	; IfMsgBox, Yes
-		; Gosub, GuiDonate
-; }
-
-; after sponsor message, we can update these values in ini file
 IniWrite, % (intStartups + 1), % o_Settings.strIniFile, Global, Startups
 IniWrite, %g_strCurrentVersion%, % o_Settings.strIniFile, Global, % "LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod"))
 
@@ -4723,7 +4711,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAddSelectSource ; ####
+gosub, GuiMultipleAddSelectSource ; #####
 
 return
 
@@ -14582,12 +14570,14 @@ if !(blnUsePath and g_strMultipleAddSourceKey <> "SettingsFileItems")
 
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["DialogMultipleAddExcludeExisting"]
 
+Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
+
 if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 	Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
 else
 {
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
-	Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
+	Gui, 2:Add, ListView, % "x10 y+5 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
 		. "|Favorite Code (hidden)"
 		; Favorite Name, Type, Favorite Location or Content, Internal type (hidden), Favorite code (hidden) filled for QAP Features only
@@ -14605,6 +14595,18 @@ Gosub, ShowGui2AndDisableGui1
 
 blnUsePath := ""
 oMultipleAddSources := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSelectAllNoneClicked:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+Loop, % LV_GetCount()
+	LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
 
 return
 ;------------------------------------------------------------
@@ -14663,6 +14665,8 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 		LV_ModifyCol(0, "AutoHdr")
 	LV_ModifyCol(4, 0) ; hide internal type column
 	LV_ModifyCol(5, 0) ; hide favorite code column
+	
+	GuiControl, , f_blnMultipleAddSelectAllNone, % 0 ; reset select all/none to none
 }
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
@@ -24706,20 +24710,25 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		g_strNewLocation := saData[2]
 		Gosub, AddThisShortcutFromMsg
 	}
-	else if (saData[1] = "ShowMenuNavigate")
-	{
-		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
-		Gosub, NavigateFromMsg
-	}
-	else if (saData[1] = "ShowMenuLaunch")
-	{
-		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
-		Gosub, LaunchFromMsg
-	}
 	else if (saData[1] = "ShowMenuAlternative")
-
+		
 		Gosub, AlternativeHotkeyKeyboard
-
+		
+	else if InStr(saData[1], "ShowMenu")
+	{
+		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
+		
+		if IsObject(o_Containers.AA[g_strShowMenu])
+			if (saData[1] = "ShowMenuNavigate")
+				Gosub, NavigateFromMsg
+			else ; (saData[1] = "ShowMenuLaunch")
+				Gosub, LaunchFromMsg
+		else
+		{
+			Oops(0, o_L["OopsMenuNotFound"], g_strShowMenu)
+			g_strShowMenu := ""
+		}
+	}
 	else
 		return 0
 
