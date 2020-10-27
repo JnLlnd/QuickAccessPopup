@@ -4532,7 +4532,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 
 ;---------------------------------
 ; Constants for EDD license - must be after InitDiagMode
-global g_strUniqueSystemId := Get_UniqueSystemId()
+global g_strUniqueSystemId := GetUniqueSystemId()
 global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
 global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294967295 but must stay 890313 forever here)
 
@@ -24347,21 +24347,23 @@ GetDefaultBrowserPath(strUrl)
 
 
 ;---------------------------------------------------------
-Get_UniqueSystemId()
+GetUniqueSystemId()
 ;---------------------------------------------------------
 {
 	Diag(A_ThisFunc . " START", "", "")
-	strUniqueId := Get_MotherboardSerialNumber()
+	strUniqueId := GetMotherboardSerialNumber()
 	Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
 	if !StrLen(strUniqueId) or (strUniqueId = 0)
-		or InStr("to be filled by o.e.m.|$(default_string)|default string|none", strUniqueId) ; case insensitive
-		; fallback on MAC Address
+		or InStr("to be filled by o.e.m.|none|na|1|invalid|n/a", strUniqueId) ; case insensitive
+		or InStr(strUniqueId, "default")
+		or InStr(strUniqueId, "serial")
+		; fallback on C: drive serial number
 	{
-		strUniqueId := Get_MACAddress()
+		strUniqueId := GetBootDriveSerialNumber()
 		Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
 	}
 	if !StrLen(strUniqueId)
-		; this should not happen
+		; this should not happen often
 		strUniqueId := "Unknown to QAP"
 	
 	Diag(A_ThisFunc . " strUniqueId FINAL", strUniqueId, "")
@@ -24371,45 +24373,79 @@ Get_UniqueSystemId()
 
 
 ;---------------------------------------------------------
-Get_MotherboardSerialNumber()
+GetMotherboardSerialNumber()
 ; source: https://www.autohotkey.com/boards/viewtopic.php?style=1&t=24346
 ; info: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor
 ; example: 120700577302842
 ;---------------------------------------------------------
 {
-	Diag(A_ThisFunc . " START", "", "")
-	While (ComObjGet("winmgmts:{impersonationLevel=impersonate}!\\" . A_ComputerName . "\root\cimv2")
-		.ExecQuery("Select * From Win32_BaseBoard")._NewEnum)[objMBInfo]
-		return objMBInfo["SerialNumber"]
+    objWMIService := ComObjGet("winmgmts:\\.\root\cimv2")
+    strWQLQuery := "Select * From Win32_BaseBoard" ;  WQL = WMI Query Language
+	objColMB := objWMIService.ExecQuery(strWQLQuery)._NewEnum
+    While objColMB[objMBInfo]
+	{
+		Diag(A_ThisFunc . " SerialNumber", objMBInfo["SerialNumber"], "")
+		return objMBInfo["SerialNumber"] ; return the first item in the collection
+	}
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+GetBootDriveSerialNumber()
+;---------------------------------------------------------
+{
+	DriveGet, strSerialNumber, Serial, C:
+	while StrLen(strSerialNumber) < 8
+		strSerialNumber := "0" . strSerialNumber
+	Diag(A_ThisFunc . " strSerialNumber", strSerialNumber, "")
+	
+	return strSerialNumber
+	
+	; an alternative approach using WMI would be:
+    ; objWMIService := ComObjGet("winmgmts:\\.\root\cimv2")
+    ; strWQLQuery := "SELECT * FROM Win32_LogicalDisk" ;  WQL = WMI Query Language
+	; objCol := objWMIService.ExecQuery(strWQLQuery)._NewEnum
+    ; While objCol[objInfo]
+		; return objInfo["VolumeSerialNumber"] ; first item is the boot drive
+}
+;---------------------------------------------------------
+
+
+/*
+;---------------------------------------------------------
+GetProcessorId()
+; info: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor
+;---------------------------------------------------------
+{
+    objWMIService := ComObjGet("winmgmts:\\.\root\cimv2")
+    strWQLQuery := "Select * From Win32_Processor" ;  WQL = WMI Query Language
+    objColCPU := objWMIService.ExecQuery(strWQLQuery)._NewEnum
+    while objColCPU[objCPU]
+	{
+		Diag(A_ThisFunc . " ProcessorId", objCPU.ProcessorId, "")
+        return objCPU.ProcessorId
+	}
 }
 ;---------------------------------------------------------
 
 
 ;---------------------------------------------------------
 Get_MACAddress()
-; source: https://www.autohotkey.com/boards/viewtopic.php?style=1&t=24346
 ; example: 30:85:A9:8E:F9:E2
+; issue with this approach when PC get a dynamic (different) MAC addresses each time it is rebooted
 ;---------------------------------------------------------
 {
-	/* In v11.0.4 - hangs or creates an infinite loop on some systems
-	while (ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
-		.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum)[objItem]
-		if objItem.IPAddress[0] = A_IPAddress1
-			return objItem.MACAddress
-	*/
-	/* From Tank
-    winmgmts := ComObjGet("winmgmts:\\.\root\cimv2")
-    ;; https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-baseboard
-    MACAddress := "Select MACAddress from Win32_NetworkAdapter  WHERE NetConnectionStatus = 2"
-    (winmgmts.ExecQuery(MACAddress)._NewEnum)[Win32_NetworkAdapter]
-    return {ProcessorId: Win32_Processor.ProcessorId
-                , SerialNumber: Win32_BaseBoard.SerialNumber
-                , MACAddress: Win32_NetworkAdapter.MACAddress}
-	*/
+	; In v11.0.4 - hangs or creates an infinite loop on some systems
+	; while (ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
+		; .ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum)[objItem]
+		; if objItem.IPAddress[0] = A_IPAddress1
+			; return objItem.MACAddress
+	;
 	; adapted from Tank's code
 	Diag(A_ThisFunc . " START", "", "")
     winmgmts := ComObjGet("winmgmts:\\.\root\cimv2")
-    MACAddress := "Select MACAddress from Win32_NetworkAdapter  WHERE NetConnectionStatus = 2"
+    MACAddress := "Select MACAddress from Win32_NetworkAdapter  WHERE NetConnectionStatus = 2" ;  2 = Connected
 		(winmgmts.ExecQuery(MACAddress)._NewEnum)[Win32_NetworkAdapter]
 	strMACAddress := Win32_NetworkAdapter.MACAddress
 	Diag(A_ThisFunc . " Full MAC Address", strMACAddress, "")
@@ -24419,6 +24455,7 @@ Get_MACAddress()
 	return saValues[5] . saValues[6]
 }
 ;---------------------------------------------------------
+*/
 
 
 ;---------------------------------------------------------
