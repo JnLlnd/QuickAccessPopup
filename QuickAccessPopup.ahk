@@ -8764,7 +8764,7 @@ Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath h
 ; line 4
 ; TotalCommanderWinCmd
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
-Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd gGuiOptionsGroupChanged hidden ; gGuiOptionsGroupChanged
+Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd hidden ; gLabel after Gosub that changes the value below
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
@@ -8795,6 +8795,7 @@ Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSid
 Gosub, ActiveFileManagerClickedInit
 Gosub, FileManagerNavigateClickedInit
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strFileManagerPath
+GuiControl, 2:+gGuiOptionsGroupChanged, f_strTotalCommanderWinCmd
 
 GuiControlGet, arrPos, Pos, f_blnFileManagerDirectoryOpusShowLayouts
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
