@@ -1,3 +1,7 @@
+lAboutLicense	Licença para: ~1~`nID única do sistema (usada para o nº de instalações):`n~2~ (<a id="copiar">~3~</a>)
+lAboutLicenseCopy	copiar a ID única
+lAboutLicenseCopyMessage	A sua ID única do sistema do QAP (código de instalação) será copiada para a área de transferência.
+lAboutLicenseHelp	Ajuda da Gestão da Licença
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ foi escrito por Jean Lalonde usando a`nlinguagem de programação <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTradução Alemã: Edgar "Fast Edi" Hoffmann`nTradução Francesa: Jean Lalonde`nTradução Italiana: Riccardo Leone`nTradução Espanhola: kiketrucker`nTradução Brasileira: Igor Ruckert`nTradução Chinês: ilaoyao`nTradução Portuguesa: Luis Neves`nDutch translation: Ric Roggeveen`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nRevisão do Inglês: (a ajuda é bem-vinda)`n`nÍcones por: <a href="https://icons8.com/">Icons8</a>`nInstalador: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nAutoHotkey_L v~2~ sources: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
 lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~3~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
@@ -314,6 +318,7 @@ lDialogMultipleAddDescription	Adiciona com apenas um clique vários favoritos ao 
 lDialogMultipleAddExcludeExisting	Excluir favoritos existentes
 lDialogMultipleAddFilter	Filtrar
 lDialogMultipleAddFrom	Adicionar de
+lDialogMultipleAddHelp	Faça duplo clique nas linhas para ajuda nas funcionalidades do QAP
 lDialogMultipleAddIntro1	1) Seleccione um menu de destino e se desejar filtre os favoritos.
 lDialogMultipleAddIntro1a	Para ordenar a lista, clique no cabeçalho das colunas
 lDialogMultipleAddIntro2	2) Clique na caixa de verificação dos favorites a adicionar.
@@ -417,6 +422,7 @@ lDonateActionEnterLicense	Guardar o seu código de licença
 lDonateActionGroupQAP	Em ~1~:
 lDonateActionGroupWebsite	No website:
 lDonateActionManageInstallations	Gerir instalações
+lDonateActionManageInstallationsConfirm	~1~ irá abrir a página web "Purchase History". Se necessário, inicie sessão na coluna da direita usando a palavra-passe enviada quando obteve a licença.`n`nQuando estiver ligado, clique na ligação "Manage Installations" na linha para "~2~" e desactive a(s) instalação(ões) que não são necessárias.
 lDonateActionManageLicense	Gerir a sua licença
 lDonateActionManageLicenseDescription	Abre uma caixa de diálogo onde pode obter uma nova licença ou gerí-la no site do QAP. Pode também usá-la para remover a sua licença permitindo a instalação noutro sistema.
 lDonateActionNewLicense	Obter uma nova licença
@@ -442,6 +448,7 @@ lDonateText1	Apoie o desenvolvimento do ~1~!
 lDonateText3	... e passe a palavra se gosta deste software!
 lDonateText4	Faça uma avaliação favorável do ~1~ em:
 lDonateText5	Envie-me o seu link
+lDonateTextSaveLicense	Guarde a sua licença ~1~
 lDonateThankyou	Obrigado ~1~ por apoiar este software!
 lDonateThankyouRestart	Obrigado por apoiar o denvolvimento do ~1~!`n`nO programa vai reiniciar em breve.
 lDonateTitle	Apoie o desenvolvimento deste software! - ~1~ ~2~
@@ -745,6 +752,7 @@ lOopsMenuExternalCentralized	menu partilhado centralizado
 lOopsMenuExternalCollaborative	menu partilhado colaborativo
 lOopsMenuExternalPersonalChangedBy	Este menu partilhado pessoal está a ser EDITADO ou tem alterações NÃO GUARDADAS no computador: ~1~.`n`nSe guardar as alterações para este menu aqui, as alterações não guardadas no outro computador serão perdidas e deve cancelar essas alterações quando regressar a esse computador.
 lOopsMenuExternalReservedBy	Este ~1~ está RESERVADO pelo utilizador: ~2~.`n`nAguarde que este utilizador liberte o menu partilhado ou contacte o administrador do sistema.
+lOopsMenuNotFound	O menu "~1~" não existe.
 lOopsMenuSorted	Este comando não pode ser executado porque este menu é ordenado automaticamente.
 lOopsMultipleContainersError	Menus, grupos e menus partilhados só podem ser copiados ou movidos individualmente. Estes itens serão ignorados.
 lOopsNotAdmin	Não foi possível carregar ~1~ como Administrador.`n`nEstá agora a ser executado como Normal.
