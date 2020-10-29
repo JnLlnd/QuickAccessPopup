@@ -5633,6 +5633,8 @@ else ; the license is site_inactive, invalid or missing
 		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
 		o_EDDLicense.oLicense := Object() ; for temporary offline usage
 		o_EDDLicense.oLicense.license := "valid"
+		o_EDDLicense.oLicense.item_name := o_L["DonateCodeNotAvailable"]
+		o_EDDLicense.strUniqueSystemId := GetUniqueSystemId()
 		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		strSponsorCodeError := "" ; QAP will launch
 	}
