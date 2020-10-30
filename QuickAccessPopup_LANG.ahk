@@ -440,6 +440,7 @@ this["DonateCodeInvalidMessage"] := "You need a license code to run this version
 this["DonateCodeManageMessage"] := "Your license is valid.`n`nYou have ~1~/~2~ installation(s) remaining for this license."
 this["DonateCodeNoInstallationsMessage"] := "NO INSTALLATIONS LEFT`n`nYou used the ~1~ installation(s) allowed for your ~2~ license.`n`nYou can manage the installations for this license on ~2~ website."
 this["DonateCodeNoInstallationsTitle"] := "No installations left - ~1~"
+this["DonateCodeNotAvailable"] := "not available when offline"
 this["DonateEnterCode"] := "Do you have your ~1~ license code?`n`nIf yes, enter your code and restart ~1~.`n`nIf not, please get your license code on ~1~ website."
 this["DonateMenu"] := "Support the development of this software!"
 this["DonateOnline"] := "Your license has not been checked for more than ~1~ days.`n`nPlease connect to the Internet to validate your code."

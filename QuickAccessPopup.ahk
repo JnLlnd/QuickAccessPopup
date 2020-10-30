@@ -4410,6 +4410,7 @@ global g_strLegacyBrowsers := "IEFrame,OperaWindowClass"
 global g_aaLastActions := Object()
 
 global g_strWindosListAppsCacheFile := A_WorkingDir . "\WindowsAppsList.tsv"
+global g_strPsScriptPathFile ; set in ButtonRefreshWindowsAppsList
 global g_aaWindowsAppsIDsByName := Object()
 
 global g_intNewWindowOffset := -1 ; to offset multiple Explorer windows positioned at center of screen
@@ -4547,7 +4548,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := true ; true / false ; ####
+blnDoNotCheckLicense := false ; true / false ; ####
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -4562,7 +4563,16 @@ else
 {
 	Gosub, ProcessSponsorCode
 	if (o_EDDLicense.oLicense.license <> "valid")
-		return
+	{
+		if (g_blnIniFileCreation) ; remove files created when launching for the first time
+		{
+			FileDelete, % o_Settings.strIniFile
+			FileDelete, %g_strWindosListAppsCacheFile%
+			FileDelete, %g_strPsScriptPathFile%
+		}
+		OnExit ; disable exit subroutine
+		ExitApp
+	}
 }
 
 ; Build main menus
@@ -5601,8 +5611,7 @@ else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 		MsgBox, % "An error occurred while validating your licence. Please try again."
 	else
 		MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
-	OnExit ; disable exit subroutine
-	ExitApp
+	return ; will remove files created if first launch and exit
 }
 else if (o_EDDLicense.oLicense.license = "expired")
 
@@ -5625,6 +5634,8 @@ else ; the license is site_inactive, invalid or missing
 		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
 		o_EDDLicense.oLicense := Object() ; for temporary offline usage
 		o_EDDLicense.oLicense.license := "valid"
+		o_EDDLicense.oLicense.item_name := o_L["DonateCodeNotAvailable"]
+		o_EDDLicense.strUniqueSystemId := GetUniqueSystemId()
 		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		strSponsorCodeError := "" ; QAP will launch
 	}
@@ -5642,10 +5653,7 @@ if StrLen(strSponsorCodeError)
 	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
 	if (strSponsorCodeAction <> "save-key")
-	{
-		OnExit ; disable exit subroutine
-		ExitApp
-	}
+		return ; will remove files created if first launch and exit
 }
 ; else launch QAP
 
@@ -12992,10 +13000,9 @@ ButtonRefreshWindowsAppsListAtStartup:
 
 ; Diag(A_ThisLabel, "", "START")
 
-strPsScriptFile := ".\CollectWindowsAppsList.ps1" ; must start with ".\", start PowerShell in g_strTempDir
-; changed in v9.0.9.11 strPsScriptPathFile := g_strTempDir . "\" . strPsScriptFile
-strPsScriptPathFile := A_WorkingDir . "\" . strPsScriptFile
-FileDelete, %strPsScriptPathFile%
+strPsScriptFile := ".\CollectWindowsAppsList.ps1" ; must start with ".\", start PowerShell in working directory
+g_strPsScriptPathFile := A_WorkingDir . "\" . strPsScriptFile
+FileDelete, %g_strPsScriptPathFile%
 strWindowsAppsListFile := g_strTempDir . "\CollectWindowsAppsList.tsv"
 FileDelete, %strWindowsAppsListFile%
 FileAppend,
@@ -13023,7 +13030,7 @@ foreach ($app in $installedapps)
 # [void][System.Console]::ReadKey($true)
 
 ) ; leave the last extra line above
-, %strPsScriptPathFile%, % (A_IsUnicode ? "UTF-16" : "")
+, %g_strPsScriptPathFile%, % (A_IsUnicode ? "UTF-16" : "")
 
 sleep, 200
 
@@ -13032,7 +13039,6 @@ sleep, 200
 ; RunWait, PowerShell.exe -ExecutionPolicy Bypass -Command %strPsScriptFile%, %g_strTempDir%, Hide ; could be Min instead of Hide
 RunWait, PowerShell.exe -ExecutionPolicy Bypass -Command %strPsScriptFile%, %A_WorkingDir%, Hide ; could be Min instead of Hide
 Sleep, 200
-; removed in v9.0.9.11 FileDelete, %strPsScriptPathFile%
 
 if (A_ThisLabel <> "ButtonRefreshWindowsAppsListAtStartup")
 {
@@ -13051,7 +13057,6 @@ else
 		FileCopy, %strWindowsAppsListFile%, %g_strWindosListAppsCacheFile%, 1
 
 strPsScriptFile := ""
-strPsScriptPathFile := ""
 strWindowsAppsListFile := ""
 
 ; Diag(A_ThisLabel, "", "STOP")
