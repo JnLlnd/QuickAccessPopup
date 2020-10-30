@@ -6983,8 +6983,8 @@ saMenuItemsTable.Push(["GuiOptionsGroupAdvancedOther", aaL["OptionsAdvancedOther
 o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuSupportForum"
-	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
+aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
+	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -6992,6 +6992,8 @@ saMenuItemsTable.Push(["Check4Update", aaHelpL["MenuUpdate"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["HelpQuickStart", aaHelpL["HelpMenuQuickStart"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["HelpKnowledgeBase", aaHelpL["HelpMenuKnowledgeBase"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["HelpVideosFirstSteps", aaHelpL["HelpMenuVideosFirstStep"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["HelpVideosAll", aaHelpL["HelpMenuVideosAll"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["HelpSupportForum", aaHelpL["HelpMenuSupportForum"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF1", "", "iconNoIcon"])
@@ -7021,6 +7023,8 @@ return
 ;------------------------------------------------------------
 HelpQuickStart:
 HelpKnowledgeBase:
+HelpVideosFirstSteps:
+HelpVideosAll:
 HelpSupportForum:
 ;------------------------------------------------------------
 
@@ -7028,6 +7032,10 @@ if (A_ThisLabel = "HelpQuickStart")
 	Run, https://www.quickaccesspopup.com/what-should-i-know-about-quick-access-popup-before-starting/
 else if (A_ThisLabel = "HelpKnowledgeBase")
 	Run, https://www.quickaccesspopup.com/frequently-asked-questions/
+else if (A_ThisLabel = "HelpVideosFirstSteps")
+	Run, https://www.youtube.com/watch?v=1AQ6sgH52fk&list=PLKvuCRHeZzOC8fP4MCClk3OsfSDRElHg_
+else if (A_ThisLabel = "HelpVideosAll")
+	Run, https://www.quickaccesspopup.com/videos/
 else if (A_ThisLabel = "HelpSupportForum")
 	Run, https://forum.quickaccesspopup.com
 
@@ -20554,7 +20562,7 @@ return
 GuiHelp:
 ;------------------------------------------------------------
 
-aaL := o_L.InsertAmpersand(false, "DonateButton", "GuiClose", "DialogTabNext")
+aaL := o_L.InsertAmpersand(false, "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep", "GuiClose", "DialogTabNext")
 
 Gui, 1:Submit, NoHide
 
@@ -20622,9 +20630,10 @@ Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText45"]
 
 Gui, 2:Tab
 GuiControlGet, arrTabPos, Pos, f_intHelpTab
-Gui, 2:Add, Button, % "x180 y" . arrTabPosY + arrTabPosH + 10. " vf_btnHelpDonate gGuiDonate", % aaL["DonateButton"]
+Gui, 2:Add, Button, % "x180 y" . arrTabPosY + arrTabPosH + 10. " vf_btnHelpKnowledgeBase gHelpKnowledgeBase", % aaL["HelpMenuKnowledgeBase"]
+Gui, 2:Add, Button, x+80 yp vf_btnHelpVideos gHelpVideosFirstSteps, % aaL["HelpMenuVideosFirstStep"]
 Gui, 2:Add, Button, x+80 yp g2GuiClose vf_btnHelpClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnHelpDonate", "f_btnHelpClose")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnHelpVideos", "f_btnHelpKnowledgeBase", "f_btnHelpClose")
 
 GuiControl, Focus, btnHelpClose
 Gosub, ShowGui2AndDisableGui1
