@@ -31,7 +31,47 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.0 (2020-10-??)
+Version: 11.0.6 (2020-10-30)
+- in "Add Multiple Favorites" dialog box, add a checkbox to select or deselect all rows
+- fix bug always showing the "Cancel changes" dialog box in "Options" when active file manager is Total Commander
+- when opening a menu from QAPmessenger, validate that the menu exists and display an error message if does not exist
+- adjustments in the way QAP gets a unique system identifier for license management (may require for a small number of users to delete an obsolete code in the "Manage License" command - see https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/)
+- add links to tutorial videos in "Help" menu and "Help" dialog box
+- new option under "Advanced Menu Options" to "Show advanced Settings file menu items under the 'File' menu"
+- update French, German, Italian, Korean, Portuguese, Brazilian Portuguese, Dutch and Chinese language files
+
+Version: 11.0.5 (2020-10-23)
+- fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
+- remove irrelevant options and info from the "Manage your license" dialog box and add a link to the License help page
+- add a link to the License help in the "Help, About" dialog box
+- clarify language in "Save your license" and make the "Continue" button the default button (allowing to save the license by pressing Enter)
+- Italian language file update
+
+Version: 11.0.4 (2020-10-21)
+- fix bug getting the unique system id used to count the installations for a license (may require to remove obsolete installation codes on the website)
+- remove irrelevant options and info from the "Manage your license" dialog box and add a link to the License help page
+- add a link to the License help in the "Help, About" dialog box
+- clarify language in "Save your license" and make the "Continue" button the default button (allowing to save the license by pressing Enter)
+- Italian language file update
+
+Version: 11.0.3 (2020-10-20)
+- encode license code in quickaccesspopup.ini file to prevent copy of the code by end-users without the consent of the license buyer
+- internal adjustments to license code management and installation count (requires re-saving licenses)
+- fix bug (EDD bug?) in deactivate license (installation) trying first by adding / at the system unique id and, it it fails, with the id alone
+- in Manage License dialog box, make Continue button default; in Save license code dialog box, make Save button default
+- remove old forgotten "support this software" dialog box in portable version
+- Dutch language file update
+ 
+Version: 11.0.2 (2020-10-19)
+- fix bug when validating license on some systems (most probably only some Windows 7 versions)
+- diagnostic code added for license validation
+ 
+Version: 11.0.1 (2020-10-18)
+- adjustments to "About" and "Manage your license" dialog boxes
+- Chinese language file updated for v11
+- fix bug with Frequent menus in Korean language
+ 
+Version: 11.0 (2020-10-17)
  
 SUMMARY
 - new licensing system replacing the sponsor codes with various paid licenses and a free edition
@@ -48,16 +88,17 @@ License processing
 - new license text in the "About" dialog box, setup file and portable zip file
  
 Add Multiple Favorites
-- a new menu "Favorite, Add Multiple Favorites" in the "Cuszomize" window allows to add various favorites to a menu or group in one step;
+- a new menu "Favorite, Add Multiple Favorites" in the "Customize" window allows to add various favorites to a menu or group in one step;
 - multiple favorites sources are:
   - add favorites folders or applications from the "Current Windows";
   - add items from the "Recent Folders" or the "Recent Files";
   - add items from the "Frequent Folders" or the "Frequent Files";
   - add multiple QAP Features or Special Folders;
   - add folders, documents or applications favorites from a selected folder;
-  - add any favporites from any QAP settings file.
+  - add any types of favorites from a QAP settings file.
 - the list in the "Add Multiple Favorites" dialog box can be filtered by keywords or sorted
 - optionally a checkbox excludes from the list the favorites already found in the QAP menu
+- for more info see: https://www.quickaccesspopup.com/can-i-add-multiple-favorites-in-one-click/
  
 Customize window
 - right-click entries in the favorites list of the "Customize" window to open a contextual menu allowing to "Add", "Edit", "Remove", "Copy" or "Move" the selected favorite(s)
@@ -4189,7 +4230,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0
+;@Ahk2Exe-SetVersion 11.0.6.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4212,6 +4253,7 @@ StringCaseSense, Off
 ComObjError(False) ; we will do our own error handling
 
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
+#Include %A_ScriptDir%\QAPtools.ahk ; by Jean Lalonde
 #Include %A_ScriptDir%\..\EDD\EDDLicense.ahk ; by Jean Lalonde (Aug. 2020)
 
 ; avoid error message when shortcut destination is missing
@@ -4255,7 +4297,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.6.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4370,6 +4412,7 @@ global g_strLegacyBrowsers := "IEFrame,OperaWindowClass"
 global g_aaLastActions := Object()
 
 global g_strWindosListAppsCacheFile := A_WorkingDir . "\WindowsAppsList.tsv"
+global g_strPsScriptPathFile ; set in ButtonRefreshWindowsAppsList
 global g_aaWindowsAppsIDsByName := Object()
 
 global g_intNewWindowOffset := -1 ; to offset multiple Explorer windows positioned at center of screen
@@ -4476,11 +4519,6 @@ intStartups := o_Settings.ReadIniValue("Startups", 1)
 global g_strLastVersionUsed := o_Settings.ReadIniValue("LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod")), 0.0)
 
 ;---------------------------------
-; Constants for EDD license
-global g_strProcessorId := Get_ProcessorId()
-global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
-
-;---------------------------------
 ; Load Settings file
 
 Gosub, LoadIniFile ; load options, load/enable popup hotkeys, load favorites to menu object
@@ -4509,6 +4547,12 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 	strLaunchSettingsFolderDiag := ""
 }
 
+;---------------------------------
+; Constants for EDD license - must be after InitDiagMode
+global g_strUniqueSystemId := GetUniqueSystemId()
+global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
+global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294967295 but must stay 890313 forever here)
+
 ; Init Sponsor code
 
 ;@Ahk2Exe-IgnoreBegin
@@ -4528,7 +4572,17 @@ else
 {
 	Gosub, ProcessSponsorCode
 	if (o_EDDLicense.oLicense.license <> "valid")
+	{
 		return
+		; if (g_blnIniFileCreation) ; remove files created when launching for the first time
+		; {
+			; FileDelete, % o_Settings.strIniFile
+			; FileDelete, %g_strWindosListAppsCacheFile%
+			; FileDelete, %g_strPsScriptPathFile%
+		; }
+		; OnExit ; disable exit subroutine
+		; ExitApp
+	}
 }
 
 ; Build main menus
@@ -4545,18 +4599,6 @@ Gosub, BuildGui
 if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
 
-; Must be after BuildGui
-; Sponsor message when launching a portable prod release for the first time and user is not a sponsor
-if (g_blnPortableMode and g_strCurrentBranch = "prod" and !g_blnSponsor
-	and FirstVsSecondIs(g_strCurrentVersion, g_strLastVersionUsed) = 1) ; FirstVsSecondIs() returns -1 if first smaller, 0 if equal, 1 if first greater
-{
-	MsgBox, 36, % l(o_L["DonateCheckTitle"], intStartups, g_strAppNameText)
-		, % L(o_L["DonateCheckPrompt"], g_strAppNameText, intStartups)
-	IfMsgBox, Yes
-		Gosub, GuiDonate
-}
-
-; after sponsor message, we can update these values in ini file
 IniWrite, % (intStartups + 1), % o_Settings.strIniFile, Global, Startups
 IniWrite, %g_strCurrentVersion%, % o_Settings.strIniFile, Global, % "LastVersionUsed" . (g_strCurrentBranch = "alpha" ? "Alpha" : (g_strCurrentBranch = "beta" ? "Beta" : "Prod"))
 
@@ -5393,6 +5435,7 @@ if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
 	o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(500)
 o_Settings.ReadIniOption("MenuPopup", "blnOpenMenuOnTaskbar", "OpenMenuOnTaskbar", 1, "MenuAdvanced", "f_blnOpenMenuOnTaskbar") ; g_blnOpenMenuOnTaskbar
 o_Settings.ReadIniOption("MenuAdvanced", "intClipboardMaxSize", "ClipboardMaxSize", 10000, "MenuAdvanced", "f_lblClipboardMaxSize|f_lblClipboardMaxSizeDefault|f_intClipboardMaxSize") ; default 10000 chars ; g_intClipboardMaxSize
+o_Settings.ReadIniOption("MenuAdvanced", "blnShowAdvancedSettingsMenusItems", "ShowAdvancedSettingsMenusItems", 0, "MenuAdvanced", "f_blnShowAdvancedSettingsMenusItems")
 
 ; Group AdvancedLaunch
 o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
@@ -5414,8 +5457,21 @@ o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly"
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 o_Settings.ReadIniOption("Launch", "strSponsorName", "SponsorNameOptional", " ") ; rename ini name from SponsorName to SponsorNameOptional to avoid overwriting the name associated to the pre-v11 sponsor code
-o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
 o_Settings.ReadIniOption("Launch", "strSponsorProductId", "SponsorProductId", " ")
+
+; read the license code and scramble it if neccesary (for codes saved with v11.0, v11.0.1 or v11.0.2)
+o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
+if StrLen(o_Settings.Launch.strSponsorCode.IniValue)
+; this is the license code unscrambled, scramble it under the name SponsorCodeConverted in the ini file
+; and remove the original SponsorCode value from ini file and validation trace in registry or working directory
+{
+	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCode.IniValue) ; remove trace using the unscramlbed license code
+	o_Settings.ReadIniOption("Launch", "strSponsorCodeConverted", "SponsorCodeConverted", Scramble(o_Settings.Launch.strSponsorCode.IniValue)) ; set SponsorCodeConverted ini name with the scrambled value
+	o_Settings.Launch.strSponsorCodeConverted.WriteIni(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; write scrambled value to ini file using the new ini name SponsorCodeConverted
+	IniDelete, % o_Settings.strIniFile, Global, SponsorCode ; remove the old unscrambled value
+	o_Settings.Launch.strSponsorCode.IniValue := ""
+}
+o_Settings.ReadIniOption("Launch", "strSponsorCodeConverted", "SponsorCodeConverted", " ") ; read the scrambled license code
 
 o_Settings.ReadIniOption("Launch", "strUserBanner", "UserBanner", " ") ; g_strUserBanner
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
@@ -5495,12 +5551,20 @@ strProductIdCustomLifetime := "110"
 strProductIdCustomYearly := "112"
 global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F", (strProductIdCustomYearly): "CY", (strProductIdCustomLifetime): "CL"}
 
+; Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorProductId.IniValue", o_Settings.Launch.strSponsorProductId.IniValue, "")
+Diag(A_ThisLabel . " g_strSponsorCodeSiteURL", g_strSponsorCodeSiteURL, "")
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (scrambled)", o_Settings.Launch.strSponsorCodeConverted.IniValue, "")
+Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (descrambled)", Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), "")
+
 loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
 	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
 	; if we have the product id, check license for this product, else, check for all products in order
 	; 1) free (most frequent), 2) yearly, 3) monthly, 4) lifetime, 5) custom lifetime, 6) custom yearly
 {
-	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, o_Settings.Launch.strSponsorCode.IniValue, g_strProcessorId)
+	Diag(A_ThisLabel . " A_LoopField", A_LoopField, "")
+	; descramble license code before verification
+	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), g_strUniqueSystemId)
 	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
 	
 	; TEST VALUES
@@ -5542,13 +5606,16 @@ loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settin
 
 ; set the status before asking user for next action
 
+Diag(A_ThisLabel . " o_EDDLicense.oLicense.license", o_EDDLicense.oLicense.license, "")
+Diag(A_ThisLabel . " o_EDDLicense.strProductId", o_EDDLicense.strProductId, "")
+Diag(A_ThisLabel . " o_EDDLicense.oLicense.item_id", o_EDDLicense.oLicense.item_id, "")
 if (o_EDDLicense.oLicense.license = "valid")
 {
 	o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
 	g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 	strPossibleBadNumber := ""
 	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
-	SetSponsorOnlineTrace(o_EDDLicense.strEddLicense)
+	SetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
 	strSponsorCodeError := "" ; QAP will launch
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
@@ -5557,8 +5624,7 @@ else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 		MsgBox, % "An error occurred while validating your licence. Please try again."
 	else
 		MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
-	OnExit ; disable exit subroutine
-	ExitApp
+	return ; will remove files created if first launch and exit
 }
 else if (o_EDDLicense.oLicense.license = "expired")
 
@@ -5567,11 +5633,12 @@ else if (o_EDDLicense.oLicense.license = "expired")
 else ; the license is site_inactive, invalid or missing
 {
 	strCheckValidLicenseTrace := CheckValidLicenseTrace(intDaysAlert)
+	Diag(A_ThisLabel . " strCheckValidLicenseTrace", strCheckValidLicenseTrace, "")
 	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0)
 		
 		strSponsorCodeError := "no_activation_left"
 		
-	else if StrLen(o_Settings.Launch.strSponsorCode.IniValue) and (strCheckValidLicenseTrace <> "reject")
+	else if StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue) and (strCheckValidLicenseTrace <> "reject")
 	{
 		if (strCheckValidLicenseTrace = "alert")
 			Oops(1, o_L["DonateOnline"], intDaysAlert)
@@ -5580,26 +5647,26 @@ else ; the license is site_inactive, invalid or missing
 		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
 		o_EDDLicense.oLicense := Object() ; for temporary offline usage
 		o_EDDLicense.oLicense.license := "valid"
+		o_EDDLicense.oLicense.item_name := o_L["DonateCodeNotAvailable"]
+		o_EDDLicense.strUniqueSystemId := GetUniqueSystemId()
 		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		strSponsorCodeError := "" ; QAP will launch
 	}
 	else
 		
 		strSponsorCodeError := "invalid"
-		
 }
 
+Diag(A_ThisLabel . " strSponsorCodeError", strSponsorCodeError, "")
 if StrLen(strSponsorCodeError)
 {
-	RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense) ; if we had a valide licnece trace, remove it
+	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; if we had a valid license trace, remove it, using scrambled license code
 	
 	Gosub, GuiManageLicenseFromProcess
+	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
 	if (strSponsorCodeAction <> "save-key")
-	{
-		OnExit ; disable exit subroutine
-		ExitApp
-	}
+		return ; will remove files created if first launch and exit
 }
 ; else launch QAP
 
@@ -5628,7 +5695,7 @@ return
 CheckValidLicenseTrace(ByRef intDaysAlert)
 ;------------------------------------------------------------
 {
-	strSponsorOnlineTrace := GetSponsorOnlineTrace(o_Settings.Launch.strSponsorCode.IniValue)
+	strSponsorOnlineTrace := GetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
 	if StrLen(strSponsorOnlineTrace)
 	{
 		Loop, % StrLen(strSponsorOnlineTrace) / 2
@@ -5679,17 +5746,17 @@ SetSponsorOnlineTrace(strEddLicense)
 
 
 ;---------------------------------------------------------
-GetSponsorOnlineTrace(strEddLicense)
+GetSponsorOnlineTrace(strEddLicenseConverted)
 ;---------------------------------------------------------
 {
 	if (g_blnPortableMode)
 	{
-		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
+		strFileName :=  A_WorkingDir . "\" . strEddLicenseConverted . "."
 		FileRead, strSponsorOnlineTrace, %strFileName%
 		return %strSponsorOnlineTrace%
 	}
 	else
-		return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
+		return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicenseConverted)
 }
 ;---------------------------------------------------------
 
@@ -5749,15 +5816,15 @@ else if (strSponsorCodeAction = "save-key")
 	
 else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 {
-	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strProcessorId, g_strAppNameText)
+	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strUniqueSystemId, g_strAppNameText)
 	
-	ifMsgBox, Yes
+	IfMsgBox, Yes
 	{
 		o_EDDLicense.Deactivate()
-		IniDelete, % o_Settings.strIniFile, Global, SponsorCode
+		IniDelete, % o_Settings.strIniFile, Global, SponsorCodeConverted
 		IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
 		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
-		RemoveSponsorOnlineTrace(o_EDDLicense.strEddLicense)
+		RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
 	}
 }
 ; else (if empty) do nothing
@@ -5781,22 +5848,22 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 
 	if (GSA_strStatus = "invalid")
 	{
-		GSA_strGuiTitle := L(o_L["DonateButton"])
+		GSA_strGuiTitle := o_L["DonateActionManageLicense"] . " - " . g_strAppVersion
 		GSA_strPrompt := L(o_L["DonateCodeInvalidMessage"], g_strAppNameText)
 	}
 	else if (GSA_strStatus = "expired")
 	{
-		GSA_strGuiTitle := L(o_L["DonateCodeExpiredTitle"], g_strAppNameText)
+		GSA_strGuiTitle := L(o_L["DonateCodeExpiredTitle"], g_strAppVersion)
 		GSA_strPrompt := L(o_L["DonateCodeExpiredMessage"], g_strAppNameText)
 	}
 	else if (GSA_strStatus = "no_activation_left")
 	{
-		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationsTitle"], g_strAppNameText)
+		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationsTitle"], g_strAppVersion)
 		GSA_strPrompt := L(o_L["DonateCodeNoInstallationsMessage"], o_EDDLicense.oLicense.site_count, g_strAppNameText)
 	}
 	else if (GSA_strStatus = "valid")
 	{
-		GSA_strGuiTitle := L(o_L["DonateButton"])
+		GSA_strGuiTitle := o_L["DonateActionManageLicense"] . " - " . g_strAppVersion
 		GSA_strPrompt := L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
 	}
 	else
@@ -5822,35 +5889,39 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	
 	Gui, 2:Add, Link, -Group y+10 w420, %GSA_strPrompt%
 
+	Gui, 2:Add, Link, -Group y+10 gSponsorActionHelp, % "<a>" . o_L["AboutLicenseHelp"] . "</a>"
+	
 	Gui, 2:Font, w700
 	Gui, 2:Add, Text, -Group y+10, % o_L["DonateActionGroupWebsite"]
 	Gui, 2:Font
 	if (GSA_strStatus = "expired")
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
+	if (GSA_strStatus <> "invalid")
+		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
 	if (GSA_strStatus = "no_activation_left")
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageInstallations, % o_L["DonateActionManageInstallations"]
 	
 	Gui, 2:Font, w700
-	Gui, 2:Add, Text, -Group y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
+	Gui, 2:Add, Text, -Group x10 y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
 	Gui, 2:Font
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
+	if (GSA_strStatus <> "invalid")
+		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
 
 	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
 
 	Gui, 2:Font, s8 w400, Verdana
-	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue, % aaL["DialogContinue"]
+	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue Default, % aaL["DialogContinue"]
 	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionCancel vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
-
-	Gui, 2:Add, Link, -Group w400 x10 y+15 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
-		. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
 	
+	Gui, 2:Add, Text
+	Gui, 2:Add, Text
+
 	GuiCenterButtons(strGuiSponsorActionHwnd, 10, 5, 20, "f_btnSponsorActionContinue", "f_btnSponsorActionCancel")
 	
 	if (GSA_strStatus = "invalid")
-		GuiControl, , f_blnSponsorActionEnterLicense, 1
+		GuiControl, , f_blnSponsorActionNewLicense, 1
 	else if (GSA_strStatus = "expired")
 		GuiControl, , f_blnSponsorActionRenew, 1
 	else if (GSA_strStatus = "no_activation_left")
@@ -5866,6 +5937,15 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	
 	return GSA_strAction ; returning value
 	
+	;------------------------------------------------------------
+	
+	;------------------------------------------------------------
+	SponsorActionHelp:
+	;------------------------------------------------------------
+	
+	Run, https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/
+	
+	return
 	;------------------------------------------------------------
 	
 	;------------------------------------------------------------
@@ -5936,12 +6016,12 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 GuiSponsorCodeInput:
 ;------------------------------------------------------------
 
-strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
+strGuiTitle := g_strAppNameText . " " . g_strAppVersion
 Gui, 1:New, +HwndstrGuiSponsorCodeInputHwnd, %strGuiTitle%
 if (g_blnUseColors)
 	Gui, 1:Color, %g_strGuiWindowColor%
-Gui, 1:Font, s12 w700, Verdana
-Gui, 1:Add, Link, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
+Gui, 1:Font, s10 w700, Verdana
+Gui, 1:Add, Link, y10 w420, % L(o_L["DonateTextSaveLicense"], g_strAppNameText)
 Gui, 1:Font, s8 w400, Verdana
 
 Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
@@ -5953,12 +6033,12 @@ Gui, 1:Add, Edit, y+10 w300 vf_strSponsorName
 aaL := o_L.InsertAmpersand(false, "GuiSave", "GuiHelp", "DialogCancelButton")
 
 Gui, 1:Font, s8 w400, Verdana
-Gui, 1:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave, % aaL["GuiSave"]
+Gui, 1:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave Default, % aaL["GuiSave"]
 Gui, 1:Add, Button, x175 yp gGuiSponsorCodeInputCancel vf_btnSponsorCodeInputCancel, % aaL["DialogCancelButton"]
 Gui, 1:Add, Text
 GuiCenterButtons(strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInputSave", "f_btnSponsorCodeInputCancel")
 
-GuiControl, Focus, f_btnSponsorCodeInputSave
+GuiControl, Focus, f_strSponsorCode
 Gui, 1:Show
 
 return
@@ -5981,7 +6061,7 @@ if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
 	return
 }
 
-o_Settings.Launch.strSponsorCode.WriteIni(strSponsorCode)
+o_Settings.Launch.strSponsorCodeConverted.WriteIni(Scramble(strSponsorCode)) ; scramble license code before saving
 o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
 
 MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyouRestart"], g_strAppNameText), 5
@@ -6543,8 +6623,9 @@ CleanUpBeforeExit:
 ; if (o_Settings.Launch.blnDiagMode.IniValue)
 	; Diag("ListLines", ScriptInfo("ListLines"), "")
 
+if (o_Settings.Launch.blnDiagMode.IniValue)
+	Run, %g_strDiagFile%
 ; display MsgBox is not working for an unknown reason
-; if (o_Settings.Launch.blnDiagMode.IniValue)
 ; {
 	; MsgBox, % 52 + 256, %g_strAppNameText%, % L(o_L["DiagModeExit"], g_strAppNameText, g_strDiagFile) . "`n`n" . o_L["DiagModeIntro"] . "`n`n" . o_L["DiagModeSee"]
 	; IfMsgBox, Yes
@@ -6824,8 +6905,11 @@ saMenuItemsTable.Push(["OpenWorkingDirectory", aaMenuFileL["MenuOpenWorkingDirec
 saMenuItemsTable.Push(["OpenBackupDirectory", aaMenuFileL["MenuOpenBackupDirectory"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["ShowSettingsIniFile", aaMenuFileL["MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly], "", "iconNoIcon"])
-saMenuItemsTable.Push(["SwitchSettings", aaMenuFileL["MenuSwitchSettings"] . g_strEllipse, "", "iconNoIcon"])
-saMenuItemsTable.Push(["SwitchSettingsDefault", aaMenuFileL["MenuSwitchSettingsDefault"], "", "iconNoIcon"])
+if (o_Settings.MenuAdvanced.blnShowAdvancedSettingsMenusItems.IniValue = 1)
+{
+	saMenuItemsTable.Push(["SwitchSettings", aaMenuFileL["MenuSwitchSettings"] . g_strEllipse, "", "iconNoIcon"])
+	saMenuItemsTable.Push(["SwitchSettingsDefault", aaMenuFileL["MenuSwitchSettingsDefault"], "", "iconNoIcon"])
+}
 saMenuItemsTable.Push(["ImportExport", aaMenuFileL["ImpExpMenu"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["ReloadQAP", aaMenuFileL["MenuReload@" . g_strAppNameText], "", "iconNoIcon"])
@@ -6912,8 +6996,8 @@ saMenuItemsTable.Push(["GuiOptionsGroupAdvancedOther", aaL["OptionsAdvancedOther
 o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuSupportForum"
-	, "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
+aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
+	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -6921,6 +7005,8 @@ saMenuItemsTable.Push(["Check4Update", aaHelpL["MenuUpdate"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["HelpQuickStart", aaHelpL["HelpMenuQuickStart"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["HelpKnowledgeBase", aaHelpL["HelpMenuKnowledgeBase"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["HelpVideosFirstSteps", aaHelpL["HelpMenuVideosFirstStep"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["HelpVideosAll", aaHelpL["HelpMenuVideosAll"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["HelpSupportForum", aaHelpL["HelpMenuSupportForum"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF1", "", "iconNoIcon"])
@@ -6950,6 +7036,8 @@ return
 ;------------------------------------------------------------
 HelpQuickStart:
 HelpKnowledgeBase:
+HelpVideosFirstSteps:
+HelpVideosAll:
 HelpSupportForum:
 ;------------------------------------------------------------
 
@@ -6957,6 +7045,10 @@ if (A_ThisLabel = "HelpQuickStart")
 	Run, https://www.quickaccesspopup.com/what-should-i-know-about-quick-access-popup-before-starting/
 else if (A_ThisLabel = "HelpKnowledgeBase")
 	Run, https://www.quickaccesspopup.com/frequently-asked-questions/
+else if (A_ThisLabel = "HelpVideosFirstSteps")
+	Run, https://www.youtube.com/watch?v=1AQ6sgH52fk&list=PLKvuCRHeZzOC8fP4MCClk3OsfSDRElHg_
+else if (A_ThisLabel = "HelpVideosAll")
+	Run, https://www.quickaccesspopup.com/videos/
 else if (A_ThisLabel = "HelpSupportForum")
 	Run, https://forum.quickaccesspopup.com
 
@@ -8710,7 +8802,7 @@ Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath h
 ; line 4
 ; TotalCommanderWinCmd
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
-Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd gGuiOptionsGroupChanged hidden ; gGuiOptionsGroupChanged
+Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd hidden ; gLabel after Gosub that changes the value below
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
@@ -8741,6 +8833,7 @@ Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSid
 Gosub, ActiveFileManagerClickedInit
 Gosub, FileManagerNavigateClickedInit
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strFileManagerPath
+GuiControl, 2:+gGuiOptionsGroupChanged, f_strTotalCommanderWinCmd
 
 GuiControlGet, arrPos, Pos, f_blnFileManagerDirectoryOpusShowLayouts
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -8870,6 +8963,10 @@ Gui, 2:Add, Text, x+5 yp vf_lblClipboardMaxSizeDefault hidden, % o_L["OptionsCli
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+15 vf_lblNbLiveFolderItemsMax hidden, % o_L["OptionsNbLiveFolderItemsMax"]
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intNbLiveFolderItemsMax gGuiOptionsGroupChanged hidden, % o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue
 Gui, 2:Add, Text, x+5 yp vf_lblNbLiveFolderItemsMaxDefault hidden, % o_L["OptionsNbLiveFolderItemsMaxDefault"]
+
+; ShowAdvancedSettingsMenusItems
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnShowAdvancedSettingsMenusItems gGuiOptionsGroupChanged hidden, % o_L["OptionsShowAdvancedSettingsMenusItems"]
+GuiControl, , f_blnShowAdvancedSettingsMenusItems, % (o_Settings.MenuAdvanced.blnShowAdvancedSettingsMenusItems.IniValue = true)
 
 GuiControlGet, arrPos, Pos, f_intClipboardMaxSize
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -9343,6 +9440,7 @@ o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(f_intNbLiveFolderItemsM
 o_Settings.MenuAdvanced.intClipboardMaxSize.WriteIni(f_intClipboardMaxSize)
 o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.WriteIni(f_blnNetworkDrivesAlwaysOnline)
 o_Settings.MenuAdvanced.strNetworkDrivesLetters.WriteIni(f_strNetworkDrivesLetters)
+o_Settings.MenuAdvanced.blnShowAdvancedSettingsMenusItems.WriteIni(f_blnShowAdvancedSettingsMenusItems)
 
 if (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue > 0)
 	SetTimer, RefreshQAPMenuScheduled, % o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue * 1000
@@ -12941,10 +13039,9 @@ ButtonRefreshWindowsAppsListAtStartup:
 
 ; Diag(A_ThisLabel, "", "START")
 
-strPsScriptFile := ".\CollectWindowsAppsList.ps1" ; must start with ".\", start PowerShell in g_strTempDir
-; changed in v9.0.9.11 strPsScriptPathFile := g_strTempDir . "\" . strPsScriptFile
-strPsScriptPathFile := A_WorkingDir . "\" . strPsScriptFile
-FileDelete, %strPsScriptPathFile%
+strPsScriptFile := ".\CollectWindowsAppsList.ps1" ; must start with ".\", start PowerShell in working directory
+g_strPsScriptPathFile := A_WorkingDir . "\" . strPsScriptFile
+FileDelete, %g_strPsScriptPathFile%
 strWindowsAppsListFile := g_strTempDir . "\CollectWindowsAppsList.tsv"
 FileDelete, %strWindowsAppsListFile%
 FileAppend,
@@ -12972,7 +13069,7 @@ foreach ($app in $installedapps)
 # [void][System.Console]::ReadKey($true)
 
 ) ; leave the last extra line above
-, %strPsScriptPathFile%, % (A_IsUnicode ? "UTF-16" : "")
+, %g_strPsScriptPathFile%, % (A_IsUnicode ? "UTF-16" : "")
 
 sleep, 200
 
@@ -12981,7 +13078,6 @@ sleep, 200
 ; RunWait, PowerShell.exe -ExecutionPolicy Bypass -Command %strPsScriptFile%, %g_strTempDir%, Hide ; could be Min instead of Hide
 RunWait, PowerShell.exe -ExecutionPolicy Bypass -Command %strPsScriptFile%, %A_WorkingDir%, Hide ; could be Min instead of Hide
 Sleep, 200
-; removed in v9.0.9.11 FileDelete, %strPsScriptPathFile%
 
 if (A_ThisLabel <> "ButtonRefreshWindowsAppsListAtStartup")
 {
@@ -13000,7 +13096,6 @@ else
 		FileCopy, %strWindowsAppsListFile%, %g_strWindosListAppsCacheFile%, 1
 
 strPsScriptFile := ""
-strPsScriptPathFile := ""
 strWindowsAppsListFile := ""
 
 ; Diag(A_ThisLabel, "", "STOP")
@@ -14530,12 +14625,14 @@ if !(blnUsePath and g_strMultipleAddSourceKey <> "SettingsFileItems")
 
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["DialogMultipleAddExcludeExisting"]
 
+Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
+
 if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 	Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
 else
 {
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
-	Gui, 2:Add, ListView, % "x10 y+10 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
+	Gui, 2:Add, ListView, % "x10 y+5 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
 		. "|Favorite Code (hidden)"
 		; Favorite Name, Type, Favorite Location or Content, Internal type (hidden), Favorite code (hidden) filled for QAP Features only
@@ -14553,6 +14650,18 @@ Gosub, ShowGui2AndDisableGui1
 
 blnUsePath := ""
 oMultipleAddSources := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMultipleAddSelectAllNoneClicked:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+Loop, % LV_GetCount()
+	LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
 
 return
 ;------------------------------------------------------------
@@ -14611,6 +14720,8 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 		LV_ModifyCol(0, "AutoHdr")
 	LV_ModifyCol(4, 0) ; hide internal type column
 	LV_ModifyCol(5, 0) ; hide favorite code column
+	
+	GuiControl, , f_blnMultipleAddSelectAllNone, % 0 ; reset select all/none to none
 }
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
@@ -20357,8 +20468,8 @@ Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
 FormatTime, strYear, , yyyy ; current time
 Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
 Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
-Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strEddLicense, o_EDDLicense.strUniqueSystemId)
-	. " (<a>" . o_L["AboutLicenseCopy"] . "</a>)"
+Gui, 2:Add, Link, w380 y+5 , % "<a href=""https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/"">" . o_L["AboutLicenseHelp"] . "</a>"
+Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
 Gui, 2:Font, s10 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
 Gui, 2:Font, s8 w400, Verdana
@@ -20383,11 +20494,15 @@ return
 GuiAboutCopyLicense:
 ;------------------------------------------------------------
 
+blnShowLicenseCode := GetKeyState("LShift") and GetKeyState("LControl")
+
 MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
 IfMsgBox, Cancel
 	return
 
-Clipboard := o_EDDLicense.strEddLicense . "`n" o_EDDLicense.strUniqueSystemId
+Clipboard := (blnShowLicenseCode ? o_EDDLicense.strEddLicense . " " : "") . o_EDDLicense.strUniqueSystemId ; only here we can see the unscrambled license code
+
+blnShift := ""
 
 return
 ;------------------------------------------------------------
@@ -20479,7 +20594,7 @@ return
 GuiHelp:
 ;------------------------------------------------------------
 
-aaL := o_L.InsertAmpersand(false, "DonateButton", "GuiClose", "DialogTabNext")
+aaL := o_L.InsertAmpersand(false, "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep", "GuiClose", "DialogTabNext")
 
 Gui, 1:Submit, NoHide
 
@@ -20547,9 +20662,10 @@ Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText45"]
 
 Gui, 2:Tab
 GuiControlGet, arrTabPos, Pos, f_intHelpTab
-Gui, 2:Add, Button, % "x180 y" . arrTabPosY + arrTabPosH + 10. " vf_btnHelpDonate gGuiDonate", % aaL["DonateButton"]
+Gui, 2:Add, Button, % "x180 y" . arrTabPosY + arrTabPosH + 10. " vf_btnHelpKnowledgeBase gHelpKnowledgeBase", % aaL["HelpMenuKnowledgeBase"]
+Gui, 2:Add, Button, x+80 yp vf_btnHelpVideos gHelpVideosFirstSteps, % aaL["HelpMenuVideosFirstStep"]
 Gui, 2:Add, Button, x+80 yp g2GuiClose vf_btnHelpClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnHelpDonate", "f_btnHelpClose")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnHelpVideos", "f_btnHelpKnowledgeBase", "f_btnHelpClose")
 
 GuiControl, Focus, btnHelpClose
 Gosub, ShowGui2AndDisableGui1
@@ -21928,77 +22044,6 @@ DiagWindowInfo(strName)
 */
 
 
-;------------------------------------------------
-Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
-;------------------------------------------------
-{
-	static s_intStartTick
-	static s_intStartFullTick
-	static s_intStartShowTick
-	static s_intStartCollectTick
-
-	if !(o_Settings.Launch.blnDiagMode.IniValue or blnForceForFirstStartup)
-		return
-	
-	FormatTime, strNow, %A_Now%, yyyyMMdd@HH:mm:ss
-	strDiag := strNow . "." . A_MSec . "`t" . strName . "`t" . strData
-	
-	if StrLen(strStartElapsedStop)
-	{
-		strDiag .= "`t" . strStartElapsedStop . "`t" . A_TickCount
-		
-		if (strStartElapsedStop = "START-REFRESH")
-			s_intStartFullTick := A_TickCount
-		else if (strStartElapsedStop = "START-SHOW")
-			s_intStartShowTick := A_TickCount
-		else if (strStartElapsedStop = "START-COLLECT")
-			s_intStartCollectTick := A_TickCount
-		else if (strStartElapsedStop = "START")
-			s_intStartTick := A_TickCount
-		else if InStr(strStartElapsedStop, "-REFRESH") ; ELAPSED-REFRESH or STOP-REFRESH
-		{
-			intTicksAll := A_TickCount - s_intStartFullTick
-			strDiag .= "`t" . intTicksAll . "`t" . (intTicksAll > 500 ? "*FLAG1*" : "")
-		}
-		else if InStr(strStartElapsedStop, "-SHOW") ; ELAPSED-SHOW or STOP-SHOW
-		{
-			intTicksShow := A_TickCount - s_intStartShowTick
-			strDiag .= "`t" . intTicksShow . "`t" . (intTicksShow > 1000 ? "*FLAG2*" : "")
-		}
-		else if InStr(strStartElapsedStop, "-COLLECT") ; ELAPSED-COLLECT or STOP-COLLECT
-		{
-			intTicksCollect := A_TickCount - s_intStartCollectTick
-			strDiag .= "`t" . intTicksCollect . "`t" . (intTicksCollect > 2000 ? "*FLAG3*" : "")
-		}
-		else ; ELAPSED
-		{
-			intTicks := A_TickCount - s_intStartTick
-			strDiag .= "`t" . intTicks . "`t" . (intTicks > 2000 and strStartElapsedStop <> "ELAPSED" ? "*FLAG4*" : "")
-		}
-	}
-
-	; g_strDiagFile := A_WorkingDir . "\" . g_strAppNameFile . "-DIAG.txt"
-	strDiagFile := (blnForceForFirstStartup ? StrReplace(g_strDiagFile, "DIAG", "1st_STARTUP") : g_strDiagFile)
-	loop
-	{
-		FileAppend, %strDiag%`n, %strDiagFile%
-		if ErrorLevel
-			Sleep, 20
-	}
-	until !ErrorLevel or (A_Index > 50) ; after 1 second (20ms x 50), we have a problem
-	
-	if (strStartElapsedStop = "STOP")
-		s_intStartTick := ""
-	else if (strStartElapsedStop = "STOP-REFRESH")
-		s_intStartFullTick := ""
-	else if (strStartElapsedStop = "STOP-SHOW")
-		s_intStartShowTick := ""
-	else if (strStartElapsedStop = "STOP-COLLECT")
-		s_intStartCollectTick := ""
-}
-;------------------------------------------------
-
-
 ;------------------------------------------------------------
 ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDefaultType := "")
 ; strIconResource can be a icongroup (file,index) or an index in o_JLicons.AA
@@ -22361,43 +22406,6 @@ GetWebPageTitle(strLocation)
 	
 	strTitle := NumDecode(Trim(strTitle, Chr(160))) ; Chr(160) to also trim non-breaking spaces
 	return (StrLen(strTitle) ? strTitle : o_L["DialogNA"])
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-Url2Var(strUrl)
-; WinHttp.WinHttpRequest.5.1 and MSXML2.XMLHTTP.6.0 properties:
-; 	.GetAllResponseHeaders()
-; 	.ResponseText()
-; 	.ResponseBody()
-; 	.StatusText()
-; 	.Status() ; numeric value 200 is success
-; see https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttprequest
-; see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=66685
-;------------------------------------------------------------
-{
-	strUrl .= (InStr(strUrl, "?") ? "&" : "?") . "cache-breaker=" . A_NowUTC
-	
-	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
-	{
-		oHttpRequest := ComObjCreate(A_LoopField)
-		oHttpRequest.Open("GET", strUrl)
-		oHttpRequest.SetRequestHeader("Pragma", "no-cache")
-		oHttpRequest.SetRequestHeader("Cache-Control", "no-cache, no-store")
-		oHttpRequest.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
-		oHttpRequest.Send()
-		
-		Diag(A_ThisFunc, (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl), "")
-		Diag(A_LoopField . " Status" , oHttpRequest.Status(), "")
-		Diag(A_LoopField . " StatusText" , oHttpRequest.StatusText(), "")
-		Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
-		
-		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
-			break
-	}
-
-	return oHttpRequest.ResponseText()
 }
 ;------------------------------------------------------------
 
@@ -24326,18 +24334,115 @@ GetDefaultBrowserPath(strUrl)
 
 
 ;---------------------------------------------------------
-Get_ProcessorId()
+GetUniqueSystemId()
+;---------------------------------------------------------
+{
+	Diag(A_ThisFunc . " START", "", "")
+	strUniqueId := GetMotherboardSerialNumber()
+	Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
+	if !StrLen(strUniqueId) or (strUniqueId = 0)
+		or InStr("to be filled by o.e.m.|none|na|1|invalid|n/a", strUniqueId) ; case insensitive
+		or InStr(strUniqueId, "default")
+		or InStr(strUniqueId, "serial")
+		; fallback on C: drive serial number
+	{
+		strUniqueId := GetBootDriveSerialNumber()
+		Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
+	}
+	if !StrLen(strUniqueId)
+		; this should not happen often
+		strUniqueId := "Unknown to QAP"
+	
+	Diag(A_ThisFunc . " strUniqueId FINAL", strUniqueId, "")
+	return strUniqueId
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+GetMotherboardSerialNumber()
+; source: https://www.autohotkey.com/boards/viewtopic.php?style=1&t=24346
+; info: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor
+; example: 120700577302842
+;---------------------------------------------------------
+{
+    objWMIService := ComObjGet("winmgmts:\\.\root\cimv2")
+    strWQLQuery := "Select * From Win32_BaseBoard" ;  WQL = WMI Query Language
+	objColMB := objWMIService.ExecQuery(strWQLQuery)._NewEnum
+    While objColMB[objMBInfo]
+	{
+		Diag(A_ThisFunc . " SerialNumber", objMBInfo["SerialNumber"], "")
+		return objMBInfo["SerialNumber"] ; return the first item in the collection
+	}
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+GetBootDriveSerialNumber()
+;---------------------------------------------------------
+{
+	DriveGet, strSerialNumber, Serial, C:
+	while StrLen(strSerialNumber) < 8
+		strSerialNumber := "0" . strSerialNumber
+	Diag(A_ThisFunc . " strSerialNumber", strSerialNumber, "")
+	
+	return strSerialNumber
+	
+	; an alternative approach using WMI would be:
+    ; objWMIService := ComObjGet("winmgmts:\\.\root\cimv2")
+    ; strWQLQuery := "SELECT * FROM Win32_LogicalDisk" ;  WQL = WMI Query Language
+	; objCol := objWMIService.ExecQuery(strWQLQuery)._NewEnum
+    ; While objCol[objInfo]
+		; return objInfo["VolumeSerialNumber"] ; first item is the boot drive
+}
+;---------------------------------------------------------
+
+
+/*
+;---------------------------------------------------------
+GetProcessorId()
 ; info: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor
 ;---------------------------------------------------------
 {
-	strComputer := "."
-	objWMIService := ComObjGet("winmgmts:\\" . strComputer . "\root\cimv2")
-	WQLQuery := "Select * From Win32_Processor"
-	colCPU := objWMIService.ExecQuery(WQLQuery)._NewEnum
-	while colCPU[objCPU]
-		return objCPU.ProcessorId
+    objWMIService := ComObjGet("winmgmts:\\.\root\cimv2")
+    strWQLQuery := "Select * From Win32_Processor" ;  WQL = WMI Query Language
+    objColCPU := objWMIService.ExecQuery(strWQLQuery)._NewEnum
+    while objColCPU[objCPU]
+	{
+		Diag(A_ThisFunc . " ProcessorId", objCPU.ProcessorId, "")
+        return objCPU.ProcessorId
+	}
 }
 ;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Get_MACAddress()
+; example: 30:85:A9:8E:F9:E2
+; issue with this approach when PC get a dynamic (different) MAC addresses each time it is rebooted
+;---------------------------------------------------------
+{
+	; In v11.0.4 - hangs or creates an infinite loop on some systems
+	; while (ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
+		; .ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum)[objItem]
+		; if objItem.IPAddress[0] = A_IPAddress1
+			; return objItem.MACAddress
+	;
+	; adapted from Tank's code
+	Diag(A_ThisFunc . " START", "", "")
+    winmgmts := ComObjGet("winmgmts:\\.\root\cimv2")
+    MACAddress := "Select MACAddress from Win32_NetworkAdapter  WHERE NetConnectionStatus = 2" ;  2 = Connected
+		(winmgmts.ExecQuery(MACAddress)._NewEnum)[Win32_NetworkAdapter]
+	strMACAddress := Win32_NetworkAdapter.MACAddress
+	Diag(A_ThisFunc . " Full MAC Address", strMACAddress, "")
+	; for security and confidentiality, keep only two last pairs of values of the MAC adresse, without separator
+	; example, from "30:83:B9:8E:F9:E2" to "F9E2" which is quite unique in the context of a given license code
+	saValues := StrSplit(strMACAddress, ":")
+	return saValues[5] . saValues[6]
+}
+;---------------------------------------------------------
+*/
 
 
 ;---------------------------------------------------------
@@ -24374,6 +24479,46 @@ ExtensionIsApplication(strPath)
 	return StrLen(strExtension) and InStr(g_strExeExtensions, "." . strExtension)
 }
 ;------------------------------------------------
+
+
+;---------------------------------------------------------
+Scramble(strContent)
+; https://autohotkey.com/board/topic/90663-way-to-randomize-a-string-and-be-able-to-restore-it-again-later/#entry573327
+;---------------------------------------------------------
+{
+	Random, , g_LicenseScrambleSeed
+	intLength := StrLen(strContent)
+	Loop, % intLength
+	{
+		Random, intPosition, 1, (intLength - A_Index + 1)
+		strOut .= SubStr(strContent, intPosition, 1)
+		strContent := SubStr(strContent, 1, intPosition - 1) . SubStr(strContent, intPosition + 1)
+	}
+	return strOut
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Descramble(strContent)
+; https://autohotkey.com/board/topic/90663-way-to-randomize-a-string-and-be-able-to-restore-it-again-later/#entry573327
+;---------------------------------------------------------
+{
+	Random, , g_LicenseScrambleSeed
+	intLength := StrLen(strContent)
+	Loop, % intLength
+	{
+		Random, intPosition, 1, (intLength - A_Index + 1)
+		strChar%A_Index% := intPosition
+	}
+	loop, % intLength
+	{
+		strNewString := SubStr(strNewString, 1, strChar%intLength% - 1) . SubStr(strContent, intLength, 1) . SubStr(strNewString, strChar%intLength%)
+		intLength--
+	}
+	return strNewString
+}
+;---------------------------------------------------------
 
 
 ;========================================================================================================================
@@ -24567,20 +24712,25 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		g_strNewLocation := saData[2]
 		Gosub, AddThisShortcutFromMsg
 	}
-	else if (saData[1] = "ShowMenuNavigate")
-	{
-		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
-		Gosub, NavigateFromMsg
-	}
-	else if (saData[1] = "ShowMenuLaunch")
-	{
-		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
-		Gosub, LaunchFromMsg
-	}
 	else if (saData[1] = "ShowMenuAlternative")
-
+		
 		Gosub, AlternativeHotkeyKeyboard
-
+		
+	else if InStr(saData[1], "ShowMenu")
+	{
+		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
+		
+		if IsObject(o_Containers.AA[g_strShowMenu])
+			if (saData[1] = "ShowMenuNavigate")
+				Gosub, NavigateFromMsg
+			else ; (saData[1] = "ShowMenuLaunch")
+				Gosub, LaunchFromMsg
+		else
+		{
+			Oops(0, o_L["OopsMenuNotFound"], g_strShowMenu)
+			g_strShowMenu := ""
+		}
+	}
 	else
 		return 0
 

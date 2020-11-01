@@ -34,7 +34,7 @@ IF %ERRORLEVEL% NEQ 0 PAUSE
 IF %ERRORLEVEL% NEQ 0 EXIT
 ECHO Copy quickaccesspopup-setup%QAPBETAPROD%.exe
 COPY "C:\temp\InnoSetup-OutputDir\quickaccesspopup-setup%QAPBETAPROD%.exe"
-ECHO Copy quickaccesspopup-setup-%QAPVERSIONFILE%.exe (for Chocolatey)
+ECHO Copy quickaccesspopup-setup-%QAPVERSIONFILE%.exe (for Chocolatey and archives)
 COPY "quickaccesspopup-setup%QAPBETAPROD%.exe" "quickaccesspopup-setup-%QAPVERSIONFILE%.exe"
 rem Update version file
 IF NOT EXIST "QAP-v%QAPVERSIONFILE%.txt" REN "QAP-v%QAPVERSIONPREV%.txt" "QAP-v%QAPVERSIONFILE%.txt"
@@ -45,6 +45,8 @@ ECHO Add new version and executable files to zip file
 ECHO Check if ZIP file is good
 IF EXIST "*.tmp*" ECHO Erreur dans le fichier ZIP...
 IF EXIST "*.tmp*" GOTO:finish
+ECHO Copy %QAPZIPFILE%.zip %QAPZIPFILE%-%QAPVERSIONFILE%.zip (for archives)
+COPY "%QAPZIPFILE%.zip" "quickaccesspopup-%QAPVERSIONFILE%.zip"
 IF [%QAPBETAPROD%] == [] GOTO:messages
 ECHO Copy %QAPZIPFILE%.zip to %QAPZIPFILEVERSION%.zip
 COPY %QAPZIPFILE%.zip %QAPZIPFILEVERSION%.zip
@@ -60,6 +62,6 @@ GOTO:finish
 :messagesprod
 ECHO COPIER quickaccesspopup-setup.exe dans FTP ftp://www.quickaccesspopup/download
 ECHO COPIER quickaccesspopup.zip dans FTP ftp://www.quickaccesspopup/download
-ECHO COPIER quickaccesspopup-setup-%QAPVERSIONFILE%.exe dans FTP ftp://www.quickaccesspopup/download/archives
+ECHO COPIER quickaccesspopup-setup-%QAPVERSIONFILE%.exe et %QAPZIPFILE%-%QAPVERSIONFILE%.zip dans FTP ftp://www.quickaccesspopup/download/archives
 :finish
 PAUSE
