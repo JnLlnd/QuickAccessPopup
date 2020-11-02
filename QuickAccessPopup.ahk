@@ -21106,7 +21106,7 @@ loop, parse, % "Folders|Files", |
 		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue)
 			strMenuItemName .= " [" . strTargetNb . "]"
 		; if location is on a network drive that could be offline, GetFolderIcon() and GetIcon4Location() return generic icons for folder or documents
-		strIcon := (strFoldersOrFiles = "Folders" ? GetFolderIcon(strPath, true) : GetIcon4Location(strPath, true))
+		strIcon := (strFoldersOrFiles = "Folders" ? GetFolderIcon(strPath) : GetIcon4Location(strPath))
 		
 		strMenuItemsList%strFoldersOrFiles% .= strFoldersOrFilesMenuNameLocalized . "|" . strMenuItemName
 			. (strFoldersOrFiles = "Folders" ? "|Folder|" : "|Document|") . strIcon . "`n"
@@ -22073,9 +22073,12 @@ GetIcon4Location(strLocation)
 ; get icon, extract from kiu http://www.autohotkey.com/board/topic/8616-kiu-icons-manager-quickly-change-icon-files/
 ;------------------------------------------------------------
 {
-	; if location is on a network drive that could be offline, return generic documents icon
+	; if location is on a network drive that could be offline, return generic application or document icon
 	if FileOnServerNotAlwaysOnline(strLocation)
-		return "iconDocuments"
+		if ExtensionIsApplication(strLocation)
+			return "iconApplication"
+		else
+			return "iconDocuments"
 		
 	FileExistInPath(strLocation) ; expand strLocation and search in PATH
 	if !StrLen(strLocation)
@@ -22087,7 +22090,7 @@ GetIcon4Location(strLocation)
 		return "iconUnknown"
 	
 	RegRead, strRegistryIconResource, HKEY_CLASSES_ROOT, %strHKeyClassRoot%\DefaultIcon
-	if (strRegistryIconResource = "%1") ; use the file itself (for executable) ; ##### ici si network peut bloquer si offline
+	if (strRegistryIconResource = "%1") ; use the file itself (for executable)
 		return strLocation . ",1"
 	else if InStr(strRegistryIconResource, """") ; for badly set icon in registry including double-quote
 		return StrReplace(strRegistryIconResource, """") ; remove double-cuotes
@@ -22715,8 +22718,7 @@ LocationIsHTTP(strLocation)
 FileExistInPath(ByRef strFile)
 ;------------------------------------------------------------
 {
-	if FileOnServerNotAlwaysOnline(strFile)
-		; consider file exists
+	if FileOnServerNotAlwaysOnline(strFile) ; consider file exists
 		return true
 	; do not else
 		
@@ -22728,6 +22730,16 @@ FileExistInPath(ByRef strFile)
 		strFile := WhereIs(strFile) ; search if file exists in path env variable or registry app paths
 	else
 		strFile := PathCombine(A_WorkingDir, strFile) ; make relative path absolute
+	
+	if (SubStr(strFile, 1, 2) = "\\") ; this is an UNC path (option network drives always online enabled)
+	; avoid FileExist on the root of a UNC path "\\something" or "\\something\"
+	; check if it is the UNC root - if yes, return true without confirming if path exist because FileExist limitation with UNC root path
+	{
+		intPos := InStr(strFile, "\", false, 3) ; if there is no "\" after the initial "\\" (after the domain or IP address), this is the UNC root
+		if !(intPos) ; there is no "\" after the domain or IP address, this is an UNC root (example: "\\something")
+			or (SubStr(strFile, intPos) = "\") ; the 3rd \ the last char, this is also an UNC root (example: "\\something\")
+			return true
+	}
 	
 	return FileExist(strFile) ; returns the file's attributes if file exists or empty (false) is not
 }
@@ -24447,17 +24459,6 @@ FileOnServerNotAlwaysOnline(strLocation)
 {
 	blnIsNetwork := (SubStr(strLocation, 1, 2) = "\\")
 	
-	if (blnIsNetwork) ; this is an UNC path
-	{
-		; avoid FileExist on the root of a UNC path "\\something\"
-		; check if it is the UNC root - if yes, return true without confirming if path exist because FileExist bug(?) with UNC root path
-		intPos := InStr(strFile, "\", false, 3) ; if there is no "\" after the initial "\\" (after the domain or IP address), this is the UNC root
-		; ##### "\\unc\" should also be considered root
-		if !(intPos) ; consider it as not always online because FileExist cannot inspect this type of value
-			return true
-	}
-	; do no else
-	
 	if !(blnIsNetwork) ; this is a drive with letter
 	{
 		SplitPath, strLocation, , , , , strDrive
@@ -24469,7 +24470,7 @@ FileOnServerNotAlwaysOnline(strLocation)
 
 
 ;------------------------------------------------
-ExtensionIsApplication(strPath)
+ExtensionIsApplication(strFilePathName)
 ;------------------------------------------------
 {
 	strExtension := GetFileExtension(strFilePathName)
