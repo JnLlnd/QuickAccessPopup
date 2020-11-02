@@ -31,7 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.0.6 (2020-10-30)
+Version: 11.0.6 / 11.0.6.1 (2020-10-31)
+- v11.0.6.1 fix a bug when saving the license in v11.0.6 released yesterday
 - in "Add Multiple Favorites" dialog box, add a checkbox to select or deselect all rows
 - fix bug always showing the "Cancel changes" dialog box in "Options" when active file manager is Total Commander
 - when opening a menu from QAPmessenger, validate that the menu exists and display an error message if does not exist
