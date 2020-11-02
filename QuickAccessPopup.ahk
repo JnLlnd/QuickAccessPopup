@@ -5358,7 +5358,6 @@ o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLoc
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "intIconSize", "IconSize", 32, "MenuIcons", "f_lblIconSize|f_drpIconSize") ; g_intIconSize
 o_Settings.ReadIniOption("MenuIcons", "intIconsManageRowsSettings", "IconsManageRows", 0, "MenuIcons", "f_intIconsManageRowsSettingsEdit|f_intIconsManageRowsSettings|f_lblIconsManageRows") ; g_intIconsManageRowsSettings
-o_Settings.ReadIniOption("MenuIcons", "blnRetrieveIconInFrequentMenus", "RetrieveIconInFrequentMenus", 1, "MenuIcons", "f_blnRetrieveIconInFrequentMenus") ; avoid offline delay when retrieving icons for Frequent items menus
 o_Settings.ReadIniOption("MenuIcons", "strIconReplacementList", "IconReplacementList", " ", "MenuIcons", "f_lnkIconReplacementList1|f_lnkIconReplacementList2|f_strIconReplacementList") ; g_strIconReplacementList
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
@@ -8539,11 +8538,6 @@ Gui, 2:Add, Text, % "yp x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsI
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intIconsManageRowsSettingsEdit
 gosub, DisplayIconsClickedInit
 
-; RetrieveIconInFrequentMenus
-Gui, 2:Add, CheckBox, y+20 x%g_intGroupItemsX% w500 vf_blnRetrieveIconInFrequentMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsIconsRetrieveInFrequentMenus"]
-GuiControl, , f_blnRetrieveIconInFrequentMenus, % (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue = true)
-gosub, DisplayIconsClickedInit
-
 ; strIconReplacementList
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+25 x%g_intGroupItemsX% w500 hidden vf_lnkIconReplacementList1
@@ -8973,7 +8967,7 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
 ; NetworkDrivesLetters
-Gui, 2:Add, Link, x%g_intGroupItemsX% y+20 vf_lblNetworkDrivesLetters hidden, % o_L["OptionsNetworkDrivesLetters"] . ":"
+Gui, 2:Add, Link, x%g_intGroupItemsX% y+20 vf_lblNetworkDrivesLetters hidden, % L(o_L["OptionsNetworkDrivesLetters"], "https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/") . ":"
 Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters hidden ; gLabel after GuiControl that changes the value below
 GuiControl, 2:, f_strNetworkDrivesLetters, % o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
@@ -9236,7 +9230,6 @@ o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 o_Settings.MenuIcons.blnDisplayIcons.WriteIni(f_blnDisplayIcons)
 o_Settings.MenuIcons.intIconSize.WriteIni(f_drpIconSize)
 o_Settings.MenuIcons.intIconsManageRowsSettings.WriteIni(f_intIconsManageRowsSettings)
-o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.WriteIni(f_blnRetrieveIconInFrequentMenus)
 o_Settings.MenuIcons.strIconReplacementList.WriteIni(OptionsListCleanup(f_strIconReplacementList))
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
@@ -9416,6 +9409,7 @@ if (intUsageDbIntervalSecondsPrev <> o_Settings.Database.intUsageDbIntervalSecon
 	Oops(2, o_L["OptionsUsageDbDisabling"], g_strAppNameText)
 
 ; preprocess these dynamic menus
+; Diag("INIT", "DynamicMenusPreProcess", "")
 Gosub, DynamicMenusPreProcess ; in case the number of items in Frequent and Recent menus was changed in Options
 
 intUsageDbIntervalSecondsPrev := ""
@@ -14088,14 +14082,12 @@ return
 
 
 ;------------------------------------------------------------
-GetFolderIcon(strFolderLocation, blnFrequentMenu := false)
+GetFolderIcon(strFolderLocation)
 ;------------------------------------------------------------
 {
-	; for Frequent menus, do not try to retrieve custom icon if file is on a network (path starting with "\\") or if user exclude icons for Frequent menus
-	; return standard folder icon instead
-	if (blnFrequentMenu)
-		if (SubStr(strFolderLocation, 1, 2) = "\\" or !o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue)
-			return "iconFolder"
+	; if location is on a network drive that could be offline, return generic folder icon
+	if FileOnServerNotAlwaysOnline(strFolderLocation)
+		return "iconFolder" ; return standard folder icon instead
 	
 	; if strFolderLocation has a relative path, make it absolute based on the working directry before reading desktop.ini
 	strFolderDesktopIni := PathCombine(A_WorkingDir, EnvVars(strFolderLocation)) . "\desktop.ini"
@@ -20861,6 +20853,7 @@ UsageDbCollectMenuData:
 ; repeated timed task to collect recent items and dynamic menus data
 ;------------------------------------------------------------
 
+; Diag(A_ThisLabel, "START", "")
 if !(g_blnUsageDbEnabled)
 {
 	SetTimer, UsageDbCollectMenuData, Off
@@ -20914,6 +20907,7 @@ strUsageDbSQL := "INSERT INTO Usage ("
 		. ") VALUES`n"
 Loop, parse, strUsageDbItemsList, `n
 {
+	; Diag(A_ThisLabel . " parse " . A_Index, A_LoopField, "")
 	if !StrLen(A_LoopField) ; last line is empty
 		continue
 	if (A_Index > g_intUsageDbRecentLimit)
@@ -21000,6 +20994,7 @@ if (g_blnUsageDbDebug)
 }
 
 ; preprocess Frequent Folders, Frequent Files, Recent Folders, Recent Files and Drives menu data
+; Diag(A_ThisLabel, "DynamicMenusPreProcess", "")
 Gosub, DynamicMenusPreProcess
 
 strUsageDbRecentsFolder := ""
@@ -21059,7 +21054,6 @@ DynamicMenusPreProcess:
 
 if !(g_blnUsageDbEnabled)
 	return
-
 ; Diag(A_ThisLabel, "", "START")
 
 ; process Frequent menus
@@ -21104,16 +21098,14 @@ loop, parse, % "Folders|Files", |
 		if (strTargetNb <= 1) ; skip if not enough frequent
 			continue
 		
-        if (o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue ; if not, consider that file exists (we won't try to retrieve its icon)
-			and SubStr(strPath, 1, 2) <> "\\") ; if this is an UNC path, consider that file exists (we won't try to retrieve its icon)
-			and !FileExistInPath(strPath) ; skip if not exist
-				continue
+        if !FileExistInPath(strPath) ; skip if not exist
+			continue
 		
 		intPopularItemsCount++
 		strMenuItemName := strPath
 		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue)
 			strMenuItemName .= " [" . strTargetNb . "]"
-		; for location with UNC path "\\" or when blnRetrieveIconInFrequentMenus is false, GetFolderIcon(, true) and GetIcon4Location(, true) return generic icons for folder or documents
+		; if location is on a network drive that could be offline, GetFolderIcon() and GetIcon4Location() return generic icons for folder or documents
 		strIcon := (strFoldersOrFiles = "Folders" ? GetFolderIcon(strPath, true) : GetIcon4Location(strPath, true))
 		
 		strMenuItemsList%strFoldersOrFiles% .= strFoldersOrFilesMenuNameLocalized . "|" . strMenuItemName
@@ -21130,7 +21122,7 @@ loop, parse, % "Folders|Files", |
 		strDynamicDbSQL .= "Popular" . strFoldersOrFiles .  "MenuData = '" . EscapeQuote(strMenuItemsList%strFoldersOrFiles%) "', " ; PopularFoldersMenuData and PopularFilesMenuData
 	; Diag(A_ThisLabel . ":FinishPopular", A_Loopfield, "ELAPSED")
 }
-; Diag(A_ThisLabel . ":pre-strDynamicDbSQL", StrReplace(strDynamicDbSQL, "`n", "``n"))
+; Diag(A_ThisLabel . ":pre-strDynamicDbSQL", StrReplace(strDynamicDbSQL, "`n", "``n"), "")
 
 ; process Drives menus
 if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Drives}")) ; we have this QAP features in at least one menu
@@ -21139,7 +21131,7 @@ if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Drives}")) ; we have this QAP fe
 	strDynamicDbSQL .= "DrivesMenuData = '" . EscapeQuote(g_strMenuItemsListDrives) . "', "
 }
 ; Diag(A_ThisLabel . ":After GetDrivesMenuListPreprocess", intPopularItemsCount, "ELAPSED")
-; Diag(A_ThisLabel . ":g_strMenuItemsListDrives", StrReplace(g_strMenuItemsListDrives, "`n", "``n"))
+; Diag(A_ThisLabel . ":g_strMenuItemsListDrives", StrReplace(g_strMenuItemsListDrives, "`n", "``n"), "")
 
 ; process Recent menus
 ; Diag(A_ThisLabel . ":StartRecent", A_Loopfield, "ELAPSED")
@@ -21157,7 +21149,7 @@ if StrLen(strDynamicDbSQL) ; if menu does not contain Drives, Popular or Recent 
 {
 	strDynamicDbSQL := SubStr(strDynamicDbSQL, 1, -2) ; remove last ", "
 	strDynamicDbSQL := "UPDATE zMetadata SET " . strDynamicDbSQL . ";" ; add opening command and ending semi-colon
-	; Diag(A_ThisLabel . ":strDynamicDbSQL", StrReplace(strDynamicDbSQL, "`n", "``n"))
+	; Diag(A_ThisLabel . ":strDynamicDbSQL", StrReplace(strDynamicDbSQL, "`n", "``n"), "")
 
 	If !o_UsageDb.Exec(strDynamicDbSQL)
 	{
@@ -21196,8 +21188,12 @@ DriveGet, strDrivesList, List
 ; gather info for menu (can be long for CD/DVD drives)
 Loop, parse, strDrivesList
 {
+	; Diag(A_ThisLabel . " Drive", A_LoopField, "")
 	strPath := A_LoopField . ":"
-	DriveGet, strStatus, Status, %strPath%
+	if FileOnServerNotAlwaysOnline(strPath)
+		strStatus := o_L["MenuNetworkDrive"] ; will display "Network drive" instead of label, capacity, etc.
+	else
+		DriveGet, strStatus, Status, %strPath%
 	if (strStatus = "Ready")
 	{
 		DriveGet, intCapacity, Capacity, %strPath%
@@ -22070,17 +22066,15 @@ ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDef
 
 
 ;------------------------------------------------------------
-GetIcon4Location(strLocation, blnFrequentMenu := false)
+GetIcon4Location(strLocation)
 ; returns an icon resource in icongroup format (file,index) or an index of o_JLicons.AA
 ; icongroup will be splitted by ParseIconResource before being used by Menu command
 ; index of o_JLicons.AA will converted to icongroup by ParseIconResource before being splitted
 ; get icon, extract from kiu http://www.autohotkey.com/board/topic/8616-kiu-icons-manager-quickly-change-icon-files/
 ;------------------------------------------------------------
 {
-	; for Frequent menus, do not try to retrieve custom icon if file is on a network (path starting with "\\") or if user exclude icons for Frequent menus
-	; return generic document icon instead
-	if (blnFrequentMenu)
-		if (SubStr(strLocation, 1, 2) = "\\" or !o_Settings.MenuIcons.blnRetrieveIconInFrequentMenus.IniValue)
+	; if location is on a network drive that could be offline, return generic documents icon
+	if FileOnServerNotAlwaysOnline(strLocation)
 		return "iconDocuments"
 		
 	FileExistInPath(strLocation) ; expand strLocation and search in PATH
@@ -22093,7 +22087,7 @@ GetIcon4Location(strLocation, blnFrequentMenu := false)
 		return "iconUnknown"
 	
 	RegRead, strRegistryIconResource, HKEY_CLASSES_ROOT, %strHKeyClassRoot%\DefaultIcon
-	if (strRegistryIconResource = "%1") ; use the file itself (for executable)
+	if (strRegistryIconResource = "%1") ; use the file itself (for executable) ; ##### ici si network peut bloquer si offline
 		return strLocation . ",1"
 	else if InStr(strRegistryIconResource, """") ; for badly set icon in registry including double-quote
 		return StrReplace(strRegistryIconResource, """") ; remove double-cuotes
@@ -22735,15 +22729,7 @@ FileExistInPath(ByRef strFile)
 	else
 		strFile := PathCombine(A_WorkingDir, strFile) ; make relative path absolute
 	
-	if (SubStr(strFile, 1, 2) = "\\") ; this is an UNC path
-	; check if it is the UNC root - if yes, return true without confirming if path exist because FileExist bug(?) with UNC root path
-	{
-		intPos := InStr(strFile, "\", false, 3)
-		if !(intPos) ; there is no "\" after the domain or IP address, this is the UNC root
-			return true
-	}
-	
-	return, FileExist(strFile) ; returns the file's attributes if file exists or empty (false) is not
+	return FileExist(strFile) ; returns the file's attributes if file exists or empty (false) is not
 }
 ;------------------------------------------------------------
 
@@ -24459,11 +24445,23 @@ ShowToolTip(strContent)
 FileOnServerNotAlwaysOnline(strLocation)
 ;------------------------------------------------------------
 {
-	blnIsNetwork := SubStr(strLocation, 1, 2) = "\\")
-	if !(blnIsNetwork)
+	blnIsNetwork := (SubStr(strLocation, 1, 2) = "\\")
+	
+	if (blnIsNetwork) ; this is an UNC path
+	{
+		; avoid FileExist on the root of a UNC path "\\something\"
+		; check if it is the UNC root - if yes, return true without confirming if path exist because FileExist bug(?) with UNC root path
+		intPos := InStr(strFile, "\", false, 3) ; if there is no "\" after the initial "\\" (after the domain or IP address), this is the UNC root
+		; ##### "\\unc\" should also be considered root
+		if !(intPos) ; consider it as not always online because FileExist cannot inspect this type of value
+			return true
+	}
+	; do no else
+	
+	if !(blnIsNetwork) ; this is a drive with letter
 	{
 		SplitPath, strLocation, , , , , strDrive
-		blnIsNetwork := InStr(o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue, strDrive)
+		blnIsNetwork := InStr(o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue, StrReplace(strDrive, ":", "")) ; remove the : in strDrive
 	}
 	return (blnIsNetwork) and !(o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue)
 }
