@@ -35,9 +35,9 @@ Version BETA: 11.0.6.9.1 (2020-11-03)
  
 Avoid delays caused by network drives offline
 - new option under "Options, Menu Advanced Options" to specify that network drives with UNC path ("\\...") or with drive letters (see below) are always online (disabled by default)
-- new option under "Options, Menu Advanced Options" to specify what drive letters are assigned to network drives that could be temporarlily offline
-- avoid an unexpected delays when refreshing dynamic menus by not checking if a file exist or if it has a custom icon for favorites saved on a network drive that coul be offline (dynamic menus are: "Frequent Folders", "Frequent Files", "Recent Folders" and "Recent Files")
-- when refreshing the "Drives" menu (under "My QAP Essentials"), avoid retrieving lable and free space for drive letters assigned to network drives that could be offline (see above)
+- new option under "Options, Menu Advanced Options" to specify what drive letters are assigned to network drives that could be temporarily offline
+- avoid an unexpected delays when refreshing dynamic menus by not checking if a file exist or if it has a custom icon for favorites saved on a network drive that could be offline (dynamic menus are: "Frequent Folders", "Frequent Files", "Recent Folders" and "Recent Files")
+- when refreshing the "Drives" menu (under "My QAP Essentials"), avoid retrieving label and free space for drive letters assigned to network drives that could be offline (see above)
 - see Network drive help: https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/
 
 Version: 11.0.6 / 11.0.6.1 (2020-10-31)
