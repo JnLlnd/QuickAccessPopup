@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.0.6.9.1 (2020-11-03)
+ 
+Avoid delays caused by network drives offline
+- new option under "Options, Menu Advanced Options" to specify that network drives with UNC path ("\\...") or with drive letters (see below) are always online (disabled by default)
+- new option under "Options, Menu Advanced Options" to specify what drive letters are assigned to network drives that could be temporarlily offline
+- avoid an unexpected delays when refreshing dynamic menus by not checking if a file exist or if it has a custom icon for favorites saved on a network drive that coul be offline (dynamic menus are: "Frequent Folders", "Frequent Files", "Recent Folders" and "Recent Files")
+- when refreshing the "Drives" menu (under "My QAP Essentials"), avoid retrieving lable and free space for drive letters assigned to network drives that could be offline (see above)
+- see Network drive help: https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/
+
 Version: 11.0.6 / 11.0.6.1 (2020-10-31)
 - v11.0.6.1 fix a bug when saving the license in v11.0.6 released yesterday
 - in "Add Multiple Favorites" dialog box, add a checkbox to select or deselect all rows
@@ -4231,7 +4240,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.6.1
+;@Ahk2Exe-SetVersion 11.0.6.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4298,8 +4307,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.6.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.0.6.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
