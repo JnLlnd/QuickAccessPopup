@@ -5240,7 +5240,7 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			AvailableThemes=Windows|Grey|Light Blue|Light Green|Light Red|Yellow
 			Theme=Windows
 			NameLocationHotkeysUpgraded=1
-			WaitDelayInSnippet=40|80|180
+			WaitDelayInSnippet=40|80|180|150
 			DefaultDynamicMenusBuilt=1
 			DisplaySettingsStartup=1
 			[Gui-Grey]
@@ -5455,9 +5455,11 @@ o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInD
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
-o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180", "AdvancedOther"
-	, "f_lblWaitDelayInSnippet|f_intWaitDelayInSnippet1|f_intWaitDelayInSnippet2|f_intWaitDelayInSnippet3") ; default 300 ms (split in three sleep commands) ; strWaitDelayInSnippet
+o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180|150", "AdvancedOther"
+	, "f_lblWaitDelayInSnippet|f_intWaitDelayInSnippet1|f_intWaitDelayInSnippet2|f_intWaitDelayInSnippet3|f_intWaitDelayInSnippet4") ; split in four sleep commands) ; strWaitDelayInSnippet
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
+if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
+	o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] := 150 ; new default added 2020-11-05 (was 100 ms)
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "AdvancedOther"
 	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
 
@@ -9035,7 +9037,7 @@ if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 
 ; WaitDelayInSnippet
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 hidden vf_lblWaitDelayInSnippet, % o_L["OptionsWaitDelayInSnippet"]
-loop, 3
+loop, 4
 	Gui, 2:Add, Edit, % "x+5 yp h20 w50 hidden number center gGuiOptionsGroupChanged vf_intWaitDelayInSnippet" . A_Index, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[A_Index]
 
 ; SwitchExclusionList
@@ -9466,7 +9468,7 @@ blnRunAsAdminPrev := ""
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
-o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3)
+o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
 strNewHotstringsDefaultOptions := ""
@@ -30217,7 +30219,7 @@ class Container
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[3] ; delay required by some application, including Notepad, default 180 ms
 				SendEvent, ^v
 				BlockInput, Off
-				Sleep, 100 ; safety
+				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] ; safety, default 150 ms (was 100 ms before 2020-11-05)
 				
 				Clipboard := objPrevClipboard ; Restore the original clipboard
 			}
