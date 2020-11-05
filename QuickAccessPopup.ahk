@@ -8978,7 +8978,7 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 
 ; NetworkDrivesLetters
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+20 vf_lblNetworkDrivesLetters hidden, % L(o_L["OptionsNetworkDrivesLetters"], "https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/") . ":"
-Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters Uppercase hidden ; gLabel after GuiControl that changes the value below
 GuiControl, 2:, f_strNetworkDrivesLetters, % o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
 
@@ -9443,7 +9443,7 @@ o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.WriteIni(f_blnRefreshQAPMenuD
 o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(f_intNbLiveFolderItemsMax)
 o_Settings.MenuAdvanced.intClipboardMaxSize.WriteIni(f_intClipboardMaxSize)
 o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.WriteIni(f_blnNetworkDrivesAlwaysOnline)
-o_Settings.MenuAdvanced.strNetworkDrivesLetters.WriteIni(f_strNetworkDrivesLetters)
+o_Settings.MenuAdvanced.strNetworkDrivesLetters.WriteIni(RegExReplace(f_strNetworkDrivesLetters, "[^A-Z]"))
 o_Settings.MenuAdvanced.blnShowAdvancedSettingsMenusItems.WriteIni(f_blnShowAdvancedSettingsMenusItems)
 
 if (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue > 0)
