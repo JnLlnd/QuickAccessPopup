@@ -14026,6 +14026,8 @@ o_MainMenuBK := o_MainMenu.BackupContainer() ; backup menu content
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName)
 
+Gosub, LoadFavoritesInGui
+
 ; if gui already visible, just activate the window
 DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
 blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
@@ -14036,8 +14038,6 @@ if (blnExist) ; keep the gui as-is if it is not closed
 	return
 }
 ; else continue
-
-Gosub, LoadFavoritesInGui
 
 GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
 if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
