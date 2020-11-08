@@ -845,7 +845,7 @@ this["OptionsMoveWorkingFolderType"] := "Do you want to copy your current settin
 this["OptionsNbLiveFolderItemsMax"] := "Maximum number of items in Live folders:"
 this["OptionsNbLiveFolderItemsMaxDefault"] := "(default 500 items)"
 this["OptionsNetworkDrivesAlwaysOnline"] := "Network drives (""\\"" or with drive letters) are always online"
-this["OptionsNetworkDrivesLetters"] := "Drive letters for network drives (<a href=""~1~"">network drives help</a>)"
+this["OptionsNetworkDrivesLetters"] := "Drive letters to consider as network drives"
 this["OptionsOpenFavoritesOnActiveMonitor"] := "On a multi-monitor system, always open the Explorer window on the active monitor"
 this["OptionsOpenMenuOnTaskbar"] := "Open menu when clicking on taskbar"
 this["OptionsOpenSettingsOnActiveMonitor"] := "Open ""Customize"" window on Active monitor"

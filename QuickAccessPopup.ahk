@@ -5437,7 +5437,7 @@ global g_blnUsageDbDebugBeep := (o_Settings.Database.intUsageDbDebug.IniValue > 
 
 ; Group MenuAdvanced
 o_Settings.ReadIniOption("MenuAdvanced", "intShowQAPmenu", "ShowQAPmenu", 3, "MenuAdvanced", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
-o_Settings.ReadIniOption("MenuAdvanced", "blnNetworkDrivesAlwaysOnline", "NetworkDrivesAlwaysOnline", 0, "MenuAdvanced", "f_blnNetworkDrivesAlwaysOnline")
+o_Settings.ReadIniOption("MenuAdvanced", "blnNetworkDrivesAlwaysOnline", "NetworkDrivesAlwaysOnline", 0, "MenuAdvanced", "f_blnNetworkDrivesAlwaysOnline|f_lblNetworkDrivesAlwaysOnline")
 o_Settings.ReadIniOption("MenuAdvanced", "strNetworkDrivesLetters", "NetworkDrivesLetters", " ", "MenuAdvanced", "f_strNetworkDrivesLetters|f_lblNetworkDrivesLetters")
 o_Settings.ReadIniOption("MenuAdvanced", "intNbLiveFolderItemsMax", "NbLiveFolderItemsMax", "", "MenuAdvanced", "f_lblNbLiveFolderItemsMax|f_lblNbLiveFolderItemsMaxDefault|f_intNbLiveFolderItemsMax") ; ERROR if not found
 if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
@@ -8976,15 +8976,16 @@ GuiControlGet, arrPos, Pos, f_intClipboardMaxSize
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
+; NetworkDrivesAlwaysOnline
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnNetworkDrivesAlwaysOnline gGuiOptionsNetworkDrivesClicked hidden, % o_L["OptionsNetworkDrivesAlwaysOnline"]
+Gui, 2:Add, Link, x+1 yp vf_lblNetworkDrivesAlwaysOnline hidden, % "(<a href=""https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/"">" . o_L["GuiHelp"] . "</a>)"
+GuiControl, , f_blnNetworkDrivesAlwaysOnline, % (o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue = true)
+
 ; NetworkDrivesLetters
-Gui, 2:Add, Link, x%g_intGroupItemsX% y+20 vf_lblNetworkDrivesLetters hidden, % L(o_L["OptionsNetworkDrivesLetters"], "https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/") . ":"
+Gui, 2:Add, Text, x%g_intGroupItemsX% y+5 vf_lblNetworkDrivesLetters hidden, % o_L["OptionsNetworkDrivesLetters"] . ":"
 Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters Uppercase hidden ; gLabel after GuiControl that changes the value below
 GuiControl, 2:, f_strNetworkDrivesLetters, % o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
-
-; NetworkDrivesAlwaysOnline
-Gui, 2:Add, CheckBox, y+5 x%g_intGroupItemsX% vf_blnNetworkDrivesAlwaysOnline gGuiOptionsGroupChanged hidden, % o_L["OptionsNetworkDrivesAlwaysOnline"]
-GuiControl, , f_blnNetworkDrivesAlwaysOnline, % (o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue = true)
 
 ; === AdvancedLaunch ===
 
@@ -9715,6 +9716,23 @@ Gosub, ActiveFileManagerClickedGroupButton
 
 strSettingsGroupPrev := ""
 strGotoGroup := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiOptionsNetworkDrivesClicked:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strEnableDisable := (f_blnNetworkDrivesAlwaysOnline ? "Disable" : "Enable")
+GuiControl, %strEnableDisable%, f_lblNetworkDrivesLetters
+GuiControl, %strEnableDisable%, f_strNetworkDrivesLetters
+
+Gosub, GuiOptionsGroupChanged
+
+strEnableDisable := ""
 
 return
 ;------------------------------------------------------------
