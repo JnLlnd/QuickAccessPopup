@@ -21286,7 +21286,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if StrLen(strOnlyFileOrFolder)
 		strWhere := "TargetType='" . strOnlyFileOrFolder . "'"
 	else
-		strWhere := "TargetType='Folder' OR TargetType='File'"
+		strWhere := "TargetType='Folder' OR TargetType='File' OR TargetType='Application'"
 	
 	strUsageDbSQL := "SELECT TargetPath, TargetType FROM Usage WHERE (" . strWhere . ") ORDER BY CollectDateTime DESC;"
 	
@@ -21366,7 +21366,7 @@ Loop
 		; Diag(A_ThisLabel . ":ProcessingFinish-Folder", intRecentFoldersCount, "ELAPSED")
 	}
 	; do not "else"
-	if (strTargetType = "File")
+	if (strTargetType = "File" or strTargetType = "Application")
 		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
@@ -23650,7 +23650,9 @@ GetRecordSetPopular(strTargetType)
 ;------------------------------------------------------------
 {
 	strUsageDbSQL := "SELECT TargetPath, COUNT(TargetPath) AS 'Nb' FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-		. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
+		. "GROUP BY TargetPath COLLATE NOCASE HAVING "
+		. (strTargetType = "File" ? "TargetType='File' or TargetType='Application'" : "TargetType='Folder'")
+		. " COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
 
 	if !o_UsageDb.Query(strUsageDbSQL, oRecordSet)
 	{
