@@ -5382,6 +5382,14 @@ o_Settings.ReadIniOption("MenuPopup", "strExclusionMouseList", "ExclusionMouseLi
 	, "f_lnkExclusionMouseList1|f_lnkExclusionMouseList2|f_lnkExclusionMouseList3|f_strExclusionMouseList|f_btnGetWinInfoMouseExclusions") ; g_strExclusionMouseList
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
+; Group MenuExclusions
+o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
+	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
+o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
+	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
+o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
+	, "f_lnkFilesExclusionList|f_strFilesExclusionList|f_lblFilesExclusionList")
+
 ; Group PopupHotkeys
 o_Settings.ReadIniOption("MenuPopup", "blnLeftControlDoublePressed", "LeftControlDoublePressed", 0, "PopupHotkeys", "f_lblChangeShortcutTitle|f_lblControlDoublePressedTitle|f_blnLeftControlDoublePressed") ; g_blnLeftControlDoublePressed
 o_Settings.ReadIniOption("MenuPopup", "blnRightControlDoublePressed", "RightControlDoublePressed", 0, "PopupHotkeys", "f_blnRightControlDoublePressed") ; g_blnRightControlDoublePressed
@@ -5440,10 +5448,6 @@ o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "Exter
 o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180", "AdvancedOther"
 	, "f_lblWaitDelayInSnippet|f_intWaitDelayInSnippet1|f_intWaitDelayInSnippet2|f_intWaitDelayInSnippet3") ; default 300 ms (split in three sleep commands) ; strWaitDelayInSnippet
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
-o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "AdvancedOther"
-	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
-o_Settings.ReadIniOption("Execution", "strUsageDbExclusionsList", "UsageDbExclusionsList", " ", "AdvancedOther"
-	, "f_lnkUsageDbExclusionsList|f_strUsageDbExclusionsList|f_lblUsageDbExclusionsList")
 
 ; not in Options Gui
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
@@ -6961,8 +6965,8 @@ saMenuItemsTable.Push(["GuiAlwaysOnTop", aaMenuToolsL["ControlToolTipAlwaysOnTop
 o_Containers.AA["menuBarTools"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarTools"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaL := o_L.InsertAmpersand(true, "OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu"
-	, "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets", "OptionsUserVariables"
+aaL := o_L.InsertAmpersand(true, "OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu", 
+	, "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets", "OptionsUserVariables"
 	, "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiOptionsGroupGeneral", aaL["OptionsGeneral"] . "`tCtrl+O", "", "iconNoIcon"])
@@ -6971,6 +6975,7 @@ saMenuItemsTable.Push(["X", "", "", ""])
 saMenuItemsTable.Push(["GuiOptionsGroupMenuIcons", aaL["OptionsMenuIcons"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupMenuAppearance", aaL["OptionsMenuAppearance"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupMenu", aaL["OptionsPopupMenu"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiOptionsGroupMenuExclusions", aaL["OptionsMenuExclusions"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeys", aaL["OptionsPopupHotkeys"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeysAlternative", aaL["OptionsPopupHotkeysAlternative"], "", "iconNoIcon"])
@@ -8371,6 +8376,7 @@ GuiOptionsGroupSettingsWindow:
 GuiOptionsGroupMenuIcons:
 GuiOptionsGroupMenuAppearance:
 GuiOptionsGroupPopupMenu:
+GuiOptionsGroupMenuExclusions:
 GuiOptionsGroupPopupHotkeys:
 GuiOptionsGroupPopupHotkeysAlternative:
 GuiOptionsGroupFileManagers:
@@ -8387,8 +8393,8 @@ g_strSettingsGroup := StrReplace(A_ThisLabel, "GuiOptionsGroup")
 gosub, CheckShowSettings
 
 aaL := o_L.InsertAmpersand(false, "OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu"
-	, "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets", "OptionsUserVariables"
-	, "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther", "GuiSave", "GuiCancel")
+	, "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets"
+	, "OptionsUserVariables", "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther", "GuiSave", "GuiCancel")
 
 Gosub, GuiOptionsHeader
 
@@ -8659,6 +8665,42 @@ GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoMouseExclusions")
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoMouseExclusions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
+
+; === MenuExclusions ===
+
+; FoldersExclusionList
+strUrl := "https://www.quickaccesspopup.com/#####/"
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w340 section hidden vf_lnkFoldersExclusionList, % o_L["OptionsFoldersExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFoldersExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList, % L(o_L["OptionsFoldersExclusionListInstructions"], strUrl)
+Gui, 2:Add, Text, y+5 vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
+
+; FilesExclusionList
+strUrl := "https://www.quickaccesspopup.com/#####/"
+intGroupItemsXFiles := g_intGroupItemsX + 350
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, ys x%intGroupItemsXFiles% w240 hidden vf_lnkFilesExclusionList, % o_L["OptionsFilesExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w240 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w235 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
+
+; SwitchExclusionList
+strUrl := "https://www.quickaccesspopup.com/how-is-built-the-switch-to-an-open-folder-or-application-menu/"
+GuiControlGet, arrPos, Pos, f_lblFoldersExclusionListBottom
+arrPosY := arrPosY + 10
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w340 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
+Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
+
+GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
+if ((arrPosY + arrPosH) > g_intOptionsFooterY)
+g_intOptionsFooterY := arrPosY + arrPosH
 
 ; === PopupHotkeys ===
 
@@ -9012,26 +9054,7 @@ Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 hidden vf_lblWaitDelayInSnippet, % o_
 loop, 3
 	Gui, 2:Add, Edit, % "x+5 yp h20 w50 hidden number center gGuiOptionsGroupChanged vf_intWaitDelayInSnippet" . A_Index, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[A_Index]
 
-; SwitchExclusionList
-strUrl := "https://www.quickaccesspopup.com/how-is-built-the-switch-to-an-open-folder-or-application-menu/"
-Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w340 section hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
-Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Link, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
-Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
-
-; UsageDbExclusionsList
-strUrl := "https://www.quickaccesspopup.com/###/"
-g_intGroupItemsXTemp := g_intGroupItemsX + 350
-Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, ys x%g_intGroupItemsXTemp% w200 hidden vf_lnkUsageDbExclusionsList, % o_L["OptionsUsageDbExclusionsList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
-Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsXTemp% w200 hidden r5 vf_strUsageDbExclusionsList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strUsageDbExclusionsList.IniValue), "|", "`n")
-Gui, 2:Add, Text, y+5 x%g_intGroupItemsXTemp% w225 hidden vf_lblUsageDbExclusionsList, % o_L["OptionsUsageDbExclusionsListInstructions"]
-
-GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
+GuiControlGet, arrPos, Pos, f_intWaitDelayInSnippet4
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -9041,6 +9064,7 @@ strUrl := ""
 intThisIndex := ""
 objThisPopupHotkey := ""
 ResetArray("arrPos")
+intGroupItemsXFiles := ""
 
 return
 ;------------------------------------------------------------
@@ -9288,6 +9312,12 @@ o_Settings.MenuPopup.blnExclusionMouseListWhitelist.WriteIni(f_blnExclusionMouse
 o_Settings.MenuPopup.strExclusionMouseList.WriteIni(OptionsListCleanup(f_strExclusionMouseList))
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
+; === MenuExclusions ===
+
+o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
+o_Settings.Execution.strFoldersExclusionList.WriteIni(OptionsListCleanup(f_strFoldersExclusionList))
+o_Settings.Execution.strFilesExclusionList.WriteIni(OptionsListCleanup(f_strFilesExclusionList))
+
 ; === PopupHotkeys ===
 
 for intThisIndex, objThisPopupHotkey in o_PopupHotkeys.SA
@@ -9448,8 +9478,6 @@ o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
-o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
-o_Settings.Execution.strUsageDbExclusionsList.WriteIni(OptionsListCleanup(f_strUsageDbExclusionsList))
 strNewHotstringsDefaultOptions := ""
 
 ; === Save new Working Folder in current user registry entry and update o_Settings.strIniFile
@@ -27102,8 +27130,8 @@ TODO
 		this.strIniFileDefault := this.strIniFile
 		
 		this.saOptionsGroups := ["General", "SettingsWindow", "MenuIcons", "MenuAppearance"
-			, "PopupMenu", "PopupHotkeys", "PopupHotkeysAlternative", "FileManagers"
-			, "Snippets", "UserVariables", "Database"
+			, "PopupMenu", "MenuExclusions", "PopupHotkeys", "PopupHotkeysAlternative"
+			, "FileManagers", "Snippets", "UserVariables", "Database"
 			, "MenuAdvanced", "AdvancedLaunch", "AdvancedOther"]
 			
 		; at first launch quickaccesspopup.ini does not exist, read language value in quickaccesspopup-setup.ini (if exist) created by Setup
@@ -27118,7 +27146,7 @@ TODO
 	;---------------------------------------------------------
 	{
 		this.saOptionsGroupsLabelNames := ["OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance"
-			, "OptionsPopupMenu", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers"
+			, "OptionsPopupMenu", "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers"
 			, "OptionsSnippets", "OptionsUserVariables", "OptionsDatabase"
 			, "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther"]
 	}
