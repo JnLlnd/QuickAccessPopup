@@ -31,6 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.0.6.9.2 (2020-11-09)
+- standardise network drive letter to uppercase and save only letters
+- disable drive letters list if always onlin option is checked; move help link; review language
+
 Version BETA: 11.0.6.9.1 (2020-11-03)
  
 Avoid delays caused by network drives offline
@@ -5437,7 +5441,7 @@ global g_blnUsageDbDebugBeep := (o_Settings.Database.intUsageDbDebug.IniValue > 
 
 ; Group MenuAdvanced
 o_Settings.ReadIniOption("MenuAdvanced", "intShowQAPmenu", "ShowQAPmenu", 3, "MenuAdvanced", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
-o_Settings.ReadIniOption("MenuAdvanced", "blnNetworkDrivesAlwaysOnline", "NetworkDrivesAlwaysOnline", 0, "MenuAdvanced", "f_blnNetworkDrivesAlwaysOnline|f_lblNetworkDrivesAlwaysOnline")
+o_Settings.ReadIniOption("MenuAdvanced", "blnNetworkDrivesSometimesOffline", "NetworkDrivesSometimesOffline", 1, "MenuAdvanced", "f_blnNetworkDrivesSometimesOffline|f_lblNetworkDrivesSometimesOffline")
 o_Settings.ReadIniOption("MenuAdvanced", "strNetworkDrivesLetters", "NetworkDrivesLetters", " ", "MenuAdvanced", "f_strNetworkDrivesLetters|f_lblNetworkDrivesLetters")
 o_Settings.ReadIniOption("MenuAdvanced", "intNbLiveFolderItemsMax", "NbLiveFolderItemsMax", "", "MenuAdvanced", "f_lblNbLiveFolderItemsMax|f_lblNbLiveFolderItemsMaxDefault|f_intNbLiveFolderItemsMax") ; ERROR if not found
 if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
@@ -8976,10 +8980,10 @@ GuiControlGet, arrPos, Pos, f_intClipboardMaxSize
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
-; NetworkDrivesAlwaysOnline
-Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnNetworkDrivesAlwaysOnline gGuiOptionsNetworkDrivesClicked hidden, % o_L["OptionsNetworkDrivesAlwaysOnline"]
-Gui, 2:Add, Link, x+1 yp vf_lblNetworkDrivesAlwaysOnline hidden, % "(<a href=""https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/"">" . o_L["GuiHelp"] . "</a>)"
-GuiControl, , f_blnNetworkDrivesAlwaysOnline, % (o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue = true)
+; NetworkDrivesSometimesOffline
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnNetworkDrivesSometimesOffline gGuiOptionsNetworkDrivesClicked hidden, % o_L["OptionsNetworkDrivesSometimesOffline"]
+Gui, 2:Add, Link, x+1 yp vf_lblNetworkDrivesSometimesOffline hidden, % "(<a href=""https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/"">" . o_L["GuiHelp"] . "</a>)"
+GuiControl, , f_blnNetworkDrivesSometimesOffline, % (o_Settings.MenuAdvanced.blnNetworkDrivesSometimesOffline.IniValue = true)
 
 ; NetworkDrivesLetters
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+5 vf_lblNetworkDrivesLetters hidden, % o_L["OptionsNetworkDrivesLetters"] . ":"
@@ -9443,7 +9447,7 @@ o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.WriteIni(f_blnRefreshQAPMen
 o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.WriteIni(f_blnRefreshQAPMenuDebugBeep)
 o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(f_intNbLiveFolderItemsMax)
 o_Settings.MenuAdvanced.intClipboardMaxSize.WriteIni(f_intClipboardMaxSize)
-o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.WriteIni(f_blnNetworkDrivesAlwaysOnline)
+o_Settings.MenuAdvanced.blnNetworkDrivesSometimesOffline.WriteIni(f_blnNetworkDrivesSometimesOffline)
 o_Settings.MenuAdvanced.strNetworkDrivesLetters.WriteIni(RegExReplace(f_strNetworkDrivesLetters, "[^A-Z]"))
 o_Settings.MenuAdvanced.blnShowAdvancedSettingsMenusItems.WriteIni(f_blnShowAdvancedSettingsMenusItems)
 
@@ -9726,7 +9730,7 @@ GuiOptionsNetworkDrivesClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-strEnableDisable := (f_blnNetworkDrivesAlwaysOnline ? "Disable" : "Enable")
+strEnableDisable := (f_blnNetworkDrivesSometimesOffline ? "Enable" : "Disable")
 GuiControl, %strEnableDisable%, f_lblNetworkDrivesLetters
 GuiControl, %strEnableDisable%, f_strNetworkDrivesLetters
 
@@ -24490,9 +24494,9 @@ FileOnServerNotAlwaysOnline(strLocation)
 	if !(blnIsNetwork) ; this is a drive with letter
 	{
 		SplitPath, strLocation, , , , , strDrive
-		blnIsNetwork := InStr(o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue, StrReplace(strDrive, ":", "")) ; remove the : in strDrive
+		blnIsNetwork := StrLen(strDrive) and InStr(o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue, StrReplace(strDrive, ":", "")) ; remove the : in strDrive
 	}
-	return (blnIsNetwork) and !(o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue)
+	return (blnIsNetwork) and (o_Settings.MenuAdvanced.blnNetworkDrivesSometimesOffline.IniValue)
 }
 ;------------------------------------------------------------
 
