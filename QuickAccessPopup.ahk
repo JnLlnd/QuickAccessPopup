@@ -31,10 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.0.6.9.2 (2020-11-09)
+Version BETA: 11.0.6.9.3 (2020-11-09)
+- reverse checkbox options from "drive are always online" to "drive can sometines be offline"
+- disable drive letters list if option "drive can sometines be offline" is unchecked
 - standardise network drive letter to uppercase and save only letters
-- disable drive letters list if always onlin option is checked; move help link; review language
-
+- fix bug when location has no drive (like "notepad.exe")
+ 
+Version BETA: 11.0.6.9.2 (2020-11-06)
+- expand environement variables and user variables like %temp% or {Dropbox} before checking if a favorite is on a network drive
+ 
 Version BETA: 11.0.6.9.1 (2020-11-03)
  
 Avoid delays caused by network drives offline
@@ -4244,7 +4249,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.6.9.1
+;@Ahk2Exe-SetVersion 11.0.6.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4311,7 +4316,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.6.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.6.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -22750,11 +22755,12 @@ LocationIsHTTP(strLocation)
 FileExistInPath(ByRef strFile)
 ;------------------------------------------------------------
 {
+	strFile := EnvVars(strFile) ; expand environment variables like %APPDATA% or %USERPROFILE%, and user variables like {DropBox}
+	
 	if FileOnServerNotAlwaysOnline(strFile) ; consider file exists
 		return true
 	; do not else
 		
-	strFile := EnvVars(strFile) ; expand environment variables like %APPDATA% or %USERPROFILE%, and user variables like {DropBox}
 	if (!StrLen(strFile) or InStr(strFile, "://") or SubStr(strFile, 1, 1) = "{") ; this is not a file - caution some URLs in WhereIs cause an infinite loop
 		return false
 	
