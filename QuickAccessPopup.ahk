@@ -5442,6 +5442,8 @@ o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippe
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "AdvancedOther"
 	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
+o_Settings.ReadIniOption("Execution", "strUsageDbExclusionsList", "UsageDbExclusionsList", " ", "AdvancedOther"
+	, "f_lnkUsageDbExclusionsList|f_strUsageDbExclusionsList|f_lblUsageDbExclusionsList")
 
 ; not in Options Gui
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
@@ -9013,12 +9015,21 @@ loop, 3
 ; SwitchExclusionList
 strUrl := "https://www.quickaccesspopup.com/how-is-built-the-switch-to-an-open-folder-or-application-menu/"
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w500 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w340 section hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w500 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Link, y+5 x%g_intGroupItemsX% w495 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Link, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
 Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
+
+; UsageDbExclusionsList
+strUrl := "https://www.quickaccesspopup.com/###/"
+g_intGroupItemsXTemp := g_intGroupItemsX + 350
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, ys x%g_intGroupItemsXTemp% w200 hidden vf_lnkUsageDbExclusionsList, % o_L["OptionsUsageDbExclusionsList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsXTemp% w200 hidden r5 vf_strUsageDbExclusionsList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strUsageDbExclusionsList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsXTemp% w225 hidden vf_lblUsageDbExclusionsList, % o_L["OptionsUsageDbExclusionsListInstructions"]
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -9438,6 +9449,7 @@ o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenu
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
+o_Settings.Execution.strUsageDbExclusionsList.WriteIni(OptionsListCleanup(f_strUsageDbExclusionsList))
 strNewHotstringsDefaultOptions := ""
 
 ; === Save new Working Folder in current user registry entry and update o_Settings.strIniFile
