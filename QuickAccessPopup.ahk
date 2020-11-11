@@ -7092,7 +7092,7 @@ loop, parse, % "Folders|Files", |
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -7328,7 +7328,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	}
 	o_MetadataRecordSet.Next(o_MetadataRow)
 	g_strMenuItemsListDrives := o_MetadataRow[1] ; first (and only) field is PopularFoldersMenuData or PopularFilesMenuData
@@ -7407,7 +7407,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 			if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 			{
 				; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-				Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+				Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 			}
 			o_MetadataRecordSet.Next(o_MetadataRow)
 			g_strMenuItemsListRecent%A_LoopField% := o_MetadataRow[1] ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
@@ -10298,7 +10298,7 @@ IfMsgBox, Yes
 {
 	strUsageDbSQL := "DELETE FROM Usage;" ; do not delete zMetadata (and if yes in the future, do not delete record, empty LatestCollected)
 	If !o_UsageDb.Exec(strUsageDbSQL)
-		Oops(2, "SQLite FLUSH Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(2, "SQLite FLUSH Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	else
 		Oops(2, o_L["OptionsUsageDbFlushDatabaseDone"])
 }
@@ -20730,9 +20730,9 @@ blnUsageDbIsNew := !FileExist(g_strUsageDbFile)
 
 if !o_UsageDb.OpenDb(g_strUsageDbFile)
 {
-	; Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
-	; Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
-	Oops(0, "SQLite Error OpenDb`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nFile: " . g_strUsageDbFile)
+	; Diag(A_ThisLabel, "SQLite Error OpenDb " . SQLiteErrorMessage(""), "STOP", g_blnIniFileCreation) ; force if first launch
+	; Diag(A_ThisLabel, "SQLite Error OpenDb " . SQLiteErrorMessage(""), "STOP")
+	Oops(0, "SQLite Error OpenDb`n`n" . SQLiteErrorMessage(g_strUsageDbFile))
 	g_blnUsageDbEnabled := false
 	return
 }
@@ -20755,9 +20755,9 @@ if (blnUsageDbIsNew)
 
 	If !o_UsageDb.Exec(strUsageDbSQL)
 	{
-		; Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
-		; Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
-		Oops(0, "SQLite CREATE Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		; Diag(A_ThisLabel, "SQLite CREATE Error " . SQLiteErrorMessage(""), "STOP", g_blnIniFileCreation) ; force if first launch
+		; Diag(A_ThisLabel, "SQLite CREATE Error " . SQLiteErrorMessage(""), "STOP")
+		Oops(0, "SQLite CREATE Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -20780,7 +20780,7 @@ else ; modifications for previous versions
 	If StrLen(strUsageDbSQL)
 		!o_UsageDb.Exec(strUsageDbSQL)
 		{
-			Oops(0, "SQLite ALTER Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+			Oops(0, "SQLite ALTER Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 			g_blnUsageDbEnabled := false
 			return
 		}
@@ -20868,7 +20868,7 @@ strUsageDbSQL := "SELECT LatestCollected FROM zMetadata;"
 if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 {
 	; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-	Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	g_blnUsageDbEnabled := false
 	return
 }
@@ -20941,7 +20941,7 @@ o_UsageDb.Exec("BEGIN TRANSACTION;")
 If (intUsageDbtNbItems) and !o_UsageDb.Exec(strUsageDbSQL)
 {
 	; Diag(A_ThisLabel, "SQLite INSERT Recent Items Error: " . strUsageDbSQL, "STOP")
-	Oops(0, "SQLite INSERT Recent Items Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite INSERT Recent Items Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
 	return
@@ -20953,7 +20953,7 @@ strUsageDbSQL := "UPDATE zMetadata SET LatestCollected = '" . strUsageDbLatestCo
 If !o_UsageDb.Exec(strUsageDbSQL)
 {
 	; Diag(A_ThisLabel, "SQLite UPDATE LatestCollected zMETADATA Error: " . strUsageDbSQL, "STOP")
-	Oops(0, "SQLite UPDATE LatestCollected zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite UPDATE LatestCollected zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
 	return
@@ -21131,7 +21131,7 @@ if StrLen(strDynamicDbSQL) ; if menu does not contain Drives, Popular or Recent 
 	If !o_UsageDb.Exec(strDynamicDbSQL)
 	{
 		; Diag(A_ThisLabel, "SQLite UPDATE zMETADATA Error: " . StrReplace(strDynamicDbSQL, "`n", "``n"), "STOP")
-		Oops(0, "SQLite UPDATE Popular zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strDynamicDbSQL)
+		Oops(0, "SQLite UPDATE Popular zMETADATA Error`n`n" . SQLiteErrorMessage(strDynamicDbSQL))
 		return
 	}
 }
@@ -21229,7 +21229,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY Build menu Error", "STOP")
-		Oops(0, "SQLite QUERY Build menu Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY Build menu Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		return
 	}
 	objDuplicatesFinder := Object()
@@ -23671,7 +23671,7 @@ GetRecordSetPopular(strTargetType)
 	if !o_UsageDb.Query(strUsageDbSQL, oRecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY POPULAR MENUS Error", "STOP")
-		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -24543,6 +24543,16 @@ Descramble(strContent)
 		intLength--
 	}
 	return strNewString
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+SQLiteErrorMessage(strQuery)
+;---------------------------------------------------------
+{
+	return	"Error Message: " . o_UsageDb.ErrorMsg . "`nError Code: " . o_UsageDb.ErrorCode . "`nExtended Error Code: " . o_UsageDb.ExtErrCode()
+		. "`nQuery: " . strQuery
 }
 ;---------------------------------------------------------
 
@@ -30909,7 +30919,7 @@ class Container
 				If !o_UsageDb.Exec(strUsageDbSQL)
 				{
 					; Diag(A_ThisFunc, "SQLite INSERT ACTION Error: " . strUsageDbSQL, "STOP")
-					Oops(0, "SQLite INSERT ACTION Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+					Oops(0, "SQLite INSERT ACTION Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 					g_blnUsageDbEnabled := false
 					return
 				}	
