@@ -31,6 +31,29 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0.7 (2020-11-11)
+ 
+Avoid delays caused by network drives offline
+- see updates Network drive help page: https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/
+- new option under "Options, Menu Advanced Options" to specify if network drives with UNC path ("\\...") or with drive letters can sometimes be offline (enabled by default)
+- new option under "Options, Menu Advanced Options" to specify what drive letters are assigned to network drives that could be sometimes offline
+- avoid an unexpected delays when refreshing dynamic menus by not checking if a file exist or if it has a custom icon for favorites saved on a network drive that can be offline (dynamic menus are: "Frequent Folders", "Frequent Files", "Recent Folders" and "Recent Files")
+- when refreshing the "Drives" menu (under "My QAP Essentials"), avoid retrieving label and free space for drive letters assigned to network drives that can be offline
+ 
+Other bug fixes or minor improvements
+- fix bug when adding favorite from a submenu QAP feature like "Add Favorite - Special Folder" under "My Special Folders"
+- include applications in "Recent Files" and "Frequent Files" menus
+- under "Options, Various Advanced Options", in "Delays (in ms) during Snippet execution", make configurable a 4th delay executed after sending the snippet and before restoring the Clipboard, delay increased from 100 ms to 150 ms
+
+Version BETA: 11.0.6.9.3 (2020-11-09)
+- reverse checkbox options from "drive are always online" to "drive can sometines be offline"
+- disable drive letters list if option "drive can sometines be offline" is unchecked
+- standardise network drive letter to uppercase and save only letters
+- fix bug when location has no drive (like "notepad.exe")
+ 
+Version BETA: 11.0.6.9.2 (2020-11-06)
+- expand environement variables and user variables like %temp% or {Dropbox} before checking if a favorite is on a network drive
+ 
 Version BETA: 11.0.6.9.1 (2020-11-03)
  
 Avoid delays caused by network drives offline
@@ -4240,7 +4263,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.6.9.1
+;@Ahk2Exe-SetVersion 11.0.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4307,8 +4330,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.6.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.0.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
@@ -5240,7 +5263,7 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			AvailableThemes=Windows|Grey|Light Blue|Light Green|Light Red|Yellow
 			Theme=Windows
 			NameLocationHotkeysUpgraded=1
-			WaitDelayInSnippet=40|80|180
+			WaitDelayInSnippet=40|80|180|150
 			DefaultDynamicMenusBuilt=1
 			DisplaySettingsStartup=1
 			[Gui-Grey]
@@ -5437,7 +5460,7 @@ global g_blnUsageDbDebugBeep := (o_Settings.Database.intUsageDbDebug.IniValue > 
 
 ; Group MenuAdvanced
 o_Settings.ReadIniOption("MenuAdvanced", "intShowQAPmenu", "ShowQAPmenu", 3, "MenuAdvanced", "f_lblShowQAPmenu|f_radShowQAPmenu1|f_radShowQAPmenu2|f_radShowQAPmenu3")
-o_Settings.ReadIniOption("MenuAdvanced", "blnNetworkDrivesAlwaysOnline", "NetworkDrivesAlwaysOnline", 0, "MenuAdvanced", "f_blnNetworkDrivesAlwaysOnline")
+o_Settings.ReadIniOption("MenuAdvanced", "blnNetworkDrivesSometimesOffline", "NetworkDrivesSometimesOffline", 1, "MenuAdvanced", "f_blnNetworkDrivesSometimesOffline|f_lblNetworkDrivesSometimesOffline")
 o_Settings.ReadIniOption("MenuAdvanced", "strNetworkDrivesLetters", "NetworkDrivesLetters", " ", "MenuAdvanced", "f_strNetworkDrivesLetters|f_lblNetworkDrivesLetters")
 o_Settings.ReadIniOption("MenuAdvanced", "intNbLiveFolderItemsMax", "NbLiveFolderItemsMax", "", "MenuAdvanced", "f_lblNbLiveFolderItemsMax|f_lblNbLiveFolderItemsMaxDefault|f_intNbLiveFolderItemsMax") ; ERROR if not found
 if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
@@ -5455,9 +5478,11 @@ o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInD
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
-o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180", "AdvancedOther"
-	, "f_lblWaitDelayInSnippet|f_intWaitDelayInSnippet1|f_intWaitDelayInSnippet2|f_intWaitDelayInSnippet3") ; default 300 ms (split in three sleep commands) ; strWaitDelayInSnippet
+o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180|150", "AdvancedOther"
+	, "f_lblWaitDelayInSnippet|f_intWaitDelayInSnippet1|f_intWaitDelayInSnippet2|f_intWaitDelayInSnippet3|f_intWaitDelayInSnippet4") ; split in four sleep commands) ; strWaitDelayInSnippet
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
+if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
+	o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] := 150 ; new default added 2020-11-05 (was 100 ms)
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "AdvancedOther"
 	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
 
@@ -8976,15 +9001,16 @@ GuiControlGet, arrPos, Pos, f_intClipboardMaxSize
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
+; NetworkDrivesSometimesOffline
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnNetworkDrivesSometimesOffline gGuiOptionsNetworkDrivesClicked hidden, % o_L["OptionsNetworkDrivesSometimesOffline"]
+Gui, 2:Add, Link, x+1 yp vf_lblNetworkDrivesSometimesOffline hidden, % "(<a href=""https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/"">" . o_L["GuiHelp"] . "</a>)"
+GuiControl, , f_blnNetworkDrivesSometimesOffline, % (o_Settings.MenuAdvanced.blnNetworkDrivesSometimesOffline.IniValue = true)
+
 ; NetworkDrivesLetters
-Gui, 2:Add, Link, x%g_intGroupItemsX% y+20 vf_lblNetworkDrivesLetters hidden, % L(o_L["OptionsNetworkDrivesLetters"], "https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/") . ":"
-Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Add, Text, x%g_intGroupItemsX% y+5 vf_lblNetworkDrivesLetters hidden, % o_L["OptionsNetworkDrivesLetters"] . ":"
+Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters Uppercase hidden ; gLabel after GuiControl that changes the value below
 GuiControl, 2:, f_strNetworkDrivesLetters, % o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
-
-; NetworkDrivesAlwaysOnline
-Gui, 2:Add, CheckBox, y+5 x%g_intGroupItemsX% vf_blnNetworkDrivesAlwaysOnline gGuiOptionsGroupChanged hidden, % o_L["OptionsNetworkDrivesAlwaysOnline"]
-GuiControl, , f_blnNetworkDrivesAlwaysOnline, % (o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue = true)
 
 ; === AdvancedLaunch ===
 
@@ -9035,7 +9061,7 @@ if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 
 ; WaitDelayInSnippet
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 hidden vf_lblWaitDelayInSnippet, % o_L["OptionsWaitDelayInSnippet"]
-loop, 3
+loop, 4
 	Gui, 2:Add, Edit, % "x+5 yp h20 w50 hidden number center gGuiOptionsGroupChanged vf_intWaitDelayInSnippet" . A_Index, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[A_Index]
 
 ; SwitchExclusionList
@@ -9442,8 +9468,8 @@ o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.WriteIni(f_blnRefreshQAPMen
 o_Settings.MenuAdvanced.blnRefreshQAPMenuDebugBeep.WriteIni(f_blnRefreshQAPMenuDebugBeep)
 o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.WriteIni(f_intNbLiveFolderItemsMax)
 o_Settings.MenuAdvanced.intClipboardMaxSize.WriteIni(f_intClipboardMaxSize)
-o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.WriteIni(f_blnNetworkDrivesAlwaysOnline)
-o_Settings.MenuAdvanced.strNetworkDrivesLetters.WriteIni(f_strNetworkDrivesLetters)
+o_Settings.MenuAdvanced.blnNetworkDrivesSometimesOffline.WriteIni(f_blnNetworkDrivesSometimesOffline)
+o_Settings.MenuAdvanced.strNetworkDrivesLetters.WriteIni(RegExReplace(f_strNetworkDrivesLetters, "[^A-Z]"))
 o_Settings.MenuAdvanced.blnShowAdvancedSettingsMenusItems.WriteIni(f_blnShowAdvancedSettingsMenusItems)
 
 if (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue > 0)
@@ -9466,7 +9492,7 @@ blnRunAsAdminPrev := ""
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
-o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3)
+o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
 strNewHotstringsDefaultOptions := ""
@@ -9715,6 +9741,23 @@ Gosub, ActiveFileManagerClickedGroupButton
 
 strSettingsGroupPrev := ""
 strGotoGroup := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiOptionsNetworkDrivesClicked:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strEnableDisable := (f_blnNetworkDrivesSometimesOffline ? "Enable" : "Disable")
+GuiControl, %strEnableDisable%, f_lblNetworkDrivesLetters
+GuiControl, %strEnableDisable%, f_strNetworkDrivesLetters
+
+Gosub, GuiOptionsGroupChanged
+
+strEnableDisable := ""
 
 return
 ;------------------------------------------------------------
@@ -14057,6 +14100,8 @@ o_MainMenuBK := o_MainMenu.BackupContainer() ; backup menu content
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName)
 
+Gosub, LoadFavoritesInGui
+
 ; if gui already visible, just activate the window
 DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
 blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
@@ -14067,8 +14112,6 @@ if (blnExist) ; keep the gui as-is if it is not closed
 	return
 }
 ; else continue
-
-Gosub, LoadFavoritesInGui
 
 GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
 if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
@@ -21301,7 +21344,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if StrLen(strOnlyFileOrFolder)
 		strWhere := "TargetType='" . strOnlyFileOrFolder . "'"
 	else
-		strWhere := "TargetType='Folder' OR TargetType='File'"
+		strWhere := "TargetType='Folder' OR TargetType='File' OR TargetType='Application'"
 	
 	strUsageDbSQL := "SELECT TargetPath, TargetType FROM Usage WHERE (" . strWhere . ") ORDER BY CollectDateTime DESC;"
 	
@@ -21381,7 +21424,7 @@ Loop
 		; Diag(A_ThisLabel . ":ProcessingFinish-Folder", intRecentFoldersCount, "ELAPSED")
 	}
 	; do not "else"
-	if (strTargetType = "File")
+	if (strTargetType = "File" or strTargetType = "Application")
 		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
@@ -22770,11 +22813,12 @@ LocationIsHTTP(strLocation)
 FileExistInPath(ByRef strFile)
 ;------------------------------------------------------------
 {
+	strFile := EnvVars(strFile) ; expand environment variables like %APPDATA% or %USERPROFILE%, and user variables like {DropBox}
+	
 	if FileOnServerNotAlwaysOnline(strFile) ; consider file exists
 		return true
 	; do not else
 		
-	strFile := EnvVars(strFile) ; expand environment variables like %APPDATA% or %USERPROFILE%, and user variables like {DropBox}
 	if (!StrLen(strFile) or InStr(strFile, "://") or SubStr(strFile, 1, 1) = "{") ; this is not a file - caution some URLs in WhereIs cause an infinite loop
 		return false
 	
@@ -23664,7 +23708,9 @@ GetRecordSetPopular(strTargetType)
 ;------------------------------------------------------------
 {
 	strUsageDbSQL := "SELECT TargetPath, COUNT(TargetPath) AS 'Nb' FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-		. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
+		. "GROUP BY TargetPath COLLATE NOCASE HAVING "
+		. (strTargetType = "File" ? "TargetType='File' or TargetType='Application'" : "TargetType='Folder'")
+		. " COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
 
 	if !o_UsageDb.Query(strUsageDbSQL, oRecordSet)
 	{
@@ -24514,9 +24560,9 @@ FileOnServerNotAlwaysOnline(strLocation)
 	if !(blnIsNetwork) ; this is a drive with letter
 	{
 		SplitPath, strLocation, , , , , strDrive
-		blnIsNetwork := InStr(o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue, StrReplace(strDrive, ":", "")) ; remove the : in strDrive
+		blnIsNetwork := StrLen(strDrive) and InStr(o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue, StrReplace(strDrive, ":", "")) ; remove the : in strDrive
 	}
-	return (blnIsNetwork) and !(o_Settings.MenuAdvanced.blnNetworkDrivesAlwaysOnline.IniValue)
+	return (blnIsNetwork) and (o_Settings.MenuAdvanced.blnNetworkDrivesSometimesOffline.IniValue)
 }
 ;------------------------------------------------------------
 
@@ -30263,7 +30309,7 @@ class Container
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[3] ; delay required by some application, including Notepad, default 180 ms
 				SendEvent, ^v
 				BlockInput, Off
-				Sleep, 100 ; safety
+				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] ; safety, default 150 ms (was 100 ms before 2020-11-05)
 				
 				Clipboard := objPrevClipboard ; Restore the original clipboard
 			}
