@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.0.7 (2020-11-??)
+Version: 11.0.7 (2020-11-11)
  
 Avoid delays caused by network drives offline
 - see updates Network drive help page: https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/
