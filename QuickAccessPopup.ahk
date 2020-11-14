@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0.7.1 (2020-11-13)
+- fix a bug introduced in v11.0.7 causing undesired items being added to the "Recent Folders" and "Frequent Folders" menus
+- exclude applications in "Recent Files" and "Frequent Files" menus (revert to pre-v11.0.7 state)
+ 
+Undesired items in these menus will be removed by themselve after some time. If you wish to remove them immediately, flush the QAP database (see menu "Options, Database"). Sorry for the inconvenient.
+ 
 Version: 11.0.7 (2020-11-11)
  
 Avoid delays caused by network drives offline
@@ -21302,7 +21308,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if StrLen(strOnlyFileOrFolder)
 		strWhere := "TargetType='" . strOnlyFileOrFolder . "'"
 	else
-		strWhere := "TargetType='Folder' OR TargetType='File' OR TargetType='Application'"
+		strWhere := "TargetType='Folder' OR TargetType='File'"
 	
 	strUsageDbSQL := "SELECT TargetPath, TargetType FROM Usage WHERE (" . strWhere . ") ORDER BY CollectDateTime DESC;"
 	
@@ -21382,7 +21388,7 @@ Loop
 		; Diag(A_ThisLabel . ":ProcessingFinish-Folder", intRecentFoldersCount, "ELAPSED")
 	}
 	; do not "else"
-	if (strTargetType = "File" or strTargetType = "Application")
+	if (strTargetType = "File")
 		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
@@ -23601,6 +23607,15 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 GetUsageDbTargetFileInfo(strPath, ByRef strAttributes, ByRef strType, ByRef strDateTime, ByRef strExtension)
 ;------------------------------------------------------------
 {
+	if !StrLen(strPath)
+	{
+		strAttributes := ""
+		strType := ""
+		strDateTime := ""
+		strExtension := ""
+		return
+	}
+	
 	strDateTime := "" ; will be empty if we cannot get it
 	
 	strExtension := GetFileExtension(strPath)
@@ -23666,9 +23681,7 @@ GetRecordSetPopular(strTargetType)
 ;------------------------------------------------------------
 {
 	strUsageDbSQL := "SELECT TargetPath, COUNT(TargetPath) AS 'Nb' FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-		. "GROUP BY TargetPath COLLATE NOCASE HAVING "
-		. (strTargetType = "File" ? "TargetType='File' or TargetType='Application'" : "TargetType='Folder'")
-		. " COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
+        . "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
 
 	if !o_UsageDb.Query(strUsageDbSQL, oRecordSet)
 	{
