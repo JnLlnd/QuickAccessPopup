@@ -35,7 +35,7 @@ Version: 11.0.7.1 (2020-11-13)
 - fix a bug introduced in v11.0.7 causing undesired items being added to the "Recent Folders" and "Frequent Folders" menus
 - exclude applications in "Recent Files" and "Frequent Files" menus (revert to pre-v11.0.7 state)
  
-Undesired items in these menus will be removed by themselve after some time. If you wish to remove them immediately, flush the QAP database (see menu "Options, Database"). Sorry for the inconvenient.
+Undesired items in these menus will be removed by themselves after some time. If you wish to remove them immediately, flush the QAP database (see menu "Options, Database"). Sorry for the inconvenience.
  
 Version: 11.0.7 (2020-11-11)
  
@@ -4269,7 +4269,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.7
+;@Ahk2Exe-SetVersion 11.0.7.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4336,7 +4336,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.0.7.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
