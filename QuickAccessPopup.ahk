@@ -21415,15 +21415,17 @@ Loop
 	strMenuName := strTargetPath
 	strIcon := (InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd") ? "" : (strTargetType = "Folder" ? GetFolderIcon(strTargetPath) : GetIcon4Location(strTargetPath)))
 	if (strTargetType = "Folder")
-		and ((intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
+		and ((!FolderOrFileIsExcluded(strTargetType, strMenuName) and (intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue))
+		or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFolders .= o_L["MenuRecentFolders"] . "|" . strMenuName . "|Folder|" . strIcon . "`n"
 		intRecentFoldersCount++
 		; Diag(A_ThisLabel . ":ProcessingFinish-Folder", intRecentFoldersCount, "ELAPSED")
 	}
 	; do not "else"
-	if (strTargetType = "File" or strTargetType = "Application")
-		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
+	if (strTargetType = "File")
+		and ((!FolderOrFileIsExcluded(strTargetType, strMenuName) and (intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue))
+		or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
 		intRecentFilesCount++
@@ -23632,6 +23634,26 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 			or InStr(strProcessName, A_LoopField))
 			return true
 		
+	return false
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+FolderOrFileIsExcluded(strFolderOrFile, strPath)
+;------------------------------------------------------------
+{
+	Loop, parse, % (strFolderOrFile = "Folder" ? o_Settings.Execution.strFoldersExclusionList.IniValue
+		: o_Settings.Execution.strFilesExclusionList.IniValue), |
+	{
+		blnFolderExcluded := StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField)))
+		if (strFolderOrFile = "Folder") and (blnFolderExcluded)
+			return true
+		; do not else
+		if (strFolderOrFile = "File") and (blnFolderExcluded or (StrLen(A_LoopField) and (GetFileExtension(strPath) = A_LoopField)))
+			return true
+	}
+	
 	return false
 }
 ;------------------------------------------------------------
