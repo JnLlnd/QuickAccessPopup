@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.0.7.9.1 (2020-11-15)
+-
+
 Version: 11.0.7 (2020-11-11)
  
 Avoid delays caused by network drives offline
@@ -4263,7 +4266,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.7
+;@Ahk2Exe-SetVersion 11.0.7.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4330,8 +4333,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.0.7.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
@@ -8712,7 +8715,7 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 ; === MenuExclusions ===
 
 ; FoldersExclusionList
-strUrl := "https://www.quickaccesspopup.com/#####/"
+strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#folders"
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w340 section hidden vf_lnkFoldersExclusionList, % o_L["OptionsFoldersExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
@@ -8721,7 +8724,7 @@ Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList
 Gui, 2:Add, Text, y+5 vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
 
 ; FilesExclusionList
-strUrl := "https://www.quickaccesspopup.com/#####/"
+strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#files"
 intGroupItemsXFiles := g_intGroupItemsX + 350
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, ys x%intGroupItemsXFiles% w240 hidden vf_lnkFilesExclusionList, % o_L["OptionsFilesExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
@@ -8730,7 +8733,7 @@ Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w240 hidden r5 vf_strFilesExclusion
 Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w235 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
 
 ; SwitchExclusionList
-strUrl := "https://www.quickaccesspopup.com/how-is-built-the-switch-to-an-open-folder-or-application-menu/"
+strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#applications"
 GuiControlGet, arrPos, Pos, f_lblFoldersExclusionListBottom
 arrPosY := arrPosY + 10
 Gui, 2:Font, s8 w700
@@ -21189,9 +21192,8 @@ loop, parse, % "Folders|Files", |
 		; Diag(A_ThisLabel . ":Processing Start", strPath . " " . strTargetType, "ELAPSED")
 		
 		if (strTargetNb <= 1) ; skip if not enough frequent
-			continue
-		
-        if !FileExistInPath(strPath) ; skip if not exist
+			or FolderOrFileIsExcluded(strTargetType, strPath) ; skip if excluded
+			or !FileExistInPath(strPath) ; skip if not exist
 			continue
 		
 		intPopularItemsCount++
@@ -23643,18 +23645,20 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 FolderOrFileIsExcluded(strFolderOrFile, strPath)
 ;------------------------------------------------------------
 {
-	Loop, parse, % (strFolderOrFile = "Folder" ? o_Settings.Execution.strFoldersExclusionList.IniValue
-		: o_Settings.Execution.strFilesExclusionList.IniValue), |
-	{
-		blnFolderExcluded := StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField)))
-		if (strFolderOrFile = "Folder") and (blnFolderExcluded)
-			return true
-		; do not else
-		if (strFolderOrFile = "File") and (blnFolderExcluded or (StrLen(A_LoopField) and (GetFileExtension(strPath) = A_LoopField)))
-			return true
-	}
+	; check folder exclusions for folders and files
+	if (strFolderOrFile = "Folder" and SubStr(strPath, 0, 1) <> "\") ; if path is folder and does not end with "\", add it (to remove "C:\test" if exclusion is "C:\test\")
+		strPath .= "\"
+	Loop, parse, % o_Settings.Execution.strFoldersExclusionList.IniValue, |
+		if StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField))) ; folder path starts with an exclusion
+			return true ; folder or file under this folder is excluded
 	
-	return false
+	; check file exclusions
+	if (strFolderOrFile = "File")
+		Loop, parse, % o_Settings.Execution.strFilesExclusionList.IniValue, |
+			if (StrLen(A_LoopField) and GetFileExtension(strPath) = A_LoopField) ; target file has an excluded extension
+				return true ; file is excluded
+	
+	return false ; file or folder is not excluded
 }
 ;------------------------------------------------------------
 
