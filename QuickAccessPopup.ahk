@@ -31,6 +31,26 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.0.7.1 (2020-11-13)
+- fix a bug introduced in v11.0.7 causing undesired items being added to the "Recent Folders" and "Frequent Folders" menus
+- exclude applications in "Recent Files" and "Frequent Files" menus (revert to pre-v11.0.7 state)
+ 
+Undesired items in these menus will be removed by themselves after some time. If you wish to remove them immediately, flush the QAP database (see menu "Options, Database"). Sorry for the inconvenience.
+ 
+Version: 11.0.7 (2020-11-11)
+ 
+Avoid delays caused by network drives offline
+- see updates Network drive help page: https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/
+- new option under "Options, Menu Advanced Options" to specify if network drives with UNC path ("\\...") or with drive letters can sometimes be offline (enabled by default)
+- new option under "Options, Menu Advanced Options" to specify what drive letters are assigned to network drives that could be sometimes offline
+- avoid an unexpected delays when refreshing dynamic menus by not checking if a file exist or if it has a custom icon for favorites saved on a network drive that can be offline (dynamic menus are: "Frequent Folders", "Frequent Files", "Recent Folders" and "Recent Files")
+- when refreshing the "Drives" menu (under "My QAP Essentials"), avoid retrieving label and free space for drive letters assigned to network drives that can be offline
+ 
+Other bug fixes or minor improvements
+- fix bug when adding favorite from a submenu QAP feature like "Add Favorite - Special Folder" under "My Special Folders"
+- include applications in "Recent Files" and "Frequent Files" menus
+- under "Options, Various Advanced Options", in "Delays (in ms) during Snippet execution", make configurable a 4th delay executed after sending the snippet and before restoring the Clipboard, delay increased from 100 ms to 150 ms
+
 Version BETA: 11.0.6.9.3 (2020-11-09)
 - reverse checkbox options from "drive are always online" to "drive can sometines be offline"
 - disable drive letters list if option "drive can sometines be offline" is unchecked
@@ -4249,7 +4269,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.6.9.3
+;@Ahk2Exe-SetVersion 11.0.7.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4316,8 +4336,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.6.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.0.7.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
@@ -4750,7 +4770,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAddSelectSource ; ####
+; gosub, GuiMultipleAddSettingsFileMenus ; ####
 
 return
 
@@ -5249,7 +5269,7 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			AvailableThemes=Windows|Grey|Light Blue|Light Green|Light Red|Yellow
 			Theme=Windows
 			NameLocationHotkeysUpgraded=1
-			WaitDelayInSnippet=40|80|180
+			WaitDelayInSnippet=40|80|180|150
 			DefaultDynamicMenusBuilt=1
 			DisplaySettingsStartup=1
 			[Gui-Grey]
@@ -5464,9 +5484,11 @@ o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInD
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
-o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180", "AdvancedOther"
-	, "f_lblWaitDelayInSnippet|f_intWaitDelayInSnippet1|f_intWaitDelayInSnippet2|f_intWaitDelayInSnippet3") ; default 300 ms (split in three sleep commands) ; strWaitDelayInSnippet
+o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180|150", "AdvancedOther"
+	, "f_lblWaitDelayInSnippet|f_intWaitDelayInSnippet1|f_intWaitDelayInSnippet2|f_intWaitDelayInSnippet3|f_intWaitDelayInSnippet4") ; split in four sleep commands) ; strWaitDelayInSnippet
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
+if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
+	o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] := 150 ; new default added 2020-11-05 (was 100 ms)
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "AdvancedOther"
 	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
 
@@ -9045,7 +9067,7 @@ if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 
 ; WaitDelayInSnippet
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 hidden vf_lblWaitDelayInSnippet, % o_L["OptionsWaitDelayInSnippet"]
-loop, 3
+loop, 4
 	Gui, 2:Add, Edit, % "x+5 yp h20 w50 hidden number center gGuiOptionsGroupChanged vf_intWaitDelayInSnippet" . A_Index, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[A_Index]
 
 ; SwitchExclusionList
@@ -9476,7 +9498,7 @@ blnRunAsAdminPrev := ""
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
-o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3)
+o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
 strNewHotstringsDefaultOptions := ""
@@ -14084,6 +14106,8 @@ o_MainMenuBK := o_MainMenu.BackupContainer() ; backup menu content
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName)
 
+Gosub, LoadFavoritesInGui
+
 ; if gui already visible, just activate the window
 DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
 blnExist := WinExist("ahk_id " . g_strGui1Hwnd)
@@ -14094,8 +14118,6 @@ if (blnExist) ; keep the gui as-is if it is not closed
 	return
 }
 ; else continue
-
-Gosub, LoadFavoritesInGui
 
 GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
 if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
@@ -14487,7 +14509,7 @@ GuiMultipleAddSelectSourceFromQAPFeature:
 
 ; list of available sources
 oMultipleAddSourcesIndex := ["CurrentWindows", "RecentFolders", "RecentFiles", "FrequentFolders", "FrequentFiles"
-	, "QAP", "Special", "Folder", "SettingsFileItems"] ; to be added: "SettingsFileItems", "SettingsFileMenus"]
+	, "QAP", "Special", "Folder", "SettingsFileItems", "SettingsFileMenus"]
 oMultipleAddSources := {CurrentWindows: o_L["MenuSwitchFolderOrApp"], RecentFolders: o_L["MenuRecentFolders"]
 	, RecentFiles: o_L["MenuRecentFiles"], FrequentFolders: o_L["MenuPopularMenusFolders"], FrequentFiles: o_L["MenuPopularMenusFiles"]
 	, QAP: o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand, Special: o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
@@ -14625,15 +14647,25 @@ Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 
 Gui, 2:Font, w600, Verdana
-Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth, % o_L["DialogMultipleAdd"] . " - " . oMultipleAddSources[g_strMultipleAddSourceKey]
+Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth, % o_L["DialogMultipleAdd"] . " - "
+	. (g_strMultipleAddSourceKey = "SettingsFileMenus" ? o_L["DialogMultipleAddSettingsFileMenus"] : oMultipleAddSources[g_strMultipleAddSourceKey])
 Gui, 2:Font
-Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro1"] . " " .  o_L["DialogMultipleAddIntro1a"]
-Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro2"] . " " .  o_L["DialogMultipleAddIntro2a"]
+
+if (g_strMultipleAddSourceKey = "Folder")
+	strStep1 :=  o_L["DialogMultipleAddIntro1f"]
+else if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+	strStep1 :=  o_L["DialogMultipleAddIntro1s"]
+else
+	strStep1 :=  o_L["DialogMultipleAddIntro1"]
+strStep1 .= " " . (g_strMultipleAddSourceKey <> "SettingsFileMenus" ? o_L["DialogMultipleAddIntro1a"] : o_L["DialogMultipleAddIntro1t"]) . "."
+Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, %strStep1%
+Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro2"] . " " . o_L["DialogMultipleAddIntro2a"]
 Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro3"]
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+15 w" . intCol1Width . " right", % o_L["MenuMenu"]
 Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intGuiContentWidth - intCol1Width - 5 . " vf_drpGuiMultipleAddMenu"
 	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
+GuiControl, ChooseString, f_drpGuiMultipleAddMenu, % o_MenuInGui.AA.strMenuPath
 
 if (blnUsePath)
 {
@@ -14645,21 +14677,23 @@ if (blnUsePath)
 	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 }
 
-if !(blnUsePath and g_strMultipleAddSourceKey <> "SettingsFileItems")
+if (!blnUsePath or g_strMultipleAddSourceKey = "SettingsFileItems")
 {
 	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
 	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
 	Gui, 2:Add, Button, x+5 yp gButtonMultipleAddClearFilter vf_btnMultipleAddClearFilter, X
 }
 
-Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["DialogMultipleAddExcludeExisting"]
-
-Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
+Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged, % o_L["DialogMultipleAddExcludeExisting"]
 
 if (g_strMultipleAddSourceKey = "SettingsFileMenus")
-	Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
+{
+	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
+	Gui, 2:Add, TreeView, % "x10 y+5 w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
+}
 else
 {
+	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
 	Gui, 2:Add, ListView, % "x10 y+5 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
@@ -14689,8 +14723,24 @@ GuiMultipleAddSelectAllNoneClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-Loop, % LV_GetCount()
-	LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
+if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+{
+	intRootId := 0
+	Loop
+	{
+		intRootId := TV_GetNext(intRootId)
+		if !(intRootId)
+			break
+		TV_Modify(intRootId , "Check" . f_blnMultipleAddSelectAllNone)
+		if TV_GetChild(intRootId) ; it's a node
+			ToggleAllTheWayDown(intRootId, !f_blnMultipleAddSelectAllNone) ; check all children
+	}
+	GuiControl, % (f_blnMultipleAddSelectAllNone ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if select all enable the Add button
+	intRootId := ""
+}
+else
+	Loop, % LV_GetCount()
+		LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
 
 return
 ;------------------------------------------------------------
@@ -14790,6 +14840,8 @@ if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
 	}
 	else ; o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
 		gosub, GuiMultipleAddSourceFolderLoad
+
+GuiControl, , f_blnMultipleAddSelectAllNone, % 0
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 SetCursor(false)
@@ -15258,6 +15310,9 @@ Loop
 	
 	oAddedItem := g_aaTreeViewItemsByIDs[strItemId] ; get item object
 	
+	TV_GetText(strTvFavoriteName, strItemId)
+	oAddedItem.AA.strFavoriteName := strTvFavoriteName ; update favorite name with name in treeview
+	
 	strUniqueName := oAddedItem.AA.strFavoriteName
 	oAddedItem.GetUniqueName(strUniqueName, "", strMenuPath, true) ; last true for blnRename
 	if (strUniqueName <> oAddedItem.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
@@ -15292,6 +15347,7 @@ strItemId := ""
 strMenuPath := ""
 oParentMenu := ""
 oAddedItem := ""
+strTvFavoriteName := ""
 strUniqueName := ""
 strNewMenuPath := ""
 
@@ -20166,10 +20222,13 @@ Gui, 2:Font, w700
 Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpOptions, % o_L["ImpExpExport"]
 Gui, 2:Font
 
-Gui, 2:Add, CheckBox, y+10 x10 w400 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
 Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpGlobal Checked, % o_L["ImpExpFileGlobal"]
 Gui, 2:Add, CheckBox, y+10 x10 w400 vf_blnImpExpAlternative Checked, % o_L["ImpExpOptionAlternative"]
 Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpThemes Checked, % o_L["ImpExpFileThemes"]
+Gui, 2:Add, CheckBox, y+10 x10 w200 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
+
+Gui, 2:Add, Button, y+1 x10 vf_btnImportFavorites gGuiMultipleAddSettingsFileMenus, % o_L["ImpExpImportFavorites"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnImportFavorites")
 
 aaImportExportL := o_L.InsertAmpersand(false, "ImpExpImport", "ImpExpExport", "GuiClose")
 
@@ -20202,7 +20261,12 @@ GuiControl, , f_btnImpExpGo, % L(f_radImpExpExport ? o_L["ImpExpExport"] : aaImp
 if (f_radImpExpExport)
 	strImpExpFile := o_Settings.ReadIniValue("LastExportFile", " ") ; empty if not found
 else
+{
 	strImpExpFile := ""
+	GuiControl, , f_blnImpExpFavorites, 0
+}
+GuiControl, % (f_radImpExpExport ? "Enable" : "Disable"), f_blnImpExpFavorites
+GuiControl, % (f_radImpExpExport ? "Hide" : "Show"), f_btnImportFavorites
 GuiControl, , f_strImpExpFile, %strImpExpFile%
 
 return
@@ -23585,6 +23649,15 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 GetUsageDbTargetFileInfo(strPath, ByRef strAttributes, ByRef strType, ByRef strDateTime, ByRef strExtension)
 ;------------------------------------------------------------
 {
+	if !StrLen(strPath)
+	{
+		strAttributes := ""
+		strType := ""
+		strDateTime := ""
+		strExtension := ""
+		return
+	}
+	
 	strDateTime := "" ; will be empty if we cannot get it
 	
 	strExtension := GetFileExtension(strPath)
@@ -23650,7 +23723,7 @@ GetRecordSetPopular(strTargetType)
 ;------------------------------------------------------------
 {
 	strUsageDbSQL := "SELECT TargetPath, COUNT(TargetPath) AS 'Nb' FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-		. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
+        . "GROUP BY TargetPath COLLATE NOCASE HAVING TargetType='" . strTargetType . "' COLLATE NOCASE ORDER BY COUNT(TargetPath) DESC;"
 
 	if !o_UsageDb.Query(strUsageDbSQL, oRecordSet)
 	{
@@ -29221,10 +29294,14 @@ class Container
 			}
 			else if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oItem) : true)
 			{
-				if (oItem.AA.strfavoriteType = "X")
-					oItem.AA.strFavoriteName := g_strGuiMenuSeparatorShort . " > " . oItem.AA.strfavoriteType
-				else if (oItem.AA.strfavoriteType = "K")
-					oItem.AA.strFavoriteName := g_strGuiDoubleLine . " > " . oItem.AA.strfavoriteType
+				if InStr("XK", oItem.AA.strfavoriteType)
+				{
+					strFavoriteTypeShortName := " " . o_Favorites.GetFavoriteTypeObject(oItem.AA.strfavoriteType).strFavoriteTypeShortName . " "
+					if (oItem.AA.strfavoriteType = "X")
+						oItem.AA.strFavoriteName := g_strGuiMenuSeparatorShort . g_strGuiMenuSeparatorShort . strFavoriteTypeShortName . g_strGuiMenuSeparatorShort . g_strGuiMenuSeparatorShort
+					else ; oItem.AA.strfavoriteType = "K"
+						oItem.AA.strFavoriteName := g_strGuiDoubleLine . strFavoriteTypeShortName . g_strGuiDoubleLine
+				}
 				
 				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
 				
@@ -30245,7 +30322,7 @@ class Container
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[3] ; delay required by some application, including Notepad, default 180 ms
 				SendEvent, ^v
 				BlockInput, Off
-				Sleep, 100 ; safety
+				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] ; safety, default 150 ms (was 100 ms before 2020-11-05)
 				
 				Clipboard := objPrevClipboard ; Restore the original clipboard
 			}
