@@ -907,4 +907,17 @@ Class SQLiteDB Extends SQLiteDB.BaseClass {
       }
       Return True
    }
+   ; ===================================================================================================================
+   ; METHOD ExtErrCode     Gets the extended result code in case of errors.
+   ; Parameters:           None.
+   ; Return values:        On success  - Extended result code
+   ;                       On failure  - 0
+   ; Remarks:              Extended result code list -> https://www.sqlite.org/rescode.html#extrc
+   ; See:                  https://www.autohotkey.com/boards/viewtopic.php?p=363421#p363421
+   ; ===================================================================================================================
+   ExtErrCode() {
+      If !(This._Handle)
+         Return 0
+      Return DllCall("SQLite3.dll\sqlite3_extended_errcode", "Ptr", This._Handle, "Cdecl Int")
+   }
 }
