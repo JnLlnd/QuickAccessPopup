@@ -31,8 +31,24 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.0.7.9.1 (2020-11-15)
--
+Version BETA: 11.0.7.9.1 (2020-11-??)
+ 
+Exclusions in Recent/Frequent menus
+- see: https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus
+- add new section "Options, Menu Exclusions" with zones for folders and files exclusions in Recent/Frequent menus
+- move "Current Windows Exclusions" option from "Various Advanced Options" to "Menu Exclusions"
+- filter out items in "Recent Folders" and "Frequent Folders" if their path is under one of the "Folder Exclusions" of the "Menu Exclusions" options
+- filter out items in "Recent Files" and "Frequent Files" if their path is under one of the "Folder Exclusions" or if their extensions is one of the "Files Exclusion" of the "Menu Exclusions" options
+ 
+Add Multiple favorites / Import Favorites
+- add a new source in "Favorite, Add Multiple Favorites" named "QAP Settings File (tree view)" allowing ot import favorites by selecting menus or submenus to import
+- rename existing source from "QAP Settings File (items)" to "QAP Settings File (flat view)" to distinguish it from the new source
+- this new feature replaces the "Import Favorites" offering stornger validation against duplicate favorite names
+- in "File, Import/Export Settings", disable "Favorites" checkbox and add a button "Import Favorites" opening the "Add Multiple Favorites" dialog box with the source "QAP Settings File (tree view)"
+- uncheck all items when changing source file
+ 
+Various improvements
+- display extended error codes in case of SQLite database error
 
 Version: 11.0.7.1 (2020-11-13)
 - fix a bug introduced in v11.0.7 causing undesired items being added to the "Recent Folders" and "Frequent Folders" menus
