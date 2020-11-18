@@ -49,6 +49,7 @@ Add Multiple favorites / Import Favorites
  
 Various improvements
 - display extended error codes in case of SQLite database error
+- do not open dialog boxes inside the "Customize" window while favorites are being saved, to prevent save errors in some situations
 
 Version: 11.0.7.1 (2020-11-13)
 - fix a bug introduced in v11.0.7 causing undesired items being added to the "Recent Folders" and "Frequent Folders" menus
@@ -11316,6 +11317,9 @@ return
 GuiQuickAddSnippet:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 Gosub, GuiShowFromAddSnippetAndHotstring
 
 Gui, 1:Submit, NoHide
@@ -11401,6 +11405,9 @@ return
 GuiAddFavoriteSelectType:
 GuiAddFavoriteFromQAPFeature:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 if (A_ThisLabel = "GuiAddFavoriteFromQAPFeature")
 {
@@ -11715,6 +11722,9 @@ GuiAddExternalFromCatalogue:
 GuiAddExternalOtherExternal:
 GuiEditMenuFromGui:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 strGuiFavoriteLabel := A_ThisLabel
 g_blnAbortEdit := false
@@ -12926,6 +12936,9 @@ GuiMoveFavoriteToMenu:
 GuiMoveMultipleFavoritesToMenu:
 GuiCopyMultipleFavoritesToMenu:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 Gui, 1:Default
 strGuiFavoriteLabel := A_ThisLabel
@@ -14411,6 +14424,9 @@ AddExternalMenusFromCatalogue:
 AddExternalCatalogueFromQAPFeature:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 if (A_ThisLabel = "AddExternalCatalogueFromQAPFeature")
 	gosub, GuiShowFromExternalCatalogue
 else
@@ -14564,6 +14580,9 @@ GuiMultipleAddSelectSource:
 GuiMultipleAddSelectSourceFromQAPFeature:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 ; list of available sources
 oMultipleAddSourcesIndex := ["CurrentWindows", "RecentFolders", "RecentFiles", "FrequentFolders", "FrequentFiles"
 	, "QAP", "Special", "Folder", "SettingsFileItems", "SettingsFileMenus"]
@@ -14682,6 +14701,9 @@ GuiMultipleAddSpecial:
 GuiMultipleAddSettingsFileItems:
 GuiMultipleAddSettingsFileMenus:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 g_strMultipleAddSourceKey := StrReplace(A_ThisLabel, "GuiMultipleAdd", "")
 blnUsePath := InStr("Folder|SettingsFileMenus|SettingsFileItems", g_strMultipleAddSourceKey)
@@ -16366,6 +16388,9 @@ return
 GuiRemoveMultipleFavorites:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 if LV_GetCount("Selected") > 1
 {
 	Gui, 1:+OwnDialogs
@@ -16411,6 +16436,9 @@ return
 GuiRemoveFavorite:
 GuiRemoveOneFavorite:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 if (A_ThisLabel = "GuiRemoveFavorite")
 {
@@ -16516,7 +16544,7 @@ GuiMoveMultipleFavoritesUp:
 GuiMoveMultipleFavoritesDown:
 ;------------------------------------------------------------
 
-if o_MenuInGui.OopsMenuIsSorted()
+if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 	return
 
 GuiControl, Focus, f_lvFavoritesList
@@ -16557,7 +16585,7 @@ GuiMoveOneFavoriteUp:
 GuiMoveOneFavoriteDown:
 ;------------------------------------------------------------
 
-if o_MenuInGui.OopsMenuIsSorted()
+if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 	return
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
@@ -16635,6 +16663,9 @@ return
 GuiSortFavoritesMenu:
 GuiSortFavoritesMenuContextMenu:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 if (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"])
 	strSortMenu := "menuSortMainMenu"
@@ -16847,6 +16878,9 @@ return
 GuiSelectAll:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 gosub, CheckShowSettings
 
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
@@ -16899,6 +16933,9 @@ GuiHotkeysManageFromQAPFeature:
 GuiHotkeysManageHotstrings:
 GuiHotkeysManageHotstringsFromQAPFeature:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 gosub, CheckShowSettings
 	
@@ -17116,6 +17153,9 @@ GuiIconsManage:
 GuiIconsManageFromQAPFeature:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 gosub, CheckShowSettings
 
 global g_saManageIcons := Object() ; was g_objManageIcons
@@ -17314,7 +17354,7 @@ GuiAddSeparator:
 GuiAddColumnBreak:
 ;------------------------------------------------------------
 
-if o_MenuInGui.OopsMenuIsSorted()
+if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 	return
 
 gosub, CheckShowSettings
@@ -20250,6 +20290,9 @@ return
 ;------------------------------------------------------------
 ImportExport:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 if SettingsUnsaved()
 {
