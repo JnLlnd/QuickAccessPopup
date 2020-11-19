@@ -23754,14 +23754,21 @@ FolderOrFileIsExcluded(strFolderOrFile, strPath)
 	if (strFolderOrFile = "Folder" and SubStr(strPath, 0, 1) <> "\") ; if path is folder and does not end with "\", add it (to remove "C:\test" if exclusion is "C:\test\")
 		strPath .= "\"
 	Loop, parse, % o_Settings.Execution.strFoldersExclusionList.IniValue, |
-		if StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField))) ; folder path starts with an exclusion
+		; if StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField))) ; folder path starts with an exclusion
+	{
+		if (StrLen(A_LoopField) and RegExMatch(strPath, Wildcards2RegEx(A_LoopField . "*"))) ; folder path starts with an exclusion
 			return true ; folder or file under this folder is excluded
+	}
 	
 	; check file exclusions
 	if (strFolderOrFile = "File")
 		Loop, parse, % o_Settings.Execution.strFilesExclusionList.IniValue, |
-			if (StrLen(A_LoopField) and GetFileExtension(strPath) = A_LoopField) ; target file has an excluded extension
+		{
+			strCriteria := (InStr(A_LoopField, ".") ? A_LoopField : "*." . A_LoopField) ; convert extension like "mp3" to "*.mp3"
+			SplitPath, strPath, strFileName
+			if (StrLen(strCriteria) and RegExMatch(strFileName, Wildcards2RegEx(strCriteria)))
 				return true ; file is excluded
+		}
 	
 	return false ; file or folder is not excluded
 }
@@ -24760,6 +24767,17 @@ SQLiteErrorMessage(strQuery)
 {
 	return	"Error Message: " . o_UsageDb.ErrorMsg . "`nError Code: " . o_UsageDb.ErrorCode . "`nExtended Error Code: " . o_UsageDb.ExtErrCode()
 		. "`nQuery: " . strQuery
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Wildcards2RegEx(strDosWildcards)
+; https://www.autohotkey.com/boards/viewtopic.php?f=6&t=83453
+;---------------------------------------------------------
+{
+	strRegExCriteria := "i)^\Q" . StrReplace(StrReplace(StrReplace(strDosWildcards, "\E", "\E\\E\Q"), "?", "\E.\Q"), "*", "\E.*\Q") . "\E$"
+	return strRegExCriteria
 }
 ;---------------------------------------------------------
 
