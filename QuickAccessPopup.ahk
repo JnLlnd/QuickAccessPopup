@@ -24776,7 +24776,7 @@ Wildcards2RegEx(strDosWildcards)
 ; https://www.autohotkey.com/boards/viewtopic.php?f=6&t=83453
 ;---------------------------------------------------------
 {
-	strRegExCriteria := "i)^\Q" . StrReplace(StrReplace(StrReplace(strDosWildcards, "\E", "\E\\E\Q"), "?", "\E.\Q"), "*", "\E.*\Q") . "\E$"
+	strRegExCriteria := "i)^\Q" . StrReplace(StrReplace(StrReplace(strDosWildcards, "\E", "\E\\E\Q"), "?", "\E.?\Q"), "*", "\E.*\Q") . "\E$"
 	return strRegExCriteria
 }
 ;---------------------------------------------------------
