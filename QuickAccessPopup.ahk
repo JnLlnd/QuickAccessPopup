@@ -45,9 +45,9 @@ Exclusions in Recent/Frequent menus
 - filter out items in "Recent Files" and "Frequent Files" if their path is under one of the "Folder Exclusions" or if their extensions is one of the "Files Exclusion" of the "Menu Exclusions" options
  
 Add Multiple favorites / Import Favorites
-- add a new source in "Favorite, Add Multiple Favorites" named "QAP Settings File (tree view)" allowing ot import favorites by selecting menus or submenus to import
+- add a new source in "Favorite, Add Multiple Favorites" named "QAP Settings File (tree view)" allowing ot import favorites by selecting the menus or submenus to import
 - rename existing source from "QAP Settings File (items)" to "QAP Settings File (flat view)" to distinguish it from the new source
-- this new feature replaces the "Import Favorites" offering stornger validation against duplicate favorite names
+- this new feature replaces the "Import Favorites" offering stronger validation against duplicate favorite names
 - in "File, Import/Export Settings", disable "Favorites" checkbox and add a button "Import Favorites" opening the "Add Multiple Favorites" dialog box with the source "QAP Settings File (tree view)"
 - uncheck all items when changing source file
  
