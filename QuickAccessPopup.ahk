@@ -14713,6 +14713,7 @@ Gui, 2:Submit, NoHide
 
 Loop, % LV_GetCount()
 	LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
+GuiControl, % (LV_GetNext(0, "C") ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if at least one row is checked enable the Add button
 
 return
 ;------------------------------------------------------------
