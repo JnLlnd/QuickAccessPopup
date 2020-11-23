@@ -4294,7 +4294,7 @@ ComObjError(False) ; we will do our own error handling
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
 #Include %A_ScriptDir%\QAPtools.ahk ; by Jean Lalonde
 #Include %A_ScriptDir%\..\EDD\EDDLicense.ahk ; by Jean Lalonde (Aug. 2020)
-#Include %A_ScriptDir%\..\Class_LV_Rows\Class_LV_Rows-JL.ahk ; https://github.com/Pulover/Class_LV_Rows from Rodolfo U. Batista / Pulover (as of 2020-11-22)
+#Include %A_ScriptDir%\Class_LV_Rows.ahk ; https://github.com/Pulover/Class_LV_Rows from Rodolfo U. Batista / Pulover (as of 2020-11-22)
 
 ; avoid error message when shortcut destination is missing
 ; see http://ahkscript.org/boards/viewtopic.php?f=5&t=4477&p=25239#p25236
@@ -10744,7 +10744,7 @@ Gui, 1:Add, ListView
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
 	LV_ModifyCol(8, "Integer") ; usage column
 
-; initialize LV_Rows class
+; initialize LV_Rows class (https://github.com/Pulover/Class_LV_Rows)
 LvHandle := New LV_Rows(g_strFavoritesListHwnd)
 LvHandle.SetHwnd(g_strFavoritesListHwnd)
 
@@ -10789,6 +10789,7 @@ if (saSettingsPosition[1] <> -1)
 }
 
 GuiControl, Focus, f_lvFavoritesList
+; GuiControlGet, g_strFavoritesListClass, Focus ; re-enable to use in GuiFavoritesListDropCopy
 
 saSettingsPosition := ""
 saDonateButtons := ""
@@ -11173,12 +11174,24 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 		saItem := StrSplit(A_LoopField, "`t") ; saItem[1]: language item, saItem[2]: ellipse, saItem[3]: shortcut
 		Menu, menuBarFavorite, % (g_intFavoriteSelected ? "Enable" : "Disable")
 			, % aaFavoriteL[saItem[1]] . (StrLen(saItem[2]) ? g_strEllipse : "") . "`t" . saItem[3]
+		saItem := ""
 	}
 }
 else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 {
 	if SearchIsVisible()
 		return
+
+/*
+	if GetKeyState("Control") ; copy item
+	{
+		g_intOriginalMenuPosition := A_EventInfo
+		HotKey, ^LButton UP, GuiFavoritesListDropCopy, On
+		SetCursor(true, "whatsthis")
+		return
+	}
+*/
+	; else drag & drop in menu in gui
 	
 	LvHandle.SetHwnd(h%A_GuiControl%) ; select active hwnd in Handle.
 	g_intOriginalMenuPosition := A_EventInfo ; original position
@@ -11187,11 +11200,51 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 		g_intNewItemPos--
 	o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition] ; set edited favorite
 	g_strDragDropDestinationMenu := o_MenuInGui.AA.strMenuPath ; set destination menu to menu in gui
+	
 	gosub, GuiFavoritesListDropSave
+	
+	g_intOriginalMenuPosition := ""
+    g_intNewItemPos := ""
+	o_EditedFavorite := ""
+	g_strDragDropDestinationMenu := ""
+}
+/* re-enable to use GuiFavoritesListDropCopy
+else if (!SearchIsVisible() and (A_GuiEvent = "Normal") and StrLen(g_strDragDropWaitClick))
+{
+	SetCursor(false)
+	g_intNewItemPos := A_EventInfo
+	; o_EditedFavorite := o_MenuInGui.SA[intDragDropCutRow]
+	strOriginalMenu := o_MenuInGui.AA.strMenuPath
+	; g_strDragDropDestinationMenu := o_MenuInGui.AA.strMenuPath ; #### what if drop is on a menu?
+	; gosub, GuiFavoritesListDropSave ; GuiFavoritesListDropCopySave if Control ?
+	###_V("", g_strDragDropWaitClick, g_intOriginalMenuPosition, g_intNewItemPos)
+	g_strDragDropWaitClick := ""
+}
+*/
+
+return
+;------------------------------------------------------------
+
+
+/*
+;------------------------------------------------------------
+GuiFavoritesListDropCopy:
+; https://autohotkey.com/board/topic/82354-drag-and-reorder-listview-items/#entry523531
+;------------------------------------------------------------
+
+SetCursor(false)
+HotKey, ^LButton UP, GuiFavoritesListDropCopy, Off
+MouseGetPos,,, intWinID, intControlID
+
+If (intWinID = g_strGui1Hwnd and intControlID = g_strFavoritesListClass)
+{
+	g_strDragDropWaitClick := "copy"
+	Send, {Click}
 }
 
 return
 ;------------------------------------------------------------
+*/
 
 
 ;------------------------------------------------------------
@@ -22980,6 +23033,8 @@ IsProcessElevated(ProcessID)
 ;------------------------------------------------------------
 SetCursor(blnOnOff, strCursorName := "")
 ; from Gio in https://autohotkey.com/boards/viewtopic.php?f=5&t=13284
+; cursors list: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setsystemcursor
+; wait 32514 / hand 32649 / appstarting 32650 / whatsthis 32651
 ;------------------------------------------------------------
 {
 	static s_blnCursorWaitAlreadyOn
@@ -22991,8 +23046,14 @@ SetCursor(blnOnOff, strCursorName := "")
 		else
 		{
 			if StrLen(strCursorName)
-				if (strCursorName = "wait")
+				if (strCursorName = "wait") ; OCR_WAIT
 					strCursorCode := 32514
+				else if (strCursorName = "hand") ; OCR_HAND
+					strCursorCode := 32649
+				else if (strCursorName = "appstarting") ; OCR_APPSTARTING
+					strCursorCode := 32650
+				else if (strCursorName = "whatsthis") ; OCR_HELP
+					strCursorCode := 32651
 				else
 					return
 			
