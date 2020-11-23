@@ -5388,6 +5388,7 @@ o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableTheme
 o_Settings.ReadIniOption("SettingsWindow", "blnDisplaySettingsStartup", "DisplaySettingsStartup", 0, "SettingsWindow", "f_blnDisplaySettingsStartup|f_lblOptionsSettingsWindow")
 o_Settings.ReadIniOption("SettingsWindow", "blnRememberSettingsPosition", "RememberSettingsPosition", 1, "SettingsWindow", "f_blnRememberSettingsPosition") ; g_blnRememberSettingsPosition
 o_Settings.ReadIniOption("SettingsWindow", "blnOpenSettingsOnActiveMonitor", "OpenSettingsOnActiveMonitor", 1, "SettingsWindow", "f_blnOpenSettingsOnActiveMonitor") ; g_blnOpenSettingsOnActiveMonitor
+o_Settings.ReadIniOption("SettingsWindow", "blnCheckIfExistingFavoriteForSameLocation", "CheckIfExistingFavoriteForSameLocation", 1, "SettingsWindow", "f_blnCheckIfExistingFavoriteForSameLocation")
 o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0, "SettingsWindow", "f_lblAddAutoAtTop|f_blnAddAutoAtTop0|f_blnAddAutoAtTop1") ; g_blnAddAutoAtTop
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
@@ -8536,6 +8537,10 @@ GuiControl, , f_blnRememberSettingsPosition, % (o_Settings.SettingsWindow.blnRem
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnOpenSettingsOnActiveMonitor gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsOpenSettingsOnActiveMonitor"]
 GuiControl, , f_blnOpenSettingsOnActiveMonitor, % (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue = true)
 
+; CheckIfExistingFavoriteForSameLocation
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnCheckIfExistingFavoriteForSameLocation gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsCheckIfSameLocation"]
+GuiControl, , f_blnCheckIfExistingFavoriteForSameLocation, % (o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue = true)
+
 ; AddAutoAtTop
 Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblAddAutoAtTop, % o_L["OptionsAddAutoAtTop"]
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w220 vf_blnAddAutoAtTop0 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? "Checked" : ""), % o_L["OptionsAddAutoTopOfMenu"]
@@ -9263,6 +9268,7 @@ blnSearchWithStatsPrev := o_Settings.SettingsWindow.blnSearchWithStats.IniValue
 o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
 o_Settings.SettingsWindow.blnRememberSettingsPosition.WriteIni(f_blnRememberSettingsPosition)
 o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.WriteIni(f_blnOpenSettingsOnActiveMonitor)
+o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_blnCheckIfExistingFavoriteForSameLocation)
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
@@ -15639,7 +15645,8 @@ if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is proces
 
 ; alert user if an existing favorite has the same location + parameters
 
-if InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd
+if (InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd
+	and o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue)
 {
 	oDuplicateFavorite := o_MainMenu.FoundIdenticalFavorite(o_EditedFavorite)
 	if (oDuplicateFavorite) ; FoundIdenticalFavorite returned false if not duplicate
