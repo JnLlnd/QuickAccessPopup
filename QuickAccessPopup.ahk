@@ -15982,12 +15982,17 @@ if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
 	{
 		if StrLen(strExpandedNewFavoriteLocation)
-			Oops(2, o_L["OopsFileNotFound"] . ":`n" . strExpandedNewFavoriteLocation
+			strFileNotFoundMessage := L(o_L["OopsFileNotFound"] . ":`n" . strExpandedNewFavoriteLocation
 				. (strExpandedNewFavoriteLocation <> strNewFavoriteLocation ? "`n`n" . o_L["OopsFileExpandedFrom"] . ":`n" . strNewFavoriteLocation : ""))
 		else
-			Oops(2, o_L["OopsFileNotFound"] . ":`n" . strNewFavoriteLocation)
-		g_blnAbortSave := true
-		return
+			strFileNotFoundMessage := L(o_L["OopsFileNotFound"] . ":`n" . strNewFavoriteLocation)
+		MsgBox, % 4+256, %g_strAppNameText%, % strFileNotFoundMessage . "`n`n" . o_L["OopsFileNotFoundSaveAnyway"]
+		strFileNotFoundMessage := ""
+		IfMsgBox, No
+		{
+			g_blnAbortSave := true
+			return
+		}
 	}
 }
 
@@ -22879,6 +22884,8 @@ EnvVars(str)
 ; in addition to environment variables, it expands QAP user variables like {Dropbox}
 ;------------------------------------------------------------
 {
+    str := ExpandUserVariables(str)
+	
     if sz:=DllCall("ExpandEnvironmentStrings", "uint", &str, "uint", 0, "uint", 0)
     {
         VarSetCapacity(dst, A_IsUnicode ? sz*2:sz)
@@ -22886,7 +22893,7 @@ EnvVars(str)
             return ExpandUserVariables(dst)
     }
 	
-    return ExpandUserVariables(str)
+    return str
 }
 ;------------------------------------------------------------
 
