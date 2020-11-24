@@ -8681,7 +8681,7 @@ GuiControl, , f_blnAddCloseToDynamicMenus, % (o_Settings.Menu.blnAddCloseToDynam
 
 GuiControlGet, arrPos, Pos, f_blnAddCloseToDynamicMenus
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
-g_intOptionsFooterY := arrPosY + arrPosH
+	g_intOptionsFooterY := arrPosY + arrPosH
 
 ; === PopupMenu ===
 
@@ -8746,7 +8746,7 @@ Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w340 section hidden vf_l
 Gui, 2:Font
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFoldersExclusionList.IniValue), "|", "`n")
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList, % L(o_L["OptionsFoldersExclusionListInstructions"], strUrl)
-Gui, 2:Add, Text, y+5 vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
+Gui, 2:Add, Text, y+5 hidden vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
 
 ; FilesExclusionList
 strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#files"
@@ -8771,7 +8771,7 @@ GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
-g_intOptionsFooterY := arrPosY + arrPosH
+	g_intOptionsFooterY := arrPosY + arrPosH
 
 ; === PopupHotkeys ===
 
