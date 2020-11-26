@@ -739,6 +739,7 @@ this["OopsExternalUnderExternalError"] := "The following shared menu includes a 
 this["OopsFavoritesCopied"] := "~1~ favorites copied."
 this["OopsFileExpandedFrom"] := "Expanded from"
 this["OopsFileNotFound"] := "This location does not exist"
+this["OopsFileNotFoundSaveAnyway"] := "Save this favorite anyway?"
 this["OopsFirstEnterUrl"] := "First, enter an address in the ""~1~"" field."
 this["OopsFolderLiveAndAutomatic"] := "The options ""~1~"" and ""~2~"" cannot be enabled simultaneously.`n`nPlease, disable one of these options."
 this["OopsFtpLocationProtocol"] := "FTP location address must start with ""ftp://""."
