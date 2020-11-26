@@ -4487,6 +4487,7 @@ global o_MenuInGui ; replace g_objMenuInGui, back item added at top when first l
 global o_SearchResultContainerBK ; to swap search result container with menu of an item edited from the search result
 global g_intMenuPosX
 global g_intMenuPosY
+global g_strHotstringEndChar
 
 ;---------------------------------
 ; Initial validation
@@ -17703,7 +17704,7 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 SelectHotstringDefaultOptions:
 ;------------------------------------------------------------
 
-strNewHotstringsDefaultOptions := SelectHotstring(o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue, "", "", "", true)
+strNewHotstringsDefaultOptions := SelectHotstring(o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue, "", "HotstringsOptions", "", true)
 Gosub, GuiOptionsGroupChanged
 
 return
@@ -17766,7 +17767,10 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	Gui, Add, Checkbox, % "x10 y+5 vf_SH_blnHotstringKeepHotstring " . (InStr(SH_strFavoriteHotstringOptionsShort, "B0") ? "checked" : ""), % o_L["DialogHotstringKeepHotstring"]
 	; *	Do not wait for Ending key
 	Gui, Add, Checkbox, % "x10 y+5 vf_SH_blnHotstringNotWaitEndingKey " . (InStr(SH_strFavoriteHotstringOptionsShort, "*") ? "checked" : ""), % o_L["DialogHotstringNotWaitEndingKey"]
-	; Unsupported options: O	Do not keep Ending key (not available when using Send), C1 Do not conform to typed case (not available when using Send),
+	; *	Omit the ending character (by default false, behaviour change compared to previous version where end char was never pasted for snippets)
+	if InStr("|Snippet|HotstringsOptions|", "|" . P_strFavoriteType . "|")
+		Gui, Add, Checkbox, % "x10 y+5 vf_SH_blnHotstringOmitEndChar " . (InStr(SH_strFavoriteHotstringOptionsShort, "O") ? "checked" : ""), % o_L["DialogHotstringOmitEndChar"]
+	; Unsupported option: C1 Do not conform to typed case (not available when using Send),
 	; Kn Key-delay, Pn Priority, R Send Raw, SI Send Input, SP Send PLay, SE Send Event, T Send Raw, Z Reset recognizer after each triggering
 	; Keep default EndChars "-()[]{}:;'"/\,.?!" + Enter, Space and Tab
 	; Keep default MouseReset option (recognizer resets monitored string on mouse click)
@@ -17823,8 +17827,9 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	
 	GuiControlGet, SH_blnHotstringCaseSensitive, , f_SH_blnHotstringCaseSensitive
 	GuiControlGet, SH_blnHotstringExpandInsideWords, , f_SH_blnHotstringExpandInsideWords
-	GuiControlGet, SH_blnHotstringKeepHotstring , , f_SH_blnHotstringKeepHotstring
-	GuiControlGet, SH_blnHotstringNotWaitEndingKey , , f_SH_blnHotstringNotWaitEndingKey
+	GuiControlGet, SH_blnHotstringKeepHotstring, , f_SH_blnHotstringKeepHotstring
+	GuiControlGet, SH_blnHotstringNotWaitEndingKey, , f_SH_blnHotstringNotWaitEndingKey
+	GuiControlGet, SH_blnHotstringOmitEndChar, , f_SH_blnHotstringOmitEndChar
 
 	GuiControlGet, SH_strHotstringTrigger, , f_SH_strHotstringTrigger
 	
@@ -17834,6 +17839,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 			. (SH_blnHotstringExpandInsideWords ? "?" : "")
 			. (SH_blnHotstringKeepHotstring ? "B0" : "")
 			. (SH_blnHotstringNotWaitEndingKey ? "*" : "")
+			. (SH_blnHotstringOmitEndChar ? "O" : "")
 			. g_strHotstringOptionsSeparator
 			. SH_strHotstringTrigger
 	else
@@ -19021,6 +19027,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 	{
 		g_strTargetWinId := "" ; never use target window when launched from hotstring
 		g_strHotkeyTypeDetected := "Launch"
+		g_strHotstringEndChar := (o_ThisFavorite.AA.strFavoriteType = "Snippet" ? A_EndChar : "") ; to paste the end char if type is snippet and if OmitEndChar is false
 	}
 	else if CanNavigate(A_ThisHotkey) ; update g_strTargetWinId
 		g_strHotkeyTypeDetected := "Navigate"
@@ -22058,6 +22065,7 @@ GetHotstringOptionsLong(strHotstringOptionsShort)
 		. (InStr(strHotstringOptionsShort, "?") ? o_L["DialogHotstringExpandInsideWords"] . g_strHotstringOptionsLongSeparator : "")
 		. (InStr(strHotstringOptionsShort, "B0") ? o_L["DialogHotstringKeepHotstring"] . g_strHotstringOptionsLongSeparator : "")
 		. (InStr(strHotstringOptionsShort, "*") ? o_L["DialogHotstringNotWaitEndingKey"] . g_strHotstringOptionsLongSeparator : "")
+		. (InStr(strHotstringOptionsShort, "O") ? o_L["DialogHotstringOmitEndChar"] . g_strHotstringOptionsLongSeparator : "")
 	if (SubStr(strHotstringOptionsLong, StrLen(strHotstringOptionsLong) - StrLen(g_strHotstringOptionsLongSeparator) + 1) = g_strHotstringOptionsLongSeparator)
 		strHotstringOptionsLong := SubStr(strHotstringOptionsLong, 1, -StrLen(g_strHotstringOptionsLongSeparator))
 	
@@ -26540,7 +26548,7 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
 			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
 			, "how-do-i-setup-or-manage-my-qap-license")
-
+		
 		; Close computer various command features
 		
 		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",			"5.1-CloseComputer"
@@ -30265,6 +30273,8 @@ class Container
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms
 				; DecodeSnippet: convert from raw content (as from ini file) to display format (when f_blnProcessEOLTab is true) or to paste format
 				ClipBoard := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders, true)
+				if !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "O") ; OmitEndChar (by default false, behaviour change compared to previous version where end char was never pasted)
+					Clipboard .= g_strHotstringEndChar
 				ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
 				intErrorLevel := ErrorLevel
 				if (intErrorLevel)
