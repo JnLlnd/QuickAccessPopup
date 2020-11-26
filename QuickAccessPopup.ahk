@@ -6778,7 +6778,7 @@ BuildTrayMenuRefresh:
 ;------------------------------------------------------------
 
 global g_aaMenuTrayL := o_L.InsertAmpersand(true, "MenuSettings", "MenuFile", "MenuFavorite", "MenuTools", "MenuOptions"
-	, "MenuHelp", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "GuiDonate")
+	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "GuiDonate")
 
 if (A_ThisLabel = "BuildTrayMenuRefresh")
 	Menu, Tray, DeleteAll
@@ -6794,6 +6794,7 @@ if (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue > 1) ; 1 Customize menu bar
 	Menu, Tray, Add, % g_aaMenuTrayL["MenuHelp"], :menuBarHelp
 }
 Menu, Tray, Add
+Menu, Tray, Add, % g_aaMenuTrayL["MenuSuspendHotkeys"], ToggleSuspendHotkeys
 Menu, Tray, Add, % g_aaMenuTrayL["MenuRunAtStartup"], ToggleRunAtStartup ; function ToggleRunAtStartup replaces RunAtStartup
 Menu, Tray, Add, % g_aaMenuTrayL["MenuExitApp@" . g_strAppNameText], GuiCancelAndExitApp
 if (!g_blnSponsor)
@@ -7001,7 +7002,7 @@ saMenuItemsTable.Push(["GuiIconsManage", aaMenuToolsL["DialogIconsManage"], "", 
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["RefreshQAPMenu", aaMenuToolsL["MenuRefreshMenu"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["ResetQAPSpecialDefaultNames", aaMenuToolsL["MenuResetQAPSpecialDefaultNames"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["SuspendHotkeys", aaMenuToolsL["MenuSuspendHotkeys"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["ToggleSuspendHotkeys", aaMenuToolsL["MenuSuspendHotkeys"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiShowRestoreDefaultPosition", aaMenuToolsL["MenuRestoreSettingsWindowPosition"], "", "iconNoIcon"])
  saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAlwaysOnTop", aaMenuToolsL["ControlToolTipAlwaysOnTopOff"], "", "iconNoIcon"])
@@ -19796,15 +19797,13 @@ return
 
 
 ;------------------------------------------------------------
-SuspendHotkeys:
+ToggleSuspendHotkeys:
 ;------------------------------------------------------------
 
-if (A_IsSuspended)
-	Suspend, Off
-else
-	Suspend, On
+Suspend, % (A_IsSuspended ? "Off" : "On")
 
-Menu, menuBarTools, ToggleCheck, % aaMenuToolsL["MenuSuspendHotkeys"]
+Menu, menuBarTools, % (A_IsSuspended ? "Check" : "Uncheck"), % aaMenuToolsL["MenuSuspendHotkeys"]
+Menu, Tray, % (A_IsSuspended ? "Check" : "Uncheck"), % g_aaMenuTrayL["MenuSuspendHotkeys"]
 
 return
 ;------------------------------------------------------------
@@ -21830,6 +21829,10 @@ strICloudDrive := EnvVars("%USERPROFILE%\iCloudDrive")
 if FileExist(strICloudDrive)
 	o_Settings.UserVariables.strUserVariablesList.IniValue .= "{iCloudDrive}=" . strICloudDrive . "|"
 
+if StrLen(o_Settings.UserVariables.strUserVariablesList.IniValue)
+	o_Settings.UserVariables.strUserVariablesList.IniValue := "-- Variables detected by QAP --`n" . o_Settings.UserVariables.strUserVariablesList.IniValue
+o_Settings.UserVariables.strUserVariablesList.IniValue .= "-- Any line not starting with { is treated as a comment --`n"
+
 strDropboxJsonFileContent := ""
 strOneDrive := ""
 strGoogleDriveDbFile := ""
@@ -22897,7 +22900,7 @@ ExpandUserVariables(str)
 ;------------------------------------------------------------
 {
     loop, parse, % o_Settings.UserVariables.strUserVariablesList.IniValue, |
-        if StrLen(A_LoopField)
+        if (StrLen(A_LoopField) and SubStr(A_LoopField, 1, 1) ="{")
         {
             saUserVariable := StrSplit(A_LoopField, "=")
             if (SubStr(saUserVariable[1], 1, 1) = "{" and SubStr(saUserVariable[1], StrLen(saUserVariable[1]), 1) = "}")
