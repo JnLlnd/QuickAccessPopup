@@ -885,6 +885,7 @@ this["OptionsSelectCatalogueRoot"] := "Select Shared Menus Catalogue root folder
 this["OptionsSelectQAPTempFolder"] := "Create the Temporary Folder in:"
 this["OptionsSelectWorkingFolder"] := "Save Settings in what folder?"
 this["OptionsSendToConsoleWithAlt"] := "Use ASCII codes (ALT+0nnn) when changing folder in Windows Command Line (CMD)"
+this["OptionsSettingsCheckIfSameLocation"] := "When saving a favorite, check if an existing favorite has the same location or content"
 this["OptionsSettingsSearchResults"] := "Search Results"
 this["OptionsSettingsStartup"] := "Open ""Customize"" window at Startup"
 this["OptionsSettingsWindow"] := "Customize Window"
