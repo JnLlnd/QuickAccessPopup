@@ -15798,7 +15798,8 @@ if !(g_intNewItemPos)
 	if SearchIsVisible()
 		g_intNewItemPos := o_EditedFavoriteMenu.SA.MaxIndex() + 1
 	else
-		g_intNewItemPos := o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1
+		; prevent if destination menu is empty and MaxIndex() returns null
+		g_intNewItemPos := (o_Containers.AA[strDestinationMenu].SA.MaxIndex() ? o_Containers.AA[strDestinationMenu].SA.MaxIndex() : 0) + 1
 
 o_Containers.AA[strDestinationMenu].SA.InsertAt(g_intNewItemPos, o_EditedFavorite)
 
