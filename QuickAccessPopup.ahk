@@ -31,6 +31,42 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.1 (2020-11-??)
+ 
+### review FAQ
+Exclusions in Recent/Frequent menus
+- see: https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus
+- add new section "Menu Exclusions" under the "Options" menu with zones for folders and files exclusions in "Recent" or "Frequent" menus
+- move the "Current Windows Exclusions" option from "Various Advanced Options" to "Menu Exclusions"
+- filter out items in "Recent Folders" and "Frequent Folders" if their path is under one of the items in the "Folder Exclusions" list of the "Menu Exclusions" options
+- filter out items in "Recent Files" and "Frequent Files" if their path is under one of the items in "Folder Exclusions" or if their extensions is one of the items in "Files Exclusion" of the "Menu Exclusions" options
+- support wildcards * and ? when filtering files and folder in "Frequent" and "Recent" menus
+ 
+Add Multiple favorites / Import Favorites
+- add a new source in "Favorite, Add Multiple Favorites" named "QAP Settings File (tree view)" allowing to import favorites by selecting the menus or submenus to import
+- this imports favorites of any types from the selected .ini file with all their properties
+- rename existing source from "QAP Settings File (items)" to "QAP Settings File (flat view)" to distinguish it from the new source
+- this new feature replaces the "Import Favorites" with a stronger validation against duplicate favorite names
+- in "File, Import/Export Settings", disable the "Favorites" checkbox and add a button "Import Favorites" opening the "Add Multiple Favorites" dialog box with the source "QAP Settings File (tree view)"
+ 
+Various improvements
+- support comments in user variables; any lines not starting with { is treated as a comment
+- add the "Suspend Hotkeys" menu to QAP System menu (right-click on the QAP icon) and keep it under the "Tools" menu
+- in the "Options, Customize Window" section, add the new checkbox "When saving a favorite, check if an existing favorite has the same location or content"
+- when replacing an hotstring trigger with a snippet's content, by default keep the ending character (this is an new behaviour for existing snippets with hotstrings)
+- add the hotstring option "Omit the ending character when pasting snippets" for situations where the user wants the ending character to be removed when pasting a snippet (applicable only to hotstrings for "Text Mode" snippets
+- when saving a favorite, if its location does not exist, offer to save the favorite anyway (default is No)
+- when expanding user variables in locations or elsewhere, also expand environment variables embedded inside user variables
+- do not open "Add/Edit Favorites" and other dialog boxes inside the "Customize" window while favorites are being saved (preventing save errors in some situations)
+- display extended error codes in case of SQLite database error
+ 
+Bug fixes
+- fix bug to enable the "Save" button in "Add Multiple favorites" dialog box when selecting all items
+- fix bug when adding multiple favorites in an empty destination menu
+ 
+Language update
+- French, ### and language file updates
+
 Version BETA: 11.0.7.9.2 (2020-11-20)
 - support wildcards * and ? when filtering files and folder in Frequent and Recent menus
 - do not open dialog boxes inside the "Customize" window while favorites are being saved, to prevent save errors in some situations
@@ -4291,7 +4327,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.7.9.2
+;@Ahk2Exe-SetVersion 11.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4358,8 +4394,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.7.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
