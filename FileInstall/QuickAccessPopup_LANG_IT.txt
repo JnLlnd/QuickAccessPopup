@@ -258,6 +258,7 @@ lDialogHotstringExpandInsideWords	Espansione all'interno di altre parole
 lDialogHotstringIndicator	Abbrev.
 lDialogHotstringKeepHotstring	Mantieni la sequenza di sostituzione tale e quale
 lDialogHotstringNotWaitEndingKey	Non aspettare il tasto di finalizzazione
+lDialogHotstringOmitEndChar	Ometti il carattere finale quando incollo gli snippet (frammenti di testo)
 lDialogHotstrings	Sequenze di sostituzione
 lDialogHotstringsDescription	Visualizza una casella di dialogo con una visione complessiva delle sequenze di sostituzione (corte sequenze di tasti, di solito caratteri, che attivano automaticamente preferiti, di solito uno, di QAP). Puoi ordinare i preferiti cliccando sull'intestazione.`n`nFai doppio click su una sequenza di sostituzione per editarla.`n`nClicca la casella di spunta "Vedi tutti i preferiti" per assegnare sequenze di sostituzione ad altri preferiti.
 lDialogHotstringTriggerAbbreviation	Attivatore (abbreviazione):
@@ -321,13 +322,16 @@ lDialogMultipleAddFrom	Aggiungi da
 lDialogMultipleAddHelp	Fai doppio click per aiuto sulle varie Caratteristiche di QAP indicate
 lDialogMultipleAddIntro1	1) Seleziona un menÃ¹ di destinazione e filtra (se vuoi) i preferiti.
 lDialogMultipleAddIntro1a	Per ordinare la lista, clicca l'intestazione di colonna
+lDialogMultipleAddIntro1f	1) Seleziona un menù destinazione, una cartella sorgente e filtra (se vuoi) i preferiti.
+lDialogMultipleAddIntro1s	1) Seleziona un menù destinazione ed un file di impostzioni di QAP (.ini).
+lDialogMultipleAddIntro1t	I menù principali e dei preferiti verranno caricati in vista ad albero
 lDialogMultipleAddIntro2	2) Spunta la casella dei preferiti da aggiungere.
 lDialogMultipleAddIntro2a	Per editare il nome di un preferito seleziona la sua riga e premi F2.
 lDialogMultipleAddIntro3	3) Clicca "Aggiungi" per inserire i preferiti nel menÃ¹ destinazione e clicca "Salva" nella finestra "Personalizza".
 lDialogMultipleAddSelectSource	Seleziona la sorgente dei preferiti che vuoi aggiungere e clicca "Continua".
 lDialogMultipleAddSelectSourceNext	Nella finestra seguente, potrai:
-lDialogMultipleAddSettingsFileItems	File di Impostazioni di QAP (degli oggetti)
-lDialogMultipleAddSettingsFileMenus	File di Impostazioni di QAP (dei menÃ¹)
+lDialogMultipleAddSettingsFileItems	File di Impostazioni di QAP (vista piatta)
+lDialogMultipleAddSettingsFileMenus	File di Impostazioni di QAP (vista ad albero)
 lDialogNA	n/a
 lDialogNew	Nuovo
 lDialogNone	Nessuno
@@ -441,6 +445,7 @@ lDonateCodeInvalidMessage	E' necessario un codice licenza per eseguire questa ve
 lDonateCodeManageMessage	La tua licenza è valida.`n`nHai ~1~/~2~ installazione/i rimanenti per questa licenza.
 lDonateCodeNoInstallationsMessage	NESSUNA INSTALLAZIONE RIMASTA`n`nHai usato il numero (~1~) di installazioni consentite per le tue ~2~ licenze.`n`nPuoi gestire le installazioni per questa licenza sul sito ~2~.
 lDonateCodeNoInstallationsTitle	Nessuna installazione rimanente - ~1~
+lDonateCodeNotAvailable	non disponibile quando sei offline
 lDonateEnterCode	Hai il tuo codice licenza di ~1~?`n`nSe si, inserisci il codice e riavvia ~1~.`n`nAltrimenti, si prega di ottenere un codice licenza sul sito di ~1~.
 lDonateMenu	Supporta questo lo sviluppo di questo programma!
 lDonateOnline	La tua licenza non è stata controllata per più di ~1~ giorni.`n`nSi prega di collegarsi ad Internet per validare la tua licenza.
@@ -517,6 +522,8 @@ lGuiTitle	"Personalizzare" - ~1~ ~2~
 lHelpMenuKnowledgeBase	Informazioni per Aiuto e Supporto
 lHelpMenuQuickStart	Avvio Veloce
 lHelpMenuSupportForum	Forum di Supporto
+lHelpMenuVideosAll	Tutti i Video
+lHelpMenuVideosFirstStep	Video sui Primi Passi
 lHelpTabAddingFavorite	Aggiungere Preferiti
 lHelpTabGettingStarted	Per Cominciare
 lHelpTabQAPFeatures	Funzionalità di QAP
@@ -559,6 +566,7 @@ lImpExpFileGlobal	Scorciatoie per le Impostazioni Globali ed il Menù Principale
 lImpExpFileThemes	Temi
 lImpExpFinalReport	Trasferimento di ~1~.`n`nSorgente:`n~2~`n`nDestinazione:`n~3~
 lImpExpImport	Importare
+lImpExpImportFavorites	Importa i Preferiti
 lImpExpInvalidDestinationFolder	Cartella di destinazione invalida:`n`n~1~
 lImpExpMenu	Impostazioni per Importare/Esportare
 lImpExpMenuDescription	Visualizza una casella di dialogo dove puoi esportare i tuoi preferiti ed altre impostazioni per creare un backup da conservare dove preferisci.`n`nPuoi anche importare preferiti e impostazioni da un altro PC o da un altro utente.
@@ -646,6 +654,7 @@ lMenuMySnippetsMenu	I miei Frammenti Testuali (Snippets)
 lMenuMySpecialMenu	Cartelle Speciali
 lMenuMyVideo	Video
 lMenuMyWindowsAppsMenu	Le Mie App Windows
+lMenuNetworkDrive	Disco di Rete
 lMenuNoCurrentFolder	Nessuna cartella attualmente aperta...
 lMenuOpenBackupDirectory	Apri la Cartella di Backup delle Impostazioni di QAP
 lMenuOpenWorkingDirectory	Apri la directory delle Impostazioni di QAP
@@ -735,6 +744,7 @@ lOopsExternalUnderExternalError	Il menù condiviso seguente include un menù condi
 lOopsFavoritesCopied	~1~ preferiti copiati.
 lOopsFileExpandedFrom	Espanso da
 lOopsFileNotFound	Questa destinazione non esiste
+lOopsFileNotFoundSaveAnyway	Salvo comunque questo Preferito?
 lOopsFirstEnterUrl	Dapprima inserisci un indirizzo nel campo "~1~".
 lOopsFolderLiveAndAutomatic	Le opzioni "~1~" e "~2~" non possono essere abilitate simultaneamente.`n`nSi prega di disabilitare una di queste opzioni.
 lOopsFtpLocationProtocol	L'indirizzo di un sito FTP deve iniziare con "ftp://".
@@ -813,6 +823,10 @@ lOptionsFileManagerNavigateIntro	Aprendo il menù QAP al di fuori di ~1~, apri le
 lOptionsFileManagerNavigateNew	una nuova finestra ~1~
 lOptionsFileManagerNavigateNewTab	un nuovo tab ~1~
 lOptionsFileManagers	File Manager
+lOptionsFilesExclusionList	File da Escludere
+lOptionsFilesExclusionListInstructions	Per escludere file dai "File Recenti" e "File Frequenti", immetti le loro estensioni (es.: "mp3") o usa caratteri jolly * e ? (es.: *.mp?), uno per linea.
+lOptionsFoldersExclusionList	Esclusioni di Cartelle
+lOptionsFoldersExclusionListInstructions	Per escludere cartelle (inclusi file e sottocartelle) dai menù "Cartelle Recenti", "File Recenti", "Cartelle Frequenti" e "File Frequenti", immetti i loro percorsi, uno per linea. Opzionalmente, puoi usare caratteri jolly * e ? seguiti da sbarra all'indietro (es.: c:\hide*\).
 lOptionsFtpEncoding	Codifica nome utente e password FTP (consigliato)
 lOptionsFtpEncodingTC	Codifica nome utente e password FTP (non consigliato per Total Commander)
 lOptionsGeneral	Generale
@@ -834,6 +848,7 @@ lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italian
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
 lOptionsMenuAppearance	Aspetto dei Menù
+lOptionsMenuExclusions	Menu Esclusioni
 lOptionsMenuFixPosition	In posizione prefissata
 lOptionsMenuIcons	Icone dei Menù
 lOptionsMenuNearMouse	Vicino al puntatore del mouse
@@ -843,6 +858,8 @@ lOptionsMoveWorkingFolderTitle	Cambia Impostazioni della posizione della cartell
 lOptionsMoveWorkingFolderType	Vuoi copiare le impostazioni correnti in questa nuova posizione:`n`n~1~`n`nSe selezioni COPIA, ~2~ sarà ricaricato con le impostazioni correnti COPIATE nella nuova posizione.`n`nSe selezioni NUOVO, ~2~ sarà ricaricato con le impostazioni che già si trovano (eventualmente create) in questa NUOVA POSIZIONE.
 lOptionsNbLiveFolderItemsMax	Massimo numero di voci nelle cartelle Live:
 lOptionsNbLiveFolderItemsMaxDefault	(valore predefinito 500 voci)
+lOptionsNetworkDrivesLetters	Lettere disco da usare come dischi di rete
+lOptionsNetworkDrivesSometimesOffline	Dischi di Rete ("\\" o con lettere disco) possono a volta essere offline
 lOptionsOpenFavoritesOnActiveMonitor	Su un sistema multi-monitor, apri sempre la finestra di Explorer nel monitor attivo
 lOptionsOpenMenuOnTaskbar	Apri il menù cliccando sulla barra delle applicazioni
 lOptionsOpenSettingsOnActiveMonitor	Apri la finestra "Personalizzare" sul monitor attivo
@@ -882,9 +899,11 @@ lOptionsSelectCatalogueRoot	Seleziona la cartella radice del Catalogo dei Menù C
 lOptionsSelectQAPTempFolder	Crea la Cartella Temporanea in:
 lOptionsSelectWorkingFolder	Salva Impostazioni in quale cartella?
 lOptionsSendToConsoleWithAlt	Usa codici ASCII (ALT+0nnn) per cambiare cartella dalla Linea di Comando (CMD)
+lOptionsSettingsCheckIfSameLocation	Salvando un preferito, controlla se un preferito preesistente abbia la stessa destinazione o contenuto
 lOptionsSettingsSearchResults	Risultati di Ricerca
 lOptionsSettingsStartup	Apri la Finestra "Personalizzare" all'avvio
 lOptionsSettingsWindow	Finestra "Personalizzare"
+lOptionsShowAdvancedSettingsMenusItems	Mostra le Impostazioni avanzate degli elementi del menù dei file sotto il menù "File"
 lOptionsShowQAPmenu	Mostra menù QAP (File, Preferito, ecc.):
 lOptionsShowQAPmenuBoth	in entrambe le posizioni
 lOptionsShowQAPmenuCustomize	Nella parte superiore della finestra Personalizza
@@ -892,7 +911,7 @@ lOptionsShowQAPmenuSystem	nel menù Sistema (area notifiche)
 lOptionsSnippets	Frammenti di testo e stringhe di sostituzione
 lOptionsSnippetsHelp	Impostazioni predefinite per gli Snippet (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Lista corrente delle Finestre escluse
-lOptionsSwitchExclusionListInstructions	Per escludere applicazioni dal menù "Finestre correnti", inserisci qualunque parte del titolo della finestra dell'applicazione. Puoi inserire esclusioni multiple, una per riga. Per esempio, per escludere le finestre delle applicazioni Clippate e FinestreOmbrate, inserisci le seguenti righe nella lista delle esclusioni:`n`nAClippate:`nFinestreOmbrate`n`nPuoi anche escludere finestre tramite il loro nome di classe o di processo (nome del file EXE). Puoi trovare aiuto e supporto su questa funzione <a href="~1~">sul sito di QAP</a>.
+lOptionsSwitchExclusionListInstructions	Per escludere applicazioni dal menù "Finestre correnti", inserisci qualunque parte dei titoli della finestra dell'applicazione, una per linea.
 lOptionsTabFileManagersIntro	Seleziona il file manager da usare per aprire le cartelle in una nuova finestra.
 lOptionsTabFileManagersPreferences	Impostazioni del file manager
 lOptionsTabFileManagersPreferred	File manager prescelto
