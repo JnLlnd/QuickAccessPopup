@@ -12954,13 +12954,18 @@ ButtonChangeFavoriteHotstring:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-g_strNewFavoriteHotstring := SelectHotstring(g_strNewFavoriteHotstring, f_strFavoriteShortName, o_EditedFavorite.AA.strFavoriteType, f_strFavoriteLocation)
+strTempFavoriteHotstring := SelectHotstring(g_strNewFavoriteHotstring, f_strFavoriteShortName, o_EditedFavorite.AA.strFavoriteType, f_strFavoriteLocation, blnEscaped)
+if !(blnEscaped)
+	g_strNewFavoriteHotstring := strTempFavoriteHotstring
 ; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger or existing hotstring if cancelled
 
 SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
 
 GuiControl, 2:, f_strHotstringTrigger, %g_strNewFavoriteHotstringTrigger%
 GuiControl, 2:, f_strHotstringOptions, % GetHotstringOptionsLong(g_strNewFavoriteHotstringOptionsShort)
+
+strTempFavoriteHotstring := ""
+blnEscaped := ""
 
 return
 ;------------------------------------------------------------
@@ -16929,11 +16934,14 @@ if (A_GuiEvent = "DoubleClick")
 		}
 	else ; Hotstring
 	{
-		g_strNewFavoriteHotstring := SelectHotstring(o_EditedFavorite.AA.strFavoriteHotstring
+		strTempFavoriteHotstring := SelectHotstring(o_EditedFavorite.AA.strFavoriteHotstring
 			, o_EditedFavorite.AA.strFavoriteName
 			, o_EditedFavorite.AA.strFavoriteType
-			, o_EditedFavorite.AA.strFavoriteLocation)
-		; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger or existing hotstring if cancelled
+			, o_EditedFavorite.AA.strFavoriteLocation
+			, blnEscaped)
+		; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger
+		if !(blnEscaped)
+			g_strNewFavoriteHotstring := strTempFavoriteHotstring
 		
 		Gosub, UpdateFavoriteObjectSaveHotstringList ; updates o_EditedFavorite.AA.strFavoriteHotstring with g_strNewFavoriteHotstring and enable Settings save/Cancel buttons
 	}
@@ -16945,6 +16953,8 @@ intItemPosition := ""
 strHotkeyType := ""
 strMenuPath := ""
 strFavoritePosition := ""
+strTempFavoriteHotstring := ""
+blnEscaped := ""
 
 return
 ;------------------------------------------------------------
@@ -17703,19 +17713,27 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 SelectHotstringDefaultOptions:
 ;------------------------------------------------------------
 
-strNewHotstringsDefaultOptions := SelectHotstring(o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue, "", "", "", true)
-Gosub, GuiOptionsGroupChanged
+strTempHotstringsDefaultOptions := SelectHotstring(strNewHotstringsDefaultOptions, "", "", "", blnEscaped, true)
+if !(blnEscaped)
+{
+	strNewHotstringsDefaultOptions := strTempHotstringsDefaultOptions
+	Gosub, GuiOptionsGroupChanged
+}
+
+strTempHotstringsDefaultOptions := ""
+blnEscaped := ""
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_strFavoriteLocation, P_blnDefaultOptions := false)
+SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_strFavoriteLocation, ByRef P_blnEscaped, P_blnDefaultOptions := false)
 ; returns the new hotstring or empty string if cancel
 ;------------------------------------------------------------
 {
 	global
+    P_blnEscaped := true ; unless closed with OK
 	
 	g_blnChangeHotstringInProgress := !(P_blnDefaultOptions)
 	SH_strGuiTitle := L((P_blnDefaultOptions ? o_L["DialogChangeHotstringTitleDefaultOptions"] : o_L["DialogChangeHotstringTitle"]), g_strAppNameText)
@@ -17779,7 +17797,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeHotstringOK", "f_btnChangeHotstringCancel")
 
 	Gui, Add, Text
-	GuiControl, Focus, f_btnChangeHotkeyOK
+	GuiControl, Focus, f_btnChangeHotstringOK
 	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SH_intX, SH_intY)
 	Gui, Show, AutoSize x%SH_intX% y%SH_intY%
 
@@ -17841,6 +17859,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	
 	g_blnChangeHotstringInProgress := false
 	Gosub, 3GuiClose
+	P_blnEscaped := false
 	
 	return
 	;------------------------------------------------------------
@@ -17849,7 +17868,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	ButtonChangeHotstringCancel:
 	;------------------------------------------------------------
 	
-	; called here if user click Cancel, called also directlry if user hit Escape
+	; called here if user click Cancel, not called if user hit Escape (handled by P_blnEscaped parameter)
 
 	SH_strNewHotstring := P_strActualHotstring
 	g_blnChangeHotstringInProgress := false
@@ -18201,10 +18220,7 @@ if (A_ThisLabel = "3GuiEscape")
 		g_blnChangeShortcutInProgress := false
 	}
 	else if (g_blnChangeHotstringInProgress) ; coming from SelectHotstring
-	{
-		SH_strNewHotstring := g_objEditedFavorite.FavoriteHotstring ; do not use P_strActualHotstring that is a parameter, not global
 		g_blnChangeHotstringInProgress := false
-	}
 
 Gui, 2:-Disabled
 Gui, 3:Destroy
@@ -28962,7 +28978,7 @@ class Container
 				strThisType := oItem.GetItemTypeLabelForList()
 				intHotkeyListOrder++
 				
-				if (intShortcutOrHotstrings = 1 and StrLen(oItem.AA.strFavoriteShortcut)) or (blnSeeAllFavorites)
+				if (intShortcutOrHotstrings = 1 and (StrLen(oItem.AA.strFavoriteShortcut) or blnSeeAllFavorites))
 				{
 					strThisHotkey := (StrLen(oItem.AA.strFavoriteShortcut) ? oItem.AA.strFavoriteShortcut : o_L["DialogNone"])
 					; #|Menu|Favorite Name|Type|Shortcuts|Favorite Location|Object Position (hidden)
@@ -28974,7 +28990,7 @@ class Container
 						, (oItem.AA.strFavoriteType = "Snippet" ? StringLeftDotDotDot(oItem.AA.strFavoriteLocation, 50) : oItem.AA.strFavoriteLocation)
 						, intKey)
 				}
-				else if (intShortcutOrHotstrings = 2 and StrLen(oItem.AA.strFavoriteHotstring)) or (blnSeeAllFavorites)
+				else if (intShortcutOrHotstrings = 2 and (StrLen(oItem.AA.strFavoriteHotstring) or blnSeeAllFavorites))
 				{
 					SplitHotstring(oItem.AA.strFavoriteHotstring, strTrigger, strOptionsShort)
 					; #|Menu|Favorite Name|Type|Trigger|Options|Favorite Location|Object Position (hidden)
