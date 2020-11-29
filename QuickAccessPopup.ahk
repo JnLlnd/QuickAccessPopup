@@ -4514,6 +4514,7 @@ if InStr(A_ScriptDir, A_Temp) ; must be positioned after g_strAppNameFile is cre
 ; Keep gosubs in this order
 Gosub, InitLanguageArrays
 Gosub, InitGuiControls
+Gosub, InitSortCriterias
 
 ;---------------------------------
 ; Check JLicons.dll version (now that language file is available)
@@ -5218,6 +5219,22 @@ InsertGuiControlPos("f_lvFavoritesList",				  40,   57)
 InsertGuiControlPos("f_lvFavoritesListSearch",			  40,   57)
 
 InsertGuiControlPos("f_lnkSponsoredBy",             	  10,  -25)
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+InitSortCriterias:
+;------------------------------------------------------------
+
+global g_saSortCriteria := Object() ; used when setting menu sort criteria
+
+g_saSortCriteria := StrSplit(o_L["GuiLvFavoritesHeader"], "|") ; Name|Type|Hotkey|Location or content
+g_saSortCriteria.Push(o_L["DialogMenuSortLastModified"])
+g_saSortCriteria.Push(o_L["DialogMenuSortCreated"])
+g_saSortCriteria.Push(o_L["DialogMenuSortLastUsed"])
+g_saSortCriteria.Push(o_L["DialogMenuSortUsage"])
 
 return
 ;------------------------------------------------------------
@@ -12281,24 +12298,13 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 ; menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
 {
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (o_EditedFavorite.AA.strFavoriteGroupSettings ? "checked" : "")
+	if !StrLen(g_intNewSortCriteria)
+		g_intNewSortCriteria := (StrLen(o_EditedFavorite.AA.strFavoriteGroupSettings) ? o_EditedFavorite.AA.strFavoriteGroupSettings : 0)
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (g_intNewSortCriteria ? "checked" : "")
 		, % o_L["DialogMenuSortEnable"]
-		
-	Gui, 2:Add, Text, y+5 x340 w150 section vf_lblMenuAutoSortOrder, % o_L["DialogSortOrder"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x340 w150 vf_intRadioMenuAutoSortOrder1 group" . (o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? " checked" : ""), % o_L["DialogAscending"]
-	Gui, 2:Add, Radio, % "y+5 x340 w150 vf_intRadioMenuAutoSortOrder2" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? " checked" : ""), % o_L["DialogDescending"]
-
-	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria, % o_L["DialogSortBy"] . ":"
-	
-	saSortCriteria := StrSplit(o_L["GuiLvFavoritesHeader"], "|") ; Name|Type|Hotkey|Location or content
-	saSortCriteria.Push(o_L["DialogMenuSortLastModified"])
-	saSortCriteria.Push(o_L["DialogMenuSortCreated"])
-	saSortCriteria.Push(o_L["DialogMenuSortLastUsed"])
-	saSortCriteria.Push(o_L["DialogMenuSortUsage"])
-	
-	for intKey, strCriteria in saSortCriteria
-		Gui, 2:Add, Radio, % (intKey = 5 ? "ys" : "y+5") . " x" . (intKey <= 4 ? 20 : 180) . " w150 vf_intRadioMenuAutoSort" . intKey . (intKey = 1 ? " section" : "") 
-			. (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = intKey ? " checked" : ""), %strCriteria%
+	Gui, 2:Add, Button, x+10 yp vf_lblMenuAutoSortButton gGuiFavoriteTabBasicSort, % o_L["OptionsChangeHotkey"]
+	Gui, 2:Add, Text, x+20 yp vf_lblMenuAutoSortBy, % o_L["DialogSortBy"] . ":"
+	Gui, 2:Add, Text, x+1 yp w300 h18 vf_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -12323,6 +12329,119 @@ intKey := ""
 strCriteria := ""
 
 return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiFavoriteTabBasicSort:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+intTempSortCriteria := SelectSortCriteria(g_intNewSortCriteria, blnEscaped)
+if !(blnEscaped)
+	g_intNewSortCriteria := intTempSortCriteria
+GuiControl, 2:, f_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
+
+intTempSortCriteria := ""
+blnEscaped := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SelectSortCriteria(P_intActualSortCriteria, ByRef blnEscaped)
+;------------------------------------------------------------
+{
+	global
+	blnEscaped := true ; unless closed with OK
+	
+	SC_strGuiTitle := o_L["DialogSortBy"] . " - " . g_strAppNameText
+
+	if !StrLen(P_intActualSortCriteria) ; if new SortCriteria, use default options
+		SC_strFavoriteSortCriteriaOptionsShort := o_Settings.SortCriterias.strSortCriteriasDefaultOptions.IniValue
+
+	Gui, 3:New, +Hwndg_strGui3Hwnd, %SC_strGuiTitle%
+	Gui, 3:Default
+	Gui, +Owner2
+	Gui, +OwnDialogs
+	
+	if (g_blnUseColors)
+		Gui, Color, %g_strGuiWindowColor%
+	Gui, Font, s10 w700, Verdana
+	Gui, Add, Text, x10 y10 w400 center, %SC_strGuiTitle%
+	Gui, Font
+	
+	Gui, Add, Text, x240 w150 vf_lblMenuAutoSortOrder section, % o_L["DialogSortOrder"] . ":"
+	Gui, Add, Radio, % "y+5 x240 w150 vf_intRadioMenuAutoSortOrder1 group" . (P_intActualSortCriteria > 0 ? " checked" : ""), % o_L["DialogAscending"]
+	Gui, Add, Radio, % "y+5 x240 w150 vf_intRadioMenuAutoSortOrder2" . (P_intActualSortCriteria < 0 ? " checked" : ""), % o_L["DialogDescending"]
+
+	Gui, Add, Text, ys x10, % o_L["DialogSortBy"] . ":"
+	
+	for SC_intKey, SC_strCriteria in g_saSortCriteria
+		Gui, Add, Radio, % "y+5 x10 w150 vf_intRadioMenuAutoSort" . SC_intKey
+			. (Abs(P_intActualSortCriteria) = SC_intKey ? " checked" : ""), %SC_strCriteria%
+	
+	SC_aaL := o_L.InsertAmpersand(false, "DialogOK", "GuiCancel")
+	Gui, Add, Button, y+25 x10 vf_btnChangeSortCriteriaOK gButtonChangeSortCriteriaOK default, % SC_aaL["DialogOK"]
+	Gui, Add, Button, yp x+20 vf_btnChangeSortCriteriaCancel gButtonChangeSortCriteriaCancel, % SC_aaL["GuiCancel"]
+	
+	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeSortCriteriaOK", "f_btnChangeSortCriteriaCancel")
+
+	Gui, Add, Text
+	GuiControl, Focus, f_btnChangeSortCriteriaOK
+	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SH_intX, SH_intY)
+	Gui, Show, AutoSize x%SH_intX% y%SH_intY%
+
+	Gui, 2:+Disabled
+	WinWaitClose,  %SC_strGuiTitle% ; waiting for Gui to close
+	
+	SC_strGuiTitle := ""
+	SC_strFavoriteSortCriteriaOptionsShort := ""
+	SC_intKey := ""
+	SC_strCriteria := ""
+	SC_aaL := ""
+	
+	return SC_intNewSortCriteria ; returning value
+	
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	ButtonChangeSortCriteriaOK:
+	;------------------------------------------------------------
+	
+	for SC_intKey, SC_strCriteria in g_saSortCriteria
+	{
+		GuiControlGet, blnRadioButtonValue, , % "f_intRadioMenuAutoSort" . SC_intKey
+		if (blnRadioButtonValue)
+		{
+			SC_intNewSortCriteria := SC_intKey
+			break
+		}
+	}
+	GuiControlGet, blnRadioButtonDesc, , f_intRadioMenuAutoSortOrder2
+	SC_intNewSortCriteria := (blnRadioButtonDesc ? -SC_intNewSortCriteria : SC_intNewSortCriteria) ; 2 descending else 1 ascending
+	
+	if (Abs(SC_intNewSortCriteria) > 4 and !o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+		or (Abs(SC_intNewSortCriteria) > 6 and !g_blnUsageDbEnabled)
+		Oops(2, o_L["OopsSortOnHiddenColumns"], o_L["OptionsSearchWithStats"])
+		
+	Gosub, 3GuiClose
+	blnEscaped := false
+	
+	return
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	ButtonChangeSortCriteriaCancel:
+	;------------------------------------------------------------
+	
+	; called here if user click Cancel, but not called if user hit Escape (reason for using blnEscaped)
+	Gosub, 3GuiEscape
+  
+	return
+	;------------------------------------------------------------
+}
 ;------------------------------------------------------------
 
 
@@ -12803,18 +12922,16 @@ MenuAutoSortClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSortOrder
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder1
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder2
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSortCriteria
-Loop, 8
-	GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), % "f_intRadioMenuAutoSort" . A_Index
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortCriteria
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortButton
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortBy
 
-if (f_blnMenuAutoSortEnable and !o_EditedFavorite.AA.strFavoriteGroupSettings)
-{
-	GuiControl, , f_intRadioMenuAutoSort1, 1
-	GuiControl, , f_intRadioMenuAutoSortOrder1, 1
-}
+if !(f_blnMenuAutoSortEnable)
+	g_intNewSortCriteria := 0
+else if !(g_intNewSortCriteria)
+	g_intNewSortCriteria := 1
+	
+GuiControl, 2:, f_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
 
 return
 ;------------------------------------------------------------
@@ -15536,30 +15653,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	{
-		if (f_blnMenuAutoSortEnable)
-		{
-			Loop, 8
-			{
-				GuiControlGet, blnRadioButtonValue, , % "f_intRadioMenuAutoSort" . A_Index
-				if (blnRadioButtonValue)
-				{
-					intMenuAutoSort := A_Index
-					break
-				}
-			}
-			intMenuAutoSort := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; 2 descending else 1 ascending
-			
-			if (Abs(intMenuAutoSort) > 4 and !o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-				or (Abs(intMenuAutoSort) > 6 and !g_blnUsageDbEnabled)
-				Oops(2, o_L["OopsSortOnHiddenColumns"], o_L["OptionsSearchWithStats"])
-		}
-		else
-			intMenuAutoSort := 0 ; manual, no auto sorting
-		
-		o_EditedFavorite.AA.strFavoriteGroupSettings := intMenuAutoSort ; value saved to settings file
+		o_EditedFavorite.AA.strFavoriteGroupSettings := g_intNewSortCriteria ; value saved to settings file
 		; use o_EditedFavorite.AA.oSubMenu.AA because when this menu is edited from sort menu, o_MenuInGui contains the menu's parent menu
-		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := intMenuAutoSort ; for when refreshing this menu
-		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := intMenuAutoSort ; for future load of this menu before relaunching QAP
+		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := g_intNewSortCriteria ; for when refreshing this menu
+		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := g_intNewSortCriteria ; for future load of this menu before relaunching QAP
 	}
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
@@ -15759,6 +15856,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	oDuplicateFavorite := ""
 	blnRadioButtonValue := ""
 	oNewFavoriteMenu := ""
+	g_intNewSortCriteria := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
@@ -24587,6 +24685,17 @@ Descramble(strContent)
 	return strNewString
 }
 ;---------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetSortCriteria(intCriteria)
+;------------------------------------------------------------
+{
+	if (intCriteria)
+		return g_saSortCriteria[Abs(intCriteria)] . " - " . (intCriteria > 0 ? o_L["DialogAscending"] : o_L["DialogDescending"])
+	; else return empty
+}
+;------------------------------------------------------------
 
 
 ;========================================================================================================================
