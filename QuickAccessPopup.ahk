@@ -14925,6 +14925,7 @@ if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
 		gosub, GuiMultipleAddSourceFolderLoad
 
 GuiControl, , f_blnMultipleAddSelectAllNone, % 0
+gosub, GuiMultipleAddFilterChanged
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 SetCursor(false)
