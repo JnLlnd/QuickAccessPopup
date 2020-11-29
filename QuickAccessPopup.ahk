@@ -58,14 +58,16 @@ Various improvements
 - when saving a favorite, if its location does not exist, offer to save the favorite anyway (default is No)
 - when expanding user variables in locations or elsewhere, also expand environment variables embedded inside user variables
 - do not open "Add/Edit Favorites" and other dialog boxes inside the "Customize" window while favorites are being saved (preventing save errors in some situations)
+- in the "Add/Edit Favorites" for menu and shared menus, save space (needed when editing a shared menu) by moving the automatic sort options to a new dialog box
 - display extended error codes in case of SQLite database error
  
 Bug fixes
 - fix bug to enable the "Save" button in "Add Multiple favorites" dialog box when selecting all items
 - fix bug when adding multiple favorites in an empty destination menu
+- fix bug when escaping the "Change Hotstring" dialog box and fix bug when loading favorites in "Manage Hotstrings" dialog box with "See all favorites" option enabled
  
 Language update
-- French, ### and language file updates
+- German, Italian, Brazilian-Portuguese, Korean and French language file updates
 
 Version BETA: 11.0.7.9.2 (2020-11-20)
 - support wildcards * and ? when filtering files and folder in Frequent and Recent menus
