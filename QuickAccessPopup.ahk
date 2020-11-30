@@ -4673,17 +4673,7 @@ else
 {
 	Gosub, ProcessSponsorCode
 	if (o_EDDLicense.oLicense.license <> "valid")
-	{
-		return
-		; if (g_blnIniFileCreation) ; remove files created when launching for the first time
-		; {
-			; FileDelete, % o_Settings.strIniFile
-			; FileDelete, %g_strWindosListAppsCacheFile%
-			; FileDelete, %g_strPsScriptPathFile%
-		; }
-		; OnExit ; disable exit subroutine
-		; ExitApp
-	}
+		return ; do not exit in case save-key is in progress
 }
 
 ; Build main menus
@@ -5791,7 +5781,9 @@ if StrLen(strSponsorCodeError)
 	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
 	if (strSponsorCodeAction <> "save-key")
-		return ; will remove files created if first launch and exit
+		gosub, ProcessSponsorCodeExitAfterCancel
+	else
+		return ; end this process and let the save-key process terminate
 }
 ; else launch QAP
 
@@ -6141,6 +6133,8 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 GuiSponsorCodeInput:
 ;------------------------------------------------------------
 
+blnSponsorCodeInputInProgress := true
+
 strGuiTitle := g_strAppNameText . " " . g_strAppVersion
 Gui, 1:New, +HwndstrGuiSponsorCodeInputHwnd, %strGuiTitle%
 if (g_blnUseColors)
@@ -6201,8 +6195,25 @@ return
 ;------------------------------------------------------------
 GuiSponsorCodeInputCancel:
 ;------------------------------------------------------------
+
+gosub, ProcessSponsorCodeExitAfterCancel ; this exits the app
+
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ProcessSponsorCodeExitAfterCancel:
+;------------------------------------------------------------
+
+if (g_blnIniFileCreation) ; remove files created when launching for the first time
+{
+	; FileDelete, % o_Settings.strIniFile ; do not delete to keep the o_FileManagers config
+	FileDelete, %g_strWindosListAppsCacheFile%
+	FileDelete, %g_strPsScriptPathFile%
+}
 OnExit ; disable exit subroutine
 ExitApp
+
 ;------------------------------------------------------------
 
 
@@ -18349,6 +18360,9 @@ return
 GuiCancel:
 GuiCancelAndExitApp:
 ;------------------------------------------------------------
+
+if (blnSponsorCodeInputInProgress) ; when user click X or hit Escape in the GuiSponsorCodeInput dialog box
+	gosub, ProcessSponsorCodeExitAfterCancel ; will exit QAP
 
 if GetKeyState("LShift") and GetKeyState("LCtrl")
 	Gosub, ReloadQAPDontSave ; undocumented
