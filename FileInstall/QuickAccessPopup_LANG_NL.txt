@@ -258,6 +258,7 @@ lDialogHotstringExpandInsideWords	Hotstring plakken binnen woorden
 lDialogHotstringIndicator	hs
 lDialogHotstringKeepHotstring	Behoudt de hotstring-afkorting
 lDialogHotstringNotWaitEndingKey	Niet wachten op de eindtoets
+lDialogHotstringOmitEndChar	Laat het laatste teken weg bij het plakken van fragmenten
 lDialogHotstrings	Hotstrings
 lDialogHotstringsDescription	Geeft het venster weer met een globaal overzicht van uw hotstrings (kleine toetsenreeks die automatisch QAP-favorieten activeren). Je kunt favorieten sorteren door op de kop te klikken.`n`nDubbelklik op een hotstring om deze te bewerken.`n`nKlik op het selectievakje "Alle favorieten bekijken" om hotstrings aan andere favorieten toe te wijzen.
 lDialogHotstringTriggerAbbreviation	Trigger (afkorting):
@@ -321,13 +322,16 @@ lDialogMultipleAddFrom	Add from
 lDialogMultipleAddHelp	Dubbelklik op een regel voor hulp over QAP-functionaliteit
 lDialogMultipleAddIntro1	1) Select a destination menu and filter the favorites if desired.
 lDialogMultipleAddIntro1a	To sort the list, click column headers
+lDialogMultipleAddIntro1f	1) Selecteer een bestemmingsmenu, een bronmap en filter de favorieten indien gewenst.
+lDialogMultipleAddIntro1s	1) Selecteer een bestemmingsmenu en een QAP-instellingenbestand (.ini).
+lDialogMultipleAddIntro1t	De hoofdmenu's en favorieten worden in een boomstructuur geladen
 lDialogMultipleAddIntro2	2) Click the checkbox of the favorites to add.
 lDialogMultipleAddIntro2a	To edit the name of a favorite select its row and press F2.
 lDialogMultipleAddIntro3	3) Click "Add" to insert the favorites in the destination menu and click "Save" in the "Customize" window.
 lDialogMultipleAddSelectSource	Select the source of the favorites you want to add and click "Continue".
 lDialogMultipleAddSelectSourceNext	In the next window, you will:
-lDialogMultipleAddSettingsFileItems	QAP Settings File (items)
-lDialogMultipleAddSettingsFileMenus	QAP Settings File (menus)
+lDialogMultipleAddSettingsFileItems	QAP-instellingenbestand (platte weergave)
+lDialogMultipleAddSettingsFileMenus	QAP-instellingenbestand (boomstructuur)
 lDialogNA	n.v.t.
 lDialogNew	Nieuw
 lDialogNone	Geen
@@ -441,6 +445,7 @@ lDonateCodeInvalidMessage	Je hebt een licentiecode nodig om deze versie van ~1~ 
 lDonateCodeManageMessage	Jouw licentie is geldig.`n`nJe hebt nog ~1~/~2~ installatie(s) over voor deze licentie.
 lDonateCodeNoInstallationsMessage	GEEN VRIJE INSTALLATIES MEER BESCHIKBAAR`n`nJe hebt ~1~ installatie(s) gebruikt die zijn toegestaan voor jouw ~2~ licentie`n`nJe kunt het aantal installaties voor deze licentie beheren op de ~2~ website.
 lDonateCodeNoInstallationsTitle	Geen vrije installaties meer beschikbaar - ~1~
+lDonateCodeNotAvailable	niet beschikbaar wanneer je offline bent
 lDonateEnterCode	Heb je een ~1~ licentiecode?`n`nIndien ja, voer dan de code in en start ~1~ (opnieuw).`n`nZo niet, vraag dan jouw licentiecode op via de ~1~ website.
 lDonateMenu	Ondersteun de ontwikkeling van deze software!
 lDonateOnline	De licentie kon al ~1~ dagen niet worden gecontroleerd.`n`nMaak verbinding met internet om de code te valideren.
@@ -517,6 +522,8 @@ lGuiTitle	Voorkeuren - ~1~ ~2~
 lHelpMenuKnowledgeBase	Veelgestelde vragen
 lHelpMenuQuickStart	Snel beginnen
 lHelpMenuSupportForum	Support Forum
+lHelpMenuVideosAll	Alle video's
+lHelpMenuVideosFirstStep	"Aan de Slag" video's
 lHelpTabAddingFavorite	Favorieten toevoegen
 lHelpTabGettingStarted	Om te beginnen
 lHelpTabQAPFeatures	QAP functies
@@ -559,6 +566,7 @@ lImpExpFileGlobal	Globale voorkeuren en sneltoetsen voor het hoofdmenu
 lImpExpFileThemes	Thema's
 lImpExpFinalReport	Verplaats ~1~. Bron: `n~2~`n`nBestemming:`n~3~
 lImpExpImport	Importeren
+lImpExpImportFavorites	Importeer favorieten
 lImpExpInvalidDestinationFolder	Invalid destination folder:`n`n~1~
 lImpExpMenu	Importeren/Exporteren
 lImpExpMenuDescription	Geeft het venster weer waarin je jouw favorieten en andere voorkeuren kunt exporteren (bijvoorbeeld om een back-up te maken) op een locatie naar keuze.`n`nJe kunt ook favorieten en voorkeuren van een andere computer of een andere gebruiker importeren.
@@ -646,6 +654,7 @@ lMenuMySnippetsMenu	Mijn fragmenten
 lMenuMySpecialMenu	Mijn speciale mappen
 lMenuMyVideo	Mijn video's
 lMenuMyWindowsAppsMenu	Mijn Windows Apps
+lMenuNetworkDrive	Netwerk station
 lMenuNoCurrentFolder	Geen open mappen gevonden...
 lMenuOpenBackupDirectory	Open QAP-Instellingen Backup Map
 lMenuOpenWorkingDirectory	Open QAP voorkeurenmap...
@@ -735,6 +744,7 @@ lOopsExternalUnderExternalError	Het volgende gedeelde menu bevat een gedeeld men
 lOopsFavoritesCopied	~1~ favorieten gekopieerd.
 lOopsFileExpandedFrom	Uitgebreid van
 lOopsFileNotFound	Deze locatie bestaat niet
+lOopsFileNotFoundSaveAnyway	Deze favoriet toch opslaan?
 lOopsFirstEnterUrl	Selecteer eerst een adres in het "~1~" veld.
 lOopsFolderLiveAndAutomatic	De opties "~1~" en "~2~" kunnen niet tegelijkertijd worden ingeschakeld.`n`nJe dient één van deze opties uit te schakelen.
 lOopsFtpLocationProtocol	Het FTP-Adres dient te starten met "ftp://".
@@ -813,6 +823,10 @@ lOptionsFileManagerNavigateIntro	Bij het openen van het QAP menu buiten ~1~, ope
 lOptionsFileManagerNavigateNew	een nieuw ~1~ venster
 lOptionsFileManagerNavigateNewTab	een nieuwe ~1~ tab
 lOptionsFileManagers	Bestandsbeheerders
+lOptionsFilesExclusionList	Bestanden uitsluiten
+lOptionsFilesExclusionListInstructions	Om bestanden uit te sluiten van "Recente bestanden" en "Frequente bestanden", voer je de bestandsextensies in (bijv.: "mp3") of gebruik jokertekens * en ? (bijv.: *.mp?), maximaal één per regel.
+lOptionsFoldersExclusionList	Mappen uitsluiten
+lOptionsFoldersExclusionListInstructions	Om mappen (inclusief submappen en bestanden) uit te sluiten van menu's: "Recente mappen", "Recente bestanden", "Frequente mappen" en "Frequente bestanden", voer je het pad in, maximaal één per regel. Optioneel kun je jokertekens * en ? gebruiken voor de laatste schuine streep (bijv.: c:\hide*\).
 lOptionsFtpEncoding	Versleutel FTP gebruikernaam en wachtwoord (aangeraden)
 lOptionsFtpEncodingTC	Versleutel FTP gebruikernaam en wachtwoord (niet aangeraden voor Total Commander)
 lOptionsGeneral	Algemeen
@@ -834,6 +848,7 @@ lOptionsLanguageLabels	Engels|Frans|Duits|Spaans|Braziliaans Portugees|Italiaans
 lOptionsMenuActiveWindow	Linksboven in het actieve venster
 lOptionsMenuAdvanced	Geavanceerde menuopties
 lOptionsMenuAppearance	Menuweergave
+lOptionsMenuExclusions	Menu uitsluiten
 lOptionsMenuFixPosition	Op een vaste plaats
 lOptionsMenuIcons	Menupictogrammen
 lOptionsMenuNearMouse	In de buurt van de muispijl
@@ -843,6 +858,8 @@ lOptionsMoveWorkingFolderTitle	Wijzig de locatie van het instellingenbestand
 lOptionsMoveWorkingFolderType	Wil je jouw huidige voorkeuren naar deze nieuwe locatie kopieren:`n`n~1~`n`nBij "Kopieren" wordt ~2~ opnieuw geladen met de huidige voorkeuren gekopieerd naar de nieuwe locatie`n`nBij "Nieuw" wordt ~2~ opnieuw geladen met de voorkeuren die al op deze "Nieuwe locatie" zijn gevonden (of gemaakt).
 lOptionsNbLiveFolderItemsMax	Maximaal aantal items in Live-mappen:
 lOptionsNbLiveFolderItemsMaxDefault	(standaard 500 items)
+lOptionsNetworkDrivesLetters	Schijfletters om te beschouwen als netwerkstations
+lOptionsNetworkDrivesSometimesOffline	Netwerkstations ("\\" of met stationsletters) kunnen offline zijn
 lOptionsOpenFavoritesOnActiveMonitor	Op een multi-monitorsysteem, Windows Explorer altijd starten op de actieve monitor
 lOptionsOpenMenuOnTaskbar	Open het menu wanneer er op de taakbalk geklikt wordt
 lOptionsOpenSettingsOnActiveMonitor	Open voorkeurenvenster op actieve monitor
@@ -882,9 +899,11 @@ lOptionsSelectCatalogueRoot	Selecteer een openbare map voor de Openbare Menu's
 lOptionsSelectQAPTempFolder	Maak de tijdelijke map aan in:
 lOptionsSelectWorkingFolder	In welke map dienen de voorkeuren opgeslagen te worden?
 lOptionsSendToConsoleWithAlt	Gebruik ASCII-codes (ALT + 0nnn) bij het wijzigen van de map in de Windows Command Line (Cmd)
+lOptionsSettingsCheckIfSameLocation	Controleer bij het opslaan van een favoriet of een bestaande favoriet dezelfde locatie of inhoud heeft
 lOptionsSettingsSearchResults	Zoekresultaten
 lOptionsSettingsStartup	Open voorkeurenvenster bij het opstarten
 lOptionsSettingsWindow	Voorkeurenvenster
+lOptionsShowAdvancedSettingsMenusItems	Toon geavanceerde menu-items van het instellingenbestand onder het menu "Bestand"
 lOptionsShowQAPmenu	Menubalk (bestand, favoriet, etc.) weergeven:
 lOptionsShowQAPmenuBoth	op beide locaties
 lOptionsShowQAPmenuCustomize	in venster "Voorkeuren"
@@ -892,7 +911,7 @@ lOptionsShowQAPmenuSystem	in het systeemmenu (taakbalk)
 lOptionsSnippets	Fragmenten en Hotstrings
 lOptionsSnippetsHelp	Fragment standaard (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Huidige uitsluitingen voor vensters
-lOptionsSwitchExclusionListInstructions	Om applicaties uit te sluiten van het "huidig venster" menu, voer een deel van de naam van het gewenste programma's venstertitel in. Je kunt meerdere uitsluitingen invoeren, maximaal 1 per regel. Als voorbeeld, om het programma "Sticky Notes" en "GhostWindows" uit te sluiten, voer je de volgende regels in de uitsluitingenlijst:`n`nSticky Notes`n`nGhostWindows`n`nJe kunt ook programma's uitsluiten bij klasse naam of procesnaam (.exe bestandsnaam). Meer hulp bij dit onderwerp is in het Engels te vinden op:<a href="~1~"> de QAP-website</a>.
+lOptionsSwitchExclusionListInstructions	Om toepassingen uit te sluiten van het menu "Momenteel Open", voer je een deel van de venstertitel van de toepassing in, maximaal één per regel.
 lOptionsTabFileManagersIntro	Selecteer de bestandsbeheerder waarin mappen worden geopend in een nieuw venster.
 lOptionsTabFileManagersPreferences	Opties voor de bestandsbeheerder
 lOptionsTabFileManagersPreferred	Voorkeur bestandsbeheerder

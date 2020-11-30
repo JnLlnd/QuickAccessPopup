@@ -65,9 +65,10 @@ Bug fixes
 - fix bug to enable the "Save" button in "Add Multiple favorites" dialog box when selecting all items
 - fix bug when adding multiple favorites in an empty destination menu
 - fix bug when escaping the "Change Hotstring" dialog box and fix bug when loading favorites in "Manage Hotstrings" dialog box with "See all favorites" option enabled
+- fix minor display bug and delete temporary files when cancelling the save license process
  
 Language update
-- German, Italian, Brazilian-Portuguese, Korean and French language file updates
+- German, Italian, Brazilian-Portuguese, Korean, Dutch and French language file updates
 
 Version BETA: 11.0.7.9.2 (2020-11-20)
 - support wildcards * and ? when filtering files and folder in Frequent and Recent menus
