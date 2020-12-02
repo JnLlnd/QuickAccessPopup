@@ -258,6 +258,7 @@ lDialogHotstringExpandInsideWords	Expandir dentro de outras palavras
 lDialogHotstringIndicator	st
 lDialogHotstringKeepHotstring	Manter abreviação de string de substituição
 lDialogHotstringNotWaitEndingKey	Não aguardar tecla de conclusão
+lDialogHotstringOmitEndChar	Omitir caractere final ao colar recortes
 lDialogHotstrings	Strings de Substituição
 lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma visão global de suas strings de substituição (pequenas sequências de chaves que automaticamente disparam favoritos do QAP). Você pode classificar os favoritos clicando no cabeçalho.`n`nClique duplo em uma string de substituição para editá-la.`n`nClique na caixa de marcação "Ver todos os favoritos" para atribuir strings de substituição para outros favoritos.
 lDialogHotstringTriggerAbbreviation	Disparador (abreviação):
@@ -321,13 +322,16 @@ lDialogMultipleAddFrom	Adicionar de
 lDialogMultipleAddHelp	Duplo clique nas linhas para ajuda dos Recursos do QAP
 lDialogMultipleAddIntro1	1) Selecione um menu de destino e filtre os favoritos, se desejado.
 lDialogMultipleAddIntro1a	Para ordenar a lista, clique no cabeçalho das colunas
+lDialogMultipleAddIntro1f	1) Selecione um menu de destino, uma pasta de origem e filtre os favoritos, se desejado.
+lDialogMultipleAddIntro1s	1) Selecione um menu de destino e um arquivo (.ini) de configurações do QAP.
+lDialogMultipleAddIntro1t	Os menus principais e favoritos serão carregados em visualização em árvore
 lDialogMultipleAddIntro2	2) Clique na caixa de marcação dos favoritos para adicionar.
 lDialogMultipleAddIntro2a	Para editar o nome de um favorito, selecione a sua linha e pressione F2.
 lDialogMultipleAddIntro3	3) Clique "Adicionar" para inserir os favoritos no menu de destino e clique "Salvar" na janela "Personalizar".
 lDialogMultipleAddSelectSource	Selecione a origem dos favoritos que deseja adicionar e clique em "Continuar".
 lDialogMultipleAddSelectSourceNext	Na próxima janela, você irá:
-lDialogMultipleAddSettingsFileItems	Arquivo de configurações do QAP (itens)
-lDialogMultipleAddSettingsFileMenus	Arquivo de configurações do QAP (menus)
+lDialogMultipleAddSettingsFileItems	Arquivo de configurações do QAP (visualização plana)
+lDialogMultipleAddSettingsFileMenus	Arquivo de configurações do QAP (visualização em árvore)
 lDialogNA	n/a
 lDialogNew	Novo
 lDialogNone	Nenhum
@@ -441,6 +445,7 @@ lDonateCodeInvalidMessage	Você precisa de uma código de licença para executar es
 lDonateCodeManageMessage	Sua licença é válida.`n`nVocê possui ~1~/~2~ instalação(ões) restante(s) para esta licença.
 lDonateCodeNoInstallationsMessage	NENHUMA INSTALAÇÃO RESTANTE`n`nVocê usou a(s) ~1~ instalação(ões) permitida(s) para a sua licença do ~2~.`n`nVocê pode gerenciar as instalações para esta licença no site do ~2~.
 lDonateCodeNoInstallationsTitle	Nenhuma instalação restante - ~1~
+lDonateCodeNotAvailable	não disponível quando offline
 lDonateEnterCode	Você possui o código de licença do ~1~?`n`nSe sim, entre o código e reinicie o ~1~.`n`nSe não, obtenha o código da licença no site do  ~1~.
 lDonateMenu	Ajude no desenvolvimento deste software!
 lDonateOnline	Sua licença não foi verificada nos últimos ~1~ dias.`n`nPor favor, conecte-se à Internet para validar seu código.
@@ -517,6 +522,8 @@ lGuiTitle	Personalizar - ~1~ ~2~
 lHelpMenuKnowledgeBase	Base de Conhecimento
 lHelpMenuQuickStart	Início Rápido
 lHelpMenuSupportForum	Fórum de Suporte
+lHelpMenuVideosAll	Todos os Vídeos
+lHelpMenuVideosFirstStep	Vídeos de Primeiros Passos
 lHelpTabAddingFavorite	Adicionando Favoritos
 lHelpTabGettingStarted	Começando
 lHelpTabQAPFeatures	Recursos do QAP
@@ -559,6 +566,7 @@ lImpExpFileGlobal	Configurações globais e atalhos do menu principal
 lImpExpFileThemes	Temas
 lImpExpFinalReport	Transferir ~1~.`n`nOrigem:`n~2~`n`nDestino:`n~3~
 lImpExpImport	Importar
+lImpExpImportFavorites	Importar Favoritos
 lImpExpInvalidDestinationFolder	Pasta de destino inválida:`n`n~1~
 lImpExpMenu	Importar/Exportar Configurações
 lImpExpMenuDescription	Exibe uma caixa de diálogo onde você pode exportar os seus favoritos e outras configurações para criar um backup em um local da sua escolha.`n`nVocê também pode importar favoritos e configurações a partir de outro PC ou usuário.
@@ -646,6 +654,7 @@ lMenuMySnippetsMenu	Meus Recortes
 lMenuMySpecialMenu	Minhas Pastas Especiais
 lMenuMyVideo	Meus Vídeos
 lMenuMyWindowsAppsMenu	Meus Aplicativos do Windows
+lMenuNetworkDrive	Unidade de rede
 lMenuNoCurrentFolder	Nenhuma pasta aberta atualmente...
 lMenuOpenBackupDirectory	Abrir Pasta de Backup das Configurações do QAP
 lMenuOpenWorkingDirectory	Abrir Pasta de Configurações do QAP
@@ -735,6 +744,7 @@ lOopsExternalUnderExternalError	O seguinte menu compartilhado inclui um menu com
 lOopsFavoritesCopied	~1~ favoritos copiados.
 lOopsFileExpandedFrom	Expandido de
 lOopsFileNotFound	Este local não existe
+lOopsFileNotFoundSaveAnyway	Salvar este favorito assim mesmo?
 lOopsFirstEnterUrl	Primeiro, entre um endereço no campo "~1~".
 lOopsFolderLiveAndAutomatic	As opções "~1~" e "~2~" não podem ser habilitadas simultaneamente.`n`nPor favor, desative uma destas opções.
 lOopsFtpLocationProtocol	O local FTP deve começar com "ftp://".
@@ -813,6 +823,10 @@ lOptionsFileManagerNavigateIntro	Ao abrir o menu do QAP fora do ~1~, abrir pasta
 lOptionsFileManagerNavigateNew	uma nova janela ~1~
 lOptionsFileManagerNavigateNewTab	uma nova aba ~1~
 lOptionsFileManagers	Gerenciadores de Arquivos
+lOptionsFilesExclusionList	Exclusões de Arquivos
+lOptionsFilesExclusionListInstructions	Para excluir arquivos de "Arquivos recentes" e "Arquivos frequentes", entre a extensão do arquivo (ex.: "mp3") ou use os coringas * e ? (ex.: *.mp?), um por linha.
+lOptionsFoldersExclusionList	Exclusões de Pastas
+lOptionsFoldersExclusionListInstructions	Para excluir pastas (incluindo suas subpastas e arquivos) dos menus "Pastas recentes", "Arquivos recentes", "Pastas frequentes" e "Arquivos frequentes", entre seus caminhos, um por linha. Como opção, você pode usar os coringas * e ? antes de uma barra final (ex.: c:\pasta*\).
 lOptionsFtpEncoding	Criptografar usuário e senha FTP (recomendado)
 lOptionsFtpEncodingTC	Criptografar usuário e senha FTP (não recomendado para o Total Commander)
 lOptionsGeneral	Geral
@@ -834,6 +848,7 @@ lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italian
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela ativa
 lOptionsMenuAdvanced	Opções Avançadas de Menus
 lOptionsMenuAppearance	Aparência dos Menus
+lOptionsMenuExclusions	Exclusões de Menus
 lOptionsMenuFixPosition	Em uma posição fixa
 lOptionsMenuIcons	Ícones do Menu
 lOptionsMenuNearMouse	Próximo do ponteiro do mouse
@@ -843,6 +858,8 @@ lOptionsMoveWorkingFolderTitle	Alterar Local da Pasta de Configurações
 lOptionsMoveWorkingFolderType	Deseja copiar suas configurações atuais para este local:`n`n~1~`n`nSe você selecionar COPIAR, o ~2~ será recarregado com suas configurações atuais COPIADAS para novo local.`n`nSe você selecionar NOVO, o ~2~ será recarregado com as configurações já encontradas (ou criadas) neste NOVO LOCAL.
 lOptionsNbLiveFolderItemsMax	Número máximo de itens nas pastas Ativas:
 lOptionsNbLiveFolderItemsMaxDefault	(padrão: 500 itens)
+lOptionsNetworkDrivesLetters	Letras de unidades para considerar como unidades de rede
+lOptionsNetworkDrivesSometimesOffline	Unidades de rede ("\\" ou com letras de unidade) as vezes podem estar offline
 lOptionsOpenFavoritesOnActiveMonitor	Em um sistema de vários monitores, abrir sempre a janela do Explorer no monitor ativo
 lOptionsOpenMenuOnTaskbar	Abrir menu ao clicar na barra de tarefas
 lOptionsOpenSettingsOnActiveMonitor	Abrir janela "Personalizar" no monitor Ativo
@@ -882,9 +899,11 @@ lOptionsSelectCatalogueRoot	Selecione a pasta raiz do Catálogo de Menus Comparti
 lOptionsSelectQAPTempFolder	Criar a Pasta Temporária em:
 lOptionsSelectWorkingFolder	Salvar Configurações em qual pasta?
 lOptionsSendToConsoleWithAlt	Usar códigos ASCII (ALT+0nnn) ao alterar pasta na Linha de Comando do Windows (CMD)
+lOptionsSettingsCheckIfSameLocation	Ao salvar um favorito, verificar se um favorito existente possui a mesma localização ou conteúdo
 lOptionsSettingsSearchResults	Resultados da Pesquisa
 lOptionsSettingsStartup	Abrir janela "Personalizar" ao Inicializar
 lOptionsSettingsWindow	Janela Personalizar
+lOptionsShowAdvancedSettingsMenusItems	Mostrar itens avançados do menu de arquivo de Configurações sob o menu "Arquivo"
 lOptionsShowQAPmenu	Exibir menu do QAP (Arquivo, Favorito, etc.):
 lOptionsShowQAPmenuBoth	em ambas as localizações
 lOptionsShowQAPmenuCustomize	no topo da janela Personalizar
@@ -892,7 +911,7 @@ lOptionsShowQAPmenuSystem	no menu do Sistema (Área de Notificação)
 lOptionsSnippets	Recortes e Substituições
 lOptionsSnippetsHelp	Padrões de recortes (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Exclusões Atuais de Janelas
-lOptionsSwitchExclusionListInstructions	Para excluir aplicativos do menu "Janelas Atuais", entre qualquer parte do título da janela do aplicativo. Você pode entrar múltiplas exclusões, uma por linha. Por exemplo, para excluir as janelas dos aplicativos Sticky e GhostWindows, entre as seguintes linhas na lista de exclusões:`n`nAStickies:`nGhostWindows`n`nVocê também pode excluir janelas pelo nome da sua classe ou nome do processo (nome do arquivo EXE). Você pode encontrar ajuda e suporte para este recurso no <a href="~1~">site do QAP</a>.
+lOptionsSwitchExclusionListInstructions	Para excluir aplicativos do menu "Janelas Atuais", entre qualquer parte do título da janela do aplicativo, um por linha.
 lOptionsTabFileManagersIntro	Selecione o gerenciador de arquivos para abrir pastas em uma nova janela.
 lOptionsTabFileManagersPreferences	Preferências do gerenciador de arquivos
 lOptionsTabFileManagersPreferred	Gerenciador de arquivos preferido

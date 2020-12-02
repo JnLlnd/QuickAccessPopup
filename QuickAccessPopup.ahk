@@ -31,11 +31,72 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.1 (2020-12-02)
+ 
+Exclusions in Recent/Frequent menus
+- see: https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus
+- add new section "Menu Exclusions" under the "Options" menu with zones for folders and files exclusions in "Recent" or "Frequent" menus
+- move the "Current Windows Exclusions" option from "Various Advanced Options" to "Menu Exclusions"
+- filter out items in "Recent Folders" and "Frequent Folders" if their path is under one of the items in the "Folder Exclusions" list of the "Menu Exclusions" options
+- filter out items in "Recent Files" and "Frequent Files" if their path is under one of the items in "Folder Exclusions" or if their extensions is one of the items in "Files Exclusion" of the "Menu Exclusions" options
+- support wildcards * and ? when filtering files and folder in "Frequent" and "Recent" menus
+ 
+Add Multiple favorites / Import Favorites
+- see: https://www.quickaccesspopup.com/can-i-add-multiple-favorites-in-one-click/
+- add a new source in "Favorite, Add Multiple Favorites" named "QAP Settings File (tree view)" allowing to import favorites by selecting the menus or submenus to import
+- this imports favorites of any types from the selected .ini file with all their properties
+- rename existing source from "QAP Settings File (items)" to "QAP Settings File (flat view)" to distinguish it from the new source
+- this new feature replaces the "Import Favorites" with a stronger validation against duplicate favorite names
+- in "File, Import/Export Settings", disable the "Favorites" checkbox and add a button "Import Favorites" opening the "Add Multiple Favorites" dialog box with the source "QAP Settings File (tree view)"
+ 
+Various improvements
+- support comments in user variables list; any lines not starting with { is treated as a comment
+- add the "Suspend Hotkeys" menu to QAP System menu (right-click on the QAP icon) and keep it under the "Tools" menu
+- in the "Options, Customize Window" section, add the new checkbox "When saving a favorite, check if an existing favorite has the same location or content"
+- when replacing an hotstring trigger with a snippet's content, by default keep the ending character (this is an new behaviour for existing snippets with hotstrings)
+- add the hotstring option "Omit the ending character when pasting snippets" for situations where the user wants the ending character to be removed when pasting a snippet (applicable only to hotstrings for "Text Mode" snippets
+- when saving a favorite, if its location does not exist, offer to save the favorite anyway (default is No)
+- when expanding user variables in locations or elsewhere, also expand environment variables embedded inside user variables
+- do not open "Add/Edit Favorites" and other dialog boxes inside the "Customize" window while favorites are being saved (preventing save errors in some situations)
+- in the "Add/Edit Favorites" for menu and shared menus, save space (needed when editing a shared menu) by moving the automatic sort options to a new dialog box
+- display extended error codes in case of SQLite database error
+ 
+Bug fixes
+- fix bug to enable the "Save" button in "Add Multiple favorites" dialog box when selecting all items
+- fix bug when adding multiple favorites in an empty destination menu
+- fix bug when escaping the "Change Hotstring" dialog box and fix bug when loading favorites in "Manage Hotstrings" dialog box with "See all favorites" option enabled
+- fix minor display bug and delete temporary files when cancelling the save license process
+ 
+Language update
+- German, Italian, Brazilian-Portuguese, Korean, Dutch, Portuguese and French language files update
+
+Version BETA: 11.0.7.9.2 (2020-11-20)
+- support wildcards * and ? when filtering files and folder in Frequent and Recent menus
+- do not open dialog boxes inside the "Customize" window while favorites are being saved, to prevent save errors in some situations
+
+Version BETA: 11.0.7.9.1 (2020-11-16)
+ 
+Exclusions in Recent/Frequent menus
+- see: https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus
+- add new section "Options, Menu Exclusions" with zones for folders and files exclusions in Recent/Frequent menus
+- move "Current Windows Exclusions" option from "Various Advanced Options" to "Menu Exclusions"
+- filter out items in "Recent Folders" and "Frequent Folders" if their path is under one of the "Folder Exclusions" of the "Menu Exclusions" options
+- filter out items in "Recent Files" and "Frequent Files" if their path is under one of the "Folder Exclusions" or if their extensions is one of the "Files Exclusion" of the "Menu Exclusions" options
+ 
+Add Multiple favorites / Import Favorites
+- add a new source in "Favorite, Add Multiple Favorites" named "QAP Settings File (tree view)" allowing ot import favorites by selecting the menus or submenus to import
+- rename existing source from "QAP Settings File (items)" to "QAP Settings File (flat view)" to distinguish it from the new source
+- this new feature replaces the "Import Favorites" offering stronger validation against duplicate favorite names
+- in "File, Import/Export Settings", disable "Favorites" checkbox and add a button "Import Favorites" opening the "Add Multiple Favorites" dialog box with the source "QAP Settings File (tree view)"
+- uncheck all items when changing source file
+ 
+Various improvements
+- display extended error codes in case of SQLite database error
+- do not open dialog boxes inside the "Customize" window while favorites are being saved, to prevent save errors in some situations
+
 Version: 11.0.7.1 (2020-11-13)
 - fix a bug introduced in v11.0.7 causing undesired items being added to the "Recent Folders" and "Frequent Folders" menus
 - exclude applications in "Recent Files" and "Frequent Files" menus (revert to pre-v11.0.7 state)
- 
-Undesired items in these menus will be removed by themselves after some time. If you wish to remove them immediately, flush the QAP database (see menu "Options, Database"). Sorry for the inconvenience.
  
 Version: 11.0.7 (2020-11-11)
  
@@ -4269,7 +4330,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.0.7.1
+;@Ahk2Exe-SetVersion 11.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4337,7 +4398,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.0.7.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4488,6 +4549,7 @@ global o_MenuInGui ; replace g_objMenuInGui, back item added at top when first l
 global o_SearchResultContainerBK ; to swap search result container with menu of an item edited from the search result
 global g_intMenuPosX
 global g_intMenuPosY
+global g_strHotstringEndChar
 
 ;---------------------------------
 ; Initial validation
@@ -4515,6 +4577,7 @@ if InStr(A_ScriptDir, A_Temp) ; must be positioned after g_strAppNameFile is cre
 ; Keep gosubs in this order
 Gosub, InitLanguageArrays
 Gosub, InitGuiControls
+Gosub, InitSortCriterias
 
 ;---------------------------------
 ; Check JLicons.dll version (now that language file is available)
@@ -4612,17 +4675,7 @@ else
 {
 	Gosub, ProcessSponsorCode
 	if (o_EDDLicense.oLicense.license <> "valid")
-	{
-		return
-		; if (g_blnIniFileCreation) ; remove files created when launching for the first time
-		; {
-			; FileDelete, % o_Settings.strIniFile
-			; FileDelete, %g_strWindosListAppsCacheFile%
-			; FileDelete, %g_strPsScriptPathFile%
-		; }
-		; OnExit ; disable exit subroutine
-		; ExitApp
-	}
+		return ; do not exit in case save-key is in progress
 }
 
 ; Build main menus
@@ -4771,7 +4824,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAddSelectSource ; ####
+; gosub, GuiMultipleAddSettingsFileMenus ; ####
 
 return
 
@@ -5225,6 +5278,22 @@ return
 
 
 ;------------------------------------------------------------
+InitSortCriterias:
+;------------------------------------------------------------
+
+global g_saSortCriteria := Object() ; used when setting menu sort criteria
+
+g_saSortCriteria := StrSplit(o_L["GuiLvFavoritesHeader"], "|") ; Name|Type|Hotkey|Location or content
+g_saSortCriteria.Push(o_L["DialogMenuSortLastModified"])
+g_saSortCriteria.Push(o_L["DialogMenuSortCreated"])
+g_saSortCriteria.Push(o_L["DialogMenuSortLastUsed"])
+g_saSortCriteria.Push(o_L["DialogMenuSortUsage"])
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 InsertGuiControlPos(strControlName, intX, intY, blnCenter := false, blnDraw := false)
 ;------------------------------------------------------------
 {
@@ -5389,6 +5458,7 @@ o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableTheme
 o_Settings.ReadIniOption("SettingsWindow", "blnDisplaySettingsStartup", "DisplaySettingsStartup", 0, "SettingsWindow", "f_blnDisplaySettingsStartup|f_lblOptionsSettingsWindow")
 o_Settings.ReadIniOption("SettingsWindow", "blnRememberSettingsPosition", "RememberSettingsPosition", 1, "SettingsWindow", "f_blnRememberSettingsPosition") ; g_blnRememberSettingsPosition
 o_Settings.ReadIniOption("SettingsWindow", "blnOpenSettingsOnActiveMonitor", "OpenSettingsOnActiveMonitor", 1, "SettingsWindow", "f_blnOpenSettingsOnActiveMonitor") ; g_blnOpenSettingsOnActiveMonitor
+o_Settings.ReadIniOption("SettingsWindow", "blnCheckIfExistingFavoriteForSameLocation", "CheckIfExistingFavoriteForSameLocation", 1, "SettingsWindow", "f_blnCheckIfExistingFavoriteForSameLocation")
 o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0, "SettingsWindow", "f_lblAddAutoAtTop|f_blnAddAutoAtTop0|f_blnAddAutoAtTop1") ; g_blnAddAutoAtTop
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
@@ -5427,6 +5497,14 @@ o_Settings.ReadIniOption("MenuPopup", "blnExclusionMouseListWhitelist", "Exclusi
 o_Settings.ReadIniOption("MenuPopup", "strExclusionMouseList", "ExclusionMouseList", " ", "PopupMenu"
 	, "f_lnkExclusionMouseList1|f_lnkExclusionMouseList2|f_lnkExclusionMouseList3|f_strExclusionMouseList|f_btnGetWinInfoMouseExclusions") ; g_strExclusionMouseList
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
+
+; Group MenuExclusions
+o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
+	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
+o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
+	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
+o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
+	, "f_lnkFilesExclusionList|f_strFilesExclusionList|f_lblFilesExclusionList")
 
 ; Group PopupHotkeys
 o_Settings.ReadIniOption("MenuPopup", "blnLeftControlDoublePressed", "LeftControlDoublePressed", 0, "PopupHotkeys", "f_lblChangeShortcutTitle|f_lblControlDoublePressedTitle|f_blnLeftControlDoublePressed") ; g_blnLeftControlDoublePressed
@@ -5490,8 +5568,6 @@ o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippe
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
 	o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] := 150 ; new default added 2020-11-05 (was 100 ms)
-o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "AdvancedOther"
-	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
 
 ; not in Options Gui
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
@@ -5707,7 +5783,9 @@ if StrLen(strSponsorCodeError)
 	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
 	if (strSponsorCodeAction <> "save-key")
-		return ; will remove files created if first launch and exit
+		gosub, ProcessSponsorCodeExitAfterCancel
+	else
+		return ; end this process and let the save-key process terminate
 }
 ; else launch QAP
 
@@ -6057,6 +6135,8 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 GuiSponsorCodeInput:
 ;------------------------------------------------------------
 
+blnSponsorCodeInputInProgress := true
+
 strGuiTitle := g_strAppNameText . " " . g_strAppVersion
 Gui, 1:New, +HwndstrGuiSponsorCodeInputHwnd, %strGuiTitle%
 if (g_blnUseColors)
@@ -6117,8 +6197,25 @@ return
 ;------------------------------------------------------------
 GuiSponsorCodeInputCancel:
 ;------------------------------------------------------------
+
+gosub, ProcessSponsorCodeExitAfterCancel ; this exits the app
+
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ProcessSponsorCodeExitAfterCancel:
+;------------------------------------------------------------
+
+if (g_blnIniFileCreation) ; remove files created when launching for the first time
+{
+	; FileDelete, % o_Settings.strIniFile ; do not delete to keep the o_FileManagers config
+	FileDelete, %g_strWindosListAppsCacheFile%
+	FileDelete, %g_strPsScriptPathFile%
+}
 OnExit ; disable exit subroutine
 ExitApp
+
 ;------------------------------------------------------------
 
 
@@ -6779,7 +6876,7 @@ BuildTrayMenuRefresh:
 ;------------------------------------------------------------
 
 global g_aaMenuTrayL := o_L.InsertAmpersand(true, "MenuSettings", "MenuFile", "MenuFavorite", "MenuTools", "MenuOptions"
-	, "MenuHelp", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "GuiDonate")
+	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "GuiDonate")
 
 if (A_ThisLabel = "BuildTrayMenuRefresh")
 	Menu, Tray, DeleteAll
@@ -6795,6 +6892,7 @@ if (o_Settings.MenuAdvanced.intShowQAPmenu .IniValue > 1) ; 1 Customize menu bar
 	Menu, Tray, Add, % g_aaMenuTrayL["MenuHelp"], :menuBarHelp
 }
 Menu, Tray, Add
+Menu, Tray, Add, % g_aaMenuTrayL["MenuSuspendHotkeys"], ToggleSuspendHotkeys
 Menu, Tray, Add, % g_aaMenuTrayL["MenuRunAtStartup"], ToggleRunAtStartup ; function ToggleRunAtStartup replaces RunAtStartup
 Menu, Tray, Add, % g_aaMenuTrayL["MenuExitApp@" . g_strAppNameText], GuiCancelAndExitApp
 if (!g_blnSponsor)
@@ -7002,15 +7100,15 @@ saMenuItemsTable.Push(["GuiIconsManage", aaMenuToolsL["DialogIconsManage"], "", 
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["RefreshQAPMenu", aaMenuToolsL["MenuRefreshMenu"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["ResetQAPSpecialDefaultNames", aaMenuToolsL["MenuResetQAPSpecialDefaultNames"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["SuspendHotkeys", aaMenuToolsL["MenuSuspendHotkeys"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["ToggleSuspendHotkeys", aaMenuToolsL["MenuSuspendHotkeys"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiShowRestoreDefaultPosition", aaMenuToolsL["MenuRestoreSettingsWindowPosition"], "", "iconNoIcon"])
  saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAlwaysOnTop", aaMenuToolsL["ControlToolTipAlwaysOnTopOff"], "", "iconNoIcon"])
 o_Containers.AA["menuBarTools"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarTools"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaL := o_L.InsertAmpersand(true, "OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu"
-	, "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets", "OptionsUserVariables"
+aaL := o_L.InsertAmpersand(true, "OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu", 
+	, "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets", "OptionsUserVariables"
 	, "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiOptionsGroupGeneral", aaL["OptionsGeneral"] . "`tCtrl+O", "", "iconNoIcon"])
@@ -7019,6 +7117,7 @@ saMenuItemsTable.Push(["X", "", "", ""])
 saMenuItemsTable.Push(["GuiOptionsGroupMenuIcons", aaL["OptionsMenuIcons"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupMenuAppearance", aaL["OptionsMenuAppearance"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupMenu", aaL["OptionsPopupMenu"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiOptionsGroupMenuExclusions", aaL["OptionsMenuExclusions"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeys", aaL["OptionsPopupHotkeys"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeysAlternative", aaL["OptionsPopupHotkeysAlternative"], "", "iconNoIcon"])
@@ -7142,7 +7241,7 @@ loop, parse, % "Folders|Files", |
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -7378,7 +7477,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-		Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	}
 	o_MetadataRecordSet.Next(o_MetadataRow)
 	g_strMenuItemsListDrives := o_MetadataRow[1] ; first (and only) field is PopularFoldersMenuData or PopularFilesMenuData
@@ -7457,7 +7556,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 			if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 			{
 				; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-				Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+				Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 			}
 			o_MetadataRecordSet.Next(o_MetadataRow)
 			g_strMenuItemsListRecent%A_LoopField% := o_MetadataRow[1] ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
@@ -8419,6 +8518,7 @@ GuiOptionsGroupSettingsWindow:
 GuiOptionsGroupMenuIcons:
 GuiOptionsGroupMenuAppearance:
 GuiOptionsGroupPopupMenu:
+GuiOptionsGroupMenuExclusions:
 GuiOptionsGroupPopupHotkeys:
 GuiOptionsGroupPopupHotkeysAlternative:
 GuiOptionsGroupFileManagers:
@@ -8435,8 +8535,8 @@ g_strSettingsGroup := StrReplace(A_ThisLabel, "GuiOptionsGroup")
 gosub, CheckShowSettings
 
 aaL := o_L.InsertAmpersand(false, "OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu"
-	, "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets", "OptionsUserVariables"
-	, "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther", "GuiSave", "GuiCancel")
+	, "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets"
+	, "OptionsUserVariables", "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther", "GuiSave", "GuiCancel")
 
 Gosub, GuiOptionsHeader
 
@@ -8536,6 +8636,10 @@ GuiControl, , f_blnRememberSettingsPosition, % (o_Settings.SettingsWindow.blnRem
 ; OpenSettingsOnActiveMonitor
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnOpenSettingsOnActiveMonitor gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsOpenSettingsOnActiveMonitor"]
 GuiControl, , f_blnOpenSettingsOnActiveMonitor, % (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue = true)
+
+; CheckIfExistingFavoriteForSameLocation
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnCheckIfExistingFavoriteForSameLocation gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsCheckIfSameLocation"]
+GuiControl, , f_blnCheckIfExistingFavoriteForSameLocation, % (o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue = true)
 
 ; AddAutoAtTop
 Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblAddAutoAtTop, % o_L["OptionsAddAutoAtTop"]
@@ -8652,7 +8756,7 @@ GuiControl, , f_blnAddCloseToDynamicMenus, % (o_Settings.Menu.blnAddCloseToDynam
 
 GuiControlGet, arrPos, Pos, f_blnAddCloseToDynamicMenus
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
-g_intOptionsFooterY := arrPosY + arrPosH
+	g_intOptionsFooterY := arrPosY + arrPosH
 
 ; === PopupMenu ===
 
@@ -8705,6 +8809,42 @@ Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% vf_btnGetWinInfoMouseExclusions gGe
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoMouseExclusions")
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoMouseExclusions
+if ((arrPosY + arrPosH) > g_intOptionsFooterY)
+	g_intOptionsFooterY := arrPosY + arrPosH
+
+; === MenuExclusions ===
+
+; FoldersExclusionList
+strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#folders"
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w340 section hidden vf_lnkFoldersExclusionList, % o_L["OptionsFoldersExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFoldersExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList, % L(o_L["OptionsFoldersExclusionListInstructions"], strUrl)
+Gui, 2:Add, Text, y+5 hidden vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
+
+; FilesExclusionList
+strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#files"
+intGroupItemsXFiles := g_intGroupItemsX + 350
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, ys x%intGroupItemsXFiles% w240 hidden vf_lnkFilesExclusionList, % o_L["OptionsFilesExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w240 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w235 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
+
+; SwitchExclusionList
+strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#applications"
+GuiControlGet, arrPos, Pos, f_lblFoldersExclusionListBottom
+arrPosY := arrPosY + 10
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w340 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
+Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
+
+GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -9071,17 +9211,7 @@ Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 hidden vf_lblWaitDelayInSnippet, % o_
 loop, 4
 	Gui, 2:Add, Edit, % "x+5 yp h20 w50 hidden number center gGuiOptionsGroupChanged vf_intWaitDelayInSnippet" . A_Index, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[A_Index]
 
-; SwitchExclusionList
-strUrl := "https://www.quickaccesspopup.com/how-is-built-the-switch-to-an-open-folder-or-application-menu/"
-Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w500 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
-Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w500 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Link, y+5 x%g_intGroupItemsX% w495 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
-Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
-
-GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
+GuiControlGet, arrPos, Pos, f_intWaitDelayInSnippet4
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -9091,6 +9221,7 @@ strUrl := ""
 intThisIndex := ""
 objThisPopupHotkey := ""
 ResetArray("arrPos")
+intGroupItemsXFiles := ""
 
 return
 ;------------------------------------------------------------
@@ -9264,6 +9395,7 @@ blnSearchWithStatsPrev := o_Settings.SettingsWindow.blnSearchWithStats.IniValue
 o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
 o_Settings.SettingsWindow.blnRememberSettingsPosition.WriteIni(f_blnRememberSettingsPosition)
 o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.WriteIni(f_blnOpenSettingsOnActiveMonitor)
+o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_blnCheckIfExistingFavoriteForSameLocation)
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
@@ -9337,6 +9469,12 @@ o_Settings.MenuPopup.blnRefreshedMenusAttached.WriteIni(f_blnRefreshedMenusAttac
 o_Settings.MenuPopup.blnExclusionMouseListWhitelist.WriteIni(f_blnExclusionMouseListWhitelist)
 o_Settings.MenuPopup.strExclusionMouseList.WriteIni(OptionsListCleanup(f_strExclusionMouseList))
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
+
+; === MenuExclusions ===
+
+o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
+o_Settings.Execution.strFoldersExclusionList.WriteIni(OptionsListCleanup(f_strFoldersExclusionList))
+o_Settings.Execution.strFilesExclusionList.WriteIni(OptionsListCleanup(f_strFilesExclusionList))
 
 ; === PopupHotkeys ===
 
@@ -9501,7 +9639,6 @@ o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
-o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
 strNewHotstringsDefaultOptions := ""
 
 ; === Save new Working Folder in current user registry entry and update o_Settings.strIniFile
@@ -10379,7 +10516,7 @@ IfMsgBox, Yes
 {
 	strUsageDbSQL := "DELETE FROM Usage;" ; do not delete zMetadata (and if yes in the future, do not delete record, empty LatestCollected)
 	If !o_UsageDb.Exec(strUsageDbSQL)
-		Oops(2, "SQLite FLUSH Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(2, "SQLite FLUSH Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	else
 		Oops(2, o_L["OptionsUsageDbFlushDatabaseDone"])
 }
@@ -11333,6 +11470,9 @@ return
 GuiQuickAddSnippet:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 Gosub, GuiShowFromAddSnippetAndHotstring
 
 Gui, 1:Submit, NoHide
@@ -11418,6 +11558,9 @@ return
 GuiAddFavoriteSelectType:
 GuiAddFavoriteFromQAPFeature:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 if (A_ThisLabel = "GuiAddFavoriteFromQAPFeature")
 {
@@ -11732,6 +11875,9 @@ GuiAddExternalFromCatalogue:
 GuiAddExternalOtherExternal:
 GuiEditMenuFromGui:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 strGuiFavoriteLabel := A_ThisLabel
 g_blnAbortEdit := false
@@ -12355,24 +12501,13 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 ; menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
 {
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (o_EditedFavorite.AA.strFavoriteGroupSettings ? "checked" : "")
+	if !StrLen(g_intNewSortCriteria)
+		g_intNewSortCriteria := (StrLen(o_EditedFavorite.AA.strFavoriteGroupSettings) ? o_EditedFavorite.AA.strFavoriteGroupSettings : 0)
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (g_intNewSortCriteria ? "checked" : "")
 		, % o_L["DialogMenuSortEnable"]
-		
-	Gui, 2:Add, Text, y+5 x340 w150 section vf_lblMenuAutoSortOrder, % o_L["DialogSortOrder"] . ":"
-	Gui, 2:Add, Radio, % "y+5 x340 w150 vf_intRadioMenuAutoSortOrder1 group" . (o_EditedFavorite.AA.strFavoriteGroupSettings > 0 ? " checked" : ""), % o_L["DialogAscending"]
-	Gui, 2:Add, Radio, % "y+5 x340 w150 vf_intRadioMenuAutoSortOrder2" . (o_EditedFavorite.AA.strFavoriteGroupSettings < 0 ? " checked" : ""), % o_L["DialogDescending"]
-
-	Gui, 2:Add, Text, ys x20 vf_lblMenuAutoSortCriteria, % o_L["DialogSortBy"] . ":"
-	
-	saSortCriteria := StrSplit(o_L["GuiLvFavoritesHeader"], "|") ; Name|Type|Hotkey|Location or content
-	saSortCriteria.Push(o_L["DialogMenuSortLastModified"])
-	saSortCriteria.Push(o_L["DialogMenuSortCreated"])
-	saSortCriteria.Push(o_L["DialogMenuSortLastUsed"])
-	saSortCriteria.Push(o_L["DialogMenuSortUsage"])
-	
-	for intKey, strCriteria in saSortCriteria
-		Gui, 2:Add, Radio, % (intKey = 5 ? "ys" : "y+5") . " x" . (intKey <= 4 ? 20 : 180) . " w150 vf_intRadioMenuAutoSort" . intKey . (intKey = 1 ? " section" : "") 
-			. (Abs(o_EditedFavorite.AA.strFavoriteGroupSettings) = intKey ? " checked" : ""), %strCriteria%
+	Gui, 2:Add, Button, x+10 yp vf_lblMenuAutoSortButton gGuiFavoriteTabBasicSort, % o_L["OptionsChangeHotkey"]
+	Gui, 2:Add, Text, x+20 yp vf_lblMenuAutoSortBy, % o_L["DialogSortBy"] . ":"
+	Gui, 2:Add, Text, x+1 yp w300 h18 vf_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -12397,6 +12532,119 @@ intKey := ""
 strCriteria := ""
 
 return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiFavoriteTabBasicSort:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+intTempSortCriteria := SelectSortCriteria(g_intNewSortCriteria, blnEscaped)
+if !(blnEscaped)
+	g_intNewSortCriteria := intTempSortCriteria
+GuiControl, 2:, f_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
+
+intTempSortCriteria := ""
+blnEscaped := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SelectSortCriteria(P_intActualSortCriteria, ByRef blnEscaped)
+;------------------------------------------------------------
+{
+	global
+	blnEscaped := true ; unless closed with OK
+	
+	SC_strGuiTitle := o_L["DialogSortBy"] . " - " . g_strAppNameText
+
+	if !StrLen(P_intActualSortCriteria) ; if new SortCriteria, use default options
+		SC_strFavoriteSortCriteriaOptionsShort := o_Settings.SortCriterias.strSortCriteriasDefaultOptions.IniValue
+
+	Gui, 3:New, +Hwndg_strGui3Hwnd, %SC_strGuiTitle%
+	Gui, 3:Default
+	Gui, +Owner2
+	Gui, +OwnDialogs
+	
+	if (g_blnUseColors)
+		Gui, Color, %g_strGuiWindowColor%
+	Gui, Font, s10 w700, Verdana
+	Gui, Add, Text, x10 y10 w400 center, %SC_strGuiTitle%
+	Gui, Font
+	
+	Gui, Add, Text, x240 w150 vf_lblMenuAutoSortOrder section, % o_L["DialogSortOrder"] . ":"
+	Gui, Add, Radio, % "y+5 x240 w150 vf_intRadioMenuAutoSortOrder1 group" . (P_intActualSortCriteria > 0 ? " checked" : ""), % o_L["DialogAscending"]
+	Gui, Add, Radio, % "y+5 x240 w150 vf_intRadioMenuAutoSortOrder2" . (P_intActualSortCriteria < 0 ? " checked" : ""), % o_L["DialogDescending"]
+
+	Gui, Add, Text, ys x10, % o_L["DialogSortBy"] . ":"
+	
+	for SC_intKey, SC_strCriteria in g_saSortCriteria
+		Gui, Add, Radio, % "y+5 x10 w150 vf_intRadioMenuAutoSort" . SC_intKey
+			. (Abs(P_intActualSortCriteria) = SC_intKey ? " checked" : ""), %SC_strCriteria%
+	
+	SC_aaL := o_L.InsertAmpersand(false, "DialogOK", "GuiCancel")
+	Gui, Add, Button, y+25 x10 vf_btnChangeSortCriteriaOK gButtonChangeSortCriteriaOK default, % SC_aaL["DialogOK"]
+	Gui, Add, Button, yp x+20 vf_btnChangeSortCriteriaCancel gButtonChangeSortCriteriaCancel, % SC_aaL["GuiCancel"]
+	
+	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeSortCriteriaOK", "f_btnChangeSortCriteriaCancel")
+
+	Gui, Add, Text
+	GuiControl, Focus, f_btnChangeSortCriteriaOK
+	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SH_intX, SH_intY)
+	Gui, Show, AutoSize x%SH_intX% y%SH_intY%
+
+	Gui, 2:+Disabled
+	WinWaitClose,  %SC_strGuiTitle% ; waiting for Gui to close
+	
+	SC_strGuiTitle := ""
+	SC_strFavoriteSortCriteriaOptionsShort := ""
+	SC_intKey := ""
+	SC_strCriteria := ""
+	SC_aaL := ""
+	
+	return SC_intNewSortCriteria ; returning value
+	
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	ButtonChangeSortCriteriaOK:
+	;------------------------------------------------------------
+	
+	for SC_intKey, SC_strCriteria in g_saSortCriteria
+	{
+		GuiControlGet, blnRadioButtonValue, , % "f_intRadioMenuAutoSort" . SC_intKey
+		if (blnRadioButtonValue)
+		{
+			SC_intNewSortCriteria := SC_intKey
+			break
+		}
+	}
+	GuiControlGet, blnRadioButtonDesc, , f_intRadioMenuAutoSortOrder2
+	SC_intNewSortCriteria := (blnRadioButtonDesc ? -SC_intNewSortCriteria : SC_intNewSortCriteria) ; 2 descending else 1 ascending
+	
+	if (Abs(SC_intNewSortCriteria) > 4 and !o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+		or (Abs(SC_intNewSortCriteria) > 6 and !g_blnUsageDbEnabled)
+		Oops(2, o_L["OopsSortOnHiddenColumns"], o_L["OptionsSearchWithStats"])
+		
+	Gosub, 3GuiClose
+	blnEscaped := false
+	
+	return
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	ButtonChangeSortCriteriaCancel:
+	;------------------------------------------------------------
+	
+	; called here if user click Cancel, but not called if user hit Escape (reason for using blnEscaped)
+	Gosub, 3GuiEscape
+  
+	return
+	;------------------------------------------------------------
+}
 ;------------------------------------------------------------
 
 
@@ -12877,18 +13125,16 @@ MenuAutoSortClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSortOrder
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder1
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_intRadioMenuAutoSortOrder2
-GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), f_lblMenuAutoSortCriteria
-Loop, 8
-	GuiControl, % (f_blnMenuAutoSortEnable ? "Enable" : "Disable"), % "f_intRadioMenuAutoSort" . A_Index
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortCriteria
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortButton
+GuiControl, % (f_blnMenuAutoSortEnable ? "Show" : "Hide"), f_lblMenuAutoSortBy
 
-if (f_blnMenuAutoSortEnable and !o_EditedFavorite.AA.strFavoriteGroupSettings)
-{
-	GuiControl, , f_intRadioMenuAutoSort1, 1
-	GuiControl, , f_intRadioMenuAutoSortOrder1, 1
-}
+if !(f_blnMenuAutoSortEnable)
+	g_intNewSortCriteria := 0
+else if !(g_intNewSortCriteria)
+	g_intNewSortCriteria := 1
+	
+GuiControl, 2:, f_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
 
 return
 ;------------------------------------------------------------
@@ -12943,6 +13189,9 @@ GuiMoveFavoriteToMenu:
 GuiMoveMultipleFavoritesToMenu:
 GuiCopyMultipleFavoritesToMenu:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 Gui, 1:Default
 strGuiFavoriteLabel := A_ThisLabel
@@ -13028,13 +13277,18 @@ ButtonChangeFavoriteHotstring:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-g_strNewFavoriteHotstring := SelectHotstring(g_strNewFavoriteHotstring, f_strFavoriteShortName, o_EditedFavorite.AA.strFavoriteType, f_strFavoriteLocation)
+strTempFavoriteHotstring := SelectHotstring(g_strNewFavoriteHotstring, f_strFavoriteShortName, o_EditedFavorite.AA.strFavoriteType, f_strFavoriteLocation, blnEscaped)
+if !(blnEscaped)
+	g_strNewFavoriteHotstring := strTempFavoriteHotstring
 ; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger or existing hotstring if cancelled
 
 SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
 
 GuiControl, 2:, f_strHotstringTrigger, %g_strNewFavoriteHotstringTrigger%
 GuiControl, 2:, f_strHotstringOptions, % GetHotstringOptionsLong(g_strNewFavoriteHotstringOptionsShort)
+
+strTempFavoriteHotstring := ""
+blnEscaped := ""
 
 return
 ;------------------------------------------------------------
@@ -14428,6 +14682,9 @@ AddExternalMenusFromCatalogue:
 AddExternalCatalogueFromQAPFeature:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 if (A_ThisLabel = "AddExternalCatalogueFromQAPFeature")
 	gosub, GuiShowFromExternalCatalogue
 else
@@ -14581,9 +14838,12 @@ GuiMultipleAddSelectSource:
 GuiMultipleAddSelectSourceFromQAPFeature:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 ; list of available sources
 oMultipleAddSourcesIndex := ["CurrentWindows", "RecentFolders", "RecentFiles", "FrequentFolders", "FrequentFiles"
-	, "QAP", "Special", "Folder", "SettingsFileItems"] ; to be added: "SettingsFileItems", "SettingsFileMenus"]
+	, "QAP", "Special", "Folder", "SettingsFileItems", "SettingsFileMenus"]
 oMultipleAddSources := {CurrentWindows: o_L["MenuSwitchFolderOrApp"], RecentFolders: o_L["MenuRecentFolders"]
 	, RecentFiles: o_L["MenuRecentFiles"], FrequentFolders: o_L["MenuPopularMenusFolders"], FrequentFiles: o_L["MenuPopularMenusFiles"]
 	, QAP: o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand, Special: o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
@@ -14700,6 +14960,9 @@ GuiMultipleAddSettingsFileItems:
 GuiMultipleAddSettingsFileMenus:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 g_strMultipleAddSourceKey := StrReplace(A_ThisLabel, "GuiMultipleAdd", "")
 blnUsePath := InStr("Folder|SettingsFileMenus|SettingsFileItems", g_strMultipleAddSourceKey)
 
@@ -14721,15 +14984,25 @@ Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 
 Gui, 2:Font, w600, Verdana
-Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth, % o_L["DialogMultipleAdd"] . " - " . oMultipleAddSources[g_strMultipleAddSourceKey]
+Gui, 2:Add, Text, % "x10 y10 w" . intGuiContentWidth, % o_L["DialogMultipleAdd"] . " - "
+	. (g_strMultipleAddSourceKey = "SettingsFileMenus" ? o_L["DialogMultipleAddSettingsFileMenus"] : oMultipleAddSources[g_strMultipleAddSourceKey])
 Gui, 2:Font
-Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro1"] . " " .  o_L["DialogMultipleAddIntro1a"]
-Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro2"] . " " .  o_L["DialogMultipleAddIntro2a"]
+
+if (g_strMultipleAddSourceKey = "Folder")
+	strStep1 :=  o_L["DialogMultipleAddIntro1f"]
+else if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+	strStep1 :=  o_L["DialogMultipleAddIntro1s"]
+else
+	strStep1 :=  o_L["DialogMultipleAddIntro1"]
+strStep1 .= " " . (g_strMultipleAddSourceKey <> "SettingsFileMenus" ? o_L["DialogMultipleAddIntro1a"] : o_L["DialogMultipleAddIntro1t"]) . "."
+Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, %strStep1%
+Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro2"] . " " . o_L["DialogMultipleAddIntro2a"]
 Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro3"]
 
 Gui, 2:Add, Text, % "vf_lblMultipleAddMenu x10 y+15 w" . intCol1Width . " right", % o_L["MenuMenu"]
 Gui, 2:Add, DropDownList, % "x" . intCol2X . " yp w" . intGuiContentWidth - intCol1Width - 5 . " vf_drpGuiMultipleAddMenu"
 	, % o_MainMenu.BuildMenuListDropDown(o_MainMenu.AA.strMenuPath, "", true) . "|" ; last true to exclude read-only external menus
+GuiControl, ChooseString, f_drpGuiMultipleAddMenu, % o_MenuInGui.AA.strMenuPath
 
 if (blnUsePath)
 {
@@ -14741,21 +15014,23 @@ if (blnUsePath)
 	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 }
 
-if !(blnUsePath and g_strMultipleAddSourceKey <> "SettingsFileItems")
+if (!blnUsePath or g_strMultipleAddSourceKey = "SettingsFileItems")
 {
 	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
 	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
 	Gui, 2:Add, Button, x+5 yp gButtonMultipleAddClearFilter vf_btnMultipleAddClearFilter, X
 }
 
-Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged checked, % o_L["DialogMultipleAddExcludeExisting"]
-
-Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
+Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged, % o_L["DialogMultipleAddExcludeExisting"]
 
 if (g_strMultipleAddSourceKey = "SettingsFileMenus")
-	Gui, 2:Add, TreeView, % "xs ys w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
+{
+	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
+	Gui, 2:Add, TreeView, % "x10 y+5 w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
+}
 else
 {
+	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
 	Gui, 2:Add, ListView, % "x10 y+5 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
@@ -14785,8 +15060,27 @@ GuiMultipleAddSelectAllNoneClicked:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-Loop, % LV_GetCount()
-	LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
+if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+{
+	intRootId := 0
+	Loop
+	{
+		intRootId := TV_GetNext(intRootId)
+		if !(intRootId)
+			break
+		TV_Modify(intRootId , "Check" . f_blnMultipleAddSelectAllNone)
+		if TV_GetChild(intRootId) ; it's a node
+			ToggleAllTheWayDown(intRootId, !f_blnMultipleAddSelectAllNone) ; check all children
+	}
+	GuiControl, % (f_blnMultipleAddSelectAllNone ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if select all enable the Add button
+	intRootId := ""
+}
+else
+{
+	Loop, % LV_GetCount()
+		LV_Modify(A_Index, "Check" . f_blnMultipleAddSelectAllNone)
+	GuiControl, % (LV_GetNext(0, "C") ? "Enable" : "Disable"), f_btnGuiMultipleAddAddFavorites ; if at least one row is checked enable the Add button
+}
 
 return
 ;------------------------------------------------------------
@@ -14886,6 +15180,9 @@ if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
 	}
 	else ; o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
 		gosub, GuiMultipleAddSourceFolderLoad
+
+GuiControl, , f_blnMultipleAddSelectAllNone, % 0
+gosub, GuiMultipleAddFilterChanged
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 SetCursor(false)
@@ -15354,6 +15651,9 @@ Loop
 	
 	oAddedItem := g_aaTreeViewItemsByIDs[strItemId] ; get item object
 	
+	TV_GetText(strTvFavoriteName, strItemId)
+	oAddedItem.AA.strFavoriteName := strTvFavoriteName ; update favorite name with name in treeview
+	
 	strUniqueName := oAddedItem.AA.strFavoriteName
 	oAddedItem.GetUniqueName(strUniqueName, "", strMenuPath, true) ; last true for blnRename
 	if (strUniqueName <> oAddedItem.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
@@ -15388,6 +15688,7 @@ strItemId := ""
 strMenuPath := ""
 oParentMenu := ""
 oAddedItem := ""
+strTvFavoriteName := ""
 strUniqueName := ""
 strNewMenuPath := ""
 
@@ -15611,30 +15912,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	{
-		if (f_blnMenuAutoSortEnable)
-		{
-			Loop, 8
-			{
-				GuiControlGet, blnRadioButtonValue, , % "f_intRadioMenuAutoSort" . A_Index
-				if (blnRadioButtonValue)
-				{
-					intMenuAutoSort := A_Index
-					break
-				}
-			}
-			intMenuAutoSort := (f_intRadioMenuAutoSortOrder2 ? -intMenuAutoSort : intMenuAutoSort) ; 2 descending else 1 ascending
-			
-			if (Abs(intMenuAutoSort) > 4 and !o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
-				or (Abs(intMenuAutoSort) > 6 and !g_blnUsageDbEnabled)
-				Oops(2, o_L["OopsSortOnHiddenColumns"], o_L["OptionsSearchWithStats"])
-		}
-		else
-			intMenuAutoSort := 0 ; manual, no auto sorting
-		
-		o_EditedFavorite.AA.strFavoriteGroupSettings := intMenuAutoSort ; value saved to settings file
+		o_EditedFavorite.AA.strFavoriteGroupSettings := g_intNewSortCriteria ; value saved to settings file
 		; use o_EditedFavorite.AA.oSubMenu.AA because when this menu is edited from sort menu, o_MenuInGui contains the menu's parent menu
-		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := intMenuAutoSort ; for when refreshing this menu
-		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := intMenuAutoSort ; for future load of this menu before relaunching QAP
+		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := g_intNewSortCriteria ; for when refreshing this menu
+		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := g_intNewSortCriteria ; for future load of this menu before relaunching QAP
 	}
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
@@ -15714,7 +15995,8 @@ if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is proces
 
 ; alert user if an existing favorite has the same location + parameters
 
-if InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd
+if (InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd
+	and o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue)
 {
 	oDuplicateFavorite := o_MainMenu.FoundIdenticalFavorite(o_EditedFavorite)
 	if (oDuplicateFavorite) ; FoundIdenticalFavorite returned false if not duplicate
@@ -15744,7 +16026,8 @@ if !(g_intNewItemPos)
 	if SearchIsVisible()
 		g_intNewItemPos := o_EditedFavoriteMenu.SA.MaxIndex() + 1
 	else
-		g_intNewItemPos := o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1
+		; prevent if destination menu is empty and MaxIndex() returns null
+		g_intNewItemPos := (o_Containers.AA[strDestinationMenu].SA.MaxIndex() ? o_Containers.AA[strDestinationMenu].SA.MaxIndex() : 0) + 1
 
 o_Containers.AA[strDestinationMenu].SA.InsertAt(g_intNewItemPos, o_EditedFavorite)
 
@@ -15834,6 +16117,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	oDuplicateFavorite := ""
 	blnRadioButtonValue := ""
 	oNewFavoriteMenu := ""
+	g_intNewSortCriteria := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
@@ -16060,12 +16344,17 @@ if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
 	{
 		if StrLen(strExpandedNewFavoriteLocation)
-			Oops(2, o_L["OopsFileNotFound"] . ":`n" . strExpandedNewFavoriteLocation
+			strFileNotFoundMessage := L(o_L["OopsFileNotFound"] . ":`n" . strExpandedNewFavoriteLocation
 				. (strExpandedNewFavoriteLocation <> strNewFavoriteLocation ? "`n`n" . o_L["OopsFileExpandedFrom"] . ":`n" . strNewFavoriteLocation : ""))
 		else
-			Oops(2, o_L["OopsFileNotFound"] . ":`n" . strNewFavoriteLocation)
-		g_blnAbortSave := true
-		return
+			strFileNotFoundMessage := L(o_L["OopsFileNotFound"] . ":`n" . strNewFavoriteLocation)
+		MsgBox, % 4+256, %g_strAppNameText%, % strFileNotFoundMessage . "`n`n" . o_L["OopsFileNotFoundSaveAnyway"]
+		strFileNotFoundMessage := ""
+		IfMsgBox, No
+		{
+			g_blnAbortSave := true
+			return
+		}
 	}
 }
 
@@ -16354,6 +16643,9 @@ return
 GuiRemoveMultipleFavorites:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 if LV_GetCount("Selected") > 1
 {
 	Gui, 1:+OwnDialogs
@@ -16399,6 +16691,9 @@ return
 GuiRemoveFavorite:
 GuiRemoveOneFavorite:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 if (A_ThisLabel = "GuiRemoveFavorite")
 {
@@ -16504,7 +16799,7 @@ GuiMoveMultipleFavoritesUp:
 GuiMoveMultipleFavoritesDown:
 ;------------------------------------------------------------
 
-if o_MenuInGui.OopsMenuIsSorted()
+if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 	return
 
 GuiControl, Focus, f_lvFavoritesList
@@ -16545,7 +16840,7 @@ GuiMoveOneFavoriteUp:
 GuiMoveOneFavoriteDown:
 ;------------------------------------------------------------
 
-if o_MenuInGui.OopsMenuIsSorted()
+if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 	return
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
@@ -16623,6 +16918,9 @@ return
 GuiSortFavoritesMenu:
 GuiSortFavoritesMenuContextMenu:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 if (o_MenuInGui.AA.strMenuPath = o_L["MainMenuName"])
 	strSortMenu := "menuSortMainMenu"
@@ -16835,6 +17133,9 @@ return
 GuiSelectAll:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 gosub, CheckShowSettings
 
 Gui, 1:ListView, % (SearchIsVisible() ? "f_lvFavoritesListSearch" : "f_lvFavoritesList")
@@ -16887,6 +17188,9 @@ GuiHotkeysManageFromQAPFeature:
 GuiHotkeysManageHotstrings:
 GuiHotkeysManageHotstringsFromQAPFeature:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 gosub, CheckShowSettings
 	
@@ -17008,11 +17312,14 @@ if (A_GuiEvent = "DoubleClick")
 		}
 	else ; Hotstring
 	{
-		g_strNewFavoriteHotstring := SelectHotstring(o_EditedFavorite.AA.strFavoriteHotstring
+		strTempFavoriteHotstring := SelectHotstring(o_EditedFavorite.AA.strFavoriteHotstring
 			, o_EditedFavorite.AA.strFavoriteName
 			, o_EditedFavorite.AA.strFavoriteType
-			, o_EditedFavorite.AA.strFavoriteLocation)
-		; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger or existing hotstring if cancelled
+			, o_EditedFavorite.AA.strFavoriteLocation
+			, blnEscaped)
+		; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger
+		if !(blnEscaped)
+			g_strNewFavoriteHotstring := strTempFavoriteHotstring
 		
 		Gosub, UpdateFavoriteObjectSaveHotstringList ; updates o_EditedFavorite.AA.strFavoriteHotstring with g_strNewFavoriteHotstring and enable Settings save/Cancel buttons
 	}
@@ -17024,6 +17331,8 @@ intItemPosition := ""
 strHotkeyType := ""
 strMenuPath := ""
 strFavoritePosition := ""
+strTempFavoriteHotstring := ""
+blnEscaped := ""
 
 return
 ;------------------------------------------------------------
@@ -17103,6 +17412,9 @@ return
 GuiIconsManage:
 GuiIconsManageFromQAPFeature:
 ;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
 
 gosub, CheckShowSettings
 
@@ -17302,7 +17614,7 @@ GuiAddSeparator:
 GuiAddColumnBreak:
 ;------------------------------------------------------------
 
-if o_MenuInGui.OopsMenuIsSorted()
+if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 	return
 
 gosub, CheckShowSettings
@@ -17782,19 +18094,27 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 SelectHotstringDefaultOptions:
 ;------------------------------------------------------------
 
-strNewHotstringsDefaultOptions := SelectHotstring(o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue, "", "", "", true)
-Gosub, GuiOptionsGroupChanged
+strTempHotstringsDefaultOptions := SelectHotstring(strNewHotstringsDefaultOptions, "", "HotstringsOptions", "", blnEscaped, true)
+if !(blnEscaped)
+{
+	strNewHotstringsDefaultOptions := strTempHotstringsDefaultOptions
+	Gosub, GuiOptionsGroupChanged
+}
+
+strTempHotstringsDefaultOptions := ""
+blnEscaped := ""
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_strFavoriteLocation, P_blnDefaultOptions := false)
+SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_strFavoriteLocation, ByRef P_blnEscaped, P_blnDefaultOptions := false)
 ; returns the new hotstring or empty string if cancel
 ;------------------------------------------------------------
 {
 	global
+    P_blnEscaped := true ; unless closed with OK
 	
 	g_blnChangeHotstringInProgress := !(P_blnDefaultOptions)
 	SH_strGuiTitle := L((P_blnDefaultOptions ? o_L["DialogChangeHotstringTitleDefaultOptions"] : o_L["DialogChangeHotstringTitle"]), g_strAppNameText)
@@ -17845,7 +18165,10 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	Gui, Add, Checkbox, % "x10 y+5 vf_SH_blnHotstringKeepHotstring " . (InStr(SH_strFavoriteHotstringOptionsShort, "B0") ? "checked" : ""), % o_L["DialogHotstringKeepHotstring"]
 	; *	Do not wait for Ending key
 	Gui, Add, Checkbox, % "x10 y+5 vf_SH_blnHotstringNotWaitEndingKey " . (InStr(SH_strFavoriteHotstringOptionsShort, "*") ? "checked" : ""), % o_L["DialogHotstringNotWaitEndingKey"]
-	; Unsupported options: O	Do not keep Ending key (not available when using Send), C1 Do not conform to typed case (not available when using Send),
+	; *	Omit the ending character (by default false, behaviour change compared to previous version where end char was never pasted for snippets)
+	if InStr("|Snippet|HotstringsOptions|", "|" . P_strFavoriteType . "|")
+		Gui, Add, Checkbox, % "x10 y+5 vf_SH_blnHotstringOmitEndChar " . (InStr(SH_strFavoriteHotstringOptionsShort, "O") ? "checked" : ""), % o_L["DialogHotstringOmitEndChar"]
+	; Unsupported option: C1 Do not conform to typed case (not available when using Send),
 	; Kn Key-delay, Pn Priority, R Send Raw, SI Send Input, SP Send PLay, SE Send Event, T Send Raw, Z Reset recognizer after each triggering
 	; Keep default EndChars "-()[]{}:;'"/\,.?!" + Enter, Space and Tab
 	; Keep default MouseReset option (recognizer resets monitored string on mouse click)
@@ -17858,7 +18181,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeHotstringOK", "f_btnChangeHotstringCancel")
 
 	Gui, Add, Text
-	GuiControl, Focus, f_btnChangeHotkeyOK
+	GuiControl, Focus, f_btnChangeHotstringOK
 	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SH_intX, SH_intY)
 	Gui, Show, AutoSize x%SH_intX% y%SH_intY%
 
@@ -17902,8 +18225,9 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	
 	GuiControlGet, SH_blnHotstringCaseSensitive, , f_SH_blnHotstringCaseSensitive
 	GuiControlGet, SH_blnHotstringExpandInsideWords, , f_SH_blnHotstringExpandInsideWords
-	GuiControlGet, SH_blnHotstringKeepHotstring , , f_SH_blnHotstringKeepHotstring
-	GuiControlGet, SH_blnHotstringNotWaitEndingKey , , f_SH_blnHotstringNotWaitEndingKey
+	GuiControlGet, SH_blnHotstringKeepHotstring, , f_SH_blnHotstringKeepHotstring
+	GuiControlGet, SH_blnHotstringNotWaitEndingKey, , f_SH_blnHotstringNotWaitEndingKey
+	GuiControlGet, SH_blnHotstringOmitEndChar, , f_SH_blnHotstringOmitEndChar
 
 	GuiControlGet, SH_strHotstringTrigger, , f_SH_strHotstringTrigger
 	
@@ -17913,6 +18237,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 			. (SH_blnHotstringExpandInsideWords ? "?" : "")
 			. (SH_blnHotstringKeepHotstring ? "B0" : "")
 			. (SH_blnHotstringNotWaitEndingKey ? "*" : "")
+			. (SH_blnHotstringOmitEndChar ? "O" : "")
 			. g_strHotstringOptionsSeparator
 			. SH_strHotstringTrigger
 	else
@@ -17920,6 +18245,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	
 	g_blnChangeHotstringInProgress := false
 	Gosub, 3GuiClose
+	P_blnEscaped := false
 	
 	return
 	;------------------------------------------------------------
@@ -17928,7 +18254,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	ButtonChangeHotstringCancel:
 	;------------------------------------------------------------
 	
-	; called here if user click Cancel, called also directlry if user hit Escape
+	; called here if user click Cancel, not called if user hit Escape (handled by P_blnEscaped parameter)
 
 	SH_strNewHotstring := P_strActualHotstring
 	g_blnChangeHotstringInProgress := false
@@ -18115,6 +18441,9 @@ GuiCancel:
 GuiCancelAndExitApp:
 ;------------------------------------------------------------
 
+if (blnSponsorCodeInputInProgress) ; when user click X or hit Escape in the GuiSponsorCodeInput dialog box
+	gosub, ProcessSponsorCodeExitAfterCancel ; will exit QAP
+
 if GetKeyState("LShift") and GetKeyState("LCtrl")
 	Gosub, ReloadQAPDontSave ; undocumented
 
@@ -18280,10 +18609,7 @@ if (A_ThisLabel = "3GuiEscape")
 		g_blnChangeShortcutInProgress := false
 	}
 	else if (g_blnChangeHotstringInProgress) ; coming from SelectHotstring
-	{
-		SH_strNewHotstring := g_objEditedFavorite.FavoriteHotstring ; do not use P_strActualHotstring that is a parameter, not global
 		g_blnChangeHotstringInProgress := false
-	}
 
 Gui, 2:-Disabled
 Gui, 3:Destroy
@@ -19100,6 +19426,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 	{
 		g_strTargetWinId := "" ; never use target window when launched from hotstring
 		g_strHotkeyTypeDetected := "Launch"
+		g_strHotstringEndChar := (o_ThisFavorite.AA.strFavoriteType = "Snippet" ? A_EndChar : "") ; to paste the end char if type is snippet and if OmitEndChar is false
 	}
 	else if CanNavigate(A_ThisHotkey) ; update g_strTargetWinId
 		g_strHotkeyTypeDetected := "Navigate"
@@ -19874,15 +20201,13 @@ return
 
 
 ;------------------------------------------------------------
-SuspendHotkeys:
+ToggleSuspendHotkeys:
 ;------------------------------------------------------------
 
-if (A_IsSuspended)
-	Suspend, Off
-else
-	Suspend, On
+Suspend, % (A_IsSuspended ? "Off" : "On")
 
-Menu, menuBarTools, ToggleCheck, % aaMenuToolsL["MenuSuspendHotkeys"]
+Menu, menuBarTools, % (A_IsSuspended ? "Check" : "Uncheck"), % aaMenuToolsL["MenuSuspendHotkeys"]
+Menu, Tray, % (A_IsSuspended ? "Check" : "Uncheck"), % g_aaMenuTrayL["MenuSuspendHotkeys"]
 
 return
 ;------------------------------------------------------------
@@ -20239,6 +20564,9 @@ return
 ImportExport:
 ;------------------------------------------------------------
 
+if !(g_blnMenuReady)
+	return
+
 if SettingsUnsaved()
 {
 	Oops(1, o_L["ImpExpUnsavedSettings"])
@@ -20267,10 +20595,13 @@ Gui, 2:Font, w700
 Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpOptions, % o_L["ImpExpExport"]
 Gui, 2:Font
 
-Gui, 2:Add, CheckBox, y+10 x10 w400 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
 Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpGlobal Checked, % o_L["ImpExpFileGlobal"]
 Gui, 2:Add, CheckBox, y+10 x10 w400 vf_blnImpExpAlternative Checked, % o_L["ImpExpOptionAlternative"]
 Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpThemes Checked, % o_L["ImpExpFileThemes"]
+Gui, 2:Add, CheckBox, y+10 x10 w200 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
+
+Gui, 2:Add, Button, y+1 x10 vf_btnImportFavorites gGuiMultipleAddSettingsFileMenus, % o_L["ImpExpImportFavorites"]
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnImportFavorites")
 
 aaImportExportL := o_L.InsertAmpersand(false, "ImpExpImport", "ImpExpExport", "GuiClose")
 
@@ -20303,7 +20634,12 @@ GuiControl, , f_btnImpExpGo, % L(f_radImpExpExport ? o_L["ImpExpExport"] : aaImp
 if (f_radImpExpExport)
 	strImpExpFile := o_Settings.ReadIniValue("LastExportFile", " ") ; empty if not found
 else
+{
 	strImpExpFile := ""
+	GuiControl, , f_blnImpExpFavorites, 0
+}
+GuiControl, % (f_radImpExpExport ? "Enable" : "Disable"), f_blnImpExpFavorites
+GuiControl, % (f_radImpExpExport ? "Hide" : "Show"), f_btnImportFavorites
 GuiControl, , f_strImpExpFile, %strImpExpFile%
 
 return
@@ -20888,9 +21224,9 @@ blnUsageDbIsNew := !FileExist(g_strUsageDbFile)
 
 if !o_UsageDb.OpenDb(g_strUsageDbFile)
 {
-	; Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
-	; Diag(A_ThisLabel, "SQLite Error OpenDb Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
-	Oops(0, "SQLite Error OpenDb`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nFile: " . g_strUsageDbFile)
+	; Diag(A_ThisLabel, "SQLite Error OpenDb " . SQLiteErrorMessage(""), "STOP", g_blnIniFileCreation) ; force if first launch
+	; Diag(A_ThisLabel, "SQLite Error OpenDb " . SQLiteErrorMessage(""), "STOP")
+	Oops(0, "SQLite Error OpenDb`n`n" . SQLiteErrorMessage(g_strUsageDbFile))
 	g_blnUsageDbEnabled := false
 	return
 }
@@ -20913,9 +21249,9 @@ if (blnUsageDbIsNew)
 
 	If !o_UsageDb.Exec(strUsageDbSQL)
 	{
-		; Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP", g_blnIniFileCreation) ; force if first launch
-		; Diag(A_ThisLabel, "SQLite CREATE Error Message: " . o_UsageDb.ErrorMsg . " Code: " . o_UsageDb.ErrorCode, "STOP")
-		Oops(0, "SQLite CREATE Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		; Diag(A_ThisLabel, "SQLite CREATE Error " . SQLiteErrorMessage(""), "STOP", g_blnIniFileCreation) ; force if first launch
+		; Diag(A_ThisLabel, "SQLite CREATE Error " . SQLiteErrorMessage(""), "STOP")
+		Oops(0, "SQLite CREATE Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -20938,7 +21274,7 @@ else ; modifications for previous versions
 	If StrLen(strUsageDbSQL)
 		!o_UsageDb.Exec(strUsageDbSQL)
 		{
-			Oops(0, "SQLite ALTER Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+			Oops(0, "SQLite ALTER Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 			g_blnUsageDbEnabled := false
 			return
 		}
@@ -21028,7 +21364,7 @@ strUsageDbSQL := "SELECT LatestCollected FROM zMetadata;"
 if !o_UsageDb.Query(strUsageDbSQL, o_MetadataRecordSet)
 {
 	; Diag(A_ThisLabel, "SQLite QUERY zMETADATA Error: " . strUsageDbSQL, "STOP")
-	Oops(0, "SQLite QUERY zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite QUERY zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	g_blnUsageDbEnabled := false
 	return
 }
@@ -21101,7 +21437,7 @@ o_UsageDb.Exec("BEGIN TRANSACTION;")
 If (intUsageDbtNbItems) and !o_UsageDb.Exec(strUsageDbSQL)
 {
 	; Diag(A_ThisLabel, "SQLite INSERT Recent Items Error: " . strUsageDbSQL, "STOP")
-	Oops(0, "SQLite INSERT Recent Items Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite INSERT Recent Items Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
 	return
@@ -21113,7 +21449,7 @@ strUsageDbSQL := "UPDATE zMetadata SET LatestCollected = '" . strUsageDbLatestCo
 If !o_UsageDb.Exec(strUsageDbSQL)
 {
 	; Diag(A_ThisLabel, "SQLite UPDATE LatestCollected zMETADATA Error: " . strUsageDbSQL, "STOP")
-	Oops(0, "SQLite UPDATE LatestCollected zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+	Oops(0, "SQLite UPDATE LatestCollected zMETADATA Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 	g_blnUsageDbEnabled := false
 	o_UsageDb.Exec("ROLLBACK;")
 	return
@@ -21234,9 +21570,8 @@ loop, parse, % "Folders|Files", |
 		; Diag(A_ThisLabel . ":Processing Start", strPath . " " . strTargetType, "ELAPSED")
 		
 		if (strTargetNb <= 1) ; skip if not enough frequent
-			continue
-		
-        if !FileExistInPath(strPath) ; skip if not exist
+			or FolderOrFileIsExcluded(strTargetType, strPath) ; skip if excluded
+			or !FileExistInPath(strPath) ; skip if not exist
 			continue
 		
 		intPopularItemsCount++
@@ -21292,7 +21627,7 @@ if StrLen(strDynamicDbSQL) ; if menu does not contain Drives, Popular or Recent 
 	If !o_UsageDb.Exec(strDynamicDbSQL)
 	{
 		; Diag(A_ThisLabel, "SQLite UPDATE zMETADATA Error: " . StrReplace(strDynamicDbSQL, "`n", "``n"), "STOP")
-		Oops(0, "SQLite UPDATE Popular zMETADATA Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strDynamicDbSQL)
+		Oops(0, "SQLite UPDATE Popular zMETADATA Error`n`n" . SQLiteErrorMessage(strDynamicDbSQL))
 		return
 	}
 }
@@ -21394,7 +21729,7 @@ if (g_blnUsageDbEnabled) ; use SQLite usage database
 	if !o_UsageDb.Query(strUsageDbSQL, o_RecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY Build menu Error", "STOP")
-		Oops(0, "SQLite QUERY Build menu Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY Build menu Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		return
 	}
 	objDuplicatesFinder := Object()
@@ -21460,7 +21795,8 @@ Loop
 	strMenuName := strTargetPath
 	strIcon := (InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd") ? "" : (strTargetType = "Folder" ? GetFolderIcon(strTargetPath) : GetIcon4Location(strTargetPath)))
 	if (strTargetType = "Folder")
-		and ((intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
+		and ((!FolderOrFileIsExcluded(strTargetType, strMenuName) and (intRecentFoldersCount < o_Settings.Menu.intRecentFoldersMax.IniValue))
+		or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFolders .= o_L["MenuRecentFolders"] . "|" . strMenuName . "|Folder|" . strIcon . "`n"
 		intRecentFoldersCount++
@@ -21468,7 +21804,8 @@ Loop
 	}
 	; do not "else"
 	if (strTargetType = "File")
-		and ((intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue) or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
+		and ((!FolderOrFileIsExcluded(strTargetType, strMenuName) and (intRecentFilesCount < o_Settings.Menu.intRecentFoldersMax.IniValue))
+		or InStr(A_ThisLabel, "GetMenusListRecentItemsForMultipleAdd"))
 	{
 		g_strMenuItemsListRecentFiles .= o_L["MenuRecentFiles"] . "|" . strMenuName . "|Document|" . strIcon . "`n"
 		intRecentFilesCount++
@@ -21908,6 +22245,10 @@ strICloudDrive := EnvVars("%USERPROFILE%\iCloudDrive")
 if FileExist(strICloudDrive)
 	o_Settings.UserVariables.strUserVariablesList.IniValue .= "{iCloudDrive}=" . strICloudDrive . "|"
 
+if StrLen(o_Settings.UserVariables.strUserVariablesList.IniValue)
+	o_Settings.UserVariables.strUserVariablesList.IniValue := "-- Variables detected by QAP --`n" . o_Settings.UserVariables.strUserVariablesList.IniValue
+o_Settings.UserVariables.strUserVariablesList.IniValue .= "-- Any line not starting with { is treated as a comment --`n"
+
 strDropboxJsonFileContent := ""
 strOneDrive := ""
 strGoogleDriveDbFile := ""
@@ -22137,6 +22478,7 @@ GetHotstringOptionsLong(strHotstringOptionsShort)
 		. (InStr(strHotstringOptionsShort, "?") ? o_L["DialogHotstringExpandInsideWords"] . g_strHotstringOptionsLongSeparator : "")
 		. (InStr(strHotstringOptionsShort, "B0") ? o_L["DialogHotstringKeepHotstring"] . g_strHotstringOptionsLongSeparator : "")
 		. (InStr(strHotstringOptionsShort, "*") ? o_L["DialogHotstringNotWaitEndingKey"] . g_strHotstringOptionsLongSeparator : "")
+		. (InStr(strHotstringOptionsShort, "O") ? o_L["DialogHotstringOmitEndChar"] . g_strHotstringOptionsLongSeparator : "")
 	if (SubStr(strHotstringOptionsLong, StrLen(strHotstringOptionsLong) - StrLen(g_strHotstringOptionsLongSeparator) + 1) = g_strHotstringOptionsLongSeparator)
 		strHotstringOptionsLong := SubStr(strHotstringOptionsLong, 1, -StrLen(g_strHotstringOptionsLongSeparator))
 	
@@ -22958,6 +23300,8 @@ EnvVars(str)
 ; in addition to environment variables, it expands QAP user variables like {Dropbox}
 ;------------------------------------------------------------
 {
+    str := ExpandUserVariables(str)
+	
     if sz:=DllCall("ExpandEnvironmentStrings", "uint", &str, "uint", 0, "uint", 0)
     {
         VarSetCapacity(dst, A_IsUnicode ? sz*2:sz)
@@ -22965,7 +23309,7 @@ EnvVars(str)
             return ExpandUserVariables(dst)
     }
 	
-    return ExpandUserVariables(str)
+    return str
 }
 ;------------------------------------------------------------
 
@@ -22975,7 +23319,7 @@ ExpandUserVariables(str)
 ;------------------------------------------------------------
 {
     loop, parse, % o_Settings.UserVariables.strUserVariablesList.IniValue, |
-        if StrLen(A_LoopField)
+        if (StrLen(A_LoopField) and SubStr(A_LoopField, 1, 1) ="{")
         {
             saUserVariable := StrSplit(A_LoopField, "=")
             if (SubStr(saUserVariable[1], 1, 1) = "{" and SubStr(saUserVariable[1], StrLen(saUserVariable[1]), 1) = "}")
@@ -23691,6 +24035,35 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 
 
 ;------------------------------------------------------------
+FolderOrFileIsExcluded(strFolderOrFile, strPath)
+;------------------------------------------------------------
+{
+	; check folder exclusions for folders and files
+	if (strFolderOrFile = "Folder" and SubStr(strPath, 0, 1) <> "\") ; if path is folder and does not end with "\", add it (to remove "C:\test" if exclusion is "C:\test\")
+		strPath .= "\"
+	Loop, parse, % o_Settings.Execution.strFoldersExclusionList.IniValue, |
+		; if StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField))) ; folder path starts with an exclusion
+	{
+		if (StrLen(A_LoopField) and RegExMatch(strPath, Wildcards2RegEx(A_LoopField . "*"))) ; folder path starts with an exclusion
+			return true ; folder or file under this folder is excluded
+	}
+	
+	; check file exclusions
+	if (strFolderOrFile = "File")
+		Loop, parse, % o_Settings.Execution.strFilesExclusionList.IniValue, |
+		{
+			strCriteria := (InStr(A_LoopField, ".") ? A_LoopField : "*." . A_LoopField) ; convert extension like "mp3" to "*.mp3"
+			SplitPath, strPath, strFileName
+			if (StrLen(strCriteria) and RegExMatch(strFileName, Wildcards2RegEx(strCriteria)))
+				return true ; file is excluded
+		}
+	
+	return false ; file or folder is not excluded
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GetUsageDbTargetFileInfo(strPath, ByRef strAttributes, ByRef strType, ByRef strDateTime, ByRef strExtension)
 ;------------------------------------------------------------
 {
@@ -23773,7 +24146,7 @@ GetRecordSetPopular(strTargetType)
 	if !o_UsageDb.Query(strUsageDbSQL, oRecordSet)
 	{
 		; Diag(A_ThisLabel, "SQLite QUERY POPULAR MENUS Error", "STOP")
-		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+		Oops(0, "SQLite QUERY POPULAR MENUS Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 		g_blnUsageDbEnabled := false
 		return
 	}
@@ -24674,6 +25047,38 @@ Descramble(strContent)
 	return strNewString
 }
 ;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+SQLiteErrorMessage(strQuery)
+;---------------------------------------------------------
+{
+	return	"Error Message: " . o_UsageDb.ErrorMsg . "`nError Code: " . o_UsageDb.ErrorCode . "`nExtended Error Code: " . o_UsageDb.ExtErrCode()
+		. "`nQuery: " . strQuery
+}
+;---------------------------------------------------------
+
+
+;---------------------------------------------------------
+Wildcards2RegEx(strDosWildcards)
+; https://www.autohotkey.com/boards/viewtopic.php?f=6&t=83453
+;---------------------------------------------------------
+{
+	strRegExCriteria := "i)^\Q" . StrReplace(StrReplace(StrReplace(strDosWildcards, "\E", "\E\\E\Q"), "?", "\E.?\Q"), "*", "\E.*\Q") . "\E$"
+	return strRegExCriteria
+}
+;---------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetSortCriteria(intCriteria)
+;------------------------------------------------------------
+{
+	if (intCriteria)
+		return g_saSortCriteria[Abs(intCriteria)] . " - " . (intCriteria > 0 ? o_L["DialogAscending"] : o_L["DialogDescending"])
+	; else return empty
+}
+;------------------------------------------------------------
 
 
 ;========================================================================================================================
@@ -26627,7 +27032,7 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
 			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
 			, "how-do-i-setup-or-manage-my-qap-license")
-
+		
 		; Close computer various command features
 		
 		this.AddQAPFeatureObject("Close Computer Control", o_L["DialogCloseComputerControl"] . g_strEllipse, "", "CloseComputerControl",			"5.1-CloseComputer"
@@ -27219,8 +27624,8 @@ TODO
 		this.strIniFileDefault := this.strIniFile
 		
 		this.saOptionsGroups := ["General", "SettingsWindow", "MenuIcons", "MenuAppearance"
-			, "PopupMenu", "PopupHotkeys", "PopupHotkeysAlternative", "FileManagers"
-			, "Snippets", "UserVariables", "Database"
+			, "PopupMenu", "MenuExclusions", "PopupHotkeys", "PopupHotkeysAlternative"
+			, "FileManagers", "Snippets", "UserVariables", "Database"
 			, "MenuAdvanced", "AdvancedLaunch", "AdvancedOther"]
 			
 		; at first launch quickaccesspopup.ini does not exist, read language value in quickaccesspopup-setup.ini (if exist) created by Setup
@@ -27235,7 +27640,7 @@ TODO
 	;---------------------------------------------------------
 	{
 		this.saOptionsGroupsLabelNames := ["OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance"
-			, "OptionsPopupMenu", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers"
+			, "OptionsPopupMenu", "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers"
 			, "OptionsSnippets", "OptionsUserVariables", "OptionsDatabase"
 			, "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther"]
 	}
@@ -29049,7 +29454,7 @@ class Container
 				strThisType := oItem.GetItemTypeLabelForList()
 				intHotkeyListOrder++
 				
-				if (intShortcutOrHotstrings = 1 and StrLen(oItem.AA.strFavoriteShortcut)) or (blnSeeAllFavorites)
+				if (intShortcutOrHotstrings = 1 and (StrLen(oItem.AA.strFavoriteShortcut) or blnSeeAllFavorites))
 				{
 					strThisHotkey := (StrLen(oItem.AA.strFavoriteShortcut) ? oItem.AA.strFavoriteShortcut : o_L["DialogNone"])
 					; #|Menu|Favorite Name|Type|Shortcuts|Favorite Location|Object Position (hidden)
@@ -29061,7 +29466,7 @@ class Container
 						, (oItem.AA.strFavoriteType = "Snippet" ? StringLeftDotDotDot(oItem.AA.strFavoriteLocation, 50) : oItem.AA.strFavoriteLocation)
 						, intKey)
 				}
-				else if (intShortcutOrHotstrings = 2 and StrLen(oItem.AA.strFavoriteHotstring)) or (blnSeeAllFavorites)
+				else if (intShortcutOrHotstrings = 2 and (StrLen(oItem.AA.strFavoriteHotstring) or blnSeeAllFavorites))
 				{
 					SplitHotstring(oItem.AA.strFavoriteHotstring, strTrigger, strOptionsShort)
 					; #|Menu|Favorite Name|Type|Trigger|Options|Favorite Location|Object Position (hidden)
@@ -29339,10 +29744,14 @@ class Container
 			}
 			else if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oItem) : true)
 			{
-				if (oItem.AA.strfavoriteType = "X")
-					oItem.AA.strFavoriteName := g_strGuiMenuSeparatorShort . " > " . oItem.AA.strfavoriteType
-				else if (oItem.AA.strfavoriteType = "K")
-					oItem.AA.strFavoriteName := g_strGuiDoubleLine . " > " . oItem.AA.strfavoriteType
+				if InStr("XK", oItem.AA.strfavoriteType)
+				{
+					strFavoriteTypeShortName := " " . o_Favorites.GetFavoriteTypeObject(oItem.AA.strfavoriteType).strFavoriteTypeShortName . " "
+					if (oItem.AA.strfavoriteType = "X")
+						oItem.AA.strFavoriteName := g_strGuiMenuSeparatorShort . g_strGuiMenuSeparatorShort . strFavoriteTypeShortName . g_strGuiMenuSeparatorShort . g_strGuiMenuSeparatorShort
+					else ; oItem.AA.strfavoriteType = "K"
+						oItem.AA.strFavoriteName := g_strGuiDoubleLine . strFavoriteTypeShortName . g_strGuiDoubleLine
+				}
 				
 				strTreeViewID := TV_Add(oItem.AA.strFavoriteName, strContainerUniqueId)
 				
@@ -30352,6 +30761,8 @@ class Container
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms
 				; DecodeSnippet: convert from raw content (as from ini file) to display format (when f_blnProcessEOLTab is true) or to paste format
 				ClipBoard := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders, true)
+				if !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "O") ; OmitEndChar (by default false, behaviour change compared to previous version where end char was never pasted)
+					Clipboard .= g_strHotstringEndChar
 				ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
 				intErrorLevel := ErrorLevel
 				if (intErrorLevel)
@@ -31038,7 +31449,7 @@ class Container
 				If !o_UsageDb.Exec(strUsageDbSQL)
 				{
 					; Diag(A_ThisFunc, "SQLite INSERT ACTION Error: " . strUsageDbSQL, "STOP")
-					Oops(0, "SQLite INSERT ACTION Error`n`nMessage: " . o_UsageDb.ErrorMsg . "`n`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strUsageDbSQL)
+					Oops(0, "SQLite INSERT ACTION Error`n`n" . SQLiteErrorMessage(strUsageDbSQL))
 					g_blnUsageDbEnabled := false
 					return
 				}	
