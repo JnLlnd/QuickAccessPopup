@@ -31,9 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.1 (2020-11-??)
+Version: 11.1 (2020-12-02)
  
-### review FAQ
 Exclusions in Recent/Frequent menus
 - see: https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus
 - add new section "Menu Exclusions" under the "Options" menu with zones for folders and files exclusions in "Recent" or "Frequent" menus
@@ -43,6 +42,7 @@ Exclusions in Recent/Frequent menus
 - support wildcards * and ? when filtering files and folder in "Frequent" and "Recent" menus
  
 Add Multiple favorites / Import Favorites
+- see: https://www.quickaccesspopup.com/can-i-add-multiple-favorites-in-one-click/
 - add a new source in "Favorite, Add Multiple Favorites" named "QAP Settings File (tree view)" allowing to import favorites by selecting the menus or submenus to import
 - this imports favorites of any types from the selected .ini file with all their properties
 - rename existing source from "QAP Settings File (items)" to "QAP Settings File (flat view)" to distinguish it from the new source
@@ -50,7 +50,7 @@ Add Multiple favorites / Import Favorites
 - in "File, Import/Export Settings", disable the "Favorites" checkbox and add a button "Import Favorites" opening the "Add Multiple Favorites" dialog box with the source "QAP Settings File (tree view)"
  
 Various improvements
-- support comments in user variables; any lines not starting with { is treated as a comment
+- support comments in user variables list; any lines not starting with { is treated as a comment
 - add the "Suspend Hotkeys" menu to QAP System menu (right-click on the QAP icon) and keep it under the "Tools" menu
 - in the "Options, Customize Window" section, add the new checkbox "When saving a favorite, check if an existing favorite has the same location or content"
 - when replacing an hotstring trigger with a snippet's content, by default keep the ending character (this is an new behaviour for existing snippets with hotstrings)
@@ -68,7 +68,7 @@ Bug fixes
 - fix minor display bug and delete temporary files when cancelling the save license process
  
 Language update
-- German, Italian, Brazilian-Portuguese, Korean, Dutch and French language file updates
+- German, Italian, Brazilian-Portuguese, Korean, Dutch, Portuguese and French language files update
 
 Version BETA: 11.0.7.9.2 (2020-11-20)
 - support wildcards * and ? when filtering files and folder in Frequent and Recent menus
