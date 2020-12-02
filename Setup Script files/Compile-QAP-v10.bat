@@ -47,6 +47,7 @@ IF EXIST "*.tmp*" ECHO Erreur dans le fichier ZIP...
 IF EXIST "*.tmp*" GOTO:finish
 ECHO Copy %QAPZIPFILE%.zip %QAPZIPFILE%-%QAPVERSIONFILE%.zip (for archives)
 COPY "%QAPZIPFILE%.zip" "quickaccesspopup-%QAPVERSIONFILE%.zip"
+IF [%QAPBETAPROD%] == [] CALL "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Backup-sources.bat"
 IF [%QAPBETAPROD%] == [] GOTO:messages
 ECHO Copy %QAPZIPFILE%.zip to %QAPZIPFILEVERSION%.zip
 COPY %QAPZIPFILE%.zip %QAPZIPFILEVERSION%.zip
