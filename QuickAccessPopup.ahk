@@ -12119,7 +12119,7 @@ else ; add favorite
 			if LocationIsHttp(g_strNewLocation)
 			{
 				o_EditedFavorite.AA.strFavoriteType := "URL"
-				o_EditedFavorite.AA.strFavoriteName := o_L["ToolTipRetrievingWebPageTitle"]
+				o_EditedFavorite.AA.strFavoriteName := (InStr(strGuiFavoriteLabel, "Xpress") ? GetWebPageTitle(g_strNewLocation) : o_L["ToolTipRetrievingWebPageTitle"])
 				g_strNewFavoriteIconResource := g_strURLIconFileIndex
 			}
 			else
