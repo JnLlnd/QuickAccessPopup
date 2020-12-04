@@ -4660,22 +4660,31 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 blnDoNotCheckLicense := true ; true / false ; ####
+g_blnSponsor := true
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
-if (blnDoNotCheckLicense)
+global g_SponsoredMessage ; displayed in BuildBui
+if (blnDoNotCheckLicense) ; for developement
+	or !StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; this is a free edition without license
 {
 	o_EDDLicense := Object()
 	o_EDDLicense.oLicense := Object()
 	o_EDDLicense.oLicense.license := "valid"
-	g_blnSponsor := true
+	g_blnSponsor := (blnDoNotCheckLicense ? g_blnSponsor ; when in dev
+		: false) ; free edition
 }
 else
 {
 	Gosub, ProcessSponsorCode
-	if (o_EDDLicense.oLicense.license <> "valid")
-		return ; do not exit in case save-key is in progress
+	if (o_EDDLicense.oLicense.license <> "valid") or 1
+	{
+		Oops(0, o_L["OopsLicenseInvalid"], g_strAppNameText, o_L["MenuHelp"], o_L["DonateMenu"])
+		g_blnSponsor := false
+	}
 }
+if !(g_blnSponsor)
+	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>"
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -5788,8 +5797,7 @@ if StrLen(strSponsorCodeError)
 }
 ; else launch QAP
 
-g_SponsoredMessage := (g_blnSponsor ? (StrLen(o_Settings.Launch.strSponsorName.IniValue)
-	? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "") : "<a id=""none"">" . o_L["SponsoredNone"] . "</a>")
+g_SponsoredMessage := (StrLen(o_Settings.Launch.strSponsorName.IniValue) ? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "")
 if StrLen(g_SponsoredMessage)
 	g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
 
@@ -6875,7 +6883,7 @@ BuildTrayMenuRefresh:
 ;------------------------------------------------------------
 
 global g_aaMenuTrayL := o_L.InsertAmpersand(true, "MenuSettings", "MenuFile", "MenuFavorite", "MenuTools", "MenuOptions"
-	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "GuiDonate")
+	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "DonateMenu")
 
 if (A_ThisLabel = "BuildTrayMenuRefresh")
 	Menu, Tray, DeleteAll
@@ -6897,7 +6905,7 @@ Menu, Tray, Add, % g_aaMenuTrayL["MenuExitApp@" . g_strAppNameText], GuiCancelAn
 if (!g_blnSponsor)
 {
 	Menu, Tray, Add
-	Menu, Tray, Add, % g_aaMenuTrayL["GuiDonate"] . g_strEllipse, GuiDonate
+	Menu, Tray, Add, % g_aaMenuTrayL["DonateMenu"] . g_strEllipse, GuiDonate ; "Get a license"
 }
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
@@ -6909,7 +6917,7 @@ Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-cli
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
-	. (g_blnSponsor ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
+	. (g_blnSponsor ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateMenu"]) ; A_PtrSize * 8 = 32 or 64
 	
 return
 ;------------------------------------------------------------
@@ -7136,7 +7144,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
-	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
+	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "DonateActionManageLicense", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -7151,8 +7159,10 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF1", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiDonate", aaHelpL["GuiDonate"] . g_strEllipse, "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
+if (g_blnSponsor)
+	saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
+else
+	saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -9834,7 +9844,7 @@ g_intOptionsFooterY += 20 ; place buttons below highest options group
 Gui, 2:Add, Button, x10 y%g_intOptionsFooterY% vf_btnOptionsSave gGuiOptionsGroupSave disabled Default, % aaL["GuiSave"]
 Gui, 2:Add, Button, yp vf_btnOptionsCancel gButtonOptionsCancel, % aaL["GuiCancel"]
 if (!g_blnSponsor)
-	Gui, 2:Add, Button, yp vf_btnOptionsDonate gGuiDonate, % o_L["DonateButton"]
+	Gui, 2:Add, Button, yp vf_btnOptionsDonate gGuiDonate, % o_L["DonateMenu"]
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel", (!g_blnSponsor ? "f_btnOptionsDonate" : ""))
 
 Gui, 2:Add, Text
@@ -10921,7 +10931,6 @@ if (saSettingsPosition[1] <> -1)
 GuiControl, Focus, f_lvFavoritesList
 
 saSettingsPosition := ""
-saDonateButtons := ""
 strTextColor := ""
 
 return
@@ -20861,7 +20870,7 @@ Gui, 2:Font, s10 w400, Verdana
 Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
 Gui, 2:Font, s8 w400, Verdana
 
-aaL := o_L.InsertAmpersand(false, "GuiClose", "DonateButton")
+aaL := o_L.InsertAmpersand(false, "GuiClose")
 
 Gui, 2:Add, Button, y+20 vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
@@ -20898,70 +20907,8 @@ return
 ;------------------------------------------------------------
 GuiDonate:
 ;------------------------------------------------------------
-Gui, 1:Submit, NoHide
 
-strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
-Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
-if (g_blnUseColors)
-	Gui, 2:Color, %g_strGuiWindowColor%
-Gui, 2:+Owner1
-
-Gui, 2:Font, s12 w700, Verdana
-Gui, 2:Add, Text, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
-Gui, 2:Font, s10 w600, Verdana
-Gui, 2:Add, Button, y+20 Default vbtnDonateDefault w220 h50 gButtonDonate, % o_L["DonateMenu"]
-; GuiCenterButtons(g_strGui2Hwnd, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, "btnDonateDefault")
-GuiCenterButtons(g_strGui2Hwnd, 20, 20, 0, "btnDonateDefault")
-Gui, 2:Font, s8 w400 c404040 normal, Verdana
-
-Gui, 2:Font, s10 w700, Verdana
-Gui, 2:Add, Link, xm y+60 w420, % o_L["DonateText3"]
-Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Link, xm y+10 w420 Section, % L(o_L["DonateText4"], g_strAppNameText)
-
-strDonateReviewUrlLeft1 := "https://alternativeto.net/software/quick-access-popup/"
-strDonateReviewUrlLeft2 := "http://www.portablefreeware.com/index.php?id=2765"
-strDonateReviewUrlLeft3 := "http://www.softpedia.com/get/System/OS-Enhancements/FoldersPopup.shtml"
-strDonateReviewUrlRight1 := "http://fileforum.betanews.com/detail/Quick-Access-Popup/1455462511/1"
-strDonateReviewUrlRight2 := "http://www.filecluster.com/System-Utilities/Launchers-Task-Manager-Utilities/Download-Quick-Access-Popup.html"
-strDonateReviewUrlRight3 := "http://freewares-tutos.blogspot.ca/2016/05/quick-access-popup-accedez-rapidement.html"
-
-strDonateReviewTextLeft1 := "AlternativeTo.com"
-strDonateReviewTextLeft2 := "PortableFreeware.com"
-strDonateReviewTextLeft3 := "Softpedia.com"
-strDonateReviewTextRight1 := "BetaNews.com"
-strDonateReviewTextRight2 := "FileCluster.com"
-strDonateReviewTextRight3 := "Freewares && Tutos (FR)"
-
-loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x25 w150", % "<a href=""" . strDonateReviewUrlLeft%A_Index% . """>" . strDonateReviewTextLeft%A_Index% . "</a>"
-
-loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x175 w150", % "<a href=""" . strDonateReviewUrlRight%A_Index% . """>" . strDonateReviewTextRight%A_Index% . "</a>"
-
-Gui, 2:Add, Link, y+10 x10 vf_lnkSendLink, % "<a href=""mailto:jeanlalonde@quickaccesspopup.com"">" . o_L["DonateText5"] . "</a>"
-GuiControlGet, arrPos, Pos, f_lnkSendLink
-g_intLnkSendLink := arrPosW
-
-aaL := o_L.InsertAmpersand(false, "GuiHelp", "GuiClose")
-
-Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Button, x175 y+20 g2GuiClose vf_btnDonateClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateClose")
-Gui, 2:Add, Text
-
-GuiControl, Focus, btnDonateDefault
-Gosub, ShowGui2AndDisableGui1
-
-strDonateReviewUrlLeft1 := ""
-strDonateReviewUrlLeft2 := ""
-strDonateReviewUrlLeft3 := ""
-strDonateReviewUrlRight1 := ""
-strDonateReviewUrlRight2 := ""
-strDonateReviewUrlRight3 := ""
-strGuiTitle := ""
-arrPos := ""
-aaL := ""
+Run, %g_strSponsorCodeSiteURL%
 
 return
 ;------------------------------------------------------------
@@ -26886,9 +26833,6 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Settings",				o_L["MenuSettings"],						"", "GuiShowFromQAPFeature",				"3-QAPMenuEditing~7-QAPManagement"
 			, o_L["MenuSettingsDescription"], 0, "iconSettings", "+^c"
 			, "what-should-i-know-about-quick-access-popup-before-starting")
-		this.AddQAPFeatureObject("Support",					o_L["GuiDonate"] . g_strEllipse,			"", "GuiDonate",							"7-QAPManagement"
-			, o_L["GuiDonateDescription"], 0, "iconDonate", ""
-			, "sponsoring")
 		this.AddQAPFeatureObject("GetWinInfo",				o_L["MenuGetWinInfo"] . g_strEllipse,		"", "GetWinInfo",							"6-Utility"
 			, o_L["MenuGetWinInfoDescription"], 0, "iconAbout", ""
 			, "can-i-block-the-qap-menu-hotkeys-if-they-interfere-with-one-of-my-other-apps")
