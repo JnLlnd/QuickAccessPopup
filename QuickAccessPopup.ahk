@@ -4525,6 +4525,7 @@ g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) 
 global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
+global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
@@ -4685,8 +4686,12 @@ else
 	if (o_EDDLicense.oLicense.license <> "valid")
 		return ; happens when invalid item id error because of an old SponsorProductId
 }
+
+; Free Edition setup
 if !(g_blnSponsor)
-	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>"
+	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
+global g_intNbLiveFolderItemsMax := (g_blnSponsor ? o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue : 5) ; limit live folder items
+global g_intMenuItemsMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 25) ; limit live folder items (0x7FFFFFFFFFFFFFFF)
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -8339,6 +8344,9 @@ g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum 
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
+
+if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax) or (g_intMenuItemsCount > g_intMenuItemsMax)
+	Oops(0, "Max Live")
 
 return
 ;------------------------------------------------------------
@@ -28587,7 +28595,7 @@ class Container
 			
 			if InStr("Menu|External", aaThisFavorite.strFavoriteType, true)
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
-					and !(g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+					and !(g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
 			{
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
@@ -28728,7 +28736,7 @@ class Container
 		Loop, Files, %strExpandedLocation%\*.*, D ; directories
 		{
 			g_intNbLiveFolderItems++
-			if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+			if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
 				Break
 			
 			strFavoriteName := GetLocalizedNameFromDesktopIni(A_LoopFileLongPath) ; if desktop.ini exists, try to retrieve the localized name resource
@@ -28757,7 +28765,7 @@ class Container
 					and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if file is system and include system items is false
 				{
 					g_intNbLiveFolderItems++
-					if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+					if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
 						Break
 					; favorite type Document is OK for Application items
 					
