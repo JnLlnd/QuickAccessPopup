@@ -4660,7 +4660,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 blnDoNotCheckLicense := true ; true / false ; ####
-g_blnSponsor := true
+g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -4671,17 +4671,19 @@ if (blnDoNotCheckLicense) ; for developement
 	o_EDDLicense := Object()
 	o_EDDLicense.oLicense := Object()
 	o_EDDLicense.oLicense.license := "valid"
-	g_blnSponsor := (blnDoNotCheckLicense ? g_blnSponsor ; when in dev
-		: false) ; free edition
+	if (blnDoNotCheckLicense)
+	{
+		o_EDDLicense.oLicense.item_name := "Quick Access Popup (developement)"
+		o_EDDLicense.strUniqueSystemId := "00000000"
+	}
+	else
+		g_blnSponsor := false ; free edition
 }
 else
 {
 	Gosub, ProcessSponsorCode
-	if (o_EDDLicense.oLicense.license <> "valid") or 1
-	{
-		Oops(0, o_L["OopsLicenseInvalid"], g_strAppNameText, o_L["MenuHelp"], o_L["DonateMenu"])
-		g_blnSponsor := false
-	}
+	if (o_EDDLicense.oLicense.license <> "valid")
+		return ; happens when invalid item id error because of an old SponsorProductId
 }
 if !(g_blnSponsor)
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>"
@@ -5746,7 +5748,11 @@ if (o_EDDLicense.oLicense.license = "valid")
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
 	if (blnInvalidProductIdRemoved)
-		MsgBox, % "An error occurred while validating your licence. Please try again."
+	{
+		MsgBox, 0, %g_strAppNameText%, % "Your previous license info was removed.`n`nThe app will restart in a moment."
+		OnExit ; disable exit subroutine
+		Reload
+	}
 	else
 		MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
 	return ; will remove files created if first launch and exit
@@ -7159,10 +7165,9 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF1", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-if (g_blnSponsor)
-	saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
-else
+if !(g_blnSponsor)
 	saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -20852,35 +20857,56 @@ GuiAbout:
 ;------------------------------------------------------------
 Gui, 1:Submit, NoHide
 
+intWidthTotal := 680
+intWidthHalf := 340
+intXCol2 := 350
+
 strGuiTitle := L(o_L["AboutTitle"], g_strAppNameText, g_strAppVersion)
 Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 Gui, 2:+Owner1
+
+; header
 Gui, 2:Font, s12 w700, Verdana
-Gui, 2:Add, Link, y10 w380, % L(o_L["AboutText1"], g_strAppNameText, g_strAppVersion, A_PtrSize * 8) ;  ; A_PtrSize * 8 = 32 or 64
+Gui, 2:Add, Link, x10 y10 w%intWidthTotal%, % L(o_L["AboutText1"], g_strAppNameText, g_strAppVersion, A_PtrSize * 8) ;  ; A_PtrSize * 8 = 32 or 64
 Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
+Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText2"], g_strAppNameText)
 FormatTime, strYear, , yyyy ; current time
-Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
-Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
-Gui, 2:Add, Link, w380 y+5 , % "<a href=""https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/"">" . o_L["AboutLicenseHelp"] . "</a>"
-Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
-Gui, 2:Font, s10 w400, Verdana
-Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
+Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
+
+; user info (left)
+Gui, 2:Add, Text, x10 w%intWidthHalf% section, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
+Gui, 2:Add, Link, x10 w%intWidthHalf%, % L(o_L["AboutText4"])
+; license (right)
+if (g_blnSponsor)
+{
+	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% ys gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
+	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% y+1, % "<a href=""https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/"">" . o_L["AboutLicenseHelp"] . "</a>"
+}
+
+; credits translators (left)
+Gui, 2:Font, s8 w700, Verdana
+Gui, 2:Add, Link, x10 y+10 w%intWidthTotal%, % L(o_L["AboutText5"])
 Gui, 2:Font, s8 w400, Verdana
-
+Gui, 2:Add, Link, x10 w%intWidthHalf% section, % L(o_L["AboutText2a"], g_strAppNameText)
 aaL := o_L.InsertAmpersand(false, "GuiClose")
-
 Gui, 2:Add, Button, y+20 vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
 
+; contributors (right)
+Gui, 2:Add, Link, x%intXCol2% ys w%intWidthHalf%, % L(o_L["AboutText6"], "Lexikos (AutoHotkey_L), Joe Glines (the-Automator.com), Avi Aryan Ryan, RaptorX, Blackholyman, just_me (Class_SQLiteDB), Learning One, leo (GPSoftware), Maestrith (XML_Class), Pulover (LV_Rows class), Tank", "https://www.autohotkey.com/boards/")
+Gui, 2:Add, Link, x%intXCol2% y+5 w%intWidthHalf%, % L(o_L["AboutText2b"], A_AhkVersion)
+
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
 GuiControl, Focus, f_btnAboutClose
 Gosub, ShowGui2AndDisableGui1
 
 strYear := ""
 strGuiTitle := ""
 aaL := ""
+intWidth := ""
+intWidthHalf :=
+intXCol2 := ""
 
 return
 ;------------------------------------------------------------
@@ -23164,7 +23190,7 @@ PathCombine(strAbsolutePath, strRelativePath)
 ;------------------------------------------------------------
 EnvVars(str)
 ; from Lexikos http://www.autohotkey.com/board/topic/40115-func-envvars-replace-environment-variables-in-text/#entry310601
-; adapted from from Lexikos http://www.autohotkey.com/board/topic/40115-func-envvars-replace-environment-variables-in-text/#entry310601
+; adapted from Lexikos http://www.autohotkey.com/board/topic/40115-func-envvars-replace-environment-variables-in-text/#entry310601
 ; in addition to environment variables, it expands QAP user variables like {Dropbox}
 ;------------------------------------------------------------
 {
