@@ -4527,6 +4527,7 @@ global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
+global g_intNbLiveFoldersCount ; number of live folders built (vs maximum for free edition)
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
@@ -4690,7 +4691,8 @@ else
 ; Free Edition setup
 if !(g_blnSponsor)
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
-global g_intMenuItemsMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 3) ; limit live folder items (0x7FFFFFFFFFFFFFFF is max value for integers)
+global g_intMenuItemsMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 100) ; limit menu items for free edition (0x7FFFFFFFFFFFFFFF is max value for integers)
+global g_intNbLiveFoldersMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 1) ; limit number of live folders (0x7FFFFFFFFFFFFFFF is max value for integers)
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -8339,9 +8341,12 @@ g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
 g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
+g_intNbLiveFoldersCount := 0 ; number of live folders built (vs maximum for free edition)
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
+if (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax or g_intMenuItemsCount > g_intMenuItemsMax)
+	MsgBox, Limit exceeded
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
 
@@ -28601,6 +28606,7 @@ class Container
 			{
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
+					g_intNbLiveFoldersCount++
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
 					o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
@@ -28696,6 +28702,8 @@ class Container
 					intMenuItemStatus := 0
 				else if !(g_blnSponsor) and (this.AA.blnCountItems)
 					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
+				else if !(g_blnSponsor) and (this.AA.blnLiveMenuIsDisabled) ; free edition limit
 					intMenuItemStatus := 0 ; disabled, free edition limit
 				else
 					intMenuItemStatus := 1
@@ -28844,6 +28852,7 @@ class Container
 		
 		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, , this, "init", true) ; last parameter true for blnDoubleAmpersands
 		oNewSubMenu.AA.blnIsLiveMenu := true
+		oNewSubMenu.AA.blnLiveMenuIsDisabled := (!g_blnSponsor and (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax)) ; for free edition limitation
 		oNewSubMenu.AA.intLiveFolderParentPosition := intMenuParentPosition ; could be changed if we are in a Live Folder submenu
 		oNewSubMenu.AA.strLiveFolderParentPath := strMenuParentPath ; could be changed if we are in a Live Folder submenu
 		if (o_Containers.AA[oNewSubMenu.AA.strLiveFolderParentPath].AA.blnIsLiveMenu)
