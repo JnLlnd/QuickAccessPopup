@@ -4661,7 +4661,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 blnDoNotCheckLicense := true ; true / false ; ####
-g_blnSponsor := true ; value when in dev mode without checking license
+g_blnSponsor := false ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -4690,8 +4690,7 @@ else
 ; Free Edition setup
 if !(g_blnSponsor)
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
-global g_intNbLiveFolderItemsMax := (g_blnSponsor ? o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue : 5) ; limit live folder items
-global g_intMenuItemsMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 25) ; limit live folder items (0x7FFFFFFFFFFFFFFF)
+global g_intMenuItemsMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 3) ; limit live folder items (0x7FFFFFFFFFFFFFFF is max value for integers)
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -5629,7 +5628,7 @@ global g_strGuiWindowColor := o_Settings.ReadIniValue("WindowColor", E0E0E0, "Gu
 global g_strMenuBackgroundColor := o_Settings.ReadIniValue("MenuBackgroundColor", FFFFFF, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 
 global o_Containers := new Containers() ; replace g_objMenusIndex index of menus path used in Gui menu dropdown list and to access the menu object for a given menu path
-global o_MainMenu := new Container("Menu", o_L["MainMenuName"], , , , , true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
+global o_MainMenu := new Container("Menu", o_L["MainMenuName"], , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 
 Gosub, LoadFavoritesFromIni
 
@@ -8339,14 +8338,12 @@ gosub, DisableShortcuts ; turn off all favorites keyboard and mouse hotkeys
 g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
+g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
-
-if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax) or (g_intMenuItemsCount > g_intMenuItemsMax)
-	Oops(0, "Max Live")
 
 return
 ;------------------------------------------------------------
@@ -27944,7 +27941,7 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false)
+	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false, blnCountItems := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
@@ -27953,6 +27950,8 @@ class Container
 		this.AA.intMenuAutoSort := intAutoSort
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
+		this.AA.blnCountItems := blnCountItems ; increment items counter for free edition limit
+		
 		if (oParentMenu)
 		{
 			if (oParentMenu = "nomenu") ; exception string for search result containers
@@ -28184,7 +28183,7 @@ class Container
 				}
 				
 				; load the submenu
-				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], (saThisFavorite[1] = "Group" ? "" : saThisFavorite[11]), this, , , true)
+				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], (saThisFavorite[1] = "Group" ? "" : saThisFavorite[11]), this, , , true, true)
 				
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
@@ -28548,6 +28547,9 @@ class Container
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
 			
+			if (this.AA.blnCountItems)
+				g_intMenuItemsCount++ ; for free edition limit
+			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
 				strMenuItemAction := aaThisFavorite.strFavoriteType
@@ -28595,7 +28597,7 @@ class Container
 			
 			if InStr("Menu|External", aaThisFavorite.strFavoriteType, true)
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
-					and !(g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
+					and !(g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 			{
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
@@ -28679,20 +28681,24 @@ class Container
 				}
 				else
 					strMenuItemIcon := "iconNoIcon"
-				
+
+				; intMenuItemStatus 0 disabled, 1 enabled, 2 default
 				if (aaThisFavorite.strFavoriteLocation = "{Settings}") ; make Settings... menu bold in any menu; check favorite's location, not its name (that can now be changed)
-					intMenuItemStatus := 2 ; 0 disabled, 1 enabled, 2 default
+					intMenuItemStatus := 2
 					; Menu, % this.AA.strMenuPath, Default, %strMenuItemLabel%
 				else if (strMenuItemAction = "GuiShowNeverCalled")
-					intMenuItemStatus := 0 ; 0 disabled, 1 enabled, 2 default
+					intMenuItemStatus := 0
 				else if (aaThisFavorite.strFavoriteLocation = "{Container In Gui}" and this.AA.strMenuPath = o_L["MenuContainerInGui"])
 					; blocked by AHK because this could cause an infinite loop; disable the menu entry (menu will not be attached)
 					or (aaThisFavorite.strFavoriteLocation = "{Container In Gui}" and aaThisFavorite.oParentMenu.AA.strMenupath <> o_L["MainMenuName"])
 					; block MenuContainerInGui menu if not in Main menu
 					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
+				else if !(g_blnSponsor) and (this.AA.blnCountItems)
+					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
 				else
-					intMenuItemStatus := 1 ; 0 disabled, 1 enabled, 2 default
+					intMenuItemStatus := 1
 			}
 			
 			if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue ; add popularity index
@@ -28736,7 +28742,7 @@ class Container
 		Loop, Files, %strExpandedLocation%\*.*, D ; directories
 		{
 			g_intNbLiveFolderItems++
-			if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
+			if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 				Break
 			
 			strFavoriteName := GetLocalizedNameFromDesktopIni(A_LoopFileLongPath) ; if desktop.ini exists, try to retrieve the localized name resource
@@ -28765,7 +28771,7 @@ class Container
 					and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if file is system and include system items is false
 				{
 					g_intNbLiveFolderItems++
-					if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
+					if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 						Break
 					; favorite type Document is OK for Application items
 					
