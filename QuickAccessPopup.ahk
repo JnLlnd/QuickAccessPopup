@@ -4528,11 +4528,13 @@ global g_intRemovedItems ; used when deleting or moving multiple favorites from 
 global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
 global g_intNbLiveFoldersCount ; number of live folders built (vs maximum for free edition)
+global g_intNbExternalMenusCount ; number of external menus built (vs maximum for free edition)
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
 global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
+global g_intMaximumValue := 0x7FFFFFFFFFFFFFFF ; max value for integers
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -4691,8 +4693,9 @@ else
 ; Free Edition setup
 if !(g_blnSponsor)
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
-global g_intMenuItemsMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 100) ; limit menu items for free edition (0x7FFFFFFFFFFFFFFF is max value for integers)
-global g_intNbLiveFoldersMax := (g_blnSponsor ? 0x7FFFFFFFFFFFFFFF : 1) ; limit number of live folders (0x7FFFFFFFFFFFFFFF is max value for integers)
+global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 100) ; limit menu items for free edition
+global g_intNbLiveFoldersMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of live folders
+global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -8343,12 +8346,23 @@ g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
 g_intNbLiveFoldersCount := 0 ; number of live folders built (vs maximum for free edition)
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
+g_intNbExternalMenusCount := 0 ; number of external menus (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
-if (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax or g_intMenuItemsCount > g_intMenuItemsMax)
-	MsgBox, Limit exceeded
+strLimitExceededMessage := (g_intMenuItemsCount > g_intMenuItemsMax ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
+strLimitExceededMessage .= (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax ? L(o_L["DialogFreeEditionLive"], g_intNbLiveFoldersCount, g_intNbLiveFoldersMax) . "`n" : "")
+strLimitExceededMessage .= (g_intNbExternalMenusCount > g_intNbExternalMenusMax ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
+if StrLen(strLimitExceededMessage)
+{
+	intSeconds := 10
+	MsgBox, % 1 + 256, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . L(o_L["DialogFreeEditionMessage2"], intSeconds), %intSeconds%
+	IfMsgBox, OK
+		run, %g_strSponsorCodeSiteURL%
+}
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
+
+intSeconds := ""
 
 return
 ;------------------------------------------------------------
@@ -28610,6 +28624,8 @@ class Container
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
 					o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
+				else if (aaThisFavorite.strFavoriteType = "External")
+					g_intNbExternalMenusCount++
 				
 				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh) ; RECURSIVE - build the submenu first
 				
@@ -28687,7 +28703,7 @@ class Container
 				}
 				else
 					strMenuItemIcon := "iconNoIcon"
-
+				
 				; intMenuItemStatus 0 disabled, 1 enabled, 2 default
 				if (aaThisFavorite.strFavoriteLocation = "{Settings}") ; make Settings... menu bold in any menu; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 2
@@ -28703,7 +28719,9 @@ class Container
 				else if !(g_blnSponsor) and (this.AA.blnCountItems)
 					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
 					intMenuItemStatus := 0 ; disabled, free edition limit
-				else if !(g_blnSponsor) and (this.AA.blnLiveMenuIsDisabled) ; free edition limit
+				else if !(g_blnSponsor) and (this.AA.blnIsLiveMenu and this.AA.blnLiveMenuIsDisabled) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
+				else if !(g_blnSponsor) and (this.AA.strMenuType = "External" and g_intNbExternalMenusCount > g_intNbExternalMenusMax) ; free edition limit
 					intMenuItemStatus := 0 ; disabled, free edition limit
 				else
 					intMenuItemStatus := 1
