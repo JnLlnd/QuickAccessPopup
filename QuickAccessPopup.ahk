@@ -7026,7 +7026,7 @@ BuildGuiMenuBar:
 ; see https://docs.microsoft.com/fr-fr/windows/desktop/uxguide/cmd-menus
 ;------------------------------------------------------------
 
-loop, Parse, % "Main|File|Favorite|Tools|Options|MoreOptions|Help", |
+loop, Parse, % "Main|File|Favorite|Tools|Options|MoreOptions|Help|SpecialSearch", |
 	new Container("MenuBar", "menuBar" . A_LoopField)
 
 ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource
@@ -7086,12 +7086,21 @@ saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A
 o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchAllFavorites", "DialogShortcuts", "DialogHotstrings", "DialogIconsManage"
-	, "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys", "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
+; submenu for Tools, Special Searches
+aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue)
+saMenuItemsTable := Object()
+saMenuItemsTable.Push(["SpecialSearchAll", aaL["DialogSearchAllFavorites"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
+o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
+o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+
+aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial"
+	, "DialogShortcuts", "DialogHotstrings", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
+	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["FilterAllFavorites", aaMenuToolsL["DialogSearchAllFavorites"], "", "iconNoIcon"])
+saMenuItemsTable.Push([":menuBarSpecialSearch", aaMenuToolsL["DialogSearchSpecial"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysManage", aaMenuToolsL["DialogShortcuts"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiHotkeysManageHotstrings", aaMenuToolsL["DialogHotstrings"], "", "iconNoIcon"])
@@ -11058,11 +11067,13 @@ return
 
 
 ;------------------------------------------------------------
-FilterAllFavorites:
+SpecialSearchAll:
+SpecialSearchNotInDatabase:
 ;------------------------------------------------------------
 
+strCode := "{" . StrReplace(A_ThisLabel, "SpecialSearch" , "") . "}"
 Gosub, GuiFavoritesListFilterShowOpen
-GuiControl, , f_strFavoritesListFilter, {All} ; this will trigger LoadFavoritesInGui
+GuiControl, , f_strFavoritesListFilter, %strCode% ; this will trigger LoadFavoritesInGui
 
 return
 ;------------------------------------------------------------
@@ -27715,19 +27726,10 @@ TODO
 
 ;-------------------------------------------------------------
 class Language
-/*
-TODO
-- adapt Settings for when setting language before quickaccesspopup.ini is created
-  Regex: \bl[A-Z].*
-- finish property LanguageCode (review all)
-- switch language: save new language code to ini file and restart QAP
-- adapt variables in QAP main script (no change done at this time)
-
-*/
 ;-------------------------------------------------------------
 {
 	;---------------------------------------------------------
-	__Call(function, parameters*)
+	###__Call(function, parameters*)
 	; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
 	{
 		funcRef := Func(funcName := this.__class "." function)
@@ -28284,7 +28286,8 @@ class Container
 			}
 				
 			if !oItem.IsSeparator()
-				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or o_MenuInGui.AA.strMenuPath = "{all}") ; case insensitive
+				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}")
+				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and !oItem.AA.intFavoriteUsageDb)) ; case insensitive
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
