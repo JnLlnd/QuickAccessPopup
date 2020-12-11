@@ -4531,6 +4531,7 @@ global g_strMultipleAddDestinationMenu ; used to set the destination menu when s
 
 global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
+global g_blnUsageDbUpdateFavoritesCompleted := false ; prevent special search NotInDatabase if favorites has not been completely updated with database data
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -4823,7 +4824,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, SpecialSearchBrokenFolders ; ####
+; gosub, SpecialSearchNotInDatabase ; ####
 
 return
 
@@ -11074,6 +11075,13 @@ SpecialSearchBrokenFolders:
 ;------------------------------------------------------------
 
 strCode := "{" . StrReplace(A_ThisLabel, "SpecialSearch" , "") . "}"
+
+if (strCode = "{NotInDatabase}" and !g_blnUsageDbUpdateFavoritesCompleted)
+{
+	Oops(0, o_L["OopsFavoritesUsageUpdated"])
+	return
+}
+
 Gosub, GuiFavoritesListFilterShowOpen
 GuiControl, , f_strFavoritesListFilter, %strCode% ; this will trigger LoadFavoritesInGui
 
@@ -16272,8 +16280,7 @@ if (!g_intNewItemPos)
 
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
-	and !(RegExMatch(strNewFavoriteLocation, "i){(|CUR_|SEL_)(LOC|NAME|DIR|EXT|NOEXT|DRIVE|Clipboard)}") ; case insensitive
-		or RegExMatch(strNewFavoriteLocation, "i)({Input:)") or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
+	and !(ContainsPlaceholder(strNewFavoriteLocation) or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
 {
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
@@ -21442,6 +21449,7 @@ if (g_blnUsageDbDebug)
 }
 
 o_MainMenu.UpdateUsageDbFrequency() ; was UsageDbUpdateFavorites
+g_blnUsageDbUpdateFavoritesCompleted := true
 
 if (g_blnUsageDbDebug)
 {
@@ -25007,6 +25015,19 @@ GetSortCriteria(intCriteria)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+ContainsPlaceholder(strLocation)
+; returns true if location contains placeholders
+; see: https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/
+;------------------------------------------------------------
+{
+	if StrLen(strLocation)
+		return RegExMatch(strLocation, "i){(CUR_|SEL_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|NOW:.*)}") ; case insensitive
+	; else return false
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -28288,9 +28309,9 @@ class Container
 			}
 				
 			if !oItem.IsSeparator()
-				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}")
-				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and !oItem.AA.intFavoriteUsageDb) ; case insensitive
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenFolders}" and oItem.LocationBroken("Folder"))) ; case insensitive
+				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}") ; case insensitive
+				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and oItem.ItemNotInDatabase())
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenFolders}" and oItem.LocationBroken("Folder")))
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
@@ -29427,7 +29448,7 @@ class Container
 	;---------------------------------------------------------
 	{
 		; Diag(A_ThisFunc, "", "START")
-
+		
 		for intKey, oItem in this.SA
 		{
 			if StrLen(oItem.AA.strFavoriteLocation) ; exclude separators
@@ -31389,8 +31410,18 @@ class Container
 		; 2019-05-19: converted to Item class mehod with logic as-is
 		;---------------------------------------------------------
 		{
+            oItemTemp := this
+            oItemTemp.aaTemp := Object() ; item temporary values
+            oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
+            oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
+            oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments for this test
+			oItemTemp.AA.intFavoriteOpenSubFolder := "" ; do not consider subfolder option
+            if !oItemTemp.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
+                return 0
+			
+			strFileLocationExpanded := oItemTemp.aaTemp.strFullLocation
 			strGetUsageDbSQL := "SELECT COUNT(*) FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE;"
+				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(strFileLocationExpanded) . "' COLLATE NOCASE;"
 			if !o_UsageDb.Query(strGetUsageDbSQL, o_RecordSet)
 			{
 				Oops(0, "Database error (#1): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
@@ -31562,6 +31593,18 @@ class Container
 		;------------------------------------------------------------
 		
 		;---------------------------------------------------------
+		ItemNotInDatabase()
+		;---------------------------------------------------------
+		{
+			if InStr("|Menu|External|Group|Text|X|K|", "|" . this.AA.strFavoriteType . "|") ; exclude these types
+				or (this.AA.strFavoriteType = "QAP" and o_QAPFeatures.aaQAPFeaturesDynamicMenus.HasKey(this.AA.strFavoriteLocation)) ; exclude QAP Features dynamic menus
+				return false
+			
+			return !this.AA.intFavoriteUsageDb
+		}
+		;---------------------------------------------------------
+
+		;---------------------------------------------------------
 		LocationBroken(strTypes)
 		;---------------------------------------------------------
 		{
@@ -31574,14 +31617,14 @@ class Container
 			oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
 			oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments for this test
 			
-			if !this.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
+			if !oItemTemp.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
 				return true ; consider that file exists
 			
 			; after variables are expanded, check if there are any placeholders in location
-			if RegExMatch(this.aaTemp.strFullLocation, "i){(CUR_|SEL_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD)}")
+			if ContainsPlaceholder(oItemTemp.aaTemp.strFullLocation)
 				return true ; if yes, do not check (return true)
 			
-			return !FileExist(this.aaTemp.strFullLocation)
+			return !FileExist(oItemTemp.aaTemp.strFullLocation)
 		}
 		;---------------------------------------------------------
 
