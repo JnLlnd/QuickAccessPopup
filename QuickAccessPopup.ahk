@@ -4330,7 +4330,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.1
+;@Ahk2Exe-SetVersion 11.1.0.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4397,8 +4397,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.1.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
@@ -4823,7 +4823,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, GuiMultipleAddSettingsFileMenus ; ####
+; gosub, SpecialSearchBrokenFolders ; ####
 
 return
 
@@ -7087,10 +7087,11 @@ o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 ; submenu for Tools, Special Searches
-aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue)
+aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue, "DialogSearchBrokenFolders")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SpecialSearchAll", aaL["DialogSearchAllFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
+saMenuItemsTable.Push(["SpecialSearchBrokenFolders", aaL["DialogSearchBrokenFolders"], "", "iconNoIcon"])
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
@@ -11069,6 +11070,7 @@ return
 ;------------------------------------------------------------
 SpecialSearchAll:
 SpecialSearchNotInDatabase:
+SpecialSearchBrokenFolders:
 ;------------------------------------------------------------
 
 strCode := "{" . StrReplace(A_ThisLabel, "SpecialSearch" , "") . "}"
@@ -28287,7 +28289,8 @@ class Container
 				
 			if !oItem.IsSeparator()
 				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}")
-				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and !oItem.AA.intFavoriteUsageDb)) ; case insensitive
+				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and !oItem.AA.intFavoriteUsageDb) ; case insensitive
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenFolders}" and oItem.LocationBroken("Folder"))) ; case insensitive
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
@@ -31558,6 +31561,30 @@ class Container
 		}
 		;------------------------------------------------------------
 		
+		;---------------------------------------------------------
+		LocationBroken(strTypes)
+		;---------------------------------------------------------
+		{
+			if !InStr(strTypes, this.AA.strFavoriteType)
+				return
+			
+			oItemTemp := this
+			oItemTemp.aaTemp := Object() ; item temporary values
+			oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
+			oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
+			oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments for this test
+			
+			if !this.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
+				return true ; consider that file exists
+			
+			; after variables are expanded, check if there are any placeholders in location
+			if RegExMatch(this.aaTemp.strFullLocation, "i){(CUR_|SEL_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD)}")
+				return true ; if yes, do not check (return true)
+			
+			return !FileExist(this.aaTemp.strFullLocation)
+		}
+		;---------------------------------------------------------
+
 /*
 		;---------------------------------------------------------
 		Method()
