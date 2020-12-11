@@ -22246,6 +22246,24 @@ GetSelectedLocation(strClass, strWinId)
 			if StrLen(strFirstItem)
 				break
 		}
+		
+		if !StrLen(strFirstItem)
+		; simplified version from https://www.autohotkey.com/boards/viewtopic.php?p=154836#p154836
+		{
+			objWindows := ComObjCreate("Shell.Application").Windows
+			VarSetCapacity(hWnd, 4, 0)
+			; SWC_DESKTOP := 0x8 VT_BYREF := 0x4000 VT_I4 := 0x3 SWFO_NEEDDISPATCH := 0x1
+			objDesktop := objWindows.FindWindowSW(0, "", 8, ComObject(0x4003, &hWnd), 1)
+			for oItem in objDesktop.Document.SelectedItems
+			{
+				strSelected := oItem.path
+				if StrLen(strSelected) and !(SubStr(strSelected, 1, 3) = "::{")
+				{
+					strFirstItem := strSelected
+					break
+				}
+			}
+		}
 	}
 	else if WindowIsDirectoryOpus(strClass)
 	{
