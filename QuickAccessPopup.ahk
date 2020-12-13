@@ -10926,7 +10926,6 @@ if (saSettingsPosition[1] <> -1)
 }
 
 GuiControl, Focus, f_lvFavoritesList
-; GuiControlGet, g_strFavoritesListClass, Focus ; re-enable to use in GuiFavoritesListDropCopy
 
 saSettingsPosition := ""
 saDonateButtons := ""
@@ -11318,18 +11317,8 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 {
 	if SearchIsVisible()
 		return
-
-/*
-	if GetKeyState("Control") ; copy item
-	{
-		g_intOriginalMenuPosition := A_EventInfo
-		HotKey, ^LButton UP, GuiFavoritesListDropCopy, On
-		SetCursor(true, "whatsthis")
-		return
-	}
-*/
-	; else drag & drop in menu in gui
 	
+	; drop item in gui using LV_Rows class
 	LvHandle.SetHwnd(h%A_GuiControl%) ; select active hwnd in Handle.
 	g_intOriginalMenuPosition := A_EventInfo ; original position
     g_intNewItemPos := LvHandle.Drag("D", true, 80, 2, "3F51B5") ; returns the new item position, 3F51B5 is the color of the up/down buttons
@@ -11345,43 +11334,9 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 	o_EditedFavorite := ""
 	g_strDragDropDestinationMenu := ""
 }
-/* re-enable to use GuiFavoritesListDropCopy
-else if (!SearchIsVisible() and (A_GuiEvent = "Normal") and StrLen(g_strDragDropWaitClick))
-{
-	SetCursor(false)
-	g_intNewItemPos := A_EventInfo
-	; o_EditedFavorite := o_MenuInGui.SA[intDragDropCutRow]
-	strOriginalMenu := o_MenuInGui.AA.strMenuPath
-	; g_strDragDropDestinationMenu := o_MenuInGui.AA.strMenuPath ; #### what if drop is on a menu?
-	; gosub, GuiFavoritesListDropSave ; GuiFavoritesListDropCopySave if Control ?
-	###_V("", g_strDragDropWaitClick, g_intOriginalMenuPosition, g_intNewItemPos)
-	g_strDragDropWaitClick := ""
-}
-*/
 
 return
 ;------------------------------------------------------------
-
-
-/*
-;------------------------------------------------------------
-GuiFavoritesListDropCopy:
-; https://autohotkey.com/board/topic/82354-drag-and-reorder-listview-items/#entry523531
-;------------------------------------------------------------
-
-SetCursor(false)
-HotKey, ^LButton UP, GuiFavoritesListDropCopy, Off
-MouseGetPos,,, intWinID, intControlID
-
-If (intWinID = g_strGui1Hwnd and intControlID = g_strFavoritesListClass)
-{
-	g_strDragDropWaitClick := "copy"
-	Send, {Click}
-}
-
-return
-;------------------------------------------------------------
-*/
 
 
 ;------------------------------------------------------------
