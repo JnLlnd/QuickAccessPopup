@@ -79,8 +79,7 @@ Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
 
 
 ;------------------------------------------------------------
-Url2Var(strUrl)
-; SAME AS IN QAP SOURCE CODE - INTEGRATE BETTER IF IT SOLVE THE CHECK LICENSE ISSUE
+Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText")
 ; WinHttp.WinHttpRequest.5.1 and MSXML2.XMLHTTP.6.0 properties:
 ; 	.GetAllResponseHeaders()
 ; 	.ResponseText()
@@ -91,7 +90,8 @@ Url2Var(strUrl)
 ; see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=66685
 ;------------------------------------------------------------
 {
-	strUrl .= (InStr(strUrl, "?") ? "&" : "?") . "cache-breaker=" . A_NowUTC
+	if (blnBreakCache)
+		strUrl .= (InStr(strUrl, "?") ? "&" : "?") . "cache-breaker=" . A_NowUTC
 	
 	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
 	{
@@ -114,7 +114,10 @@ Url2Var(strUrl)
 			break
 	}
 
-	return oHttpRequest.ResponseText()
+	if (strReturn = "ResponseText")
+		return oHttpRequest.ResponseText()
+	else if (strReturn = "Status")
+		return oHttpRequest.Status()
 }
 ;------------------------------------------------------------
 
