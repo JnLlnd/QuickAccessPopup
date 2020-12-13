@@ -7088,11 +7088,12 @@ o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 ; submenu for Tools, Special Searches
-aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue, "DialogSearchBrokenFolders")
+aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue, "DialogSearchBrokenFolders", "DialogSearchBrokenFiles")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SpecialSearchAll", aaL["DialogSearchAllFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenFolders", aaL["DialogSearchBrokenFolders"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["SpecialSearchBrokenFiles", aaL["DialogSearchBrokenFiles"], "", "iconNoIcon"])
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
@@ -11072,6 +11073,7 @@ return
 SpecialSearchAll:
 SpecialSearchNotInDatabase:
 SpecialSearchBrokenFolders:
+SpecialSearchBrokenFiles:
 ;------------------------------------------------------------
 
 strCode := "{" . StrReplace(A_ThisLabel, "SpecialSearch" , "") . "}"
@@ -28311,7 +28313,8 @@ class Container
 			if !oItem.IsSeparator()
 				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}") ; case insensitive
 				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and oItem.ItemNotInDatabase())
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenFolders}" and oItem.LocationBroken("Folder")))
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenFolders}" and oItem.LocationBroken("Folder"))
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenFiles}" and oItem.LocationBroken("Document|Application")))
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
