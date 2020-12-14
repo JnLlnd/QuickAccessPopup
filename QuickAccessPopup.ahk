@@ -4532,6 +4532,7 @@ global g_strMultipleAddDestinationMenu ; used to set the destination menu when s
 global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
 global g_blnUsageDbUpdateFavoritesCompleted := false ; prevent special search NotInDatabase if favorites has not been completely updated with database data
+global g_strBrokenLinks ; for ToolTip listing broken favorites
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -4824,7 +4825,7 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
-; gosub, SpecialSearchNotInDatabase ; ####
+; gosub, SpecialSearchBrokenLinks ; ####
 
 return
 
@@ -7088,12 +7089,14 @@ o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 ; submenu for Tools, Special Searches
-aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue, "DialogSearchBrokenFolders", "DialogSearchBrokenFiles")
+aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue
+	, "DialogSearchBrokenFolders", "DialogSearchBrokenFiles", "DialogSearchBrokenLinks")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SpecialSearchAll", aaL["DialogSearchAllFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenFolders", aaL["DialogSearchBrokenFolders"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenFiles", aaL["DialogSearchBrokenFiles"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["SpecialSearchBrokenLinks", aaL["DialogSearchBrokenLinks"], "", "iconNoIcon"])
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
@@ -10966,7 +10969,7 @@ if !SearchIsVisible()
 					+ (o_MenuInGui.GetSortOrder() ? 0 : 1) ; +1 for reverse sort (63 or 65)
 					+ (Abs(o_MenuInGui.AA.intCurrentSortCriteria) > 4 ? 2 : 0) ; +2 if date or number, sort numeric
 }
-
+	
 if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already loaded
 {
 	Gui, 1:Submit, NoHide
@@ -10983,7 +10986,14 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 		GuiControlGet, strFilter, 1:, f_strFavoritesListFilter
 		o_MenuInGui.AA.strMenuPath := Trim(strFilter)
 		o_MenuInGui.AA.blnFavoritesListFilterExtended := f_blnFavoritesListFilterExtended
-
+		
+		if (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}")
+		{
+			SetCursor(true, "wait")
+			g_strBrokenLinks := o_L["ToolTipBrokenLinksList"] . ":"
+			Tooltip, % o_L["ToolTipBrokenLinksIntro"], 55, 140, 3
+		}
+		
 		o_MenuInGui.SA := Object() ; flush content of previous search
 		if StrLen(o_MenuInGui.AA.strMenuPath)
 		{
@@ -11021,6 +11031,13 @@ if SearchIsVisible()
 	{
 		Gosub, GuiSortSearchResult ; will call ReorderFavoritesInGui to LoadInGui again with o_MenuInGui sorted
 		return ; and exit this instance
+	}
+	
+	if (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}")
+	{
+		Loop, 3
+			ToolTip, , , , % A_Index + 2 ; remove tooltips 3, 4 and 5
+		SetCursor(false)
 	}
 	
 	g_intOriginalMenuPosition := o_MenuInGui.AA.intLastSearchPosition
@@ -11074,6 +11091,7 @@ SpecialSearchAll:
 SpecialSearchNotInDatabase:
 SpecialSearchBrokenFolders:
 SpecialSearchBrokenFiles:
+SpecialSearchBrokenLinks:
 ;------------------------------------------------------------
 
 strCode := "{" . StrReplace(A_ThisLabel, "SpecialSearch" , "") . "}"
@@ -11086,6 +11104,8 @@ if (strCode = "{NotInDatabase}" and !g_blnUsageDbUpdateFavoritesCompleted)
 
 Gosub, GuiFavoritesListFilterShowOpen
 GuiControl, , f_strFavoritesListFilter, %strCode% ; this will trigger LoadFavoritesInGui
+
+strCode := ""
 
 return
 ;------------------------------------------------------------
@@ -28314,7 +28334,8 @@ class Container
 				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}") ; case insensitive
 				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and oItem.ItemNotInDatabase())
 				or (o_MenuInGui.AA.strMenuPath = "{BrokenFolders}" and oItem.LocationBroken("Folder"))
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenFiles}" and oItem.LocationBroken("Document|Application")))
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenFiles}" and oItem.LocationBroken("Document|Application"))
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}" and oItem.LinkBroken()))
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
@@ -31628,6 +31649,39 @@ class Container
 				return true ; if yes, do not check (return true)
 			
 			return !FileExist(oItemTemp.aaTemp.strFullLocation)
+		}
+		;---------------------------------------------------------
+
+		;---------------------------------------------------------
+		LinkBroken()
+		;---------------------------------------------------------
+		{
+			if (this.AA.strFavoriteType <> "URL" or this.AA.blnLinkAlreadyChecked)
+				return false
+			
+			oItemTemp := this
+			oItemTemp.aaTemp := Object() ; item temporary values
+			oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
+			oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with
+			oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments
+			
+			; after variables are expanded, check if there are any placeholders in location
+			if ContainsPlaceholder(oItemTemp.aaTemp.strFullLocation)
+				return false ; if yes, do not check (consider as not broken)
+			
+			Sleep, 100 ; pause for Windows event handler
+			ToolTip, % o_L["ToolTipBrokenLinksChecking"] . ": " . this.AA.strFavoriteLocation, 55, 195, 4
+			
+			intStatus := Url2Var(this.AA.strFavoriteLocation, false, "Status")
+			if (intStatus <> 200)
+			{
+				g_strBrokenLinks .= "`n" . this.AA.strFavoriteLocation
+				ToolTip, % g_strBrokenLinks, 55, 220, 5
+			}
+			else
+				this.AA.blnLinkAlreadyChecked := true
+			
+			return  (intStatus <> 200)
 		}
 		;---------------------------------------------------------
 
