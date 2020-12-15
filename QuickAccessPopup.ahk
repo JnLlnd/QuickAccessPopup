@@ -4355,6 +4355,7 @@ ComObjError(False) ; we will do our own error handling
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
 #Include %A_ScriptDir%\QAPtools.ahk ; by Jean Lalonde
 #Include %A_ScriptDir%\..\EDD\EDDLicense.ahk ; by Jean Lalonde (Aug. 2020)
+#Include %A_ScriptDir%\Class_LV_Rows.ahk ; https://github.com/Pulover/Class_LV_Rows from Rodolfo U. Batista / Pulover (as of 2020-11-22)
 
 ; avoid error message when shortcut destination is missing
 ; see http://ahkscript.org/boards/viewtopic.php?f=5&t=4477&p=25239#p25236
@@ -10883,11 +10884,17 @@ Gui, 1:Add, Button, vf_btnFavoritesListNoFilter gGuiGotoMenuPrev x+10 yp w20 h20
 g_aaToolTipsMessages["Button2"] := o_L["ControlToolTipSearchBoxClear"]
 ; #| + Name|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 Gui, 1:Add, ListView
-	, % "vf_lvFavoritesList Count32 AltSubmit NoSortHdr LV0x10 " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
+	, % "vf_lvFavoritesList +Hwndg_strFavoritesListHwnd Count32 AltSubmit NoSortHdr LV0x10 LV0x10000 "
+		. (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeader"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? "|" . o_L["GuiLvFavoritesHeaderFilteredDates"]
 	. (g_blnUsageDbEnabled ? "|" . o_L["GuiLvFavoritesHeaderFilteredStats"] : "") : "") ; SysHeader321 / SysListView321
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
 	LV_ModifyCol(8, "Integer") ; usage column
+
+; initialize LV_Rows class (https://github.com/Pulover/Class_LV_Rows)
+LvHandle := New LV_Rows(g_strFavoritesListHwnd)
+LvHandle.SetHwnd(g_strFavoritesListHwnd)
+
 ; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
@@ -11315,7 +11322,29 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 		saItem := StrSplit(A_LoopField, "`t") ; saItem[1]: language item, saItem[2]: ellipse, saItem[3]: shortcut
 		Menu, menuBarFavorite, % (g_intFavoriteSelected ? "Enable" : "Disable")
 			, % aaFavoriteL[saItem[1]] . (StrLen(saItem[2]) ? g_strEllipse : "") . "`t" . saItem[3]
+		saItem := ""
 	}
+}
+else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
+{
+	if SearchIsVisible()
+		return
+	
+	; drop item in gui using LV_Rows class
+	LvHandle.SetHwnd(h%A_GuiControl%) ; select active hwnd in Handle.
+	g_intOriginalMenuPosition := A_EventInfo ; original position
+    g_intNewItemPos := LvHandle.Drag("D", true, 80, 2, "3F51B5") ; returns the new item position, 3F51B5 is the color of the up/down buttons
+	if (g_intNewItemPos > g_intOriginalMenuPosition) ; adjust new position to position before drag & drop
+		g_intNewItemPos--
+	o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition] ; set edited favorite
+	g_strDragDropDestinationMenu := o_MenuInGui.AA.strMenuPath ; set destination menu to menu in gui
+	
+	gosub, GuiFavoritesListDropSave
+	
+	g_intOriginalMenuPosition := ""
+    g_intNewItemPos := ""
+	o_EditedFavorite := ""
+	g_strDragDropDestinationMenu := ""
 }
 
 return
@@ -15738,6 +15767,7 @@ GuiCopyFavoriteSave:
 GuiAddExternalSave:
 GuiQuickAddSnippetSave:
 GuiAddFavoriteSaveFromMultipleAdd:
+GuiFavoritesListDropSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -15769,8 +15799,8 @@ if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalS
 
 o_EditedFavoriteMenu := o_EditedFavorite.AA.oParentMenu
 
-; update menu object except if we multiple move or copy favorites
-if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+; update menu object except if we multiple move or copy favorites, or drag and drop a favorite
+if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
 {
 	; if external menu file exists, load the submenu from the external settings ini file
 	if (o_EditedFavorite.AA.strFavoriteType = "External")
@@ -15921,7 +15951,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 			o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0
 	}
 }
-else ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave
+else if (strThisLabel <> "GuiFavoritesListDropSave") ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave, not required for GuiFavoritesListDropSave because container not changed
 	if o_EditedFavorite.IsContainer()
 		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
 		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
@@ -15932,7 +15962,7 @@ if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is proces
 
 ; alert user if an existing favorite has the same location + parameters
 
-if (InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd
+if (InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd or GuiFavoritesListDropSave
 	and o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue)
 {
 	oDuplicateFavorite := o_MainMenu.FoundIdenticalFavorite(o_EditedFavorite)
@@ -15956,7 +15986,7 @@ if (InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThis
 if !InStr(strThisLabel, "Copy")
 	if SearchIsVisible()
 		o_EditedFavoriteMenu.SA.RemoveAt(g_intOriginalMenuPosition) ; use .RemoveAt, not .Delete
-	else
+	else if StrLen(strOriginalMenu)
 		o_Containers.AA[strOriginalMenu].SA.RemoveAt(g_intOriginalMenuPosition) ; use .RemoveAt, not .Delete
 	
 if !(g_intNewItemPos)
@@ -15987,7 +16017,7 @@ else if (strThisLabel <> "GuiAddFavoriteSaveFromMultipleAdd") ; update listview
 {
 	if (strThisLabel = "GuiAddExternalSave")
 		g_blnExternalMenusAdded := true
-	else if !InStr(strThisLabel, "GuiAddFavoriteSaveXpress") ; also exclude GuiAddFavoriteSaveXpressFromMsg
+	else if !InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiFavoritesListDropSave|", strThisLabel . "|")
 		Gosub, 2GuiClose
 
 	if (SearchIsVisible() or o_EditedFavorite.AA.oParentMenu.AA.intMenuAutoSort)
@@ -16000,7 +16030,7 @@ else if (strThisLabel <> "GuiAddFavoriteSaveFromMultipleAdd") ; update listview
 			LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus Vis")
 		}
 	}
-	else
+	else if (strThisLabel <> "GuiFavoritesListDropSave") ; not required because already updated by LV_Rows class
 		Gosub, GuiAddFavoriteSaveUpdateListView
 
 	Gosub, EnableSaveAndCancel
@@ -16009,7 +16039,8 @@ else if (strThisLabel <> "GuiAddFavoriteSaveFromMultipleAdd") ; update listview
 }
 
 o_EditedFavorite.AA.strFavoriteDateModified := A_NowUTC
-if !InStr("GuiEditFavoriteSave|GuiMoveOneFavoriteSave|", strThisLabel . "|") ; item modified: GuiEditFavoriteSave, GuiMoveOneFavoriteSave (for all others, item is created)
+if !InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
+	; item is created except for GuiEditFavoriteSave, GuiMoveOneFavoriteSave and GuiFavoritesListDropSave where item is modified
 	o_EditedFavorite.AA.strFavoriteDateCreated := A_NowUTC
 
 ; if favorite's original or destination menu are in an external settings file, flag that they need to be saved
@@ -16138,7 +16169,7 @@ if (strDestinationMenu = o_MenuInGui.AA.strMenuPath) ; add modified to Listview 
 		LV_Modify(0, "-Select")
 
 	; GuiCopyOneFavoriteSave condition to protect selected items in multiple copy to same folder
-	o_EditedFavorite.LoadLineInGui("", g_intNewItemPos, (strThisLabel <>"GuiCopyOneFavoriteSave" ? "Select Focus Vis" : "")) ; if g_intNewItemPos LV_Insert, if false LV_Add
+	o_EditedFavorite.LoadLineInGui("", g_intNewItemPos, (strThisLabel <> "GuiCopyOneFavoriteSave" ? "Select Focus Vis" : "")) ; if g_intNewItemPos LV_Insert, if false LV_Add
 	
 	if (strThisLabel <> "GuiCopyOneFavoriteSave") ; to protect selected items in multiple copy to same folder
 		LV_Modify(LV_GetNext(), "Vis")
@@ -16178,7 +16209,7 @@ if (strThisLabel = "GuiQuickAddSnippetSave")
 	g_strSnippetFormat := "display"
 }
 
-if InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|GuiEditMenuFromGui", "|" . strThisLabel)
+if InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|GuiEditMenuFromGui|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
 	strOriginalMenu := o_MenuInGui.AA.strMenuPath
 else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|GuiQuickAddSnippetSave
 {
@@ -16190,7 +16221,7 @@ else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromM
 if (strThisLabel = "GuiAddExternalSave")
 	strExternalMenuName := o_Settings.ReadIniValue("MenuName", " ", "Global", o_EditedFavorite.AA.strFavoriteAppWorkingDir) ; empty if not found
 
-if InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|", strThisLabel . "|")
+if InStr("|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
 {
 	strNewFavoriteShortName := (StrLen(o_EditedFavorite.AA.strFavoriteName) ? o_EditedFavorite.AA.strFavoriteName : strExternalMenuName)
 	strNewFavoriteLocation := o_EditedFavorite.AA.strFavoriteLocation
@@ -16209,7 +16240,7 @@ if InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExterna
 			strDestinationMenu := A_ThisMenu
 		g_intNewItemPos := (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? 1 : o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1) ; 
 	}
-	else ; GuiAddExternalSave
+	else if (strThisLabel = "GuiAddExternalSave")
 	{
 		; add new shared menu in current Main menu
 		Gui, 1:Default
@@ -16217,6 +16248,8 @@ if InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExterna
 		g_intNewItemPos := LV_GetNext()
 		strDestinationMenu := o_MenuInGui.AA.strMenuPath
 	}
+	else ; GuiFavoritesListDropSave
+		strDestinationMenu := o_MenuInGui.AA.strMenuPath
 }
 else
 {
@@ -16224,7 +16257,10 @@ else
 	strNewFavoriteLocation := f_strFavoriteLocation
 	strFavoriteAppWorkingDir := f_strFavoriteAppWorkingDir
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
-	strDestinationMenu := f_drpParentMenu
+	if (strThisLabel = "GuiFavoritesListDropSave")
+		strDestinationMenu := g_strDragDropDestinationMenu
+	else
+		strDestinationMenu := f_drpParentMenu
 
 	; if gui was closed from Live Folder Options tab (without changing tab), update Live folder icon
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder" and f_blnFavoriteFolderLive
@@ -16273,6 +16309,7 @@ if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
 	and !(RegExMatch(strNewFavoriteLocation, "i){(|CUR_|SEL_)(LOC|NAME|DIR|EXT|NOEXT|DRIVE|Clipboard)}") ; case insensitive
 		or RegExMatch(strNewFavoriteLocation, "i)({Input:)") or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
+	and (strThisLabel <> "GuiFavoritesListDropSave") ; not required for drag and drop
 {
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
@@ -16337,9 +16374,9 @@ if (o_EditedFavorite.AA.strFavoriteType = "External") and !InStr("|GuiEditFavori
 	}
 }
 
-; various validations (not required for GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave because info in o_EditedFavorite is not changed)
+; various validations (not required for GuiMoveOneFavoriteSave, GuiCopyOneFavoriteSave and GuiFavoritesListDropSave because info in o_EditedFavorite is not changed)
 
-if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
 {
 	if !StrLen(strNewFavoriteShortName)
 		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
@@ -16469,9 +16506,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 
 ; avoid duplicate names when saving, rename if saving express or multiple
 
-strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
+strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
 	? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
-blnRename := InStr("GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|", strThisLabel . "|")
+blnRename := InStr("|GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|GuiFavoritesListDropMoveSave|"
+	, "|" . strThisLabel . "|")
 if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinationMenu, blnRename)
 {
 	Oops(2, o_L["DialogFavoriteNameNotNew"], (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName))
@@ -23330,6 +23368,8 @@ IsProcessElevated(ProcessID)
 ;------------------------------------------------------------
 SetCursor(blnOnOff, strCursorName := "")
 ; from Gio in https://autohotkey.com/boards/viewtopic.php?f=5&t=13284
+; cursors list: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setsystemcursor
+; wait 32514 / hand 32649 / appstarting 32650 / whatsthis 32651
 ;------------------------------------------------------------
 {
 	static s_blnCursorWaitAlreadyOn
@@ -23341,8 +23381,14 @@ SetCursor(blnOnOff, strCursorName := "")
 		else
 		{
 			if StrLen(strCursorName)
-				if (strCursorName = "wait")
+				if (strCursorName = "wait") ; OCR_WAIT
 					strCursorCode := 32514
+				else if (strCursorName = "hand") ; OCR_HAND
+					strCursorCode := 32649
+				else if (strCursorName = "appstarting") ; OCR_APPSTARTING
+					strCursorCode := 32650
+				else if (strCursorName = "whatsthis") ; OCR_HELP
+					strCursorCode := 32651
 				else
 					return
 			
