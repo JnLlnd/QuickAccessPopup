@@ -21869,6 +21869,8 @@ GetCurrentLocation(strClass, strWinID)
 			Clipboard := objPrevClipboard ; Restore the original clipboard
 		}
 	}
+	else if WindowIsDesktop(strClass)
+		strLocation := A_Desktop
 	else if InStr(g_strModernBrowsers, strClass)
 		strLocation := GetCurrentUrlAcc(strClass)
 	else if InStr(g_strLegacyBrowsers, strClass) ; LegacyBrowsers (as of https://autohotkey.com/boards/viewtopic.php?p=116752#p116752)
