@@ -32,6 +32,29 @@ HISTORY
 =======
 
 Version BETA: 11.1.0.9.1 (2020-12-15)
+ 
+Free Edition
+- limit the number of items in the menu to 100 items in the free edition
+- limit the free edition to one Live Folder and one Shared Menu
+- disable menu items exceeding the limits of the free edition and display a dialog box about limitations
+- redesign the "About Quick Access Popup" dialog box and add credits for contributors
+ 
+Drag and Drop
+- implement drag & drop items inside a menu (using LV_Rows class from Rodolfo U. Batista aka Pulover)
+ 
+Special Searches
+- add the submenu "Special Searches" under the "Tools" menu and move the "Search All Favorites" under this menu
+- add "Search Favorites not used in the last n days" looking for menu items not found in the QAP database (some item may be reported falsely as unused; the database info will improve as you use this new release)
+- add "Search Favorites Documents or Applications not found" menu item under "Special Searches"
+- add "Search Favorites Folders not found" menu item under "Special Searches"
+- add "Search Broken Favorites Links (404)" menu item under "Special Searches", display progress info while searching for broken links
+ 
+Bug fixes and improvements
+- fix a bug retrieving the web page title when adding a Link favorite using the command "Add Active Folder or Web Page Epxress"
+- send hotstring ending character when executing a snippet in macro mode
+- fix a bug retrieving the current location for {CUR...} placeholders when the current location is the Desktop
+- improve retrieving the selected file or folder for the {SEL...} placeholders
+- improve dialog box message when installing a new license and deleting previous license info
 
 Version: 11.1 (2020-12-02)
  
