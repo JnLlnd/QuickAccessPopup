@@ -4528,7 +4528,10 @@ g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) 
 global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
+global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
+global g_intNbLiveFoldersCount ; number of live folders built (vs maximum for free edition)
+global g_intNbExternalMenusCount ; number of external menus built (vs maximum for free edition)
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
@@ -4536,6 +4539,7 @@ global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTree
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
 global g_blnUsageDbUpdateFavoritesCompleted := false ; prevent special search NotInDatabase if favorites has not been completely updated with database data
 global g_strBrokenLinks ; for ToolTip listing broken favorites
+global g_intMaximumValue := 0x7FFFFFFFFFFFFFFF ; max value for integers
 
 ;---------------------------------
 ; Used in OpenFavorite
@@ -4665,22 +4669,38 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 blnDoNotCheckLicense := true ; true / false ; ####
+g_blnSponsor := false ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
-if (blnDoNotCheckLicense)
+global g_SponsoredMessage ; displayed in BuildBui
+if (blnDoNotCheckLicense) ; for developement
+	or !StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; this is a free edition without license
 {
 	o_EDDLicense := Object()
 	o_EDDLicense.oLicense := Object()
 	o_EDDLicense.oLicense.license := "valid"
-	g_blnSponsor := true
+	if (blnDoNotCheckLicense)
+	{
+		o_EDDLicense.oLicense.item_name := "Quick Access Popup (developement)"
+		o_EDDLicense.strUniqueSystemId := "00000000"
+	}
+	else
+		g_blnSponsor := false ; free edition
 }
 else
 {
 	Gosub, ProcessSponsorCode
 	if (o_EDDLicense.oLicense.license <> "valid")
-		return ; do not exit in case save-key is in progress
+		return ; happens when invalid item id error because of an old SponsorProductId
 }
+
+; Free Edition setup
+if !(g_blnSponsor)
+	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
+global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 100) ; limit menu items for free edition
+global g_intNbLiveFoldersMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of live folders
+global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -5619,7 +5639,7 @@ global g_strGuiWindowColor := o_Settings.ReadIniValue("WindowColor", E0E0E0, "Gu
 global g_strMenuBackgroundColor := o_Settings.ReadIniValue("MenuBackgroundColor", FFFFFF, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 
 global o_Containers := new Containers() ; replace g_objMenusIndex index of menus path used in Gui menu dropdown list and to access the menu object for a given menu path
-global o_MainMenu := new Container("Menu", o_L["MainMenuName"], , , , , true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
+global o_MainMenu := new Container("Menu", o_L["MainMenuName"], , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 
 Gosub, LoadFavoritesFromIni
 
@@ -5743,7 +5763,11 @@ if (o_EDDLicense.oLicense.license = "valid")
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
 	if (blnInvalidProductIdRemoved)
-		MsgBox, % "An error occurred while validating your licence. Please try again."
+	{
+		MsgBox, 0, %g_strAppNameText%, % "Your previous license info was removed.`n`nThe app will restart in a moment."
+		OnExit ; disable exit subroutine
+		Reload
+	}
 	else
 		MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
 	return ; will remove files created if first launch and exit
@@ -5794,8 +5818,7 @@ if StrLen(strSponsorCodeError)
 }
 ; else launch QAP
 
-g_SponsoredMessage := (g_blnSponsor ? (StrLen(o_Settings.Launch.strSponsorName.IniValue)
-	? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "") : "<a id=""none"">" . o_L["SponsoredNone"] . "</a>")
+g_SponsoredMessage := (StrLen(o_Settings.Launch.strSponsorName.IniValue) ? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "")
 if StrLen(g_SponsoredMessage)
 	g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
 
@@ -6881,7 +6904,7 @@ BuildTrayMenuRefresh:
 ;------------------------------------------------------------
 
 global g_aaMenuTrayL := o_L.InsertAmpersand(true, "MenuSettings", "MenuFile", "MenuFavorite", "MenuTools", "MenuOptions"
-	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "GuiDonate")
+	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "DonateMenu")
 
 if (A_ThisLabel = "BuildTrayMenuRefresh")
 	Menu, Tray, DeleteAll
@@ -6903,7 +6926,7 @@ Menu, Tray, Add, % g_aaMenuTrayL["MenuExitApp@" . g_strAppNameText], GuiCancelAn
 if (!g_blnSponsor)
 {
 	Menu, Tray, Add
-	Menu, Tray, Add, % g_aaMenuTrayL["GuiDonate"] . g_strEllipse, GuiDonate
+	Menu, Tray, Add, % g_aaMenuTrayL["DonateMenu"] . g_strEllipse, GuiDonate ; "Get a license"
 }
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
@@ -6915,7 +6938,7 @@ Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-cli
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
 Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
-	. (g_blnSponsor ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateButton"]) ; A_PtrSize * 8 = 32 or 64
+	. (g_blnSponsor ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateMenu"]) ; A_PtrSize * 8 = 32 or 64
 	
 return
 ;------------------------------------------------------------
@@ -7155,7 +7178,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
-	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
+	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "DonateActionManageLicense", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -7170,7 +7193,8 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF1", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiDonate", aaHelpL["GuiDonate"] . g_strEllipse, "", "iconNoIcon"])
+if !(g_blnSponsor)
+	saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
@@ -8338,11 +8362,26 @@ gosub, DisableShortcuts ; turn off all favorites keyboard and mouse hotkeys
 g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
+g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
+g_intNbLiveFoldersCount := 0 ; number of live folders built (vs maximum for free edition)
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
+g_intNbExternalMenusCount := 0 ; number of external menus (vs maximum set in ini file)
 ; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
+strLimitExceededMessage := (g_intMenuItemsCount > g_intMenuItemsMax ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
+strLimitExceededMessage .= (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax ? L(o_L["DialogFreeEditionLive"], g_intNbLiveFoldersCount, g_intNbLiveFoldersMax) . "`n" : "")
+strLimitExceededMessage .= (g_intNbExternalMenusCount > g_intNbExternalMenusMax ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
+if StrLen(strLimitExceededMessage)
+{
+	intSeconds := 10
+	MsgBox, % 1 + 256, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . L(o_L["DialogFreeEditionMessage2"], intSeconds), %intSeconds%
+	IfMsgBox, OK
+		run, %g_strSponsorCodeSiteURL%
+}
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
+
+intSeconds := ""
 
 return
 ;------------------------------------------------------------
@@ -9853,7 +9892,7 @@ g_intOptionsFooterY += 20 ; place buttons below highest options group
 Gui, 2:Add, Button, x10 y%g_intOptionsFooterY% vf_btnOptionsSave gGuiOptionsGroupSave disabled Default, % aaL["GuiSave"]
 Gui, 2:Add, Button, yp vf_btnOptionsCancel gButtonOptionsCancel, % aaL["GuiCancel"]
 if (!g_blnSponsor)
-	Gui, 2:Add, Button, yp vf_btnOptionsDonate gGuiDonate, % o_L["DonateButton"]
+	Gui, 2:Add, Button, yp vf_btnOptionsDonate gGuiDonate, % o_L["DonateMenu"]
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel", (!g_blnSponsor ? "f_btnOptionsDonate" : ""))
 
 Gui, 2:Add, Text
@@ -10946,7 +10985,6 @@ if (saSettingsPosition[1] <> -1)
 GuiControl, Focus, f_lvFavoritesList
 
 saSettingsPosition := ""
-saDonateButtons := ""
 strTextColor := ""
 
 return
@@ -20926,35 +20964,56 @@ GuiAbout:
 ;------------------------------------------------------------
 Gui, 1:Submit, NoHide
 
+intWidthTotal := 680
+intWidthHalf := 340
+intXCol2 := 350
+
 strGuiTitle := L(o_L["AboutTitle"], g_strAppNameText, g_strAppVersion)
 Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 Gui, 2:+Owner1
+
+; header
 Gui, 2:Font, s12 w700, Verdana
-Gui, 2:Add, Link, y10 w380, % L(o_L["AboutText1"], g_strAppNameText, g_strAppVersion, A_PtrSize * 8) ;  ; A_PtrSize * 8 = 32 or 64
+Gui, 2:Add, Link, x10 y10 w%intWidthTotal%, % L(o_L["AboutText1"], g_strAppNameText, g_strAppVersion, A_PtrSize * 8) ;  ; A_PtrSize * 8 = 32 or 64
 Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Link, w380, % L(o_L["AboutText2"], g_strAppNameText, A_AhkVersion)
+Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText2"], g_strAppNameText)
 FormatTime, strYear, , yyyy ; current time
-Gui, 2:Add, Link, w380, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
-Gui, 2:Add, Text, w380, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
-Gui, 2:Add, Link, w380 y+5 , % "<a href=""https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/"">" . o_L["AboutLicenseHelp"] . "</a>"
-Gui, 2:Add, Link, w380 y+5 gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
-Gui, 2:Font, s10 w400, Verdana
-Gui, 2:Add, Link, w380, % L(o_L["AboutText4"])
+Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
+
+; user info (left)
+Gui, 2:Add, Text, x10 w%intWidthHalf% section, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
+Gui, 2:Add, Link, x10 w%intWidthHalf%, % L(o_L["AboutText4"])
+; license (right)
+if (g_blnSponsor)
+{
+	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% ys gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
+	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% y+1, % "<a href=""https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/"">" . o_L["AboutLicenseHelp"] . "</a>"
+}
+
+; credits translators (left)
+Gui, 2:Font, s8 w700, Verdana
+Gui, 2:Add, Link, x10 y+10 w%intWidthTotal%, % L(o_L["AboutText5"])
 Gui, 2:Font, s8 w400, Verdana
-
-aaL := o_L.InsertAmpersand(false, "GuiClose", "DonateButton")
-
+Gui, 2:Add, Link, x10 w%intWidthHalf% section, % L(o_L["AboutText2a"], g_strAppNameText)
+aaL := o_L.InsertAmpersand(false, "GuiClose")
 Gui, 2:Add, Button, y+20 vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
 
+; contributors (right)
+Gui, 2:Add, Link, x%intXCol2% ys w%intWidthHalf%, % L(o_L["AboutText6"], "Lexikos (AutoHotkey_L), Joe Glines (the-Automator.com), Avi Aryan Ryan, RaptorX, Blackholyman, just_me (Class_SQLiteDB), Learning One, leo (GPSoftware), Maestrith (XML_Class), Pulover (LV_Rows class), Tank", "https://www.autohotkey.com/boards/")
+Gui, 2:Add, Link, x%intXCol2% y+5 w%intWidthHalf%, % L(o_L["AboutText2b"], A_AhkVersion)
+
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
 GuiControl, Focus, f_btnAboutClose
 Gosub, ShowGui2AndDisableGui1
 
 strYear := ""
 strGuiTitle := ""
 aaL := ""
+intWidth := ""
+intWidthHalf :=
+intXCol2 := ""
 
 return
 ;------------------------------------------------------------
@@ -20981,70 +21040,8 @@ return
 ;------------------------------------------------------------
 GuiDonate:
 ;------------------------------------------------------------
-Gui, 1:Submit, NoHide
 
-strGuiTitle := L(o_L["DonateTitle"], g_strAppNameText, g_strAppVersion)
-Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
-if (g_blnUseColors)
-	Gui, 2:Color, %g_strGuiWindowColor%
-Gui, 2:+Owner1
-
-Gui, 2:Font, s12 w700, Verdana
-Gui, 2:Add, Text, y10 w420, % L(o_L["DonateText1"], g_strAppNameText)
-Gui, 2:Font, s10 w600, Verdana
-Gui, 2:Add, Button, y+20 Default vbtnDonateDefault w220 h50 gButtonDonate, % o_L["DonateMenu"]
-; GuiCenterButtons(g_strGui2Hwnd, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, "btnDonateDefault")
-GuiCenterButtons(g_strGui2Hwnd, 20, 20, 0, "btnDonateDefault")
-Gui, 2:Font, s8 w400 c404040 normal, Verdana
-
-Gui, 2:Font, s10 w700, Verdana
-Gui, 2:Add, Link, xm y+60 w420, % o_L["DonateText3"]
-Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Link, xm y+10 w420 Section, % L(o_L["DonateText4"], g_strAppNameText)
-
-strDonateReviewUrlLeft1 := "https://alternativeto.net/software/quick-access-popup/"
-strDonateReviewUrlLeft2 := "http://www.portablefreeware.com/index.php?id=2765"
-strDonateReviewUrlLeft3 := "http://www.softpedia.com/get/System/OS-Enhancements/FoldersPopup.shtml"
-strDonateReviewUrlRight1 := "http://fileforum.betanews.com/detail/Quick-Access-Popup/1455462511/1"
-strDonateReviewUrlRight2 := "http://www.filecluster.com/System-Utilities/Launchers-Task-Manager-Utilities/Download-Quick-Access-Popup.html"
-strDonateReviewUrlRight3 := "http://freewares-tutos.blogspot.ca/2016/05/quick-access-popup-accedez-rapidement.html"
-
-strDonateReviewTextLeft1 := "AlternativeTo.com"
-strDonateReviewTextLeft2 := "PortableFreeware.com"
-strDonateReviewTextLeft3 := "Softpedia.com"
-strDonateReviewTextRight1 := "BetaNews.com"
-strDonateReviewTextRight2 := "FileCluster.com"
-strDonateReviewTextRight3 := "Freewares && Tutos (FR)"
-
-loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x25 w150", % "<a href=""" . strDonateReviewUrlLeft%A_Index% . """>" . strDonateReviewTextLeft%A_Index% . "</a>"
-
-loop, 3
-	Gui, 2:Add, Link, % (A_Index = 1 ? "ys+20" : "y+5") . " x175 w150", % "<a href=""" . strDonateReviewUrlRight%A_Index% . """>" . strDonateReviewTextRight%A_Index% . "</a>"
-
-Gui, 2:Add, Link, y+10 x10 vf_lnkSendLink, % "<a href=""mailto:jeanlalonde@quickaccesspopup.com"">" . o_L["DonateText5"] . "</a>"
-GuiControlGet, arrPos, Pos, f_lnkSendLink
-g_intLnkSendLink := arrPosW
-
-aaL := o_L.InsertAmpersand(false, "GuiHelp", "GuiClose")
-
-Gui, 2:Font, s8 w400, Verdana
-Gui, 2:Add, Button, x175 y+20 g2GuiClose vf_btnDonateClose, % aaL["GuiClose"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnDonateClose")
-Gui, 2:Add, Text
-
-GuiControl, Focus, btnDonateDefault
-Gosub, ShowGui2AndDisableGui1
-
-strDonateReviewUrlLeft1 := ""
-strDonateReviewUrlLeft2 := ""
-strDonateReviewUrlLeft3 := ""
-strDonateReviewUrlRight1 := ""
-strDonateReviewUrlRight2 := ""
-strDonateReviewUrlRight3 := ""
-strGuiTitle := ""
-arrPos := ""
-aaL := ""
+Run, %g_strSponsorCodeSiteURL%
 
 return
 ;------------------------------------------------------------
@@ -23321,7 +23318,7 @@ PathCombine(strAbsolutePath, strRelativePath)
 ;------------------------------------------------------------
 EnvVars(str)
 ; from Lexikos http://www.autohotkey.com/board/topic/40115-func-envvars-replace-environment-variables-in-text/#entry310601
-; adapted from from Lexikos http://www.autohotkey.com/board/topic/40115-func-envvars-replace-environment-variables-in-text/#entry310601
+; adapted from Lexikos http://www.autohotkey.com/board/topic/40115-func-envvars-replace-environment-variables-in-text/#entry310601
 ; in addition to environment variables, it expands QAP user variables like {Dropbox}
 ;------------------------------------------------------------
 {
@@ -27011,9 +27008,6 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Settings",				o_L["MenuSettings"],						"", "GuiShowFromQAPFeature",				"3-QAPMenuEditing~7-QAPManagement"
 			, o_L["MenuSettingsDescription"], 0, "iconSettings", "+^c"
 			, "what-should-i-know-about-quick-access-popup-before-starting")
-		this.AddQAPFeatureObject("Support",					o_L["GuiDonate"] . g_strEllipse,			"", "GuiDonate",							"7-QAPManagement"
-			, o_L["GuiDonateDescription"], 0, "iconDonate", ""
-			, "sponsoring")
 		this.AddQAPFeatureObject("GetWinInfo",				o_L["MenuGetWinInfo"] . g_strEllipse,		"", "GetWinInfo",							"6-Utility"
 			, o_L["MenuGetWinInfoDescription"], 0, "iconAbout", ""
 			, "can-i-block-the-qap-menu-hotkeys-if-they-interfere-with-one-of-my-other-apps")
@@ -28082,7 +28076,7 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false)
+	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false, blnCountItems := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
@@ -28091,6 +28085,8 @@ class Container
 		this.AA.intMenuAutoSort := intAutoSort
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
+		this.AA.blnCountItems := blnCountItems ; increment items counter for free edition limit
+		
 		if (oParentMenu)
 		{
 			if (oParentMenu = "nomenu") ; exception string for search result containers
@@ -28322,7 +28318,7 @@ class Container
 				}
 				
 				; load the submenu
-				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], (saThisFavorite[1] = "Group" ? "" : saThisFavorite[11]), this, , , true)
+				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], (saThisFavorite[1] = "Group" ? "" : saThisFavorite[11]), this, , , true, true)
 				
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
@@ -28690,6 +28686,9 @@ class Container
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
 			
+			if (this.AA.blnCountItems)
+				g_intMenuItemsCount++ ; for free edition limit
+			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
 				strMenuItemAction := aaThisFavorite.strFavoriteType
@@ -28741,9 +28740,12 @@ class Container
 			{
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
+					g_intNbLiveFoldersCount++
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
 					o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
+				else if (aaThisFavorite.strFavoriteType = "External")
+					g_intNbExternalMenusCount++
 				
 				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh) ; RECURSIVE - build the submenu first
 				
@@ -28822,19 +28824,27 @@ class Container
 				else
 					strMenuItemIcon := "iconNoIcon"
 				
+				; intMenuItemStatus 0 disabled, 1 enabled, 2 default
 				if (aaThisFavorite.strFavoriteLocation = "{Settings}") ; make Settings... menu bold in any menu; check favorite's location, not its name (that can now be changed)
-					intMenuItemStatus := 2 ; 0 disabled, 1 enabled, 2 default
+					intMenuItemStatus := 2
 					; Menu, % this.AA.strMenuPath, Default, %strMenuItemLabel%
 				else if (strMenuItemAction = "GuiShowNeverCalled")
-					intMenuItemStatus := 0 ; 0 disabled, 1 enabled, 2 default
+					intMenuItemStatus := 0
 				else if (aaThisFavorite.strFavoriteLocation = "{Container In Gui}" and this.AA.strMenuPath = o_L["MenuContainerInGui"])
 					; blocked by AHK because this could cause an infinite loop; disable the menu entry (menu will not be attached)
 					or (aaThisFavorite.strFavoriteLocation = "{Container In Gui}" and aaThisFavorite.oParentMenu.AA.strMenupath <> o_L["MainMenuName"])
 					; block MenuContainerInGui menu if not in Main menu
 					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
+				else if !(g_blnSponsor) and (this.AA.blnCountItems)
+					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
+				else if !(g_blnSponsor) and (this.AA.blnIsLiveMenu and this.AA.blnLiveMenuIsDisabled) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
+				else if !(g_blnSponsor) and (this.AA.strMenuType = "External" and g_intNbExternalMenusCount > g_intNbExternalMenusMax) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
 				else
-					intMenuItemStatus := 1 ; 0 disabled, 1 enabled, 2 default
+					intMenuItemStatus := 1
 			}
 			
 			if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue ; add popularity index
@@ -28980,6 +28990,7 @@ class Container
 		
 		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, , this, "init", true) ; last parameter true for blnDoubleAmpersands
 		oNewSubMenu.AA.blnIsLiveMenu := true
+		oNewSubMenu.AA.blnLiveMenuIsDisabled := (!g_blnSponsor and (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax)) ; for free edition limitation
 		oNewSubMenu.AA.intLiveFolderParentPosition := intMenuParentPosition ; could be changed if we are in a Live Folder submenu
 		oNewSubMenu.AA.strLiveFolderParentPath := strMenuParentPath ; could be changed if we are in a Live Folder submenu
 		if (o_Containers.AA[oNewSubMenu.AA.strLiveFolderParentPath].AA.blnIsLiveMenu)
