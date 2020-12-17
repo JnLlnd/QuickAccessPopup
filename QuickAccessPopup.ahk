@@ -4692,7 +4692,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 blnDoNotCheckLicense := true ; true / false ; ####
-g_blnSponsor := false ; value when in dev mode without checking license
+g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -7140,12 +7140,11 @@ o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric sho
 
 ; submenu for Tools, Special Searches
 aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue
-	, "DialogSearchBrokenFolders", "DialogSearchBrokenFiles", "DialogSearchBrokenLinks")
+	, "DialogSearchBrokenLocations", "DialogSearchBrokenLinks")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SpecialSearchAll", aaL["DialogSearchAllFavorites"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
-saMenuItemsTable.Push(["SpecialSearchBrokenFolders", aaL["DialogSearchBrokenFolders"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["SpecialSearchBrokenFiles", aaL["DialogSearchBrokenFiles"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["SpecialSearchBrokenLocations", aaL["DialogSearchBrokenLocations"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenLinks", aaL["DialogSearchBrokenLinks"], "", "iconNoIcon"])
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
@@ -11160,8 +11159,7 @@ return
 ;------------------------------------------------------------
 SpecialSearchAll:
 SpecialSearchNotInDatabase:
-SpecialSearchBrokenFolders:
-SpecialSearchBrokenFiles:
+SpecialSearchBrokenLocations:
 SpecialSearchBrokenLinks:
 ;------------------------------------------------------------
 
@@ -28421,8 +28419,7 @@ class Container
 			if !oItem.IsSeparator()
 				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}") ; case insensitive
 				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and oItem.ItemNotInDatabase())
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenFolders}" and oItem.LocationBroken("Folder"))
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenFiles}" and oItem.LocationBroken("Document|Application"))
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenLocations}" and oItem.LocationBroken("Folder|Document|Application"))
 				or (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}" and oItem.LinkBroken()))
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
