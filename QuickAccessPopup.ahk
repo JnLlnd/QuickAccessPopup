@@ -30257,14 +30257,16 @@ class Container
 				}
 				else if (this.aaTemp.strTargetAppName = "Dialog")
 				{
-					if ControlIsVisible("ahk_id " . g_strTargetWinId, "Edit1")
-						strEditControl := "Edit1"
-						; in standard dialog windows, "Edit1" control is the right choice
-					else if ControlIsVisible("ahk_id " . g_strTargetWinId, "Edit2")
-						strEditControl := "Edit2"
-						; but sometimes in MS office, if condition above fails, "Edit2" control is the right choice 
-					else ; if above fails - just return false and do nothing.
-						return false
+					ControlGetFocus, strEditControl, ahk_id %g_strTargetWinId% ; get control having focus
+					if (SubStr(strEditControl, 1, 4) <> "Edit") ; if control having focus is an Edit control, use it, else use Edit1 or Edit2
+						if ControlIsVisible("ahk_id " . g_strTargetWinId, "Edit1")
+							strEditControl := "Edit1"
+							; in standard dialog windows, "Edit1" control is the right choice
+						else if ControlIsVisible("ahk_id " . g_strTargetWinId, "Edit2")
+							strEditControl := "Edit2"
+							; but sometimes in MS office, if condition above fails, "Edit2" control is the right choice 
+						else ; if above fails - just return false and do nothing.
+							return false
 					
 					;=== In this part (if we reached it), we'll send strLocation to control and restore control's initial text after navigating to specified folder===
 					
