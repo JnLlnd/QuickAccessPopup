@@ -4553,7 +4553,6 @@ global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
-global g_intNbLiveFoldersCount ; number of live folders built (vs maximum for free edition)
 global g_intNbExternalMenusCount ; number of external menus built (vs maximum for free edition)
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
@@ -4691,7 +4690,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := true ; true / false ; ####
+blnDoNotCheckLicense := false ; true / false ; ####
 g_blnSponsor := false ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -4720,7 +4719,10 @@ else
 
 ; Free Edition setup
 if !(g_blnSponsor)
+{
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
+	o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue := 50
+}
 global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 100) ; limit menu items for free edition
 global g_intNbLiveFoldersMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of live folders
 global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
@@ -5787,7 +5789,7 @@ else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
 	if (blnInvalidProductIdRemoved)
 	{
-		MsgBox, 0, %g_strAppNameText%, % "Your previous license info was removed.`n`nThe app will restart in a moment."
+		MsgBox, 0, %g_strAppNameText%, % "Your previous license info was removed.`n`nThe app will restart in a moment.", 5
 		OnExit ; disable exit subroutine
 		Reload
 	}
@@ -8324,7 +8326,7 @@ else
 
 if (A_ThisLabel = "RefreshContainerInGuiFromShortcut")
 	g_intNbLiveFolderItems := 0
-o_Containers.AA[o_L["MenuContainerInGui"]].BuildMenu()
+o_Containers.AA[o_L["MenuContainerInGui"]].BuildMenu(, , , true)
 
 oItemCopy := ""
 
@@ -8386,25 +8388,23 @@ g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
 g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
-g_intNbLiveFoldersCount := 0 ; number of live folders built (vs maximum for free edition)
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 g_intNbExternalMenusCount := 0 ; number of external menus (vs maximum set in ini file)
-; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
+
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
+
 strLimitExceededMessage := (g_intMenuItemsCount > g_intMenuItemsMax ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
-strLimitExceededMessage .= (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax ? L(o_L["DialogFreeEditionLive"], g_intNbLiveFoldersCount, g_intNbLiveFoldersMax) . "`n" : "")
 strLimitExceededMessage .= (g_intNbExternalMenusCount > g_intNbExternalMenusMax ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
+strLimitExceededMessage .= (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue ? L(o_L["DialogFreeEditionLive"]
+	, o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue) . "`n" : "")
 if StrLen(strLimitExceededMessage)
 {
-	intSeconds := 10
-	MsgBox, % 1 + 256, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . L(o_L["DialogFreeEditionMessage2"], intSeconds), %intSeconds%
-	IfMsgBox, OK
+	MsgBox, % 4 + 256, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . o_L["DialogFreeEditionMessage2"]
+	IfMsgBox, Yes
 		run, %g_strSponsorCodeSiteURL%
 }
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
-
-intSeconds := ""
 
 return
 ;------------------------------------------------------------
@@ -15880,7 +15880,7 @@ if (g_blnAbortSave)
 
 if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalSave|", strThisLabel . "|"))
 {
-	oNewFavoriteMenu := new Container(o_EditedFavorite.AA.strFavoriteType, strNewFavoriteShortName, , o_Containers.AA[strDestinationMenu]) ; class instance for the new menu or group
+	oNewFavoriteMenu := new Container(o_EditedFavorite.AA.strFavoriteType, strNewFavoriteShortName, , o_Containers.AA[strDestinationMenu], , , , true) ; class instance for the new menu or group
 
 	if (oNewFavoriteMenu.AA.strMenuType = "External")
 	{
@@ -28681,7 +28681,7 @@ class Container
 	;-----------------------------------------------------
 
 	;------------------------------------------------------------
-	BuildMenu(blnWorkingToolTip := false, blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false) ; build menu and recurse in submenus
+	BuildMenu(blnWorkingToolTip := false, blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false, blnDoNotCountItemsNow := false) ; build menu and recurse in submenus
 	;------------------------------------------------------------
 	{
 		this.s_intMenuShortcutNumber := 0
@@ -28709,8 +28709,11 @@ class Container
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
 			
-			if (this.AA.blnCountItems)
+			if (this.AA.blnCountItems and !blnDoNotCountItemsNow)
+			{
 				g_intMenuItemsCount++ ; for free edition limit
+				ToolTip, % "##### DEBUG: " . g_intMenuItemsCount . " " . this.AA.strMenuPath
+			}
 			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
@@ -28763,14 +28766,13 @@ class Container
 			{
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
-					g_intNbLiveFoldersCount++
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
 					o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
 				else if (aaThisFavorite.strFavoriteType = "External")
 					g_intNbExternalMenusCount++
 				
-				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh) ; RECURSIVE - build the submenu first
+				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh, blnDoNotCountItemsNow) ; RECURSIVE - build the submenu first
 				
 				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
@@ -28861,8 +28863,6 @@ class Container
 					intMenuItemStatus := 0
 				else if !(g_blnSponsor) and (this.AA.blnCountItems)
 					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
-					intMenuItemStatus := 0 ; disabled, free edition limit
-				else if !(g_blnSponsor) and (this.AA.blnIsLiveMenu and this.AA.blnLiveMenuIsDisabled) ; free edition limit
 					intMenuItemStatus := 0 ; disabled, free edition limit
 				else if !(g_blnSponsor) and (this.AA.strMenuType = "External" and g_intNbExternalMenusCount > g_intNbExternalMenusMax) ; free edition limit
 					intMenuItemStatus := 0 ; disabled, free edition limit
@@ -28998,7 +28998,8 @@ class Container
 			strFolderName .= "_"
 		strSelfFolder := "`tFolder`t" . strFolderName . "`t" . strExpandedLocation . "`t" . strFolderIcon . "`n"
 		
-		if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+		if (g_blnSponsor and g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+		; non sponsor users will see the free edition limitation report if maximum number is exceeded
 		{
 			Oops(0, o_L["OopsMaxLiveFolder"], o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
 			return
@@ -29013,7 +29014,6 @@ class Container
 		
 		oNewSubMenu := new Container("Menu", o_FavoriteLiveFolder.AA.strFavoriteName, , this, "init", true) ; last parameter true for blnDoubleAmpersands
 		oNewSubMenu.AA.blnIsLiveMenu := true
-		oNewSubMenu.AA.blnLiveMenuIsDisabled := (!g_blnSponsor and (g_intNbLiveFoldersCount > g_intNbLiveFoldersMax)) ; for free edition limitation
 		oNewSubMenu.AA.intLiveFolderParentPosition := intMenuParentPosition ; could be changed if we are in a Live Folder submenu
 		oNewSubMenu.AA.strLiveFolderParentPath := strMenuParentPath ; could be changed if we are in a Live Folder submenu
 		if (o_Containers.AA[oNewSubMenu.AA.strLiveFolderParentPath].AA.blnIsLiveMenu)
