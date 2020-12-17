@@ -15878,6 +15878,8 @@ if (g_blnAbortSave)
 	return
 }
 
+if (strThisLabel = "GuiFavoritesListDropSave")
+	o###Original := o_EditedFavorite.BackupItem(true)
 ; if adding menu or group, create submenu object
 
 if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalSave|", strThisLabel . "|"))
@@ -16146,6 +16148,17 @@ if o_Containers.AA[strDestinationMenu].FavoriteIsUnderExternalMenu(oExternalMenu
 if StrLen(strOriginalMenu) and (strOriginalMenu <> strDestinationMenu)
 	if o_Containers.AA[strOriginalMenu].FavoriteIsUnderExternalMenu(oExternalMenu)
 		oExternalMenu.AA.blnNeedSave := true
+
+if (strThisLabel = "GuiFavoritesListDropSave")
+{
+	###_O2("Compare after drag & drop", o###Original.AA, o_EditedFavorite.AA)
+	###_O2("Compare after drag & drop", o###Original.AA.oParentMenu.AA, o_EditedFavorite.AA.oParentMenu.AA)
+	if (o###Original.IsContainer())
+	{
+		###_O2("Compare after drag & drop", o###Original.AA.oSubMenu.AA, o_EditedFavorite.AA.oSubMenu.AA)
+		###_O2("Compare after drag & drop", o###Original.AA.oSubMenu.SA, o_EditedFavorite.AA.oSubMenu.SA, "AA", "strFavoriteLocation")
+	}
+}
 
 GuiAddFavoriteSaveCleanup:
 if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ; do not execute at each favorite when moving multiple favorites
