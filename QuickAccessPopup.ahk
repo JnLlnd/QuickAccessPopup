@@ -28710,10 +28710,7 @@ class Container
 			intMenuItemStatus := 1 ; by default
 			
 			if (this.AA.blnCountItems and !blnDoNotCountItemsNow)
-			{
 				g_intMenuItemsCount++ ; for free edition limit
-				ToolTip, % "##### DEBUG: " . g_intMenuItemsCount . " " . this.AA.strMenuPath
-			}
 			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
@@ -31539,7 +31536,7 @@ class Container
 		; 2019-05-19: converted to Item class mehod with logic as-is
 		;---------------------------------------------------------
 		{
-            oItemTemp := this
+            oItemTemp := this.BackupItem()
             oItemTemp.aaTemp := Object() ; item temporary values
             oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
             oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
@@ -31727,6 +31724,7 @@ class Container
 		{
 			if InStr("|Menu|External|Group|Text|X|K|", "|" . this.AA.strFavoriteType . "|") ; exclude these types
 				or (this.AA.strFavoriteType = "QAP" and o_QAPFeatures.aaQAPFeaturesDynamicMenus.HasKey(this.AA.strFavoriteLocation)) ; exclude QAP Features dynamic menus
+				or (this.AA.oParentMenu.AA.strMenuType = "Group")
 				return false
 			
 			return !this.AA.intFavoriteUsageDb
