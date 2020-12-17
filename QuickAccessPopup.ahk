@@ -4690,8 +4690,8 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
-g_blnSponsor := false ; value when in dev mode without checking license
+blnDoNotCheckLicense := true ; true / false ; ####
+g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -31738,20 +31738,20 @@ class Container
 		;---------------------------------------------------------
 		{
 			if !InStr(strTypes, this.AA.strFavoriteType)
-				return
+				return false
 			
-			oItemTemp := this
-			oItemTemp.aaTemp := Object() ; item temporary values
-			oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
+			oItemTemp := this.BackupItem() ; test if file exists on a copy where some values are removed
 			oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
 			oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments for this test
+			oItemTemp.aaTemp := Object() ; item temporary values
+			oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
 			
-			if !oItemTemp.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
-				return true ; consider that file exists
+			if !oItemTemp.SetFullLocation() ; returns false if oItemTemp.aaTemp.strFullLocation is empty (exception)
+				return false ; if yes, do not check, consider that file exists (return false)
 			
 			; after variables are expanded, check if there are any placeholders in location
 			if ContainsPlaceholder(oItemTemp.aaTemp.strFullLocation)
-				return true ; if yes, do not check (return true)
+				return false ; if yes, do not check, consider that file exists (return false)
 			
 			return !FileExist(oItemTemp.aaTemp.strFullLocation)
 		}
@@ -31764,15 +31764,15 @@ class Container
 			if (this.AA.strFavoriteType <> "URL" or this.AA.blnLinkAlreadyChecked)
 				return false
 			
-			oItemTemp := this
-			oItemTemp.aaTemp := Object() ; item temporary values
-			oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
+			oItemTemp := this.BackupItem()
 			oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with
 			oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments
+			oItemTemp.aaTemp := Object() ; item temporary values
+			oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
 			
 			; after variables are expanded, check if there are any placeholders in location
 			if ContainsPlaceholder(oItemTemp.aaTemp.strFullLocation)
-				return false ; if yes, do not check (consider as not broken)
+				return false ; if yes, do not check, consider that link is not broken (return false)
 			
 			Sleep, 100 ; pause for Windows event handler
 			ToolTip, % o_L["ToolTipBrokenLinksChecking"] . ": " . this.AA.strFavoriteLocation, 55, 195, 4
@@ -31784,7 +31784,7 @@ class Container
 				ToolTip, % g_strBrokenLinks, 55, 220, 5
 			}
 			else
-				this.AA.blnLinkAlreadyChecked := true
+				this.AA.blnLinkAlreadyChecked := true ; temporary value to avoid checking this link again when refreshing search result
 			
 			return  (intStatus <> 200)
 		}
