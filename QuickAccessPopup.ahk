@@ -4691,7 +4691,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 blnDoNotCheckLicense := true ; true / false ; ####
-g_blnSponsor := true ; value when in dev mode without checking license
+g_blnSponsor := false ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
@@ -8399,7 +8399,7 @@ strLimitExceededMessage .= (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.int
 	, o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue) . "`n" : "")
 if StrLen(strLimitExceededMessage)
 {
-	MsgBox, % 4 + 256, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . o_L["DialogFreeEditionMessage2"]
+	MsgBox, % 4, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . o_L["DialogFreeEditionMessage2"]
 	IfMsgBox, Yes
 		run, %g_strSponsorCodeSiteURL%
 }
