@@ -8397,11 +8397,12 @@ strLimitExceededMessage := (g_intMenuItemsCount > g_intMenuItemsMax ? L(o_L["Dia
 strLimitExceededMessage .= (g_intNbExternalMenusCount > g_intNbExternalMenusMax ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
 strLimitExceededMessage .= (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue ? L(o_L["DialogFreeEditionLive"]
 	, o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue) . "`n" : "")
-if StrLen(strLimitExceededMessage)
+if (StrLen(strLimitExceededMessage) and !g_blnLimitExceededMessageShown)
 {
 	MsgBox, % 4, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . o_L["DialogFreeEditionMessage2"]
 	IfMsgBox, Yes
 		run, %g_strSponsorCodeSiteURL%
+	g_blnLimitExceededMessageShown := true
 }
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
