@@ -5466,7 +5466,7 @@ else
 			g_strConvertSettingsEncodingNo := "No keep ANSI encoding"
 			g_strConvertSettingsEncodingLater := "Ask me next time"
 			strGuiTitle := g_strAppNameText . " " . g_strAppVersion
-			Gui, 1:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
+			Gui, SettingsEncoding:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
 			Gui, Color, White
 			Gui, Font, w700 s9, Segoe UI
 			Gui, Add, Text, w500 , % L("~1~ ""one-time"" maintenance", g_strAppNameText)
@@ -5476,8 +5476,8 @@ else
 			Gui, Add, Text, w500 , This change will allow the use of extended characters in favorite's name, location or content, etc.
 			Gui, Add, Text, w500 , If you encounter issues with special characters in your menu after the conversion, you can revert to the previous file.
 			Gui, Add, Link, w500 , % L("See this <a href=""~1~"">FAQ page</a> for help now. Or search the <a href=""~1~"">FAQ</a> for ""Unicode"" later."
-				, "https://www.quickaccesspopup.com/why-converting-the-settings-file-to-unicode-and-conversion-troubleshooting/"
-				, "https://www.quickaccesspopup.com/frequently-asked-questions/")
+				, AddUtm2Url("https://www.quickaccesspopup.com/why-converting-the-settings-file-to-unicode-and-conversion-troubleshooting/", A_ThisLabel, "Help")
+				, AddUtm2Url("https://www.quickaccesspopup.com/frequently-asked-questions/", A_ThisLabel, "Help"))
 			Gui, Font
 			Gui, Add, Button, y+20 gConvertSettingsEncoding vf_btnConvertSettingsEncodingYes, %g_strConvertSettingsEncodingYes%
 			Gui, Add, Button, yp x+10 gConvertSettingsEncoding vf_btnConvertSettingsEncodingNo, %g_strConvertSettingsEncodingNo%
@@ -5966,7 +5966,7 @@ if (strSponsorCodeAction = "renew-key")
 {
 	MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionRenewConfirm"], g_strAppNameText)
 	if (o_EDDLicense.strProductId = strProductIdFree)
-		Run, % g_strSponsorCodeSiteURL . "products"
+		Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "products/", A_ThisLabel, "License Management")
 	else
 		Run, % o_EDDLicense.RenewLink()
 }
@@ -5974,16 +5974,16 @@ else if (strSponsorCodeAction = "get-new-key")
 {
 	if (A_ThisLabel = "GuiManageLicenseFromProcess")
 		MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionNewLicenseConfirm"], g_strAppNameText)
-	Run, % g_strSponsorCodeSiteURL . "products"
+	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "products/", A_ThisLabel, "License Management")
 }
 else if (strSponsorCodeAction = "manage-key")
 	
-	Run, % g_strSponsorCodeSiteURL . "checkout/purchase-history"
+	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "checkout/purchase-history/", A_ThisLabel, "License Management")
 	
 else if (strSponsorCodeAction = "manage-installations")
 {
 	MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionManageInstallationsConfirm"], g_strAppNameText, o_EDDLicense.oLicense.item_name)
-	Run, % g_strSponsorCodeSiteURL . "checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id
+	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id, A_ThisLabel, "License Management")
 }	
 else if (strSponsorCodeAction = "save-key")
 	
@@ -6118,7 +6118,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	SponsorActionHelp:
 	;------------------------------------------------------------
 	
-	Run, https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/
+	Run, % AddUtm2Url("https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/", A_ThisLabel, "Help")
 	
 	return
 	;------------------------------------------------------------
@@ -7251,15 +7251,15 @@ HelpSupportForum:
 ;------------------------------------------------------------
 
 if (A_ThisLabel = "HelpQuickStart")
-	Run, https://www.quickaccesspopup.com/what-should-i-know-about-quick-access-popup-before-starting/
+	Run, % AddUtm2Url("https://www.quickaccesspopup.com/what-should-i-know-about-quick-access-popup-before-starting/", A_ThisLabel, "Help")
 else if (A_ThisLabel = "HelpKnowledgeBase")
-	Run, https://www.quickaccesspopup.com/frequently-asked-questions/
+	Run, % AddUtm2Url("https://www.quickaccesspopup.com/frequently-asked-questions/", A_ThisLabel, "Help")
 else if (A_ThisLabel = "HelpVideosFirstSteps")
-	Run, https://www.youtube.com/watch?v=1AQ6sgH52fk&list=PLKvuCRHeZzOC8fP4MCClk3OsfSDRElHg_
+	Run, % AddUtm2Url("https://www.youtube.com/watch?v=1AQ6sgH52fk&list=PLKvuCRHeZzOC8fP4MCClk3OsfSDRElHg_", A_ThisLabel, "Help")
 else if (A_ThisLabel = "HelpVideosAll")
-	Run, https://www.quickaccesspopup.com/videos/
+	Run, % AddUtm2Url("https://www.quickaccesspopup.com/videos/", A_ThisLabel, "Help")
 else if (A_ThisLabel = "HelpSupportForum")
-	Run, https://forum.quickaccesspopup.com
+	Run, % AddUtm2Url("https://forum.quickaccesspopup.com", A_ThisLabel, "Support")
 
 return
 ;------------------------------------------------------------
@@ -8403,7 +8403,7 @@ if (StrLen(strLimitExceededMessage) and !g_blnLimitExceededMessageShown)
 {
 	MsgBox, % 4, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . o_L["DialogFreeEditionMessage2"]
 	IfMsgBox, Yes
-		run, %g_strSponsorCodeSiteURL%
+		run, % AddUtm2Url(g_strSponsorCodeSiteURL, A_ThisLabel, "Get License")
 	g_blnLimitExceededMessageShown := true
 }
 if InStr(A_ThisLabel, "WithStatus")
@@ -8770,7 +8770,7 @@ gosub, DisplayIconsClickedInit
 ; strIconReplacementList
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+25 x%g_intGroupItemsX% w500 hidden vf_lnkIconReplacementList1
-	, % o_L["OptionsIconReplacementList"] . " (<a href=""https://www.quickaccesspopup.com/can-i-replace-the-qap-standard-icons-with-my-own-custom-icons/"">" . o_L["GuiHelp"] . "</a>):"
+	, % o_L["OptionsIconReplacementList"] . " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-replace-the-qap-standard-icons-with-my-own-custom-icons/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>):"
 Gui, 2:Font
 Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w500 r5 vf_strIconReplacementList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 	? StrReplace(Trim(o_Settings.MenuIcons.strIconReplacementList.IniValue), "|", "`n") : "iconUnknown=" . o_JLicons.AA["iconUnknown"])
@@ -8873,7 +8873,7 @@ if !(g_blnPortableMode)
 }
 
 ; ExclusionMouseList
-strUrl := "https://www.quickaccesspopup.com/can-i-block-the-qap-menu-hotkeys-if-they-interfere-with-one-of-my-other-apps/"
+strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-block-the-qap-menu-hotkeys-if-they-interfere-with-one-of-my-other-apps/", A_ThisLabel, "Help")
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w600 hidden vf_lnkExclusionMouseList1, % L(o_L["OptionsExclusionMouseListDescription"]
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText) . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
@@ -8898,7 +8898,7 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 ; === MenuExclusions ===
 
 ; FoldersExclusionList
-strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#folders"
+strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#folders", A_ThisLabel, "Help")
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w340 section hidden vf_lnkFoldersExclusionList, % o_L["OptionsFoldersExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
@@ -8907,7 +8907,7 @@ Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList
 Gui, 2:Add, Text, y+5 hidden vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
 
 ; FilesExclusionList
-strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#files"
+strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#files", A_ThisLabel, "Help")
 intGroupItemsXFiles := g_intGroupItemsX + 350
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, ys x%intGroupItemsXFiles% w240 hidden vf_lnkFilesExclusionList, % o_L["OptionsFilesExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
@@ -8916,7 +8916,7 @@ Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w240 hidden r5 vf_strFilesExclusion
 Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w235 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
 
 ; SwitchExclusionList
-strUrl := "https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#applications"
+strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#applications", A_ThisLabel, "Help")
 GuiControlGet, arrPos, Pos, f_lblFoldersExclusionListBottom
 arrPosY := arrPosY + 10
 Gui, 2:Font, s8 w700
@@ -9005,7 +9005,9 @@ Gui, 2:Add, CheckBox, y+30 x%g_intGroupItemsX% vf_blnAlternativeMenuShowNotifica
 GuiControl, , f_blnAlternativeMenuShowNotification, % (o_Settings.MenuPopup.blnAlternativeMenuShowNotification.IniValue = true)
 
 Gui, 2:Add, Button, yp x%g_intGroupItemsTab6X% vf_btnAlternativeMenuResetModifiers gGuiOptionsAlternativeMenuResetModifiersClicked hidden, % o_L["OptionsAlternativeMenuResetModifiers"]
-Gui, 2:Add, Link, yp+5 x+10 vf_btnAlternativeMenuModifiersHelp hidden, % "<a href=""https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/"">" . o_L["GuiHelp"] . "</a>"
+Gui, 2:Add, Link, yp+5 x+10 vf_btnAlternativeMenuModifiersHelp hidden
+	, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/", A_ThisLabel, "Support")
+	. """>" . o_L["GuiHelp"] . "</a>"
 
 GuiControlGet, arrPos, Pos, f_blnAlternativeMenuShowNotification
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -9101,7 +9103,8 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 ; === Snippets ===
 
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w500 hidden vf_lblSnippetDefaultIntro, % L(o_L["OptionsSnippetsHelp"], "https://www.quickaccesspopup.com/what-are-snippets/", o_L["GuiHelp"])
+Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w500 hidden vf_lblSnippetDefaultIntro, % L(o_L["OptionsSnippetsHelp"]
+	, AddUtm2Url("https://www.quickaccesspopup.com/what-are-snippets/", A_ThisLabel, "Help"), o_L["GuiHelp"])
 Gui, 2:Font
 
 ; SnippetDefaultProcessEOLTab
@@ -9138,7 +9141,8 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 ; UserVariablesList
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w600 hidden vf_lnkUserVariablesListTitle, % o_L["OptionsUserVariablesList"]
-	. " (<a href=""https://www.quickaccesspopup.com/can-i-create-custom-user-variables-and-use-them-in-file-paths-or-snippets/"">" . o_L["GuiHelp"] . "</a>)"
+	. " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-create-custom-user-variables-and-use-them-in-file-paths-or-snippets/", A_ThisLabel, "Help")
+	. """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w600 hidden vf_lnkUserVariablesList, % o_L["OptionsUserVariablesListInstructions"]
 Gui, 2:Add, Edit, x%g_intGroupItemsX% y+10 w600 hidden r20 vf_strUserVariablesList gGuiOptionsGroupChanged
@@ -9233,7 +9237,8 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 
 ; NetworkDrivesSometimesOffline
 Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnNetworkDrivesSometimesOffline gGuiOptionsNetworkDrivesClicked hidden, % o_L["OptionsNetworkDrivesSometimesOffline"]
-Gui, 2:Add, Link, x+1 yp vf_lblNetworkDrivesSometimesOffline hidden, % "(<a href=""https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/"">" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Link, x+1 yp vf_lblNetworkDrivesSometimesOffline hidden, % "(<a href="""
+	. AddUtm2Url("https://www.quickaccesspopup.com/can-i-create-favorites-on-network-drives/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>)"
 GuiControl, , f_blnNetworkDrivesSometimesOffline, % (o_Settings.MenuAdvanced.blnNetworkDrivesSometimesOffline.IniValue = true)
 
 ; NetworkDrivesLetters
@@ -9278,7 +9283,8 @@ GuiControl, , f_blnSendToConsoleWithAlt, % (o_Settings.Execution.blnSendToConsol
 if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 {
 	Gui, 2:Add, CheckBox, y+20 x%g_intGroupItemsX% vf_blnEnableExternalMenusCatalogue hidden, % o_L["OptionsEnableExternalMenusCatalogue"]
-	Gui, 2:Add, Link, yp x+5 hidden vf_lnkEnableExternalMenusCatalogue, % "(<a href=""https://www.quickaccesspopup.com/shared-menu-catalogue/"">" . o_L["GuiHelp"] . "</a>)"
+	Gui, 2:Add, Link, yp x+5 hidden vf_lnkEnableExternalMenusCatalogue, % "(<a href="""
+		. AddUtm2Url("https://www.quickaccesspopup.com/shared-menu-catalogue/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>)"
 	GuiControl, , f_blnEnableExternalMenusCatalogue, % StrLen(o_Settings.SettingsFile.strExternalMenusCataloguePath.IniValue) > 0
 	Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblExternalMenusCataloguePathPrompt disabled hidden, % o_L["OptionsCataloguePath"] . ":"
 	Gui, 2:Add, Edit, yp x+5 w200 h20 vf_strExternalMenusCataloguePath disabled hidden ; gLabel after Gosub that changes the value below
@@ -10069,22 +10075,22 @@ if InStr(A_ThisLabel, "GroupButton")
 if (f_radActiveFileManager2) ; DirectoryOpus
 {
 	g_intClickedFileManager := 2
-	strHelpUrl := "https://www.quickaccesspopup.com/how-to-i-enable-directory-opus-support-in-quick-access-popup/"
+	strHelpUrl := AddUtm2Url("https://www.quickaccesspopup.com/how-to-i-enable-directory-opus-support-in-quick-access-popup/", A_ThisLabel, "Help")
 }
 else if (f_radActiveFileManager3) ; TotalCommander
 {
 	g_intClickedFileManager := 3
-	strHelpUrl := "https://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/"
+	strHelpUrl := AddUtm2Url("https://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/", A_ThisLabel, "Help")
 }
 else if (f_radActiveFileManager4) ; QAPconnect
 {
 	g_intClickedFileManager := 4
-	strHelpUrl := "https://www.quickaccesspopup.com/what-file-managers-are-supported-in-addition-to-windows-explorer/"
+	strHelpUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-file-managers-are-supported-in-addition-to-windows-explorer/", A_ThisLabel, "Help")
 }
 else ; f_radActiveFileManager1
 {
 	g_intClickedFileManager := 1
-	strHelpUrl := "https://www.quickaccesspopup.com/how-does-qap-work-on-multi-monitor-systems/"
+	strHelpUrl := AddUtm2Url("https://www.quickaccesspopup.com/how-does-qap-work-on-multi-monitor-systems/", A_ThisLabel, "Help")
 }
 
 if (f_radActiveFileManager1 or f_radActiveFileManager4) ; these file managers does not support tabs
@@ -11259,7 +11265,7 @@ SponsoredByClicked:
 
 strLink := ErrorLevel
 if (strLink = "update")
-	Run, https://www.quickaccesspopup.com/upgrading-donor-code/
+	Run, % AddUtm2Url("https://www.quickaccesspopup.com/upgrading-donor-code/", A_ThisLabel, "License management")
 else if (strLink = "none")
 	Gosub, GuiDonate
 ; else do nothing
@@ -11558,11 +11564,11 @@ Gui, 2:Add, DropDownList, y+5 10 w500 vf_drpParentMenu
 	, % o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath, "", true) . "|" ; exclude read-only external menus
 
 Gui, 2:Add, Text, x10 y+10 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLocationLabel . " *"
-Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-snippets/"">" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Link, x+5 yp, % "(<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/what-are-snippets/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Add, Edit, x10 y+5 vf_strFavoriteLocation w500 r12 t8, % SubStr(Clipboard, 1, 32000)
 
 Gui, 2:Add, Text, x10 y+20, % o_L["DialogHotstringTriggerOptions"]
-Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Link, x+5 yp, % "(<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/what-are-hotstrings/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Add, Text, x10 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring
 Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotstring, % o_L["OptionsChangeHotkey"]
 Gui, 2:Add, Text, x10 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring
@@ -12444,7 +12450,8 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 			Gui, 2:Add, Button, x+10 yp gButtonSelectFavoriteLocation vf_btnSelectFolderLocation, % o_L["DialogBrowseButton"]
 
 		if !InStr("Snippet|WindowsApp|", o_EditedFavorite.AA.strFavoriteType . "|")
-			Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"], "https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders")
+			Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"]
+				, AddUtm2Url("https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders", A_ThisLabel, "Help"))
 		
         if (o_EditedFavorite.AA.strFavoriteType = "Application")
 		{
@@ -12554,12 +12561,14 @@ if (blnFolderInAGroupWithSide) ; folder in a group with side
 if (o_EditedFavorite.AA.strFavoriteType = "External")
 {
 	Gui, 2:Add, Text, x20 y+10, % o_L["DialogExternalLocation"] . "*"
-	Gui, 2:Add, Edit, % (StrLen(o_EditedFavorite.AA.strFavoriteAppWorkingDir) ? "Disabled " : "") .  "x20 y+5 w400 Limit250 gEditFavoriteExternalLocationChanged vf_strFavoriteAppWorkingDir", % o_EditedFavorite.AA.strFavoriteAppWorkingDir
+	Gui, 2:Add, Edit, % (StrLen(o_EditedFavorite.AA.strFavoriteAppWorkingDir) ? "Disabled " : "")
+		. "x20 y+5 w400 Limit250 gEditFavoriteExternalLocationChanged vf_strFavoriteAppWorkingDir", % o_EditedFavorite.AA.strFavoriteAppWorkingDir
 	if StrLen(o_EditedFavorite.AA.strFavoriteAppWorkingDir)
 		Gui, 2:Add, Text, x20 y+5 w500, % o_L["DialogExternalLocationReadOnly"]
 	else
 		Gui, 2:Add, Button, x+10 yp gButtonSelectExternalSettingsFile, % o_L["DialogBrowseButton"]
-	Gui, 2:Add, Link, x20 y+15 w500, % L(o_L["DialogFavoriteExternalHelpWeb"], "https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/")
+	Gui, 2:Add, Link, x20 y+15 w500, % L(o_L["DialogFavoriteExternalHelpWeb"]
+		, AddUtm2Url("https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/", A_ThisLabel, "Help"))
 }
 
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
@@ -12855,13 +12864,14 @@ if !(blnIsGroupMember)
 	if (o_EditedFavorite.AA.strFavoriteType <> "Text")
 	{
 		Gui, 2:Add, Text, x20 y+20, % o_L["DialogShortcut"]
-		Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/"">" . o_L["GuiHelp"] . "</a>)"
+		Gui, 2:Add, Link, x+5 yp, % "(<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/", A_ThisLabel, "Help")
+			. """>" . o_L["GuiHelp"] . "</a>)"
 		Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotkeyText gButtonChangeFavoriteHotkey, % new Triggers.HotkeyParts(g_strNewFavoriteShortcut).Hotkey2Text()
 		Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotkey, % o_L["OptionsChangeHotkey"]
 		
 		SplitHotstring(g_strNewFavoriteHotstring, g_strNewFavoriteHotstringTrigger, g_strNewFavoriteHotstringOptionsShort)
 		Gui, 2:Add, Text, x20 y+20, % o_L["DialogHotstringTriggerOptions"]
-		Gui, 2:Add, Link, x+5 yp, % "(<a href=""https://www.quickaccesspopup.com/what-are-hotstrings/"">" . o_L["GuiHelp"] . "</a>)"
+		Gui, 2:Add, Link, x+5 yp, % "(<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/what-are-hotstrings/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>)"
 		Gui, 2:Add, Text, x20 y+5 w300 h23 0x1000 vf_strHotstringTrigger gButtonChangeFavoriteHotstring, %g_strNewFavoriteHotstringTrigger%
 		Gui, 2:Add, Button, yp x+10 gButtonChangeFavoriteHotstring, % o_L["OptionsChangeHotkey"]
 		Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring, % GetHotstringOptionsLong(g_strNewFavoriteHotstringOptionsShort)
@@ -12992,7 +13002,8 @@ if (o_EditedFavorite.AA.strFavoriteType = "Application")
 	Gui, 2:Add, Checkbox, x20 y+5 w500 vf_blnAppWorkingDirCurrent gButtonAppWorkingDirCurrentChanged, % o_L["DialogAppWorkingDirCurrent"] . "."
 	GuiControl, , f_blnAppWorkingDirCurrent, % (o_EditedFavorite.AA.strFavoriteAppWorkingDir = "{CUR_LOC}")
 	Gosub, ButtonAppWorkingDirCurrentChanged
-	Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"], "https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders")
+	Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"]
+		, AddUtm2Url("https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders", A_ThisLabel, "Help"))
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
@@ -13036,7 +13047,8 @@ if !InStr("Group|Snippet|QAP|Folder", o_EditedFavorite.AA.strFavoriteType, true)
 	Gui, 2:Add, Text, y+20 x20 w400  vf_lblFavoriteArguments, % o_L["DialogArgumentsLabel"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteArguments gFavoriteArgumentChanged, % o_EditedFavorite.AA.strFavoriteArguments
 	Gui, 2:Add, Text, x20 y+5 w500, % o_L["DialogArgumentsLabelHelp"]
-	Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"], "https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders")
+	Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"]
+		, AddUtm2Url("https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders", A_ThisLabel, "Help"))
 	
 	Gui, 2:Add, Text, x20 y+10 w500 vf_PlaceholdersCheckLabel, % o_L["DialogArgumentsPlaceholdersCheckLabel"]
 	Gui, 2:Add, Edit, x20 y+5 w500 vf_strPlaceholdersCheck ReadOnly
@@ -13050,7 +13062,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "FTP")
 	GuiControl, , f_blnFavoriteFtpEncoding, % (g_blnNewFavoriteFtpEncoding = true)
 }
 
-Gui, 2:Add, Link, x20 y+10, % L(o_L["DialogSoundLabel"], "https://www.quickaccesspopup.com/can-i-play-a-sound-when-i-launch-a-favorite/", o_L["GuiHelp"])
+Gui, 2:Add, Link, x20 y+10, % L(o_L["DialogSoundLabel"], AddUtm2Url("https://www.quickaccesspopup.com/can-i-play-a-sound-when-i-launch-a-favorite/", A_ThisLabel, "Help"), o_L["GuiHelp"])
 Gui, 2:Add, Edit, x20 y+10 vf_strFavoriteSoundLocation w300 h20, % o_EditedFavorite.AA.strFavoriteSoundLocation
 Gui, 2:Add, Button, x+10 yp gButtonSelectFavoriteSoundLocation, % o_L["DialogBrowseButton"]
 Gui, 2:Add, Button, x+10 yp gButtonPlayFavoriteSoundLocation, % o_L["DialogPlay"]
@@ -13071,7 +13083,7 @@ Gui, 2:Tab, % ++intTabNumber
 
 if !ExternalMenuIsReadOnly(f_strFavoriteAppWorkingDir)
 	Gui, 2:Add, Text, x20 y50 w500, % L(o_L["DialogFavoriteExternalSaveNote"], (InStr(strGuiFavoriteLabel, "Add") ? o_L["DialogAdd"] : o_L["DialogOK"]))
-Gui, 2:Add, Link, x20 y+10 w500, % L(o_L["DialogFavoriteExternalHelpWeb"], "https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/")
+Gui, 2:Add, Link, x20 y+10 w500, % L(o_L["DialogFavoriteExternalHelpWeb"], AddUtm2Url("https://www.quickaccesspopup.com/can-a-submenu-be-shared-on-different-pcs-or-by-different-users/", A_ThisLabel, "Help"))
 
 Gui, 2:Add, Text, x20 y+10 w500, % o_L["DialogExternalTypesTitle"]
 Loop, 3 ; no default type
@@ -13620,7 +13632,8 @@ if (A_GuiEvent = "S")
 	{
 		GuiControl, , f_tvQAPDescription, % g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureDescription
 		GuiControl, % (StrLen(g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL) ? "Show" : "Hide"), f_tvQAPFeatureURL
-		GuiControl, , f_tvQAPFeatureURL, % "<a href=""https://www.quickaccesspopup.com/" . g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL . "/"">" . o_L["DialogQAPFeaturesHelpLink"] . "</a>"
+		GuiControl, , f_tvQAPFeatureURL, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/" . g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL . "/", A_ThisLabel, "Help") . """>"
+			. o_L["DialogQAPFeaturesHelpLink"] . "</a>"
 	}
 }
 else if (A_GuiEvent = "DoubleClick")
@@ -13706,8 +13719,8 @@ if (strSnippetFormatBefore = "display" and !f_blnProcessEOLTab)
 
 ; change help text according to encoding state
 GuiControl, 2:, f_lblSnippetHelp, % (f_blnProcessEOLTab ? o_L["DialogFavoriteSnippetHelpProcess"] : o_L["DialogFavoriteSnippetHelpNoProcess"]) . " " 
-	. L(o_L["DialogFavoriteSnippetHelpWeb"], "https://www.quickaccesspopup.com/what-are-snippets/"
-		, "https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders")
+	. L(o_L["DialogFavoriteSnippetHelpWeb"], AddUtm2Url("https://www.quickaccesspopup.com/what-are-snippets/", A_ThisLabel, "Help")
+		, AddUtm2Url("https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders", A_ThisLabel, "Help"))
 
 strSnippetFormatBefore := ""
 
@@ -15509,7 +15522,7 @@ else if (A_GuiEvent = "DoubleClick")
 		MsgBox, % (StrLen(o_QAPFeatures.AA[strCode].strQAPFeatureURL) ? 4 : 0), %strTitle%, % strTitle . "`n`n"
 			. o_QAPFeatures.AA[strCode].strQAPFeatureDescription . (StrLen(o_QAPFeatures.AA[strCode].strQAPFeatureURL) ? "`n`n" . o_L["DialogQAPFeaturesHelpLink"] . "?" : "")
 		IfMsgBox, Yes
-			Run, % "https://www.quickaccesspopup.com/" . o_QAPFeatures.AA[strCode].strQAPFeatureURL
+			Run, % AddUtm2Url("https://www.quickaccesspopup.com/" . o_QAPFeatures.AA[strCode].strQAPFeatureURL, A_ThisLabel, "Help")
 	}
 }
 
@@ -17300,7 +17313,7 @@ Loop, 2 ; create Listviews tabs Shortcuts and Hotstrings
 	Gui, 2:Font, w600
 	Gui, 2:Add, Text, x20 y40, % L((A_Index = 1 ? o_L["DialogHotkeysManageAboutShortcuts"] : o_L["DialogHotkeysManageAboutHotstrings"]), g_strAppNameText)
 	Gui, 2:Font
-	Gui, 2:Add, Link, x+5 yp, % "(<a href=""" . saHotkeysUrl[A_Index] . """>" . o_L["GuiHelp"] . "</a>)"
+	Gui, 2:Add, Link, x+5 yp, % "(<a href=""" . AddUtm2Url(saHotkeysUrl[A_Index], A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>)"
 	Gui, 2:Add, Text, x20 y+10 w%intWidth%, % L(o_L["DialogHotkeysManageIntro"], saShortcutHotstringLower[A_Index])
 
 	; 1 -> #|Menu|Favorite Name|Type|Shortcuts|Favorite Location|Object Position (hidden)
@@ -18214,7 +18227,9 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	Gui, Add, Text, x10 y10 w400 center, %SH_strGuiTitle%
 	Gui, Font
 	
-	Gui, Add, Link, y+15 x10, % (P_blnDefaultOptions ? L(o_L["DialogChangeHotstringDefaultOptionsPrompt"], "https://www.quickaccesspopup.com/what-are-hotstrings/#options") : o_L["DialogTriggerFor"])
+	Gui, Add, Link, y+15 x10, % (P_blnDefaultOptions ? L(o_L["DialogChangeHotstringDefaultOptionsPrompt"]
+		, AddUtm2Url("https://www.quickaccesspopup.com/what-are-hotstrings/", A_ThisLabel, "Help") . "#options") ; place anchor after parameters
+		: o_L["DialogTriggerFor"])
 	
 	if !(P_blnDefaultOptions)
 	{
@@ -20518,10 +20533,12 @@ GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnCheck4UpdateDialogChangeLog", "
 
 if (g_strUpdateProdOrBeta = "prod")
 {
-	Gui, Update:Add, Button, y+20 x10 vf_btnCheck4UpdateDialogDownloadSetup gButtonCheck4UpdateDialogDownloadSetup, % o_L["UpdateButtonDownloadSetup"]
-	Gui, Update:Add, Button, yp x+20 vf_btnCheck4UpdateDialogDownloadPortable gButtonCheck4UpdateDialogDownloadPortable, % o_L["UpdateButtonDownloadPortable"]
+	if (g_blnPortableMode)
+		Gui, Update:Add, Button, y+20 x10 vf_btnCheck4UpdateDialogDownload gButtonCheck4UpdateDialogDownloadPortable, % o_L["UpdateButtonDownloadPortable"]
+	else
+		Gui, Update:Add, Button, y+20 x10 vf_btnCheck4UpdateDialogDownload gButtonCheck4UpdateDialogDownloadSetup, % o_L["UpdateButtonDownloadSetup"]
 
-	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnCheck4UpdateDialogDownloadSetup", "f_btnCheck4UpdateDialogDownloadPortable")
+	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnCheck4UpdateDialogDownload")
 }
 
 Gui, Update:Add, Button, y+20 x10 vf_btnCheck4UpdateDialogSkipVersion gButtonCheck4UpdateDialogSkipVersion, % o_L["UpdateButtonSkipVersion"]
@@ -20552,10 +20569,10 @@ UpdateGuiClose:
 UpdateGuiEscape:
 ;------------------------------------------------------------
 
-strUrlChangeLog := "https://www.quickaccesspopup.com/change-log" . (g_strUpdateProdOrBeta <> "prod" ? "-" . g_strUpdateProdOrBeta . "-version" : "") . "/"
-strUrlDownloadSetup := "https://www.quickaccesspopup.com/latest/check4update-download-setup-redirect.html" ; prod only
-strUrlDownloadPortable:= "https://www.quickaccesspopup.com/latest/check4update-download-portable-redirect.html" ; prod only
-strUrlAppLandingPageBeta := "https://forum.quickaccesspopup.com/forumdisplay.php?fid=11"
+strUrlChangeLog := AddUtm2Url("https://www.quickaccesspopup.com/change-log" . (g_strUpdateProdOrBeta <> "prod" ? "-" . g_strUpdateProdOrBeta . "-version" : "") . "/", A_ThisLabel, "Check4Update")
+strUrlDownloadSetup := AddUtm2Url("https://www.quickaccesspopup.com/latest/check4update-download-setup-redirect.html", A_ThisLabel, "Check4Update") ; prod only
+strUrlDownloadPortable:= AddUtm2Url("https://www.quickaccesspopup.com/latest/check4update-download-portable-redirect.html", A_ThisLabel, "Check4Update") ; prod only
+strUrlAppLandingPageBeta := AddUtm2Url("https://forum.quickaccesspopup.com/forumdisplay.php?fid=11", A_ThisLabel, "Check4Update")
 
 if InStr(A_ThisLabel, "ButtonCheck4UpdateDialogChangeLog")
 	Run, %strUrlChangeLog%
@@ -21018,7 +21035,8 @@ Gui, 2:Add, Link, x10 y10 w%intWidthTotal%, % L(o_L["AboutText1"], g_strAppNameT
 Gui, 2:Font, s8 w400, Verdana
 Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText2"], g_strAppNameText)
 FormatTime, strYear, , yyyy ; current time
-Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText3"], chr(169), strYear, "https://www.quickaccesspopup.com/license/")
+Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText3"], chr(169), strYear
+	, AddUtm2Url("https://www.quickaccesspopup.com/license/", A_ThisLabel, "License management"), "www.quickaccesspopup.com/license/")
 
 ; user info (left)
 Gui, 2:Add, Text, x10 w%intWidthHalf% section, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
@@ -21027,7 +21045,8 @@ Gui, 2:Add, Link, x10 w%intWidthHalf%, % L(o_L["AboutText4"])
 if (g_blnSponsor)
 {
 	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% ys gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
-	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% y+1, % "<a href=""https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/"">" . o_L["AboutLicenseHelp"] . "</a>"
+	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% y+1, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/", A_ThisLabel, "Help")
+		. """>" . o_L["AboutLicenseHelp"] . "</a>"
 }
 
 ; credits translators (left)
@@ -21076,20 +21095,11 @@ return
 
 
 ;------------------------------------------------------------
+ButtonDonate:
 GuiDonate:
 ;------------------------------------------------------------
 
-Run, %g_strSponsorCodeSiteURL%
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-ButtonDonate:
-;------------------------------------------------------------
-
-Run, %g_strSponsorCodeSiteURL%products
+Run, % AddUtm2Url(g_strSponsorCodeSiteURL, A_ThisLabel, "Get License")
 
 return
 ;------------------------------------------------------------
@@ -25154,6 +25164,18 @@ ContainsPlaceholder(strLocation)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+AddUtm2Url(strUrl, strMedium, strCampaign)
+; example: https://www.quickaccesspopup.com/?utm_source=QAP&utm_medium=Medium&utm_campaign=Campaign
+;------------------------------------------------------------
+{
+	strUrl .= (InStr(strUrl, "?") ? "&" : "?") ; add parameter separator or question mark if first parameter 
+	strUrl .= "utm_source=QAP&utm_medium=" . strMedium . "&utm_campaign=" . strCampaign
+	return strUrl
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -25191,9 +25213,8 @@ WM_MOUSEMOVE(wParam, lParam)
 	; display hand cursor over selected buttons
 	if InStr(s_strControl, "Static")
 	{
-		; 2-36 except 34 (and except 3, 4 and 25 if Edit disabled)
-		if (intControl < 2) or (intControl = 34) or (intControl > 35)
-			or ((intControl = 3 or intControl = 4 or intControl = 25) and g_blnEditButtonDisabled)
+		; 1-25 (except 2, 3 and 22 if Edit disabled)
+		if (intControl < 1 or intControl > 25 or ((intControl = 2 or intControl = 3 or intControl = 22) and g_blnEditButtonDisabled))
 			return
 	}
 	else if !InStr(s_strControl, "Button")
