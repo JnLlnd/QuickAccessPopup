@@ -1,6 +1,8 @@
 lAboutText1	~1~ ~2~ (~3~ bits)
-lAboutText2	~1~ ha sido desarrollado por Jean Lalonde usando la plataforma`n<a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTraducción al Alemán: Edgar "Fast Edi" Hoffmann`nTraducción al Francés: Jean Lalonde`nTraducción al italiano: Riccardo Leone`nTraducción al español: Kiketrucker (looking for new translator)`nTraducción al brasileño y portugues: Igor Ruckert`nTraducción al chino: ilaoyao`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nComprobación de Inglés: (tu ayuda es bienvenida)`n`nIconos por: <a href="https://icons8.com/">Icons8</a>`nInstalador del programa: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nAutoHotkey_L v~2~ sources: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>  
-lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~3~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
+lAboutText2	~1~ ha sido desarrollado por Jean Lalonde usando la plataforma <a href="http://ahkscript.org/">AutoHotkey</a>.
+lAboutText2a	Traducción al italiano: Riccardo Leone`nTraducción al español: Kiketrucker (looking for new translator)`nTraducción al brasileño y portugues: Igor Ruckert`nTraducción al chino: ilaoyao`nKorean translation: Maeng Bong Kyun`nRussian translation: Wylek.ru`nComprobación de Inglés: (tu ayuda es bienvenida)
+lAboutText2b	Iconos por: <a href="https://icons8.com/">Icons8</a>`nInstalador del programa: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> por jrsoftware.org`nAutoHotkey_L v~1~
+lAboutText3	~1~ Jean Lalonde 2013-~2~`n`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~4~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Soporte en línea: <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	Acerca de - ~1~ ~2~
 lAboutUserComputerName	Nombre de usuario: ~1~`nOrdenador: ~2~
@@ -641,7 +643,6 @@ lOptionsSelectCatalogueRoot	Elije la carpeta principal del Catálogo de los menús
 lOptionsSelectQAPTempFolder	Crear Carpeta Temporal en:
 lOptionsSnippetsHelp	Atajos por defecto (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Exclusiones Actuales de Windows
-lOptionsSwitchExclusionListInstructions	Para excluir aplicaciones del menú "Ventanas actuales", introduzca cualquier parte del título de la ventana de la aplicación. Puede introducir múltiples exclusiones, una por línea. Por ejemplo, para excluir ventanas de aplicaciones Sticky y GhostWindows, introduzca las siguientes líneas en la lista de exclusiones: `n`nAStickies:`nGhostWindows`n`nYou también puede excluir ventanas por su nombre de clase o nombre de proceso (nombre de archivo EXE). Puede encontrar ayuda y soporte en esta característica <a href="~2~">en el sitio web de QAP </a>.
 lOptionsTabFileManagersIntro	Seleccione el administrador de archivos para utilizar para abrir carpetas en una ventana nueva.
 lOptionsTabFileManagersPreferences	Preferencias del gestor de archivos
 lOptionsTabFileManagersPreferred	Gestor de archivos preferido

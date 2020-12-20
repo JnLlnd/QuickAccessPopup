@@ -3,8 +3,10 @@ lAboutLicenseCopy	copier l'identificateur unique
 lAboutLicenseCopyMessage	Votre identificateur unique (pour le compte des installations) sera copié dans le Presse-papiers.
 lAboutLicenseHelp	Aide pour la gestion de la license
 lAboutText1	~1~ ~2~ (~3~ bits)
-lAboutText2	~1~ est développé par Jean Lalonde`nsur la plateforme <a href="http://ahkscript.org/">AutoHotkey</a>.`n`nTraduction française: Jean Lalonde`nTraduction allemande: Edgar "Fast Edi" Hoffmann`nTraduction suédoise: Åke Engelbrektson`nTraduction italienne: Riccardo Leone`nTraduction espagnole: kiketrucker`nTraduction en portugais brésilien: Igor Ruckert`nTraduction en chinois simplifié: ilaoyao`nTraduction en portuguais: Luis Neves`nTraduction en néerlandais: Ric Roggeveen`nTraduction en coréen: Maeng Bong Kyun`nTraduction russe: Wylek.ru`nRévision anglaise: (aide bienvenue)`n`nIcônes par: <a href="https://icons8.com/">Icons8</a>`nInstallateur: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> par jrsoftware.org`nSources AutoHotkey_L v~2~: <a href="https://github.com/JnLlnd/QuickAccessPopup">GitHub</a>
-lAboutText3	~1~ Jean Lalonde 2013-~2~`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~3~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
+lAboutText2	~1~ est développé par Jean Lalonde sur la plateforme <a href="http://ahkscript.org/">AutoHotkey</a>.
+lAboutText2a	Traduction française: Jean Lalonde`nTraduction allemande: Edgar "Fast Edi" Hoffmann`nTraduction suédoise: Åke Engelbrektson`nTraduction italienne: Riccardo Leone`nTraduction espagnole: kiketrucker`nTraduction en portugais brésilien: Igor Ruckert`nTraduction en chinois simplifié: ilaoyao`nTraduction en portuguais: Luis Neves`nTraduction en néerlandais: Ric Roggeveen`nTraduction en coréen: Maeng Bong Kyun`nTraduction russe: Wylek.ru`nRévision anglaise: (aide bienvenue)
+lAboutText2b	Icônes par: <a href="https://icons8.com/">Icons8</a>`nInstallateur: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> par jrsoftware.org`nSources AutoHotkey_L v~1~
+lAboutText3	~1~ Jean Lalonde 2013-~2~`n`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~4~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Soutien en ligne: <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
 lAboutTitle	À propos - ~1~ ~2~
 lAboutUserComputerName	Utilisateur: ~1~`nOrdinateur: ~2~
@@ -258,7 +260,6 @@ lDialogHotstringExpandInsideWords	Substituer à l'intérieur d'autres mots
 lDialogHotstringIndicator	cs
 lDialogHotstringKeepHotstring	Conserver l'abréviation
 lDialogHotstringNotWaitEndingKey	Ne pas attendre de caractère de fin
-lDialogHotstringOmitEndChar	Omettre le caractère de fin lorsqu'un fragment de texte est collé
 lDialogHotstrings	Chaînes de substitution
 lDialogHotstringsDescription	Afficher une boîte de dialogue offrant une vue globale de vos chaînes de substitution (petites séquences de caractères qui déclenchent automatiquement un favori de QAP). Vous pouvez trier les favoris en cliquant sur l'entête des colonnes.`n`nFaites un double-clic sur une chaîne de substitution pour la modifier.`n`nCliquez sur la case à cocher "Voir tous les favoris" pour assigner des chaînes de substitution à d'autres favoris.
 lDialogHotstringTriggerAbbreviation	Déclencheur (abréviation):
@@ -322,16 +323,11 @@ lDialogMultipleAddFrom	Ajouter à partir de
 lDialogMultipleAddHelp	Faire un double-clic sur les lignes pour de l'aide sur Fonctionnalités QAP
 lDialogMultipleAddIntro1	1) Sélectionner un menu de destination et filtrer la liste si désiré.
 lDialogMultipleAddIntro1a	Pour trier la liste, cliquer sur l'entête d'une colonne
-lDialogMultipleAddIntro1f	1) Choisissez un menu de destination menu, un dossier source et un filtre si désiré.
-lDialogMultipleAddIntro1s	1) Choisissez un menu de destination menu et un fichier de paramètres QAP (.ini).
-lDialogMultipleAddIntro1t	Les menus et favoris selon chargés dans une liste arborescente
 lDialogMultipleAddIntro2	2) Cliquer la case à cocher des favoris à ajouter.
 lDialogMultipleAddIntro2a	Pour modifier le nom d'un favori, sélectionner sa rangée et appuyer sur F2.
 lDialogMultipleAddIntro3	3) Cliquer "Ajouter" pour insérer les favoris dans le menu de destination et cliquer "Enregistrer" dans la fenêtre "Personnaliser".
 lDialogMultipleAddSelectSource	Sélectionnez la source des favoris à ajouter et cliquez "Poursuivre".
 lDialogMultipleAddSelectSourceNext	Dans la prochaine fenêtre, vous allez:
-lDialogMultipleAddSettingsFileItems	Fichier de configuration QAP (liste simple)
-lDialogMultipleAddSettingsFileMenus	Fichier de configuration QAP (liste arborescente)
 lDialogNA	n/d
 lDialogNew	Nouveau
 lDialogNone	Aucun
@@ -445,7 +441,6 @@ lDonateCodeInvalidMessage	Vous avez besoin d'un code de licence pour utiliser ce
 lDonateCodeManageMessage	Votre licence est valide.`n`nIl vous reste ~1~/~2~ installation(s) pour cette licence.
 lDonateCodeNoInstallationsMessage	AUCUNE INSTALLATIONS DISPONIBLE`n`nVous avez utilisé les ~1~ installation(s) disponibles pour votre licence.`n`nVous pouvez gérer les installations pour cette licence sur le site web de ~2~.
 lDonateCodeNoInstallationsTitle	Aucune installation disponible - ~1~
-lDonateCodeNotAvailable	pas disponible hors-ligne
 lDonateEnterCode	Avez-vous votre code de licence pour ~1~?`n`nSi oui, enregistrez votre code et relancez ~1~.`n`nSi non, veuillez vous procurer une licence sur le site web de ~1~.
 lDonateMenu	Soutenez le développement de logiciel!
 lDonateOnline	Votre licence n'a pas été vérifiée depuis plus de ~1~ jours.`n`nVeuillez brancher cet ordinateur à Internet pour valider votre code.
@@ -522,8 +517,6 @@ lGuiTitle	Personnaliser - ~1~ ~2~
 lHelpMenuKnowledgeBase	Base de connaissance
 lHelpMenuQuickStart	Démarrage rapide
 lHelpMenuSupportForum	Aide sur le Forum
-lHelpMenuVideosAll	Toutes les vidéos
-lHelpMenuVideosFirstStep	Vidéos Premiers pas
 lHelpTabAddingFavorite	Ajouter des favoris
 lHelpTabGettingStarted	Premier pas
 lHelpTabQAPFeatures	Fonctionnalités QAP
@@ -566,7 +559,6 @@ lImpExpFileGlobal	Configuration globale et raccourcis du menu principal
 lImpExpFileThemes	Thèmes
 lImpExpFinalReport	Transfert ~1~.`n`nSource:`n~2~`n`nDestination:`n~3~
 lImpExpImport	Importer
-lImpExpImportFavorites	Importer des favoris
 lImpExpInvalidDestinationFolder	Dossier de destination invalide:`n`n~1~
 lImpExpMenu	Importer/exporter la configuration
 lImpExpMenuDescription	Afficher une boîte de dialogue permettant d'exporter les favoris et autres paramètres pour créer une copie de sécurité à l'emplacement voulu.`n`nVous pouvez aussi importer des favoris et paramètres d'un autre ordinateur ou d'un autre utilisateur.
@@ -654,7 +646,6 @@ lMenuMySnippetsMenu	Mes Fragments de texte
 lMenuMySpecialMenu	Mes Dossiers spéciaux
 lMenuMyVideo	Mes vidéos
 lMenuMyWindowsAppsMenu	Mes Applis Windows
-lMenuNetworkDrive	Lecteur réseau
 lMenuNoCurrentFolder	Aucun dossier ouvert actuellement…
 lMenuOpenBackupDirectory	Ouvrir le dossier des copies de sécurité des paramètres
 lMenuOpenWorkingDirectory	Ouvrir le dossier des paramètres de QAP
@@ -743,7 +734,6 @@ lOopsExternalUnderExternalError	Ce menu partagé inclut un autre menu partagé:`n~
 lOopsFavoritesCopied	~1~ favoris copiés.
 lOopsFileExpandedFrom	Étendu à partir de
 lOopsFileNotFound	Cet emplacement n'existe pas
-lOopsFileNotFoundSaveAnyway	Enregistrer ce favori quand même?
 lOopsFirstEnterUrl	Veuillez d'abord saisir une addresse dans le champ "~1~".
 lOopsFolderLiveAndAutomatic	Les options "~1~" et "~2~" ne peuvent pas être activées simultanément.`n`nVeuillez désactiver l'une de ces options.
 lOopsFtpLocationProtocol	L'emplacement d'un site FTP doit débuter par "ftp://".
@@ -822,10 +812,6 @@ lOptionsFileManagerNavigateIntro	Lorsque vous ouvrez le menu QAP hors de ~1~, ou
 lOptionsFileManagerNavigateNew	une nouvelle fenêtre de ~1~
 lOptionsFileManagerNavigateNewTab	un nouvel onglet de ~1~
 lOptionsFileManagers	Gestionnaires de fichiers
-lOptionsFilesExclusionList	Exclusions de fichiers
-lOptionsFilesExclusionListInstructions	Pour eclure des fichiers des menus "Fichiers récents" and "Fichiers fréquemment utilisés", saisissez leurs extensions de fichier (ex.: "mp3") ou utilisez les caractères génériques * et ? (ex.: *.mp?), un par ligne.
-lOptionsFoldersExclusionList	Exclusions de dossiers
-lOptionsFoldersExclusionListInstructions	Pour exclure des dossiers (incluant leur sous-dossiers et fichiers) des menus "Dossiers récents", "Fichiers récents", "Dossiers fréquemment utilisés" et "Fichiers fréquemment utilisés", saisissez leur chemins, un par ligne. Vous pouvez utiliser les caractères génériques * et ? avant la  barre oblique de fin (ex.: c:\secret*\).
 lOptionsFtpEncoding	Encoder le code d'utilisateur et le mot de passe FTP (recommandé)
 lOptionsFtpEncodingTC	Encoder le code d'utilisateur et le mot de passe FTP (déconseillé aux utilisateurs de Total Commander)
 lOptionsGeneral	Général
@@ -847,7 +833,6 @@ lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|It
 lOptionsMenuActiveWindow	Dans la fenêtre active
 lOptionsMenuAdvanced	Options de menu avancées
 lOptionsMenuAppearance	Apparence du menu
-lOptionsMenuExclusions	Exclusions des menus
 lOptionsMenuFixPosition	À une position fixe
 lOptionsMenuIcons	Icônes du menu
 lOptionsMenuNearMouse	Près du pointeur de la souris
@@ -857,8 +842,6 @@ lOptionsMoveWorkingFolderTitle	Modifier l'emplacement du dossier des paramètres
 lOptionsMoveWorkingFolderType	Souhaitez-vous copier vos paramètres actuels dans ce nouvel emplacement:`n`n~1~`n`nSi vous choisissez COPIER, ~2~ sera relancé avec vos paramètres actuels COPIÉS dans ce dossier.`n`nSi vous choisissez NOUVEAU, ~2~ sera relancé avec les paramètres déjà présents (ou créés) dans ce NOUVEAU dossier.
 lOptionsNbLiveFolderItemsMax	Nombre maximum d'items dans les menus des Dossiers actifs:
 lOptionsNbLiveFolderItemsMaxDefault	(par défaut 500 items)
-lOptionsNetworkDrivesLetters	Lettres de lecteurs à considérer comme des lecteurs réseau
-lOptionsNetworkDrivesSometimesOffline	Les lecteurs réseau ("\\" ou avec des lettres de lecteurs) peuvent parfois être hors-ligne
 lOptionsOpenFavoritesOnActiveMonitor	Sur un système multi-moniteurs, toujours ouvrir les fenêtres de l'Explorateur sur le moniteur actif
 lOptionsOpenMenuOnTaskbar	Ouvrir le menu en cliquant sur la barre des tâches
 lOptionsOpenSettingsOnActiveMonitor	Ouvrir la fenêtre des "Personnaliser" sur le moniteur actif
@@ -898,11 +881,9 @@ lOptionsSelectCatalogueRoot	Choisissez le dossier racine du Catalogue des menus 
 lOptionsSelectQAPTempFolder	Créer le dossier temporaire dans:
 lOptionsSelectWorkingFolder	Enregistrer les paramètres dans quel dossier?
 lOptionsSendToConsoleWithAlt	Utiliser les codes ASCII (ALT+0nnn) lors des changements de dossier dans la fenêtre Commandes de Windows (CMD)
-lOptionsSettingsCheckIfSameLocation	Lorsqu'un favori est sauvegardé, vérifier si un favoris existe déjà pour cet emplacement ou ce contenu
 lOptionsSettingsSearchResults	Résultats de recherche
 lOptionsSettingsStartup	Ouvrir la fenêtre "Personnaliser" lors du démarrage
 lOptionsSettingsWindow	Fenêtre Personnaliser
-lOptionsShowAdvancedSettingsMenusItems	Afficher les commandes avancées des fichiers de paramètres sous le menu "Fichier"
 lOptionsShowQAPmenu	Afficher le menu QAP (Fichier, Favori, etc.):
 lOptionsShowQAPmenuBoth	aux deux endroits
 lOptionsShowQAPmenuCustomize	au dessus de la fenêtre Personnaliser
@@ -910,7 +891,6 @@ lOptionsShowQAPmenuSystem	dans le menu Système (zone de notification)
 lOptionsSnippets	Fragments et Chaînes de substitution
 lOptionsSnippetsHelp	Valeurs par défaut pour les fragments de texte (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Exclusions pour le menu Fenêtres ouvertes
-lOptionsSwitchExclusionListInstructions	Pour exclure une application du menu "Fenêtre ouvertes", entrez une partie du titre de la fenêtre de l'application. Vous pouvez entrer plusieurs exclusions, une par ligne.
 lOptionsTabFileManagersIntro	Sélectionnez le gestionnaire de fichiers à utiliser pour ouvrir des dossiers dans une nouvelle fenêtre.
 lOptionsTabFileManagersPreferences	Préférences du gestionnaire de fichiers
 lOptionsTabFileManagersPreferred	Gestionnaire de fichier préféré
