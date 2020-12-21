@@ -11347,7 +11347,7 @@ GuiDropFilesHelpClicked:
 Gui, 1:+OwnDialogs
 
 MsgBox, 0, % g_strAppNameText . " - " . StrReplace(o_L["GuiDropFilesHelp"], "&&", "&")
-	, % L(StrReplace(o_L["GuiDropFilesIncentive"], "&&", "&")
+	, % L(StrReplace(o_L["GuiDropFilesIncentive1"] . "`n`n" . o_L["GuiDropFilesIncentive"], "&&", "&")
 		, g_strAppNameText, o_L["DialogFolderLabel"], o_L["DialogFileLabel"], o_L["DialogApplicationLabel"]) . "`n`n" . o_L["GuiDropFilesIncentive2"]
 
 return

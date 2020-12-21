@@ -479,6 +479,7 @@ this["GuiDonateCodeInputDonorLabel"] := "Copy and paste your 32-digit code (""Li
 this["GuiDonateCodeInputSponsorLabel"] := "Enter your name (optional)"
 this["GuiDropFilesHelp"] := "Drag && Drop Help"
 this["GuiDropFilesIncentive"] := "You can Drag && Drop the following types of favorites to the ~1~ window:`n`n`t- ~2~`n`t- ~3~`n`t- ~4~"
+this["GuiDropFilesIncentive1"] := "You can Drag && Drop favorites up or down inside the menu currently displayed in the ""Customize"" window. Drag the mouse above or below the list to scroll."
 this["GuiDropFilesIncentive2"] := "To help when dragging one or multiple files, you can make the Settings window stay ""always on top"" by clicking the pin icon on the left side of the window."
 this["GuiEditFavorite"] := "Edit"
 this["GuiFileManagerNewTabSide"] := "Open new tabs on which side of the file manager?"
