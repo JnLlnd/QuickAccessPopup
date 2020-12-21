@@ -21173,7 +21173,9 @@ if (g_blnPortableMode)
 	Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText42"]
 Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText43"]
 Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText44"]
-Gui, 2:Add, Link, y+5 w%intWidth%, % o_L["HelpText45"]
+Gui, 2:Add, Link, y+5 w%intWidth%, % L(o_L["HelpText45"], AddUtm2Url("http://www.quickaccesspopup.com/how-to-i-enable-directory-opus-support-in-quick-access-popup/", A_ThisLabel, "Help")
+	, AddUtm2Url("http://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/", A_ThisLabel, "Help")
+	, AddUtm2Url("http://www.quickaccesspopup.com/what-file-managers-are-supported-in-addition-to-windows-explorer/", A_ThisLabel, "Help"))
 
 Gui, 2:Tab
 GuiControlGet, arrTabPos, Pos, f_intHelpTab
