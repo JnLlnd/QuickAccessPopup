@@ -4722,13 +4722,10 @@ else
 
 ; Free Edition setup
 if !(g_blnSponsor)
-{
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
-	o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue := 50
-}
 global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 100) ; limit menu items for free edition
-global g_intNbLiveFoldersMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of live folders
 global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
+global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
 
 ; Build main menus
 Gosub, BuildMainMenuInit
@@ -8390,16 +8387,17 @@ g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
 g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
-g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
 g_intNbExternalMenusCount := 0 ; number of external menus (vs maximum set in ini file)
+
+g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
+g_intNbLiveFolderItemsMax := (g_blnSponsor ? o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue : 50) ; limit number of live folders
 
 o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 
 strLimitExceededMessage := (g_intMenuItemsCount > g_intMenuItemsMax ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
 strLimitExceededMessage .= (g_intNbExternalMenusCount > g_intNbExternalMenusMax ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
-strLimitExceededMessage .= (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue ? L(o_L["DialogFreeEditionLive"]
-	, o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue) . "`n" : "")
-if (StrLen(strLimitExceededMessage) and !g_blnLimitExceededMessageShown)
+strLimitExceededMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLive"], g_intNbLiveFolderItemsMax) . "`n" : "")
+if (!g_blnSponsor and StrLen(strLimitExceededMessage) and !g_blnLimitExceededMessageShown)
 {
 	MsgBox, % 4, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . o_L["DialogFreeEditionMessage2"]
 	IfMsgBox, Yes
@@ -8408,6 +8406,8 @@ if (StrLen(strLimitExceededMessage) and !g_blnLimitExceededMessageShown)
 }
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
+
+strLimitExceededMessage := ""
 
 return
 ;------------------------------------------------------------
@@ -28794,7 +28794,7 @@ class Container
 			
 			if InStr("Menu|External", aaThisFavorite.strFavoriteType, true)
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
-					and !(g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+					and !(g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
 			{
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
@@ -28943,7 +28943,7 @@ class Container
 		Loop, Files, %strExpandedLocation%\*.*, D ; directories
 		{
 			g_intNbLiveFolderItems++
-			if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+			if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
 				Break
 			
 			strFavoriteName := GetLocalizedNameFromDesktopIni(A_LoopFileLongPath) ; if desktop.ini exists, try to retrieve the localized name resource
@@ -28972,7 +28972,7 @@ class Container
 					and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if file is system and include system items is false
 				{
 					g_intNbLiveFolderItems++
-					if (g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+					if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
 						Break
 					; favorite type Document is OK for Application items
 					
@@ -29030,10 +29030,10 @@ class Container
 			strFolderName .= "_"
 		strSelfFolder := "`tFolder`t" . strFolderName . "`t" . strExpandedLocation . "`t" . strFolderIcon . "`n"
 		
-		if (g_blnSponsor and g_intNbLiveFolderItems > o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+		if (g_blnSponsor and g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
 		; non sponsor users will see the free edition limitation report if maximum number is exceeded
 		{
-			Oops(0, o_L["OopsMaxLiveFolder"], o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue)
+			Oops(0, o_L["OopsMaxLiveFolder"], g_intNbLiveFolderItemsMax)
 			return
 		}
 		
