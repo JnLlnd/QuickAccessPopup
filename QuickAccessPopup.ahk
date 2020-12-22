@@ -42,6 +42,7 @@ Free Edition
  
 Drag and Drop
 - implement drag & drop items inside a menu (using LV_Rows class from Rodolfo U. Batista aka Pulover)
+- update the text in the "Drag & Drop Help" dialog box (under the "Help" menu)
  
 Special Searches
 - add the submenu "Special Searches" under the "Tools" menu and move the "Search All Favorites" under this menu
@@ -55,6 +56,11 @@ Bug fixes and improvements
 - fix a bug retrieving the current location for {CUR...} placeholders when the current location is the Desktop
 - improve retrieving the selected file or folder for the {SEL...} placeholders
 - improve dialog box message when installing a new license and deleting previous license info
+- fix bug hiding the convert settings file encoding dialog box
+- fix bug when showing hand cursor over some Customize window buttons
+- in "Check for update" dialog box show only the download button for the current installation (setup or portable)
+- add UTM codes to URL in the application
+- fix bug when saving the options after the maximum number of Live folder items was exceeded
  
 Language update
 - Chinese language update for v11.1
@@ -15891,8 +15897,6 @@ if (g_blnAbortSave)
 	return
 }
 
-if (strThisLabel = "GuiFavoritesListDropSave")
-	o###Original := o_EditedFavorite.BackupItem(true)
 ; if adding menu or group, create submenu object
 
 if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalSave|", strThisLabel . "|"))
@@ -16161,17 +16165,6 @@ if o_Containers.AA[strDestinationMenu].FavoriteIsUnderExternalMenu(oExternalMenu
 if StrLen(strOriginalMenu) and (strOriginalMenu <> strDestinationMenu)
 	if o_Containers.AA[strOriginalMenu].FavoriteIsUnderExternalMenu(oExternalMenu)
 		oExternalMenu.AA.blnNeedSave := true
-
-if (strThisLabel = "GuiFavoritesListDropSave")
-{
-	###_O2("Compare after drag & drop", o###Original.AA, o_EditedFavorite.AA)
-	###_O2("Compare after drag & drop", o###Original.AA.oParentMenu.AA, o_EditedFavorite.AA.oParentMenu.AA)
-	if (o###Original.IsContainer())
-	{
-		###_O2("Compare after drag & drop", o###Original.AA.oSubMenu.AA, o_EditedFavorite.AA.oSubMenu.AA)
-		###_O2("Compare after drag & drop", o###Original.AA.oSubMenu.SA, o_EditedFavorite.AA.oSubMenu.SA, "AA", "strFavoriteLocation")
-	}
-}
 
 GuiAddFavoriteSaveCleanup:
 if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) ; do not execute at each favorite when moving multiple favorites
