@@ -16794,24 +16794,40 @@ o_MenuInGui.MoveFavorite(g_intSelectedRow, (InStr(A_ThisLabel, "Up") ? -1 : 1))
 
 ; --- move in Gui ---
 
+; get content of the selected row
 saThisRow := Object()
-Loop, 4
+Loop, % 4 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
 {
 	LV_GetText(strThisPos, g_intSelectedRow, A_Index)
 	saThisRow[A_Index] := strThisPos
 }
 
+; get content of the other row (previous or next)
 saOtherRow := Object()
-Loop, 4
+Loop, % 4 + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? 2 : 0) + (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled ? 2 : 0)
 {
 	LV_GetText(strThisPos, g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), A_Index)
 	saOtherRow[A_Index] := strThisPos
 }
 
+; deselect the selected row
 LV_Modify(g_intSelectedRow, "-Select")
-LV_Modify(g_intSelectedRow, "", saOtherRow[1], saOtherRow[2], saOtherRow[3], saOtherRow[4])
-LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), , saThisRow[1], saThisRow[2], saThisRow[3], saThisRow[4])
 
+; copy content from the other row to the selected row
+LV_Modify(g_intSelectedRow, "", saOtherRow[1], saOtherRow[2], saOtherRow[3], saOtherRow[4])
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+	LV_Modify(g_intSelectedRow, "", , , , , saOtherRow[5], saOtherRow[6])
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
+	LV_Modify(g_intSelectedRow, "", , , , , , , saOtherRow[7], saOtherRow[8])
+
+; copy content from the selected row to the other row
+LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), , saThisRow[1], saThisRow[2], saThisRow[3], saThisRow[4])
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue)
+	LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), , , , , , saThisRow[5], saThisRow[6])
+if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
+	LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), , , , , , , , saThisRow[7], saThisRow[8])
+
+; if single move, select the other row
 if !InStr(A_ThisLabel, "One")
 	LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), "Select Focus Vis")
 
