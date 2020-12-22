@@ -61,6 +61,7 @@ Bug fixes and improvements
 - in "Check for update" dialog box show only the download button for the current installation (setup or portable)
 - add UTM codes to URL in the application
 - fix bug when saving the options after the maximum number of Live folder items was exceeded
+- fix bug when moving favorites up or down in the list to also move the dates and stats columns if date and stats option is enabled
  
 Language update
 - Chinese language update for v11.1
