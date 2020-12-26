@@ -6267,7 +6267,9 @@ else
 	o_QAPfeatures.aaQAPfeaturesInMenus := Object() ; re-init
 	o_QAPfeatures.InitDynamicMenus()
 	
-	if (o_MainMenu.LoadFavoritesFromIniFile((A_ThisLabel = "LoadFavoritesFromIniWithStatus")) <> "EOM")
+	if (A_ThisLabel = "LoadFavoritesFromIniWithStatus")
+		ToolTip, % o_L["ToolTipLoading"]
+	if (o_MainMenu.LoadFavoritesFromIniFile() <> "EOM")
 	{
 		OnExit ; disable exit subroutine
 		ExitApp
@@ -7054,7 +7056,7 @@ saMenuItemsTable.Push(["ReloadQAP", aaMenuFileL["MenuReload@" . g_strAppNameText
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiCancelAndExitApp", aaMenuFileL["MenuExitApp@" . g_strAppNameText] . "`tAlt+F4", "", "iconNoIcon"])
 o_Containers.AA["menuBarFile"].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA["menuBarFile"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+o_Containers.AA["menuBarFile"].BuildMenu(true) ; true for numeric shortcut already inserted
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSave"] . "`tCtrl+S"
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSaveAndClose"]
 ; Menu, menuBarFile, Disable, % aaMenuFileL["GuiClose"] . "`tEsc"
@@ -7084,7 +7086,7 @@ saMenuItemsTable.Push(["GuiSortFavoritesMenu", aaFavoriteL["ControlToolTipSortFa
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["SettingsCtrlA", aaFavoriteL["MenuSelectAll"] . "`tCtrl+A", "", "iconNoIcon"])
 o_Containers.AA["menuBarFavorite"].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA["menuBarFavorite"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+o_Containers.AA["menuBarFavorite"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchAllFavorites", "DialogShortcuts", "DialogHotstrings", "DialogIconsManage"
 	, "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys", "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
@@ -7104,7 +7106,7 @@ saMenuItemsTable.Push(["GuiShowRestoreDefaultPosition", aaMenuToolsL["MenuRestor
  saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAlwaysOnTop", aaMenuToolsL["ControlToolTipAlwaysOnTopOff"], "", "iconNoIcon"])
 o_Containers.AA["menuBarTools"].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA["menuBarTools"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+o_Containers.AA["menuBarTools"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaL := o_L.InsertAmpersand(true, "OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu", 
 	, "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets", "OptionsUserVariables"
@@ -7133,7 +7135,7 @@ saMenuItemsTable.Push(["GuiOptionsGroupMenuAdvanced", aaL["OptionsMenuAdvanced"]
 saMenuItemsTable.Push(["GuiOptionsGroupAdvancedLaunch", aaL["OptionsAdvancedLaunch"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupAdvancedOther", aaL["OptionsAdvancedOther"], "", "iconNoIcon"])
 o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA["menuBarOptions"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+o_Containers.AA["menuBarOptions"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
 	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "GuiDonate", "DonateActionManageLicense", "MenuAbout")
@@ -7156,7 +7158,7 @@ saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] 
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA["menuBarHelp"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+o_Containers.AA["menuBarHelp"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaMenuBarL := o_L.InsertAmpersand(false, "MenuFile", "MenuFavorite", "MenuTools", "MenuOptions", "MenuHelp")
 Menu, menuBar, Add, % aaMenuBarL["MenuFile"], :menuBarFile
@@ -8320,8 +8322,9 @@ g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
-; RecursiveBuildOneMenu(g_objMainMenu) ; recurse for submenus
-o_MainMenu.BuildMenu(InStr(A_ThisLabel, "WithStatus"), , (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
+if InStr(A_ThisLabel, "WithStatus")
+	ToolTip, % o_L["ToolTipBuilding"]
+o_MainMenu.BuildMenu(, (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
 
@@ -8423,8 +8426,8 @@ for strMenuName, o_ThisContainer in o_Containers.AA
 		if o_ThisContainer.ExternalMenuModifiedSinceLoaded() ; refresh only if changed
 			or !(o_ThisContainer.AA.blnMenuExternalLoaded)
 		{
-			o_ThisContainer.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
-			o_ThisContainer.BuildMenu(, , true) ; last param for blnInitOrManualRefresh
+			o_ThisContainer.LoadFavoritesFromIniFile(true) ; true for Refresh External
+			o_ThisContainer.BuildMenu(, true) ; last param for blnInitOrManualRefresh
 		}
 
 if (A_ThisLabel <> "RefreshQAPMenuExternalOnly")
@@ -10962,7 +10965,7 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 	if (o_MenuInGui.AA.strMenuType = "External") and o_MenuInGui.ExternalMenuModifiedSinceLoaded() ; refresh only if changed
 		; was ExternalMenuReloadAndRebuild(g_objMenuInGui)
 		{
-			o_MenuInGui.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+			o_MenuInGui.LoadFavoritesFromIniFile(true) ; true for Refresh External
 			o_MenuInGui.BuildMenu()
 		}
 
@@ -15308,7 +15311,7 @@ oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "
 
 g_strMultipleAddSourceKeySettingsFile := f_strMultipleAddSourcePath
 
-if (oMultipleAddMain.LoadFavoritesFromIniFile(false, false, true, g_strMultipleAddSourceKeySettingsFile) = "EOM")
+if (oMultipleAddMain.LoadFavoritesFromIniFile(false, true, g_strMultipleAddSourceKeySettingsFile) = "EOM")
 	if (A_ThisLabel = "GuiMultipleAddSourceSettingsMenusLoad")
 		oMultipleAddMain.LoadInTreeViewMenus(f_blnMultipleAddExcludeExisting) ; assign items objects to g_aaTreeViewItemsByIDs
 	else ; GuiMultipleAddSourceSettingsItemsLoad
@@ -15765,7 +15768,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 	{
 		if FileExist(o_EditedFavorite.AA.oSubMenu.AA.strMenuExternalSettingsPath) ; file path exists
 			; load the external menu to menu instance oNewFavoriteMenu created earlier
-			o_EditedFavorite.AA.oSubMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+			o_EditedFavorite.AA.oSubMenu.LoadFavoritesFromIniFile(true) ; true for Refresh External
 		else ; if external settings file does not exist, create empty [Favorites] section
 		{
 			Gui, 2:+OwnDialogs
@@ -17639,6 +17642,7 @@ GuiControl, , f_btnGuiCancel, % aaSettingsL["GuiClose"]
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSave"] . "`tCtrl+S"
 Menu, menuBarFile, Disable, % L(aaMenuFileL["GuiSaveAndClose"], g_strAppNameText)
 
+ToolTip, % o_L["ToolTipSaving"]
 o_MainMenu.SaveFavoritesToIniFile()
 ToolTip ; clear tooltip after refresh
 
@@ -28081,7 +28085,7 @@ class Container
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	LoadFavoritesFromIniFile(blnWorkingToolTip := false, blnRefreshExternal := false, blnRoot := true, strMultipleAddIniFile := "")
+	LoadFavoritesFromIniFile(blnRefreshExternal := false, blnRoot := true, strMultipleAddIniFile := "")
 	; return "EOM" if no error (or managed external file error) or "EOF" if end of file not expected error
 	;---------------------------------------------------------
 	{
@@ -28111,9 +28115,6 @@ class Container
 		
 		if !StrLen(s_strIniFile)
 			s_strIniFile := o_Settings.strIniFile
-		
-		if (blnWorkingToolTip)
-			ShowToolTip(o_L["ToolTipLoading"] . "`n" . this.AA.strMenuPath)
 		
 		if (this.AA.strMenuType = "External")
 		{
@@ -28213,7 +28214,7 @@ class Container
 				else if InStr("Menu|External", oNewSubMenu.AA.strMenuType)
 					oNewSubMenu.AA.intMenuAutoSort := saThisFavorite[11] ; intMenuAutoSort
 				
-				strResult := oNewSubMenu.LoadFavoritesFromIniFile(blnWorkingToolTip, false, false, blnDoNotLoadExternal) ; RECURSIVE, 2nd param false not external root, 3rd param false non entry menu
+				strResult := oNewSubMenu.LoadFavoritesFromIniFile(false, false, blnDoNotLoadExternal) ; RECURSIVE, 2nd param false not external root, 3rd param false non entry menu
 				
 				if (saThisFavorite[1] = "External")
 				{
@@ -28542,7 +28543,7 @@ class Container
 	;-----------------------------------------------------
 
 	;------------------------------------------------------------
-	BuildMenu(blnWorkingToolTip := false, blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false) ; build menu and recurse in submenus
+	BuildMenu(blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false) ; build menu and recurse in submenus
 	;------------------------------------------------------------
 	{
 		this.s_intMenuShortcutNumber := 0
@@ -28553,9 +28554,6 @@ class Container
 		Menu, % this.AA.strMenuPath, DeleteAll
 		
 		intMenuItemsCount := 0 ; counter of items in this menu
-		
-		if (blnWorkingToolTip)
-			ShowToolTip(o_L["ToolTipBuilding"] . "`n" . this.AA.strMenuPath)
 		
 		if (this.AA.intMenuAutoSort)
 			this.SortContainer("", strSortedItems)
@@ -28625,7 +28623,7 @@ class Container
 					o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
 				
-				aaThisFavorite.oSubMenu.BuildMenu(blnWorkingToolTip, blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh) ; RECURSIVE - build the submenu first
+				aaThisFavorite.oSubMenu.BuildMenu(blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh) ; RECURSIVE - build the submenu first
 				
 				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
@@ -29045,7 +29043,7 @@ class Container
 		{
 			if oItem.IsContainer() and (oItem.AA.strMenuType = "External") and oItem.AA.oSubMenu.ExternalMenuModifiedSinceLoaded()
 			{
-				oItem.AA.oSubMenu.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+				oItem.AA.oSubMenu.LoadFavoritesFromIniFile(true) ; true for Refresh External
 				oItem.AA.oSubMenu.BuildMenu()
 			}
 			
@@ -29206,7 +29204,7 @@ class Container
 			else
 			; was ExternalMenuReloadAndRebuild(objMenu)
 			{
-				this.LoadFavoritesFromIniFile(false, true) ; true for Refresh External
+				this.LoadFavoritesFromIniFile(true) ; true for Refresh External
 				this.BuildMenu()
 			}
 		}
@@ -29251,8 +29249,6 @@ class Container
 			else ; ini section is incomplete because IniRead cannot read more than 65,533 characters, delete previous backup
 				IniDelete, %s_strIniFile%, Favorites-backup
 		}
-		
-		ShowToolTip(o_L["ToolTipSaving"] . "`n" . this.AA.strMenuPath)
 		
 		for intKey, oItem in this.SA
 		{
