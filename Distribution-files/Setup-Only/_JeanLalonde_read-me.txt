@@ -1,4 +1,4 @@
-The file in the folder "C:\ProgramData\JeanLalonde" are used by programs developped
+The files in the folder "C:\ProgramData\JeanLalonde" are used by programs developped
 by Jean Lalonde. As of October 2018, this folder contains only one file (JLicons.dll)
 used by only Quick Access Popup.
 
