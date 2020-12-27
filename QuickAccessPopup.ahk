@@ -32,6 +32,7 @@ HISTORY
 =======
 
 Version BETA: 11.1.0.9.2 (2020-12-27)
+- in the tooltip displayed when saving favorites, stop displaying the submenu currently processed, only display one tooltip for each step (saving favorites, reloading favorites and rebuilding the menu)
 
 Version BETA: 11.1.0.9.1 (2020-12-17)
  
