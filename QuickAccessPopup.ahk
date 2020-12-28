@@ -4703,7 +4703,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := true ; true / false ; ####
+blnDoNotCheckLicense := false ; true / false ; ####
 g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -5963,6 +5963,7 @@ RemoveSponsorOnlineTrace(strEddLicense)
 ;------------------------------------------------------------
 GuiManageLicense:
 GuiManageLicenseFromProcess:
+GuiManageLicenseFromLimitsMessage:
 ;------------------------------------------------------------
 
 strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? strSponsorCodeError : "valid"), A_ThisLabel)
@@ -6043,10 +6044,14 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationsTitle"], g_strAppVersion)
 		GSA_strPrompt := L(o_L["DonateCodeNoInstallationsMessage"], o_EDDLicense.oLicense.site_count, g_strAppNameText)
 	}
-	else if (GSA_strStatus = "valid")
+	else if (GSA_strStatus = "valid") ; including free edition
 	{
 		GSA_strGuiTitle := o_L["DonateActionManageLicense"] . " - " . g_strAppVersion
-		GSA_strPrompt := L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
+		; for sponsors, show current number of installations vs maximum
+		; for free edition, show the Get your license message
+		GSA_strPrompt := (g_blnSponsor ? L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left
+			, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
+			: o_L["DialogFreeEditionMessage0"] . "`n`n" . o_L["DialogFreeEditionMessage3"])
 	}
 	else
 		return
@@ -6079,7 +6084,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	if (GSA_strStatus = "expired")
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
-	if (GSA_strStatus <> "invalid")
+	if (GSA_strStatus <> "invalid" and g_blnSponsor)
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
 	if (GSA_strStatus = "no_activation_left")
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageInstallations, % o_L["DonateActionManageInstallations"]
@@ -6088,7 +6093,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	Gui, 2:Add, Text, -Group x10 y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
 	Gui, 2:Font
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
-	if (GSA_strStatus <> "invalid")
+	if (GSA_strStatus <> "invalid" and g_blnSponsor)
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
 
 	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
@@ -8410,18 +8415,24 @@ o_MainMenu.BuildMenu(, (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "Manual
 if InStr(A_ThisLabel, "WithStatus")
 	ToolTip
 
-strLimitExceededMessage := (g_intMenuItemsCount > g_intMenuItemsMax ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
-strLimitExceededMessage .= (g_intNbExternalMenusCount > g_intNbExternalMenusMax ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
-strLimitExceededMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLive"], g_intNbLiveFolderItemsMax) . "`n" : "")
-if (!g_blnSponsor and StrLen(strLimitExceededMessage) and !g_blnLimitExceededMessageShown)
+strLimitsIntro := (g_blnIniFileCreation ? o_L["DialogFreeEditionMessage0"] : o_L["DialogFreeEditionMessage1"])
+strLimitsMessage := (g_blnIniFileCreation or (g_intMenuItemsCount > g_intMenuItemsMax) ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
+strLimitsMessage .= (g_blnIniFileCreation or (g_intNbExternalMenusCount > g_intNbExternalMenusMax) ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
+if (g_blnIniFileCreation)
+	strLimitsMessage .= L(o_L["DialogFreeEditionLive"], g_intNbLiveFolderItemsMax) . "`n"
+else
+	strLimitsMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLiveExceeded"], g_intNbLiveFolderItemsMax) . "`n" : "")
+
+if (!g_blnSponsor and (g_blnIniFileCreation or (StrLen(strLimitsMessage) and !g_blnLimitExceededMessageShown)))
 {
-	MsgBox, % 4, Quick Access Popup Free Edition, % o_L["DialogFreeEditionMessage1"] . "`n`n" . strLimitExceededMessage . "`n" . o_L["DialogFreeEditionMessage2"]
+	MsgBox, % 4, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
+		. o_L["DialogFreeEditionMessage3"] . "`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
 	IfMsgBox, Yes
-		run, % AddUtm2Url(g_strSponsorCodeSiteURL, A_ThisLabel, "Get License")
+		Gosub, GuiManageLicenseFromLimitsMessage
 	g_blnLimitExceededMessageShown := true
 }
 
-strLimitExceededMessage := ""
+strLimitsMessage := ""
 
 return
 ;------------------------------------------------------------
