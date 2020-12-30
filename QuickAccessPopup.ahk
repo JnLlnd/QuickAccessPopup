@@ -4726,13 +4726,37 @@ if (blnDoNotCheckLicense) ; for developement
 else
 {
 	Gosub, ProcessSponsorCode
+	
 	if (o_EDDLicense.oLicense.license <> "valid")
-		return ; happens when invalid item id error because of an old SponsorProductId
+	{
+		g_blnSponsor := false ; use as free edition
+		if (g_blnSponsorCodeInProgressGetting) ; ##### never called?
+		{
+			OnExit
+			ExitApp ; end app while user gets the new key
+		}
+		else if (g_blnSponsorCodeInProgressSaving)
+		{
+			Gosub, RemoveLicenseInfoFromIniFile
+			return ; end this process and let the save-key process terminate
+		}
+		else if (o_EDDLicense.oLicense.license = "invalid")
+		{
+			Gosub, RemoveLicenseInfoFromIniFile
+			Oops(0, o_L["DonateInvalidLicense"]) ; run as free edition
+		}
+	}
+	else if (g_blnSponsorCodeInProgressSaving) ; license valid
+		return
+	; else license is valid, continue loading
 }
 
 ; Free Edition setup
 if !(g_blnSponsor)
+{
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
+	g_strAppVersion .= " " . o_L["DialogFreeEditionLabel"]
+}
 global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 100) ; limit menu items for free edition
 global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
 global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
@@ -5808,9 +5832,10 @@ else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 	return ; will remove files created if first launch and exit
 }
 else if (o_EDDLicense.oLicense.license = "expired")
-
+{
 	strSponsorCodeError := "expired"
-
+	Gosub, GuiManageLicenseFromProcess ; ##### test with paid license
+}
 else ; the license is site_inactive, invalid or missing
 {
 	strCheckValidLicenseTrace := CheckValidLicenseTrace(intDaysAlert)
@@ -5825,12 +5850,15 @@ else ; the license is site_inactive, invalid or missing
 			Oops(1, o_L["DonateOnline"], intDaysAlert)
 		; consider license is good, set values and continue
 		o_EDDLicense := Object() ; for temporary offline usage
+		o_EDDLicense.strProductId := o_Settings.Launch.strSponsorProductId.IniValue ; use product id saved in ini file
+		if !StrLen(o_EDDLicense.strProductId) ; if no product id saved in ini file (should not happen), consider as free edition
+			o_EDDLicense.strProductId := strProductIdFree
 		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
+		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		o_EDDLicense.oLicense := Object() ; for temporary offline usage
 		o_EDDLicense.oLicense.license := "valid"
 		o_EDDLicense.oLicense.item_name := o_L["DonateCodeNotAvailable"]
 		o_EDDLicense.strUniqueSystemId := GetUniqueSystemId()
-		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 		strSponsorCodeError := "" ; QAP will launch
 	}
 	else
@@ -5843,13 +5871,20 @@ if StrLen(strSponsorCodeError)
 {
 	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; if we had a valid license trace, remove it, using scrambled license code
 	
-	Gosub, GuiManageLicenseFromProcess
 	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
-	if (strSponsorCodeAction <> "save-key")
-		gosub, ProcessSponsorCodeExitAfterCancel
+	if (strSponsorCodeAction = "get-new-key") ; ##### check when renew key
+	{
+		g_blnSponsorCodeInProgressGetting := true ; ##### is it called?
+		return ; end this process and let the get-new-key continue
+	}
+	else if (strSponsorCodeAction = "save-key")
+	{
+		g_blnSponsorCodeInProgressSaving := true
+		return ; end this process and let the save-key process continue
+	}
 	else
-		return ; end this process and let the save-key process terminate
+		gosub, ProcessSponsorCodeCancel
 }
 ; else launch QAP
 
@@ -5963,7 +5998,6 @@ RemoveSponsorOnlineTrace(strEddLicense)
 ;------------------------------------------------------------
 GuiManageLicense:
 GuiManageLicenseFromProcess:
-GuiManageLicenseFromLimitsMessage:
 ;------------------------------------------------------------
 
 strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? strSponsorCodeError : "valid"), A_ThisLabel)
@@ -6004,9 +6038,7 @@ else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 	IfMsgBox, Yes
 	{
 		o_EDDLicense.Deactivate()
-		IniDelete, % o_Settings.strIniFile, Global, SponsorCodeConverted
-		IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
-		IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
+		Gosub, RemoveLicenseInfoFromIniFile
 		RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
 	}
 }
@@ -6081,7 +6113,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	Gui, 2:Font, w700
 	Gui, 2:Add, Text, -Group y+10, % o_L["DonateActionGroupWebsite"]
 	Gui, 2:Font
-	if (GSA_strStatus = "expired")
+	if (GSA_strStatus = "expired" and o_EDDLicense.strItemId <> strProductIdFree) ; do not show renew option for free license
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
 	if (GSA_strStatus <> "invalid" and g_blnSponsor)
@@ -6206,29 +6238,29 @@ GuiSponsorCodeInput:
 blnSponsorCodeInputInProgress := true
 
 strGuiTitle := g_strAppNameText . " " . g_strAppVersion
-Gui, 1:New, +HwndstrGuiSponsorCodeInputHwnd, %strGuiTitle%
+Gui, SaveCode:New, +Hwndg_strGuiSponsorCodeInputHwnd, %strGuiTitle%
 if (g_blnUseColors)
-	Gui, 1:Color, %g_strGuiWindowColor%
-Gui, 1:Font, s10 w700, Verdana
-Gui, 1:Add, Link, y10 w420, % L(o_L["DonateTextSaveLicense"], g_strAppNameText)
-Gui, 1:Font, s8 w400, Verdana
+	Gui, SaveCode:Color, %g_strGuiWindowColor%
+Gui, SaveCode:Font, s10 w700, Verdana
+Gui, SaveCode:Add, Link, y10 w420, % L(o_L["DonateTextSaveLicense"], g_strAppNameText)
+Gui, SaveCode:Font, s8 w400, Verdana
 
-Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
-Gui, 1:Add, Edit, y+10 w300 vf_strSponsorCode
+Gui, SaveCode:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
+Gui, SaveCode:Add, Edit, y+10 w300 vf_strSponsorCode
 
-Gui, 1:Add, Text, y+20, % o_L["GuiDonateCodeInputSponsorLabel"]
-Gui, 1:Add, Edit, y+10 w300 vf_strSponsorName
+Gui, SaveCode:Add, Text, y+20, % o_L["GuiDonateCodeInputSponsorLabel"]
+Gui, SaveCode:Add, Edit, y+10 w300 vf_strSponsorName
 
 aaL := o_L.InsertAmpersand(false, "GuiSave", "GuiHelp", "DialogCancelButton")
 
-Gui, 1:Font, s8 w400, Verdana
-Gui, 1:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave Default, % aaL["GuiSave"]
-Gui, 1:Add, Button, x175 yp gGuiSponsorCodeInputCancel vf_btnSponsorCodeInputCancel, % aaL["DialogCancelButton"]
-Gui, 1:Add, Text
-GuiCenterButtons(strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInputSave", "f_btnSponsorCodeInputCancel")
+Gui, SaveCode:Font, s8 w400, Verdana
+Gui, SaveCode:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave Default, % aaL["GuiSave"]
+Gui, SaveCode:Add, Button, x175 yp gGuiSponsorCodeInputCancel vf_btnSponsorCodeInputCancel, % aaL["DialogCancelButton"]
+Gui, SaveCode:Add, Text
+GuiCenterButtons(g_strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInputSave", "f_btnSponsorCodeInputCancel")
 
 GuiControl, Focus, f_strSponsorCode
-Gui, 1:Show
+Gui, SaveCode:Show
 
 return
 ;------------------------------------------------------------
@@ -6237,7 +6269,7 @@ return
 ;------------------------------------------------------------
 GuiSponsorCodeInputSave:
 ;------------------------------------------------------------
-Gui, 1:Submit, NoHide
+Gui, SaveCode:Submit, NoHide
 
 strSponsorCode := Trim(f_strSponsorCode)
 strSponsorName := Trim(f_strSponsorName)
@@ -6266,24 +6298,38 @@ return
 GuiSponsorCodeInputCancel:
 ;------------------------------------------------------------
 
-gosub, ProcessSponsorCodeExitAfterCancel ; this exits the app
+OnExit ; disable exit subroutine
+Reload
 
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-ProcessSponsorCodeExitAfterCancel:
+ProcessSponsorCodeCancel:
 ;------------------------------------------------------------
 
+; ##### not sure if required?
 if (g_blnIniFileCreation) ; remove files created when launching for the first time
 {
 	; FileDelete, % o_Settings.strIniFile ; do not delete to keep the o_FileManagers config
 	FileDelete, %g_strWindosListAppsCacheFile%
 	FileDelete, %g_strPsScriptPathFile%
 }
-OnExit ; disable exit subroutine
-ExitApp
 
+return
+
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+RemoveLicenseInfoFromIniFile:
+;------------------------------------------------------------
+
+IniDelete, % o_Settings.strIniFile, Global, SponsorCodeConverted
+IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
+IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
+
+return
 ;------------------------------------------------------------
 
 
@@ -8418,6 +8464,7 @@ if InStr(A_ThisLabel, "WithStatus")
 strLimitsIntro := (g_blnIniFileCreation ? o_L["DialogFreeEditionMessage0"] : o_L["DialogFreeEditionMessage1"])
 strLimitsMessage := (g_blnIniFileCreation or (g_intMenuItemsCount > g_intMenuItemsMax) ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
 strLimitsMessage .= (g_blnIniFileCreation or (g_intNbExternalMenusCount > g_intNbExternalMenusMax) ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
+
 if (g_blnIniFileCreation)
 	strLimitsMessage .= L(o_L["DialogFreeEditionLive"], g_intNbLiveFolderItemsMax) . "`n"
 else
@@ -8425,10 +8472,8 @@ else
 
 if (!g_blnSponsor and (g_blnIniFileCreation or (StrLen(strLimitsMessage) and !g_blnLimitExceededMessageShown)))
 {
-	MsgBox, % 4, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
+	MsgBox, % 0, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
 		. o_L["DialogFreeEditionMessage3"] . "`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
-	IfMsgBox, Yes
-		Gosub, GuiManageLicenseFromLimitsMessage
 	g_blnLimitExceededMessageShown := true
 }
 
@@ -18566,7 +18611,7 @@ GuiCancelAndExitApp:
 ;------------------------------------------------------------
 
 if (blnSponsorCodeInputInProgress) ; when user click X or hit Escape in the GuiSponsorCodeInput dialog box
-	gosub, ProcessSponsorCodeExitAfterCancel ; will exit QAP
+	gosub, ProcessSponsorCodeCancel ; ##### not sure if this happens here?
 
 if GetKeyState("LShift") and GetKeyState("LCtrl")
 	Gosub, ReloadQAPDontSave ; undocumented
