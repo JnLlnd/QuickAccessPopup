@@ -4743,7 +4743,7 @@ else
 		else if (o_EDDLicense.oLicense.license = "invalid")
 		{
 			Gosub, RemoveLicenseInfoFromIniFile
-			Oops(0, o_L["DonateInvalidLicense"]) ; run as free edition
+			Oops(0, o_L["DonateInvalidLicense"] . "`n`n" . o_L["DonateInvalidLicenseRunAsFreeEdition"]) ; run as free edition
 		}
 	}
 	else if (g_blnSponsorCodeInProgressSaving) ; license valid
@@ -5743,6 +5743,7 @@ ProcessSponsorCode:
 ;------------------------------------------------------------
 
 global g_blnSponsor := false
+global g_strSponsorCodeError := "" ; track license statut if invalid
 
 strProductIdFree := "51"
 strProductIdYearly := "62"
@@ -5817,7 +5818,7 @@ if (o_EDDLicense.oLicense.license = "valid")
 	strPossibleBadNumber := ""
 	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
 	SetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
-	strSponsorCodeError := "" ; QAP will launch
+	g_strSponsorCodeError := "" ; QAP will launch
 }
 else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 {
@@ -5833,17 +5834,19 @@ else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 }
 else if (o_EDDLicense.oLicense.license = "expired")
 {
-	strSponsorCodeError := "expired"
-	Gosub, GuiManageLicenseFromProcess ; ##### test with paid license
+	g_strSponsorCodeError := "expired"
+	Gosub, GuiManageLicenseFromProcess
 }
 else ; the license is site_inactive, invalid or missing
 {
 	strCheckValidLicenseTrace := CheckValidLicenseTrace(intDaysAlert)
 	Diag(A_ThisLabel . " strCheckValidLicenseTrace", strCheckValidLicenseTrace, "")
-	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0)
-		
-		strSponsorCodeError := "no_activation_left"
-		
+	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0) ; "site_inactive" because no installation left
+	{
+		g_strSponsorCodeError := "no_activation_left"
+		Oops(1, o_L["DonateCodeNoInstallationsMessage"] . " " . o_L["DonateCodeNoInstallationOops"] . "`n`n" . o_L["DonateInvalidLicenseRunAsFreeEdition"]
+			, o_EDDLicense.oLicense.site_count, g_strAppNameText, o_L["MenuHelp"], o_L["DonateActionManageLicense"], "support@quickaccesspopup.com")
+	}
 	else if StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue) and (strCheckValidLicenseTrace <> "reject")
 	{
 		if (strCheckValidLicenseTrace = "alert")
@@ -5859,21 +5862,21 @@ else ; the license is site_inactive, invalid or missing
 		o_EDDLicense.oLicense.license := "valid"
 		o_EDDLicense.oLicense.item_name := o_L["DonateCodeNotAvailable"]
 		o_EDDLicense.strUniqueSystemId := GetUniqueSystemId()
-		strSponsorCodeError := "" ; QAP will launch
+		g_strSponsorCodeError := "" ; QAP will launch
 	}
 	else
 		
-		strSponsorCodeError := "invalid"
+		g_strSponsorCodeError := "invalid"
 }
 
-Diag(A_ThisLabel . " strSponsorCodeError", strSponsorCodeError, "")
-if StrLen(strSponsorCodeError)
+Diag(A_ThisLabel . " g_strSponsorCodeError", g_strSponsorCodeError, "")
+if StrLen(g_strSponsorCodeError)
 {
 	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; if we had a valid license trace, remove it, using scrambled license code
 	
 	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
-	if (strSponsorCodeAction = "get-new-key") ; ##### check when renew key
+	if InStr("|get-new-key|renew-key|", "|" . strSponsorCodeAction . "|")
 	{
 		g_blnSponsorCodeInProgressGetting := true ; ##### is it called?
 		return ; end this process and let the get-new-key continue
@@ -5900,7 +5903,6 @@ strPossibleBadNumber := ""
 strSponsorOnlineTrace := ""
 intDaysAlert := ""
 intDaysExit := ""
-strSponsorCodeError := ""
 strSponsorCodeAction := ""
 blnInvalidProductIdRemoved := ""
  
@@ -6000,7 +6002,8 @@ GuiManageLicense:
 GuiManageLicenseFromProcess:
 ;------------------------------------------------------------
 
-strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? strSponsorCodeError : "valid"), A_ThisLabel)
+; strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? g_strSponsorCodeError : "valid"), A_ThisLabel)
+strSponsorCodeAction := GetSponsorAction(g_strSponsorCodeError, A_ThisLabel)
 
 strMsgBoxTitle := g_strAppNameText . " - " . g_strAppVersion
 
