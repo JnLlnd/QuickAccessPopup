@@ -5814,7 +5814,9 @@ Diag(A_ThisLabel . " o_EDDLicense.oLicense.item_id", o_EDDLicense.oLicense.item_
 if (o_EDDLicense.oLicense.license = "valid")
 {
 	o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
-	g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
+	; when valid free license, run as sponsor (no limitations) until the license expires
+	; keep track that it is a free license in o_EDDLicense.strProduct
+	g_blnSponsor := true ; was g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
 	strPossibleBadNumber := ""
 	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
 	SetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
@@ -6003,7 +6005,7 @@ GuiManageLicenseFromProcess:
 ;------------------------------------------------------------
 
 ; strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? g_strSponsorCodeError : "valid"), A_ThisLabel)
-strSponsorCodeAction := GetSponsorAction(g_strSponsorCodeError, A_ThisLabel)
+strSponsorCodeAction := GetSponsorAction((StrLen(g_strSponsorCodeError) ? g_strSponsorCodeError : "valid"), A_ThisLabel)
 
 strMsgBoxTitle := g_strAppNameText . " - " . g_strAppVersion
 
@@ -7283,7 +7285,7 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF1", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-if !(g_blnSponsor)
+if (o_EDDLicense.strProduct <> "Sponsor" or !g_blnSponsor)
 	saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
