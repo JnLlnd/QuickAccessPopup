@@ -31,8 +31,26 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.1.0.9.2 (2020-12-27)
+Version BETA: 11.1.0.9.2 (2021-01-13)
+ 
+Free Edition
+- at first launch of free edition, show the limits dialog box
+- adapt message and options in Manage License dialog box to free edition or sponsor message
+- when license is invalid run as free edition
+- add "free" to version number when running free edition
+- when license is expired, show Manage License dialog box with options to Renew (except for Free license product #51), Get or Save license
+  - if "Get", open Shop website and quit app
+  - if "Save", delete old license, save new license, reload as sponsor
+  - if "Cancel" in "Manage License" dialog box, show a dialog box and "Run as free edition"
+  - if "Cancel" in "Save license" dialog box, delete old license, reload and run as free edition
+- if no activation left, show a dialog box and "Run as free edition"
+- fix bug hiding the Save license dialog box
+- stop offering to open the manage licnese dialog box when limits exceeded (replace with instructions text only);
+- do not enforce free edition limitations when user have a valid free license produt #51 (but display "Get license") until the license expires
+ 
+Various
 - in the tooltip displayed when saving favorites, stop displaying the submenu currently processed, only display one tooltip for each step (saving favorites, reloading favorites and rebuilding the menu)
+- when identifying the Edit control used to change folder in a file dialog box, get the control having the focus and, if it is an Edit control, use it, else use Edit1 or Edit2 (as before)
 
 Version BETA: 11.1.0.9.1 (2020-12-17)
  
@@ -4730,12 +4748,12 @@ else
 	if (o_EDDLicense.oLicense.license <> "valid")
 	{
 		g_blnSponsor := false ; use as free edition
-		if (g_blnSponsorCodeInProgressGetting) ; ##### never called?
+		if (g_blnSponsorCodeInProgressGetting) ; called from Manage License when license expired
 		{
 			OnExit
 			ExitApp ; end app while user gets the new key
 		}
-		else if (g_blnSponsorCodeInProgressSaving)
+		else if (g_blnSponsorCodeInProgressSaving) ; called from Manage License when license expired
 		{
 			Gosub, RemoveLicenseInfoFromIniFile
 			return ; end this process and let the save-key process terminate
@@ -5468,12 +5486,10 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			Favorite9=Z
 			Favorite10=X
 			Favorite11=Folder|C:\|C:\
-			Favorite12=Folder|Windows|%A_WinDir%
-			Favorite13=Folder|Program Files|%A_ProgramFiles%
-			Favorite14=Folder|User Profile|`%USERPROFILE`%
-			Favorite15=Application|Notepad|%A_WinDir%\system32\notepad.exe
-			Favorite16=URL|%g_strAppNameText% web site|https://www.quickaccesspopup.com|||||||||||||||||+^q
-			Favorite17=Z
+			Favorite12=Folder|User Profile|`%USERPROFILE`%
+			Favorite13=Application|Notepad|%A_WinDir%\system32\notepad.exe
+			Favorite14=URL|%g_strAppNameText% web site|https://www.quickaccesspopup.com|||||||||||||||||+^q
+			Favorite15=Z
 
 ) ; leave the last extra line above
 			, % o_Settings.strIniFile, % (A_IsUnicode ? "UTF-16" : "")
@@ -5837,7 +5853,7 @@ else if (o_EDDLicense.oLicense.license = "invalid_item_id")
 else if (o_EDDLicense.oLicense.license = "expired")
 {
 	g_strSponsorCodeError := "expired"
-	Gosub, GuiManageLicenseFromProcess
+	Gosub, GuiManageLicenseWhenExpired ; offer to renew, get a new license or save a new license
 }
 else ; the license is site_inactive, invalid or missing
 {
@@ -5878,12 +5894,12 @@ if StrLen(g_strSponsorCodeError)
 	
 	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
 	
-	if InStr("|get-new-key|renew-key|", "|" . strSponsorCodeAction . "|")
+	if InStr("|get-new-key|renew-key|", "|" . strSponsorCodeAction . "|") ; called from Manage License dialog box when license expired
 	{
-		g_blnSponsorCodeInProgressGetting := true ; ##### is it called?
+		g_blnSponsorCodeInProgressGetting := true
 		return ; end this process and let the get-new-key continue
 	}
-	else if (strSponsorCodeAction = "save-key")
+	else if (strSponsorCodeAction = "save-key") ; called from Manage License dialog box when license expired and saving a new key
 	{
 		g_blnSponsorCodeInProgressSaving := true
 		return ; end this process and let the save-key process continue
@@ -6001,10 +6017,9 @@ RemoveSponsorOnlineTrace(strEddLicense)
 
 ;------------------------------------------------------------
 GuiManageLicense:
-GuiManageLicenseFromProcess:
+GuiManageLicenseWhenExpired:
 ;------------------------------------------------------------
 
-; strSponsorCodeAction := GetSponsorAction((A_ThisLabel = "GuiManageLicenseFromProcess" ? g_strSponsorCodeError : "valid"), A_ThisLabel)
 strSponsorCodeAction := GetSponsorAction((StrLen(g_strSponsorCodeError) ? g_strSponsorCodeError : "valid"), A_ThisLabel)
 
 strMsgBoxTitle := g_strAppNameText . " - " . g_strAppVersion
@@ -6019,7 +6034,7 @@ if (strSponsorCodeAction = "renew-key")
 }
 else if (strSponsorCodeAction = "get-new-key")
 {
-	if (A_ThisLabel = "GuiManageLicenseFromProcess")
+	if (A_ThisLabel = "GuiManageLicenseWhenExpired")
 		MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionNewLicenseConfirm"], g_strAppNameText)
 	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "products/", A_ThisLabel, "License Management")
 }
@@ -6313,7 +6328,6 @@ Reload
 ProcessSponsorCodeCancel:
 ;------------------------------------------------------------
 
-; ##### not sure if required?
 if (g_blnIniFileCreation) ; remove files created when launching for the first time
 {
 	; FileDelete, % o_Settings.strIniFile ; do not delete to keep the o_FileManagers config
@@ -6423,18 +6437,9 @@ AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithIn
 AddToIniOneDefaultMenu("{Add Favorite - WindowsApp}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("Microsoft.MicrosoftSolitaireCollection_8wekyb3d8bbwe!App", "Solitaire", "WindowsApp")
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", "Calculator", "WindowsApp")
-AddToIniOneDefaultMenu("microsoft.windowscommunicationsapps_8wekyb3d8bbwe!microsoft.windowslive.calendar", "Calendar", "WindowsApp")
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("Microsoft.MSPaint_8wekyb3d8bbwe!Microsoft.MSPaint", "MS Paint", "WindowsApp")
-AddToIniOneDefaultMenu("Microsoft.SkypeApp_kzf8qxf38zg5c!App", "Skype", "WindowsApp")
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge", "Microsoft Edge", "WindowsApp")
-AddToIniOneDefaultMenu("Microsoft.WindowsMaps_8wekyb3d8bbwe!App", "Maps", "WindowsApp")
-AddToIniOneDefaultMenu("Microsoft.BingNews_8wekyb3d8bbwe!AppexNews", "Bing News", "WindowsApp")
-AddToIniOneDefaultMenu("Microsoft.ZuneVideo_8wekyb3d8bbwe!Microsoft.ZuneVideo", "Zune Video", "WindowsApp")
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel", "Immersive Control Panel", "WindowsApp")
 AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 
@@ -6467,7 +6472,7 @@ AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithIn
 AddToIniOneDefaultMenu("{Add Snippet and Hotstring}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
 ; AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "")
-AddToIniOneDefaultMenu(L(o_L["GuiQuickAddSnippetExample"], """#snippet#"""), o_L["GuiQuickAddSnippetExampleName"], "Snippet", false, "", ":*:#snippet#")
+AddToIniOneDefaultMenu(L(o_L["GuiQuickAddSnippetExample"], """,snippet"""), o_L["GuiQuickAddSnippetExampleName"], "Snippet", false, "", "::,snippet")
 AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 
 if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
@@ -6495,12 +6500,10 @@ AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 AddToIniOneDefaultMenu("{Add Favorite - QAP}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
-AddToIniOneDefaultMenu("{Last Actions}", "", "QAP")
 AddToIniOneDefaultMenu("{ReopenCurrentFolder}", "", "QAP", true)
+AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{Current Folders}", "", "QAP", true)
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{Clipboard}", "", "QAP", true)
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{Drives}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "Z") ; close QAP menu
 
@@ -6517,7 +6520,6 @@ AddToIniOneDefaultMenu(o_SpecialFolders.strDownloadPath, "", "Special") ; Downlo
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{20D04FE0-3AEA-1069-A2D8-08002B30309D}", "", "Special") ; Computer
 AddToIniOneDefaultMenu("{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", "", "Special") ; Network
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{21EC2020-3AEA-1069-A2DD-08002B30309D}", "", "Special") ; Control Panel
 AddToIniOneDefaultMenu("{645FF040-5081-101B-9F08-00AA002F954E}", "", "Special") ; Recycle Bin
 AddToIniOneDefaultMenu("", "", "Z") ; close special menu
@@ -8475,7 +8477,7 @@ if (g_blnIniFileCreation)
 else
 	strLimitsMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLiveExceeded"], g_intNbLiveFolderItemsMax) . "`n" : "")
 
-if (!g_blnSponsor and (g_blnIniFileCreation or (StrLen(strLimitsMessage) and !g_blnLimitExceededMessageShown)))
+if (!g_blnSponsor and (g_blnIniFileCreation or StrLen(strLimitsMessage)) and !g_blnLimitExceededMessageShown)
 {
 	MsgBox, % 0, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
 		. o_L["DialogFreeEditionMessage3"] . "`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
@@ -18615,8 +18617,9 @@ GuiCancel:
 GuiCancelAndExitApp:
 ;------------------------------------------------------------
 
-if (blnSponsorCodeInputInProgress) ; when user click X or hit Escape in the GuiSponsorCodeInput dialog box
-	gosub, ProcessSponsorCodeCancel ; ##### not sure if this happens here?
+if (blnSponsorCodeInputInProgress)
+; when user click X or hit Escape in the GuiSponsorCodeInput dialog box not sure if this happens but keep it for safety)
+	gosub, ProcessSponsorCodeCancel
 
 if GetKeyState("LShift") and GetKeyState("LCtrl")
 	Gosub, ReloadQAPDontSave ; undocumented
