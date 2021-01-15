@@ -32,7 +32,9 @@ HISTORY
 =======
 
 Version BETA: 11.1.0.9.3 (2021-01-14)
-- private test
+- remove tooltip displayed when saving favorites, stop displaying the submenu currently processed and replace it with a wait cursor (blue circle)
+- improve when identifying the Edit control used to change folder in a file dialog box, get the control having the focus and, if it is an Edit control, use it, else use Edit1 or Edit2 (as before)
+- fix bug when searching broken links and URL contains a placeholder
 
 Version BETA: 11.1.0.9.2 (2021-01-13)
  
@@ -48,7 +50,7 @@ Free Edition
   - if "Cancel" in "Save license" dialog box, delete old license, reload and run as free edition
 - if no activation left, show a dialog box and "Run as free edition"
 - fix bug hiding the Save license dialog box
-- stop offering to open the manage licnese dialog box when limits exceeded (replace with instructions text only);
+- stop offering to open the manage license dialog box when limits exceeded (replace with instructions text only);
 - do not enforce free edition limitations when user have a valid free license produt #51 (but display "Get license") until the license expires
  
 Various
@@ -31886,14 +31888,8 @@ class Container
 			if (this.AA.strFavoriteType <> "URL" or this.AA.blnLinkAlreadyChecked)
 				return false
 			
-			oItemTemp := this.BackupItem()
-			oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with
-			oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments
-			oItemTemp.aaTemp := Object() ; item temporary values
-			oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
-			
-			; after variables are expanded, check if there are any placeholders in location
-			if ContainsPlaceholder(oItemTemp.aaTemp.strFullLocation)
+			; check if there are any placeholders in location
+			if ContainsPlaceholder(this.AA.strFavoriteLocation)
 				return false ; if yes, do not check, consider that link is not broken (return false)
 			
 			Sleep, 100 ; pause for Windows event handler
