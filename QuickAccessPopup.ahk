@@ -6403,17 +6403,14 @@ else
 	o_QAPfeatures.InitDynamicMenus()
 	
 	if (A_ThisLabel = "LoadFavoritesFromIniWithStatus")
-	{
-		ToolTip, % o_L["ToolTipLoading"]
-		SetCursor(true, "wait")
-	}
+		SetCursor(true, "wait") ; set wait cursur during loading, was ToolTip, % o_L["ToolTipLoading"]
 	if (o_MainMenu.LoadFavoritesFromIniFile() <> "EOM")
 	{
 		OnExit ; disable exit subroutine
 		ExitApp
 	}
 	if (A_ThisLabel = "LoadFavoritesFromIniWithStatus")
-		ToolTip ; clear tooltip after refresh
+		SetCursor(false) ; reset cursor after refresh
 }
 
 return
@@ -8467,16 +8464,10 @@ g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum 
 g_intNbLiveFolderItemsMax := (g_blnSponsor ? o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue : 50) ; limit number of live folders
 
 if InStr(A_ThisLabel, "WithStatus")
-{
-	ToolTip, % o_L["ToolTipBuilding"]
-	SetCursor(true, "wait")
-}
+	SetCursor(true, "wait") ; set wait cursor during building menu, was ToolTip, % o_L["ToolTipBuilding"]
 o_MainMenu.BuildMenu(, (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if InStr(A_ThisLabel, "WithStatus")
-{
-	ToolTip
 	SetCursor(false)
-}
 
 strLimitsIntro := (g_blnIniFileCreation ? o_L["DialogFreeEditionMessage0"] : o_L["DialogFreeEditionMessage1"])
 strLimitsMessage := (g_blnIniFileCreation or (g_intMenuItemsCount > g_intMenuItemsMax) ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
@@ -17901,10 +17892,9 @@ GuiControl, , f_btnGuiCancel, % aaSettingsL["GuiClose"]
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSave"] . "`tCtrl+S"
 Menu, menuBarFile, Disable, % L(aaMenuFileL["GuiSaveAndClose"], g_strAppNameText)
 
-ToolTip, % o_L["ToolTipSaving"]
-SetCursor(true, "wait")
+SetCursor(true, "wait") ; set wait cursor during saving, was ToolTip, % o_L["ToolTipSaving"]
 o_MainMenu.SaveFavoritesToIniFile()
-ToolTip ; clear tooltip after refresh
+SetCursor(false) ; reset cursor after refresh
 
 if (A_ThisLabel = "GuiSaveAndReloadQAP") or (g_blnHotstringNeedRestart)
 	Gosub, ReloadQAP
