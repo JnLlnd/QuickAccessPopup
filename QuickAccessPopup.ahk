@@ -7222,7 +7222,8 @@ aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInD
 	, "DialogSearchBrokenLocations", "DialogSearchBrokenLinks")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SpecialSearchAll", aaL["DialogSearchAllFavorites"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
+if (g_blnUsageDbEnabled)
+	saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenLocations", aaL["DialogSearchBrokenLocations"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenLinks", aaL["DialogSearchBrokenLinks"], "", "iconNoIcon"])
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -11259,7 +11260,7 @@ SpecialSearchBrokenLinks:
 
 strCode := "{" . StrReplace(A_ThisLabel, "SpecialSearch" , "") . "}"
 
-if (strCode = "{NotInDatabase}" and !g_blnUsageDbUpdateFavoritesCompleted)
+if (g_blnUsageDbEnabled and strCode = "{NotInDatabase}" and !g_blnUsageDbUpdateFavoritesCompleted)
 {
 	Oops(0, o_L["OopsFavoritesUsageUpdated"])
 	return
