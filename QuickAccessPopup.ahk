@@ -35,6 +35,7 @@ Version BETA: 11.1.0.9.3 (2021-01-14)
 - remove tooltip displayed when saving favorites, stop displaying the submenu currently processed and replace it with a wait cursor (blue circle)
 - improve when identifying the Edit control used to change folder in a file dialog box, get the control having the focus and, if it is an Edit control, use it, else use Edit1 or Edit2 (as before)
 - fix bug when searching broken links and URL contains a placeholder
+- under "Tools, Special Searches" menu, do not display the menu item "Search Favorites not used in the last ~1~ days" if the QAP usage database is disabled
 
 Version BETA: 11.1.0.9.2 (2021-01-13)
  
