@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.1.0.9.3 (2021-01-14)
+- private test
+
 Version BETA: 11.1.0.9.2 (2021-01-13)
  
 Free Edition
@@ -4387,7 +4390,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.1.0.9.2
+;@Ahk2Exe-SetVersion 11.1.0.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4455,7 +4458,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.1.0.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.1.0.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4601,6 +4604,7 @@ global g_blnAlternativeMenu
 global g_strAlternativeMenu
 global g_blnLaunchFromTrayIcon
 global g_strTargetWinId
+global g_strTargetControlId
 global g_strTargetClass
 global g_strHotkeyTypeDetected
 global g_strNewWindowId
@@ -19029,6 +19033,11 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	else
 		g_blnShowChangeFolderInDialogAlert := false
 	
+	if WindowIsDialog(g_strTargetClass, g_strTargetWinId)
+		ControlGetFocus, g_strTargetControlId, ahk_id %g_strTargetWinId% ; get control having focus in dialog box
+	else
+		g_strTargetControlId := ""
+	
 	return blnCanNavigate
 }
 ;------------------------------------------------------------
@@ -30521,7 +30530,7 @@ class Container
 				}
 				else if (this.aaTemp.strTargetAppName = "Dialog")
 				{
-					ControlGetFocus, strEditControl, ahk_id %g_strTargetWinId% ; get control having focus
+					strEditControl := g_strTargetControlId ; use control having focus (set by CanNavigate)
 					if (SubStr(strEditControl, 1, 4) <> "Edit") ; if control having focus is an Edit control, use it, else use Edit1 or Edit2
 						if ControlIsVisible("ahk_id " . g_strTargetWinId, "Edit1")
 							strEditControl := "Edit1"
