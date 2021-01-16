@@ -31,10 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.1.0.9.3 (2021-01-14)
+Version BETA: 11.1.0.9.3 (2021-01-1?)
 - remove tooltip displayed when saving favorites, stop displaying the submenu currently processed and replace it with a wait cursor (blue circle)
-- improve when identifying the Edit control used to change folder in a file dialog box, get the control having the focus and, if it is an Edit control, use it, else use Edit1 or Edit2 (as before)
+- when identifying the Edit control used to change folder in a file dialog box, fix bug gettint the control having the focus and, if it is an Edit control, use it, else use Edit1 or Edit2 (as before)
 - fix bug when searching broken links and URL contains a placeholder
+- before searching broken links, display warnings in dialog box
 - under "Tools, Special Searches" menu, do not display the menu item "Search Favorites not used in the last ~1~ days" if the QAP usage database is disabled
 
 Version BETA: 11.1.0.9.2 (2021-01-13)
@@ -4729,7 +4730,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
+blnDoNotCheckLicense := true ; true / false ; ####
 g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -11155,9 +11156,10 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 		
 		if (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}")
 		{
+			MsgBox, 0, % g_strAppNameText . " - " . o_L["ToolTipBrokenLinksIntro"], % o_L["ToolTipBrokenLinksWarnings"]
 			SetCursor(true, "wait")
 			g_strBrokenLinks := o_L["ToolTipBrokenLinksList"] . ":"
-			Tooltip, % o_L["ToolTipBrokenLinksIntro"], 55, 140, 3
+			Tooltip, % o_L["ToolTipBrokenLinksIntro"] . "...", 55, 140, 3
 		}
 		
 		o_MenuInGui.SA := Object() ; flush content of previous search
@@ -31895,13 +31897,12 @@ class Container
 				return false ; if yes, do not check, consider that link is not broken (return false)
 			
 			Sleep, 100 ; pause for Windows event handler
-			ToolTip, % o_L["ToolTipBrokenLinksChecking"] . ": " . this.AA.strFavoriteLocation, 55, 195, 4
-			
+			ToolTip, % o_L["ToolTipBrokenLinksChecking"] . ": " . this.AA.strFavoriteLocation, 55, 165, 4
 			intStatus := Url2Var(this.AA.strFavoriteLocation, false, "Status")
 			if (intStatus <> 200)
 			{
 				g_strBrokenLinks .= "`n" . this.AA.strFavoriteLocation
-				ToolTip, % g_strBrokenLinks, 55, 220, 5
+				ToolTip, % g_strBrokenLinks, 55, 190, 5
 			}
 			else
 				this.AA.blnLinkAlreadyChecked := true ; temporary value to avoid checking this link again when refreshing search result
