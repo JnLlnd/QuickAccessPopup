@@ -38,6 +38,7 @@ Version BETA: 11.1.0.9.3 (2021-01-1?)
 - before searching broken links, display warnings in dialog box
 - under "Tools, Special Searches" menu, do not display the menu item "Search Favorites not used in the last ~1~ days" if the QAP usage database is disabled
 - fix bug when selecting the "Customize" menu item from the QAP tray menu while the QAP main window is open with a search result displayed
+- for subscription licenses, show license expiration date in "About" dialog box
 
 Version BETA: 11.1.0.9.2 (2021-01-13)
  
@@ -4731,7 +4732,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := true ; true / false ; ####
+blnDoNotCheckLicense := false ; true / false ; ####
 g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -21148,6 +21149,8 @@ Gui, 2:Add, Link, x10 w%intWidthHalf%, % L(o_L["AboutText4"])
 if (g_blnSponsor)
 {
 	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% ys gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
+	if (o_EDDLicense.oLicense.expires <> "lifetime")
+		Gui, 2:Add, Text, x%intXCol2% w%intWidthHalf% y+1, % L(o_L["AboutLicenseExpires"], o_EDDLicense.oLicense.expires)
 	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% y+1, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/", A_ThisLabel, "Help")
 		. """>" . o_L["AboutLicenseHelp"] . "</a>"
 }

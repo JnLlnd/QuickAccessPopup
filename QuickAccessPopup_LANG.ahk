@@ -1,6 +1,7 @@
 this["AboutLicense"] := "License for: ~1~`nUnique system ID (used for installations count):`n~2~ (<a id=""copy"">~3~</a>)"
 this["AboutLicenseCopy"] := "copy the unique ID"
 this["AboutLicenseCopyMessage"] := "Your QAP unique system ID (installation code) will be copied to the Clipboard."
+this["AboutLicenseExpires"] := "Expiration: ~1~"
 this["AboutLicenseHelp"] := "License Management Help"
 this["AboutText1"] := "~1~ ~2~ (~3~ bits)"
 this["AboutText2"] := "~1~ is written by Jean Lalonde using the <a href=""http://ahkscript.org/"">AutoHotkey</a> programming language."
