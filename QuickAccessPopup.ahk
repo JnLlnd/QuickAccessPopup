@@ -37,6 +37,7 @@ Version BETA: 11.1.0.9.3 (2021-01-1?)
 - fix bug when searching broken links and URL contains a placeholder
 - before searching broken links, display warnings in dialog box
 - under "Tools, Special Searches" menu, do not display the menu item "Search Favorites not used in the last ~1~ days" if the QAP usage database is disabled
+- fix bug when selecting the "Customize" menu item from the QAP tray menu while the QAP main window is open with a search result displayed
 
 Version BETA: 11.1.0.9.2 (2021-01-13)
  
@@ -14569,6 +14570,10 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 		strThisMenu := o_L["MainMenuName"] ; not "Main" for non-English
 	else
 		strThisMenu := A_ThisMenu
+	
+	if SearchIsVisible() ; reset favorites list
+		gosub, GuiFavoritesListFilterHide
+		
 	o_MenuInGui := o_Containers.AA[strThisMenu] ; A_ThisMenu is "Main" or "Main > Submenu"...
 }
 
