@@ -1,6 +1,7 @@
 lAboutLicense	Licence pour: ~1~`nIdentificateur unique (pour le compte des installations):`n~2~ (<a id="copy">~3~</a>)
 lAboutLicenseCopy	copier l'identificateur unique
 lAboutLicenseCopyMessage	Votre identificateur unique (pour le compte des installations) sera copié dans le Presse-papiers.
+lAboutLicenseExpires	Expiration: ~1~
 lAboutLicenseHelp	Aide pour la gestion de la license
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ est développé par Jean Lalonde sur la plateforme <a href="http://ahkscript.org/">AutoHotkey</a>.
@@ -8,6 +9,8 @@ lAboutText2a	Traduction française: Jean Lalonde`nTraduction allemande: Edgar "Fa
 lAboutText2b	Icônes par: <a href="https://icons8.com/">Icons8</a>`nInstallateur: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> par jrsoftware.org`nSources AutoHotkey_L v~1~
 lAboutText3	~1~ Jean Lalonde 2013-~2~`n`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~4~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Soutien en ligne: <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
+lAboutText5	Crédits et contributeurs
+lAboutText6	Merci pour leur expertise et leur code à ~1~ et à de nombreux autres développeurs <a href="~2~">AHK</a>.
 lAboutTitle	À propos - ~1~ ~2~
 lAboutUserComputerName	Utilisateur: ~1~`nOrdinateur: ~2~
 lAlternativeMenuTrayTipCopyLocation	Choisissez le favori à copier
@@ -236,6 +239,15 @@ lDialogFileLabel	Document
 lDialogFileName	Nom du fichier
 lDialogFileSize	Taille du fichier
 lDialogFolderLabel	Dossier
+lDialogFreeEditionItems	Items dans le menu: actuel ~1~ / permis ~2~
+lDialogFreeEditionLabel	Gratuit
+lDialogFreeEditionLive	Maximum de ~1~ items dans les Dossiers actifs
+lDialogFreeEditionLiveExceeded	Le nombre d'items dans les Dossiers actifs dépasse le maximum de ~1~ items
+lDialogFreeEditionMessage0	Vous utilisez Quick Access Popup Édition gratuite.
+lDialogFreeEditionMessage1	Malheureusement, les limites de Quick Access Popup Édition gratuite ont été dépassées. Les items excédentaires seront désactivés.
+lDialogFreeEditionMessage2	Veuillez ouvrir la boîte de dialogue "~1~, ~2~" pour obtenir ou enregistrer votre licence QAP...
+lDialogFreeEditionMessage3	Obtenez votre licence maintenant pour profiter pleinement des fonctionnalités de QAP.
+lDialogFreeEditionShared	Menus partagés: actuel ~1~ / permis ~2~
 lDialogGetWebPageTitle	Récupérer le titre
 lDialogGetWinInfo	Pour identifier la fenêtre dont vous voulez obtenir le titre, la classe ou le nom du processus, cliquez dans la fenêtre désirée avec le raccouricis de menu de QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titre de la fenêtre:`n"~1~"`n`nClasse:`n"~2~"`n`nNom du processus:`n"~3~"`n`nCopier ces informations dans le Presse-papiers?
@@ -359,6 +371,10 @@ lDialogSameLocartionExistsPrompt	Ce favori a le même contenu:
 lDialogSameLocartionExistsQuestion	Voulez-vous toujours enregistrer ce favori?
 lDialogSearch	Rechercher
 lDialogSearchAllFavorites	Rechercher tous les favoris
+lDialogSearchBrokenLinks	Rechercher les favoris "Liens (URL)" brisés (404)
+lDialogSearchBrokenLocations	Rechercher les Dossiers, Documents ou Applications introuvables
+lDialogSearchNotInDatabaseFavorites	Rechercher les favoris inutilisés depuis ~1~ jours
+lDialogSearchSpecial	Recherches spéciales
 lDialogSelectFolder	Sélectionnez un dossier
 lDialogSelectIcon	Changer l'icône
 lDialogSelectIconJL	Sélectionner dans:
@@ -433,25 +449,22 @@ lDonateActionRemoveLicenseConfirm	Voulez-vous retirer votre licence pour "~1~" d
 lDonateActionRenew	Renouveler votre licence
 lDonateActionRenewConfirm	Veuillez relancer ~1~ après avoir renouvelé votre licence
 lDonateActionSaveLicense	Enregistrer votre code de licence
-lDonateButton	Soutenez le développement de ce logiciel!
 lDonateCheckTitle	~1~ fois! - ~2~
 lDonateCodeExpiredMessage	Votre licence ~1~ est échue.`n`nVous pouvez la renouveler sur le site web de ~1~.
 lDonateCodeExpiredTitle	Licence échue - ~1~
 lDonateCodeInvalidMessage	Vous avez besoin d'un code de licence pour utiliser cette version de ~1~.`n`nVous pouvez obtenir une licence gratuite ou contribuer au développement de cette application en vous procurant une licence pour un coût modique. Pour plus de renseignements, visitez le site web de ~1~.`n`nSi vous avez reçu votre code de licence, veuillez sélectionner "Enregistrer votre licence".
 lDonateCodeManageMessage	Votre licence est valide.`n`nIl vous reste ~1~/~2~ installation(s) pour cette licence.
+lDonateCodeNoInstallationOops	Veuillez ouvrir la boîte de dialogue "~3~, ~4~" si vous souhaitez retirer des installations inutilisées.`n`nOu écrivez nous à ~5~ pour faire augmenter le nombre d'installations pour votre licence.
 lDonateCodeNoInstallationsMessage	AUCUNE INSTALLATIONS DISPONIBLE`n`nVous avez utilisé les ~1~ installation(s) disponibles pour votre licence.`n`nVous pouvez gérer les installations pour cette licence sur le site web de ~2~.
 lDonateCodeNoInstallationsTitle	Aucune installation disponible - ~1~
 lDonateEnterCode	Avez-vous votre code de licence pour ~1~?`n`nSi oui, enregistrez votre code et relancez ~1~.`n`nSi non, veuillez vous procurer une licence sur le site web de ~1~.
-lDonateMenu	Soutenez le développement de logiciel!
+lDonateInvalidLicense	Code de licence invalide.
+lDonateInvalidLicenseRunAsFreeEdition	QAP fonctionnera avec les limitations de l'édition gratuite jusqu'à ce qu'une licence valide soit enregistrée.
+lDonateMenu	Obtenez une licence pour ce logiciel
 lDonateOnline	Votre licence n'a pas été vérifiée depuis plus de ~1~ jours.`n`nVeuillez brancher cet ordinateur à Internet pour valider votre code.
-lDonateText1	Soutenez le développement de ~1~ !
-lDonateText3	... ou faites connaître ce logiciel si vous l'appréciez !
-lDonateText4	Rédigez un avis favorable à ~1~ sur :
-lDonateText5	Envoyez-moi votre lien
 lDonateTextSaveLicense	Enregistrer votre code de licence pour ~1~
 lDonateThankyou	Merci de soutenir le développement de ce logiciel!
 lDonateThankyouRestart	Merci de soutenir le développement de ~1~!`n`nL'application sera relancée dans un moment.
-lDonateTitle	Soutenez le développement de ce logiciel! - ~1~ ~2~
 lDOpusLayoutsName	Dispositions
 lDOpusMenuName	Favoris Directory Opus
 lDopusMenuNameDescription	Pour les utilisateurs de Directory Opus (DOpus), affiche un menu dynamique comportant les dossiers ajoutés aux Favoris de DOpus. Si DOpus était sélectionné quand QAP a été installé, les Favoris Directory Opus ont été automatiquement ajoutés à votre menu.
@@ -462,14 +475,13 @@ lGuiAddFavorite	Ajouter
 lGuiCancel	Annuler
 lGuiClose	Fermer
 lGuiCopy	Copier
-lGuiDonate	Soutenir le développement de ce logiciel
 lGuiDonateCodeInput	Entrez votre code de licence
 lGuiDonateCodeInputDonorInvalid	Code de licence invalide.`n`nAssurez-vous de copier le code de licence ("License key") tel qu'il apparaît dans le courriel confirmant l'acquisition de la licence.
 lGuiDonateCodeInputDonorLabel	Entrez votre code de licence de 32 caractères ("License Key")
 lGuiDonateCodeInputSponsorLabel	Entrez votre nom (optionnel)
-lGuiDonateDescription	Afficher la boîte de dialogue "Soutenir le développement de ce logiciel".
 lGuiDropFilesHelp	Aide glisser-déposer
 lGuiDropFilesIncentive	Vous pouvez "glisser-déposer" les types de favoris suivants sur la fenêtre de ~1~:`n`n- ~2~`n- ~3~`n- ~4~
+lGuiDropFilesIncentive1	Vous pouvez glisser-déposer les favoris vers le haut ou le bas dans le menu affiché dans la fenêtre "Personnaliser". Glissez la souris au dessus ou sous la liste pour faire dérouler les favoris.
 lGuiDropFilesIncentive2	Pour "glisser-déposer" un ou plusieurs fichier plus facilement, activez l'option "toujours visible" en cliquant sur l'icône de punaise à la gauche de la fenêtre "Personnaliser".
 lGuiEditFavorite	Modifier
 lGuiFileManagerNewTabSide	Ouvrir les nouveaux onglets de quel côté?
@@ -732,6 +744,7 @@ lOopsExternalReadOnlyAlertUsernameAdded	Votre nom d'utilisateur a été ajouté aut
 lOopsExternalSelectType	Veuillez sélectionner le type de menu partagé dans l'onglet "Menu partagé".
 lOopsExternalUnderExternalError	Ce menu partagé inclut un autre menu partagé:`n~1~`n`nLes menus partagés ne peuvent inclure d'autres menus partagés. Veuillez retirer le menu partagé enfant qui s'y trouve.
 lOopsFavoritesCopied	~1~ favoris copiés.
+lOopsFavoritesUsageUpdated	Les données d'utilisation sur les favoris sont actuellement mises à jour par une tâche de fond lancée au démarrage.`n`nVeuillez essayer à nouveau dans 15-30 secondes...
 lOopsFileExpandedFrom	Étendu à partir de
 lOopsFileNotFound	Cet emplacement n'existe pas
 lOopsFirstEnterUrl	Veuillez d'abord saisir une addresse dans le champ "~1~".
@@ -926,11 +939,15 @@ lOptionsWorkingFolder	Dossier des paramètres
 lPickIconNoLocation	Veuillez d'abord choisisr un favori avant de sélectionner une icône.
 lReloadPrompt	Changement de ~1~ enregistré: ~2~. Voulez-vous relancer ~3~ en ~2~ maintenant? Les changements non sauvegardés dans le menu seront perdus.
 lSponsoredName	Le développement de ce logiciel est soutenu par ~1~
-lSponsoredNone	Veuillez cliquer ici pour soutenir le développement de ce logiciel
+lSponsoredNone	Cliquez ici pour obtenir une licence pour ce logiciel
 lTCMenuName	TC Directory Hotlist
 lTCMenuNameDescription	Pour les utilisateurs de Total Commander (TC), afficher un menu dynamique présentant les favoris ajoutés à la "TC Hotlist" enregistrés dans le fichier wincdm.ini.`n`nSpécifiez l'emplacement du fichier wincdm.ini de TC dans les "Options", onglet "Gestionnaires". Si TC a été sélectionné lorsque vous avez installé QAP, le menu "TC Directory Hotlist" a automatiquement été ajouté à votre menu.
 lTCWinCmdLocation	Emplacement de WinCmd.ini
 lToolTipAlwaysOnTop	Propriété "Fenêtre toujours visible" désactivée pour la fenêtre:`n~1~
+lToolTipBrokenLinksChecking	Vérification de
+lToolTipBrokenLinksIntro	Vérification des favoris Liens (URL)
+lToolTipBrokenLinksList	Liens brisés ou privés
+lToolTipBrokenLinksWarnings	AVERTISSEMENTS`n- Certains liens brisés peuvent prendre du temps à répondre .`n- Les liens protégés par mot de passe peuvent être identifiés comme brisés par erreur.`n- Les liens incluant des codes de remplacement {...} ne seront pas vérifiés.
 lToolTipBuilding	Préparation du menu...
 lToolTipLoading	Chargement des favoris...
 lToolTipRetrievingWebPageTitle	Récupération du titre de la page web...
