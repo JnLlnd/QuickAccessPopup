@@ -31,14 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.1.0.9.3 (2021-01-1?)
-- remove tooltip displayed when saving favorites, stop displaying the submenu currently processed and replace it with a wait cursor (blue circle)
-- when identifying the Edit control used to change folder in a file dialog box, fix bug gettint the control having the focus and, if it is an Edit control, use it, else use Edit1 or Edit2 (as before)
+Version BETA: 11.1.0.9.3 (2021-01-17)
+- optimize saving time by removing the tooltip displayed when saving favorites and rebuilding the menu; instead, display the wait cursor (blue circle) while saving and rebuilding the menu
 - fix bug when searching broken links and URL contains a placeholder
-- before searching broken links, display warnings in dialog box
+- before searching broken links, display a warning message in a dialog box
 - under "Tools, Special Searches" menu, do not display the menu item "Search Favorites not used in the last ~1~ days" if the QAP usage database is disabled
+- when identifying the Edit control used to change folder in a file dialog box, fix bug getting the control having the focus and, if it is an Edit control, use it, else use Edit1 or Edit2 (as before)
 - fix bug when selecting the "Customize" menu item from the QAP tray menu while the QAP main window is open with a search result displayed
 - for subscription licenses, show license expiration date in "About" dialog box
+- French translation update
 
 Version BETA: 11.1.0.9.2 (2021-01-13)
  
