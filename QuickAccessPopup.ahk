@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.1.0.9.4 (2021-01-??)
+
 Version BETA: 11.1.0.9.3 (2021-01-17)
 - optimize saving time by removing the tooltip displayed when saving favorites and rebuilding the menu; instead, display the wait cursor (blue circle) while saving and rebuilding the menu
 - fix bug when searching broken links and URL contains a placeholder
@@ -4397,7 +4399,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.1.0.9.3
+;@Ahk2Exe-SetVersion 11.1.0.9.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4465,7 +4467,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.1.0.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.1.0.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -6271,6 +6273,7 @@ blnSponsorCodeInputInProgress := true
 
 strGuiTitle := g_strAppNameText . " " . g_strAppVersion
 Gui, SaveCode:New, +Hwndg_strGuiSponsorCodeInputHwnd, %strGuiTitle%
+Gui, SaveCode:+Owner1
 if (g_blnUseColors)
 	Gui, SaveCode:Color, %g_strGuiWindowColor%
 Gui, SaveCode:Font, s10 w700, Verdana
@@ -6293,6 +6296,7 @@ GuiCenterButtons(g_strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInput
 
 GuiControl, Focus, f_strSponsorCode
 Gui, SaveCode:Show
+Gui, 1:+Disabled ; ui 1: wioll not need to be re-enabled because app will be restarted if user Save or Cancel dialog box
 
 return
 ;------------------------------------------------------------
@@ -8494,7 +8498,8 @@ if (!g_blnSponsor and (g_blnIniFileCreation or StrLen(strLimitsMessage)) and !g_
 {
 	MsgBox, % 0, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
 		. o_L["DialogFreeEditionMessage3"] . "`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
-	g_blnLimitExceededMessageShown := true
+	if !(g_blnIniFileCreation) ; show limit again if in limit exceeded in the first session
+		g_blnLimitExceededMessageShown := true
 }
 
 strLimitsMessage := ""
