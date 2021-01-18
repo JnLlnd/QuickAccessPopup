@@ -31675,16 +31675,21 @@ class Container
 		; 2019-05-19: converted to Item class mehod with logic as-is
 		;---------------------------------------------------------
 		{
-            oItemTemp := this.BackupItem()
-            oItemTemp.aaTemp := Object() ; item temporary values
-            oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
-            oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
-            oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments for this test
-			oItemTemp.AA.intFavoriteOpenSubFolder := "" ; do not consider subfolder option
-            if !oItemTemp.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
-                return 0
+			if InStr("Folder|Document|Application", this.AA.strFavoriteType) ; expand location; not for URL, Special Folder and others
+			{
+				oItemTemp := this.BackupItem()
+				oItemTemp.aaTemp := Object() ; item temporary values
+				oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
+				oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
+				oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments for this test
+				oItemTemp.AA.intFavoriteOpenSubFolder := "" ; do not consider subfolder option
+				if !oItemTemp.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
+					return 0
+				strFileLocationExpanded := oItemTemp.aaTemp.strFullLocation
+			}
+			else
+				strFileLocationExpanded := this.AA.strFavoriteLocation
 			
-			strFileLocationExpanded := oItemTemp.aaTemp.strFullLocation
 			strGetUsageDbSQL := "SELECT COUNT(*) FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
 				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(strFileLocationExpanded) . "' COLLATE NOCASE;"
 			if !o_UsageDb.Query(strGetUsageDbSQL, o_RecordSet)
