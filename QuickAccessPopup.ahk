@@ -6159,7 +6159,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 	Gui, 2:Add, Text, -Group x10 y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
 	Gui, 2:Font
 	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
-	if (GSA_strStatus <> "invalid" and g_blnSponsor)
+	if ((GSA_strStatus <> "invalid" and g_blnSponsor) or GSA_strStatus = "expired")
 		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
 
 	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
@@ -6273,7 +6273,8 @@ blnSponsorCodeInputInProgress := true
 
 strGuiTitle := g_strAppNameText . " " . g_strAppVersion
 Gui, SaveCode:New, +Hwndg_strGuiSponsorCodeInputHwnd, %strGuiTitle%
-Gui, SaveCode:+Owner1
+if WinExist("ahk_id " . g_strGui1Hwnd) ; set owner only if main gui exists (not when saving from Manage License with expired license)
+	Gui, SaveCode:+Owner1
 if (g_blnUseColors)
 	Gui, SaveCode:Color, %g_strGuiWindowColor%
 Gui, SaveCode:Font, s10 w700, Verdana
@@ -6296,7 +6297,8 @@ GuiCenterButtons(g_strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInput
 
 GuiControl, Focus, f_strSponsorCode
 Gui, SaveCode:Show
-Gui, 1:+Disabled ; ui 1: wioll not need to be re-enabled because app will be restarted if user Save or Cancel dialog box
+if WinExist("ahk_id " . g_strGui1Hwnd)
+	Gui, 1:+Disabled ; ui 1: wioll not need to be re-enabled because app will be restarted if user Save or Cancel dialog box
 
 return
 ;------------------------------------------------------------
