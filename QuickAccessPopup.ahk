@@ -4940,6 +4940,9 @@ if (g_blnUsageDbEnabled)
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
 
+if (g_blnIniFileCreation) ; at first launch, set the end of ini creation process
+	g_blnIniFileCreation := false
+
 ; gosub, SpecialSearchBrokenLinks ; ####
 
 return
