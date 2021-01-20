@@ -445,7 +445,7 @@ lDonateActionNewLicense	Obtenir une nouvelle licence
 lDonateActionNewLicenseConfirm	Veuillez relancer ~1~ après avoir reçu votre licence.
 lDonateActionOldLicenseRemoved	Votre licence a été retirée
 lDonateActionRemoveLicense	Retirer votre licence
-lDonateActionRemoveLicenseConfirm	Voulez-vous retirer votre licence pour "~1~" de cet ordinateur?`n`nSi oui, l'installation pour cet ordinateur (~2~) sera libérée et deviendra disponible pour un autre ordinateur.`n`nATTENTION: Si vous répondez OUI, vous aurez besoin d'une licence valide pour relancer ~3~.
+lDonateActionRemoveLicenseConfirm	Voulez-vous retirer votre licence pour "~1~" de cet ordinateur?`n`nSi oui, l'installation pour cet ordinateur (~2~) sera libérée et deviendra disponible pour un autre ordinateur.`n`nATTENTION: Si vous répondez OUI, vous aurez besoin d'une licence valide pour relancer ~3~ avec toutes ses fonctionnalités.
 lDonateActionRenew	Renouveler votre licence
 lDonateActionRenewConfirm	Veuillez relancer ~1~ après avoir renouvelé votre licence
 lDonateActionSaveLicense	Enregistrer votre code de licence

@@ -435,11 +435,9 @@ lDonateActionNewLicense	Koop een nieuwe licentie
 lDonateActionNewLicenseConfirm	Start ~1~ opnieuw op nadat je jouw licentiecode hebt opgeslagen.
 lDonateActionOldLicenseRemoved	De licentie is verwijderd
 lDonateActionRemoveLicense	Verwijder deze licentie
-lDonateActionRemoveLicenseConfirm	Wil je jouw licentie voor "~1~" van deze computer verwijderen?`n`nZo ja, dan wordt de installatie voor deze computer (~2~) vrijgegeven en is deze beschikbaar voor een andere computer.`n`nWAARSCHUWING: Als je antwoordt met "Ja" dan is er een geldige licentie nodig om ~3~ opnieuw te starten.
 lDonateActionRenew	Verleng licentie
 lDonateActionRenewConfirm	Start ~1~ opnieuw op na het vernieuwen van een licentiecode.
 lDonateActionSaveLicense	Sla de licentiecode op
-lDonateButton	Ondersteun de ontwikkeling van deze software!
 lDonateCheckTitle	~1~ keer! - ~2~
 lDonateCodeExpiredMessage	Jouw ~1~ licentie is verlopen.`n`nJe kunt de licentie verlengen op de ~1~ website.
 lDonateCodeExpiredTitle	Licentie verlopen - ~1~
@@ -449,16 +447,10 @@ lDonateCodeNoInstallationsMessage	GEEN VRIJE INSTALLATIES MEER BESCHIKBAAR`n`nJe
 lDonateCodeNoInstallationsTitle	Geen vrije installaties meer beschikbaar - ~1~
 lDonateCodeNotAvailable	niet beschikbaar wanneer je offline bent
 lDonateEnterCode	Heb je een ~1~ licentiecode?`n`nIndien ja, voer dan de code in en start ~1~ (opnieuw).`n`nZo niet, vraag dan jouw licentiecode op via de ~1~ website.
-lDonateMenu	Ondersteun de ontwikkeling van deze software!
 lDonateOnline	De licentie kon al ~1~ dagen niet worden gecontroleerd.`n`nMaak verbinding met internet om de code te valideren.
-lDonateText1	Ondersteuning ~1~ ontwikkeling!
-lDonateText3	... vertel het door als je deze software geweldig vindt!
-lDonateText4	Geef een positieve review over ~1~ op:
-lDonateText5	Stuur mij jouw link
 lDonateTextSaveLicense	Sla jouw ~1~ licentie op
 lDonateThankyou	Bedankt ~1~, voor het ondersteunen van deze software!
 lDonateThankyouRestart	Bedankt voor het ondersteunen van ~1~ ontwikkeling!`n`nDe app wordt zo weer opgestart.
-lDonateTitle	Ondersteun de ontwikkeling van deze software! - ~1~ ~2~
 lDOpusLayoutsName	Vensterindelingen
 lDOpusMenuName	Directory Opus Favorieten
 lDopusMenuNameDescription	Voor Directory Opus (DOpus) gebruikers: een dynamisch menu weergeven dat is opgebouwd met de mappen die zijn toegevoegd aan de DOpus-favorieten. Als je DOpus-support tijdens de installatie van QAP hebt geselecteerd dan zijn de Directory Opus-favorieten automatisch aan je menu toegevoegd.
@@ -469,12 +461,10 @@ lGuiAddFavorite	Toevoegen
 lGuiCancel	Annuleren
 lGuiClose	Sluiten
 lGuiCopy	Kopiëren
-lGuiDonate	Ondersteun de ontwikkeling van deze software
 lGuiDonateCodeInput	Voer de QAP-licentiecode in
 lGuiDonateCodeInputDonorInvalid	De QAP licentiecode is ongeldig.`n`nZorg ervoor dat de code ("License Key") exact is gekopieerd vanuit de registratie-email.
 lGuiDonateCodeInputDonorLabel	Kopieer en plak jouw 32-cijferige code ("License Key")
 lGuiDonateCodeInputSponsorLabel	Voer jouw naam in (optioneel)
-lGuiDonateDescription	Geeft het venster "Ondersteun de ontwikkeling van deze software" weer.
 lGuiDropFilesHelp	Hulp voor slepen && neerzetten
 lGuiDropFilesIncentive	De volgende type favorieten kunnen worden gesleept naar het ~1~ venster:`n`n- ~2~`n- ~3~`n- ~4~
 lGuiDropFilesIncentive2	Om het verplaatsen van 1 of meerdere bestanden makkelijker te maken kun je het voorkeurenvenster altijd op de voorgrond laten weergeven door linksonder in het voorkeurenvenster op het "pin"-pictogram te klikken.
@@ -949,7 +939,6 @@ lOptionsWorkingFolder	Voorkeurenmap
 lPickIconNoLocation	Selecteer eerst een favoriet alvorens een pictogram te kiezen.
 lReloadPrompt	~1~ gewijzigd in ~2~. Wil je ~3~ herladen naar ~2~? Niet opgeslagen wijzigingen gaan verloren.
 lSponsoredName	De ontwikkeling van deze software wordt vriendelijk ondersteunt door ~1~
-lSponsoredNone	Klik hier om de ontwikkeling van deze software te ondersteunen!
 lTCMenuName	TC Directory hotlist
 lTCMenuNameDescription	Deze functie is specifiek bedoelt voor Total Commander (TC)-gebruikers.`nDeze functie geeft een dynamisch menu weer dat is opgebouwd met favorieten vanuit de TC Hotlist (vanuit wincdm.ini).`n`nStel de locatie van het wincdm.ini-bestand in via "Opties" -> "Bestandsbeheerders". Als TC was geselecteerd toen je QAP installeerde dan is de directory-hotlist automatisch aan jouw menu toegevoegd.
 lTCWinCmdLocation	WinCmd.ini locatie

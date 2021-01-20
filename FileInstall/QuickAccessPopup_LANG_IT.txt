@@ -435,11 +435,9 @@ lDonateActionNewLicense	Ottieni una nuova licenza
 lDonateActionNewLicenseConfirm	Si prega di riavviare ~1~ dopo aver ricevuto il codice licenza.
 lDonateActionOldLicenseRemoved	La licenza è stata rimossa
 lDonateActionRemoveLicense	Rimuovi la licenza
-lDonateActionRemoveLicenseConfirm	Vuoi rimuovere la licenza per "~1~" da questo pc?`n`nSe si, l'installazione per questo pc (~2~) verrà rimossa e resa disponibile per un altro pc.`n`nATTENZIONE: Se rispondi SI, avrai bisogno di una nuova licenza per riavviare ~3~.
 lDonateActionRenew	Rinnova la licenza
 lDonateActionRenewConfirm	Si prega di riavviare ~1~ dopo aver rinnovato il codice licenza.
 lDonateActionSaveLicense	Salva il codice licenza
-lDonateButton	Supporta lo sviluppo di questo Programma!
 lDonateCheckTitle	~1~ volte! - ~2~
 lDonateCodeExpiredMessage	La licenza ~1~ è scaduta.`n`nPuoi rinnovare la tua licenza sul sito ~1~.
 lDonateCodeExpiredTitle	Licenza scaduta - ~1~
@@ -449,16 +447,10 @@ lDonateCodeNoInstallationsMessage	NESSUNA INSTALLAZIONE RIMASTA`n`nHai usato il 
 lDonateCodeNoInstallationsTitle	Nessuna installazione rimanente - ~1~
 lDonateCodeNotAvailable	non disponibile quando sei offline
 lDonateEnterCode	Hai il tuo codice licenza di ~1~?`n`nSe si, inserisci il codice e riavvia ~1~.`n`nAltrimenti, si prega di ottenere un codice licenza sul sito di ~1~.
-lDonateMenu	Supporta questo lo sviluppo di questo programma!
 lDonateOnline	La tua licenza non è stata controllata per più di ~1~ giorni.`n`nSi prega di collegarsi ad Internet per validare la tua licenza.
-lDonateText1	Supporta lo sviluppo di ~1~!
-lDonateText3	... e spargi la voce se ti piace questo Programma!
-lDonateText4	Fai una recensione positiva di ~1~ su:
-lDonateText5	Mandami il tuo link
 lDonateTextSaveLicense	Salva la tua licenza ~1~
 lDonateThankyou	Grazie ~1~ per il supporto di questo programma!
 lDonateThankyouRestart	Grazie di supportare lo sviluppo di ~1~!`n`nL'applicazione verra riavviata tra un momento.
-lDonateTitle	Supporta lo sviluppo di questo programma! - ~1~ ~2~
 lDOpusLayoutsName	I layout
 lDOpusMenuName	Preferiti di Directory Opus
 lDopusMenuNameDescription	Per gli utenti di Directory Opus (DOpus), visualizza un menù dinamico costruito con le cartelle aggiunte ai Preferiti di DOpus. Se DOpus è stato selezionato durante l'installazione di QAP, i Preferiti di Directory Opus sono stati aggiunti automaticamente al tuo menù.
@@ -469,12 +461,10 @@ lGuiAddFavorite	Aggiungi
 lGuiCancel	Annulla
 lGuiClose	Chiudi
 lGuiCopy	Copia
-lGuiDonate	Supporta lo sviluppo di questo programma
 lGuiDonateCodeInput	Inserisci il codice licenza di QAP
 lGuiDonateCodeInputDonorInvalid	Codice licenza invalido.`n`nAssicurati di copiarne il valore ("License Key") esattamente come riportato nell'email di conferma registrazione.
 lGuiDonateCodeInputDonorLabel	Copia e incolla il codice di 32 caratteri ("License Key").
 lGuiDonateCodeInputSponsorLabel	Inserisci il tuo nome (facoltativo)
-lGuiDonateDescription	Visualizza la casella di dialogo "Supporta lo sviluppo di questo programma".
 lGuiDropFilesHelp	Drag and Drop (promemoria)
 lGuiDropFilesIncentive	Puoi trascinare i seguenti tipi di preferiti sulla finestra ~1~:`n`n`t- ~2~`n`t- ~3~`n`t- ~4~
 lGuiDropFilesIncentive2	Per aiutarti a trascinare uno o piú file in una sola volta, puoi far restare la finestra "Personalizzare" sempre "in primo piano" cliccando l'icona a puntina sul lato sinistro della finestra.
@@ -949,7 +939,6 @@ lOptionsWorkingFolder	Cartella Impostazioni
 lPickIconNoLocation	Seleziona il preferito prima di scegliere un'icona.
 lReloadPrompt	~1~ cambiato in ~2~. Vuoi ricaricare ~3~ in ~2~ ora? Le modifiche non salvate al menù verranno perse.
 lSponsoredName	Questo programma è sviluppato gazie anche al gentile contributo di ~1~
-lSponsoredNone	Si prega di cliccare qui per sostenere lo sviluppo di questo programma
 lTCMenuName	Hotlist Cartelle di TC
 lTCMenuNameDescription	Per gli utenti di Total Commander (TC), visualizza un menù dinamico costruito con i preferiti aggiunti alla lista-cartelle di TC, che viene riportata nel, e richiamata dal, file wincdm.ini.`n`nImposta la posizione del file wincdm.ini nelle "Opzioni", tab "File Manager". Se era stato selezionato TC al momento dell'installazione di QAP, la lista-Cartelle è stata aggiunta automaticamente al tuo menù.
 lTCWinCmdLocation	posizione di WinCmd.ini

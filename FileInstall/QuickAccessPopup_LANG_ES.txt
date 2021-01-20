@@ -352,7 +352,6 @@ lDonateActionNewLicense	Obtener una nueva licencia
 lDonateActionNewLicenseConfirm	Reinicie ~1~ después de recibir su código de licencia.
 lDonateActionOldLicenseRemoved	Su licencia fue eliminada
 lDonateActionRemoveLicense	Eliminar su licencia
-lDonateActionRemoveLicenseConfirm	"¿Desea eliminar su licencia para ""~1~"" de este equipo?`n`nEn caso de que si, se eliminará la instalación de este equipo (~2~) y estará disponible para otro equipo.`n`nPRECAUCIÓN: Si responde SÍ, necesitará una licencia válida para reiniciar ~3~."
 lDonateActionRenew	Renovar su licencia
 lDonateActionRenewConfirm	Reinicie ~1~ después de renovar su código de licencia.
 lDonateActionSaveLicense	Guarde su código de licencia
