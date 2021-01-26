@@ -1,6 +1,7 @@
 lAboutLicense	Licentie voor: ~1~`nUniek systeem-ID (wordt gebruikt om de hoeveelheid installaties te bepalen):`n~2~ (<a id="Kopi√´ren">~3~</a>)
 lAboutLicenseCopy	Kopieer het unieke ID
 lAboutLicenseCopyMessage	Het unieke QAP systeem-ID (installatiecode) is naar het klembord gekopieerd.
+lAboutLicenseExpires	Vervaldatum: ~1~
 lAboutLicenseHelp	Hulp voor Licentie Management
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ is ontwikkeld door Jean Lalonde gebruikmakend van de <a href="http://ahkscript.org/">ahk script</a> programmeertaal.
@@ -8,6 +9,8 @@ lAboutText2a	Vertalingen: `nBraziliaans Portugees: Igor Ruckert`nChinees (Mander
 lAboutText2b	Pictogrammen van: <a href="https://icons8.com/">Icons8</a>`nInstallatieprogramma van: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> van jrsoftware.org`nAutoHotkey_L v~1~
 lAboutText3	~1~ Jean Lalonde 2013-~2~`n`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~4~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Meer informatie is te vinden op: <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
+lAboutText5	Credits and contributeurs
+lAboutText6	Bedankt voor hun expertise en toevoegingen aan de code voor ~1~ en vele andere <a href="~2~"> AHK </a> -ontwikkelaars.
 lAboutTitle	Over ~1~ ~2~
 lAboutUserComputerName	Gebruikersnaam: ~1~`nComputer: ~2~
 lAlternativeMenuTrayTipCopyLocation	Selecteer een favoriet om te kopiÎren
@@ -236,6 +239,15 @@ lDialogFileLabel	Document
 lDialogFileName	Bestandsnaam
 lDialogFileSize	Bestandsformaat
 lDialogFolderLabel	Map
+lDialogFreeEditionItems	Items in menu: actueel ~1~ / toegestaan ~2~
+lDialogFreeEditionLabel	Gratis
+lDialogFreeEditionLive	Het maximaal aantal Live mappen is ~1~
+lDialogFreeEditionLiveExceeded	Het maximum van ~1~ Live mappen wordt overschreden
+lDialogFreeEditionMessage0	Je gebruikt de gratis versie van Quick Access Popup.
+lDialogFreeEditionMessage1	De beperkingen van de gratis verie van Quick Access Popup zijn overschreden. Items die de limiet overschrijden, zijn uitgeschakeld.
+lDialogFreeEditionMessage2	Open alsjeblieft het "~1~, ~2~" dialoogvenster om jouw QAP-licentie op te halen of op te slaan...
+lDialogFreeEditionMessage3	Haal nu jouw licentie op om volledig te kunnen profiteren van alle QAP-functies.
+lDialogFreeEditionShared	Gedeelde menu's: actueel ~1~ / toegestaan ~2~
 lDialogGetWebPageTitle	Haal titel op
 lDialogGetWinInfo	Klik in het doelvenster met de QAP sneltoets [~1~] om de titel, klasse of procesnaam van het venster op te halen.
 lDialogGetWInInfo2Clippoard	Venstertitel:`n"~1~"`n`nKlasse:`n"~2~"`n`nProcesnaam:`n"~3~"`n`nDeze informatie naar het klembord kopiÎren?
@@ -365,6 +377,10 @@ lDialogSameLocartionExistsPrompt	De volgende favoriet heeft dezelfde inhoud:
 lDialogSameLocartionExistsQuestion	Wil je deze favoriet nog steeds opslaan?
 lDialogSearch	Zoeken
 lDialogSearchAllFavorites	Zoek in alle favorieten...
+lDialogSearchBrokenLinks	Zoek naar gebroken favoriete links (404)
+lDialogSearchBrokenLocations	Zoek naar nier gevonden mappen, documenten of applicaties
+lDialogSearchNotInDatabaseFavorites	Zoek naar favorieten die de afgelopen ~1~ dagen niet zijn gebruikt
+lDialogSearchSpecial	Speciale zoekopdrachten
 lDialogSelectFolder	Select Folder
 lDialogSelectIcon	Pictogram wijzigen
 lDialogSelectIconJL	Selecteer in:
@@ -435,6 +451,7 @@ lDonateActionNewLicense	Koop een nieuwe licentie
 lDonateActionNewLicenseConfirm	Start ~1~ opnieuw op nadat je jouw licentiecode hebt opgeslagen.
 lDonateActionOldLicenseRemoved	De licentie is verwijderd
 lDonateActionRemoveLicense	Verwijder deze licentie
+lDonateActionRemoveLicenseConfirm	Wil je jouw licentie voor "~1~" van deze computer verwijderen?`n`nZo ja, dan wordt de installatie voor deze computer (~2~) vrijgegeven en is deze beschikbaar voor een andere computer.`n`nWAARSCHUWING: Als je antwoord met "Ja" dan is er een geldige licentie nodig om ~3~ te starten met de volledige functionaliteit.
 lDonateActionRenew	Verleng licentie
 lDonateActionRenewConfirm	Start ~1~ opnieuw op na het vernieuwen van een licentiecode.
 lDonateActionSaveLicense	Sla de licentiecode op
@@ -443,10 +460,14 @@ lDonateCodeExpiredMessage	Jouw ~1~ licentie is verlopen.`n`nJe kunt de licentie 
 lDonateCodeExpiredTitle	Licentie verlopen - ~1~
 lDonateCodeInvalidMessage	Je hebt een licentiecode nodig om deze versie van ~1~ te gebruiken.`n`nJe kunt een gratis licentie ontvangen of bijdragen aan de ontwikkeling van deze applicatie door een licentie te kopen voor een bescheiden prijs. Bezoek de ~1~ website voor meer informatie. Als je jouw licentiecode hebt ontvangen, selecteer dan "Bewaar jouw licentie".
 lDonateCodeManageMessage	Jouw licentie is geldig.`n`nJe hebt nog ~1~/~2~ installatie(s) over voor deze licentie.
+lDonateCodeNoInstallationOops	Open alsjeblieft het "~3~, ~4~" dialoogvenster als je ongebruikte installaties wilt verwijderen.`n`nOf je kunt contact met ons opnemen via ~5~ om het aantal installaties voor jouw licentie te verhogen.
 lDonateCodeNoInstallationsMessage	GEEN VRIJE INSTALLATIES MEER BESCHIKBAAR`n`nJe hebt ~1~ installatie(s) gebruikt die zijn toegestaan voor jouw ~2~ licentie`n`nJe kunt het aantal installaties voor deze licentie beheren op de ~2~ website.
 lDonateCodeNoInstallationsTitle	Geen vrije installaties meer beschikbaar - ~1~
 lDonateCodeNotAvailable	niet beschikbaar wanneer je offline bent
 lDonateEnterCode	Heb je een ~1~ licentiecode?`n`nIndien ja, voer dan de code in en start ~1~ (opnieuw).`n`nZo niet, vraag dan jouw licentiecode op via de ~1~ website.
+lDonateInvalidLicense	Ongeldige licentiecode.
+lDonateInvalidLicenseRunAsFreeEdition	QAP werkt met de beperkingen van de gratis versie totdat een geldige licentie is opgeslagen.
+lDonateMenu	Vraag een licentie aan voor deze software
 lDonateOnline	De licentie kon al ~1~ dagen niet worden gecontroleerd.`n`nMaak verbinding met internet om de code te valideren.
 lDonateTextSaveLicense	Sla jouw ~1~ licentie op
 lDonateThankyou	Bedankt ~1~, voor het ondersteunen van deze software!
@@ -467,6 +488,7 @@ lGuiDonateCodeInputDonorLabel	Kopieer en plak jouw 32-cijferige code ("License K
 lGuiDonateCodeInputSponsorLabel	Voer jouw naam in (optioneel)
 lGuiDropFilesHelp	Hulp voor slepen && neerzetten
 lGuiDropFilesIncentive	De volgende type favorieten kunnen worden gesleept naar het ~1~ venster:`n`n- ~2~`n- ~3~`n- ~4~
+lGuiDropFilesIncentive1	Je kunt favorieten omhoog of omlaag slepen en neerzetten in het menu dat momenteel wordt weergegeven in het venster "Aanpassen". Sleep de muis boven of onder de lijst om te scrollen.
 lGuiDropFilesIncentive2	Om het verplaatsen van 1 of meerdere bestanden makkelijker te maken kun je het voorkeurenvenster altijd op de voorgrond laten weergeven door linksonder in het voorkeurenvenster op het "pin"-pictogram te klikken.
 lGuiEditFavorite	Wijzigen
 lGuiFileManagerNewTabSide	Open new tabs on which side of the file manager?
@@ -734,6 +756,7 @@ lOopsExternalReadOnlyAlertUsernameAdded	Uw gebruikersnaam is automatisch toegevo
 lOopsExternalSelectType	Selecteer het type voor het Openbare menu in de tab: "Openbaar menu".
 lOopsExternalUnderExternalError	Het volgende gedeelde menu bevat een gedeeld menu:`n~1~`n`nGedeelde menu's kunnen geen gedeelde submenu's bevatten. Verplaats het gedeelde submenu naar een ander niet gedeeld menu.
 lOopsFavoritesCopied	~1~ favorieten gekopieerd.
+lOopsFavoritesUsageUpdated	Gebruiksgegevens van favorieten wordt bijgewerkt op de achtergrond. `N`n Probeer het over 15-30 seconden opnieuw ...
 lOopsFileExpandedFrom	Uitgebreid van
 lOopsFileNotFound	Deze locatie bestaat niet
 lOopsFileNotFoundSaveAnyway	Deze favoriet toch opslaan?
@@ -939,10 +962,15 @@ lOptionsWorkingFolder	Voorkeurenmap
 lPickIconNoLocation	Selecteer eerst een favoriet alvorens een pictogram te kiezen.
 lReloadPrompt	~1~ gewijzigd in ~2~. Wil je ~3~ herladen naar ~2~? Niet opgeslagen wijzigingen gaan verloren.
 lSponsoredName	De ontwikkeling van deze software wordt vriendelijk ondersteunt door ~1~
+lSponsoredNone	Klik hier om een licentie voor deze software aan te vragen
 lTCMenuName	TC Directory hotlist
 lTCMenuNameDescription	Deze functie is specifiek bedoelt voor Total Commander (TC)-gebruikers.`nDeze functie geeft een dynamisch menu weer dat is opgebouwd met favorieten vanuit de TC Hotlist (vanuit wincdm.ini).`n`nStel de locatie van het wincdm.ini-bestand in via "Opties" -> "Bestandsbeheerders". Als TC was geselecteerd toen je QAP installeerde dan is de directory-hotlist automatisch aan jouw menu toegevoegd.
 lTCWinCmdLocation	WinCmd.ini locatie
 lToolTipAlwaysOnTop	"Altijd op voorgrond weergeven" uitgeschakeld voor venster:`n~1~
+lToolTipBrokenLinksChecking	Controleren
+lToolTipBrokenLinksIntro	Favoriete links scannen
+lToolTipBrokenLinksList	Gebroken- of priv√© links
+lToolTipBrokenLinksWarnings	WAARSCHUWING`n- Het kan even duren voordat sommige verbroken koppelingen reageren.`n- Met een wachtwoord beveiligde koppelingen kunnen ten onrechte worden ge√Ødentificeerd als verbroken.`n- Koppelingen die gebruik maken van accolades {...} worden niet gecontroleerd.
 lToolTipBuilding	Menu opbouwen...
 lToolTipLoading	Favorieten laden...
 lToolTipRetrievingWebPageTitle	Titel van de webpagina aan het ophalen...

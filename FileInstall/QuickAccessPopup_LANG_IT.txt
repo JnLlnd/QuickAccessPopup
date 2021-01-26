@@ -1,6 +1,7 @@
 lAboutLicense	Licenza per: ~1~`nID di Sistema univoco (usato per contare le installazioni):`n~2~ (<a id="copy">~3~</a>)
 lAboutLicenseCopy	copia l'ID univoco
 lAboutLicenseCopyMessage	Il tuo ID di Sistema univoco di QAP verranno copiati negli Appunti.
+lAboutLicenseExpires	Scadenza: ~1~
 lAboutLicenseHelp	Aiuto Gestione Licenza
 lAboutText1	~1~ ~2~ (~3~ bit)
 lAboutText2	~1~ è stato scritto da Jean Lalonde usando il linguaggio di programmazione <a href="http://ahkscript.org/">AutoHotkey</a>.
@@ -8,6 +9,8 @@ lAboutText2a	Traduzione in Italiano: Riccardo Leone`nTraduzione in Tedesco: Edga
 lAboutText2b	Icone realizzate da: <a href="http://icons8.com">Icons8</a>`nProgramma di installazione: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> di jrsoftware.org`nAutoHotkey_L v~1~
 lAboutText3	~1~ Jean Lalonde 2013-~2~`n`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~4~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Supporto:  <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
+lAboutText5	Riconoscimenti e Contributori
+lAboutText6	Grazie per le loro conoscenze e gli snippet di codice a ~1~ e molti altri <a href="~2~">AHK</a> sviluppatori.
 lAboutTitle	Crediti - ~1~ ~2~
 lAboutUserComputerName	Nome Utente: ~1~`nComputer: ~2~
 lAlternativeMenuTrayTipCopyLocation	Seleziona il Preferito da copiare
@@ -236,6 +239,15 @@ lDialogFileLabel	Documento
 lDialogFileName	Nome del File
 lDialogFileSize	Dimensione del File
 lDialogFolderLabel	Cartella
+lDialogFreeEditionItems	Oggetti nel menÃ¹: attuale ~1~ / permesso ~2~
+lDialogFreeEditionLabel	Gratuita
+lDialogFreeEditionLive	Cartelle Lives con al massimo ~1~ oggetti
+lDialogFreeEditionLiveExceeded	Il numero di oggetti nelle Cartelle Live supera il massimo consentito di ~1~
+lDialogFreeEditionMessage0	Stai usando la versione gratuita di Quick Access Popup.
+lDialogFreeEditionMessage1	Purtroppo, i limiti di Quick Access Popup Edizione Gratuita sono stati superati. Gli elementi che superano i limiti sono stati disabilitati.
+lDialogFreeEditionMessage2	Si prega di aprire la casella di dialogo "~1~, ~2~" per richiedere o salvare la tua licenza di QAP...
+lDialogFreeEditionMessage3	Richiedi la licenza ora per sfruttare senza limitazioni tutte le funzioni di QAP.
+lDialogFreeEditionShared	MenÃ¹ condiviso: attuale ~1~ / permesso ~2~
 lDialogGetWebPageTitle	Estrai il titolo
 lDialogGetWinInfo	Per identificare la finestra di cui vuoi trovare titolo, classe o nome del processo, clicca sulla finestra desiderata premendo la scorciatoia del menù QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titolo della Finestra:`n"~1~"`n`nClasse:`n"~2~"`n`nNome del Processo:`n"~3~"`n`nVuoi copiare queste informazioni negli Appunti?
@@ -365,6 +377,10 @@ lDialogSameLocartionExistsPrompt	Il seguente preferito ha lo stesso contenuto:
 lDialogSameLocartionExistsQuestion	Vuoi salvare comunque questo preferito?
 lDialogSearch	Cerca
 lDialogSearchAllFavorites	Ricerca in Tutti i Preferiti
+lDialogSearchBrokenLinks	Ricerca Link Preferiti inesistenti (404)
+lDialogSearchBrokenLocations	Ricerca Cartelle, Documenti o Applicazioni non trovate
+lDialogSearchNotInDatabaseFavorites	Ricerca Preferiti non usati negli ultimi ~1~ giorni
+lDialogSearchSpecial	Ricerche Speciali
 lDialogSelectFolder	Seleziona Cartella
 lDialogSelectIcon	Cambia icona
 lDialogSelectIconJL	Seleziona da:
@@ -435,6 +451,7 @@ lDonateActionNewLicense	Ottieni una nuova licenza
 lDonateActionNewLicenseConfirm	Si prega di riavviare ~1~ dopo aver ricevuto il codice licenza.
 lDonateActionOldLicenseRemoved	La licenza è stata rimossa
 lDonateActionRemoveLicense	Rimuovi la licenza
+lDonateActionRemoveLicenseConfirm	Vuoi rimuovere la licenza per "~1~" da questo pc?`n`nSe si, l'installazione per questo pc (~2~) verrà rimossa e resa disponibile per un altro pc.`n`nATTENZIONE: Se rispondi SI, avrai bisogno di una nuova licenza per riavviare ~3~ con tutte le funzionalità senza limitazioni.
 lDonateActionRenew	Rinnova la licenza
 lDonateActionRenewConfirm	Si prega di riavviare ~1~ dopo aver rinnovato il codice licenza.
 lDonateActionSaveLicense	Salva il codice licenza
@@ -443,10 +460,14 @@ lDonateCodeExpiredMessage	La licenza ~1~ è scaduta.`n`nPuoi rinnovare la tua lic
 lDonateCodeExpiredTitle	Licenza scaduta - ~1~
 lDonateCodeInvalidMessage	E' necessario un codice licenza per eseguire questa versione di ~1~.`n`nPuoi ottenere una licenza gratuita o contribuire allo sviluppo di questa applicazione acquistando una licenza per un modesto importo. Per maggiori informazioni, visita il sito ~1~.`n`nSe hai ricevuto un codice licenza, si prega di selezionare "Salva la licenza".
 lDonateCodeManageMessage	La tua licenza è valida.`n`nHai ~1~/~2~ installazione/i rimanenti per questa licenza.
+lDonateCodeNoInstallationOops	Si prega di aprire la casella di dialogo "~3~, ~4~" se vuoi rimuovere le installazioni non utilizzate.`n`nOppure puoi contattarci a ~5~ per incrementare il numero di nstallazioni per la tua licenza.
 lDonateCodeNoInstallationsMessage	NESSUNA INSTALLAZIONE RIMASTA`n`nHai usato il numero (~1~) di installazioni consentite per le tue ~2~ licenze.`n`nPuoi gestire le installazioni per questa licenza sul sito ~2~.
 lDonateCodeNoInstallationsTitle	Nessuna installazione rimanente - ~1~
 lDonateCodeNotAvailable	non disponibile quando sei offline
 lDonateEnterCode	Hai il tuo codice licenza di ~1~?`n`nSe si, inserisci il codice e riavvia ~1~.`n`nAltrimenti, si prega di ottenere un codice licenza sul sito di ~1~.
+lDonateInvalidLicense	Codice di licenza non valido.
+lDonateInvalidLicenseRunAsFreeEdition	QAP sarà eseguito con le limitazioni della edizione gratuita fino a che non venga salvata una licenza valida.
+lDonateMenu	Rihiedi una licenza per questo programma
 lDonateOnline	La tua licenza non è stata controllata per più di ~1~ giorni.`n`nSi prega di collegarsi ad Internet per validare la tua licenza.
 lDonateTextSaveLicense	Salva la tua licenza ~1~
 lDonateThankyou	Grazie ~1~ per il supporto di questo programma!
@@ -467,6 +488,7 @@ lGuiDonateCodeInputDonorLabel	Copia e incolla il codice di 32 caratteri ("Licens
 lGuiDonateCodeInputSponsorLabel	Inserisci il tuo nome (facoltativo)
 lGuiDropFilesHelp	Drag and Drop (promemoria)
 lGuiDropFilesIncentive	Puoi trascinare i seguenti tipi di preferiti sulla finestra ~1~:`n`n`t- ~2~`n`t- ~3~`n`t- ~4~
+lGuiDropFilesIncentive1	Puoi spostare dei Preferiti con Drag && Drop su o giÃ¹ all'interno del menÃ¹ correntemente visualizzato nella finestra "Personalizza". Per scorrere la lista, fai scroll col mouse su o giÃ¹.
 lGuiDropFilesIncentive2	Per aiutarti a trascinare uno o piú file in una sola volta, puoi far restare la finestra "Personalizzare" sempre "in primo piano" cliccando l'icona a puntina sul lato sinistro della finestra.
 lGuiEditFavorite	Modifica
 lGuiFileManagerNewTabSide	Apri nuovi tab su quale lato del file manager?
@@ -734,6 +756,7 @@ lOopsExternalReadOnlyAlertUsernameAdded	Il tuo nome utente è stato automaticamen
 lOopsExternalSelectType	Per favore scegli il tipo di menù condiviso nel tab "Menù condiviso".
 lOopsExternalUnderExternalError	Il menù condiviso seguente include un menù condiviso:`n~1~`n`nI menù condivisi non possono includere sottomenù condivisi. Pertanto è necessario modificare tale menù condiviso per portare fuori il sottomenù in esso incluso.
 lOopsFavoritesCopied	~1~ preferiti copiati.
+lOopsFavoritesUsageUpdated	I dati sull'uso dei Preferiti Ã¨ in corso di aggiornamento da un processo in background.`n`nSI prega di riprovare fra 15-30 secondi...
 lOopsFileExpandedFrom	Espanso da
 lOopsFileNotFound	Questa destinazione non esiste
 lOopsFileNotFoundSaveAnyway	Salvo comunque questo Preferito?
@@ -939,10 +962,15 @@ lOptionsWorkingFolder	Cartella Impostazioni
 lPickIconNoLocation	Seleziona il preferito prima di scegliere un'icona.
 lReloadPrompt	~1~ cambiato in ~2~. Vuoi ricaricare ~3~ in ~2~ ora? Le modifiche non salvate al menù verranno perse.
 lSponsoredName	Questo programma è sviluppato gazie anche al gentile contributo di ~1~
+lSponsoredNone	Si prega di cliccare qui per richiedere una licenza per questo programma
 lTCMenuName	Hotlist Cartelle di TC
 lTCMenuNameDescription	Per gli utenti di Total Commander (TC), visualizza un menù dinamico costruito con i preferiti aggiunti alla lista-cartelle di TC, che viene riportata nel, e richiamata dal, file wincdm.ini.`n`nImposta la posizione del file wincdm.ini nelle "Opzioni", tab "File Manager". Se era stato selezionato TC al momento dell'installazione di QAP, la lista-Cartelle è stata aggiunta automaticamente al tuo menù.
 lTCWinCmdLocation	posizione di WinCmd.ini
 lToolTipAlwaysOnTop	"Sempre in Primo Piano"  SPENTO per la finestra:`n~1~
+lToolTipBrokenLinksChecking	Controllo in corso
+lToolTipBrokenLinksIntro	Scansione Link Preferiti
+lToolTipBrokenLinksList	Link inesistenti o privati
+lToolTipBrokenLinksWarnings	ATTENZIONE`n- Alcuni link inesistenti potrebbero impiegare del tempo prima di rispondere.`n- Link protetti da password potrebbero essere erroneamente riportati come inesistenti.`n- Link che includono dei segnaposto come {...} non verranno analizzati.
 lToolTipBuilding	Sto costruendo il menu...
 lToolTipLoading	Sto caricando i Preferiti...
 lToolTipRetrievingWebPageTitle	Sto recuperando il titolo della pagina web...
