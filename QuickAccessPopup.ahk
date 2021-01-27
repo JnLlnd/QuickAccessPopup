@@ -31,6 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.1.0.9.6 (2021-01-27)
+- improve reliability when getting the location of a selected file on the Desktop dynamic folder
+- language update for v11.2 German, French, Korean, Portuguese, Brazilian-Portuguese, Spanish, Italian and Deutsh; remove obsolete translations in Russian and Chinese language files
+
 Version BETA: 11.1.0.9.5 (2021-01-19)
 (there was a compilation error in v11.1.0.9.4 - please replace it with v11.1.0.9.5)
 - fix bug causing error message at startup about special folders
@@ -4402,7 +4406,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.1.0.9.5
+;@Ahk2Exe-SetVersion 11.1.0.9.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4470,7 +4474,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.1.0.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.1.0.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4738,7 +4742,7 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := false ; true / false ; ####
+blnDoNotCheckLicense := true ; true / false ; ####
 g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
@@ -21178,7 +21182,8 @@ aaL := o_L.InsertAmpersand(false, "GuiClose")
 Gui, 2:Add, Button, y+20 vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
 
 ; contributors (right)
-Gui, 2:Add, Link, x%intXCol2% ys w%intWidthHalf%, % L(o_L["AboutText6"], "Lexikos (AutoHotkey_L), Joe Glines (the-Automator.com), Avi Aryan Ryan, RaptorX, Blackholyman, just_me (Class_SQLiteDB), Learning One, leo (GPSoftware), Maestrith (XML_Class), Pulover (LV_Rows class), Tank", "https://www.autohotkey.com/boards/")
+Gui, 2:Add, Link, x%intXCol2% ys w%intWidthHalf%, % L(o_L["AboutText6"], "Lexikos (AutoHotkey_L), Joe Glines (the-Automator.com), Avi Aryan Ryan, RaptorX, Blackholyman, just_me (Class_SQLiteDB)"
+	. ", Learning One, leo (GPSoftware), Maestrith (XML_Class), Pulover (LV_Rows class), Tank, jeeswg", "https://www.autohotkey.com/boards/")
 Gui, 2:Add, Link, x%intXCol2% y+5 w%intWidthHalf%, % L(o_L["AboutText2b"], A_AhkVersion)
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
@@ -22492,31 +22497,19 @@ GetSelectedLocation(strClass, strWinId)
 	}
 	else if WindowIsDesktop(strClass)
 	{
-		ControlGet, objFiles, List, Selected Col1, SysListView321, ahk_class %strClass%
-		Loop, Parse, objFiles, `n, `r
-		{
-			strFirstItem := A_Desktop . "\" . A_LoopField
-			if StrLen(strFirstItem)
-				break
-		}
-		
-		if !StrLen(strFirstItem)
 		; simplified version from https://www.autohotkey.com/boards/viewtopic.php?p=154836#p154836
-		{
-			objWindows := ComObjCreate("Shell.Application").Windows
-			VarSetCapacity(hWnd, 4, 0)
-			; SWC_DESKTOP := 0x8 VT_BYREF := 0x4000 VT_I4 := 0x3 SWFO_NEEDDISPATCH := 0x1
-			objDesktop := objWindows.FindWindowSW(0, "", 8, ComObject(0x4003, &hWnd), 1)
-			for oItem in objDesktop.Document.SelectedItems
+		objWindows := ComObjCreate("Shell.Application").Windows
+		VarSetCapacity(hWnd, 4, 0)
+		; SWC_DESKTOP := 0x8 VT_BYREF := 0x4000 VT_I4 := 0x3 SWFO_NEEDDISPATCH := 0x1
+		objDesktop := objWindows.FindWindowSW(0, "", 8, ComObject(0x4003, &hWnd), 1)
+		strFirstItem := ""
+		VarSetCapacity(strFirstItem, 260*2)
+		for oItem in objDesktop.Document.SelectedItems
+			if !(SubStr(oItem.path, 1, 3) = "::{")
 			{
-				strSelected := oItem.path
-				if StrLen(strSelected) and !(SubStr(strSelected, 1, 3) = "::{")
-				{
-					strFirstItem := strSelected
-					break
-				}
+				strFirstItem .= oItem.path
+				break
 			}
-		}
 	}
 	else if WindowIsDirectoryOpus(strClass)
 	{
