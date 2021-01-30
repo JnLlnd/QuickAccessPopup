@@ -6672,6 +6672,8 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 				strIconResource := "iconSpecialFolders"
 			else if InStr(strName, o_L["MenuDynamicMenus"])
 				strIconResource := "iconQAP"
+			else if InStr(strName, o_L["MenuMySnippetsMenu"])
+				strIconResource := "iconSubmenu"
 			else ; o_L["MenuMyWindowsAppsMenu"]
 				strIconResource := "iconDesktop"
 		else if (strFavoriteType = "Special")
