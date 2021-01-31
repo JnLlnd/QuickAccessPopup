@@ -31,6 +31,56 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.2 (2021-01-31)
+ 
+Special Searches
+- add the submenu "Special Searches" under the "Tools" menu and move the "Search All Favorites" under this menu
+- add the "Search Folders, Documents or Applications not found" menu item under "Special Searches"
+- add the "Search Broken Favorites Links (404)" menu item under "Special Searches"; display progress info while searching for broken links
+ 
+Drag and Drop
+- in the "Customize" window, items can now be moved up or down in a menu using Drag & Drop (thanks to LV_Rows class from Rodolfo U. Batista aka Pulover)
+- to move a favorite above or below the visible list, drag the mouse over or above the list to scroll its content
+ 
+Free Edition
+- when executed without a license (or with an expired or invalid license), QAP runs with the following limitations:
+  - the total number of items in the menu cannot exceed 100 items;
+  - the total number of items inside Live Folder menus is limited to 50 items;
+  - only one Shared Menu can be included in the menu.
+- at its first launch, QAP shows information about limitations (user with a license can select "Help, Manage your license" to save their license)
+- items exceeding the limits will be disabled
+- the dialog box about limitations is also shown when at least one limit is exceeded
+- when running in Free mode, the tag "Free" is added to the version number in QAP window title
+ 
+Improvements
+- Saving favorites: optimize saving time by showing a "wait" cursor instead of showing the submenu currently processed
+- Placeholders: improve retrieving the selected file or folder for the {SEL...} placeholders
+- Licensing: improve dialog box message when installing a new license and deleting previous license info; for subscription licenses, show license expiration date in "About" dialog box
+- Check for update: in the dialog box show only the download button for the current installation (Easy Setup or Portable ZIP)
+- Changing folder in a dialog box: improve changing folder in applications having more that one text field in the "Open" or "Save As" dialog boxes (technical note: when identifying the Edit control used to change folder, use the control having the focus if it is an Edit control, else use the control "Edit1" as before; this fixes an issue in UltraEdit and other app's file dialog boxes)
+- "About" dialog box: redesign the "About Quick Access Popup" dialog box and add credits for contributors
+ 
+Bug fixes
+ 
+"Customize" window:
+- fix bug when showing hand cursor when the mouse hovers some of the window buttons
+- fix a bug retrieving the web page title when adding a Link favorite using the command "Add Active Folder or Web Page Express"
+- fix bug when moving favorites up or down in the list to also move the dates and stats columns content if the "Display dates and stats columns" option is enabled
+- fix bug when saving the options after the maximum number of Live folder items was exceeded
+- fix bug when selecting the "Customize" menu item from the QAP tray menu while the QAP main window is open with a search result
+ 
+Launching favorites
+- send hotstring ending character when executing a snippet in macro mode
+- fix a bug retrieving the current location for {CUR...} placeholders when the current location is the Desktop
+ 
+Startup
+- fix bug causing error message at startup when Special folders locations was changed
+ 
+Language update
+- German, French, Korean, Portuguese, Brazilian-Portuguese, Spanish, Italian and Deutsh language files language update for v11.2
+- Spanish and Chinese language update for v11
+- remove obsolete translations in Russian and Chinese language files
+
 Version BETA: 11.1.0.9.6 (2021-01-27)
 - improve reliability when getting the location of a selected file on the Desktop dynamic folder
 - language update for v11.2 German, French, Korean, Portuguese, Brazilian-Portuguese, Spanish, Italian and Deutsh; remove obsolete translations in Russian and Chinese language files
@@ -4406,7 +4456,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.1.0.9.6
+;@Ahk2Exe-SetVersion 11.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4474,8 +4524,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.1.0.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
