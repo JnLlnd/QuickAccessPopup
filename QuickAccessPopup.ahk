@@ -20469,6 +20469,7 @@ strQuery := strUrlCheck4Update
 	. "&ini1=" . g_strIniBefore
 	. "&ini2=" . g_strIniAfter
 	. "&eddp=" . g_saEddProduct[o_EDDLicense.strProductId]
+	. "&nbi=" . g_intMenuItemsCount
 strLatestVersions := Url2Var(strQuery)
 if !StrLen(strLatestVersions)
 	if (A_ThisMenuItem = aaHelpL["MenuUpdate"])
