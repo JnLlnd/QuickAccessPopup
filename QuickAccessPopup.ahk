@@ -4846,7 +4846,7 @@ if !(g_blnSponsor)
 	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
 	g_strAppVersion .= " " . o_L["DialogFreeEditionLabel"]
 }
-global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 100) ; limit menu items for free edition
+global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 75) ; limit menu items for free edition
 global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
 global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
 
@@ -20518,7 +20518,7 @@ strQuery := strUrlCheck4Update
 	. "&ird=" . "" ; strImageresDate not needed but keep empty value for MySQL database
 	. "&ini1=" . g_strIniBefore
 	. "&ini2=" . g_strIniAfter
-	. "&eddp=" . g_saEddProduct[o_EDDLicense.strProductId]
+	. "&eddp=" . (g_saEddProduct.HasKey(o_EDDLicense.strProductId) ? g_saEddProduct[o_EDDLicense.strProductId] : "FE")
 	. "&nbi=" . g_intMenuItemsCount
 strLatestVersions := Url2Var(strQuery)
 if !StrLen(strLatestVersions)
