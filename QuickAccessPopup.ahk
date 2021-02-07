@@ -12022,7 +12022,7 @@ else
 			
 			Gosub, GuiAddThisFileFromMsgXpress
 		
-		Gosub, GuiSaveAndCloseFavorites ; for Express save all favorites to ini file
+		Gosub, GuiSaveAndDoNothing ; for Express save all favorites to ini file
 	}
 }
 
