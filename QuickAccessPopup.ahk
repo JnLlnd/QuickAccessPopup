@@ -31028,6 +31028,7 @@ class Container
 				; DecodeSnippet: convert from raw content (as from ini file) to display format (when f_blnProcessEOLTab is true) or to paste format
 				ClipBoard := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders, true)
 				if !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "O") ; OmitEndChar (by default false, behaviour change compared to previous version where end char was never pasted)
+					and !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "*") ; there is not end char when option "Do not wait for Ending key"
 					Clipboard .= g_strHotstringEndChar
 				ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
 				intErrorLevel := ErrorLevel
@@ -31113,6 +31114,7 @@ class Container
 					}
 				}
 				if !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "O") ; OmitEndChar
+					and !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "*") ; there is not end char when option "Do not wait for Ending key"
 					Send, %g_strHotstringEndChar%
 				
 				SendMode, Input ; restore default SendMode to Input mode
