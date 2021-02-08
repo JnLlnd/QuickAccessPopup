@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.2.0.2 (2021-02-07)
+- fix bug when a menu with automatic sorting includes an item with a pipe (|) character in its name
+- after saving with "Add Active Folder or Web Page Express", avoid showing briefly the Customize window
+- do not add an hotstring ending key to snippets when the option "Do not wait for Ending key" is enabled
+- Russian translation for v11.2.x
+
 Version: 11.2.0.1 (2021-02-01)
 - fix number of maximum items in Free Edition to 75 items
 - internal changes in usage analysis
@@ -4460,7 +4466,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.0.1
+;@Ahk2Exe-SetVersion 11.2.0.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4528,7 +4534,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.0.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
