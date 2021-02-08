@@ -29956,7 +29956,7 @@ class Container
 			while StrLen(strCriteria) < 14
 				strCriteria := "0" . strCriteria
 			
-		return strCriteria . " " . strFavoriteName
+		return StrReplace(strCriteria . " " . strFavoriteName, "|", g_strEscapePipe)
 	}
 	;------------------------------------------------------------
 
