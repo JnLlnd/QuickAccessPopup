@@ -17059,29 +17059,49 @@ if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 GuiControl, Focus, f_lvFavoritesList
 Gui, 1:ListView, f_lvFavoritesList
 
-Gosub, GetSelectedRows
-
-Loop
+/*
+int := 0
+while, GetKeyState("LButton")
 {
-	Gosub, % (A_ThisLabel = "GuiMoveMultipleFavoritesUp" ? "GetFirstSelected" : "GetLastSelected") ; will re-init g_intRowToProcess
-	if (!g_intRowToProcess) or (g_blnAbortMultipleMove)
-		break
-	
-	g_intSelectedRow := g_intRowToProcess
-	Gosub, % (A_ThisLabel = "GuiMoveMultipleFavoritesUp" ? "GuiMoveOneFavoriteUp" : "GuiMoveOneFavoriteDown")
+	int++
+	GuiControl, , MyEdit, %int%
+	Sleep, % (int > 5 ? (int > 15 ? 50 : 150) : 300)
 }
+*/
 
-if (!g_blnAbortMultipleMove)
-	Loop, Parse, strSelectedRows, |
-		LV_Modify(A_LoopField  + (A_ThisLabel = "GuiMoveMultipleFavoritesUp" ? -1 : 1), "Select")
+intRepeatsMultiple := 0
+loop
+{
+	Gosub, GetSelectedRows
 
-LV_Modify(LV_GetNext(0), "Focus") ; give focus to the first selected row
+	Loop
+	{
+		Gosub, % (A_ThisLabel = "GuiMoveMultipleFavoritesUp" ? "GetFirstSelected" : "GetLastSelected") ; will re-init g_intRowToProcess
+		if (!g_intRowToProcess) or (g_blnAbortMultipleMove)
+			break
+		
+		g_intSelectedRow := g_intRowToProcess
+		Gosub, % (A_ThisLabel = "GuiMoveMultipleFavoritesUp" ? "GuiMoveOneFavoriteUp" : "GuiMoveOneFavoriteDown")
+	}
+
+	if (!g_blnAbortMultipleMove)
+		Loop, Parse, strSelectedRows, |
+			LV_Modify(A_LoopField  + (A_ThisLabel = "GuiMoveMultipleFavoritesUp" ? -1 : 1), "Select")
+
+	LV_Modify(LV_GetNext(0), "Focus Vis") ; give focus to the first selected row
+	
+	intRepeatsMultiple++
+	Sleep, % (intRepeatsMultiple > 5 ? (intRepeatsMultiple > 15 ? 50 : 150) : 300)
+}
+until !GetKeyState("LButton")
+
 GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|" ; update menus dropdown list
 Gosub, EnableSaveAndCancel
 
 g_blnAbortMultipleMove := ""
 strSelectedRows := ""
 g_intRowToProcess := ""
+intRepeatsMultiple := ""
 
 return
 ;------------------------------------------------------------
@@ -17093,33 +17113,81 @@ GuiMoveFavoriteDown:
 GuiMoveOneFavoriteUp:
 GuiMoveOneFavoriteDown:
 ;------------------------------------------------------------
-
 if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
+{
+	g_blnAbortMultipleMove := true
 	return
+}
 
 if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
 {
 	o_ExternalMenu := ""
+	g_blnAbortMultipleMove := true
 	return
 }
 
-if !InStr(A_ThisLabel, "One")
+if InStr(A_ThisLabel, "One")
+{
+	g_intSelectedRow := LV_GetNext()
+	if (g_intSelectedRow = (InStr(A_ThisLabel, "Up") ? 1 : LV_GetCount())) ; if first or last item
+	{
+		g_blnAbortMultipleMove := true
+		return
+	}
+	if InStr(A_ThisLabel, "Up")
+		gosub, GuiMoveFavoriteThisUp
+	else
+		gosub, GuiMoveFavoriteThisDown
+}
+else
 {
 	GuiControl, Focus, f_lvFavoritesList
 	Gui, 1:ListView, f_lvFavoritesList
-	g_intSelectedRow := LV_GetNext()
+	
+	intRepeatsSingle := 0
+	loop
+	{
+		g_intSelectedRow := LV_GetNext()
+		if (g_intSelectedRow = (InStr(A_ThisLabel, "Up") ? 1 : LV_GetCount())) ; if first or last item
+			return
+		
+		if (g_intSelectedRow = 0)
+		{
+			Oops(1, o_L["DialogSelectItemToMove"])
+			return
+		}
+		if InStr(A_ThisLabel, "Up")
+			gosub, GuiMoveFavoriteThisUp
+		else
+			gosub, GuiMoveFavoriteThisDown
+		intRepeatsSingle++
+		Sleep, % (intRepeatsSingle > 5 ? (intRepeatsSingle > 15 ? 50 : 150) : 300)
+	}
+	until !GetKeyState("LButton")
+	
+	GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|" ; update menus dropdown list
+	Gosub, EnableSaveAndCancel
 }
-if (g_intSelectedRow = 0)
-{
-	Oops(1, o_L["DialogSelectItemToMove"])
-	return
-}
-if (g_intSelectedRow = (InStr(A_ThisLabel, "Up") ? 1 : LV_GetCount())) ; if first or last item
-{
-	if InStr(A_ThisLabel, "One")
-		g_blnAbortMultipleMove := true
-	return
-}
+
+; if favorite's menu is in an external settings file, flag that it needs to be saved
+if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) ; LATER
+	o_ExternalMenu.AA.blnNeedSave := true ; fix add .AA ?
+
+objExternalMenu := ""
+saThisRow := ""
+saOtherRow := ""
+strThisPos := ""
+intRepeatsSingle := ""
+
+return
+
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiMoveFavoriteThisUp:
+GuiMoveFavoriteThisDown:
+;------------------------------------------------------------
 
 ; --- move in menu object ---
 
@@ -17164,25 +17232,8 @@ if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnable
 if !InStr(A_ThisLabel, "One")
 	LV_Modify(g_intSelectedRow + (InStr(A_ThisLabel, "Up") ? -1 : 1), "Select Focus Vis")
 
-if !InStr(A_ThisLabel, "One") ; if single move
-{
-	GuiControl, 1:, f_drpMenusList, % "|" . o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath) . "|" ; update menus dropdown list
-	Gosub, EnableSaveAndCancel
-}
-
-; if favorite's menu is in an external settings file, flag that it needs to be saved
-if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) ; LATER
-	o_ExternalMenu.AA.blnNeedSave := true ; fix add .AA ?
-
-objExternalMenu := ""
-saThisRow := ""
-saOtherRow := ""
-strThisPos := ""
-
 return
-
 ;------------------------------------------------------------
-
 
 ;------------------------------------------------------------
 GuiSortFavoritesMenu:
