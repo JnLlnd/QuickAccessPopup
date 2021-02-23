@@ -17059,16 +17059,6 @@ if !(g_blnMenuReady) or o_MenuInGui.OopsMenuIsSorted()
 GuiControl, Focus, f_lvFavoritesList
 Gui, 1:ListView, f_lvFavoritesList
 
-/*
-int := 0
-while, GetKeyState("LButton")
-{
-	int++
-	GuiControl, , MyEdit, %int%
-	Sleep, % (int > 5 ? (int > 15 ? 50 : 150) : 300)
-}
-*/
-
 intRepeatsMultiple := 0
 loop
 {
@@ -17128,16 +17118,15 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 
 if InStr(A_ThisLabel, "One")
 {
-	g_intSelectedRow := LV_GetNext()
 	if (g_intSelectedRow = (InStr(A_ThisLabel, "Up") ? 1 : LV_GetCount())) ; if first or last item
 	{
 		g_blnAbortMultipleMove := true
 		return
 	}
 	if InStr(A_ThisLabel, "Up")
-		gosub, GuiMoveFavoriteThisUp
+		gosub, GuiMoveOneFavoriteThisUp
 	else
-		gosub, GuiMoveFavoriteThisDown
+		gosub, GuiMoveOneFavoriteThisDown
 }
 else
 {
@@ -17187,6 +17176,8 @@ return
 ;------------------------------------------------------------
 GuiMoveFavoriteThisUp:
 GuiMoveFavoriteThisDown:
+GuiMoveOneFavoriteThisUp:
+GuiMoveOneFavoriteThisDown:
 ;------------------------------------------------------------
 
 ; --- move in menu object ---
