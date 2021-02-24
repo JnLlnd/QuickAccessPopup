@@ -7881,6 +7881,8 @@ return
 
 ;------------------------------------------------------------
 SwitchFolderOrAppMenuShortcut:
+SwitchFolderMenuShortcut:
+SwitchAppMenuShortcut:
 ;------------------------------------------------------------
 
 SetCursor(true, "wait")
@@ -7892,7 +7894,10 @@ CoordMode, Menu, % (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 2 ? "Wi
 
 SetCursor(false)
 
-Menu, % o_L["MenuSwitchFolderOrApp"], Show, %g_intMenuPosX%, %g_intMenuPosY%
+strString := "Menu" . StrReplace(A_ThisLabel, "MenuShortcut") ; from "SwitchFolderOrAppMenuShortcut" to "MenuSwitchFolderOrApp"
+Menu, % o_L[strString], Show, %g_intMenuPosX%, %g_intMenuPosY%
+
+strString := ""
 
 return
 ;------------------------------------------------------------
@@ -7906,7 +7911,7 @@ RefreshSwitchForMultipleAdd:
 ; The first part of "Switch" has the same items as "Reopen a Folder" but with the OpenSwitchFolderOrApp command instead of "OpenFavorite".
 ;------------------------------------------------------------
 
-if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Current Folders}") or o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Switch Folder or App}"))
+if !(o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Current Folders}") or MenuHasSwitchFolderAndOrApp())
 	and (A_ThisLabel <> "RefreshSwitchForMultipleAdd")
 	; we don't have one of these QAP features in at least one menu
 	return
@@ -8001,7 +8006,7 @@ for intIndex, aaFolder in saExplorersWindows
 }
 
 if ((A_ThisLabel <> "RefreshReopenFolderMenu")
-	and o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Switch Folder or App}") ; we have this QAP features in at least one menu
+	and MenuHasSwitchFolderAndOrApp() ; we have one of these QAP features in at least one menu
 	or (A_ThisLabel = "RefreshSwitchForMultipleAdd"))
 {
 	; Insert a menu separator
@@ -8030,18 +8035,18 @@ if ((A_ThisLabel <> "RefreshReopenFolderMenu")
 			aaFolderOrApp.strLocationURL := objWindowProperties.ProcessPath
 			aaFolderOrApp.strWindowId := strWinIDs%A_Index%
 			aaFolderOrApp.strWindowType := "APP"
-
+			
 			saFoldersAndAppsList.Push(aaFolderOrApp)
 		}
 	}
 	
-	; simple array object used to pass data to MenuBuild for MenuSwitchFolderOrApp menu
+	; simple array objects used to pass data to MenuBuild for MenuSwitchFolderOrApp, MenuSwitchFolder and MenuSwitchApp menus
 	saSwitchFolderOrAppTable := Object()
+	saSwitchFolderTable := Object()
+	saSwitchAppTable := Object()
 }
 
 ; Build menu
-
-; ### g_aaReopenFolderLocationUrlByName: replaced by menu o_Containers.AA[o_L["MenuCurrentFolders"]]
 
 Critical, On
 saCurrentFoldersTable := Object()
@@ -8082,11 +8087,18 @@ if (intWindowsIdIndex)
 			else
 				strIcon := aaFolderOrApp.strLocationURL . ",1"
 			saSwitchFolderOrAppTable.Push(["OpenSwitchFolderOrApp", strMenuName, aaFolderOrApp.strWindowType . "|" . aaFolderOrApp.strWindowId, strIcon])
+			if (aaFolderOrApp.strWindowType = "APP") ; {Switch Apps}
+				saSwitchAppTable.Push(["OpenSwitchFolderOrApp", strMenuName, aaFolderOrApp.strWindowType . "|" . aaFolderOrApp.strWindowId, strIcon])
+			else ; {Switch Folders}
+				saSwitchFolderTable.Push(["OpenSwitchFolderOrApp", strMenuName, aaFolderOrApp.strWindowType . "|" . aaFolderOrApp.strWindowId, strIcon])
 		}
 	}
 }
 else
+{
 	saSwitchFolderOrAppTable.Push(["GuiShowNeverCalled", o_L["MenuNoCurrentFolder"], "", "iconNoContent"])
+	saSwitchFolderTable.Push(["GuiShowNeverCalled", o_L["MenuNoCurrentFolder"], "", "iconNoContent"]) ; not needed for apps menu because there is always at least one app
+}
 
 if (A_ThisLabel = "RefreshSwitchForMultipleAdd")
 	return
@@ -8095,10 +8107,16 @@ if !(blnWeHaveFolders)
 	saCurrentFoldersTable.Push(["GuiShowNeverCalled", o_L["MenuNoCurrentFolder"], "", "iconNoContent"])
 
 if (A_ThisLabel <> "RefreshReopenFolderMenu")
-	and o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Switch Folder or App}") ; we have this QAP features in at least one menu
+	and MenuHasSwitchFolderAndOrApp() ; we have one of these QAP features in at least one menu
 {
 	o_Containers.AA[o_L["MenuSwitchFolderOrApp"]].LoadFavoritesFromTable(saSwitchFolderOrAppTable)
 	o_Containers.AA[o_L["MenuSwitchFolderOrApp"]].BuildMenu()
+	
+	o_Containers.AA[o_L["MenuSwitchFolder"]].LoadFavoritesFromTable(saSwitchFolderTable)
+	o_Containers.AA[o_L["MenuSwitchFolder"]].BuildMenu()
+	
+	o_Containers.AA[o_L["MenuSwitchApp"]].LoadFavoritesFromTable(saSwitchAppTable)
+	o_Containers.AA[o_L["MenuSwitchApp"]].BuildMenu()
 }
 
 o_Containers.AA[o_L["MenuCurrentFolders"]].LoadFavoritesFromTable(saCurrentFoldersTable)
@@ -8127,6 +8145,17 @@ strFavoriteType := ""
 
 ; Diag(A_ThisLabel, "", "STOP")
 return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+MenuHasSwitchFolderAndOrApp()
+;------------------------------------------------------------
+{
+	return o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Switch Folder or App}")
+		or o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Switch Folder}")
+		or o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Switch App}")
+}
 ;------------------------------------------------------------
 
 
@@ -19691,7 +19720,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 				if (saMenu[A_Index].AA.strFavoriteType = "QAP")
 					if (saMenu[A_Index].AA.strFavoriteLocation = "{Clipboard}")
 						Gosub, RefreshClipboardMenu
-					else if InStr("{Switch Folder or App}|{Current Folders}", saMenu[A_Index].strFavoriteLocation)
+					else if InStr("{Switch Folder or App}|{Switch Folder}|{Switch App}|{Current Folders}", saMenu[A_Index].strFavoriteLocation)
 						Gosub, RefreshSwitchFolderOrAppMenu
 		}
 		else
@@ -27196,6 +27225,12 @@ class QAPfeatures
 			, "what-is-in-the-clipboard-menu", "RefreshClipboardMenu")
 		this.AddQAPFeatureObject("Switch Folder or App",	o_L["MenuSwitchFolderOrApp"],		o_L["MenuSwitchFolderOrApp"],	"SwitchFolderOrAppMenuShortcut",		"2-DynamicMenus~4-WindowManagement"
 			, o_L["MenuSwitchFolderOrAppDescription"], 0, "iconSwitch", "+^w"
+			, "how-is-built-the-switch-to-an-open-folder-or-application-menu", "RefreshSwitchFolderOrAppMenu")
+		this.AddQAPFeatureObject("Switch Folder",			o_L["MenuSwitchFolder"],			o_L["MenuSwitchFolder"],		"SwitchFolderMenuShortcut",				"2-DynamicMenus~4-WindowManagement"
+			, o_L["MenuSwitchFolderDescription"], 0, "iconSwitch", ""
+			, "how-is-built-the-switch-to-an-open-folder-or-application-menu", "RefreshSwitchFolderOrAppMenu")
+		this.AddQAPFeatureObject("Switch App",				o_L["MenuSwitchApp"],				o_L["MenuSwitchApp"],			"SwitchAppMenuShortcut",				"2-DynamicMenus~4-WindowManagement"
+			, o_L["MenuSwitchAppDescription"], 0, "iconSwitch", ""
 			, "how-is-built-the-switch-to-an-open-folder-or-application-menu", "RefreshSwitchFolderOrAppMenu")
 		this.AddQAPFeatureObject("Current Folders",			o_L["MenuCurrentFolders"],			o_L["MenuCurrentFolders"],		"ReopenFolderMenuShortcut",				"2-DynamicMenus~4-WindowManagement"
 			, o_L["MenuCurrentFoldersDescription"], 0, "iconCurrentFolders", "+^f"
