@@ -19701,6 +19701,9 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 		}
 	}
 
+	if (g_strOpenFavoriteLabel <> "OpenFavoriteFromHotstring")
+		g_strHotstringEndChar := "" ; reset in case a snippet is pasted with menu or shorcut
+	
 	if (g_strOpenFavoriteLabel = "OpenFavoriteFromHotstring")
 	{
 		g_strTargetWinId := "" ; never use target window when launched from hotstring
