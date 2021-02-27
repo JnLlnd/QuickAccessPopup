@@ -14648,6 +14648,7 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 		or o_Containers.AA[A_ThisMenu].AA.strMenuType = "MenuBar" ; A_ThisMenu is empty or menu not in containers or menu is menu bar
 		or A_ThisMenu = o_L["MenuLastActions"] ; A_ThisMenu is empty or menu not in containers or menu is menu bar
 		or A_ThisLabel = "GuiShowFromAddThisFolderMsg") ; force add to main menu when called from QAPmessenger
+		or o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey("{" . A_ThisMenu . "}") ; last A_ThisMenu was a dynamic menu
 		strThisMenu := o_L["MainMenuName"] ; not "Main" for non-English
 	else
 		strThisMenu := A_ThisMenu
