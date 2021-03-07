@@ -994,6 +994,6 @@ this["UpdateYouHaveLatest"] := "You have the latest version: ~1~.`n`nVisit the ~
 this["WindowIsTreeviewText"] := "Windows limitation...."
 this["WindowIsTreeviewTitle"] := "Tree view dialog box not supported"
 this["TipInitShortcutsTitle"] := "TipInitShortcutsTitle"
-this["TipInitShortcutsDesc"] := "TipInitShortcutsDesc"
+this["TipInitShortcutsDetails"] := "TipInitShortcutsDetails"
 this["TipCustomizeStartupTitle"] := "TipCustomizeStartupTitle"
 this["TipCustomizeStartupDesc"] := "TipCustomizeStartupDesc"

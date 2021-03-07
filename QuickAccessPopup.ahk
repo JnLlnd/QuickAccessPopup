@@ -6486,6 +6486,47 @@ return
 
 
 ;------------------------------------------------------------
+GuiShowTips:
+;------------------------------------------------------------
+; o_Tips.aaTipToShow: .strTitle, .strDetails, .strURL, .strImage
+
+###_O("o_Tips.aaTipToShow", o_Tips.aaTipToShow)
+Gui, ShowTips:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
+Gui, Color, White
+Gui, Font, w700 s9, Segoe UI
+Gui, Add, Text, w500 , % L("~1~ ""one-time"" maintenance", g_strAppNameText)
+Gui, Font, w400 s9, Segoe UI
+Gui, Add, Text, w500 , ...
+Gui, Add, Link, w500 , ...
+Gui, Font
+Gui, Add, Button, y+20 gShowTipsButtons vf_btnShowTipsButtonsYes, %g_strShowTipsButtonsYes%
+Gui, Add, Button, yp x+10 gShowTipsButtons vf_btnShowTipsButtonsNo, %g_strShowTipsButtonsNo%
+Gui, Add, Button, yp x+10 gShowTipsButtons vf_btnShowTipsButtonsLater default, %g_strShowTipsButtonsLater%
+Gui, Add, Text
+GuiCenterButtons(g_strGui1Hwnd, 10, 5, 20, "f_btnConvertShowTipsYes", "f_btnConvertShowTipsNo", "f_btnConvertShowTipsLater")
+Gui, Show, AutoSize Center
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ShowTipsButtons:
+;------------------------------------------------------------
+
+if (A_GuiControl = "f_btnConvertSettingsEncodingYes")
+{
+}
+else if (A_GuiControl = "f_btnConvertSettingsEncodingNo")
+{
+}
+	
+Gui, Destroy
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 LoadFavoritesFromIni:
 LoadFavoritesFromIniWithStatus:
 ;------------------------------------------------------------
@@ -32060,6 +32101,7 @@ class Tips
 {
 	aaTips := Object() ; associative array of tip contents
 	saTipsOrder := Object() ; simple array for tips order
+	aaTipToShow := Object()
 	
 	;---------------------------------------------------------
 	__New()
@@ -32076,7 +32118,7 @@ class Tips
 	{
 		objThisTip := Object()
 		objThisTip.strTitle := o_L["Tip" . strCode . "Title"]
-		objThisTip.strDesc := o_L["Tip" . strCode . "Desc"]
+		objThisTip.strDetails := o_L["Tip" . strCode . "Details"]
 		objThisTip.strURL := strURL
 		objThisTip.strImage := strImage
 		
@@ -32112,7 +32154,8 @@ class Tips
 	ShowGui(intTip)
 	;---------------------------------------------------------
 	{
-		###_O("show tip:", this.aaTips[this.saTipsOrder[intTip]])
+		this.aaTipToShow := this.aaTips[this.saTipsOrder[intTip]]
+		Gosub, GuiShowTips
 	}
 	;---------------------------------------------------------
 }
