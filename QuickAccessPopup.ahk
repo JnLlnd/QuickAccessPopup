@@ -4924,12 +4924,12 @@ if (o_Settings.Launch.blnDisplayTrayTip.IniValue)
 {
 	TrayTip, % L(o_L["TrayTipInstalledTitle"], g_strAppNameText)
 		, % L(o_L["TrayTipInstalledDetail"]
-			, (HasShortcut(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText)
+			, (HasShortcutText(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText)
 				? o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText : "") ; "NavigateOrLaunchHotkeyMouse"
-				. (HasShortcut(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText)
-					and HasShortcut(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.AA.strPopupHotkeyText)
+				. (HasShortcutText(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText)
+					and HasShortcutText(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.AA.strPopupHotkeyText)
 					? " " . o_L["DialogOr"] . " " : "")
-				. (HasShortcut(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.AA.strPopupHotkeyText)
+				. (HasShortcutText(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.AA.strPopupHotkeyText)
 					? o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.AA.strPopupHotkeyText : "")) ; "NavigateOrLaunchHotkeyKeyboard"
 		, , 17 ; 1 info icon + 16 no sound
 	Sleep, 20 ; tip from Lexikos for Windows 10 "Just sleep for any amount of time after each call to TrayTip" (http://ahkscript.org/boards/viewtopic.php?p=50389&sid=29b33964c05f6a937794f88b6ac924c0#p50389)
@@ -23154,9 +23154,20 @@ NameIsInObject(strName, aa)
 
 ;------------------------------------------------------------
 HasShortcut(strCandidateShortcut)
+; checking the shortcut internal code
 ;------------------------------------------------------------
 {
 	return StrLen(strCandidateShortcut) and (strCandidateShortcut <> "None")
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+HasShortcutText(strCandidateShortcutText)
+; checking the shortcut localized text
+;------------------------------------------------------------
+{
+	return StrLen(strCandidateShortcutText) and (strCandidateShortcutText <> o_L["DialogNone"])
 }
 ;------------------------------------------------------------
 
