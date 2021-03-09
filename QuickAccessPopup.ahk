@@ -31,10 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.2.0.3 (2021-03-08)
+Version: 11.2.0.3 (2021-03-09)
 - fix bug showing sometimes wrong content in the "Customize" window when it was open using a shortcut
-- fix bug causing ending character wrongly added when pasting a snippet using a shortcut or the menu
-- fix bug only when language was other than English showing the translation of "None" in the startup tip if user selected no mouse or no keyboard hotkey for the QAP menu
+- fix bug in snippets causing the ending character wrongly added when pasting the snippet using a shortcut or the menu
+- when the selected language iss other than English, fix bug showing the translation of "None" in the startup tip if user selected no mouse or no keyboard hotkey for the QAP menu
 
 Version: 11.2.0.2 (2021-02-07)
 - fix bug when a menu with automatic sorting includes an item with a pipe (|) character in its name
