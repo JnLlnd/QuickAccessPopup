@@ -4752,10 +4752,6 @@ global o_SpecialFolders := new SpecialFolders
 global o_Utc2LocalTime := new Utc2LocalTime
 
 ;---------------------------------
-; Init class for Tips
-global o_Tips := new Tips
-
-;---------------------------------
 ; Prepare executable extensions list from PATHEXT env variable
 global g_strExeExtensions
 EnvGet, g_strExeExtensions, PathExt ; for example ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC"
@@ -4877,9 +4873,6 @@ Gosub, BuildSortMenus
 Gosub, BuildGui
 if (o_Settings.Launch.blnCheck4Update.IniValue) ; must be after BuildGui
 	Gosub, Check4Update
-
-; Tips
-o_Tips.Show()
 
 ; startups count and trace
 IniWrite, % (intStartups + 1), % o_Settings.strIniFile, Global, Startups
@@ -5019,7 +5012,10 @@ if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 if (g_blnIniFileCreation) ; at first launch, set the end of ini creation process
 	g_blnIniFileCreation := false
 
-; gosub, SpecialSearchBrokenLinks ; ####
+;---------------------------------
+; Init class for StatupTips
+global o_StartupTips := new StartupTips
+o_StartupTips.Show()
 
 return
 
@@ -5641,7 +5637,7 @@ if (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue)
 	o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "UnderstandChangeFoldersInDialogRisk", 0) ; keep same ini instance but replace value if false
 o_Settings.ReadIniOption("Launch", "blnDisplayTrayTip", "DisplayTrayTip", 1, "General", "f_blnDisplayTrayTip") ; g_blnDisplayTrayTip
 o_Settings.ReadIniOption("Launch", "blnCheck4Update", "Check4Update", (g_blnPortableMode ? 0 : 1), "General", "f_blnCheck4Update|f_lnkCheck4Update") ; g_blnCheck4Update ; enable by default only in setup install mode
-o_Settings.ReadIniOption("Launch", "arrTips", "Tips", "1,1,20000101000000,1", "General", "f_blnShowTip|f_intShowTipDays|f_strShowTipsDays") ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
+o_Settings.ReadIniOption("Launch", "arrTips", "StartupTips", "1,1,20000101000000,1", "General", "f_blnStartupTip|f_intStartupTipDays|f_strStartupTipsDays") ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
 o_Settings.Launch.arrTips.IniValue := StrSplit(o_Settings.Launch.arrTips.IniValue, ",")
 
 o_Settings.ReadIniOption("Launch", "strTheme", "Theme", "Windows", "General", "f_drpTheme|f_lblTheme") ; g_strTheme
@@ -6486,32 +6482,54 @@ return
 
 
 ;------------------------------------------------------------
-GuiShowTips:
+GuiStartupTips:
 ;------------------------------------------------------------
-; o_Tips.aaTipToShow: .strTitle, .strDetails, .strURL, .strImage
 
-###_O("o_Tips.aaTipToShow", o_Tips.aaTipToShow)
-Gui, ShowTips:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
-Gui, Color, White
-Gui, Font, w700 s9, Segoe UI
-Gui, Add, Text, w500 , % L("~1~ ""one-time"" maintenance", g_strAppNameText)
-Gui, Font, w400 s9, Segoe UI
-Gui, Add, Text, w500 , ...
-Gui, Add, Link, w500 , ...
-Gui, Font
-Gui, Add, Button, y+20 gShowTipsButtons vf_btnShowTipsButtonsYes, %g_strShowTipsButtonsYes%
-Gui, Add, Button, yp x+10 gShowTipsButtons vf_btnShowTipsButtonsNo, %g_strShowTipsButtonsNo%
-Gui, Add, Button, yp x+10 gShowTipsButtons vf_btnShowTipsButtonsLater default, %g_strShowTipsButtonsLater%
-Gui, Add, Text
-GuiCenterButtons(g_strGui1Hwnd, 10, 5, 20, "f_btnConvertShowTipsYes", "f_btnConvertShowTipsNo", "f_btnConvertShowTipsLater")
-Gui, Show, AutoSize Center
+strGuiTitle := o_L["StartupTipsTitle"]
+
+Gui, StartupTips:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
+
+Gui, StartupTips:Add, Picture, x452 y10 w48 h48, % o_StartupTips.aaTipToShow.strImage ; %g_strTempDir%\add_property-48_c.png
+Gui, StartupTips:Font, s10 w700, Arial
+Gui, StartupTips:Add, Text, x10 y10 w432, % o_StartupTips.aaTipToShow.strTitle
+Gui, StartupTips:Font, s8 w400, Verdana
+
+Gui, StartupTips:Add, Link, x10 y+10 w432 gStartupTipsLinkClicked, % o_StartupTips.aaTipToShow.strDetails
+Gui, StartupTips:Add, Button, y+20 x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonsClose default, % o_L["GuiClose"]
+Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsPrev, % o_L["DialogIconsManagePrevious"]
+Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsNext, % o_L["DialogIconsManageNext"]
+Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsOptions, % o_L["GuiOptions"]
+Gui, StartupTips:Add, Text
+GuiCenterButtons(g_strGui1Hwnd, , , , "f_btnStartupTipsButtonsClose", "f_btnStartupTipsButtonsPrev", "f_btnStartupTipsButtonsNext", "f_btnStartupTipsButtonsOptions")
+Gui, StartupTips:Show, AutoSize Center
+
+strGuiTitle := ""
+
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-ShowTipsButtons:
+StartupTipsButtonClicked:
 ;------------------------------------------------------------
+
+if (A_GuiControl = "f_btnConvertSettingsEncodingYes")
+{
+}
+else if (A_GuiControl = "f_btnConvertSettingsEncodingNo")
+{
+}
+	
+Gui, Destroy
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+StartupTipsLinkClicked:
+;------------------------------------------------------------
+; o_StartupTips.aaTipToShow.strCommands,
 
 if (A_GuiControl = "f_btnConvertSettingsEncodingYes")
 {
@@ -32096,7 +32114,7 @@ class Utc2LocalTime
 ;-------------------------------------------------------------
 
 ;-------------------------------------------------------------
-class Tips
+class StartupTips
 ;-------------------------------------------------------------
 {
 	aaTips := Object() ; associative array of tip contents
@@ -32107,19 +32125,21 @@ class Tips
 	__New()
 	;---------------------------------------------------------
 	{
+		this.AddTip("Test", "what-is-in-the-clipboard-menu", "image!")
 		this.AddTip("InitShortcuts", "what-is-in-the-clipboard-menu", "image")
 		this.AddTip("CustomizeStartup", "what-is-in-the-clipboard-menu", "image")
 	}
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	AddTip(strCode, strURL := "", strImage := "")
+	AddTip(strCode, strCommands := "", strImage := "")
+	; strCommands: one command label or URL (identified by presence of "/") per line, to associate to "<a>...</a>" in strDetails with the A_EventInfo index
 	;---------------------------------------------------------
 	{
 		objThisTip := Object()
 		objThisTip.strTitle := o_L["Tip" . strCode . "Title"]
 		objThisTip.strDetails := o_L["Tip" . strCode . "Details"]
-		objThisTip.strURL := strURL
+		objThisTip.strCommandsURL := strCommands
 		objThisTip.strImage := strImage
 		
 		this.saTipsOrder.Push(strCode)
@@ -32134,16 +32154,16 @@ class Tips
 		if (o_Settings.Launch.arrTips.IniValue[1]) ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
 		{
 			intFrequency := o_Settings.Launch.arrTips.IniValue[2]
-			strTimeShowTip := o_Settings.Launch.arrTips.IniValue[3] ; last time shown
-			EnvAdd, strTimeShowTip, %intFrequency%, Days
-			EnvSub, strTimeShowTip, A_Now
+			strTimeStartupTip := o_Settings.Launch.arrTips.IniValue[3] ; last time shown
+			EnvAdd, strTimeStartupTip, %intFrequency%, Days
+			EnvSub, strTimeStartupTip, A_Now
 			; if delay is exceeded and next tip exists, show tip
-			if (strTimeShowTip < 0 and o_Settings.Launch.arrTips.IniValue[4] <= this.saTipsOrder.MaxIndex())
+			if (strTimeStartupTip < 0 and o_Settings.Launch.arrTips.IniValue[4] <= this.saTipsOrder.MaxIndex())
 			{
 				this.ShowGui(o_Settings.Launch.arrTips.IniValue[4])
-				; memorize last time shown and next tip to show
-				o_Settings.Launch.arrTips.WriteIni(o_Settings.Launch.arrTips.IniValue[1] . "," . o_Settings.Launch.arrTips.IniValue[2]
-					. "," . A_Now . "," . o_Settings.Launch.arrTips.IniValue[4] + 1)
+				; ##### memorize last time shown and next tip to show
+				; o_Settings.Launch.arrTips.WriteIni(o_Settings.Launch.arrTips.IniValue[1] . "," . o_Settings.Launch.arrTips.IniValue[2]
+					; . "," . A_Now . "," . o_Settings.Launch.arrTips.IniValue[4] + 1)
 			}
 		}
 		
@@ -32155,7 +32175,7 @@ class Tips
 	;---------------------------------------------------------
 	{
 		this.aaTipToShow := this.aaTips[this.saTipsOrder[intTip]]
-		Gosub, GuiShowTips
+		Gosub, GuiStartupTips
 	}
 	;---------------------------------------------------------
 }
