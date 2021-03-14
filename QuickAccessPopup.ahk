@@ -6487,8 +6487,8 @@ InitStartupTips:
 global o_StartupTips := new StartupTips ; Init class for StatupTips
 global g_aaTipToShow := Object()
 
-o_StartupTips.AddTip("DefaultHotkeys", "GuiHotkeysManage`nhttps://www.quickaccesspopup.com/what-hotkeys-are-set-by-default-when-qap-is-installed-and-how-can-i-change-them/", g_strTempDir . "\details-48_c.png")
-o_StartupTips.AddTip("CustomizeStartup", "http://www.jeanlalonde.ca`nGuiHelp", g_strTempDir . "\details-48_c.png")
+o_StartupTips.AddTip("DefaultHotkeys", "GuiHotkeysManage`nhttps://www.quickaccesspopup.com/what-hotkeys-are-set-by-default-when-qap-is-installed-and-how-can-i-change-them/", "iconOptions")
+o_StartupTips.AddTip("CustomizeStartup", "GuiOptionsGroupSettingsWindow`nhttps://www.quickaccesspopup.com/how-do-i-open-the-qap-settings-window/", "iconOptions")
 
 gosub, ShowStartupTip
 
@@ -10231,6 +10231,7 @@ GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCanc
 Gui, 2:Add, Text
 GuiControl, Focus, f_btnOptionsSave
 
+strGotoGroup := g_strSettingsGroup ; avoid using A_GuiControl when options gui is open from a gosub
 Gosub, GuiOptionsGroupButtonClicked
 Gosub, ShowGui2AndDisableGui1
 
@@ -10251,7 +10252,7 @@ GuiOptionsGroupButtonClicked:
 
 if StrLen(A_GuiControl) or StrLen(strGotoGroup)
 {
-	strSettingsGroupPrev := g_strSettingsGroup
+	strSettingsGroupPrev := (StrLen(strGotoGroup) ? "" : g_strSettingsGroup)
 	g_strSettingsGroup := (StrLen(strGotoGroup) ? strGotoGroup : StrReplace(A_GuiControl, "f_btnOptionsGroup"))
 }
 
@@ -10274,7 +10275,7 @@ GuiControl, , f_lblOptionsGuiTitle, % L(o_L["Options" . g_strSettingsGroup] . " 
 Gosub, ActiveFileManagerClickedGroupButton
 
 strSettingsGroupPrev := ""
-strGotoGroup := ""
+strGotoGroup := "" ; allow using A_GuiControl when changing section
 
 return
 ;------------------------------------------------------------
