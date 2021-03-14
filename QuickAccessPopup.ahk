@@ -5014,8 +5014,7 @@ if (g_blnIniFileCreation) ; at first launch, set the end of ini creation process
 
 ;---------------------------------
 ; Init class for StatupTips
-global o_StartupTips := new StartupTips
-o_StartupTips.ShowTip()
+gosub, InitStartupTips
 
 return
 
@@ -6482,11 +6481,42 @@ return
 
 
 ;------------------------------------------------------------
+InitStartupTips:
+;------------------------------------------------------------
+
+global o_StartupTips := new StartupTips ; Init class for StatupTips
+global g_aaTipToShow := Object()
+
+o_StartupTips.AddTip("DefaultHotkeys", "GuiHotkeysManage`nhttps://www.quickaccesspopup.com/what-hotkeys-are-set-by-default-when-qap-is-installed-and-how-can-i-change-them/", g_strTempDir . "\details-48_c.png")
+o_StartupTips.AddTip("CustomizeStartup", "http://www.jeanlalonde.ca`nGuiHelp", g_strTempDir . "\details-48_c.png")
+
+gosub, ShowStartupTip
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 ResetAndShowStartupTips:
 ;------------------------------------------------------------
 
 o_StartupTips.NextTip(0) ; 0 to restart at first tip
-o_StartupTips.ShowTip(true)
+gosub, ShowStartupTipNow
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ShowStartupTip:
+ShowStartupTipNow:
+;------------------------------------------------------------
+
+if o_StartupTips.ShowTip(A_ThisLabel = "ShowStartupTipNow")
+{
+	g_aaTipToShow := o_StartupTips.TipToShow()
+	gosub, GuiStartupTips
+}
 
 return
 ;------------------------------------------------------------
@@ -6500,19 +6530,19 @@ strGuiTitle := o_L["StartupTipsTitle"]
 
 Gui, StartupTips:New, +Hwndg_strGuiStartupTipsHwnd, %strGuiTitle%
 
-if GetFileExtension(o_StartupTips.aaTipToShow.strImage) = "png"
-	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % o_StartupTips.aaTipToShow.strImage ; %g_strTempDir%\add_property-48_c.png
+if GetFileExtension(g_aaTipToShow.strImage) = "png"
+	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % g_aaTipToShow.strImage ; %g_strTempDir%\add_property-48_c.png
 else
 {
-	ParseIconResource(o_StartupTips.aaTipToShow.strImage, strIconFile, intIconIndex)
+	ParseIconResource(g_aaTipToShow.strImage, strIconFile, intIconIndex)
 	Gui, StartupTips:Add, Picture, % "x10 y10 w48 h48 Icon" . intIconIndex, %strIconFile%
 }
 
 Gui, StartupTips:Font, s10 w700, Arial
-Gui, StartupTips:Add, Text, x65 y10 w432, % o_StartupTips.aaTipToShow.strTitle
+Gui, StartupTips:Add, Text, x65 y10 w432, % g_aaTipToShow.strTitle
 Gui, StartupTips:Font, s8 w400, Verdana
 
-Gui, StartupTips:Add, Link, x65 y+10 w432 gStartupTipsLinkClicked, % o_StartupTips.aaTipToShow.strDetails
+Gui, StartupTips:Add, Link, x65 y+10 w432 gStartupTipsLinkClicked, % g_aaTipToShow.strDetails
 Gui, StartupTips:Add, Button, y+20 x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonsClose default, % o_L["GuiClose"]
 Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsPrev, % o_L["DialogIconsManagePrevious"]
 Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsNext, % o_L["DialogIconsManageNext"]
@@ -6546,14 +6576,12 @@ if (strButton = "f_btnStartupTipsButtonsClose") ; inc to next tip
 else if (strButton = "f_btnStartupTipsButtonsPrev")
 {
 	o_StartupTips.NextTip(-1)
-	o_StartupTips.ShowTip(true)
-	; GuiControl, % (o_StartupTips.PrevTipAvailable() ? "Enable" : "Disable"), f_btnStartupTipsButtonsPrev
+	gosub, ShowStartupTipNow
 }
 else if (strButton = "f_btnStartupTipsButtonsNext")
 {
 	o_StartupTips.NextTip(1)
-	o_StartupTips.ShowTip(true)
-	; GuiControl, % (o_StartupTips.NextTipAvailable() ? "Enable" : "Disable"), f_btnStartupTipsButtonsNext
+	gosub, ShowStartupTipNow
 }
 else if (strButton = "f_btnStartupTipsButtonsOptions")
 
@@ -6566,16 +6594,11 @@ return
 ;------------------------------------------------------------
 StartupTipsLinkClicked:
 ;------------------------------------------------------------
-; o_StartupTips.aaTipToShow.strCommands,
 
-if (A_GuiControl = "f_btnConvertSettingsEncodingYes")
-{
-}
-else if (A_GuiControl = "f_btnConvertSettingsEncodingNo")
-{
-}
-	
-Gui, Destroy
+if InStr(g_aaTipToShow.saCommands[A_EventInfo], "/") ; this is an URL
+	run, % g_aaTipToShow.saCommands[A_EventInfo]
+else
+	gosub, % g_aaTipToShow.saCommands[A_EventInfo]
 
 return
 ;------------------------------------------------------------
@@ -32163,9 +32186,6 @@ class StartupTips
 	__New()
 	;---------------------------------------------------------
 	{
-		this.AddTip("Test", "what-is-in-the-clipboard-menu", g_strTempDir . "\details-48_c.png")
-		this.AddTip("InitShortcuts", "what-is-in-the-clipboard-menu", "iconHelp")
-		this.AddTip("CustomizeStartup", "what-is-in-the-clipboard-menu", "%SystemRoot%\system32\shell32.dll,-235")
 	}
 	;---------------------------------------------------------
 	
@@ -32178,7 +32198,7 @@ class StartupTips
 		objThisTip := Object()
 		objThisTip.strTitle := o_L["Tip" . strCode . "Title"]
 		objThisTip.strDetails := o_L["Tip" . strCode . "Details"]
-		objThisTip.strCommandsURL := strCommands
+		objThisTip.saCommands := StrSplit(strCommands, "`n")
 		objThisTip.strImage := strImage
 		
 		this.saTipsOrder.Push(strCode)
@@ -32190,26 +32210,25 @@ class StartupTips
 	ShowTip(blnNow := false)
 	;---------------------------------------------------------
 	{
-		if (o_Settings.Launch.arrTips.IniValue[1]) ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
+		if (o_Settings.Launch.arrTips.IniValue[1] or blnNow) ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
 		{
 			intFrequency := o_Settings.Launch.arrTips.IniValue[2]
 			strTimeStartupTip := o_Settings.Launch.arrTips.IniValue[3] ; last time shown
 			EnvAdd, strTimeStartupTip, %intFrequency%, Days
 			EnvSub, strTimeStartupTip, A_Now
 			; if delay is exceeded and next tip exists, or if user want to see it now, show tip
-			if ((blnNow or strTimeStartupTip < 0) and o_Settings.Launch.arrTips.IniValue[4] <= this.saTipsOrder.MaxIndex())
-				this.ShowGui(o_Settings.Launch.arrTips.IniValue[4])
+			return ((blnNow or strTimeStartupTip < 0) and o_Settings.Launch.arrTips.IniValue[4] <= this.saTipsOrder.MaxIndex())
 		}
-		
+		else
+			return false
 	}
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	ShowGui(intTip)
+	TipToShow()
 	;---------------------------------------------------------
 	{
-		this.aaTipToShow := this.aaTips[this.saTipsOrder[intTip]]
-		Gosub, GuiStartupTips
+		return this.aaTips[this.saTipsOrder[o_Settings.Launch.arrTips.IniValue[4]]]
 	}
 	;---------------------------------------------------------
 
