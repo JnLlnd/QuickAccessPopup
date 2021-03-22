@@ -5348,23 +5348,18 @@ FileInstall, FileInstall\QuickAccessPopup_LANG_RU.txt, %g_strTempDir%\QuickAcces
 
 FileInstall, FileInstall\default_browser_icon.html, %g_strTempDir%\default_browser_icon.html, 1
 
-FileInstall, FileInstall\about-32_c.png, %g_strTempDir%\about-32_c.png
 FileInstall, FileInstall\add_property-48_c.png, %g_strTempDir%\add_property-48_c.png
 FileInstall, FileInstall\delete_property-48_c.png, %g_strTempDir%\delete_property-48_c.png
 FileInstall, FileInstall\play_property-48_c.png, %g_strTempDir%\play_property-48_c.png
 FileInstall, FileInstall\copy-48_c.png, %g_strTempDir%\copy-48_c.png
-FileInstall, FileInstall\keyboard-48_c.png, %g_strTempDir%\keyboard-48_c.png
-FileInstall, FileInstall\details-48_c.png, %g_strTempDir%\details-48_c.png
 FileInstall, FileInstall\separator-26_c.png, %g_strTempDir%\separator-26_c.png
 FileInstall, FileInstall\generic_sorting-26_c.png, %g_strTempDir%\generic_sorting-26_c.png
 FileInstall, FileInstall\column-26_c.png, %g_strTempDir%\column-26_c.png
 FileInstall, FileInstall\down_circular-26_c.png, %g_strTempDir%\down_circular-26_c.png
 FileInstall, FileInstall\edit_property-48_c.png, %g_strTempDir%\edit_property-48_c.png
 FileInstall, FileInstall\edit_property-48d_c.png, %g_strTempDir%\edit_property-48d_c.png
-FileInstall, FileInstall\help-32_c.png, %g_strTempDir%\help-32_c.png
 FileInstall, FileInstall\left-12_c.png, %g_strTempDir%\left-12_c.png
 FileInstall, FileInstall\right-12_c.png, %g_strTempDir%\right-12_c.png
-FileInstall, FileInstall\settings-32_c.png, %g_strTempDir%\settings-32_c.png
 FileInstall, FileInstall\left2-24_c.png, %g_strTempDir%\left2-24_c.png
 FileInstall, FileInstall\up_circular-26_c.png, %g_strTempDir%\up_circular-26_c.png
 FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off-26_c.png
@@ -5374,12 +5369,7 @@ FileInstall, FileInstall\search-24_c.png, %g_strTempDir%\search-24_c.png
 FileInstall, FileInstall\preview_pane-26_c.png, %g_strTempDir%\preview_pane-26_c.png
 FileInstall, FileInstall\submenu-26_c.png, %g_strTempDir%\submenu-26_c.png
 
-FileInstall, FileInstall\thumbs_up-32_c.png, %g_strTempDir%\thumbs_up-32_c.png
-FileInstall, FileInstall\solutions-32_c.png, %g_strTempDir%\solutions-32_c.png
-FileInstall, FileInstall\handshake-32_c.png, %g_strTempDir%\handshake-32_c.png
-FileInstall, FileInstall\conference-32_c.png, %g_strTempDir%\conference-32_c.png
-FileInstall, FileInstall\gift-32_c.png, %g_strTempDir%\gift-32_c.png
-
+FileInstall, FileInstall\thumb_up-48_c.png, %g_strTempDir%\thumb_up-48_c.png ; default image for Startup Tips
 FileInstall, FileInstall\uac_logo-16.png, %g_strTempDir%\uac_logo-16.png
 
 if FileExist(A_WorkingDir . "\QAPconnect.ini")
