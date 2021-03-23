@@ -5624,10 +5624,10 @@ o_Settings.ReadIniOption("Launch", "blnRunAtStartup", "", , "General", "f_lblOpt
 o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "ChangeFolderInDialog", 0, "General", "f_lblChangeFolderInDialog|f_blnChangeFolderInDialog") ; g_blnChangeFolderInDialog
 if (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue)
 	o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "UnderstandChangeFoldersInDialogRisk", 0) ; keep same ini instance but replace value if false
+o_Settings.ReadIniOption("Launch", "arrTips", "StartupTips", "1,1,20000101000000,1", "General", "f_blnStartupTipsShow|f_intStartupTipsDaysEdit|f_intStartupTipsDays|f_lblStartupTipsDays") ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
+o_Settings.Launch.arrTips.IniValue := StrSplit(o_Settings.Launch.arrTips.IniValue, ",")
 o_Settings.ReadIniOption("Launch", "blnDisplayTrayTip", "DisplayTrayTip", 1, "General", "f_blnDisplayTrayTip") ; g_blnDisplayTrayTip
 o_Settings.ReadIniOption("Launch", "blnCheck4Update", "Check4Update", (g_blnPortableMode ? 0 : 1), "General", "f_blnCheck4Update|f_lnkCheck4Update") ; g_blnCheck4Update ; enable by default only in setup install mode
-o_Settings.ReadIniOption("Launch", "arrTips", "StartupTips", "1,1,20000101000000,1", "General", "f_blnStartupTip|f_intStartupTipDays|f_strStartupTipsDays") ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
-o_Settings.Launch.arrTips.IniValue := StrSplit(o_Settings.Launch.arrTips.IniValue, ",")
 
 o_Settings.ReadIniOption("Launch", "strTheme", "Theme", "Windows", "General", "f_drpTheme|f_lblTheme") ; g_strTheme
 if !StrLen(o_Settings.Launch.strTheme.IniValue) or (o_Settings.Launch.strTheme.IniValue = "ERROR") ; in case value is found but empty or has been saved as "ERROR"
@@ -6477,8 +6477,16 @@ InitStartupTips:
 global o_StartupTips := new StartupTips ; Init class for StatupTips
 global g_aaTipToShow := Object()
 
-o_StartupTips.AddTip("DefaultHotkeys", "GuiHotkeysManage`nhttps://www.quickaccesspopup.com/what-hotkeys-are-set-by-default-when-qap-is-installed-and-how-can-i-change-them/", "iconOptions")
-o_StartupTips.AddTip("CustomizeStartup", "GuiOptionsGroupSettingsWindow`nhttps://www.quickaccesspopup.com/how-do-i-open-the-qap-settings-window/", "iconOptions")
+o_StartupTips.AddTip("DefaultHotkeys", "GuiHotkeysManage`n/what-hotkeys-are-set-by-default-when-qap-is-installed-and-how-can-i-change-them/", "iconHotkeys")
+o_StartupTips.AddTip("CustomizeStartup", "GuiOptionsGroupSettingsWindow`n/how-do-i-open-the-qap-settings-window/", "iconOptions")
+o_StartupTips.AddTip("MenuTriggers", "GuiOptionsGroupPopupHotkeys`nhttps://www.quickaccesspopup.com/how-do-i-display-the-quick-access-popup-menu/`nhttps://www.quickaccesspopup.com/video-12-ways-to-popup-you-qap-menu-16-min/", "")
+o_StartupTips.AddTip("CustomIcons", "/can-i-embellish-my-popup-menu-with-my-preferred-icons/`n/can-i-manage-all-my-menu-icons-in-one-screen/", "iconIcons")
+o_StartupTips.AddTip("FolderDialogBox", "GuiOptionsGroupGeneral`n/can-i-change-folders-in-file-dialog-boxes-open-save-as-etc/", "")
+o_StartupTips.AddTip("CreateSubmenu", "/how-can-i-gather-numerous-favorites-in-a-clutter-free-popup-menu/", "iconSubmenu")
+o_StartupTips.AddTip("AddDragAndDrop", "/tips-add-favorites-folders-or-files-using-drag-and-drop/", "")
+o_StartupTips.AddTip("FavoriteFolderTemp", "/tips-create-a-favorite-for-your-much-used-temporary-folder/", "iconFavorites")
+o_StartupTips.AddTip("SearchFavorites", "/can-i-search-inside-my-favorites/", "search-24_c.png")
+o_StartupTips.AddTip("InTheWorks", "/what-is-in-the-works-and-its-frequent-recent-and-current-menus/", "")
 
 gosub, ShowStartupTip
 
@@ -6521,7 +6529,7 @@ strGuiTitle := o_L["StartupTipsTitle"]
 Gui, StartupTips:New, +Hwndg_strGuiStartupTipsHwnd, %strGuiTitle%
 
 if GetFileExtension(g_aaTipToShow.strImage) = "png"
-	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % g_aaTipToShow.strImage ; %g_strTempDir%\add_property-48_c.png
+	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % g_strTempDir . "\" . g_aaTipToShow.strImage ; %g_strTempDir%\add_property-48_c.png
 else
 {
 	ParseIconResource(g_aaTipToShow.strImage, strIconFile, intIconIndex)
@@ -6533,16 +6541,20 @@ Gui, StartupTips:Add, Text, x65 y10 w432, % g_aaTipToShow.strTitle
 Gui, StartupTips:Font, s8 w400, Verdana
 
 Gui, StartupTips:Add, Link, x65 y+10 w432 gStartupTipsLinkClicked, % g_aaTipToShow.strDetails
-Gui, StartupTips:Add, Button, y+20 x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonsClose default, % o_L["GuiClose"]
-Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsPrev, % o_L["DialogIconsManagePrevious"]
-Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsNext, % o_L["DialogIconsManageNext"]
-Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonsOptions, % o_L["GuiOptions"]
+Gui, StartupTips:Add, Button, % "y+20 x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonClose " . (o_StartupTips.NextTipAvailable() ? "" : "default"), % o_L["GuiClose"]
+Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonPrev, % o_L["DialogIconsManagePrevious"]
+Gui, StartupTips:Add, Button, % "yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonNext " . (o_StartupTips.NextTipAvailable() ? "default" : ""), % o_L["DialogIconsManageNext"]
+Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonOptions, % o_L["GuiOptions"]
 Gui, StartupTips:Add, Text
-GuiCenterButtons(g_strGuiStartupTipsHwnd, , , , "f_btnStartupTipsButtonsClose", "f_btnStartupTipsButtonsPrev", "f_btnStartupTipsButtonsNext", "f_btnStartupTipsButtonsOptions")
+GuiCenterButtons(g_strGuiStartupTipsHwnd, , , , "f_btnStartupTipsButtonClose", "f_btnStartupTipsButtonPrev", "f_btnStartupTipsButtonNext", "f_btnStartupTipsButtonOptions")
 Gui, StartupTips:Show, AutoSize Center
 
-GuiControl, % (o_StartupTips.PrevTipAvailable() ? "Enable" : "Disable"), f_btnStartupTipsButtonsPrev
-GuiControl, % (o_StartupTips.NextTipAvailable() ? "Enable" : "Disable"), f_btnStartupTipsButtonsNext
+GuiControl, % (o_StartupTips.PrevTipAvailable() ? "Enable" : "Disable"), f_btnStartupTipsButtonPrev
+GuiControl, % (o_StartupTips.NextTipAvailable() ? "Enable" : "Disable"), f_btnStartupTipsButtonNext
+if o_StartupTips.NextTipAvailable()
+	GuiControl, Focus, f_btnStartupTipsButtonNext
+else
+	GuiControl, Focus, f_btnStartupTipsButtonClose
 
 strGuiTitle := ""
 strIconFile := ""
@@ -6559,21 +6571,21 @@ StartupTipsButtonClicked:
 strButton := A_GuiControl
 Gui, StartupTips:Destroy
 
-if (strButton = "f_btnStartupTipsButtonsClose") ; inc to next tip
+if (strButton = "f_btnStartupTipsButtonClose") ; inc to next tip
 	
 	o_StartupTips.NextTip(1)
 
-else if (strButton = "f_btnStartupTipsButtonsPrev")
+else if (strButton = "f_btnStartupTipsButtonPrev")
 {
 	o_StartupTips.NextTip(-1)
 	gosub, ShowStartupTipNow
 }
-else if (strButton = "f_btnStartupTipsButtonsNext")
+else if (strButton = "f_btnStartupTipsButtonNext")
 {
 	o_StartupTips.NextTip(1)
 	gosub, ShowStartupTipNow
 }
-else if (strButton = "f_btnStartupTipsButtonsOptions")
+else if (strButton = "f_btnStartupTipsButtonOptions")
 
 	Gosub, GuiOptionsGroupGeneral
 
@@ -6586,7 +6598,7 @@ StartupTipsLinkClicked:
 ;------------------------------------------------------------
 
 if InStr(g_aaTipToShow.saCommands[A_EventInfo], "/") ; this is an URL
-	run, % g_aaTipToShow.saCommands[A_EventInfo]
+	run, % "https://www.quickaccesspopup.com" . g_aaTipToShow.saCommands[A_EventInfo]
 else
 	gosub, % g_aaTipToShow.saCommands[A_EventInfo]
 
@@ -8939,6 +8951,15 @@ if (g_blnPortableMode) ; get value from existence of startup file shortcut
 else ; setup mode, get value form current user registry
 	GuiControl, , f_blnOptionsRunAtStartup, % (RegistryExist("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run", g_strAppNameText) ? 1 : 0)
 
+; StartupTips
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnStartupTipsShow gGuiOptionsStartupTipsClicked hidden, % o_L["StartupTipsShow"], [2] frequency (0=each launch, n=days)
+GuiControl, , f_blnStartupTipsShow, % (o_Settings.Launch.arrTips.IniValue[1] = true) ; [1] show tip
+Gui, 2:Add, Edit, x%g_intGroupItemsTab3aX% y+5 w60 h22 vf_intStartupTipsDaysEdit center disabled hidden
+Gui, 2:Add, UpDown, vf_intStartupTipsDays Range1-31 disabled hidden gGuiOptionsGroupChanged
+	, % (o_Settings.Launch.arrTips.IniValue[2] ? o_Settings.Launch.arrTips.IniValue[2] : 1)
+Gui, 2:Add, Text, yp x+10 vf_lblStartupTipsDays Disabled hidden, % o_L["StartupTipsDays"]
+Gosub, GuiOptionsStartupTipsClickedInit ; init disabled fields
+
 ; DisplayTrayTip
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnDisplayTrayTip gGuiOptionsGroupChanged hidden, % o_L["OptionsTrayTip"]
 GuiControl, , f_blnDisplayTrayTip, % (o_Settings.Launch.blnDisplayTrayTip.IniValue = true)
@@ -10188,6 +10209,7 @@ g_intGroupItemsX := intOptionsButtonsColWidth + 30
 g_intGroupItemsTab1X := g_intGroupItemsX + 10
 g_intGroupItemsTab2X := g_intGroupItemsX + 20
 g_intGroupItemsTab3X := g_intGroupItemsX + 120
+g_intGroupItemsTab3aX := g_intGroupItemsX + 137
 g_intGroupItemsTab4X := g_intGroupItemsX + 240
 g_intGroupItemsTab5X := g_intGroupItemsX + 250
 g_intGroupItemsTab6X := g_intGroupItemsX + 300
@@ -10662,6 +10684,24 @@ Gui, 3:Show, AutoSize x%intX% y%intY%
 Gui, 2:+Disabled
 
 strGuiTitle := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiOptionsStartupTipsClicked:
+GuiOptionsStartupTipsClickedInit:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+if !InStr(A_ThisLabel, "Init")
+	Gosub, GuiOptionsGroupChanged
+
+strEnableCommand := (f_blnStartupTipsShow ? "Enable" : "Disable")
+GuiControl, 2:%strEnableCommand%, f_intStartupTipsDaysEdit
+GuiControl, 2:%strEnableCommand%, f_intStartupTipsDays
+GuiControl, 2:%strEnableCommand%, f_lblStartupTipsDays
 
 return
 ;------------------------------------------------------------
@@ -32181,7 +32221,7 @@ class StartupTips
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	AddTip(strCode, strCommands := "", strImage := "")
+	AddTip(strCode, strCommands, strImage)
 	; strCommands: one command label or URL (identified by presence of "/") per line, to associate to "<a>...</a>" in strDetails with the A_EventInfo index
 	; strImage: a png file (form FileInstall), an index from o_JLicons.AA (eg: "iconFolder") or a "file,index" icongroup (eg: "imageres.dll,33")
 	;---------------------------------------------------------
@@ -32190,7 +32230,7 @@ class StartupTips
 		objThisTip.strTitle := o_L["Tip" . strCode . "Title"]
 		objThisTip.strDetails := o_L["Tip" . strCode . "Details"]
 		objThisTip.saCommands := StrSplit(strCommands, "`n")
-		objThisTip.strImage := strImage
+		objThisTip.strImage := (StrLen(strImage) ? strImage : "thumb_up-48_c.png")
 		
 		this.saTipsOrder.Push(strCode)
 		this.aaTips[strCode] := objThisTip
