@@ -8955,7 +8955,7 @@ else ; setup mode, get value form current user registry
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnStartupTipsShow gGuiOptionsStartupTipsClicked hidden, % o_L["StartupTipsShow"], [2] frequency (0=each launch, n=days)
 GuiControl, , f_blnStartupTipsShow, % (o_Settings.Launch.arrTips.IniValue[1] = true) ; [1] show tip
 Gui, 2:Add, Edit, x%g_intGroupItemsTab3aX% y+5 w60 h22 vf_intStartupTipsDaysEdit center disabled hidden
-Gui, 2:Add, UpDown, vf_intStartupTipsDays Range1-31 disabled hidden gGuiOptionsGroupChanged
+Gui, 2:Add, UpDown, vf_intStartupTipsDays Range0-31 disabled hidden gGuiOptionsGroupChanged
 	, % (o_Settings.Launch.arrTips.IniValue[2] ? o_Settings.Launch.arrTips.IniValue[2] : 1)
 Gui, 2:Add, Text, yp x+10 vf_lblStartupTipsDays Disabled hidden, % o_L["StartupTipsDays"]
 Gosub, GuiOptionsStartupTipsClickedInit ; init disabled fields
@@ -9767,6 +9767,8 @@ g_blnMenuReady := false
 
 ; === General ===
 
+o_Settings.MenuPopup.blnChangeFolderInDialog.WriteIni(f_blnChangeFolderInDialog)
+
 strLanguageCodePrev := o_Settings.Launch.strLanguageCode.IniValue
 g_strLanguageLabel := f_drpLanguage
 loop, % g_objOptionsLanguageLabels.Length()
@@ -9780,9 +9782,11 @@ o_Settings.Launch.strLanguageCode.WriteIni("", true) ; value already changed in 
 strThemePrev := o_Settings.Launch.strTheme.IniValue
 o_Settings.Launch.strTheme.WriteIni(f_drpTheme)
 
+o_Settings.Launch.arrTips.WriteIni(f_blnStartupTipsShow . "," . f_intStartupTipsDaysEdit . "," . o_Settings.Launch.arrTips.IniValue[3] . "," . o_Settings.Launch.arrTips.IniValue[4]) ; StartupTips=1,0,20210322190241,1
+o_Settings.Launch.arrTips.IniValue := StrSplit(o_Settings.Launch.arrTips.IniValue, ",")
+
 o_Settings.Launch.blnDisplayTrayTip.WriteIni(f_blnDisplayTrayTip)
 o_Settings.Launch.blnCheck4Update.WriteIni(f_blnCheck4Update)
-o_Settings.MenuPopup.blnChangeFolderInDialog.WriteIni(f_blnChangeFolderInDialog)
 
 o_Settings.SettingsFile.strBackupFolder.WriteIni(StrLen(f_strBackupFolder) ? f_strBackupFolder : A_WorkingDir) ; save unexpanded to ini file, use Settings folder if empty
 
