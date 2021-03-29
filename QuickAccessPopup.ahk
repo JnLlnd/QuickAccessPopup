@@ -5624,7 +5624,8 @@ o_Settings.ReadIniOption("Launch", "blnRunAtStartup", "", , "General", "f_lblOpt
 o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "ChangeFolderInDialog", 0, "General", "f_lblChangeFolderInDialog|f_blnChangeFolderInDialog") ; g_blnChangeFolderInDialog
 if (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue)
 	o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "UnderstandChangeFoldersInDialogRisk", 0) ; keep same ini instance but replace value if false
-o_Settings.ReadIniOption("Launch", "arrStartupTips", "StartupTips", "1,1,20000101000000,1", "General", "f_blnStartupTipsShow|f_intStartupTipsDaysEdit|f_intStartupTipsDays|f_lblStartupTipsDays") ; [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
+o_Settings.ReadIniOption("Launch", "arrStartupTips", "StartupTips", "1,1,20000101000000,", "General", "f_blnStartupTipsShow|f_intStartupTipsDaysEdit|f_intStartupTipsDays|f_lblStartupTipsDays")
+	; default value: coma separated simple array with [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] pipe separated simple array of next tip to show for each priority group (max 5 groups)
 o_Settings.Launch.arrStartupTips.IniValue := StrSplit(o_Settings.Launch.arrStartupTips.IniValue, ",")
 o_Settings.ReadIniOption("Launch", "blnDisplayTrayTip", "DisplayTrayTip", 1, "General", "f_blnDisplayTrayTip") ; g_blnDisplayTrayTip
 o_Settings.ReadIniOption("Launch", "blnCheck4Update", "Check4Update", (g_blnPortableMode ? 0 : 1), "General", "f_blnCheck4Update|f_lnkCheck4Update") ; g_blnCheck4Update ; enable by default only in setup install mode
@@ -6475,29 +6476,34 @@ InitStartupTips:
 ;------------------------------------------------------------
 
 global o_StartupTips := new StartupTips ; Init class for StatupTips
-global g_aaTipToShow := Object()
+global g_aaTip2Show := Object()
 
 ; code generated using \Dropbox\AutoHotkey\QuickAccessPopup\Divers\StartupTips.xlsm
-o_StartupTips.AddTip("DefaultHotkeys", o_L["TipDefaultHotkeysTitle"], o_L["TipDefaultHotkeysDetails"],
-	"GuiHotkeysManage`n/what-hotkeys-are-set-by-default-when-qap-is-installed-and-how-can-i-change-them/", "iconHotkeys")
-o_StartupTips.AddTip("CustomizeStartup", o_L["TipCustomizeStartupTitle"], o_L["TipCustomizeStartupDetails"],
-	"GuiOptionsGroupSettingsWindow`n/how-do-i-open-the-qap-settings-window/", "iconOptions")
-o_StartupTips.AddTip("MenuTriggers", o_L["TipMenuTriggersTitle"], o_L["TipMenuTriggersDetails"],
-	"GuiOptionsGroupPopupHotkeys`nhttps://www.quickaccesspopup.com/how-do-i-display-the-quick-access-popup-menu/`nhttps://www.quickaccesspopup.com/video-12-ways-to-popup-you-qap-menu-16-min/", "")
-o_StartupTips.AddTip("CustomIcons", o_L["TipCustomIconsTitle"], o_L["TipCustomIconsDetails"],
-	"/can-i-embellish-my-popup-menu-with-my-preferred-icons/`n/can-i-manage-all-my-menu-icons-in-one-screen/", "iconIcons")
-o_StartupTips.AddTip("FolderDialogBox", o_L["TipFolderDialogBoxTitle"], o_L["TipFolderDialogBoxDetails"],
-	"GuiOptionsGroupGeneral`n/can-i-change-folders-in-file-dialog-boxes-open-save-as-etc/", "")
-o_StartupTips.AddTip("CreateSubmenu", o_L["TipCreateSubmenuTitle"], o_L["TipCreateSubmenuDetails"],
-	"/how-can-i-gather-numerous-favorites-in-a-clutter-free-popup-menu/", "iconSubmenu")
-o_StartupTips.AddTip("AddDragAndDrop", o_L["TipAddDragAndDropTitle"], o_L["TipAddDragAndDropDetails"],
-	"/tips-add-favorites-folders-or-files-using-drag-and-drop/", "")
-o_StartupTips.AddTip("FavoriteFolderTemp", o_L["TipFavoriteFolderTempTitle"], o_L["TipFavoriteFolderTempDetails"],
-	"/tips-create-a-favorite-for-your-much-used-temporary-folder/", "iconFavorites")
-o_StartupTips.AddTip("SearchFavorites", o_L["TipSearchFavoritesTitle"], o_L["TipSearchFavoritesDetails"],
-	"/can-i-search-inside-my-favorites/", "search-24_c.png")
-o_StartupTips.AddTip("InTheWorks", o_L["TipInTheWorksTitle"], o_L["TipInTheWorksDetails"],
-	"/what-is-in-the-works-and-its-frequent-recent-and-current-menus/", "")
+o_StartupTips.AddTip("DefaultHotkeys", "1", o_L["TipDefaultHotkeysTitle"], o_L["TipDefaultHotkeysDetails"]
+	, "GuiHotkeysManage`n/what-hotkeys-are-set-by-default-when-qap-is-installed-and-how-can-i-change-them/", "iconHotkeys")
+o_StartupTips.AddTip("CustomizeStartup", "1", o_L["TipCustomizeStartupTitle"], o_L["TipCustomizeStartupDetails"]
+	, "GuiOptionsGroupSettingsWindow`n/how-do-i-open-the-qap-settings-window/", "iconOptions")
+o_StartupTips.AddTip("MenuTriggers", "1", o_L["TipMenuTriggersTitle"], o_L["TipMenuTriggersDetails"]
+	, "GuiOptionsGroupPopupHotkeys`nhttps://www.quickaccesspopup.com/how-do-i-display-the-quick-access-popup-menu/`nhttps://www.quickaccesspopup.com/video-12-ways-to-popup-you-qap-menu-16-min/", "")
+o_StartupTips.AddTip("CustomIcons", "1", o_L["TipCustomIconsTitle"], o_L["TipCustomIconsDetails"]
+	, "/can-i-embellish-my-popup-menu-with-my-preferred-icons/`n/can-i-manage-all-my-menu-icons-in-one-screen/", "iconIcons")
+o_StartupTips.AddTip("FolderDialogBox", "1", o_L["TipFolderDialogBoxTitle"], o_L["TipFolderDialogBoxDetails"]
+	, "GuiOptionsGroupGeneral`n/can-i-change-folders-in-file-dialog-boxes-open-save-as-etc/", "")
+o_StartupTips.AddTip("CreateSubmenu", "1", o_L["TipCreateSubmenuTitle"], o_L["TipCreateSubmenuDetails"]
+	, "/how-can-i-gather-numerous-favorites-in-a-clutter-free-popup-menu/", "iconSubmenu")
+o_StartupTips.AddTip("AddDragAndDrop", "1", o_L["TipAddDragAndDropTitle"], o_L["TipAddDragAndDropDetails"]
+	, "/tips-add-favorites-folders-or-files-using-drag-and-drop/", "")
+o_StartupTips.AddTip("FavoriteFolderTemp", "1", o_L["TipFavoriteFolderTempTitle"], o_L["TipFavoriteFolderTempDetails"]
+	, "/tips-create-a-favorite-for-your-much-used-temporary-folder/", "iconFavorites")
+o_StartupTips.AddTip("SearchFavorites", "1", o_L["TipSearchFavoritesTitle"], o_L["TipSearchFavoritesDetails"]
+	, "/can-i-search-inside-my-favorites/", "search-24_c.png")
+o_StartupTips.AddTip("InTheWorks", "1", o_L["TipInTheWorksTitle"], o_L["TipInTheWorksDetails"]
+	, "/what-is-in-the-works-and-its-frequent-recent-and-current-menus/", "")
+
+o_StartupTips.AddTip("CodeB1", 2, "Title B1", "Test Groupe B", "", "")
+o_StartupTips.AddTip("CodeB2", 2, "Title B2", "Test Groupe B", "", "")
+o_StartupTips.AddTip("CodeC1", 3, "Title C1", "Test Groupe C", "", "")
+o_StartupTips.AddTip("CodeC2", 3, "Title C2", "Test Groupe B", "", "")
 
 gosub, ShowStartupTip
 
@@ -6521,10 +6527,13 @@ ShowStartupTip:
 ShowStartupTipNow:
 ;------------------------------------------------------------
 
-if o_StartupTips.ShowTip(o_Settings.Launch.arrStartupTips.IniValue, A_ThisLabel = "ShowStartupTipNow")
+if (A_ThisLabel = "ShowStartupTipNow" or o_StartupTips.Time2ShowTip(o_Settings.Launch.arrStartupTips.IniValue))
 {
-	g_aaTipToShow := o_StartupTips.TipToShow(o_Settings.Launch.arrStartupTips.IniValue[4])
-	gosub, GuiStartupTips
+	if !StrLen(o_Settings.Launch.arrStartupTips.IniValue[4])
+		o_Settings.Launch.arrStartupTips.IniValue[4] := "1|1|1|1|1" ; set next tip to first tip for each group
+	g_aaTip2Show := o_StartupTips.Tip2Show(o_Settings.Launch.arrStartupTips.IniValue[4])
+	if (g_aaTip2Show)
+		gosub, GuiStartupTips
 }
 
 return
@@ -6539,32 +6548,33 @@ strGuiTitle := o_L["StartupTipsTitle"]
 
 Gui, StartupTips:New, +Hwndg_strGuiStartupTipsHwnd, %strGuiTitle%
 
-if GetFileExtension(g_aaTipToShow.strImage) = "png"
-	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % g_strTempDir . "\" . g_aaTipToShow.strImage ; %g_strTempDir%\add_property-48_c.png
+if GetFileExtension(g_aaTip2Show.strImage) = "png"
+	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % g_strTempDir . "\" . g_aaTip2Show.strImage ; %g_strTempDir%\add_property-48_c.png
 else
 {
-	ParseIconResource(g_aaTipToShow.strImage, strIconFile, intIconIndex)
+	ParseIconResource(g_aaTip2Show.strImage, strIconFile, intIconIndex)
 	Gui, StartupTips:Add, Picture, % "x10 y10 w48 h48 Icon" . intIconIndex, %strIconFile%
 }
 
 Gui, StartupTips:Font, s10 w700, Arial
-Gui, StartupTips:Add, Text, x65 y10 w432, % g_aaTipToShow.strTitle
+Gui, StartupTips:Add, Text, x65 y10 w432, % g_aaTip2Show.strTitle
 Gui, StartupTips:Font, s8 w400, Verdana
 
-Gui, StartupTips:Add, Link, x65 y+10 w432 gStartupTipsLinkClicked, % g_aaTipToShow.strDetails
-Gui, StartupTips:Add, Button, % "y+20 x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonClose "
-	. (o_StartupTips.NextTipAvailable(o_Settings.Launch.arrStartupTips.IniValue[4]) ? "" : "default"), % o_L["GuiClose"]
-Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonPrev, % o_L["DialogIconsManagePrevious"]
-Gui, StartupTips:Add, Button, % "yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonNext "
-	. (o_StartupTips.NextTipAvailable(o_Settings.Launch.arrStartupTips.IniValue[4]) ? "default" : ""), % o_L["DialogIconsManageNext"]
+Gui, StartupTips:Add, Link, x65 y+10 w432 gStartupTipsLinkClicked, % g_aaTip2Show.strDetails
+Gui, StartupTips:Add, Button, y+20 x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonPrev, % "<-" ; o_L["DialogIconsManagePrevious"]
+Gui, StartupTips:Add, Button, % "yp x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonClose "
+	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "" : "default"), % o_L["GuiClose"]
+Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonLater, % o_L["StartupTipsLater"]
 Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonOptions, % o_L["GuiOptions"]
+Gui, StartupTips:Add, Button, % "yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonNext "
+	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "default" : ""), % chr(0x279C) ; "->" ; o_L["DialogIconsManageNext"]
+GuiCenterButtons(g_strGuiStartupTipsHwnd, , , , "f_btnStartupTipsButtonPrev", "f_btnStartupTipsButtonClose", "f_btnStartupTipsButtonLater", "f_btnStartupTipsButtonOptions", "f_btnStartupTipsButtonNext")
 Gui, StartupTips:Add, Text
-GuiCenterButtons(g_strGuiStartupTipsHwnd, , , , "f_btnStartupTipsButtonClose", "f_btnStartupTipsButtonPrev", "f_btnStartupTipsButtonNext", "f_btnStartupTipsButtonOptions")
 Gui, StartupTips:Show, AutoSize Center
 
-GuiControl, % (o_StartupTips.PrevTipAvailable(o_Settings.Launch.arrStartupTips.IniValue[4]) ? "Enable" : "Disable"), f_btnStartupTipsButtonPrev
-GuiControl, % (o_StartupTips.NextTipAvailable(o_Settings.Launch.arrStartupTips.IniValue[4]) ? "Enable" : "Disable"), f_btnStartupTipsButtonNext
-if o_StartupTips.NextTipAvailable(o_Settings.Launch.arrStartupTips.IniValue[4])
+GuiControl, % (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4], true) ? "Enable" : "Disable"), f_btnStartupTipsButtonPrev
+GuiControl, % (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "Enable" : "Disable"), f_btnStartupTipsButtonNext
+if o_StartupTips.OtherTipAvailable(o_Settings.Launch.arrStartupTips.IniValue[4])
 	GuiControl, Focus, f_btnStartupTipsButtonNext
 else
 	GuiControl, Focus, f_btnStartupTipsButtonClose
@@ -6602,6 +6612,8 @@ else if (strButton = "f_btnStartupTipsButtonOptions")
 
 	Gosub, GuiOptionsGroupGeneral
 
+; else (strButton = "f_btnStartupTipsButtonLater") - do nothing
+
 return
 ;------------------------------------------------------------
 
@@ -6610,10 +6622,10 @@ return
 StartupTipsLinkClicked:
 ;------------------------------------------------------------
 
-if InStr(g_aaTipToShow.saCommands[A_EventInfo], "/") ; this is an URL
-	run, % "https://www.quickaccesspopup.com" . g_aaTipToShow.saCommands[A_EventInfo]
+if InStr(g_aaTip2Show.saCommands[A_EventInfo], "/") ; this is an URL
+	run, % "https://www.quickaccesspopup.com" . g_aaTip2Show.saCommands[A_EventInfo]
 else
-	gosub, % g_aaTipToShow.saCommands[A_EventInfo]
+	gosub, % g_aaTip2Show.saCommands[A_EventInfo]
 
 return
 ;------------------------------------------------------------
@@ -6621,11 +6633,12 @@ return
 
 ;------------------------------------------------------------
 StartupNextTip(intIncrement)
-; if intIncrement = 0 restart art first tip, else increase (+1) or decrease (-1) by intIncrement
+; if intIncrement = 0 restart at first tip, else increase (+1) or decrease (-1) by intIncrement
 ;------------------------------------------------------------
 {
+	strNextTips := (intIncrement = 0 ? "" : o_StartupTips.SetNextTips(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4], intIncrement))
 	o_Settings.Launch.arrStartupTips.WriteIni(o_Settings.Launch.arrStartupTips.IniValue[1] . "," . o_Settings.Launch.arrStartupTips.IniValue[2]
-		. "," . A_Now . "," . (intIncrement = 0 ? 1 : o_Settings.Launch.arrStartupTips.IniValue[4] + intIncrement))
+		. "," . A_Now . "," . strNextTips)
 	o_Settings.Launch.arrStartupTips.IniValue := StrSplit(o_Settings.Launch.arrStartupTips.IniValue, ",")
 }
 ;------------------------------------------------------------
@@ -9808,7 +9821,7 @@ strThemePrev := o_Settings.Launch.strTheme.IniValue
 o_Settings.Launch.strTheme.WriteIni(f_drpTheme)
 
 o_Settings.Launch.arrStartupTips.WriteIni(f_blnStartupTipsShow . "," . f_intStartupTipsDaysEdit . ","
-	. o_Settings.Launch.arrStartupTips.IniValue[3] . "," . o_Settings.Launch.arrStartupTips.IniValue[4]) ; StartupTips=1,0,20210322190241,1
+	. o_Settings.Launch.arrStartupTips.IniValue[3] . "," . o_Settings.Launch.arrStartupTips.IniValue[4]) ; StartupTips=1,0,20210322190241,n|n
 o_Settings.Launch.arrStartupTips.IniValue := StrSplit(o_Settings.Launch.arrStartupTips.IniValue, ",")
 
 o_Settings.Launch.blnDisplayTrayTip.WriteIni(f_blnDisplayTrayTip)
@@ -32240,8 +32253,7 @@ class StartupTips
 ;-------------------------------------------------------------
 {
 	aaTips := Object() ; associative array of tip contents
-	saTipsOrder := Object() ; simple array for tips order
-	aaTipToShow := Object()
+	saPriorityGroupsOrder := Object()
 	
 	;---------------------------------------------------------
 	__New()
@@ -32251,35 +32263,41 @@ class StartupTips
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	AddTip(strCode, strTitle, strDetails, strCommands, strImage)
+	AddTip(strCode, intPriority, strTitle, strDetails, strCommands, strImage)
+	; strCode: index used in order index
+	; strPriority: 1, 2... next tip to display is the first available in group 1 or 2, etc.
+	; strTitle, strDetails: full text of title and tip
 	; strCommands: one command label or URL (identified by presence of "/") per line, to associate to "<a>...</a>" in strDetails with the A_EventInfo index
 	; strImage: a png file (form FileInstall), an index from o_JLicons.AA (eg: "iconFolder") or a "file,index" icongroup (eg: "imageres.dll,33")
 	;---------------------------------------------------------
 	{
+		if !IsObject(this.saPriorityGroupsOrder[intPriority])
+			this.saPriorityGroupsOrder[intPriority] := Object()
+		
 		objThisTip := Object()
 		objThisTip.strTitle := strTitle
 		objThisTip.strDetails := strDetails
 		objThisTip.saCommands := StrSplit(strCommands, "`n")
-		objThisTip.strImage := (StrLen(strImage) ? strImage : "thumb_up-48_c.png")
+		objThisTip.strImage := (StrLen(strImage) ? strImage : "thumb_up-48_c.png") ; not using default parameter value because code generated from XL
 		
-		this.saTipsOrder.Push(strCode)
+		this.saPriorityGroupsOrder[intPriority].Push(strCode)
 		this.aaTips[strCode] := objThisTip
 	}
 	;---------------------------------------------------------
 	
 	;---------------------------------------------------------
-	ShowTip(arrSettings, blnNow := false)
-	; arrSettings: [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] next tip to show
+	Time2ShowTip(saSettings)
+	; saSettings: [1] show tip, [2] frequency (0=each launch, n=days), [3] last time shown, [4] pipe separated simple array of next tip to show for each group
 	;---------------------------------------------------------
 	{
-		if (arrSettings[1] or blnNow) ;
+		if (saSettings[1])
 		{
-			intFrequency := arrSettings[2]
-			strTimeStartupTip := arrSettings[3] ; last time shown
+			intFrequency := saSettings[2]
+			strTimeStartupTip := saSettings[3] ; last time shown
 			EnvAdd, strTimeStartupTip, %intFrequency%, Days
 			EnvSub, strTimeStartupTip, A_Now
 			; if delay is exceeded and next tip exists, or if user want to see it now, show tip
-			return ((blnNow or strTimeStartupTip < 0) and arrSettings[4] <= this.saTipsOrder.MaxIndex())
+			return (strTimeStartupTip < 0)
 		}
 		else
 			return false
@@ -32287,26 +32305,68 @@ class StartupTips
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	TipToShow(intNextTipToShow)
+	SetNextTips(intPriorityGroup, strNextTipsToShow, intIncrement)
+	; intIncrement: +1 set next item in this group / -1 previous item in this group or, if already first, set last item in previous group
 	;---------------------------------------------------------
 	{
-		return this.aaTips[this.saTipsOrder[intNextTipToShow]]
+		saNextTipsToShow := StrSplit(strNextTipsToShow, "|")
+		
+		if (saNextTipsToShow[intPriorityGroup] + intIncrement > 0) ; in case intIncrement is -1, do not set the previous item to a non existing item in this group
+			saNextTipsToShow[intPriorityGroup] := saNextTipsToShow[intPriorityGroup] + intIncrement ; next or previous item in this group
+		else ; in case intIncrement is -1, if we are at the beginning of this group, set next item to the last item of previous group
+			saNextTipsToShow[intPriorityGroup - 1] := this.saPriorityGroupsOrder[intPriorityGroup].MaxIndex() ; last item of previous group
+		
+		Loop, % saNextTipsToShow.MaxIndex()
+			strReturn .= saNextTipsToShow[A_Index] . "|"
+		strReturn := SubStr(strReturn, 1, -1) ; remove last |
+		
+		return strReturn
 	}
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	NextTipAvailable(intCurrentStartupTip)
+	Tip2Show(strNextTips2Show)
+	; return aaTip object or false if no tip to show
 	;---------------------------------------------------------
 	{
-		return intCurrentStartupTip < this.saTipsOrder.MaxIndex()
+		saNextTips2Show := StrSplit(strNextTips2Show, "|")
+		
+		loop, % this.saPriorityGroupsOrder.MaxIndex()
+			if (saNextTips2Show[A_Index] <= this.saPriorityGroupsOrder[A_Index].MaxIndex())
+			{
+				aaTip := this.aaTips[this.saPriorityGroupsOrder[A_Index][saNextTips2Show[A_Index]]]
+				aaTip.intPriorityGroup := A_Index
+				
+				return aaTip
+			}
+			
+		return false
 	}
 	;---------------------------------------------------------
-	
+
 	;---------------------------------------------------------
-	PrevTipAvailable(intCurrentStartupTip)
+	OtherTipAvailable(intPriorityGroup, strNextTips2Show, blnPrevious := false)
 	;---------------------------------------------------------
 	{
-		return (intCurrentStartupTip > 1)
+		saNextTips2Show := StrSplit(strNextTips2Show, "|")
+		
+		if (blnPrevious)
+		{
+			blnReturn := (intPriorityGroup > 1 or saNextTips2Show[intPriorityGroup] > 1)
+			return blnReturn
+		}
+		else
+		{
+			intGroup := intPriorityGroup
+			loop
+			{
+				if (saNextTips2Show[intGroup] < this.saPriorityGroupsOrder[intGroup].MaxIndex())
+					return true
+				intGroup++
+			} until (intGroup > this.saPriorityGroupsOrder.MaxIndex())
+			
+			return false
+		}
 	}
 	;---------------------------------------------------------
 }

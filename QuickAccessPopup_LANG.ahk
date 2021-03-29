@@ -961,6 +961,7 @@ this["ReloadPrompt"] := "~1~ changed to ~2~. Do you want to reload ~3~ in ~2~ no
 this["SponsoredName"] := "The development of this software is kindly supported by ~1~"
 this["SponsoredNone"] := "Click here to get a license for this software"
 this["StartupTipsDays"] := "Days between Startup Tips`n(zero to show at each QAP start)"
+this["StartupTipsLater"] := "Read Later"
 this["StartupTipsShow"] := "Show Startup Tips"
 this["StartupTipsTitle"] := "QAP Startup Tips"
 this["TCMenuName"] := "TC Directory hotlist"
