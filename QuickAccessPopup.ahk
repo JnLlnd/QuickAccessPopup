@@ -5569,7 +5569,7 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			ListviewText=000000
 			MenuBackgroundColor=edfdf1
 			[Favorites]
-			Favorite1=Menu|%strMenuDynamicMenus%|> %strMenuDynamicMenus%|iconQAP||||||||||0||||||+^w
+			Favorite1=Menu|%strMenuDynamicMenus%|> %strMenuDynamicMenus%|iconQAP
 			Favorite2=QAP||{Popular Folders}
 			Favorite3=QAP||{Popular Files}
 			Favorite4=X
@@ -5582,7 +5582,7 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			Favorite11=Folder|C:\|C:\
 			Favorite12=Folder|User Profile|`%USERPROFILE`%
 			Favorite13=Application|Notepad|%A_WinDir%\system32\notepad.exe
-			Favorite14=URL|%g_strAppNameText% web site|https://www.quickaccesspopup.com|||||||||||||||||+^q
+			Favorite14=URL|%g_strAppNameText% web site|https://www.quickaccesspopup.com
 			Favorite15=Z
 
 ) ; leave the last extra line above
@@ -6533,7 +6533,7 @@ if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
 }
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 
-AddToIniOneDefaultMenu("{Add Favorite - WindowsApp}", "", "QAP", true)
+AddToIniOneDefaultMenu("{Add Favorite - WindowsApp}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("Microsoft.MicrosoftSolitaireCollection_8wekyb3d8bbwe!App", "Solitaire", "WindowsApp")
 AddToIniOneDefaultMenu("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", "Calculator", "WindowsApp")
@@ -6568,10 +6568,9 @@ if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
 }
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 
-AddToIniOneDefaultMenu("{Add Snippet and Hotstring}", "", "QAP", true)
+AddToIniOneDefaultMenu("{Add Snippet and Hotstring}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "X")
-; AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "")
-AddToIniOneDefaultMenu(L(o_L["GuiQuickAddSnippetExample"], """,snippet"""), o_L["GuiQuickAddSnippetExampleName"], "Snippet", false, "", "::,snippet")
+AddToIniOneDefaultMenu(L(o_L["GuiQuickAddSnippetExample"], """,snippet"""), o_L["GuiQuickAddSnippetExampleName"], "Snippet", false, "::,snippet")
 AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
 
 if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
@@ -6597,12 +6596,12 @@ g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main m
 ; do not save QAP feature menus name to ini file and keep default names
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
-AddToIniOneDefaultMenu("{Add Favorite - QAP}", "", "QAP", true)
+AddToIniOneDefaultMenu("{Add Favorite - QAP}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{ReopenCurrentFolder}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{Current Folders}", "", "QAP", true)
-AddToIniOneDefaultMenu("{Clipboard}", "", "QAP", true)
+AddToIniOneDefaultMenu("{Clipboard}", "", "QAP")
 AddToIniOneDefaultMenu("{Drives}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "Z") ; close QAP menu
 
@@ -6610,7 +6609,7 @@ g_strAddThisMenuName := o_L["MenuMySpecialMenu"]
 Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if g_strAddThisMenuName menu name exists
 
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
-AddToIniOneDefaultMenu("{Add Favorite - Special}", "", "QAP", true)
+AddToIniOneDefaultMenu("{Add Favorite - Special}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu(A_Desktop, o_L["MenuDesktop"], "Special") ; Desktop
 AddToIniOneDefaultMenu("{450D8FBA-AD25-11D0-98A8-0800361B1103}", "", "Special") ; Documents
@@ -6632,7 +6631,7 @@ if (g_strAddThisMenuNameWithInstance = o_QAPfeatures.aaQAPFeaturesCodeByDefaultN
 ; (we cannot have this menu twice with "+" because, as all QAP features, o_L["MenuSettings"] always have the same menu name)
 {
 	AddToIniOneDefaultMenu("", "", "X")
-	AddToIniOneDefaultMenu("{Settings}", o_L["MenuSettings"], "QAP", true) ; back in main menu
+	AddToIniOneDefaultMenu("{Settings}", o_L["MenuSettings"], "QAP", true) ; back in main menu, last true to add default shortcut
 
 }
 if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; Directory Opus or Total Commander
@@ -6679,7 +6678,7 @@ g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main m
 
 ; AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false)
 AddToIniOneDefaultMenu("", "", "X")
-AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu", 0, "+^m")
+AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 
 AddToIniOneDefaultMenu("{Popular Folders}", "", "QAP")
 AddToIniOneDefaultMenu("{Popular Files}", "", "QAP")
@@ -6726,7 +6725,7 @@ return
 
 
 ;------------------------------------------------------------
-AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomShortcut := "", strCustomHotstring := "")
+AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomHotstring := "")
 ;------------------------------------------------------------
 {
 	global g_intNextFavoriteNumber
@@ -6760,15 +6759,9 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 			else ; QAP or WindowsApp
 				strName := o_QAPfeatures.AA[strLocation].strLocalizedName
 		
-		if (g_blnIniFileCreation) ; do not add shortcut if not creation of ini file at first launch
-			if StrLen(strCustomShortcut)
-				strShortcut := strCustomShortcut
-			else if (blnAddShortcut)
-				strShortcut := o_QAPfeatures.AA[strLocation].strDefaultShortcut
-		
-		if StrLen(strCustomHotstring)
-		{
-		}
+		if (g_blnIniFileCreation ; do not add shortcut if not creation of ini file at first launch
+			and blnAddShortcut)
+				strShortcut := o_QAPFeatures.AA[strLocation].strDefaultShortcut
 		
 		strNewIniLine := strFavoriteType . "|" . strName . "|" . strLocation . "|" . strIconResource . "||||||||||||||||" . strShortcut . "|" . strCustomHotstring
 	}
