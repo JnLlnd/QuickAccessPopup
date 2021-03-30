@@ -4679,6 +4679,11 @@ global g_blnUsageDbUpdateFavoritesCompleted := false ; prevent special search No
 global g_strBrokenLinks ; for ToolTip listing broken favorites
 global g_intMaximumValue := 0x7FFFFFFFFFFFFFFF ; max value for integers
 
+global g_aaPopularFoldersShortNames := Object() ; search for g_aaPopular%strFoldersOrFiles%ShortNames
+global g_aaPopularFilesShortNames := Object() ; search for g_aaPopular%strFoldersOrFiles%ShortNames
+global g_aaRecentFoldersShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
+global g_aaRecentFilesShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
+
 ;---------------------------------
 ; Used in OpenFavorite
 global g_blnAlternativeMenu
@@ -5671,6 +5676,7 @@ o_Settings.ReadIniOption("Menu", "blnHotkeyRemindersRightAlignHotstrings", "Hotk
 o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcuts", "DisplayMenuShortcuts", 0, "MenuAppearance", "f_blnDisplayNumericShortcuts") ; g_blnDisplayNumericShortcuts
 o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMenuShortcutsFromOne", 0, "MenuAppearance", "f_blnDisplayNumericShortcutsFromOne") ; g_blnDisplayNumericShortcutsFromOne
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
+o_Settings.ReadIniOption("Menu", "intRecentPopularLevelsMax", "RecentPopularLevelsMax", 0, "MenuAppearance", "f_lblRecentPopularLevelsMax|f_intRecentPopularLevelsMaxEdit|f_intRecentPopularLevelsMax|f_lblRecentPopularLevelsMaxTitle")
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
 o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus
 
@@ -7484,6 +7490,9 @@ loop, parse, % "Folders|Files", |
 	; for each line in strMenuItemsList: 1) Frequent Folders/Files|2) Name/Location|3) Action|4) Icon
 	; example: Frequent Folders|E:\Dropbox\AutoHotkey\QuickAccessPopup|Folder|iconFolder
 	
+	; reset object g_aaPopularFoldersShortNames and g_aaPopularFilesShortNames to make trucated names unique
+	g_aaPopular%strFoldersOrFiles%ShortNames := Object() 
+	
 	saMenuItemsTable := Object()
 	Loop, Parse, strMenuItemsList, `n
 		if StrLen(A_LoopField)
@@ -7495,6 +7504,10 @@ loop, parse, % "Folders|Files", |
 				saOneLine[3] := SubStr(saOneLine[2], 1, InStr(saOneLine[2], " [", false, 0) - 1) ; strip " [n]" from end
 			else
 				saOneLine[3] := saOneLine[2] ; duplicate name 2 in location 3
+			
+			; shorten long paths: shorten item 2 and make it unique
+			saOneLine[2] := MakeLongPathShortAndUnique(saOneLine[2], o_Settings.Menu.intRecentPopularLevelsMax.IniValue, g_aaPopular%strFoldersOrFiles%ShortNames)
+			
 			; keep icon in 4
 			saMenuItemsTable.Push(saOneLine)
 		}
@@ -7802,6 +7815,10 @@ Loop, Parse, % "Folders|Files", |
 	if (o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Recent " . A_LoopField . "}")) ; {Recent Folders} and {Recent Files}
 	{
 		strFoldersOrFiles := A_LoopField
+		
+		; reset object g_aaRecentFoldersShortNames and g_aaRecentFilesShortNames to make trucated names unique
+		g_aaRecent%strFoldersOrFiles%ShortNames := Object() 
+		
 		saMenuItemsTable := Object()
 		Loop, Parse, g_strMenuItemsListRecent%strFoldersOrFiles%, `n ; g_strMenuItemsListRecentFolders and g_strMenuItemsListRecentFiles
 			if StrLen(A_LoopField)
@@ -7811,6 +7828,10 @@ Loop, Parse, % "Folders|Files", |
 				saOneLine := StrSplit(A_LoopField, "|") 
 				saOneLine[1] := saOneLine[3] ; FavoriteType
 				saOneLine[3] := saOneLine[2] ; duplicate name 2 in location 3
+				
+				; shorten long paths: shorten item 2 and make it unique
+				saOneLine[2] := MakeLongPathShortAndUnique(saOneLine[2], o_Settings.Menu.intRecentPopularLevelsMax.IniValue, g_aaRecent%strFoldersOrFiles%ShortNames)
+				
 				; keep icon in 4
 				saMenuItemsTable.Push(saOneLine)
 			}
@@ -8997,14 +9018,20 @@ gosub, DisplayMenuShortcutsClickedInit
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w500 hidden vf_lblRecentFoldersMaxTitle, % o_L["OptionsRecentFoldersPrompt"]
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w51 h22 vf_intRecentFoldersMaxEdit number center hidden ; %g_intRecentFoldersMax%
 Gui, 2:Add, UpDown, vf_intRecentFoldersMax Range1-9999 gGuiOptionsGroupChanged hidden, % o_Settings.Menu.intRecentFoldersMax.IniValue
-Gui, 2:Add, Text, yp x+10 w235 hidden vf_lblRecentFoldersMax, % o_L["OptionsRecentFolders"]
+Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblRecentFoldersMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intRecentFoldersMaxEdit
 
+; RecentPopularLevelsMax
+Gui, 2:Add, Edit, y+15 x%g_intGroupItemsX% w51 h22 vf_intRecentPopularLevelsMaxEdit number center hidden
+Gui, 2:Add, UpDown, vf_intRecentPopularLevelsMax Range0-9999 gGuiOptionsGroupChanged hidden, % o_Settings.Menu.intRecentPopularLevelsMax.IniValue
+Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblRecentPopularLevelsMax, % o_L["OptionsRecentPopularLevelsMax"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intRecentPopularLevelsMaxEdit
+
 ; NbLastActions
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w500 hidden vf_lblNbLastActionsMaxTitle, % o_L["MenuLastActions"]
+Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w500 hidden vf_lblNbLastActionsMaxTitle, % o_L["MenuLastActions"]
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w51 h22 vf_intNbLastActionsMaxEdit number center hidden ; %g_intNbLastActions%
 Gui, 2:Add, UpDown, vf_intNbLastActions Range1-9999 gGuiOptionsGroupChanged hidden, % o_Settings.Menu.intNbLastActions.IniValue
-Gui, 2:Add, Text, yp x+10 w235 hidden vf_lblNbLastActionsMax, % o_L["OptionsRecentFolders"]
+Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblNbLastActionsMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
 
 ; AddCloseToDynamicMenus
@@ -9694,6 +9721,7 @@ o_Settings.Menu.blnHotkeyRemindersRightAlignHotstrings.WriteIni(f_blnHotkeyRemin
 o_Settings.Menu.blnDisplayNumericShortcuts.WriteIni(f_blnDisplayNumericShortcuts)
 o_Settings.Menu.blnDisplayNumericShortcutsFromOne.WriteIni(f_blnDisplayNumericShortcutsFromOne)
 o_Settings.Menu.intRecentFoldersMax.WriteIni(f_intRecentFoldersMax)
+o_Settings.Menu.intRecentPopularLevelsMax.WriteIni(f_intRecentPopularLevelsMax)
 o_Settings.Menu.intNbLastActions.WriteIni(f_intNbLastActions)
 o_Settings.Menu.blnAddCloseToDynamicMenus.WriteIni(f_blnAddCloseToDynamicMenus)
 
@@ -25412,6 +25440,28 @@ AddUtm2Url(strUrl, strMedium, strCampaign)
 	strUrl .= (InStr(strUrl, "?") ? "&" : "?") ; add parameter separator or question mark if first parameter 
 	strUrl .= "utm_source=QAP&utm_medium=" . strMedium . "&utm_campaign=" . strCampaign
 	return strUrl
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+MakeLongPathShortAndUnique(strLong, intMaxLevels, aaUniqueNames)
+; truncate from the beginning of the name path sections exceeding the maximum level of paths
+;------------------------------------------------------------
+{
+	if !(intMaxLevels)
+		return strLong ; return as-is
+	; else continue
+	
+	strLong := StrReplace(strLong, "\", "\", intLevels) ; intLevels returns the nb of occurrences replaced (strLong is not changed)
+	strShort := (intLevels > intMaxLevels ? Chr(0x2026) . SubStr(strLong, InStr(strLong, "\", , 0, intMaxLevels)) : strLong)
+	
+	strShortOri := strShort
+	while aaUniqueNames.HasKey(strShort) ; make unique
+		strShort := strShortOri . " (" . A_Index . ")"
+	aaUniqueNames[strShort] := "" ; array content is not used, only index
+	
+	return strShort
 }
 ;------------------------------------------------------------
 
