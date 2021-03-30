@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.2.9.1 (2021-03-30)
+- Startup Tips shown when you launch QAP; you can choose the interval between tips in "Options, General" or you can browse them as you wish; each tip include links to dialog boxes or hKnowledge Base web pages
+- a new option in "Options, Menu Appearance" to shorten long paths in Recent Folders, Recent Files, Frequent Folders and Frequent Files menus
+- keep moving items in favorites list when holding the mouse click on "Up" and "Down" arrow buttons in "Customize" window
+- add two QAP Features "Current Folders" and "Current Applications" to show only open folders or running applications as an alternatives to the "Current Windows" that shows both in the same menu (add a favorite of type "QAP Feature" and select the category "Dynamic Menus")
+
 Version: 11.2.0.3 (2021-03-09)
 - fix bug showing sometimes wrong content in the "Customize" window when it was open using a shortcut
 - fix bug in snippets causing the ending character wrongly added when pasting the snippet using a shortcut or the menu
@@ -4471,7 +4477,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.0.3
+;@Ahk2Exe-SetVersion 11.2.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4539,8 +4545,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.0.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.2.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
