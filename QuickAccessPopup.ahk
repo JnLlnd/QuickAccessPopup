@@ -32,10 +32,10 @@ HISTORY
 =======
 
 Version BETA: 11.2.9.1 (2021-03-30)
-- Startup Tips shown when you launch QAP; you can choose the interval between tips in "Options, General" or you can browse them as you wish; each tip include links to dialog boxes or hKnowledge Base web pages
-- a new option in "Options, Menu Appearance" to shorten long paths in Recent Folders, Recent Files, Frequent Folders and Frequent Files menus
+- Startup Tips shown when you launch QAP; you can choose the interval between tips in "Options, General" or you can browse them as you wish; each tip includes links to dialog boxes or Knowledge Base web pages
+- a new option in "Options, Menu Appearance" to shorten long paths in "Recent Folders", "Recent Files", "Frequent Folders" and "Frequent Files" menus
 - keep moving items in favorites list when holding the mouse click on "Up" and "Down" arrow buttons in "Customize" window
-- add two QAP Features "Current Folders" and "Current Applications" to show only open folders or running applications as an alternatives to the "Current Windows" that shows both in the same menu (add a favorite of type "QAP Feature" and select the category "Dynamic Menus")
+- add two QAP Features "Current Folders" and "Current Applications" to show only open folders or only running applications as an alternatives to the "Current Windows" menu that shows both (add a favorite of type "QAP Feature" and select the category "Dynamic Menus")
 
 Version: 11.2.0.3 (2021-03-09)
 - fix bug showing sometimes wrong content in the "Customize" window when it was open using a shortcut
