@@ -31,6 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.2.9.2 (2021-04-03)
+- cosmetic changes to Startup Tips dialog box
+- removed test tips
+
 Version BETA: 11.2.9.1 (2021-03-30)
 - Startup Tips shown when you launch QAP; you can choose the interval between tips in "Options, General" or you can browse them as you wish; each tip includes links to dialog boxes or Knowledge Base web pages
 - a new option in "Options, Menu Appearance" to shorten long paths in "Recent Folders", "Recent Files", "Frequent Folders" and "Frequent Files" menus
@@ -4477,7 +4481,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.9.1
+;@Ahk2Exe-SetVersion 11.2.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4545,7 +4549,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -6517,10 +6521,10 @@ o_StartupTips.AddTip("SearchFavorites", "1", o_L["TipSearchFavoritesTitle"], o_L
 o_StartupTips.AddTip("InTheWorks", "1", o_L["TipInTheWorksTitle"], o_L["TipInTheWorksDetails"]
 	, "/what-is-in-the-works-and-its-frequent-recent-and-current-menus/", "")
 
-o_StartupTips.AddTip("CodeB1", 2, "Title B1", "Test Groupe B", "", "")
-o_StartupTips.AddTip("CodeB2", 2, "Title B2", "Test Groupe B", "", "")
-o_StartupTips.AddTip("CodeC1", 3, "Title C1", "Test Groupe C", "", "")
-o_StartupTips.AddTip("CodeC2", 3, "Title C2", "Test Groupe B", "", "")
+; o_StartupTips.AddTip("CodeB1", 2, "Title B1", "Test Groupe B", "", "")
+; o_StartupTips.AddTip("CodeB2", 2, "Title B2", "Test Groupe B", "", "")
+; o_StartupTips.AddTip("CodeC1", 3, "Title C1", "Test Groupe C", "", "")
+; o_StartupTips.AddTip("CodeC2", 3, "Title C2", "Test Groupe B", "", "")
 
 gosub, ShowStartupTip
 
@@ -6574,18 +6578,22 @@ else
 }
 
 Gui, StartupTips:Font, s10 w700, Arial
-Gui, StartupTips:Add, Text, x65 y10 w432, % g_aaTip2Show.strTitle
+Gui, StartupTips:Add, Text, x65 y10 w448, % g_aaTip2Show.strTitle
 Gui, StartupTips:Font, s8 w400, Verdana
 
-Gui, StartupTips:Add, Link, x65 y+10 w432 gStartupTipsLinkClicked, % g_aaTip2Show.strDetails
-Gui, StartupTips:Add, Button, y+20 x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonPrev, % "<-" ; o_L["DialogIconsManagePrevious"]
-Gui, StartupTips:Add, Button, % "yp x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonClose "
+Gui, StartupTips:Add, Link, x65 y+10 w448 gStartupTipsLinkClicked, % g_aaTip2Show.strDetails
+Gui, Font, s12, Arial
+Gui, StartupTips:Add, Button, y+20 x15 gStartupTipsButtonClicked vf_btnStartupTipsButtonPrev, % chr(0x25C4) ; o_L["DialogIconsManagePrevious"]
+Gui, Font
+Gui, StartupTips:Add, Button, % "yp+5 x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonClose "
 	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "" : "default"), % o_L["GuiClose"]
 Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonLater, % o_L["StartupTipsLater"]
 Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonOptions, % o_L["GuiOptions"]
-Gui, StartupTips:Add, Button, % "yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonNext "
-	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "default" : ""), % chr(0x279C) ; "->" ; o_L["DialogIconsManageNext"]
-GuiCenterButtons(g_strGuiStartupTipsHwnd, , , , "f_btnStartupTipsButtonPrev", "f_btnStartupTipsButtonClose", "f_btnStartupTipsButtonLater", "f_btnStartupTipsButtonOptions", "f_btnStartupTipsButtonNext")
+Gui, Font, s12, Arial
+Gui, StartupTips:Add, Button, % "yp-5 x480 gStartupTipsButtonClicked vf_btnStartupTipsButtonNext "
+	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "default" : ""), % chr(0x25BA) ; "->" ; o_L["DialogIconsManageNext"]
+Gui, Font
+GuiCenterButtons(g_strGuiStartupTipsHwnd, , , , "f_btnStartupTipsButtonClose", "f_btnStartupTipsButtonLater", "f_btnStartupTipsButtonOptions")
 Gui, StartupTips:Add, Text
 Gui, StartupTips:Show, AutoSize Center
 
