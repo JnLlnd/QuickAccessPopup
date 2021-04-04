@@ -27552,7 +27552,7 @@ class QAPfeatures
 			, o_L["MenuSwitchFolderOrAppDescription"], 0, "iconSwitch", "+^w"
 			, "how-is-built-the-switch-to-an-open-folder-or-application-menu", "RefreshSwitchFolderOrAppMenu")
 		this.AddQAPFeatureObject("Switch Folder",			o_L["MenuSwitchFolder"],			o_L["MenuSwitchFolder"],		"SwitchFolderMenuShortcut",				"2-DynamicMenus~4-WindowManagement"
-			, o_L["MenuSwitchFolderDescription"], 0, "iconSwitch", ""
+			, L(o_L["MenuSwitchFolderDescription"], o_L["MenuCurrentFolders"]), 0, "iconSwitch", ""
 			, "how-is-built-the-switch-to-an-open-folder-or-application-menu", "RefreshSwitchFolderOrAppMenu")
 		this.AddQAPFeatureObject("Switch App",				o_L["MenuSwitchApp"],				o_L["MenuSwitchApp"],			"SwitchAppMenuShortcut",				"2-DynamicMenus~4-WindowManagement"
 			, o_L["MenuSwitchAppDescription"], 0, "iconSwitch", ""
