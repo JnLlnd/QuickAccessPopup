@@ -6648,7 +6648,7 @@ StartupTipsLinkClicked:
 ;------------------------------------------------------------
 
 if InStr(g_aaTip2Show.saCommands[A_EventInfo], "/") ; this is an URL
-	run, % "https://www.quickaccesspopup.com" . g_aaTip2Show.saCommands[A_EventInfo]
+	run, % AddUtm2Url("https://www.quickaccesspopup.com" . g_aaTip2Show.saCommands[A_EventInfo], A_ThisLabel, "Help")
 else
 	gosub, % g_aaTip2Show.saCommands[A_EventInfo]
 
