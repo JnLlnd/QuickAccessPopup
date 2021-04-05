@@ -548,7 +548,7 @@ lHelpText33	PERSONNALISEZ VOTRE MENU DES FONCTIONS QAP
 lHelpText34	Vous pouvez déplacer les rubriques des menus "En cours" et "Mes fonctions QAP" vers le menu principal ou d'autres sous-menus. Dans la fenêtre "Personnaliser", sélectionnez la liste déroulante "Menu ou groupe à modifier:", éditez la fonction QAP à déplacer et, dans l'onglet "Options du menu", sélectionnez son nouveau menu et sa position.
 lHelpText35	Dans le menu "En cours", retrouvez vos dossiers courants:
 lHelpText36	- Choisissez les menus "Dossiers fréquemment utilisés" ou "Fichiers fréquemment utilisés" pour voir vos contenus les plus actifs.`n- Choisissez les menus "Dossiers récents" ou "Fichiers récents" pour afficher vos contenus les plus récents.`n- Cliquez "Fenêtres ouvertes" pour basculer vers n'importe quelle fenêtre de l'Explorateur ou d'une application.
-lHelpText41	- Utilisez l'icône de Quick Access Popup dans la zone de Notification (en bas à droite de l'écran de Windows) de l'une des trois façons suivantes:`n1) Cliquez l'icône avec le bouton de gauche pour afficher le menu popup de QAP.`n2) Cliquez avec le bouton de droite pour ouvrir le menu Système de QAP.`n3) Double-cliquez l'icône pour afficher la fenêtre "Personnaliser".
+lHelpText41	- Utilisez l'icône de Quick Access Popup dans la zone de Notification (en bas à droite de l'écran de Windows) de l'une des deux façons suivantes:`n1) Cliquez l'icône avec le bouton de gauche pour afficher le menu popup de QAP.`n2) Cliquez avec le bouton de droite pour ouvrir le menu Système de QAP.
 lHelpText42	- Dans la zone de Notifications, cliquez sur l'icône de Quick Access Popup avec le bouton de droite et sélectionnez "Exécuter au démarrage" pour lancer QAP au démarrage de Windows.
 lHelpText43	Configurez les déclencheurs du menu popup de Quick Access Popup: choisissez votre bouton de souris préféré ou votre raccourci clavier. Dans les "Personnaliser", choisissez le menu "Options, Déclencheurs du menu".
 lHelpText44	- Aussi dans les "Options": choisissez votre langue d'utilisation, la taille des icônes de menu ou les couleurs des fenêtres. Décidez du nombre des "Emplacements récents" à afficher, de l'affichage des raccourcis clavier numériques ou des rappels des raccourcis de favoris. Fixez le menu popup à une position de votre choix ou mémorisez la position de la fenêtre des "Personnaliser". Et plus encore...
@@ -696,6 +696,10 @@ lMenuSettingsDescription	Afficher la fenêtre "Personnaliser" pour personnaliser 
 lMenuStartMenu	Menu Démarrer
 lMenuStartup	Démarrage
 lMenuSuspendHotkeys	Suspendre les déclencheurs (Hotkeys)
+lMenuSwitchApp	Applications ouvertes
+lMenuSwitchAppDescription	Afficher un menu dynamique contenant les applications actives sur le système (en commençant par la fenêtre la plus récemment activée).`n`nLorsque vous sélectionnez un item, cette fenêtre est automatiquement amenée au premier plan et activée.`n`nCe menu est actualisé à chaque fois que vous affichez le menu de QAP.
+lMenuSwitchFolder	Dossiers ouverts
+lMenuSwitchFolderDescription	Afficher un menu dynamique contenant les dossiers actuellement ouverts dans Windows Explorer et Directory Opus`n`nLorsque vous sélectionnez un item, sa fenêtre est automatiquement amenée au premier plan et activée (voir aussi "~1~" pour ouvrir le dossier dans une autre fenêtre).`n`nCe menu est actualisé à chaque fois que vous affichez le menu de QAP.
 lMenuSwitchFolderOrApp	Fenêtres ouvertes
 lMenuSwitchFolderOrAppDescription	Afficher un menu dynamique en deux sections:`n1) les dossiers actuellement ouverts dans Windows Explorer et Directory Opus `n2) les applications actives sur le système (en commençant par la fenêtre la plus récemment activée).`n`nLorsque vous sélectionnez un item, cette fenêtre est automatiquement amenée au premier plan et activée.`n`nCe menu est actualisé à chaque fois que vous affichez le menu de QAP.
 lMenuSwitchSettings	Changer de fichier de configuration
@@ -867,9 +871,10 @@ lOptionsPopupHotkeyTitles	Bouton de souris du menu Quick Access Popup|Raccourci 
 lOptionsPopupHotkeyTitlesSub	Ce bouton de la souris affiche le menu n'importe où  (sauf dans les  <a>applications exclues</a>) et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce raccourci clavier affiche le menu n'importe où  et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce bouton de la souris affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où (sans exception).|Ce raccourci clavier affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où.
 lOptionsPopupMenu	Menu Popup
 lOptionsQAPTempFolder	Dossier temporaire
-lOptionsQuickAddSnippetSubmenu	Sousmenu pour ~1~
+lOptionsQuickAddSnippetSubmenu	Sous-menu pour ~1~
 lOptionsRecentFolders	Nombre d'items récents dans le menu
 lOptionsRecentFoldersPrompt	Items récents et fréquemment utilisés
+lOptionsRecentPopularLevelsMax	Nombre maximum de niveaux dans le sous-dossiers des éléments dans les menus Récents/Fréquents`n(les niveaux excédentaires seront retranchés du début , 0 pour conserver tous les sous-dossiers)
 lOptionsRefreshedMenusAttached	Attacher les menus dynamiques au menu de QAP
 lOptionsRefreshedMenusAttachedInfo	lOptionsRefreshedMenusAttachedInfo Si vous activez cette option, Il pourrait y avoir un léger délai de raffraîchissement (selon la configuration de votre système) chaque fois que vous affichez le menu popup.`n`nLa durée de ce délai dépend du temps requis par Windows pour fournir les renseignements à jour requis pour bâtir le menu (liste des fichiers récents est espace disponible sur les disques). Ce délai peut varier d'une fois à l'autre.`n`nSi vous désactivez cette option, les menus "~1~", "~2~", "~3~", "~4~" et "~5~" seront raffraîchis seulement sur demande et seront affichés détachés du menu de QAP.
 lOptionsRefreshQAPconnectList	Actualiser la liste des applications
@@ -940,9 +945,33 @@ lPickIconNoLocation	Veuillez d'abord choisisr un favori avant de sélectionner un
 lReloadPrompt	Changement de ~1~ enregistré: ~2~. Voulez-vous relancer ~3~ en ~2~ maintenant? Les changements non sauvegardés dans le menu seront perdus.
 lSponsoredName	Le développement de ce logiciel est soutenu par ~1~
 lSponsoredNone	Cliquez ici pour obtenir une licence pour ce logiciel
+lStartupTipsDays	Jours entre les affichages au démarrage de QAP`n(zéro pour afficher à chaque démarrage)
+lStartupTipsLater	Lire plus tard
+lStartupTipsShow	Afficher les trucs et astuces de QAP
+lStartupTipsTitle	Trucs et astuces de QAP
 lTCMenuName	TC Directory Hotlist
 lTCMenuNameDescription	Pour les utilisateurs de Total Commander (TC), afficher un menu dynamique présentant les favoris ajoutés à la "TC Hotlist" enregistrés dans le fichier wincdm.ini.`n`nSpécifiez l'emplacement du fichier wincdm.ini de TC dans les "Options", onglet "Gestionnaires". Si TC a été sélectionné lorsque vous avez installé QAP, le menu "TC Directory Hotlist" a automatiquement été ajouté à votre menu.
 lTCWinCmdLocation	Emplacement de WinCmd.ini
+lTipAddDragAndDropDetails	Utiliser votre souris et la technique "glisser-déposer" est une façon efficace d'ajouter des favoris de Windows Explorer à votre menu QAP.`n`n<a>Dans cette astuce</a>, voyez comment ajouter des dossiers, documents ou applications à votre menu sans avoir à toucher le clavier !
+lTipAddDragAndDropTitle	Ajouter des documents et fichiers avec la technique glisser-déposer
+lTipCreateSubmenuDetails	Améliorez votre menu QAP en regroupant vos favoris par types, sujets ou projets dans des sous-menus.`n`n<a>Voyez comment ajouter un sous-menu</a>.
+lTipCreateSubmenuTitle	Si votre menu QAP devient trop long, divisez pour conquérir !
+lTipCustomIconsDetails	Choisissez les icônes qui ornent votre menu Quick Access Popup en <a>remplaçant les icônes par défaut</a> utilisées par QAP avec vos images préférées.`n`nVoyez aussi comment <a>gérer toutes les icônes de votre menu</a> dans une seule fenêtre.
+lTipCustomIconsTitle	Embellissez votre menu avec vos icônes préférées
+lTipCustomizeStartupDetails	Par défaut, Quick Access Popup affiche la fenêtre "Personnaliser" (où vous pouvez modifier votre menu) lors de son démarrage.`n`nSi vous préférez l'afficher seulement sur demande, retirez la case à cocher de "Ouvrir la fenêtre Personnaliser au démarrage" dans la boîte de dialogue <a>Options, Fenêtre Personnaliser</a>.`n`nPlus d'info dans la <a>Base de connaissance</a>.
+lTipCustomizeStartupTitle	Voulez-vous toujours ouvrir la fenêtre Personnaliser de QAP au démarrage?
+lTipDefaultHotkeysDetails	Lorsque vous l'installez, Quick Access Popup prend le contrôle du bouton du milieu de votre souris et des touches de raccourcis suivantes: Windows+W, Maj+Windows+W, Contrôle+Maj+A, Contrôle+Maj+C, Contrôle-Maj+F and Contrôle+Maj+U.`n`nVous pouvez changer ceci! Ouvrez la boîte de dialogue <a>Outils, Raccourcis</a> pour retirer ou modifier ces affectations.`n`Plus d'infos dans la <a>Base de connaissance</a>.
+lTipDefaultHotkeysTitle	Décidez quelles touches raccourcis sont utilisées par Quick Access Popup
+lTipFavoriteFolderTempDetails	Cette <a>page sur le site web de QAP</a> vous guidera dans les étapes pour accéder facilement à un dossier de travail:`n- créer un favori pour un dossier;`n- choisir une icône distinctive pour ce favori;`n- attribuer un raccourci clavier pour accéder à ce dossier instantanément.`n`nAussi, voyez comment synchroniser l'icône de votre favori avec celle de votre dossier Windows.
+lTipFavoriteFolderTempTitle	Créer un favori pour un dossier utilisé fréquemment
+lTipFolderDialogBoxDetails	La possibilité de changer de dossier à l'intérieur du boîte de dialogue "Ouvrir" ou "Enregistrer sous" est souvent désignée comme étant le plus grand gain de productivité offert par Quick Access Popup.`n`nActivez cette fonctionnalité dans <a>Options , Général</a>.`n`nPlus de détails dans la <a>Base de connaissance</a>.
+lTipFolderDialogBoxTitle	Changer de dossier dans une boîte de dialogue
+lTipInTheWorksDetails	Le menu "En cours" affiche les dossiers et documents sur lesquels vous travaillez actuellement ou ceux que vous utilisez fréquemment.`n`nVoyez ce qu'est le <a>menu "En cours"</a> et ses menus "Fréquent", "Récent" et "Fenêtres ouvertes" et découvrez comment ces menus sont construits.
+lTipInTheWorksTitle	Que contient le menu "En cours"?
+lTipMenuTriggersDetails	Vous pouvez afficher le menu Quick Access Popup en utilisant différentes combinaisons de boutons de la souris ou de touches du clavier.`n`nConfigurez ces déclencheurs dans <a>Options, Déclencheurs du menu</a>. Vous pouvez aussi ouvrir ce menu à l'aide du menu contextuel de Windows Explorer.`n`nVoyez cette page de la <a>Base de connaissance</a> et cette vidéo montrant <a>12 façons d'afficher votre menu QAP</a> (en anglais).
+lTipMenuTriggersTitle	Différentes façons d'afficher votre menu popup
+lTipSearchFavoritesDetails	Alors que votre menu devient mieux garni, voyez comment <a>retrouver rapidement des favoris dans vos sous-menus</a>.`n`nEn plus de faciliter la modification de vos favoris, cet outil vous donne une vue globale sur votre menu permettant ainsi d'éliminer des doublons indésirés ou de mieux organiser vos favoris.
+lTipSearchFavoritesTitle	Rechercher des favoris dans votre menu
 lToolTipAlwaysOnTop	Propriété "Fenêtre toujours visible" désactivée pour la fenêtre:`n~1~
 lToolTipBrokenLinksChecking	Vérification de
 lToolTipBrokenLinksIntro	Vérification des favoris Liens (URL)
