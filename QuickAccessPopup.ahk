@@ -18606,12 +18606,22 @@ SelectIcon(P_strActualIcon)
 	;------------------------------------------------------------
 	SI_ButtonSelectIconFile:
 	;------------------------------------------------------------
-	
+
 	FileSelectFile, SI_strNewLocation, 3, %SI_strCurrentIconFile%, % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)
 	
 	if StrLen(SI_strNewLocation) ; FileSelectFile returns empty string if escaped
-		if InStr("dll|exe|ico|ocx|cpl|png|bmp|gif|jpg", GetFileExtension(SI_strNewLocation))
+		if InStr("png|bmp|gif|jpg", GetFileExtension(SI_strNewLocation))
+			or (GetIconsCount(SI_strNewLocation) = 1) ; for *.dll; *.exe; *.ico; *.ocx; *.cpl files with only one icon
 		{
+			GetImageSize(SI_strNewLocation, SI_intWidth, SI_intHeight)
+			if (SI_intWidth <> SI_intHeight) or (SI_intWidth > 64) or (SI_intHeight > 64)
+			{
+				Oops(2, o_L["OopsInvalidIcon"], SI_strNewLocation, SI_intWidth, SI_intHeight)
+				return
+			}
+			SI_intWidth := ""
+			SI_intHeight := ""
+			
 			SI_strNewIcon := SI_strNewLocation . ",1"
 			Gosub, 3GuiClose
 		}
@@ -18684,14 +18694,7 @@ SelectIcon(P_strActualIcon)
 	;------------------------------------------------------------
 	Gui, Submit, NoHide
 
-	SI_intIconsCount := 0
-	While (SI_oHandle := LoadPicture(f_strIconFile, "icon" . A_Index))
-	{
-		DllCall( "DeleteObject", "Ptr", SI_oHandle) ; delete unused handle
-		SI_intIconsCount++
-	}
-
-	SI_oHandle := ""
+	SI_intIconsCount := GetIconsCount(f_strIconFile)
 
 	return
 	;------------------------------------------------------------
@@ -25432,6 +25435,23 @@ GetImageSize(strImagePath, ByRef intWidth, ByRef intHeight)
 	Gui, GetSize:Add, Picture, +HwndstrPicHwnd, %strImagePath%
 	ControlGetPos, , , intWidth, intHeight, , ahk_id %strPicHwnd%
 	Gui, GetSize:Destroy
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetIconsCount(strIconFile)
+;------------------------------------------------------------
+{
+	intIconsCount := 0
+	While (oHandle := LoadPicture(strIconFile, "icon" . A_Index))
+	{
+		DllCall( "DeleteObject", "Ptr", oHandle) ; delete unused handle
+		intIconsCount++
+	}
+
+	oHandle := ""
+	return intIconsCount
 }
 ;------------------------------------------------------------
 
