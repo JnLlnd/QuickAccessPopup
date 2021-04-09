@@ -35,11 +35,12 @@ Version BETA: 11.2.9.4 (2021-04-09)
 - improve the "Select Icon" dialog box when selecting an icon for a favorite
 - support for image files (*.png; *.bmp; *.gif; *.jpg) in addition to previously supported icon files (*.dll; *.exe; *.ico; *.ocx; *.cpl)
 - move links to select banks of icons in dll files (JLicons.dll, Shell32.dll and ImageRes.dll) from "Edit Favorite" to "Select Icon" dialog box
-- when selecting an image or an icon file containing only one icon, immediately select it, otherwise, if the file conatins multiple icons, display the icons in a grid allowing the user to click the icon to select for the favorite
+- when selecting an image or an icon file containing only one icon, immediately select it, otherwise, if the file contains multiple icons, display the icons in a grid allowing the user to click the icon to select for the favorite
 - when selecting an icon from the "Manage Icons" dialog box (Tools, Icons), use the new "Select Icon" dialog box
 - when selecting an icon for the tray in "Options, Launch Advanced Options", use the new "Select Icon" dialog box
 - show an error message when trying to select an icon file (*.dll; *.exe; *.ocx; *.cpl) that contains no icon
 - when trying to select an icon from an image file (*.png; *.bmp; *.gif; *.jpg), display an error message if the image is not square or if it is larger than 64 x 64 pixels
+- German, Korean, Portuguese, Brazilian Portuguese, Russian and Chinese langue files updates for v11.2.9.2
 
 Version BETA: 11.2.9.3 (2021-04-05)
 - small adjustments in new QAP Features menu names and startup tips language

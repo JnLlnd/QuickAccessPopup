@@ -556,7 +556,7 @@ lHelpText33	PERSONALIZE O SEU MENU DE FUNÇÕES QAP
 lHelpText34	Pode mover os itens dos menus "A trabalhar" e "O Meu QAP Básico" para o menu principal ou para outros submenus como preferir. Na janela "Personalizar", seleccione "Menu ou grupo para editar:" na lista pendente, edite a função QAP para mover e, no separador "Opções do Menu", seleccione o novo menu superior e posição.
 lHelpText35	No menu "A trabalhar", encontre os seus actuais conteúdos:
 lHelpText36	- Abra os menus "Pastas Frequentes" ou "Ficheiros Frequentes" para ver os seus conteúdos usados frequentemente.`n- Escolha os menus "Pastas Recentes" ou "Ficheiros Recentes" para exibir uma lista actualizada do seu trabalho recente.`n- Seleccione o menu "Janelas Actuais" para mudar para qualquer outra janela em execução do Explorador ou de um programa.
-lHelpText41	- Utilize o ícone Quick Access Popup da Área de notificação (inferior direita do ecrã) de uma destas três formas:`n1) Clique esquerdo no ícone para abrir o menu emergente do QAP`n2) Clique direito no ícone para abrir o menu de sistema do QAP.`n3) Duplo clique no ícone para abrir a janela "Personalizar".
+lHelpText41	- Utilize o ícone Quick Access Popup da Área de notificação (inferior direita do ecrã) de uma destas duas formas:`n1) Clique esquerdo no ícone para abrir o menu emergente do QAP`n2) Clique direito no ícone para abrir o menu de sistema do QAP.
 lHelpText42	- Na área de notificação, clique com o botão direito do rato no ícone do Quick Access Popup e marque a opção "Executar no Arranque" para iniciar o Quick Access Popup automaticamente com o sistema.
 lHelpText43	- Configure os seus desencadeadores do menu Quick Access Popup: escolha os seus botões do rato preferidos ou atalhos de teclado. Na janela "Personalizar", seleccione o menu "Opções, Teclas de atalho emergentes".
 lHelpText44	- Também nas "Opções": escolha o seu idioma preferido, tamanho dos ícones do menu e cores das janelas. Seleccione o número de pastas recentes a exibir, adicione atalhos de teclado numéricos ao menu das pastas ou lembretes de atalho. Fixe o menu emergente em determinada posição ou mantenha a posição da janela "Personalizar". E muito mais...
@@ -707,6 +707,10 @@ lMenuSettingsDescription	Exibe a janela "Personalizar" onde pode personalizar o 
 lMenuStartMenu	Menu Iniciar
 lMenuStartup	Arranque
 lMenuSuspendHotkeys	Suspender Teclas de Atalho
+lMenuSwitchApp	Programas actuais
+lMenuSwitchAppDescription	Exibe um menu dinâmico com os programas actualmente em execução no seu sistema (começando com a janela do mais recentemente activado).`n`nQuando selecciona um item, a sua janela passa automaticamente para a frente.`n`nEste menu é actualizado sempre que abrir o menu QAP.
+lMenuSwitchFolder	Pastas actuais
+lMenuSwitchFolderDescription	Exibe um menu dinâmico contendo as pastas já abertas nas janelas do Explorador do Windows Explorer e Directory Opus.`n`nQuando selecciona um item, a sua janela passa automaticamente para a frente (ver também "~1~" para abrir a pasta noutra janela).`n`nEste menu é actualizado sempre que abrir o menu QAP.
 lMenuSwitchFolderOrApp	Janelas Actuais
 lMenuSwitchFolderOrAppDescription	Exibe um menu dinâmico em duas partes:`n1) as pastas já abertas nas janelas do Windows Explorer e Directory Opus`n2) as aplicações actualmente em execução no seu sistema (começando pela janela activada mais recentemente).`n`nQuando seleccionar um item, a sua janela é trazida automaticamente para primeiro plano.`n`nEste menu é actualizado sempre que abrir o menu QAP.
 lMenuSwitchSettings	Mudar de ficheiro de definições
@@ -889,6 +893,7 @@ lOptionsQAPTempFolder	Pasta Temporária
 lOptionsQuickAddSnippetSubmenu	Sub-menu para ~1~
 lOptionsRecentFolders	Número de itens em menus
 lOptionsRecentFoldersPrompt	Itens Recentes e Menus Frequentes:
+lOptionsRecentPopularLevelsMax	Número máximo de níveis de caminhos nos menus Recentes/Frequentes`n(os níveis excedentes serão truncados a partir do início, 0 para manter caminho completo)
 lOptionsRefreshedMenusAttached	Anexar todos os menus dinÃ¢micos ao menu principal do QAP
 lOptionsRefreshedMenusAttachedInfo	Se activar esta opção, pode ocorrer um ligeiro atraso na actualização (dependendo da configuração do seu sistema) cada vez que exibir o menu emergente.`n`nA duração do atraso depende do tempo que o Windows leva a fornecer a informação de actualização necessária para a construção do menu (lista de itens recentes e espaço disponível nas unidades actuais). Esta duração pode variar em cada caso.`n`nSe desactivar esta opção, os menus "~1~", "~2~", "~3~", "~4~" e "~5~" serão actualizados apenas a pedido e exibidos separadamente do menu principal.
 lOptionsRefreshQAPconnectList	Actualizar lista de programas
@@ -962,9 +967,33 @@ lPickIconNoLocation	Escolha primeiro um favorito antes de escolher um ícone.
 lReloadPrompt	~1~ alterado para ~2~. Deseja recarregar ~3~ em ~2~ agora? As alterações ao menu não guardadas serão perdidas.
 lSponsoredName	O desenvolvimento deste software é gentilmente apoiado por ~1~
 lSponsoredNone	Clique aqui para obter uma licença para este software
+lStartupTipsDays	Dias entre Dicas e Truques no Arranque`n(zero para mostrar em todos os arranques do QAP)
+lStartupTipsLater	Ler mais tarde
+lStartupTipsShow	Mostrar Dicas e Truques no Arranque
+lStartupTipsTitle	Dicas e Truques no Arranque do QAP
 lTCMenuName	Lista de Pasta Favoritas do TC
 lTCMenuNameDescription	Para os utilizadores do Total Commander (TC), exibe um menu dinâmico construído com os favoritos adicionados à Hotlist do TC como encontrado no ficheiro wincdm.ini.`n`nDefina a localização do ficheiro wincdm.ini em "Opções", no separador "Gestão de Ficheiros". Se o TC estava seleccionado quando instalou o QAP, a pasta Hotlist foi adicionada automaticamente ao seu menu.
 lTCWinCmdLocation	Localização do WinCmd.ini
+lTipAddDragAndDropDetails	Usar o rato e a técnica de arrastar e largar, é um modo eficiente de adicionar favoritos a partir do Explorador do Windows ao seu menu QAP.`n`n<a>Nesta dica</a>, veja como adicionar pastas, documentos ou programas ao seu menu sem ter que tocar no teclado!
+lTipAddDragAndDropTitle	Adicionar pastas ou ficheiros favoritos usando arrastar e largar
+lTipCreateSubmenuDetails	Melhore o seu menu agrupando em sub-menus os seus favoritos por tipos, assuntos ou projectos.`n`n<a>Veja como adicionar um sub-menu</a>.
+lTipCreateSubmenuTitle	Se o seu menu QAP se tornar demasiado longo, divida e controle!
+lTipCustomIconsDetails	Escolha os ícones exibidos no menu Quick Access Popup <a>substituindo os ícones padrão</a> usados pelo QAP comas sua imagens preferidas. Esta dica irá mostrar-lhe como converter um ficheiro de imagem num ícone (.ico).`n`nVeja também como pode <a>gerir todos os ícones do menu</a> num ecrã.
+lTipCustomIconsTitle	Embeleze o seu menu emergente com os seus ícones preferidos
+lTipCustomizeStartupDetails	Por defeito, o Quick Access Popup exibe a janela "Personalizar" (onde pode editar o seu menu) no arranque.`n`nSe preferir abrir só quando pedir, desmarque a caixa "Abrir janela Personalizar no arranque" na caixa de diálogo <a>Opções, Personalizar Janela</a>.`n`nMais info em <a>Base de Conhecimentos</a>.
+lTipCustomizeStartupTitle	Deseja abrir sempre no arranque a janela personalizar do QAP?
+lTipDefaultHotkeysDetails	Ao ser instalado, o Quick Access Popup assume o controlo do botão do meio do rato e destas teclas de atalho: Windows+W, Shift+Windows+W, Control+Shift+A, Control+Shift+C, Control+Shift+F e Control+Shift+U.`n`nPode alterar isso! Abra a caixa de diálogo <a>Ferramentas, Atalhos</a> para remover ou alterar estas atribuições.`n`nMais info na <a>Base de Conhecimentos</a>.
+lTipDefaultHotkeysTitle	Decida quais as teclas de atalho são atribuídas pelo Quick Access Popup
+lTipFavoriteFolderTempDetails	Esta <a>dica no site do QAP</a> irá guiá-lo nos passos para criar um favorito para aceder facilmente à sua pasta de trabalho temporária:`n- crie um favorito para uma pasta;`n- dê um ícone a este favorito;`n- atribua um atalho para acedê-la de imediato.`n`nVeja também como sincronizar este ícone personalizado da pasta com a pasta do Windows.
+lTipFavoriteFolderTempTitle	Crie um favorito para uma pasta usada com frequência
+lTipFolderDialogBoxDetails	Alterar a pasta nas caixas de diálogo "Guardar Como" ou "Abrir" é muitas vezes descrito como o melhor acelerador de produtividade oferecido pelo Quick Access Popup.`n`nActive esta funcionalidade em <a>Opções , Geral</a>.`n`nMais info na <a>Base de Conhecimentos</a>.
+lTipFolderDialogBoxTitle	Alterar pasta na caixa de diálogo
+lTipInTheWorksDetails	O menu "A trabalhar" mostra no que está a trabalhar neste momento ou que conteúdo usa com frequência.`n`nVeja <a>o que é o menu "A trabalhar"</a> e os seus menus "Frequentes", "Recentes" e "Janelas Actuais" e perceba como são construidos estes menus.
+lTipInTheWorksTitle	O que é o menu "A trabalhar"?
+lTipMenuTriggersDetails	Pode abrir o menu do Quick Access Popup usando vários botões do rato ou teclas de atalho.`n`nConfigure estes desencadeadores em <a>Opções, Teclas de Atalho</a>. Pode também abrir a partir dos menus de contexto do Explorador do Windows.`n`nVeja esta página na <a>Base de Conhecimentos</a> e este vídeo que mostra <a>12 maneiras de fazer emergir o seu menu QAP</a>.
+lTipMenuTriggersTitle	Diversas maneiras de fazer emergir o seu menu favoritos
+lTipSearchFavoritesDetails	À medida que o seu menu cresce, veja como pode localizar <a>rapidamente favoritos nos seus sub-menus</a>.`n`nAlém disso, para facilitar a edição dos favoritos, esta ferramenta também lhe dá uma visão global dos seus favoritos, permitindo eliminar duplicados indesejados ou organizar melhor o seu menu.
+lTipSearchFavoritesTitle	Procurar favoritos dentro do seu menu
 lToolTipAlwaysOnTop	"Sempre visÃ­vel" DESLIGADO para a janela:`n~1~
 lToolTipBrokenLinksChecking	A verificar
 lToolTipBrokenLinksIntro	A verificar ligações de Favoritos
