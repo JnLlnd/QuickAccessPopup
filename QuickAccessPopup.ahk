@@ -17696,7 +17696,7 @@ else ; IconsManageSetDefault
 strIconResource := (StrLen(strTempNewIconResource) ? strTempNewIconResource : strIconResource)
 
 ParseIconResource(strIconResource, strInconFile, intIconIndex)
-GuiControl, , f_picIconCurrent%intIconRow%, % "*icon" . intIconIndex . " " . strInconFile
+GuiControl, 2:, f_picIconCurrent%intIconRow%, % "*icon" . intIconIndex . " " . strInconFile
 
 if (g_saManageIcons[intManageIconsIndex].AA.strFavoriteIconResource <> strIconResource)
 {
@@ -18607,12 +18607,10 @@ SelectIcon(P_strActualIcon)
 	SI_ButtonSelectIconFile:
 	;------------------------------------------------------------
 	
-	; ##### add image file types
-	; Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)
-	FileSelectFile, SI_strNewLocation, 3, %SI_strCurrentIconFile%, % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl)
+	FileSelectFile, SI_strNewLocation, 3, %SI_strCurrentIconFile%, % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)
 	
 	if StrLen(SI_strNewLocation) ; FileSelectFile returns empty string if escaped
-		if GetFileExtension(SI_strNewLocation) = "ico" ; ##### add file types
+		if InStr("dll|exe|ico|ocx|cpl|png|bmp|gif|jpg", GetFileExtension(SI_strNewLocation))
 		{
 			SI_strNewIcon := SI_strNewLocation . ",1"
 			Gosub, 3GuiClose
@@ -18624,7 +18622,7 @@ SelectIcon(P_strActualIcon)
 	;------------------------------------------------------------
 	
 	;------------------------------------------------------------
-	SI_IconFileChanged
+	SI_IconFileChanged:
 	;------------------------------------------------------------
 	Gui, Submit, NoHide
 
