@@ -13034,10 +13034,6 @@ if !(blnIsGroupMember)
 	Gui, 2:Add, Link, x20 ys+57 gGuiPickIconDialog, % "<a>" . o_L["DialogSelectIcon"] . "</a>"
 	Gui, 2:Add, Link, x+20 yp gGuiPickIconDialogNo, % "<a>" . o_L["DialogSelectIconNo"] . "</a>"
 	Gui, 2:Add, Link, x+20 yp gGuiEditIconDialog, % "<a>" . o_L["DialogEditIcon"] . "</a>"
-    Gui, 2:Add, Text, x20 ys+74 gGuiPickIconDialogJL, % o_L["DialogSelectIconJL"]
-	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogJL vf_lblSelectIconJL, % "<a>JLicons.dll</a>"
-	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogShell vf_lblSelectIconShell, % "<a>Shell32.dll</a>"
-	Gui, 2:Add, Link, x+10 yp gGuiPickIconDialogImageRes vf_lblSelectIconImageRes, % "<a>ImageRes.dll</a>"
 
 	g_strNewFavoriteHotstring := o_EditedFavorite.AA.strFavoriteHotstring ; init g_strNewFavoriteHotstring even if favorite is Text
 	if (o_EditedFavorite.AA.strFavoriteType <> "Text")
@@ -14013,9 +14009,6 @@ return
 
 ;------------------------------------------------------------
 GuiPickIconDialog:
-GuiPickIconDialogJL:
-GuiPickIconDialogShell:
-GuiPickIconDialogImageRes:
 GuiPickIconDialogNo:
 GuiEditIconDialog:
 ;------------------------------------------------------------
@@ -14043,17 +14036,12 @@ if InStr("GuiEditIconDialog|GuiPickIconDialogNo|", A_ThisLabel . "|")
 	return
 }
 
-if (A_ThisLabel = "GuiPickIconDialogJL")
-	g_strNewFavoriteIconResource := o_JLicons.strFileLocation . ",1"
-else if (A_ThisLabel = "GuiPickIconDialogShell")
-	g_strNewFavoriteIconResource := A_WinDir . "\System32\shell32.dll,1"
-else if (A_ThisLabel = "GuiPickIconDialogImageRes")
-	g_strNewFavoriteIconResource := A_WinDir . "\System32\imageres.dll,1"
-
-g_strNewFavoriteIconResource := SelectIcon(g_strNewFavoriteIconResource)
-###_V(A_ThisLabel, g_strNewFavoriteIconResource) ; #####
+strTempNewFavoriteIconResource := SelectIcon(g_strNewFavoriteIconResource)
+g_strNewFavoriteIconResource := (strTempNewFavoriteIconResource = "None" ? "iconNoIcon" : (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource))
 
 Gosub, GuiFavoriteIconDisplay
+
+strTempNewFavoriteIconResource := ""
 
 return
 ;------------------------------------------------------------
@@ -14095,10 +14083,6 @@ ParseIconResource(g_strNewFavoriteIconResource, strThisIconFile, intThisIconInde
 strExpandedIconFile := EnvVars(strThisIconFile)
 GuiControl, 2:, f_picIcon, *icon%intThisIconIndex% %strExpandedIconFile%
 GuiControl, % "2:" . (g_strNewFavoriteIconResource <> g_strDefaultIconResource ? "Show" : "Hide"), f_lblRemoveIcon
-; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconSelectIn
-; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconJL
-; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconShell
-; GuiControl, % (strThisIconFile <> o_JLicons.strFileLocation ? "Show" : "Hide"), f_lblSelectIconImageRes
 
 strThisFolder := (o_EditedFavorite.AA.strFavoriteType = "Folder" and StrLen(f_strFavoriteLocation) ? PathCombine(A_WorkingDir, EnvVars(f_strFavoriteLocation)) : "")
 blnThisDesktopIniExist := (StrLen(strThisFolder) ? FileExist(strThisFolder . "\desktop.ini") : false)
@@ -17685,13 +17669,15 @@ intManageIconsIndex := g_intIconsManageStartingRow + intIconRow - 1
 
 strIconResource := g_saManageIcons[intManageIconsIndex].AA.strFavoriteIconResource
 if (A_ThisLabel = "IconsManagePickIconDialog")
+{
 	strTempNewIconResource := SelectIcon(strIconResource)
+	strTempNewIconResource := (strTempNewIconResource = "None" ? "iconNoIcon" : strTempNewIconResource)
+}
 else ; IconsManageSetDefault
 {
 	strTempNewIconResource := g_saManageIcons[intManageIconsIndex].GetDefaultIcon4Type(g_saManageIcons[intManageIconsIndex].AA.strFavoriteLocation)
 	g_strNewFavoriteIconResource := "" ; make sure it won't bring back an old value other than default
 }
-###_V(A_ThisLabel, strTempNewIconResource) ; #####
 
 strIconResource := (StrLen(strTempNewIconResource) ? strTempNewIconResource : strIconResource)
 
@@ -18554,10 +18540,16 @@ SelectIcon(P_strActualIcon)
 	ParseIconResource(P_strActualIcon, SI_strCurrentIconFile, SI_intIconIndex)
 	GuiControl, , f_strIconFile, %SI_strCurrentIconFile%
 	Gui, Add, Button, x+5 yp w100 gSI_ButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
-	Gui, Add, Text, x10 y+10, % o_L["DialogIconsSelectPrompt"]
 
+    Gui, Add, Text, x10 y+5, % o_L["DialogSelectIconJL"]
+	Gui, Add, Link, x+10 yp gSI_GuiPickIconDialogJL vf_lblSelectIconJL, % "<a>JLicons.dll</a>"
+	Gui, Add, Link, x+10 yp gSI_GuiPickIconDialogShell vf_lblSelectIconShell, % "<a>Shell32.dll</a>"
+	Gui, Add, Link, x+10 yp gSI_GuiPickIconDialogImageRes vf_lblSelectIconImageRes, % "<a>ImageRes.dll</a>"
+	
+	Gui, Add, Text, x10 y+15, % o_L["DialogIconsSelectPrompt"]
+	
 	; create pic objects
-	SI_intTop := 64
+	SI_intTop := 84
 	SI_intLeft := 4
 	SI_intRow := 0
 	Loop, %SI_intPickIconRows%
@@ -18607,11 +18599,19 @@ SelectIcon(P_strActualIcon)
 	SI_ButtonSelectIconFile:
 	;------------------------------------------------------------
 
-	FileSelectFile, SI_strNewLocation, 3, %SI_strCurrentIconFile%, % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)
+	FileSelectFile, SI_strNewLocation, 3, % (StrLen(SI_strPrevLocation) ? SI_strPrevLocation : SI_strCurrentIconFile), % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)
+	SI_strPrevLocation := SI_strNewLocation
 	
 	if StrLen(SI_strNewLocation) ; FileSelectFile returns empty string if escaped
-		if InStr("png|bmp|gif|jpg", GetFileExtension(SI_strNewLocation))
-			or (GetIconsCount(SI_strNewLocation) = 1) ; for *.dll; *.exe; *.ico; *.ocx; *.cpl files with only one icon
+	{
+		SI_strFileExtension := GetFileExtension(SI_strNewLocation)
+		
+		if InStr("dll|exe|ocx|cpl", SI_strFileExtension)
+			SI_intIconsCount := GetIconsCount(SI_strNewLocation)
+		else
+			SI_intIconsCount := ""
+			
+		if InStr("png|bmp|gif|jpg", SI_strFileExtension)
 		{
 			GetImageSize(SI_strNewLocation, SI_intWidth, SI_intHeight)
 			if (SI_intWidth <> SI_intHeight) or (SI_intWidth > 64) or (SI_intHeight > 64)
@@ -18619,15 +18619,47 @@ SelectIcon(P_strActualIcon)
 				Oops(2, o_L["OopsInvalidIcon"], SI_strNewLocation, SI_intWidth, SI_intHeight)
 				return
 			}
+			else
+			{
+				SI_strNewIcon := SI_strNewLocation . ",1"
+				Gosub, 3GuiClose
+			}
 			SI_intWidth := ""
 			SI_intHeight := ""
-			
+		}
+		else if (SI_strFileExtension = "ico") or (SI_intIconsCount = 1) ; for icon filkes and dll, exe, ocx, cpl files with only one icon
+		{
 			SI_strNewIcon := SI_strNewLocation . ",1"
 			Gosub, 3GuiClose
 		}
-		else
+		else if (SI_intIconsCount = 0) ; for dll, exe, ico, ocx, cpl files without icon
+			Oops(3, o_L["OopsNoIconInFile"], SI_strNewLocation)
+		else ; for dll, exe, ico, ocx, cpl files with icons
 			GuiControl, , f_strIconFile, %SI_strNewLocation% ; triggers SI_GetIconsCount and PickIconLoad
-		
+	}
+	
+	SI_strPrevLocation := ""
+	SI_strFileExtension := ""
+	SI_intIconsCount := ""
+	
+	return
+	;------------------------------------------------------------
+	
+	;------------------------------------------------------------
+	SI_GuiPickIconDialogJL:
+	SI_GuiPickIconDialogShell:
+	SI_GuiPickIconDialogImageRes:
+	;------------------------------------------------------------
+	if (A_ThisLabel = "SI_GuiPickIconDialogJL")
+		SI_strNewLocation := o_JLicons.strFileLocation
+	else if (A_ThisLabel = "SI_GuiPickIconDialogShell")
+		SI_strNewLocation := A_WinDir . "\System32\shell32.dll"
+	else if (A_ThisLabel = "SI_GuiPickIconDialogImageRes")
+		SI_strNewLocation := A_WinDir . "\System32\imageres.dll"
+
+	GuiControl, , f_strIconFile, %SI_strNewLocation% ; triggers SI_GetIconsCount and PickIconLoad
+	SI_strNewLocation := ""
+	
 	return
 	;------------------------------------------------------------
 	
