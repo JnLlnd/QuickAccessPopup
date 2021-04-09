@@ -10719,7 +10719,6 @@ if (A_ThisLabel = "ButtonAlternativeTrayIcon")
 {
 	strNewLocation := SelectIcon(o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue)
 	strNewLocation := (strNewLocation = "None" ? "" : (StrLen(strNewLocation) ? strNewLocation : o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue))
-	###_V(A_ThisLabel, strNewLocation) ; #####
 	GuiControl, 2:, %strControlName%, %strNewLocation%
 }
 else
@@ -18589,7 +18588,15 @@ SelectIcon(P_strActualIcon)
 	WinWaitClose, %SI_strGuiTitle% ; waiting for Gui to close
 	
 	; Clean-up function global variables
-	SI_### := "" ; ######
+	SI_intPickIconRows := ""
+	SI_intPickIconCols := ""
+	SI_intPickIconPage := ""
+	SI_strGuiTitle := ""
+	SI_intTop := ""
+	SI_intLeft := ""
+	SI_intRow := ""
+	SI_intCol := ""
+	SI_aaL := ""
 
 	return SI_strNewIcon ; returning value
 	
