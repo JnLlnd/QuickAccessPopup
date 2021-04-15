@@ -4711,6 +4711,25 @@ global g_aaRecentFoldersShortNames := Object() ; search for g_aaRecent%strFolder
 global g_aaRecentFilesShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 
 ;---------------------------------
+; Used in SelectIcon()
+global SI_intPickIconCols := 10 ; 20
+global SI_intPickIconRows := 5 ; 10
+global SI_intPickIconPage := (SI_intPickIconRows * SI_intPickIconCols)
+
+global SI_intGridTop := 88
+global SI_intGridLeft := 12
+global SI_intIconSize := 32
+global SI_intDistance := 44
+global SI_intSelectorSize := 36
+
+global SI_intIconsCount ; number of icon in the current icon file
+global SI_intIconsManageStartingIcon ; index number of first icon on the current page of the icons grid
+global SI_intSelectorPos ; current position of the icon selector in the grid
+global SI_intCurrentIconIndex ; index of the icon currently selected in the grid
+global SI_intCurrentCol ; current column of the selector
+global SI_intCurrentRow ; current row of the selector
+
+;---------------------------------
 ; Used in OpenFavorite
 global g_blnAlternativeMenu
 global g_strAlternativeMenu
@@ -5031,6 +5050,14 @@ Hotkey, If, WinActive(QAPSettingsString()) ; main Gui title
 	Hotkey, +^Right, SettingsShiftCtrlRight, On UseErrorLevel
 	Hotkey, +^Left, SettingsShiftCtrlLeft, On UseErrorLevel
 
+HotKey, If, WinActive(SI_strGuiTitle) ; Select icon in gui in function SelectIcon()
+	Hotkey, Enter, SI_SelectorEnter
+	Hotkey, NumpadEnter, SI_SelectorEnter
+	Hotkey, Left, SI_SelectorLeft
+	Hotkey, Right, SI_SelectorRight
+	Hotkey, Up, SI_SelectorUp
+	Hotkey, Down, SI_SelectorDown
+	
 	; other Hotkeys are now created by menu assignement in BuildGuiMenuBar
 
 Hotkey, If
@@ -5051,6 +5078,12 @@ if (g_blnIniFileCreation) ; at first launch, set the end of ini creation process
 ;---------------------------------
 ; Init class for StatupTips
 gosub, InitStartupTips
+
+; ####
+Gosub, GuiShow
+Gosub, GuiEditFavorite
+###_D(SelectIcon(A_AppDataCommon . "\JeanLalonde\JLicons.dll,2"))
+ExitApp
 
 return
 
@@ -5082,6 +5115,16 @@ return
 ;------------------------------------------------------------
 #If, WinActive(QAPSettingsString()) ; main Gui title
 ; empty - act as a handle for the "Hotkey, If, Expression" condition in PopupHotkey.__New() (and elsewhere)
+; ("Expression must be an expression which has been used with the #If directive elsewhere in the script.")
+#If
+;------------------------------------------------------------
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+;------------------------------------------------------------
+#If, WinActive(SI_strGuiTitle) ; Select Icon Gui
+; empty - act as a handle for the "Hotkey, If, Expression" condition
 ; ("Expression must be an expression which has been used with the #If directive elsewhere in the script.")
 #If
 ;------------------------------------------------------------
@@ -18849,11 +18892,7 @@ SelectIcon(P_strActualIcon)
 	global
 
 	g_blnChangeIconInProgress := false
-		
-	SI_intPickIconRows := 10
-	SI_intPickIconCols := 20
-	SI_intPickIconPage := (SI_intPickIconRows * SI_intPickIconCols)
-
+	
 	SI_strGuiTitle := L(o_L["DialogIconsSelectTitle"], g_strAppNameText, g_strAppVersion)
 	Gui, 3:New, +Hwndg_strGui3Hwnd, %SI_strGuiTitle%
 	Gui, 3:Default
@@ -18864,9 +18903,9 @@ SelectIcon(P_strActualIcon)
 		Gui, Color, %g_strGuiWindowColor%
 
 	Gui, Add, Text, x10 y10, % o_L["DialogFileName"] . ":"
-	Gui, Add, Edit, x+5 yp w500 h20 vf_strIconFile
-	ParseIconResource(P_strActualIcon, SI_strCurrentIconFile, SI_intIconIndex)
-	GuiControl, , f_strIconFile, %SI_strCurrentIconFile%
+	Gui, Add, Edit, x+5 yp w280 h20 vf_strIconResource ReadOnly
+	GuiControl, , f_strIconResource, %P_strActualIcon%
+	ParseIconResource(P_strActualIcon, SI_strCurrentIconFile, SI_intCurrentIconIndex)
 	Gui, Add, Button, x+5 yp w100 gSI_ButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
 
     Gui, Add, Text, x10 y+5, % o_L["DialogSelectIconJL"]
@@ -18877,18 +18916,17 @@ SelectIcon(P_strActualIcon)
 	Gui, Add, Text, x10 y+15, % o_L["DialogIconsSelectPrompt"]
 	
 	; create pic objects
-	SI_intTop := 84
-	SI_intLeft := 4
-	SI_intRow := 0
+	SI_intCurrentRow := 1
 	Loop, %SI_intPickIconRows%
 	{
-		SI_intCol := 0
+		SI_intCurrentCol := 1
 		Loop, %SI_intPickIconCols% ; icons per row
 		{
-			Gui, Add, Picture, % "y" . SI_intTop + (40 * SI_intRow) . " x" . SI_intLeft + (40 * SI_intCol) . " w32 h32 vf_picIcon" . (SI_intRow * SI_intPickIconCols) + SI_intCol ; gSI_PickIconClicked added when loading icons
-			SI_intCol++
+			Gui, Add, Picture, % "y" . SI_intGridTop + (SI_intDistance * (SI_intCurrentRow - 1)) . " x" . SI_intGridLeft + (SI_intDistance * (SI_intCurrentCol - 1))
+				. " w" . SI_intIconSize . " h" . SI_intIconSize . " vf_picIcon" . ((SI_intCurrentRow - 1) * SI_intPickIconCols) + SI_intCurrentCol ; gSI_PickIconClicked added when loading icons
+			SI_intCurrentCol++
 		}
-		SI_intRow++
+		SI_intCurrentRow++
 	}
 
 	SI_aaL := o_L.InsertAmpersand(false, "DialogIconsManagePrevious", "DialogIconsManageNext", "GuiCancel") 
@@ -18907,25 +18945,36 @@ SelectIcon(P_strActualIcon)
 	
 	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeIconOK", "f_btnChangeIconCancel")
 
+	Gui, Add, Progress, % "x1 y1 w" . SI_intDistance - 5 . " h1 BackgroundBlue vf_prgTop"
+	Gui, Add, Progress, % "x1 y1 w1 h" . SI_intDistance - 5 . " BackgroundBlue vf_prgRight"
+	Gui, Add, Progress, % "x1 y1 w" . SI_intDistance - 5 . " h1 BackgroundBlue vf_prgBottom"
+	Gui, Add, Progress, % "x1 y1 w1 h" . SI_intDistance - 5 . " BackgroundBlue vf_prgLeft"
+	Gosub, SI_MoveSelector
+
 	Gui, Add, Text
 	GuiControl, Focus, f_btnChangeIconOK
 	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SI_intX, SI_intY)
 	Gui, Show, AutoSize x%SI_intX% y%SI_intY%
 
 	Gui, 2:+Disabled
-	GuiControl, +gSI_IconFileChanged, f_strIconFile ; set g-command after control's initial content is set
 	WinWaitClose, %SI_strGuiTitle% ; waiting for Gui to close
 	
 	; Clean-up function global variables
+	SI_strGuiTitle := ""
+	strGui3Hwnd := ""
+	SI_intIconsCount := ""
+	SI_intIconsManageStartingIcon := ""
 	SI_intPickIconRows := ""
 	SI_intPickIconCols := ""
 	SI_intPickIconPage := ""
 	SI_strGuiTitle := ""
-	SI_intTop := ""
-	SI_intLeft := ""
-	SI_intRow := ""
-	SI_intCol := ""
+	SI_intGridTop := ""
+	SI_intGridLeft := ""
+	SI_intCurrentRow := ""
+	SI_intCurrentCol := ""
 	SI_aaL := ""
+	SI_intIconSize := ""
+	SI_intDistance := ""
 
 	return SI_strNewIcon ; returning value
 	
@@ -18971,12 +19020,16 @@ SelectIcon(P_strActualIcon)
 		else if (SI_intIconsCount = 0) ; for dll, exe, ico, ocx, cpl files without icon
 			Oops(3, o_L["OopsNoIconInFile"], SI_strNewLocation)
 		else ; for dll, exe, ico, ocx, cpl files with icons
-			GuiControl, , f_strIconFile, %SI_strNewLocation% ; triggers SI_GetIconsCount and PickIconLoad
+		{
+			SI_strCurrentIconFile := SI_strNewLocation
+			SI_intCurrentIconIndex := 1
+			Gosub, SI_GetIconsCount
+			Gosub, SI_PickIconLoad
+		}
 	}
 	
 	SI_strPrevLocation := ""
 	SI_strFileExtension := ""
-	SI_intIconsCount := ""
 	
 	return
 	;------------------------------------------------------------
@@ -18987,106 +19040,25 @@ SelectIcon(P_strActualIcon)
 	SI_GuiPickIconDialogImageRes:
 	;------------------------------------------------------------
 	if (A_ThisLabel = "SI_GuiPickIconDialogJL")
-		SI_strNewLocation := o_JLicons.strFileLocation
+		SI_strCurrentIconFile := o_JLicons.strFileLocation
 	else if (A_ThisLabel = "SI_GuiPickIconDialogShell")
-		SI_strNewLocation := A_WinDir . "\System32\shell32.dll"
+		SI_strCurrentIconFile := A_WinDir . "\System32\shell32.dll"
 	else if (A_ThisLabel = "SI_GuiPickIconDialogImageRes")
-		SI_strNewLocation := A_WinDir . "\System32\imageres.dll"
-
-	GuiControl, , f_strIconFile, %SI_strNewLocation% ; triggers SI_GetIconsCount and PickIconLoad
-	SI_strNewLocation := ""
-	
-	return
-	;------------------------------------------------------------
-	
-	;------------------------------------------------------------
-	SI_IconFileChanged:
-	;------------------------------------------------------------
-	Gui, Submit, NoHide
+		SI_strCurrentIconFile := A_WinDir . "\System32\imageres.dll"
+	SI_intCurrentIconIndex := 1
 
 	Gosub, SI_GetIconsCount
 	Gosub, SI_PickIconLoad
-
+	
 	return
 	;------------------------------------------------------------
-
-	;------------------------------------------------------------
-	SI_PickIconLoad:
-	SI_PickIconLoadPrev:
-	SI_PickIconLoadNext:
-	;------------------------------------------------------------
-	Gui, Submit, NoHide
-
-	DllCall("LockWindowUpdate", Uint, g_strGui3Hwnd)
-
-	if (A_ThisLabel = "SI_PickIconLoad")
-		SI_intIconsManageStartingIcon := 1 ; first load
-	else if (A_ThisLabel = "SI_PickIconLoadNext")
-		SI_intIconsManageStartingIcon += SI_intPickIconPage ; cannot exceed g_intIconsCount because Next button disabled
-	else ; SI_PickIconLoadPrev
-		SI_intIconsManageStartingIcon -= SI_intPickIconPage ; cannot go negative because Prev button disabled
-
-	SI_intRow := 0
-	Loop, %SI_intPickIconRows%
-	{
-		SI_intCol := 0
-		Loop, %SI_intPickIconCols% ; icons per row
-		{
-			SI_intThisIconPos := (SI_intRow * SI_intPickIconCols) + SI_intCol
-			SI_intThisIconIndex := SI_intThisIconPos + SI_intIconsManageStartingIcon
-			
-			GuiControl, , f_picIcon%SI_intThisIconPos%, % (SI_intThisIconIndex <= SI_intIconsCount ? "*icon" . SI_intThisIconIndex . " " . f_strIconFile : "") ; assign new icon or remove previous icon
-			GuiControl, % (SI_intThisIconIndex <= SI_intIconsCount ? "+gSI_PickIconClicked" : "-g") , f_picIcon%SI_intThisIconPos% ; set or remove gosub
-			
-			SI_intCol++
-		}
-		SI_intRow++
-	}
-
-	; enable/disable prev/next buttons
-	GuiControl, % (SI_intIconsManageStartingIcon + SI_intPickIconPage > SI_intIconsCount ? "Disable" : "Enable"), f_btnIconsManageNext
-	GuiControl, % (SI_intIconsManageStartingIcon - SI_intPickIconPage < 1 ? "Disable" : "Enable"), f_btnIconsManagePrev
-
-	DllCall("LockWindowUpdate", Uint, 0)  ; Pass 0 to unlock the currently locked window.
-
-	SI_intRow := ""
-	SI_intCol := ""
-	SI_intThisIconPos := ""
-	SI_intThisIconIndex := ""
-
-	return
-	;------------------------------------------------------------
-
+	
 	;------------------------------------------------------------
 	SI_GetIconsCount:
 	;------------------------------------------------------------
 	Gui, Submit, NoHide
 
-	SI_intIconsCount := GetIconsCount(f_strIconFile)
-
-	return
-	;------------------------------------------------------------
-
-	;------------------------------------------------------------
-	SI_PickIconClicked:
-	SI_PickIconIcoFileSelected:
-	;------------------------------------------------------------
-	Gui, Submit, NoHide
-
-	SI_strTempNewFavoriteIconResource := f_strIconFile . "," . (A_ThisLabel = "SI_PickIconIcoFileSelected" ? 1 : StrReplace(A_GuiControl, "f_picIcon") + SI_intIconsManageStartingIcon)
-	SI_strNewIcon := (StrLen(SI_strTempNewFavoriteIconResource) ? SI_strTempNewFavoriteIconResource : P_strActualIcon)
-
-	g_blnChangeShortcutInProgress := false
-	Gosub, 3GuiClose
-
-	SI_strGuiTitle := ""
-	SI_strGui3Hwnd := ""
-	SI_strTempNewFavoriteIconResource := ""
-	SI_intIconsCount := ""
-	SI_intIconsManageStartingIcon := ""
-	SI_intPickIconCols := ""
-	SI_intPickIconPage := ""
-	SI_intPickIconRows := ""
+	SI_intIconsCount := GetIconsCount(SI_strCurrentIconFile)
 
 	return
 	;------------------------------------------------------------
@@ -19097,7 +19069,7 @@ SelectIcon(P_strActualIcon)
 	Gui, Submit, NoHide
 	
 	; until selecting using keyboard is selected, return 1st icon of current file, or None if no file
-	SI_strNewIcon := (StrLen(f_strIconFile) ? f_strIconFile . ",1" : "None")
+	SI_strNewIcon := SI_strCurrentIconFile . "," . SI_intCurrentIconIndex
 	
 	g_blnChangeShortcutInProgress := false
 	Gosub, 3GuiClose
@@ -19118,6 +19090,228 @@ SelectIcon(P_strActualIcon)
 }
 ;------------------------------------------------------------
 
+
+;------------------------------------------------------------
+SI_SelectorLeft:
+SI_SelectorRight:
+SI_SelectorUp:
+SI_SelectorDown:
+SI_SelectorEnter:
+;------------------------------------------------------------
+Gui, 3:Submit, NoHide
+
+if (A_ThisLabel = "SI_SelectorEnter")
+{
+	if ((SI_intSelectorPos + SI_intIconsManageStartingIcon) > SI_intIconsCount)
+		return ; do nothing
+	
+	SI_strNewIcon := SI_strCurrentIconFile . "," . SI_intCurrentIconIndex
+	
+	g_blnChangeShortcutInProgress := false
+	Gosub, 3GuiClose
+	return
+}
+
+if (A_ThisLabel = "SI_SelectorRight")
+	if (SI_intSelectorPos = SI_intPickIconPage)
+	{
+		GuiControlGet, blnEnabled, 3:Enabled, f_btnIconsManageNext
+		if (blnEnabled)
+		{
+			SI_intSelectorPos := 1
+			Gosub, SI_PickIconLoadNextArrowRight
+		}
+		; else do nothing
+	}
+	else
+		SI_UpdatePosition(1) ; will SI_MoveSelector
+else if (A_ThisLabel = "SI_SelectorLeft")
+	if (SI_intSelectorPos = 1)
+	{
+		GuiControlGet, blnEnabled, 3:Enabled, f_btnIconsManagePrev
+		if (blnEnabled)
+		{
+			SI_intSelectorPos := SI_intPickIconPage 
+			Gosub, SI_PickIconLoadPrevArrowLeft
+		}
+		; else do nothing
+	}
+	else
+		SI_UpdatePosition(-1) ; will SI_MoveSelector
+else if (A_ThisLabel = "SI_SelectorDown")
+{
+	SI_intCurrentRow := Ceil(SI_intSelectorPos / SI_intPickIconCols) ; (SI_intSelectorPos - 1 // SI_intPickIconCols) + 1
+	GuiControlGet, blnEnabled, 3:Enabled, f_btnIconsManageNext
+	if (SI_intCurrentRow = SI_intPickIconRows and blnEnabled)
+	{
+		SI_intSelectorPos := SI_intSelectorPos - ((SI_intPickIconRows - 1) * SI_intPickIconCols)
+		Gosub, SI_PickIconLoadNextArrowDown
+	}
+	else
+		SI_UpdatePosition(SI_intPickIconCols) ; will SI_MoveSelector
+}
+else ; SI_SelectorUp
+{
+	SI_intCurrentRow := Ceil(SI_intSelectorPos / SI_intPickIconCols) ; (SI_intSelectorPos - 1 // SI_intPickIconCols) + 1
+	GuiControlGet, blnEnabled, 3:Enabled, f_btnIconsManagePrev
+	if (SI_intCurrentRow = 1 and blnEnabled)
+	{
+		SI_intSelectorPos := SI_intSelectorPos + ((SI_intPickIconRows - 1) * SI_intPickIconCols)
+		Gosub, SI_PickIconLoadPrevArrowUp
+	}
+	else
+		SI_UpdatePosition(-SI_intPickIconCols) ; will SI_MoveSelector
+}
+
+GuiControl, 3:, f_strIconResource, % SI_strCurrentIconFile . "," . SI_intCurrentIconIndex
+
+blnEnabled := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SI_UpdatePosition(intMove)
+;------------------------------------------------------------
+{
+	intTestIconIndex := SI_intSelectorPos + intMove + SI_intIconsManageStartingIcon - 1
+	if (intTestIconIndex > SI_intIconsCount)
+	{
+		SI_intSelectorPos := Mod(SI_intIconsCount, SI_intPickIconPage)
+		SI_intCurrentIconIndex := SI_intIconsCount
+	}
+	else if (intTestIconIndex < 0)
+	{
+		SI_intSelectorPos := 1
+		SI_intCurrentIconIndex := 1
+	}
+	else
+	{
+		SI_intSelectorPos := SI_intSelectorPos + intMove
+		SI_intCurrentIconIndex := intTestIconIndex
+	}
+	gosub, SI_MoveSelector
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SI_MoveSelector:
+;------------------------------------------------------------
+
+SI_GetSelectorCoordFromPosition(SI_intPrgLeft, SI_intPrgTop)
+
+GuiControl, 3:Move, f_prgTop, % "x" . SI_intPrgLeft . " y" . SI_intPrgTop
+GuiControl, 3:Move, f_prgRight, % "x" . SI_intPrgLeft + SI_intSelectorSize + 2 " y" . SI_intPrgTop
+GuiControl, 3:Move, f_prgBottom, % "x" . SI_intPrgLeft " y" SI_intPrgTop + SI_intSelectorSize + 2
+GuiControl, 3:Move, f_prgLeft, % "x" . SI_intPrgLeft " y" . SI_intPrgTop
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SI_PickIconLoad:
+SI_PickIconLoadPrev:
+SI_PickIconLoadNext:
+SI_PickIconLoadPrevArrowUp:
+SI_PickIconLoadNextArrowDown:
+SI_PickIconLoadPrevArrowLeft:
+SI_PickIconLoadNextArrowRight:
+;------------------------------------------------------------
+Gui, Submit, NoHide
+
+
+if (A_ThisLabel = "SI_PickIconLoad")
+	SI_intSelectorPos := Mod(SI_intCurrentIconIndex, SI_intPickIconPage)
+else if (A_ThisLabel = "SI_PickIconLoadNext")
+	SI_intCurrentIconIndex += SI_intPickIconPage
+else if (A_ThisLabel = "SI_PickIconLoadPrev")
+	SI_intCurrentIconIndex -= SI_intPickIconPage
+else if (A_ThisLabel = "SI_PickIconLoadNextArrowDown")
+	SI_intCurrentIconIndex += SI_intPickIconCols
+else if (A_ThisLabel = "SI_PickIconLoadPrevArrowUp")
+	SI_intCurrentIconIndex -= SI_intPickIconCols
+else if (A_ThisLabel = "SI_PickIconLoadNextArrowRight")
+	SI_intCurrentIconIndex += 1
+else if (A_ThisLabel = "SI_PickIconLoadPrevArrowLeft")
+	SI_intCurrentIconIndex -= 1
+SI_intIconsManageStartingIcon := ((Ceil(SI_intCurrentIconIndex / SI_intPickIconPage) - 1) * SI_intPickIconPage) + 1
+
+SI_intCurrentRow := 1
+DllCall("LockWindowUpdate", Uint, g_strGui3Hwnd)
+Loop, %SI_intPickIconRows%
+{
+	SI_intCurrentCol := 1
+	Loop, %SI_intPickIconCols% ; icons per row
+	{
+		SI_intThisIconPos := ((SI_intCurrentRow - 1) * SI_intPickIconCols) + SI_intCurrentCol
+		SI_intThisIconIndex := SI_intThisIconPos + SI_intIconsManageStartingIcon
+		GuiControl, 3:, f_picIcon%SI_intThisIconPos%, % (SI_intThisIconIndex - 1 <= SI_intIconsCount ? "*icon" . SI_intThisIconIndex - 1 . " " . SI_strCurrentIconFile : "") ; assign new icon or remove previous icon
+		GuiControl, % "3:" . (SI_intThisIconIndex - 1 <= SI_intIconsCount ? "+gSI_PickIconClicked" : "-g") , f_picIcon%SI_intThisIconPos% ; set or remove gosub
+		
+		SI_intCurrentCol++
+	}
+	SI_intCurrentRow++
+}
+DllCall("LockWindowUpdate", Uint, 0)  ; Pass 0 to unlock the currently locked window.
+
+; enable/disable prev/next buttons
+GuiControl, % "3:" . (SI_intIconsManageStartingIcon + SI_intPickIconPage > SI_intIconsCount ? "Disable" : "Enable"), f_btnIconsManageNext
+GuiControl, % "3:" . (SI_intIconsManageStartingIcon - SI_intPickIconPage < 1 ? "Disable" : "Enable"), f_btnIconsManagePrev
+
+GuiControl, 3:, f_strIconResource, %SI_strCurrentIconFile%,%SI_intCurrentIconIndex%
+Gosub, SI_MoveSelector
+
+
+SI_intCurrentRow := ""
+SI_intCurrentCol := ""
+SI_intThisIconPos := ""
+SI_intThisIconIndex := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SI_PickIconClicked:
+;------------------------------------------------------------
+Gui, 3:Submit, NoHide
+
+if (SI_intPreviousTickCount and (A_TickCount - SI_intPreviousTickCount < 300)) ; double-click
+{
+	SI_intPreviousTickCount := ""
+	if StrLen(SI_strCurrentIconFile)
+		SI_strNewIcon := SI_strCurrentIconFile . "," . StrReplace(A_GuiControl, "f_picIcon") + SI_intIconsManageStartingIcon - 1
+	else
+		SI_strNewIcon := P_strActualIcon
+	
+	g_blnChangeShortcutInProgress := false
+	Gosub, 3GuiClose
+}
+; else continue
+SI_intPreviousTickCount := A_TickCount
+
+SI_intSelectorPos := StrReplace(A_GuiControl, "f_picIcon")
+Gosub, SI_MoveSelector
+SI_intCurrentIconIndex := SI_intSelectorPos + SI_intIconsManageStartingIcon - 1
+GuiControl, 3:, f_strIconResource, % SI_strCurrentIconFile . "," . SI_intCurrentIconIndex
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SI_GetSelectorCoordFromPosition(ByRef intPrgLeft, ByRef intPrgTop)
+;------------------------------------------------------------
+{
+	SI_intCurrentCol := Mod(SI_intSelectorPos - 1, SI_intPickIconCols) + 1
+	SI_intCurrentRow := Ceil(SI_intSelectorPos / SI_intPickIconCols)
+	intPrgLeft := ((SI_intCurrentCol - 1) * (SI_intDistance)) + SI_intGridLeft - 4
+	intPrgTop := ((SI_intCurrentRow - 1) * SI_intDistance) + SI_intGridTop - 4
+}
+;------------------------------------------------------------
 
 
 ;========================================================================================================================
