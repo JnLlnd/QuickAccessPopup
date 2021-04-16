@@ -436,6 +436,7 @@ lHelpText12	Cuando se selecciona una carpeta de favoritos en el Explorador de Wi
 lHelpText13	Para forzar la apertura de la carpeta en una ventana nueva, pulsar las teclas de acceso rápido alternativas [~1~] or [~2~]. En el menú Alternativo, seleccione "Abrir en ventana nueva", a continuación, seleccione la carpeta deseada. El menú Alternativo ofrece varias otras funcionalidades.
 lHelpText31	En mi "Mi QAP Básicos" menú:
 lHelpText33	PERSONALIZA TU QAP FUNCIONES DEL MENU
+lHelpText41	- Utilice el icono de Quick Access Popup en el menú de la bandeja (parte inferior derecha de la pantalla de Windows) de una de estas dos formas:`n1) Haga clic izquierdo en el icono para abrir el menú emergente de QAP ' n2) Haga clic derecho en el icono para abrir el menú del sistema de QAP.
 lHelpText42	- En el menú de la bandeja, haga clic en el icono Quick Access Popup y seleccione la opción "Ejecutar al iniciar" para iniciar Quick Access Popup automáticamente en el arranque.
 lHelpText45	- Directorio de usuarios de Opus, ver <a href="~1~">esta página</a> para información adicional.`n- Usuarios de Total Commander, ir a <a href="~2~">esta página</a> para información adicional.`n- Usuarios de otros administradores de archivos, ver <a href="~3~">esta página</a> para información adicional en QAPconnect.
 lHelpText51	Los menús compartidos permiten administrar los favoritos en un archivo de configuración que puede ser compartido por diferentes usuarios o utilizado por el mismo usuario en diferentes equipos. Hay tres tipos de menús compartidos:
@@ -567,6 +568,10 @@ lMenuSettings	Personalizar
 lMenuStartMenu	Menú de Inicio
 lMenuStartup	Inicio
 lMenuSuspendHotkeys	Suspender atajos de teclado (Hotkeys)
+lMenuSwitchApp	Aplicaciones Actuales
+lMenuSwitchAppDescription	Muestra un menú dinámico con las aplicaciones que se están ejecutando actualmente en su sistema (comenzando con la ventana activada más recientemente).`n`nCuando usted selecciona un elemento, su ventana se lleva automáticamente al frente.`n`nEste menú se actualiza cada vez que se abre el menú QAP.
+lMenuSwitchFolder	Carpetas Actuales
+lMenuSwitchFolderDescription	Muestra un menú dinámico que contiene las carpetas ya abiertas en el Explorador de Windows y el Directorio Opus windows.`n`nCuando usted selecciona un elemento, su ventana se lleva automáticamente al frente (Vea también "~1~" para abrir la carpeta en otra ventana).`n`nEste menú se actualiza cada vez que abre el menú QAP.
 lMenuSwitchFolderOrApp	Ventana Actual
 lMenuSwitchFolderOrAppDescription	Mostrar un menú dinámico en dos secciones:`n1) las carpetas abiertas actualmente en el Explorador de Windows y Directorio Opus `n2) las aplicaciones activas en el sistema (comenzando con la ventana activada más recientemente).`n`n`Cuando se selecciona un elemento, esta ventana se pone automáticamente en primer plano y se activa.`n`Este menú se actualiza cada vez que se muestra el menú QAP.
 lMenuSwitchSettings	Changer del archivo de configuración
@@ -705,6 +710,7 @@ lOptionsPopupMenu	Menú emergente
 lOptionsQAPTempFolder	Carpeta Temporal
 lOptionsRecentFolders	Número de elementos en el menú 
 lOptionsRecentFoldersPrompt	Recent Elementos y menús Frecuentes:
+lOptionsRecentPopularLevelsMax	Número máximo de niveles de ubicaciones en los menús Recientes/Frecuentes`n (los niveles anteriores a este número se truncarán desde el principio, 0 para mantener la ubicación completa)
 lOptionsRefreshedMenusAttached	Adjuntar todos los menús dinámicos al menú principal de QAP
 lOptionsRefreshedMenusAttachedInfo	Si habilita esta opción, puede haber un ligero retardo de actualización (dependiendo de la configuración del sistema) cada vez que aparezca el menú emergente.`n`nLa duración del retardo depende del tiempo que Windows toma para proporcionar la información refrescada requerida para construir el menú (lista de elementos recientes y espacio disponible en unidades actuales). Esta duración puede variar para cada llamada.`n`nIf deshabilite esta opción en "~1~", "~2~", "~3~", "~4~" y "~5~" menús se actualizará sólo bajo demanda y se mostrará separado del menú principal.
 lOptionsRefreshQAPMenuDebugBeep	Bip antes y después de la actualización (depurar)
@@ -755,9 +761,33 @@ lOptionsWorkingFolder	Carpeta de configuración
 lPickIconNoLocation	Por favor, primero elegir un favorito antes de seleccionar un icono.
 lReloadPrompt	Cambio de ~1~ guardado: ~2~. Quieres relanzar ~3~ en ~2~ ahora? Los cambios no guardados en el menú se perderán.
 lSponsoredNone	Haga clic aquí para obtener una licencia para este programa
+lStartupTipsDays	Días entre Consejos de Inicio y Trucos `n(cero para mostrar en cada inicio de QAP)
+lStartupTipsLater	Leer Más Tarde
+lStartupTipsShow	Mostrar Consejos y Trucos al Inicio
+lStartupTipsTitle	Consejos y Trucos de QAP
 lTCMenuName	TC Lista de sitios Favoritos 
 lTCMenuNameDescription	Para los usuarios de Total Commander (TC), muestre un menú dinámico que muestre los favoritos añadidos a la "TC Hotlist" guardados en el archivo wincdm.ini.`n`n`Especifique la ubicación del archivo TC wincdm.ini en la pestaña " Opciones " pestaña, " Gestores ". Si TC fue seleccionado cuando instaló QAP, el menú TC Directory Hotlist fue agregado automáticamente a su menú.
 lTCWinCmdLocation	WinCmd.ini ubicación 
+lTipAddDragAndDropDetails	Usar el ratón y la técnica de arrastrar y soltar es una manera eficiente de agregar favoritos desde el Explorador de Windows a su menú de QAP.`n`n<a >En este consejo</a>, vea cómo agregar carpetas, documentos o aplicaciones a su menú sin siquiera tener que tocar el teclado.
+lTipAddDragAndDropTitle	Agregue carpetas o archivos favoritos usando arrastrar y soltar
+lTipCreateSubmenuDetails	Mejore su menú agrupando sus favoritos por tipos, temas o proyectos en submenús.`n`n<a>Vea cómo agregar un submenú</a>.
+lTipCreateSubmenuTitle	Si su menú de QAP se vuelve demasiado grande, ¡divida y conquiste!
+lTipCustomIconsDetails	Elija los iconos que se muestran en el menú emergente de Quick Access Popup <a>reemplazando los iconos predeterminados</a> utilizados por QAP con sus imágenes preferidas. Este consejo le mostrará cómo convertir un archivo de imagen en un icono (.ico).`n`nVea también cómo puede < a>administrar todos los iconos de su menú</a> en una sola pantalla.
+lTipCustomIconsTitle	Embellece tu menú emergente con tus iconos preferidos
+lTipCustomizeStartupDetails	De forma predeterminada, Quick Access Popup muestra la ventana "Personalizar" (donde puede editar su menú) al inicio.`n`nSi prefiere que abra solo manualmente, de-seleccione la casilla "Abra la ventana Personalizar al inicio" en el cuadro de diálogo <a>Opciones, Personalizar la ventana</a>.`n`nMás información en la <a> Base de conocimiento</a>.
+lTipCustomizeStartupTitle	¿Siempre desea abrir la ventana de personalización de QAP al inicio?
+lTipDefaultHotkeysDetails	Al instalarlo, Quick Access Popup toma el control de su botón central del ratón y de estos atajos de teclado: Windows + W, Shift + Windows + W, Control + Shift + A, Control + Shift + C, Control + Shift + F y Control + Shift + U.`n`nPuede cambiar esto! Abra el cuadro de diálogo <a>Herramientas, Accesos directos</a> para eliminar o cambiar estas asignaciones.`n`nMás información en la <a>Base de conocimiento</a>.
+lTipDefaultHotkeysTitle	Decida qué atajos de teclado se asignan mediante Quick Access Popup
+lTipFavoriteFolderTempDetails	Este <a> consejo en el sitio web de QAP</a> le dará los pasos para crear un favorito para acceder fácilmente a su carpeta de trabajo temporal:`n- cree un favorito para una carpeta`n- seleccione un icono para este favorito;`n- signe un acceso directo para acceder al instante.`n`nVea también cómo sincronizar el icono personalizado de esta carpeta con la carpeta de Windows.
+lTipFavoriteFolderTempTitle	Crear un favorito para una carpeta de uso frecuente
+lTipFolderDialogBoxDetails	Cambiar la carpeta dentro de los cuadros de diálogo "Guardar como" o "Abrir" a menudo se describe como la mejor mejora de productividad que ofrece Quick Access Popup.`n`nHabilite esta opción en <a>Opciones, General</a>.`n`nMás información en la <a> Base de conocimiento</a>.
+lTipFolderDialogBoxTitle	Cambiar carpeta en el cuadro de diálogo
+lTipInTheWorksDetails	El menú "En proceso" muestra en qué trabajas realmente o qué contenido usas con frecuencia.`n`nVea <a>Qué es el menú "En proceso"</a> y sus menús "Frecuentes", "Recientes" y "Ventanas Actuales" y comprenda cómo se construyen estos menús.
+lTipInTheWorksTitle	¿Qué es el menú "En proceso"?
+lTipMenuTriggersDetails	Puede abrir el menú de Quick Access Popup  utilizando varios botones del ratón o atajos de teclado.`n`nConfigure estos atajos en <a>Opciones, Teclas de acceso rápido emergentes< / a>. También puede abrirlo desde los menús contextuales del Explorador de Windows.`n`nVea esta página en la <a>Base de conocimiento</a> y este video que muestra <a>12 maneras de hacer que aparezca su menú QAP</a>.
+lTipMenuTriggersTitle	Varias formas de mostrar tu menú favoritos
+lTipSearchFavoritesDetails	A medida que su menú crece, vea cómo puede localizar rápidamente <a>favoritos en sus submenús</a>.`n`nAdemás de facilitar la edición de favoritos, esta herramienta también le da una vista global de sus favoritos, lo que permite eliminar duplicados no deseados o para organizar mejor su menú.
+lTipSearchFavoritesTitle	Busca favoritos dentro de su menú
 lToolTipBrokenLinksChecking	Verificando
 lToolTipBrokenLinksIntro	Buscando Enlaces Favoritos
 lToolTipBrokenLinksList	Enlaces rotos o privados
