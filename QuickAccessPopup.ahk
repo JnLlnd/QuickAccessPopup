@@ -5080,10 +5080,10 @@ if (g_blnIniFileCreation) ; at first launch, set the end of ini creation process
 gosub, InitStartupTips
 
 ; ####
-Gosub, GuiShow
-Gosub, GuiEditFavorite
-###_D(SelectIcon(A_AppDataCommon . "\JeanLalonde\JLicons.dll,2"))
-ExitApp
+; Gosub, GuiShow
+; Gosub, GuiEditFavorite
+; ###_D(SelectIcon(A_AppDataCommon . "\JeanLalonde\JLicons.dll,2"))
+; ExitApp
 
 return
 
@@ -11047,14 +11047,15 @@ else ; (A_ThisLabel = "ButtonAlternativeTrayIcon")
 
 if (A_ThisLabel = "ButtonAlternativeTrayIcon")
 {
-	strNewLocation := SelectIcon(o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue)
-	strNewLocation := (strNewLocation = "None" ? "" : (StrLen(strNewLocation) ? strNewLocation : o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue))
-	GuiControl, 2:, %strControlName%, %strNewLocation%
+	GuiControlGet, strNewLocation, , %strControlName%
+	strNewLocation := SelectIcon(strNewLocation) ; returns empty if cancelled
+	if StrLen(strNewLocation)
+		GuiControl, 2:, %strControlName%, %strNewLocation%
 }
 else
 {
 	FileSelectFile, strNewLocation, 3, %strDefault%, % o_L["DialogAddFolderSelect"]
-	if (StrLen(strNewLocation))
+	if StrLen(strNewLocation)
 		GuiControl, 2:, %strControlName%, %strNewLocation%
 }
 
@@ -14366,7 +14367,7 @@ if InStr("GuiEditIconDialog|GuiPickIconDialogNo|", A_ThisLabel . "|")
 }
 
 strTempNewFavoriteIconResource := SelectIcon(g_strNewFavoriteIconResource)
-g_strNewFavoriteIconResource := (strTempNewFavoriteIconResource = "None" ? "iconNoIcon" : (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource))
+g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
 
 Gosub, GuiFavoriteIconDisplay
 
@@ -18042,7 +18043,7 @@ strIconResource := g_saManageIcons[intManageIconsIndex].AA.strFavoriteIconResour
 if (A_ThisLabel = "IconsManagePickIconDialog")
 {
 	strTempNewIconResource := SelectIcon(strIconResource)
-	strTempNewIconResource := (strTempNewIconResource = "None" ? "iconNoIcon" : strTempNewIconResource)
+	strTempNewIconResource := (StrLen(strTempNewIconResource) ? strTempNewIconResource : strIconResource)
 }
 else ; IconsManageSetDefault
 {
@@ -18892,6 +18893,11 @@ SelectIcon(P_strActualIcon)
 	global
 
 	g_blnChangeIconInProgress := false
+	SI_strNewIcon := ""
+	
+	ParseIconResource(P_strActualIcon, SI_strCurrentIconFile, SI_intCurrentIconIndex)
+	if (SI_intCurrentIconIndex < 1)
+		SI_intCurrentIconIndex := 1
 	
 	SI_strGuiTitle := L(o_L["DialogIconsSelectTitle"], g_strAppNameText, g_strAppVersion)
 	Gui, 3:New, +Hwndg_strGui3Hwnd, %SI_strGuiTitle%
@@ -18905,7 +18911,6 @@ SelectIcon(P_strActualIcon)
 	Gui, Add, Text, x10 y10, % o_L["DialogFileName"] . ":"
 	Gui, Add, Edit, x+5 yp w280 h20 vf_strIconResource ReadOnly
 	GuiControl, , f_strIconResource, %P_strActualIcon%
-	ParseIconResource(P_strActualIcon, SI_strCurrentIconFile, SI_intCurrentIconIndex)
 	Gui, Add, Button, x+5 yp w100 gSI_ButtonSelectIconFile vf_btnIconFile, % o_L["DialogBrowseButton"]
 
     Gui, Add, Text, x10 y+5, % o_L["DialogSelectIconJL"]
@@ -18964,17 +18969,10 @@ SelectIcon(P_strActualIcon)
 	strGui3Hwnd := ""
 	SI_intIconsCount := ""
 	SI_intIconsManageStartingIcon := ""
-	SI_intPickIconRows := ""
-	SI_intPickIconCols := ""
-	SI_intPickIconPage := ""
 	SI_strGuiTitle := ""
-	SI_intGridTop := ""
-	SI_intGridLeft := ""
 	SI_intCurrentRow := ""
 	SI_intCurrentCol := ""
 	SI_aaL := ""
-	SI_intIconSize := ""
-	SI_intDistance := ""
 
 	return SI_strNewIcon ; returning value
 	
@@ -19247,9 +19245,9 @@ Loop, %SI_intPickIconRows%
 	Loop, %SI_intPickIconCols% ; icons per row
 	{
 		SI_intThisIconPos := ((SI_intCurrentRow - 1) * SI_intPickIconCols) + SI_intCurrentCol
-		SI_intThisIconIndex := SI_intThisIconPos + SI_intIconsManageStartingIcon
-		GuiControl, 3:, f_picIcon%SI_intThisIconPos%, % (SI_intThisIconIndex - 1 <= SI_intIconsCount ? "*icon" . SI_intThisIconIndex - 1 . " " . SI_strCurrentIconFile : "") ; assign new icon or remove previous icon
-		GuiControl, % "3:" . (SI_intThisIconIndex - 1 <= SI_intIconsCount ? "+gSI_PickIconClicked" : "-g") , f_picIcon%SI_intThisIconPos% ; set or remove gosub
+		SI_intThisIconIndex := SI_intThisIconPos + SI_intIconsManageStartingIcon - 1
+		GuiControl, 3:, f_picIcon%SI_intThisIconPos%, % (SI_intThisIconIndex <= SI_intIconsCount ? "*icon" . SI_intThisIconIndex . " " . SI_strCurrentIconFile : "") ; assign new icon or remove previous icon
+		GuiControl, % "3:" . (SI_intThisIconIndex <= SI_intIconsCount ? "+gSI_PickIconClicked" : "-g") , f_picIcon%SI_intThisIconPos% ; set or remove gosub
 		
 		SI_intCurrentCol++
 	}
