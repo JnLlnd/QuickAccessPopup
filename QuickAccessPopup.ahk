@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.2.9.5 (2021-04-16)
+- in "Select Icon" dialog box, allow selection of icons using the keyboard arrows, a blue square highlighting the selected icon; press Enter to select an icon
+- using the mouse, hilite an icon by clicking on it and select an icon with double-click
+- change the size of the "Select Icon" dialog box to 5 rows of 10 icons
+- Italian and Spanish language files update for v11.2.9.2
+
 Version BETA: 11.2.9.4 (2021-04-09)
 - improve the "Select Icon" dialog box when selecting an icon for a favorite
 - support for image files (*.png; *.bmp; *.gif; *.jpg) in addition to previously supported icon files (*.dll; *.exe; *.ico; *.ocx; *.cpl)
@@ -4496,7 +4502,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.9.4
+;@Ahk2Exe-SetVersion 11.2.9.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4564,7 +4570,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
