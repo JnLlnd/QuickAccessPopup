@@ -557,7 +557,7 @@ lHelpText33	PERSONALIZZA IL MENU DELLE FUNZIONALITA' DI QAP
 lHelpText34	Puoi spostare voci del menù "Usati di recente (o spesso)" e "Strumenti di QAP" nel menù principale o ad altri sottomenù come desideri. Nella finestra "Personalizzare", seleziona "Menu o gruppo da editare:" nell'elenco a discesa, modifica la voce di QAP da spostare e, nel tab "Opzioni del Menù", seleziona il nuovo Menù Superiore del Preferito e la posizione.
 lHelpText35	Nel menù "Usati di recente (o spesso)", cerca i contenuti correnti:
 lHelpText36	- Apri i menù "Cartelle Frequenti" o "File Frequenti" per vedere i tuoi contenuti usati più di frequente.`n- Scegli i menù "Cartelle Recenti" o "File Recenti" per mostrare un elenco aggiornato del tuo lavoro recente.`n- Premi il menù "Finestre Correnti" per passare a qualunque altra finestra di Explorer o applicazione in esecuzione.
-lHelpText41	- Usa l'icona Quick Access Popup nell'Area Notifiche (in basso a destra dello schermo di Windows) in uno dei seguenti tre modi:`n1) Click sinistro sull'icona per aprire il menù popup di QAP`n2) Click destro sull'icona per aprire il menù di sistema di QAP.`n3) Doppio click sull'icona per aprire la casella di dialogo "Personalizzare".
+lHelpText41	- Usa l'icona Quick Access Popup nell'Area Notifiche (in basso a destra dello schermo di Windows) in uno dei seguenti due modi:`n1) Click sinistro sull'icona per aprire il menù popup di QAP`n2) Click destro sull'icona per aprire il menù di sistema di QAP.
 lHelpText42	- Nell'Area Notifiche, clicca col destro sull'icona di Quick Access Popup e spunta l'opzione "Esegui all'Avvio" per lanciare Quick Access Popup automaticamente all'avvio di Windows.
 lHelpText43	- Configura le condizioni per aprire il menù Quick Access Popup: scegli il tuo tasto del mouse preferito o le scorciatoie da tastiera. Nella finestra "Personalizzare", scegli il menù "Opzioni, scorciatoie del Popup".
 lHelpText44	- Sempre in "Opzioni": scegli la tua lingua preferita, dimensione delle icone del menù, e i colori per la finestra. Seleziona il numero di cartelle recenti da visualizzare, aggiungi scorciatoie numeriche da tastiera al menù delle cartelle o promemoria delle scorciatoie. Fissa il menù popup in una posizione prestabilita o ricorda la posizione della finestra "Personalizzare". E molto altro...
@@ -708,6 +708,10 @@ lMenuSettingsDescription	Visualizza la finestra "Personalizzare" in cui puoi per
 lMenuStartMenu	Menù Avvio
 lMenuStartup	Esecuzione Automatica
 lMenuSuspendHotkeys	Sospendi Scorciatoie
+lMenuSwitchApp	Appplicazioni Correnti
+lMenuSwitchAppDescription	Visualizza un menù dinamico con le applicazioni attualmente in esecuzione nel tuo sistema (a partire dalla finestra attivata più di recente).`n`nQuando selezioni un elemento, la sua finestra viene automaticamente portata in primo piano.`n`nQuesto menù viene aggiornato ogni volta che apri il menù QAP.
+lMenuSwitchFolder	Cartelle Correnti
+lMenuSwitchFolderDescription	Visualizza un menù dinamico contenente le cartelle già aperte in Windows Explorer e finestre di Directory Opus.`n`nQuando selezioni un elemento, la sua finestra viene automaticamente portata in primo piano (vedi anche "~1~" per aprire la cartella in un'altra finestra).`n`nQuesto menù viene aggiornato ogni volta che apri il menù QAP.
 lMenuSwitchFolderOrApp	Finestre in uso
 lMenuSwitchFolderOrAppDescription	Visualizza un menù dinamico in due parti:`n1) le cartelle già aperte in finestre di Windows Explorer e Directory Opus`n2) le applicazioni attualmente in esecuzione nel tuo sistema (cominciando con la finestra attivata più di recente, e a seguire).`n`nQuando selezioni un elemento, la sua finestra viene automaticamente portata in primo piano.`n`nQuesto menù viene rigenerato ogni volta che apri il menù QAP.
 lMenuSwitchSettings	Cambiare il file delle Impostazioni
@@ -890,6 +894,7 @@ lOptionsQAPTempFolder	Cartella Temporanea
 lOptionsQuickAddSnippetSubmenu	Sottomenù per ~1~
 lOptionsRecentFolders	Numero di oggetti nei Menù
 lOptionsRecentFoldersPrompt	Menù di file/cartelle Recenti e Frequenti:
+lOptionsRecentPopularLevelsMax	Massimo numero di livelli in profondità in menù Recenti/Frequenti`n(livelli eccedenti saranno troncati dall'inizio, 0 per mantenere il percorso completo)
 lOptionsRefreshedMenusAttached	Aggiungi tutti i menù dinamici al menù principale di QAP
 lOptionsRefreshedMenusAttachedInfo	Se abiliti questa opzione, ci potrebbe essere un leggero ritardo nell'aggiornamento (a seconda della configurazione del tuo sistema) ogni volta che visualizzi il menu a popup.`n`nLa durata del ritardo dipende dal tempo che Windows impiega per fornire le informazioni richieste aggiornate per costruire il menu (lista degli oggetti recenti e spazio attualmente disponibile nei dischi). Questo ritardo puó avere durata variabile di volta in volta.`n`nSe disabiliti questa opzione, i menu "~1~", "~2~", "~3~", "~4~" e "~5~" saranno aggiornati solo su richiesta e visualizzati separatamente dal menu principale.
 lOptionsRefreshQAPconnectList	Aggiorna lista applicazioni
@@ -963,9 +968,33 @@ lPickIconNoLocation	Seleziona il preferito prima di scegliere un'icona.
 lReloadPrompt	~1~ cambiato in ~2~. Vuoi ricaricare ~3~ in ~2~ ora? Le modifiche non salvate al menù verranno perse.
 lSponsoredName	Questo programma è sviluppato gazie anche al gentile contributo di ~1~
 lSponsoredNone	Si prega di cliccare qui per richiedere una licenza per questo programma
+lStartupTipsDays	Giorni prima di mostrare di nuovo Suggerimenti e Trucchi all'Avvio`n(zero per mostrarli ad ogni avvio di QAP)
+lStartupTipsLater	Leggi più tardi
+lStartupTipsShow	Mostra Suggerimenti e Trucchi all'Avvio
+lStartupTipsTitle	Suggerimenti e Trucchi all'Avvio di QAP
 lTCMenuName	Hotlist Cartelle di TC
 lTCMenuNameDescription	Per gli utenti di Total Commander (TC), visualizza un menù dinamico costruito con i preferiti aggiunti alla lista-cartelle di TC, che viene riportata nel, e richiamata dal, file wincdm.ini.`n`nImposta la posizione del file wincdm.ini nelle "Opzioni", tab "File Manager". Se era stato selezionato TC al momento dell'installazione di QAP, la lista-Cartelle è stata aggiunta automaticamente al tuo menù.
 lTCWinCmdLocation	posizione di WinCmd.ini
+lTipAddDragAndDropDetails	Usando il mouse e la tecnica di drag-and-drop (trascina e rilascia un elemento) è un modo efficiente per aggiungere preferiti da Windows Explorer al menù QAP.`n`n<a>In questo suggerimento</a>, guarda come fare ad aggiungere cartelle, documenti o applicazioni al menù senza usare per niente la tastiera!
+lTipAddDragAndDropTitle	Aggiungi cartelle di preferiti o files usando drag-and-drop
+lTipCreateSubmenuDetails	Migliora il menù raggruppando i preferiti per tipo, argomento o progetto in sottomenù.`n`n<a>Guarda come aggiungere un sottomenù</a>.
+lTipCreateSubmenuTitle	Se il tuo menù QAP diventa troppo lungo, divide et impera!
+lTipCustomIconsDetails	Scegli le icone visualizzate nel tuo menù Quick Access Popup <a>sostituendo le icone di default</a> usate da QAP con le tue immagini preferite. Questo suggerimento mostra come convertire un file immagine in un file di icona (.ico).`n`nVedi anche come puoi <a>gestire tutte le icone nei tuoi menù</a> in un unica videata.
+lTipCustomIconsTitle	Abbellisci il tuo menù popup con le tue icone preferite
+lTipCustomizeStartupDetails	Per default, Quick Access Popup visualizza la finestra "Personalizza" (dove puoi editare il tuo menù) all'avvio.`n`nSe preferisci aprirlo solo on demand, togli la spunta ad "Apri la finestra Personalizza in avvio" nella casella di dialogo  <a>Opzioni, finestra Personalizza</a>.`n`nMaggiori informazioni nelle <a>FAQ (Knowledge Base)</a>.
+lTipCustomizeStartupTitle	Vuoi che venga sempre aperta, all'avvio di QAP, la finestra Personalizza?
+lTipDefaultHotkeysDetails	Quando lo installi, Quick Access Popup prende controllo del tasto centrale del mouse e delle seguenti combinazioni di tasti: Windows+W, Shift+Windows+W, Control+Shift+A, Control+Shift+C, Control+Shift+F and Control+Shift+U.`n`nPuoi cambiarle aprendo la casella di dialogo <a>Strumenti, Scorciatoie</a> per rimuovere o modificare gli asssegnamenti.`n`nMaggiori informazioni nelle <a>FAQ (Knowledge Base)</a>.
+lTipDefaultHotkeysTitle	Imposta quali scorciatoie da tastiera vengono assegnate da Quick Access Popup
+lTipFavoriteFolderTempDetails	Questo <a>suggerimento sul sito web di QAP</a> ti guida nei passi necessari a creare un preferito per accedere facilmente alla tua cartella di lavoro temporanea:`n- crea un preferito per una cartella
+lTipFavoriteFolderTempTitle	Crea un preferito per una cartella usata di  frequente
+lTipFolderDialogBoxDetails	Cambiare cartella dall'interno delle caselle di dialogo "Salva Come" o "Apri" viene spesso descritto come il potenziamento elementare più produttivo offerto da Quick Access Popup.`n`nAbilita questa funzione in <a>Opzioni , Generale</a>.`n`n   Maggiori informazioni nelle <a>FAQ (Knowledge Base)</a>.
+lTipFolderDialogBoxTitle	Cambia cartella nella casella di dialogo
+lTipInTheWorksDetails	Il menù "Usati di recente (o spesso)" mostra ciò che hai usato di recente o che usi spesso.`n`nVedi <a>cos'è il menù "Usati di recente (o spesso)"</a> e i suoi menù "Frequenti", "Recenti" e "Finestre Correnti" e impara come vengono costruiti questi menù.
+lTipInTheWorksTitle	Cos'è il menù "Usati di recente (o spesso)"?
+lTipMenuTriggersDetails	Puoi aprire il menù Quick Access Popup  usando varie scorciatoie da tastiera o coi tasti del mouse.`n`nConfigura le combinazioni per azionarlo in <a>Opzioni, Combinazioni di tasti del Popup</a>. Puoi anche aprirlo dai menù contestuali di Windows Explorer.`n`nVedi questa pagina nelle <a>FAQ (Knowledge Base)</a> e questo video che mostra <a>12 modi di azionare il menù QAP</a>.
+lTipMenuTriggersTitle	Vari modi di azionare il menù preferiti
+lTipSearchFavoritesDetails	Con l'aumentare delle dimensioni del menù, vedi come puoi facilmente <a>trovare preferiti nei tuoi sottomenù</a>.`n`nOltre a facilitare la modifica dei preferiti, questo strumento ti permette anche di avere una visione globale dei tuoi preferiti, e consente di eliminare duplicati indesiderati o organizzare meglio il menù.
+lTipSearchFavoritesTitle	Cerca preferiti all'interno del menù
 lToolTipAlwaysOnTop	"Sempre in Primo Piano"  SPENTO per la finestra:`n~1~
 lToolTipBrokenLinksChecking	Controllo in corso
 lToolTipBrokenLinksIntro	Scansione Link Preferiti
