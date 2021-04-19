@@ -4691,6 +4691,8 @@ global g_aaWindowsAppsIDsByName := Object()
 
 global g_intNewWindowOffset := -1 ; to offset multiple Explorer windows positioned at center of screen
 
+global g_strIconsFiles := A_WorkingDir . "\icons"
+
 global g_strLastConfiguration ; last screen configuration updated by GetScreenConfiguration
 
 global g_saDialogListApplicationsDropdown := StrSplit(o_L["DialogListApplicationsDropdown"], "|") ; "List All||Current Windows menu|Running Applications|Close All Windows menu"
@@ -12595,6 +12597,9 @@ if (o_EditedFavorite.AA.strFavoriteName = o_L["ToolTipRetrievingWebPageTitle"])
 	o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
 	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
 	GuiControl, Enable, f_strFavoriteShortName
+	strTempFavoriteIconResource := GetWebPageIcon(g_strNewLocation)
+	if StrLen(strTempFavoriteIconResource) ; leave unchanged if icon cannot be retrieved
+		g_strNewFavoriteIconResource := strTempFavoriteIconResource
 }
 
 if (SubStr(o_EditedFavorite.AA.strFavoriteName, 1, 3) = "::{")
@@ -12614,6 +12619,7 @@ intGui2Width := ""
 intGui2Height := ""
 strGuiTitle := ""
 aaL := ""
+strTempFavoriteIconResource := ""
 
 return
 ;------------------------------------------------------------
@@ -14092,7 +14098,10 @@ GuiGetWebPageTitle:
 Gui, 2:Submit, NoHide
 
 if StrLen(f_strFavoriteLocation)
+{
 	GuiControl, , f_strFavoriteShortName, % GetWebPageTitle(f_strFavoriteLocation)
+	g_strNewFavoriteIconResource := GetWebPageIcon(f_strFavoriteLocation)
+}
 else
 	Oops(2, o_L["OopsFirstEnterUrl"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLocationLabel)
 
@@ -23792,6 +23801,48 @@ GetWebPageTitle(strLocation)
 	
 	strTitle := NumDecode(Trim(strTitle, Chr(160))) ; Chr(160) to also trim non-breaking spaces
 	return (StrLen(strTitle) ? strTitle : o_L["DialogNA"])
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetWebPageIcon(strLocation)
+;------------------------------------------------------------
+{
+	SplitPath, strLocation, , , , , strProtocolDomain
+	strDomain := SubStr(strProtocolDomain, InStr(strProtocolDomain, "//") + 2)
+	strIconFilenameNoExt := g_strIconsFiles . "\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
+	
+	If !FileExist(g_strIconsFiles) ; check if icons folder exists
+		FileCreateDir, %g_strIconsFiles%
+
+	Loop, 2
+	{
+		if (A_Index = 1) ; take 1 fetching favicon.ico in its standard location
+		{
+			strIconURL := strProtocolDomain . "/" . "favicon.ico"
+			strIconFilename := strIconFilenameNoExt . ".ico"
+		}
+		else ; take 2 use Google fetching for an PNG file
+		{
+			strIconURL := "https://www.google.com/s2/favicons?domain=" . strDomain
+			strIconFilename := strIconFilenameNoExt . ".png"
+		}
+		ShowToolTip(o_L["ToolTipRetrievingWebPageIcon"])
+		UrlDownloadToFile, %strIconURL%, %strIconFilename% ; overwrite if strIconFilename exist
+		intError := ErrorLevel
+		ToolTip
+		
+		if !(intError)
+			GetImageSize(strIconFilename, intWidth, intHeight)
+		
+		if (!intError) and (intWidth = intHeight) and (intWidth <= 64) and (intHeight <= 64)
+			return (StrLen(strIconFilename) ? strIconFilename . ",1" : "")
+		; else loop or exit
+	}
+	
+	; if takes and 2 failed
+	Oops(2, o_L["OopsInvalidIconDownload"], strIconURL) ; return empty
 }
 ;------------------------------------------------------------
 
