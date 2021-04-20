@@ -12604,9 +12604,7 @@ if (o_EditedFavorite.AA.strFavoriteName = o_L["ToolTipRetrievingWebPageTitle"])
 	o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
 	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
 	GuiControl, Enable, f_strFavoriteShortName
-	strTempFavoriteIconResource := GetWebPageIcon(g_strNewLocation)
-	if StrLen(strTempFavoriteIconResource) ; leave unchanged if icon cannot be retrieved
-		g_strNewFavoriteIconResource := strTempFavoriteIconResource
+	GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource)
 }
 
 if (SubStr(o_EditedFavorite.AA.strFavoriteName, 1, 3) = "::{")
@@ -12791,8 +12789,14 @@ else ; add favorite
 			if LocationIsHttp(g_strNewLocation)
 			{
 				o_EditedFavorite.AA.strFavoriteType := "URL"
-				o_EditedFavorite.AA.strFavoriteName := (InStr(strGuiFavoriteLabel, "Xpress") ? GetWebPageTitle(g_strNewLocation) : o_L["ToolTipRetrievingWebPageTitle"])
-				g_strNewFavoriteIconResource := g_strURLIconFileIndex
+				g_strNewFavoriteIconResource := g_strURLIconFileIndex ; default icon
+				if InStr(strGuiFavoriteLabel, "Xpress")
+				{
+					o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
+					GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource, 1) ; 1 for no Oops message
+				}
+				else
+					o_EditedFavorite.AA.strFavoriteName := o_L["ToolTipRetrievingWebPageTitle"]
 			}
 			else
 				o_EditedFavorite.AA.strFavoriteName := (StrLen(g_strNewLocationSpecialName) ? g_strNewLocationSpecialName : GetLocationPathName(g_strNewLocation))
@@ -13380,6 +13384,8 @@ if !(blnIsGroupMember)
 	Gui, 2:Add, Text, x+5 yp vf_lblRemoveIcon gGuiRemoveIcon, X
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
 		Gui, 2:Add, Link, x270 yp w240 vf_lblSetWindowsFolderIcon gSetWindowsFolderIcon, % "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>"
+	else if (o_EditedFavorite.AA.strFavoriteType = "URL")
+		Gui, 2:Add, Button, x+35 yp vf_btnGetWebsiteIcon gGuiGetWebSiteIcon, % o_L["DialogGetWebSiteIcon"]
 	Gui, 2:Add, Link, x20 ys+57 gGuiPickIconDialog, % "<a>" . o_L["DialogSelectIcon"] . "</a>"
 	Gui, 2:Add, Link, x+20 yp gGuiPickIconDialogNo, % "<a>" . o_L["DialogSelectIconNo"] . "</a>"
 	Gui, 2:Add, Link, x+20 yp gGuiEditIconDialog, % "<a>" . o_L["DialogEditIcon"] . "</a>"
@@ -14107,7 +14113,7 @@ Gui, 2:Submit, NoHide
 if StrLen(f_strFavoriteLocation)
 {
 	GuiControl, , f_strFavoriteShortName, % GetWebPageTitle(f_strFavoriteLocation)
-	g_strNewFavoriteIconResource := GetWebPageIcon(f_strFavoriteLocation)
+	GetWebPageIcon(f_strFavoriteLocation, g_strNewFavoriteIconResource)
 }
 else
 	Oops(2, o_L["OopsFirstEnterUrl"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLocationLabel)
@@ -14363,6 +14369,7 @@ return
 GuiPickIconDialog:
 GuiPickIconDialogNo:
 GuiEditIconDialog:
+GuiGetWebSiteIcon:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -14388,8 +14395,13 @@ if InStr("GuiEditIconDialog|GuiPickIconDialogNo|", A_ThisLabel . "|")
 	return
 }
 
-strTempNewFavoriteIconResource := SelectIcon(g_strNewFavoriteIconResource)
-g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
+if (A_ThisLabel = "GuiGetWebSiteIcon")
+	GetWebPageIcon(f_strFavoriteLocation, g_strNewFavoriteIconResource)
+else
+{
+	strTempNewFavoriteIconResource := SelectIcon(g_strNewFavoriteIconResource)
+	g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
+}
 
 Gosub, GuiFavoriteIconDisplay
 
@@ -23813,7 +23825,7 @@ GetWebPageTitle(strLocation)
 
 
 ;------------------------------------------------------------
-GetWebPageIcon(strLocation)
+GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := 0)
 ;------------------------------------------------------------
 {
 	SplitPath, strLocation, , , , , strProtocolDomain
@@ -23842,14 +23854,20 @@ GetWebPageIcon(strLocation)
 		
 		if !(intError)
 			GetImageSize(strIconFilename, intWidth, intHeight)
+		else
+			break ; error caused by wront domain, do not try with Google
 		
-		if (!intError) and (intWidth = intHeight) and (intWidth <= 64) and (intHeight <= 64)
-			return (StrLen(strIconFilename) ? strIconFilename . ",1" : "")
+		if (intWidth = intHeight) and (intWidth >= 16) and (intHeight >= 16) and (intWidth <= 64) and (intHeight <= 64)
+		{
+			strIconResource := (StrLen(strIconFilename) ? strIconFilename . ",1" : strIconResource)
+			return
+		}
 		; else loop or exit
 	}
 	
 	; if takes and 2 failed
-	Oops(2, o_L["OopsInvalidIconDownload"], strIconURL) ; return empty
+	if (!blnExpress)
+		Oops(2, o_L["OopsInvalidIconDownload"], strIconURL) ; return strIconResource unchanged
 }
 ;------------------------------------------------------------
 

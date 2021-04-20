@@ -249,6 +249,7 @@ this["DialogFreeEditionMessage2"] := "Please, open the ""~1~, ~2~"" dialog box t
 this["DialogFreeEditionMessage3"] := "Get your license now to take full advantage of QAP features."
 this["DialogFreeEditionShared"] := "Shared menus: actual ~1~ / allowed ~2~"
 this["DialogGetWebPageTitle"] := "Get title and icon"
+this["DialogGetWebSiteIcon"] := "Get website icon"
 this["DialogGetWinInfo"] := "To identify the window you want to get the title of, its class, or process name, click in the target window with the QAP menu hotkey [~1~]."
 this["DialogGetWInInfo2Clippoard"] := "Window title:`n""~1~""`n`nClass:`n""~2~""`n`nProcess name:`n""~3~""`n`nCopy this info to your Clipboard?"
 this["DialogHotkeyInvisibleKeys"] := "<a id=""~1~"">space bar</a>, <a id=""~2~"">tab</a>, <a id=""~3~"">enter</a>, <a id=""~4~"">escape</a>`nor <a id=""~5~"">menu key (application)</a>"
