@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.2.9.6 (2021-04-19)
+- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon"
+- retrieve the web site icon (favicon) and assign it to the added or edited favorite (replacing the existing icon if it has one)
+- first try to retrieve the file favicon.ico in the root of the web site and, if it fails, try retrieving the PNG image using a Google script
+- save icon images in the folder "icons" under the QAP working directory (create it if it does not already exist)
+
 Version BETA: 11.2.9.5 (2021-04-16)
 - in "Select Icon" dialog box, allow selection of icons using the keyboard arrows, a blue square highlighting the selected icon; press Enter to select an icon
 - using the mouse, hilite an icon by clicking on it and select an icon with double-click
@@ -4502,7 +4508,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.9.5
+;@Ahk2Exe-SetVersion 11.2.9.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4570,7 +4576,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
