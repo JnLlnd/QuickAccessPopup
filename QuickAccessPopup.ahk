@@ -12602,9 +12602,9 @@ if (o_EditedFavorite.AA.strFavoriteName = o_L["ToolTipRetrievingWebPageTitle"])
 {
 	GuiControl, Disable, f_strFavoriteShortName
 	o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
+	GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource)
 	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
 	GuiControl, Enable, f_strFavoriteShortName
-	GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource)
 }
 
 if (SubStr(o_EditedFavorite.AA.strFavoriteName, 1, 3) = "::{")
