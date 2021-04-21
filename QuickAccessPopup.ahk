@@ -13386,6 +13386,11 @@ if !(blnIsGroupMember)
 		Gui, 2:Add, Link, x270 yp w240 vf_lblSetWindowsFolderIcon gSetWindowsFolderIcon, % "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>"
 	else if (o_EditedFavorite.AA.strFavoriteType = "URL")
 		Gui, 2:Add, Button, x+35 yp vf_btnGetWebsiteIcon gGuiGetWebSiteIcon, % o_L["DialogGetWebSiteIcon"]
+	else if InStr("|Menu|External", "|" . o_EditedFavorite.AA.strFavoriteType, true)
+	{
+		Gui, 2:Add, Text, yp x+35, % o_L["DialogIconsSizeInMenu"]
+		Gui, 2:Add, DropDownList, yp x+5 vf_drpMenuIconsSize, % GetMenuIconSizeList(o_EditedFavorite.AA.strFavoriteArguments)
+	}
 	Gui, 2:Add, Link, x20 ys+57 gGuiPickIconDialog, % "<a>" . o_L["DialogSelectIcon"] . "</a>"
 	Gui, 2:Add, Link, x+20 yp gGuiPickIconDialogNo, % "<a>" . o_L["DialogSelectIconNo"] . "</a>"
 	Gui, 2:Add, Link, x+20 yp gGuiEditIconDialog, % "<a>" . o_L["DialogEditIcon"] . "</a>"
@@ -16356,13 +16361,23 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		; use o_EditedFavorite.AA.oSubMenu.AA because when this menu is edited from sort menu, o_MenuInGui contains the menu's parent menu
 		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := g_intNewSortCriteria ; for when refreshing this menu
 		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := g_intNewSortCriteria ; for future load of this menu before relaunching QAP
+		
+		; store menu icons size in strFavoriteArguments
+		if (f_drpMenuIconsSize = o_L["DialogIconsDefaultSize"])
+			o_EditedFavorite.AA.strFavoriteArguments := 0
+		else if (f_drpMenuIconsSize = o_L["DialogIconsInheritedSize"])
+			o_EditedFavorite.AA.strFavoriteArguments := -1
+		else if (f_drpMenuIconsSize = o_L["DialogSelectIconNo"])
+			o_EditedFavorite.AA.strFavoriteArguments := -2
+		else
+			o_EditedFavorite.AA.strFavoriteArguments := f_drpMenuIconsSize
 	}
+	else
+		o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
 	o_EditedFavorite.AA.strFavoritePassword := f_strFavoritePassword
 	o_EditedFavorite.AA.blnFavoriteFtpEncoding := f_blnFavoriteFtpEncoding
-	
-	o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments
 	o_EditedFavorite.AA.strFavoriteAppWorkingDir := strFavoriteAppWorkingDir
 	
 	; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -26120,6 +26135,25 @@ GetIconsCount(strIconFile)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+GetMenuIconSizeList(intMenuIconsSize)
+;------------------------------------------------------------
+{
+	strDropDownList := o_L["DialogIconsDefaultSize"] . "|" . o_L["DialogIconsInheritedSize"] . "|" . o_L["DialogSelectIconNo"] . "|16|24|32|48|64|"
+	if !(intMenuIconsSize) ; 0 ir empty
+		strDropDownList := StrReplace(strDropDownList, o_L["DialogIconsDefaultSize"], o_L["DialogIconsDefaultSize"] . "|")
+	else if (intMenuIconsSize = -2)
+		strDropDownList := StrReplace(strDropDownList, o_L["DialogSelectIconNo"], o_L["DialogSelectIconNo"] . "|")
+	else if (intMenuIconsSize = -1)
+		strDropDownList := StrReplace(strDropDownList, o_L["DialogIconsInheritedSize"], o_L["DialogIconsInheritedSize"] . "|")
+	else ; numeric value 
+		strDropDownList := StrReplace(strDropDownList, intMenuIconsSize, intMenuIconsSize . "|")
+	
+	return strDropDownList
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -29095,6 +29129,7 @@ class Container
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
 		this.AA.blnCountItems := blnCountItems ; increment items counter for free edition limit
+		this.AA.intMenuIconsSize := (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? o_Settings.MenuIcons.intIconSize.IniValue : 0) ; default size from Options
 		
 		if (oParentMenu)
 		{
@@ -29749,6 +29784,15 @@ class Container
 				else if (aaThisFavorite.strFavoriteType = "External")
 					g_intNbExternalMenusCount++
 				
+				if !(aaThisFavorite.strFavoriteArguments) ; empty or 0
+					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue
+				else if (aaThisFavorite.strFavoriteArguments = -1) ; parent menu
+					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := aaThisFavorite.oParentMenu.AA.intMenuIconsSize
+				else if (aaThisFavorite.strFavoriteArguments = -2) ; no menu
+					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := 0
+				else
+					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := aaThisFavorite.strFavoriteArguments ; size from dropdown menu
+				
 				aaThisFavorite.oSubMenu.BuildMenu(blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh, blnDoNotCountItemsNow) ; RECURSIVE - build the submenu first
 				
 				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
@@ -29795,7 +29839,7 @@ class Container
 					; Menu, % this.AA.strMenuPath, Add, %strMenuItemLabel%, %strCommandName%, % (blnFlagNextItemHasColumnBreak ? "BarBreak" : "")
 				}
 				
-				if (o_Settings.MenuIcons.blnDisplayIcons.IniValue) and (aaThisFavorite.strFavoriteIconResource <> "iconNoIcon")
+				if (this.AA.intMenuIconsSize) and (aaThisFavorite.strFavoriteIconResource <> "iconNoIcon")
 				{
 					if (aaThisFavorite.strFavoriteType = "Folder") ; this is a folder
 						strMenuItemIcon := aaThisFavorite.strFavoriteIconResource
@@ -30125,16 +30169,16 @@ class Container
 		else
 			Menu, % this.AA.strMenuPath, Add, %strMenuItemName%, %strAction%, % (blnHasColumnBreak ? "BarBreak" : "")
 		
-		if (o_Settings.MenuIcons.blnDisplayIcons.IniValue) and (strIconValue <> "iconNoIcon")
+		if (this.AA.intMenuIconsSize) and (strIconValue <> "iconNoIcon")
 		{
 			Menu, % this.AA.strMenuPath, UseErrorLevel, on
 			ParseIconResource(strIconValue, strIconFile, intIconIndex)
-			Menu, % this.AA.strMenuPath, Icon, %strMenuItemName%, % EnvVars(strIconFile), %intIconIndex%, % o_Settings.MenuIcons.intIconSize.IniValue
+			Menu, % this.AA.strMenuPath, Icon, %strMenuItemName%, % EnvVars(strIconFile), %intIconIndex%, % this.AA.intMenuIconsSize
+			
 			if (ErrorLevel)
 			{
 				ParseIconResource((this.AA.strMenuPath = o_L["MenuSwitchFolderOrApp"] ? "iconApplication" : "iconUnknown"), strIconFile, intIconIndex)
-				Menu, % this.AA.strMenuPath, Icon, %strMenuItemName%
-					, % EnvVars(strIconFile), %intIconIndex%, % o_Settings.MenuIcons.intIconSize.IniValue
+				Menu, % this.AA.strMenuPath, Icon, %strMenuItemName%, % EnvVars(strIconFile), %intIconIndex%, % this.AA.intMenuIconsSize
 			}
 			Menu, % this.AA.strMenuPath, UseErrorLevel, off
 		}
