@@ -9988,7 +9988,9 @@ o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 
 ; === MenuIcons ===
 
+blnDisplayIconsPrev := o_Settings.MenuIcons.blnDisplayIcons.IniValue
 o_Settings.MenuIcons.blnDisplayIcons.WriteIni(f_blnDisplayIcons)
+intIconSizePrev := o_Settings.MenuIcons.intIconSize.IniValue
 o_Settings.MenuIcons.intIconSize.WriteIni(f_drpIconSize)
 o_Settings.MenuIcons.intIconsManageRowsSettings.WriteIni(f_intIconsManageRowsSettings)
 o_Settings.MenuIcons.strIconReplacementList.WriteIni(OptionsListCleanup(f_strIconReplacementList))
@@ -10283,12 +10285,14 @@ if (strWorkingFolderPrev <> strWorkingFolderNew and blnSettingsMoveOK)
 	Gosub, ReloadQAP
 }
 
-; === Optional restart if show QAP menu, language, theme or temporary folder changed
+; === Optional restart if show QAP menu, language, theme, temporary folder or menu icon size changed
 
 if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (strLanguageCodePrev <> o_Settings.Launch.strLanguageCode.IniValue)
 	or (strThemePrev <> o_Settings.Launch.strTheme.IniValue)
 	or (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
+	or (blnDisplayIconsPrev <> o_Settings.MenuIcons.blnDisplayIcons.IniValue)
+	or (intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
@@ -10306,10 +10310,20 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 		strOption := o_L["OptionsTheme"]
 		strValue := o_Settings.Launch.strTheme.IniValue
 	}
-	else ; (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
+	else if (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
 	{
 		strOption := o_L["OptionsQAPTempFolder"]
 		strValue := o_Settings.Launch.strQAPTempFolderParent.IniValue
+	}
+	else if (blnDisplayIconsPrev <> o_Settings.MenuIcons.blnDisplayIcons.IniValue)
+	{
+		strOption := o_L["OptionsDisplayIcons"]
+		strValue := (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
+	}
+	else ; intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue
+	{
+		strOption := o_L["OptionsIconSize"]
+		strValue := o_Settings.MenuIcons.intIconSize.IniValue
 	}
 
 	MsgBox, 52, %g_strAppNameText%, % L(o_L["ReloadPrompt"], strOption, """" . strValue . """", g_strAppNameText)
@@ -10362,6 +10376,8 @@ strBackupFolderNew := ""
 strTempFolderNew := ""
 strMenuName := ""
 oContainer := ""
+blnDisplayIconsPrev := ""
+intIconSizePrev := ""
 
 return
 ;------------------------------------------------------------
