@@ -32,6 +32,8 @@ HISTORY
 =======
 
 Version BETA: 11.2.9.7 (2021-04-22)
+ 
+Menu Icons Size
 - allow to set custom menu icons size for each submenu
 - default icon size is set in "Options, Menu Icons" dialog box
 - for each menu, a new dropdown list in the "Menu Options" tab of the "Add/Edit Favorite" dialog box, allows to:
@@ -41,6 +43,9 @@ Version BETA: 11.2.9.7 (2021-04-22)
   - choose to display no icon in this menu
 - the Main menu always has the default icon size
 - changing the default icon size in "Options, Menu Icons" dialog box will now prompt you to restart QAP
+ 
+Web sites icons
+- retrieve favicon using an asynchronous HTTP request, avoiding hanging QAP if the website does not respond
 
 Version BETA: 11.2.9.6 (2021-04-19)
 - when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon"
