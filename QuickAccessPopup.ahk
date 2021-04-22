@@ -23848,14 +23848,30 @@ GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := 0)
 			strIconFilename := strIconFilenameNoExt . ".png"
 		}
 		ShowToolTip(o_L["ToolTipRetrievingWebPageIcon"])
-		UrlDownloadToFile, %strIconURL%, %strIconFilename% ; overwrite if strIconFilename exist
-		intError := ErrorLevel
-		ToolTip
 		
-		if !(intError)
+		; UrlDownloadToFile, %strIconURL%, %strIconFilename% ; not used because not async
+		
+		; using asynchronous HTTP request (see https://www.autohotkey.com/docs/commands/URLDownloadToFile.htm#XHR)
+		objHttp := ComObjCreate("Msxml2.XMLHTTP")
+		objHttp.Open("GET", strIconURL, true) ; true to enable async
+		objHttp.OnReadyStateChange := Func("HttpReady").Bind(objHttp, strIconFilename) ; will overwrite if strIconFilename exist
+		objHttp.Send()
+		
+		While (objHttp.ReadyState <> 4)
+		{
+			Sleep, 100
+			if (A_Index > 100) ; timeout after 10 seconds
+			{
+				blnError := true
+				break
+			}
+		}
+		
+		ToolTip
+		if !(blnError)
 			GetImageSize(strIconFilename, intWidth, intHeight)
 		else
-			break ; error caused by wront domain, do not try with Google
+			break ; error, do not try with Google
 		
 		if (intWidth = intHeight) and (intWidth >= 16) and (intHeight >= 16) and (intWidth <= 64) and (intHeight <= 64)
 		{
@@ -23865,9 +23881,29 @@ GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := 0)
 		; else loop or exit
 	}
 	
-	; if takes and 2 failed
+	; if the 2 takes failed to return, show an error message
 	if (!blnExpress)
 		Oops(2, o_L["OopsInvalidIconDownload"], strIconURL) ; return strIconResource unchanged
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+HttpReady(objHttp, strFilePath)
+; objHttp is ComObjCreate("Msxml2.XMLHTTP") see https://www.autohotkey.com/docs/commands/URLDownloadToFile.htm#XHR
+;------------------------------------------------------------
+{
+    if (objHttp.readyState <> 4) ; not done yet (see: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms753800(v=vs.85))
+        return
+	
+    if (objHttp.status = 200) ; OK (see: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms767625(v=vs.85))
+	{
+		saResponseBody := objHttp.responseBody
+		intPData := NumGet(ComObjValue(saResponseBody) + 8 + A_PtrSize)
+		intLen := saResponseBody.MaxIndex() + 1
+		FileOpen(strFilePath, "w").RawWrite(intPData + 0, intLen)
+	}
+	; else do nothing
 }
 ;------------------------------------------------------------
 
