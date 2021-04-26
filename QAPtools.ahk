@@ -79,7 +79,7 @@ Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
 
 
 ;------------------------------------------------------------
-Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText")
+Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText", blnAsync := false)
 ; WinHttp.WinHttpRequest.5.1 and MSXML2.XMLHTTP.6.0 properties:
 ; 	.GetAllResponseHeaders()
 ; 	.ResponseText()
@@ -99,7 +99,7 @@ Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText")
 		Diag(A_ThisFunc . " URL", strUrl, "")
 		
 		oHttpRequest := ComObjCreate(A_LoopField)
-		oHttpRequest.Open("GET", strUrl)
+		oHttpRequest.Open("GET", strUrl, blnAsync)
 		oHttpRequest.SetRequestHeader("Pragma", "no-cache")
 		oHttpRequest.SetRequestHeader("Cache-Control", "no-cache, no-store")
 		oHttpRequest.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
@@ -110,15 +110,87 @@ Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText")
 		Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
 		Diag(A_LoopField . " ResponseText" , oHttpRequest.ResponseText(), "")
 		
-		if (oHttpRequest.StatusText() = "OK") and StrLen(oHttpRequest.ResponseText())
+		blnTimeout := false
+		While (blnAsync and oHttpRequest.ReadyState <> 4)
+		{
+			if (oHttpRequest.Status() = 404)
+				break, 2 ; do not try next protocol
+			Sleep, 100 ; wait 100 ms
+			if (A_Index > 100) ; timeout after 10 seconds
+			{
+				blnTimeout := true
+				break ; try with next protocol, if any
+			}
+		}
+		
+		if (oHttpRequest.StatusText() = "OK" and StrLen(oHttpRequest.ResponseText())) or (oHttpRequest.Status() = 404)
 			break
 	}
 
 	if (strReturn = "ResponseText")
-		return oHttpRequest.ResponseText()
+		return (blnTimeout ? "timeout" : oHttpRequest.ResponseText())
 	else if (strReturn = "Status")
-		return oHttpRequest.Status()
+		return (blnTimeout ? -1 : oHttpRequest.Status())
 }
 ;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+Url2File(strUrl, strFile, ByRef intStatus, blnAsync := false)
+; returns ByRef the status of the last HTTP request (200 is OK)
+; returns true for successful download
+;------------------------------------------------------------
+{
+	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
+	{
+		oHttpRequest := ComObjCreate(A_LoopField)
+		oHttpRequest.Open("GET", strUrl, blnAsync)
+		oHttpRequest.OnReadyStateChange := Func("Url2FileSave").Bind(oHttpRequest, strFile) ; will overwrite if strIconFilename exist
+		oHttpRequest.SetRequestHeader("Pragma", "no-cache")
+		oHttpRequest.SetRequestHeader("Cache-Control", "no-cache, no-store")
+		oHttpRequest.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
+		oHttpRequest.Send()
+		
+		blnTimeout := false
+		While (blnAsync and oHttpRequest.ReadyState <> 4)
+		{
+			if (oHttpRequest.Status() = 404)
+				break, 2 ; do not try next protocol
+			Sleep, 100
+			if (A_Index > 100) ; timeout after 10 seconds
+			{
+				blnTimeout := true
+				break ; try with next protocol, if any
+			}
+		}
+		if (oHttpRequest.StatusText() = "OK" or oHttpRequest.Status() = 404)
+			break
+	}
+	
+	intStatus := (blnTimeout ? -1 : oHttpRequest.Status())
+	return (intStatus = 200) ; see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+Url2FileSave(oHttpRequest, strFile)
+; objHttp is ComObjCreate("Msxml2.XMLHTTP") see https://www.autohotkey.com/docs/commands/URLDownloadToFile.htm#XHR
+;------------------------------------------------------------
+{
+    if (oHttpRequest.ReadyState <> 4) ; not done yet (see: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms753800(v=vs.85))
+        return
+	
+    if (oHttpRequest.Status = 200) ; OK (see: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms767625(v=vs.85))
+	{
+		saResponseBody := oHttpRequest.ResponseBody
+		intPData := NumGet(ComObjValue(saResponseBody) + 8 + A_PtrSize)
+		intLen := saResponseBody.MaxIndex() + 1
+		FileOpen(strFile, "w").RawWrite(intPData + 0, intLen)
+	}
+	; else do nothing
+}
+;------------------------------------------------------------
+
 
 
