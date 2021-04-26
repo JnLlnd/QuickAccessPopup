@@ -29757,6 +29757,10 @@ class Container
 			if (aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 				intMenuItemsCount++ ; for objMenuColumnBreak
 			
+			if !InStr("X|K", aaThisFavorite.strFavoriteType) and !StrLen(aaThisFavorite.strFavoriteName)
+				; prevent the unexpected situation where a favorite would not have a short name for the menu
+				aaThisFavorite.strFavoriteName := "* Delete me or fix me * " . RandomBetween() . " *"
+				
 			strMenuItemLabel := aaThisFavorite.strFavoriteName
 			if (StrLen(strMenuItemLabel) and !blnMenuShortcutAlreadyInserted and (aaThisFavorite.intFavoriteDisabled <> -1)) ; if not hidden
 				strMenuItemLabel := this.MenuNameWithNumericShortcut(strMenuItemLabel, true) ; true for blnUseAmpersandPlaceholder
