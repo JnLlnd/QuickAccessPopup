@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.2.9.8 (2021-04-23)
+
 Version BETA: 11.2.9.7 (2021-04-22)
  
 Menu Icons Size
@@ -4524,7 +4526,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.9.7
+;@Ahk2Exe-SetVersion 11.2.9.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -12824,7 +12826,7 @@ else ; add favorite
 				if InStr(strGuiFavoriteLabel, "Xpress")
 				{
 					o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
-					GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource, 1) ; 1 for no Oops message
+					GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource, true) ; true for no Oops message
 				}
 				else
 					o_EditedFavorite.AA.strFavoriteName := o_L["ToolTipRetrievingWebPageTitle"]
@@ -14143,6 +14145,7 @@ return
 
 ;------------------------------------------------------------
 GuiGetWebPageTitle:
+; also retrieve favicon
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -23851,8 +23854,8 @@ EscapeQuote(str)
 GetWebPageTitle(strLocation)
 ;------------------------------------------------------------
 {
-	ShowToolTip(o_L["ToolTipRetrievingWebPageTitle"])
-	strHTML := Url2Var(strLocation)
+	ShowToolTip(o_L["ToolTipRetrievingWebPageTitle"] . "`n" . strLocation)
+	strHTML := Url2Var(strLocation, false, "ResponseText", true) ; last true for async
 	ToolTip
 	
 	RegExMatch(strHTML, "is)<title(.*?)</title>", strTitle) ; extract title with tags
@@ -23871,85 +23874,34 @@ GetWebPageTitle(strLocation)
 
 
 ;------------------------------------------------------------
-GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := 0)
+GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := false)
 ;------------------------------------------------------------
 {
-	SplitPath, strLocation, , , , , strProtocolDomain
-	strDomain := SubStr(strProtocolDomain, InStr(strProtocolDomain, "//") + 2)
-	strIconFilenameNoExt := g_strIconsFiles . "\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
-	
 	If !FileExist(g_strIconsFiles) ; check if icons folder exists
 		FileCreateDir, %g_strIconsFiles%
 
-	Loop, 2
-	{
-		if (A_Index = 1) ; take 1 fetching favicon.ico in its standard location
-		{
-			strIconURL := strProtocolDomain . "/" . "favicon.ico"
-			strIconFilename := strIconFilenameNoExt . ".ico"
-		}
-		else ; take 2 use Google fetching for an PNG file
-		{
-			strIconURL := "https://www.google.com/s2/favicons?domain=" . strDomain
-			strIconFilename := strIconFilenameNoExt . ".png"
-		}
-		ShowToolTip(o_L["ToolTipRetrievingWebPageIcon"])
-		
-		; UrlDownloadToFile, %strIconURL%, %strIconFilename% ; not used because not async
-		
-		; using asynchronous HTTP request (see https://www.autohotkey.com/docs/commands/URLDownloadToFile.htm#XHR)
-		objHttp := ComObjCreate("Msxml2.XMLHTTP")
-		objHttp.Open("GET", strIconURL, true) ; true to enable async
-		objHttp.OnReadyStateChange := Func("HttpReady").Bind(objHttp, strIconFilename) ; will overwrite if strIconFilename exist
-		objHttp.Send()
-		
-		While (objHttp.ReadyState <> 4)
-		{
-			Sleep, 100
-			if (A_Index > 100) ; timeout after 10 seconds
-			{
-				blnError := true
-				break
-			}
-		}
-		
-		ToolTip
-		if !(blnError)
-			GetImageSize(strIconFilename, intWidth, intHeight)
-		else
-			break ; error, do not try with Google
-		
-		if (intWidth = intHeight) and (intWidth >= 16) and (intHeight >= 16) and (intWidth <= 64) and (intHeight <= 64)
-		{
-			strIconResource := (StrLen(strIconFilename) ? strIconFilename . ",1" : strIconResource)
-			return
-		}
-		; else loop or exit
-	}
+	SplitPath, strLocation, , , , , strProtocolDomain
+	strDomain := SubStr(strProtocolDomain, InStr(strProtocolDomain, "//") + 2)
+	strIconFilename := g_strIconsFiles . "\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
+		. ".ico"
 	
-	; if the 2 takes failed to return, show an error message
-	if (!blnExpress)
+	strIconURL := strProtocolDomain . "/" . "favicon.ico"
+	ShowToolTip(o_L["ToolTipRetrievingWebPageIcon"] . "`n" . strIconURL)
+	blnSuccess := Url2File(strIconURL, strIconFilename, intStatus, true) ; UrlDownloadToFile not used because not async
+	ToolTip
+	
+	if !(blnError)
+		GetImageSize(strIconFilename, intWidth, intHeight)
+	; else intWidth and intHeight are 0
+	
+	if (intWidth = intHeight) and (intWidth >= 16) and (intHeight >= 16) and (intWidth <= 64) and (intHeight <= 64)
+	{
+		strIconResource := (StrLen(strIconFilename) ? strIconFilename . ",1" : strIconResource)
+		return
+	}
+	else if (!blnExpress)
 		Oops(2, o_L["OopsInvalidIconDownload"], strIconURL) ; return strIconResource unchanged
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-HttpReady(objHttp, strFilePath)
-; objHttp is ComObjCreate("Msxml2.XMLHTTP") see https://www.autohotkey.com/docs/commands/URLDownloadToFile.htm#XHR
-;------------------------------------------------------------
-{
-    if (objHttp.readyState <> 4) ; not done yet (see: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms753800(v=vs.85))
-        return
-	
-    if (objHttp.status = 200) ; OK (see: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms767625(v=vs.85))
-	{
-		saResponseBody := objHttp.responseBody
-		intPData := NumGet(ComObjValue(saResponseBody) + 8 + A_PtrSize)
-		intLen := saResponseBody.MaxIndex() + 1
-		FileOpen(strFilePath, "w").RawWrite(intPData + 0, intLen)
-	}
-	; else do nothing
+		; return empty
 }
 ;------------------------------------------------------------
 
