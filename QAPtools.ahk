@@ -93,7 +93,7 @@ Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText", blnAsync :=
 	if (blnBreakCache)
 		strUrl .= (InStr(strUrl, "?") ? "&" : "?") . "cache-breaker=" . A_NowUTC
 	
-	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 don't work, try WinHttp.WinHttpRequest.5.1
+	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 doesn't work, try WinHttp.WinHttpRequest.5.1
 	{
 		Diag(A_ThisFunc . " URL Root", (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl), "")
 		Diag(A_ThisFunc . " URL", strUrl, "")
@@ -111,7 +111,7 @@ Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText", blnAsync :=
 		Diag(A_LoopField . " ResponseText" , oHttpRequest.ResponseText(), "")
 		
 		blnTimeout := false
-		While (blnAsync and oHttpRequest.ReadyState <> 4)
+		While (blnAsync and oHttpRequest.ReadyState and oHttpRequest.ReadyState <> 4)
 		{
 			if (oHttpRequest.Status() = 404)
 				break, 2 ; do not try next protocol
