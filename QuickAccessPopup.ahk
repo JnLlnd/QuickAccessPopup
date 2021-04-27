@@ -31,7 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.2.9.8 (2021-04-23)
+Version BETA: 11.2.9.8 (2021-04-26)
+- when retrieving an icon from a website, send an asynchronous request to the website and timeout after 10 seconds
+- when getting a web page title, send an asynchronous request to the website and timeout after 10 seconds
+- when building a menu, prevent the unexpected situation where a favorite would not have a short name for the menu by giving it a temporary name
 
 Version BETA: 11.2.9.7 (2021-04-22)
  
@@ -4594,7 +4597,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.9.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.9.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
