@@ -31,6 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.2.9.9 (2021-04-28)
+- use the current menu's icons size when showing the "Show menu" eye icon in the "Customize" window
+- make the select icons file always on top
+- 
 Version BETA: 11.2.9.8 (2021-04-26)
 - when retrieving an icon from a website, send an asynchronous request to the website and timeout after 10 seconds
 - when getting a web page title, send an asynchronous request to the website and timeout after 10 seconds
@@ -4529,7 +4533,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.9.8
+;@Ahk2Exe-SetVersion 11.2.9.9
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4597,7 +4601,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.9.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.9.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -8811,6 +8815,7 @@ if (o_MenuInGui.AA.strMenuType = "Search")
 	}
 else
 	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
+o_Containers.AA[o_L["MenuContainerInGui"]].AA.intMenuIconsSize := o_MenuInGui.AA.intMenuIconsSize
 
 if (A_ThisLabel = "RefreshContainerInGuiFromShortcut")
 	g_intNbLiveFolderItems := 0
@@ -19067,6 +19072,7 @@ SelectIcon(P_strActualIcon)
 	;------------------------------------------------------------
 	SI_ButtonSelectIconFile:
 	;------------------------------------------------------------
+	Gui, 3:+OwnDialogs
 
 	FileSelectFile, SI_strNewLocation, 3, % (StrLen(SI_strPrevLocation) ? SI_strPrevLocation : SI_strCurrentIconFile), % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)
 	SI_strPrevLocation := SI_strNewLocation
@@ -22003,7 +22009,7 @@ intXCol2 := ""
 
 return
 ;------------------------------------------------------------
-
+ 
 
 ;------------------------------------------------------------
 GuiAboutCopyLicense:
