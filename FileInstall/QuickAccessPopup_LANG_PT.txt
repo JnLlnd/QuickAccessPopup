@@ -23,7 +23,7 @@ lContextAddFileXpress	Adicionar Ficheiro ao menu do Quick Access Popup (Expresso
 lContextAddFolder	Adicionar Pasta ao menu do Quick Access Popup
 lContextAddFolderXpress	Adicionar Pasta ao menu do Quick Access Popup (Expresso)
 lContextAddShortcut	Importar Atalho para o menu Quick Access Popup
-lContextCancelled	A activaÃ§Ã£o ou desactivaÃ§Ã£o dos menus de contexto do Windows Explorer foi cancelada pelo utilizador.
+lContextCancelled	A activação ou desactivação dos menus de contexto do Windows Explorer foi cancelada pelo utilizador.
 lContextShowMenu	Mostrar o menu do Quick Access Popup
 lControlToolTipAlwaysOnTopOff	Mantem esta janela sempre visível em primeiro plano
 lControlToolTipAlwaysOnTopOn	Para de manter esta janela sempre visível
@@ -365,7 +365,7 @@ lDialogOptionsPathNotExist	Esta pasta não existe:`n`n~1~`n`nDeseja criá-la?
 lDialogOr	ou
 lDialogPlaceholders	Ver <a href="~1~">página de ajuda de espaços reservados</a>.
 lDialogPlay	Reproduzir
-lDialogQAPFeatureCategoriesNames	Destaque|Menus Dinâmicos|Edição do Menu QAP|Adicionar Favorito do Tipo|Gestão de janelas|Recursos do Windows|Utilitários|Gestão do QAP
+lDialogQAPFeatureCategoriesNames	Destaque|Menus Dinâmicos|Edição do Menu QAP|Adicionar Favorito do Tipo|Gestão de janelas|Recursos do Windows|Close Computer Commands|Utilitários|Gestão do QAP
 lDialogQAPFeatureCategoriesNamesAll	Todos (ordem alfabética)
 lDialogQAPFeaturesHelpLink	Ajuda neste recurso
 lDialogReadOnly	Só de leitura
@@ -473,7 +473,7 @@ lDonateThankyou	Obrigado ~1~ por apoiar este software!
 lDonateThankyouRestart	Obrigado por apoiar o denvolvimento do ~1~!`n`nO programa vai reiniciar em breve.
 lDOpusLayoutsName	Esquemas
 lDOpusMenuName	Favoritos Directory Opus
-lDopusMenuNameDescription	Para utilizadores do Directory Opus (DOpus), exibe um menu dinÃ¢mico construÃ­do com as pastas adicionadas aos Favoritos DOpus. Se o DOpus foi seleccionado quando instalou o QAP, os Favoritos Directory Opus foram adicionados automaticamente ao seu menu.
+lDopusMenuNameDescription	Para utilizadores do Directory Opus (DOpus), exibe um menu dinâmico construído com as pastas adicionadas aos Favoritos DOpus. Se o DOpus foi seleccionado quando instalou o QAP, os Favoritos Directory Opus foram adicionados automaticamente ao seu menu.
 lDopusMenuNameShowLayout	Exibir Esquemas nos menus ~1~
 lGuiAbout	Acerca
 lGuiAboutDescription	Exibe o desenvolvimento, traduções e outros créditos, versão da aplicação e runtime, licença, nome do utilizador actual e do PC, ligação para a página de suporte.
@@ -670,8 +670,8 @@ lMenuMyWindowsAppsMenu	As minhas Apps Windows
 lMenuNetworkDrive	Unidade de rede
 lMenuNoCurrentFolder	Não há pastas abertas actualmente...
 lMenuOpenBackupDirectory	Abrir a Pasta de SeguranÃ§as das DefiniÃ§Ãµes QAP
-lMenuOpenWorkingDirectory	Abrir pasta de definições QAP
-lMenuOptions	OpÃ§Ãµes
+lMenuOpenWorkingDirectory	Abrir directório de trabalho do QAP
+lMenuOptions	Opções
 lMenuPictures	Imagens
 lMenuPopularFiles	Ficheiros
 lMenuPopularFolders	Pastas
@@ -761,7 +761,7 @@ lOopsExternalUnderExternalError	O segunte menu partilhado inclui um menu partilh
 lOopsFavoritesCopied	~1~ favoritos copiados.
 lOopsFavoritesUsageUpdated	Os dados de utilização dos Favoritos estão a ser actualizados por uma tarefa em segundo plano.`n`nPor favor, tente de novo dentro de 15-30 segundos...
 lOopsFileExpandedFrom	Expandido a partir de
-lOopsFileNotFound	Esta localizaÃ§Ã£o nÃ£o existe
+lOopsFileNotFound	Esta localização não existe
 lOopsFileNotFoundSaveAnyway	Guardar este favorito mesmo assim?
 lOopsFirstEnterUrl	Primeiro, introduza um endereço no campo "~1~".
 lOopsFolderLiveAndAutomatic	As opções "~1~" e "~2~" não podem ser activadas em simultâneo.`n`nPor favor, desactive uma destas opções.
@@ -827,7 +827,7 @@ lOptionsControlDoublePressedRight	Usando a tecla Control Direita
 lOptionsDatabase	Base de dados
 lOptionsDisplayIcons	Exibir Ícones do Menu
 lOptionsDisplayMenuShortcuts	Exibir Atalhos Numéricos do Menu
-lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos do Menu NumÃ©rico em 1 (em vez de 0)
+lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos do Menu Numérico em 1 (em vez de 0)
 lOptionsEnableExternalMenusCatalogue	Activar Catálogo de Menus Partilhados
 lOptionsExclusionMouseList	Lista negra
 lOptionsExclusionMouseListDescription	Lista negra ou lista branca do desencadeador do Rato [~1~]
@@ -880,7 +880,7 @@ lOptionsNetworkDrivesLetters	Letras de unidades a considerar como unidades de re
 lOptionsNetworkDrivesSometimesOffline	Unidades de rede ("\\" ou com letras de unidade) por estar por vezes offline
 lOptionsOpenFavoritesOnActiveMonitor	Num sistema multi-monitor, abrir sempre a janela do Explorador no monitor activo
 lOptionsOpenMenuOnTaskbar	Abrir menu ao clicar na barra de tarefas
-lOptionsOpenSettingsOnActiveMonitor	Abrir a janela "Personalizar" no monitor Activo
+lOptionsOpenSettingsOnActiveMonitor	Abrir janela de Definições no monitor &Activo
 lOptionsOtherOptions	Geral
 lOptionsPopupFixPositionX	Posição X:
 lOptionsPopupFixPositionY	Y:
