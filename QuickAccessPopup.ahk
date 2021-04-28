@@ -35,6 +35,7 @@ Version BETA: 11.2.9.9 (2021-04-28)
 - use the current menu's icons size when showing the "Show menu" eye icon in the "Customize" window
 - make the select icons file always on top
 - fix encoding errors in Italian translation
+- Korean and French translation for v11.3
 
 Version BETA: 11.2.9.8 (2021-04-26)
 - when retrieving an icon from a website, send an asynchronous request to the website and timeout after 10 seconds

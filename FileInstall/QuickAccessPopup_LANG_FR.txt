@@ -248,7 +248,8 @@ lDialogFreeEditionMessage1	Malheureusement, les limites de Quick Access Popup Éd
 lDialogFreeEditionMessage2	Veuillez ouvrir la boîte de dialogue "~1~, ~2~" pour obtenir ou enregistrer votre licence QAP...
 lDialogFreeEditionMessage3	Obtenez votre licence maintenant pour profiter pleinement des fonctionnalités de QAP.
 lDialogFreeEditionShared	Menus partagés: actuel ~1~ / permis ~2~
-lDialogGetWebPageTitle	Récupérer le titre
+lDialogGetWebPageTitle	Récupérer le titre et l'icône
+lDialogGetWebSiteIcon	Récupérer l'icône du site web
 lDialogGetWinInfo	Pour identifier la fenêtre dont vous voulez obtenir le titre, la classe ou le nom du processus, cliquez dans la fenêtre désirée avec le raccouricis de menu de QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titre de la fenêtre:`n"~1~"`n`nClasse:`n"~2~"`n`nNom du processus:`n"~3~"`n`nCopier ces informations dans le Presse-papiers?
 lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>`nou <a id="~5~">touche menu (application)</a>
@@ -277,6 +278,8 @@ lDialogHotstringsDescription	Afficher une boîte de dialogue offrant une vue glob
 lDialogHotstringTriggerAbbreviation	Déclencheur (abréviation):
 lDialogHotstringTriggerOptions	Chaîne de substitution (déclencheur et options)
 lDialogIcon	Icône
+lDialogIconsDefaultSize	Taille par défaut
+lDialogIconsInheritedSize	Taille héritée
 lDialogIconsManage	Icônes
 lDialogIconsManageAbout	Choisissez de nouveaux icônes pour vos favoris ou rétablissez l'icône par défaut selon le type de favori. N'oubliez pas d'enregistrer vos changements dans la fenêtre "Personnaliser".
 lDialogIconsManageCurrent	Icône actuel
@@ -288,8 +291,9 @@ lDialogIconsManageParentMenu	Menu contenant ce favori
 lDialogIconsManagePrevious	Précédant
 lDialogIconsManageSetDefaultIcon	Icône par défaut
 lDialogIconsManageTitle	Gérer les icônes - ~1~ ~2~
-lDialogIconsSelectPrompt	Cliquez sur une icône pour la sélectionner.
+lDialogIconsSelectPrompt	Pour sélectionner une icône, faites un double-clic sur l'icône ou utilisez les flèches et appuyez sur Entrée.
 lDialogIconsSelectTitle	SÃ©lection de l'icÃ´ne - ~1~ ~2~
+lDialogIconsSizeInMenu	Taille des icônes dans ce menu:
 lDialogInputExample	Exemple de saisie
 lDialogInputParameter	Saisie du paramètre - ~1~
 lDialogInvalidHotkey	Avec votre configuration actuelle de clavier, la touche de raccourci "~1~" ne peut être utilisée comme un déclencheur pour le menu popup.`n`nVeuillez ouvrir la fenêtre "Personnaliser" dans la zone de notification et cliquez sur "Options". Dans cette boîte de dialogue, choisissez une autre touche de raccourci pour "~2~".
@@ -758,6 +762,8 @@ lOopsHotkeyAlreadyUsed	Le raccourci "~1~" est déjà utilisé pour l'emplacement "~
 lOopsHotkeyObjectNotFound	~1~ ne peut trouver le favori associé à: ~2~ "~3~".`n`nCela pourrait être une situation temporaire. Essayez de redémarrer ~1~.
 lOopsHotstringTriggerTooLong	Le déclencheur (abréviation) pour cette chaîne de substitution est trop long. Les déclencheurs ne peuvent avoir plus de 40 caractères.
 lOopsHttpLocationTransformed	L'emplacement HTTP (format URL) a été converti en chemin réseau (format UNC) afin d'être compatible avec Windows:`n`n~1~`n~2~
+lOopsInvalidIcon	Les images des icônes doivent être carrées et ne pas être plus grandes que 64 x 64 pixels.`n`nFichier: ~1~`nTaille de l'image: ~2~ x ~3~ pixels
+lOopsInvalidIconDownload	L'icône pour ce site web n'est pas disponible ou est invalide:`n`n~1~
 lOopsInvalidWinCmdIni	Le fichier des paramêtres "wincmd.ini" de Total Commander est introuvable.`n`nSélectionnez "Options" et l'onglet "Gestionnaires de fichiers".
 lOopsInvalidWindowPosition	Valeur(s) de position de la fenêtre invalide
 lOopsJLiconsError	Icône de la zone de notification introuvable. Assurez-vous d'avoir mis à jour le fichier JLicons.dll à la version ~1~.
@@ -771,6 +777,7 @@ lOopsMenuExternalReservedBy	Ce ~1~ est RÉSERVÉ par l'utilisateur: ~2~.`n`nAttend
 lOopsMenuNotFound	Le menu "~1~" n'existe pas.
 lOopsMenuSorted	Cette commande ne peut pas être exécutée dans un menu trié automatiquement.
 lOopsMultipleContainersError	Les menus, groupes and menus partagés doivent être copiés ou déplacés individuellement. Ces items de la sélection seront ignorés.
+lOopsNoIconInFile	Il n'y a pas d'icône dans ce fichier:`n`n~1~
 lOopsNotAdmin	~1~ ne peut être exécuté en tant qu'administrateur.`n`nL'application est maintenant exécutée avec les privilèges normaux.
 lOopsOptionsPathNotExist	~1~ n'existe pas:`n~2~`n`nVeuillez choisir un emplacement valide.
 lOopsOptionsPathTrayIcon	Icône dans la zone de notification
@@ -843,7 +850,7 @@ lOptionsHotstringsDefault	Options par défaut des chaînes de substitution
 lOptionsHotstringsDefaultSelect	Sélectionner
 lOptionsIconReplacementList	Remplacements des icônes de QAP
 lOptionsIconReplacementListInstructions	Entrez une instruction de remplacement par ligne. Chaque ligne doit commencer par le nom de l'icône QAP (i.e "iconFolderLive"), suivi du signe égal "=" et du "fichier,index" de l'icône de remplacement. Le "fichier,index" est le chemin et nom du fichier (.ico, .dll or .exe) contenant l'icône et l'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1".
-lOptionsIconSize	Taille des icônes de menu
+lOptionsIconSize	Taille par défaut des icônes de menu
 lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 pour le maximum possible)
 lOptionsLanguage	Langue
 lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe
@@ -942,7 +949,7 @@ lOptionsWaitDelayInDialogBox	Delai (en ms) lors des changements d'emplacement da
 lOptionsWaitDelayInSnippet	Delai (en ms) lors de l'exécution des Fragments de texte
 lOptionsWorkingFolder	Dossier des paramètres
 lPickIconNoLocation	Veuillez d'abord choisisr un favori avant de sélectionner une icône.
-lReloadPrompt	Changement de ~1~ enregistré: ~2~. Voulez-vous relancer ~3~ en ~2~ maintenant? Les changements non sauvegardés dans le menu seront perdus.
+lReloadPrompt	Changement de ~1~ enregistré: ~2~. Voulez-vous relancer ~3~ avec l'option ~2~ maintenant? Les changements non sauvegardés dans le menu seront perdus.
 lSponsoredName	Le développement de ce logiciel est soutenu par ~1~
 lSponsoredNone	Cliquez ici pour obtenir une licence pour ce logiciel
 lStartupTipsDays	Jours entre les affichages au démarrage de QAP`n(zéro pour afficher à chaque démarrage)
@@ -979,6 +986,7 @@ lToolTipBrokenLinksList	Liens brisés ou privés
 lToolTipBrokenLinksWarnings	AVERTISSEMENTS`n- Certains liens brisés peuvent prendre du temps à répondre .`n- Les liens protégés par mot de passe peuvent être identifiés comme brisés par erreur.`n- Les liens incluant des codes de remplacement {...} ne seront pas vérifiés.
 lToolTipBuilding	Préparation du menu...
 lToolTipLoading	Chargement des favoris...
+lToolTipRetrievingWebPageIcon	Récupération de l'icône de ce site web....
 lToolTipRetrievingWebPageTitle	Récupération du titre de la page web...
 lToolTipSaving	Enregistrement des favoris...
 lTooltipSnippetKeyWait	Appuyez sur {~1~} pour continuer…
