@@ -520,11 +520,11 @@ lGuiOptionsDescription	Exibe a caixa de di·logo "OpÁıes" permitindo fazer o QAP 
 lGuiPassword	Palavra-passe
 lGuiPasswordNotEncripted	Nota: a palavra-passe N√O ser· encriptada ao ser enviada para a Internet.
 lGuiQuickAddNewSnippet	este novo snippet
-lGuiQuickAddSnippet	Adi√ß√£o R√°pida de Snippets
-lGuiQuickAddSnippetDescription	Crie rapidamente um favorito Snippet e o seu desencadeador da cadeia na mesma caixa de di√°logo. Se a √Årea de Transfer√™ncias do Windows contiver texto, ele ser√° usado como valor padr√£o. Use a caixa de di√°logo normal "Editar Favorito" para definir op√ß√µes mais avan√ßadas.
+lGuiQuickAddSnippet	AdiÁ„o R·pida de Snippets
+lGuiQuickAddSnippetDescription	Crie rapidamente um favorito Snippet e o seu desencadeador da cadeia na mesma caixa de di·logo. Se a ¡rea de TransferÍncias do Windows contiver texto, ele ser· usado como valor padr„o. Use a caixa de di·logo normal "Editar Favorito" para definir opÁıes mais avanÁadas.
 lGuiQuickAddSnippetExample	Digite ~1~ num editor de texto para expandi-lo.
 lGuiQuickAddSnippetExampleName	Exemplo de Snippet
-lGuiQuickAddSnippetTitle	Adi√ß√£o R√°pida de Snippets - ~1~ ~2~
+lGuiQuickAddSnippetTitle	AdiÁ„o R·pida de Snippets - ~1~ ~2~
 lGuiRemoveFavorite	Remover
 lGuiResetDefault	Repor tecla de atalho padr„o
 lGuiSave	Guardar
@@ -669,7 +669,7 @@ lMenuMyVideo	Os Meus VÌdeos
 lMenuMyWindowsAppsMenu	As minhas Apps Windows
 lMenuNetworkDrive	Unidade de rede
 lMenuNoCurrentFolder	N„o h· pastas abertas actualmente...
-lMenuOpenBackupDirectory	Abrir a Pasta de Seguran√ßas das Defini√ß√µes QAP
+lMenuOpenBackupDirectory	Abrir a Pasta de SeguranÁas das DefiniÁıes QAP
 lMenuOpenWorkingDirectory	Abrir directÛrio de trabalho do QAP
 lMenuOptions	OpÁıes
 lMenuPictures	Imagens
@@ -726,8 +726,8 @@ lMenuUpdate	Procurar actualizaÁıes
 lMenuUpdateDescription	Verifica se existe uma nova vers„o disponÌvel na p·gina oficial do Quick Access Popup.
 lMenuUserFolder	Pasta do Utilizador
 lMenuUserPinned	Fixado pelo Utilizador
-lMenuWindowAlwaysonTop	Janela sempre vis√≠vel
-lMenuWindowAlwaysonTopDescription	Define a propriedade da actual janela "Sempre vis√≠vel" ligada ou desligada (alterna)
+lMenuWindowAlwaysonTop	Janela sempre visÌvel
+lMenuWindowAlwaysonTopDescription	Define a propriedade da actual janela "Sempre visÌvel" ligada ou desligada (alterna)
 lMessengerCloseQAPSettings	… aberta uma janela em ~1~, possivelmente com alteraÁıes n„o guardadas.`n`nPor favor, feche as janelas de definiÁıes antes, usando este menu de contexto.
 lMessengerDoNotRun	N„o execute o ~1~ directamente. Pode:`n`n- clicar com o bot„o direito do rato num Ìcone de ficheiro ou pasta no Explorador para adicion·-los ao menu`n- clicar com o bot„o direito do rato no fundo da janela do Explorador para adicionar a pasta actual`n- clicar com o bot„o direito do rato no fundo do Ambiente de Trabalho para fazer emergir o menu.`n`nCertifique-se que o ~2~ est· aberto antes de usar os seus menus de contexto. Ver caixa de selecÁ„o "Menus de Contexto" na janela "OpÁıes" do ~2~.
 lMessengerError	Ocorreu um erro.`n`nCertifique-se de que o ~1~ est· em execuÁ„o antes de usar os seus menus de contexto.
@@ -735,8 +735,8 @@ lMessengerHelp	Procure o "Messenger" em www.QuickAccessPopup.com para ajuda.
 lNavigateFileError	Ocorreu um erro ao abrir a pasta:`n~1~.
 lNavigateSpecialError	Ocorreu um erro ao abrir a pasta especial #~1~.
 lOopsAddThisFolderTip	Para melhores resultados com o comando "Adicionar Pasta Activa ou p·gina Web":`n`n1) Active a janela ~1~ contendo a pasta ou ligaÁ„o a adicionar ao seu menu.`n2) Abra o menu emergente usando ~2~.`n3) Seleccione "Adicionar Pasta Activa ou p·gina Web" e guarde o seu novo favorito.
-lOopsAlternativeMenuModifiersDuplicates	O Modificador "~1~" do Menu Alternativo √© usado duas vezes.`n`nPor favor, certifique-se que cada modificador √© usado apenas uma vez.
-lOopsAlternativeNotSupported	O comando do Menu Alternativo "~1~" n√£o √© suportado para favoritos do tipo "~2~".
+lOopsAlternativeMenuModifiersDuplicates	O Modificador "~1~" do Menu Alternativo È usado duas vezes.`n`nPor favor, certifique-se que cada modificador È usado apenas uma vez.
+lOopsAlternativeNotSupported	O comando do Menu Alternativo "~1~" n„o È suportado para favoritos do tipo "~2~".
 lOopsAmpersandInName	O s√≠mbolo "&" √© utilizado para definir teclas de atalho nos menus do Windows. Para exibir o s√≠mbolo num nome de menu, digite "&&".`n`nPara mais informa√ß√£o, procure por "ampersand" nas FAQ na p√°gina do QAP.
 lOopsCannotCopyFavorite	N„o È possÌvel copiar favoritos do tipo "~1~".
 lOopsCannotMoveToSelf	N„o poder mover favoritos para as suas localizaÁıes actuais. Por favor, seleccione outro destino.
