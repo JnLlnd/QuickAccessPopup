@@ -247,7 +247,8 @@ lDialogFreeEditionMessage0	Está a usar e Edição Gratuíta do Quick Access Popup.
 lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuíta do Quick Access Popup foram excedidos. Os itens em excesso foram desactivados.
 lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para obter ou guardar a sua licença QAP...
 lDialogFreeEditionShared	Menus partilhados: actual ~1~ / permitidos ~2~
-lDialogGetWebPageTitle	Obter título
+lDialogGetWebPageTitle	Obter título e ícone
+lDialogGetWebSiteIcon	Obter ícone do site
 lDialogGetWinInfo	Para identificar a janela da qual pretende obter o título, classe ou nome do processo, clique na janela alvo com a combimação [~1~] do menu QAP.
 lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nProcesso:`n"~3~"`n`nCopiar esta informação para a Área de transferência?
 lDialogHotkeyInvisibleKeys	(OLD version *UPDATE next line and DELETE this line*) <a id="~1~">barra de espaços</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a> ou <a id="~4~">escape</a>
@@ -277,6 +278,8 @@ lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma vista geral das 
 lDialogHotstringTriggerAbbreviation	Activador (abreviatura):
 lDialogHotstringTriggerOptions	Cadeia de substituição (activador e opções)
 lDialogIcon	Ícone do Favorito
+lDialogIconsDefaultSize	Tamanho padrão
+lDialogIconsInheritedSize	Tamanho herdado
 lDialogIconsManage	Ícones
 lDialogIconsManageAbout	Seleccione novos ícones para os seus favoritos ou defina-os para o ícone padrão do seu tipo. Não se esqueça de guardar as alterações na janela "Personalizar".
 lDialogIconsManageCurrent	Ícone actual
@@ -288,8 +291,9 @@ lDialogIconsManageParentMenu	Menu principal do Favorito
 lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir ícone padrão
 lDialogIconsManageTitle	Gerir Ícones - ~1~ ~2~
-lDialogIconsSelectPrompt	Clique num ícone para o seleccionar.
+lDialogIconsSelectPrompt	Para seleccionar um ícone, faça duplo-clique nele ou use as teclas de setas e prima Enter.
 lDialogIconsSelectTitle	Seleccionar ícone - ~1~ ~2~
+lDialogIconsSizeInMenu	Tamanho dos ícones neste menu:
 lDialogInputExample	Inserir Exemplo
 lDialogInputParameter	Inserir parâmetro - ~1~
 lDialogInvalidHotkey	Com a sua actual configuração do teclado, a tecla de atalho "~1~" não pode usada como desencadeadora do menu emergente (erro de nome de tecla inválido).`n`nPor favor, abra a janela "Personalizar" do menu da Barra de notificação e clique em "Opções". Nesta caixa de diálogo, escolha outro atalho para "~2~".
@@ -770,6 +774,8 @@ lOopsHotkeyAlreadyUsed	A tecla de atalho "~1~" já está em uso para "~2~".`n`nPor
 lOopsHotkeyObjectNotFound	~1~ não conseguiu localizar o favorito associado ao ~2~ "~3~".`n`nIsto pode ser uma situação temporária. Tente reiniciar o ~1~.
 lOopsHotstringTriggerTooLong	Activador da cadeia de substituição demasiado longo. Os activadores das cadeias de substituição não podem ter mais de 40 caracteres.
 lOopsHttpLocationTransformed	A localização http (formato URL) foi transformada num atalho de rede (formato UNC) para compatibilidade com o Windows:`n`n~1~`n~2~
+lOopsInvalidIcon	As imagens dos ícones devem ser quadradas e inferiores a 64 x 64 píxeis.`n`nFicheiro: ~1~`nTamanho da imagem: ~2~ x ~3~ píxeis
+lOopsInvalidIconDownload	O ícone para este site não está disponível ou é inválido:`n`n~1~
 lOopsInvalidWinCmdIni	Não foi encontrado o ficheiro de definições do Total Commander "wincmd.ini".`n`nSeleccione o ficheiro em "Opções", separador "Gestores de ficheiros".
 lOopsInvalidWindowPosition	Valor(es) de posição da janela inválido(s)
 lOopsJLiconsError	Ícone QAP não encontrado. Certifique-se que actualizou o ficheiro JLicons.dll para ~1~.
@@ -783,6 +789,7 @@ lOopsMenuExternalReservedBy	Este ~1~ está RESERVADO pelo utilizador: ~2~.`n`nAgu
 lOopsMenuNotFound	O menu "~1~" não existe.
 lOopsMenuSorted	Este comando não pode ser executado porque este menu é ordenado automaticamente.
 lOopsMultipleContainersError	Menus, grupos e menus partilhados só podem ser copiados ou movidos individualmente. Estes itens serão ignorados.
+lOopsNoIconInFile	Não existem ícones no ficheiro:`n`n~1~
 lOopsNotAdmin	Não foi possível carregar ~1~ como Administrador.`n`nEstá agora a ser executado como Normal.
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, seleccione um atalho válido.
 lOopsOptionsPathTrayIcon	Ficheiro do ícone da área de notificação
@@ -859,7 +866,7 @@ lOptionsHotstringsDefault	Opções padrão de cadeias de substituição
 lOptionsHotstringsDefaultSelect	Seleccionar
 lOptionsIconReplacementList	Substituição de ícones do QAP
 lOptionsIconReplacementListInstructions	Introduza as substituições de ícones do QAP, um por linha. Todas as linhas devem começar com o nome do ícone QAP (p.e. "iconFolderLive"), seguido pelo sinal igual "=" e o "ficheiro,índice" do ícone de substituição. O "ficheiro,índice" é o atalho para o ficheiro (.ico, .dll ou .exe) contendo o ícone e o índice é a posição do ícone neste ficheiro, p.e. "C:\Icons\MyFile.dll,1".
-lOptionsIconSize	Tamanho dos ícones do menu
+lOptionsIconSize	Tamanho padrão dos ícones do menu
 lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponível)
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
@@ -964,7 +971,7 @@ lOptionsWaitDelayInDialogBox	Atraso (em ms) ao mudar de pasta em caixas de diálo
 lOptionsWaitDelayInSnippet	Atrasos (em ms) durante a execução de Snippets
 lOptionsWorkingFolder	Pasta de Definições
 lPickIconNoLocation	Escolha primeiro um favorito antes de escolher um ícone.
-lReloadPrompt	~1~ alterado para ~2~. Deseja recarregar ~3~ em ~2~ agora? As alterações ao menu não guardadas serão perdidas.
+lReloadPrompt	~1~ alterado para ~2~. Deseja recarregar ~3~ com a opção ~2~ agora? As alterações ao menu não guardadas serão perdidas.
 lSponsoredName	O desenvolvimento deste software é gentilmente apoiado por ~1~
 lSponsoredNone	Clique aqui para obter uma licença para este software
 lStartupTipsDays	Dias entre Dicas e Truques no Arranque`n(zero para mostrar em todos os arranques do QAP)
@@ -980,7 +987,7 @@ lTipCreateSubmenuDetails	Melhore o seu menu agrupando em sub-menus os seus favor
 lTipCreateSubmenuTitle	Se o seu menu QAP se tornar demasiado longo, divida e controle!
 lTipCustomIconsDetails	Escolha os ícones exibidos no menu Quick Access Popup <a>substituindo os ícones padrão</a> usados pelo QAP comas sua imagens preferidas. Esta dica irá mostrar-lhe como converter um ficheiro de imagem num ícone (.ico).`n`nVeja também como pode <a>gerir todos os ícones do menu</a> num ecrã.
 lTipCustomIconsTitle	Embeleze o seu menu emergente com os seus ícones preferidos
-lTipCustomizeStartupDetails	Por defeito, o Quick Access Popup exibe a janela "Personalizar" (onde pode editar o seu menu) no arranque.`n`nSe preferir abrir só quando pedir, desmarque a caixa "Abrir janela Personalizar no arranque" na caixa de diálogo <a>Opções, Personalizar Janela</a>.`n`nMais info em <a>Base de Conhecimentos</a>.
+lTipCustomizeStartupDetails	Por defeito, o Quick Access Popup, ao iniciar, exibe a janela "Personalizar" (onde pode editar o seu menu).`n`nSe preferir abrir só a pedido, desmarque a caixa "Abrir janela Personalizar no arranque" na caixa de diálogo <a>Opções, Janela Personalizar</a>.`n`nMais info em <a>Base de Conhecimentos</a>.
 lTipCustomizeStartupTitle	Deseja abrir sempre no arranque a janela personalizar do QAP?
 lTipDefaultHotkeysDetails	Ao ser instalado, o Quick Access Popup assume o controlo do botão do meio do rato e destas teclas de atalho: Windows+W, Shift+Windows+W, Control+Shift+A, Control+Shift+C, Control+Shift+F e Control+Shift+U.`n`nPode alterar isso! Abra a caixa de diálogo <a>Ferramentas, Atalhos</a> para remover ou alterar estas atribuições.`n`nMais info na <a>Base de Conhecimentos</a>.
 lTipDefaultHotkeysTitle	Decida quais as teclas de atalho são atribuídas pelo Quick Access Popup
@@ -1001,6 +1008,7 @@ lToolTipBrokenLinksList	Ligações perdidas ou privadas
 lToolTipBrokenLinksWarnings	ALERTAS`n- Alguma ligações perdidas pode levar algum tempo a responder.`n- Ligações protegidas com palavra-passe podem ser erradamente identificadas como perdidas.`n- Ligações que incluam espaços reservados {...} não serão verificadas.
 lToolTipBuilding	A construir o menu...
 lToolTipLoading	A carregar favoritos...
+lToolTipRetrievingWebPageIcon	A recuperar ícone da página web....
 lToolTipRetrievingWebPageTitle	A recuperar título da página web...
 lToolTipSaving	A guardar favoritos...
 lTooltipSnippetKeyWait	Pressione {~1~} para continuar...

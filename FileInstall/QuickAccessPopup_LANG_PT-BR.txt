@@ -248,7 +248,8 @@ lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuita do Quick 
 lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para adquirir ou salvar sua licença do QAP...
 lDialogFreeEditionMessage3	Adquira sua licença agora para tirar o máximo proveito dos recursos do QAP.
 lDialogFreeEditionShared	Menus compartilhados: atual ~1~ / permitido ~2~
-lDialogGetWebPageTitle	Obter título
+lDialogGetWebPageTitle	Obter título e ícone
+lDialogGetWebSiteIcon	Obter ícone do site
 lDialogGetWinInfo	Para identificar a janela da qual deseja obter título, classe ou nome do processo, clique na janela de destino com a tecla de atalho do menu QAP [~1~].
 lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nNome do processo:`n"~3~"`n`nCopiar informações para a Área de Transferência?
 lDialogHotkeyInvisibleKeys	<a id="~1~">barra de espaço</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>`nor <a id="~5~">tecla menu (aplicativo)</a>
@@ -278,6 +279,8 @@ lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma visão global de 
 lDialogHotstringTriggerAbbreviation	Disparador (abreviação):
 lDialogHotstringTriggerOptions	String de substituição (disparador e opções)
 lDialogIcon	Ícone do Favorito
+lDialogIconsDefaultSize	Tamanho padrão
+lDialogIconsInheritedSize	Tamanho herdado
 lDialogIconsManage	Ícones
 lDialogIconsManageAbout	Selecione novos ícones para seus favoritos ou defina o ícone padrão para o tipo. Não esqueça de salvar as alterações na janela "Personalizar".
 lDialogIconsManageCurrent	Ícone atual
@@ -289,8 +292,9 @@ lDialogIconsManageParentMenu	Menu principal do favorito
 lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir ícone padrão
 lDialogIconsManageTitle	Gerenciar Ícones - ~1~ ~2~
-lDialogIconsSelectPrompt	Clique em um ícone para selecioná-lo.
+lDialogIconsSelectPrompt	Para selecionar um ícone, dê um duplo clique nele ou use as teclas direcionais e pressione Enter.
 lDialogIconsSelectTitle	Selecionar Ícone - ~1~ ~2~
+lDialogIconsSizeInMenu	Tamanho dos ícones neste menu:
 lDialogInputExample	Input Exemplo
 lDialogInputParameter	Parâmetro de entrada - ~1~
 lDialogInvalidHotkey	Com o layout de teclado atual do sistema, a tecla de atalho "~1~" não pode ser usada como disparador para o menu popup (erro 'não é uma tecla válida').`n`nPor favor, abra a janela "Personalizar" pelo menu da Área de Notificação e clique em "Opções". Nesta caixa de diálogo, escolha outro atalho para "~2~".
@@ -771,6 +775,8 @@ lOopsHotkeyAlreadyUsed	O atalho "~1~" já está sendo usado por ~2~.`n`nPor favor,
 lOopsHotkeyObjectNotFound	~1~ não pôde localizar o favorito associado ao ~2~ "~3~".`n`nEsta pode ser uma situação temporária. Tente reiniciar o ~1~.
 lOopsHotstringTriggerTooLong	Disparador da string de substituição muito longo. Disparadores de strings de substituição não podem ter mais do que 40 caracteres.
 lOopsHttpLocationTransformed	O local HTTP (formato URL) foi transformado em um caminho de rede (formato UNC) para compatibilidade com o Windows:`n`n~1~`n~2~
+lOopsInvalidIcon	Imagens de ícones devem ser quadradas e não devem ser maiores do que 64 x 64 pixels.`n`nArquivo: ~1~`nTamanho da imagem: ~2~ x ~3~ pixels
+lOopsInvalidIconDownload	O ícone deste site não está disponível ou é inválido:`n`n~1~
 lOopsInvalidWinCmdIni	Arquivo de configuração "wincmd.ini" do Total Commander não encontrado.`n`nSelecione o arquivo em "Opções", aba "Gerenciadores de arquivos".
 lOopsInvalidWindowPosition	Valor(es) inválido(s) da posição da janela
 lOopsJLiconsError	Ícone da área de notificação do QAP não encontrado. Veja se você atualizou o arquivo JLicons.dll para ~1~.
@@ -784,6 +790,7 @@ lOopsMenuExternalReservedBy	Este ~1~ está RESERVADO pelo usuário: ~2~.`n`nAguard
 lOopsMenuNotFound	O menu "~1~" não existe.
 lOopsMenuSorted	Este comando não pode ser executado pois este menu foi classificado automaticamente.
 lOopsMultipleContainersError	Menus, grupos e menus compartilhados somente podem ser copiados ou movidos individualmente. Estes itens serão ignorados.
+lOopsNoIconInFile	Não há ícones no arquivo:`n`n~1~
 lOopsNotAdmin	~1~ não pôde ser iniciado como Administrador.`n`nEle está sendo executado como Normal.
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, selecione um caminho válido.
 lOopsOptionsPathTrayIcon	Arquivo de ícone da Área de Notificação
@@ -860,7 +867,7 @@ lOptionsHotstringsDefault	Opções padrão de strings de substituição
 lOptionsHotstringsDefaultSelect	Selecionar
 lOptionsIconReplacementList	Substituições de Ícones do QAP
 lOptionsIconReplacementListInstructions	Entre as substituições de ícones do QAP, um por linha. Cada linha deve iniciar com o nome do ícone do QAP (ex.: "iconFolderLive"), seguido pelo sinal de igual "=" e o "arquivo,índice" do ícone de substituição. O "arquivo,índice" é o caminho para o arquivo (.ico, .dll ou .exe) contendo o ícone e o índice é a posição do ícone neste arquivo, ex.: "C:\Ícones\Arquivo.dll,1".
-lOptionsIconSize	Tamanho dos ícones no menu
+lOptionsIconSize	Tamanho padrão dos ícones no menu
 lOptionsIconsManageRows	Linhas da janela 'Gerenciar Ícones' (0 para espaço máximo disponível)
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
@@ -965,7 +972,7 @@ lOptionsWaitDelayInDialogBox	Atraso (em ms) ao alterar pasta em caixas de diálog
 lOptionsWaitDelayInSnippet	Atrasos (em ms) durante execução de Recorte
 lOptionsWorkingFolder	Pasta de Configurações
 lPickIconNoLocation	Selecione primeiro um favorito antes de escolher um ícone.
-lReloadPrompt	~1~ foi alterado para ~2~. Deseja recarregar ~3~ em ~2~ agora? Alterações não salvas no menu serão perdidas.
+lReloadPrompt	~1~ foi alterado para ~2~. Deseja recarregar ~3~ com a opção ~2~ agora? Alterações não salvas no menu serão perdidas.
 lSponsoredName	O desenvolvimento deste software possui a gentil ajuda de ~1~
 lSponsoredNone	Por favor, clique aqui adquirir uma licença para este software
 lStartupTipsDays	Dias entre Dicas e Truques de Inicialização`n(zero para mostrar a cada inicialização do QAP)
@@ -1002,6 +1009,7 @@ lToolTipBrokenLinksList	Links quebrados ou privados
 lToolTipBrokenLinksWarnings	AVISOS`n- Alguns links quebrados podem levar um certo tempo para responder.`n- Links protegidos por senha podem ser identificados erroneamente como quebrados.`n- Links incluindo espaços reservados {...} não serão examinados.
 lToolTipBuilding	Criando menu...
 lToolTipLoading	Carregando favoritos...
+lToolTipRetrievingWebPageIcon	Recuperando ícone da página da web...
 lToolTipRetrievingWebPageTitle	Obtendo título da página da web...
 lToolTipSaving	Salvando favoritos...
 lTooltipSnippetKeyWait	Pressione {~1~} para continuar…

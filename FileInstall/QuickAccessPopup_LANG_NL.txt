@@ -248,7 +248,8 @@ lDialogFreeEditionMessage1	De beperkingen van de gratis verie van Quick Access P
 lDialogFreeEditionMessage2	Open alsjeblieft het "~1~, ~2~" dialoogvenster om jouw QAP-licentie op te halen of op te slaan...
 lDialogFreeEditionMessage3	Haal nu jouw licentie op om volledig te kunnen profiteren van alle QAP-functies.
 lDialogFreeEditionShared	Gedeelde menu's: actueel ~1~ / toegestaan ~2~
-lDialogGetWebPageTitle	Haal titel op
+lDialogGetWebPageTitle	Haal titel en pictogram op
+lDialogGetWebSiteIcon	Website-pictogram ophalen
 lDialogGetWinInfo	Klik in het doelvenster met de QAP sneltoets [~1~] om de titel, klasse of procesnaam van het venster op te halen.
 lDialogGetWInInfo2Clippoard	Venstertitel:`n"~1~"`n`nKlasse:`n"~2~"`n`nProcesnaam:`n"~3~"`n`nDeze informatie naar het klembord kopiëren?
 lDialogHotkeyInvisibleKeys	<a id="~1~">Spatiebalk</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>`nof <a id="~5~">menu toets (applicatie)</a>
@@ -278,6 +279,8 @@ lDialogHotstringsDescription	Geeft het venster weer met een globaal overzicht va
 lDialogHotstringTriggerAbbreviation	Trigger (afkorting):
 lDialogHotstringTriggerOptions	Hotstring (trigger en opties)
 lDialogIcon	Pictogram
+lDialogIconsDefaultSize	Standaard formaat
+lDialogIconsInheritedSize	Inherited size
 lDialogIconsManage	Pictogrammen
 lDialogIconsManageAbout	Selecteer een nieuw pictogram voor de gewenste favoriet, of herstel het standaardpictogram, vergeet niet om de wijzigingen op te slaan in het voorkeurenmenu.
 lDialogIconsManageCurrent	Huidig pictogram
@@ -289,8 +292,9 @@ lDialogIconsManageParentMenu	Favoriete hoofdmenu
 lDialogIconsManagePrevious	Terug
 lDialogIconsManageSetDefaultIcon	Stel standaard pictogram in
 lDialogIconsManageTitle	Beheer pictogrammen - ~1~ ~2~
-lDialogIconsSelectPrompt	Klik op een pictogram om het te selecteren.
+lDialogIconsSelectPrompt	Klik op een pictogram om het te selecteren, dubbelklik hierop of gebruik de pijltjes-toetsen vervolgt door Enter.
 lDialogIconsSelectTitle	Selecteer het pictogram - ~1~ ~2~
+lDialogIconsSizeInMenu	Formaat van de pictogrammen in dit menu:
 lDialogInputExample	Invoervoorbeeld
 lDialogInputParameter	Invoer parameter - ~1~
 lDialogInvalidHotkey	Met de huidige toetsenbordindeling kan de sneltoets "~1~" niet gebruikt worden als commando voor het popupmenu.`n`nGelieve het voorkeurenmenu te openen vanuit de taakbalk en klik op "Voorkeuren". Selecteer hier een andere sneltoets voor "~2~".
@@ -366,7 +370,7 @@ lDialogOptionsPathNotExist	Deze map bestaat niet:`n`n~1~`n`nWil je deze aanmaken
 lDialogOr	of
 lDialogPlaceholders	Browse naar <a href="~1~">placeholders help page</a>.
 lDialogPlay	Afspelen
-lDialogQAPFeatureCategoriesNames	Opties|Dynamische menu's|QAP menuopmaak|Favoriet toevoegen van type|Venstermanagement|Windows opties|Close Computer Commands|Verschillende opties|QAP management
+lDialogQAPFeatureCategoriesNames	Opties|Dynamische menu's|QAP menuopmaak|Favoriet toevoegen van type|Venstermanagement|Windows opties|Computer afsluitopties|Verschillende opties|QAP management
 lDialogQAPFeatureCategoriesNamesAll	Alles (alfabetische volgorde)
 lDialogQAPFeaturesHelpLink	Hulp bij deze opties
 lDialogReadOnly	Alleen lezen
@@ -771,6 +775,8 @@ lOopsHotkeyAlreadyUsed	De sneltoets "~1~" is al in gebruik voor ~2~.`n`nSelectee
 lOopsHotkeyObjectNotFound	~1~ kon de favoriet geassocieerd met ~2~ "~3~" niet vinden.`n`nDit kan een tijdelijke situatie zijn, probeer ~1~ te herstarten.
 lOopsHotstringTriggerTooLong	De Hotstringtrigger is te lang. Hotstringtriggers kunnen niet meer dan 40 karakters bevatten.
 lOopsHttpLocationTransformed	De http locatie (URL formaat) is aangepast in een netwerkpad (UNC formaat) voor compatibiliteit met Windows: `n`n~1~`n~2~
+lOopsInvalidIcon	Pictogramafbeeldingen moeten vierkant zijn en niet groter dan 64 x 64 pixels.`n`nBestand: ~1~`nAfbeeldingsgrootte: ~2~ x ~3~ pixels
+lOopsInvalidIconDownload	Het pictogram voor deze website is niet beschikbaar of is ongeldig:`n`n~1~
 lOopsInvalidWinCmdIni	Total Commander bestand "wincmd.ini" is niet gevonden.`n`nSelecteer het bestand in "Opties" onder de tab "Bestandsbeheerders".
 lOopsInvalidWindowPosition	De vensterpositiewaarde(s) zijn ongeldig.
 lOopsJLiconsError	De QAP taakbalk icoon is niet gevonden, zorg ervoor dat je het bestand JLicons.dll hebt geudatet naar ~1~.
@@ -784,6 +790,7 @@ lOopsMenuExternalReservedBy	Deze sessie van ~1~ is GERESERVEERD door gebruiker: 
 lOopsMenuNotFound	Het menu "~1~" bestaat niet.
 lOopsMenuSorted	Deze opdracht kan niet worden uitgevoerd omdat dit menu automatisch wordt gesorteerd.
 lOopsMultipleContainersError	Menu's, groepen en gedeelde menu's kunnen alleen afzonderlijk worden gekopieerd of verplaatst, deze items worden overgeslagen.
+lOopsNoIconInFile	Er is geen pictogram in het bestand:`n`n~1~
 lOopsNotAdmin	~1~ kon niet worden geladen als Administrator.`n`nHet is geladen in de normale modus.
 lOopsOptionsPathNotExist	~1~ bestaat niet:`n~2~`n`nSelecteer een geldige locatie.
 lOopsOptionsPathTrayIcon	Taakbalk pictogrambestand
@@ -860,7 +867,7 @@ lOptionsHotstringsDefault	Standaard opties voor Hotstrings
 lOptionsHotstringsDefaultSelect	Selecteren
 lOptionsIconReplacementList	QAP-pictogram vervanger
 lOptionsIconReplacementListInstructions	Hier kan een vervanger voor een QAP-pictogram opgegeven worden.`n`nElke regel dient 1 pictogram te definiëren en te starten met de naam van het QAP-pictogram (b.v. "iconFolderLive") gevolgd met een "="-teken en "bestandslocatie, index" van het vervangende pictogram.`nDe "bestandslocatie" is de locatie van het bestand (.ico, .dll of .exe) waar het nieuwe pictogram zich bevindt en "index" is de positie van het pictogram in het bestand, b.v. "C:\pictogrammen\MijnBestand.dll,1".
-lOptionsIconSize	Pictogramgrootte
+lOptionsIconSize	Standaardformaat menupictogrammen
 lOptionsIconsManageRows	Beheer de pictogramvenster-regels (0 voor maximaal beschikbare ruimte)
 lOptionsLanguage	Taal
 lOptionsLanguageLabels	Engels|Frans|Duits|Spaans|Braziliaans Portugees|Italiaans|Portugees|Nederlands|Korean|Simplified Chinese
@@ -965,7 +972,7 @@ lOptionsWaitDelayInDialogBox	Vertraging (in ms) bij het wijzigen van een map in 
 lOptionsWaitDelayInSnippet	Vertragingen (in ms) voor het uitvoeren van een fragment
 lOptionsWorkingFolder	Voorkeurenmap
 lPickIconNoLocation	Selecteer eerst een favoriet alvorens een pictogram te kiezen.
-lReloadPrompt	~1~ gewijzigd in ~2~. Wil je ~3~ herladen naar ~2~? Niet opgeslagen wijzigingen gaan verloren.
+lReloadPrompt	~1~ gewijzigd in ~2~. Wil je ~3~ nu laden met optie: ~2~? Niet opgeslagen wijzigingen gaan verloren.
 lSponsoredName	De ontwikkeling van deze software wordt vriendelijk ondersteunt door ~1~
 lSponsoredNone	Klik hier om een licentie voor deze software aan te vragen
 lStartupTipsDays	Aantal dagen tussen opstarttips en -trucs`n("0" om tips en trucs weer te geven bij elke QAP-start)
@@ -1002,6 +1009,7 @@ lToolTipBrokenLinksList	Gebroken- of privé links
 lToolTipBrokenLinksWarnings	WAARSCHUWING`n- Het kan even duren voordat sommige verbroken koppelingen reageren.`n- Met een wachtwoord beveiligde koppelingen kunnen ten onrechte worden geïdentificeerd als verbroken.`n- Koppelingen die gebruik maken van accolades {...} worden niet gecontroleerd.
 lToolTipBuilding	Menu opbouwen...
 lToolTipLoading	Favorieten laden...
+lToolTipRetrievingWebPageIcon	Webpaginapictogram ophalen....
 lToolTipRetrievingWebPageTitle	Titel van de webpagina aan het ophalen...
 lToolTipSaving	Favorieten opslaan...
 lTooltipSnippetKeyWait	Druk op {~1~} om door te gaan...
