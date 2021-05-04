@@ -248,7 +248,8 @@ lDialogFreeEditionMessage1	Purtroppo, i limiti di Quick Access Popup Edizione Gr
 lDialogFreeEditionMessage2	Si prega di aprire la casella di dialogo "~1~, ~2~" per richiedere o salvare la tua licenza di QAP...
 lDialogFreeEditionMessage3	Richiedi la licenza ora per sfruttare senza limitazioni tutte le funzioni di QAP.
 lDialogFreeEditionShared	MenÃ¹ condiviso: attuale ~1~ / permesso ~2~
-lDialogGetWebPageTitle	Estrai il titolo
+lDialogGetWebPageTitle	Estrai titolo e icona
+lDialogGetWebSiteIcon	Estrai l'icona del sito web
 lDialogGetWinInfo	Per identificare la finestra di cui vuoi trovare titolo, classe o nome del processo, clicca sulla finestra desiderata premendo la scorciatoia del menù QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titolo della Finestra:`n"~1~"`n`nClasse:`n"~2~"`n`nNome del Processo:`n"~3~"`n`nVuoi copiare queste informazioni negli Appunti?
 lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>`nor <a id="~5~">tasto del menú (applicazione)</a>
@@ -278,6 +279,8 @@ lDialogHotstringsDescription	Visualizza una casella di dialogo con una visione c
 lDialogHotstringTriggerAbbreviation	Attivatore (abbreviazione):
 lDialogHotstringTriggerOptions	Sequenza di sostituzione (attivatore e opzioni)
 lDialogIcon	Icona del Preferito
+lDialogIconsDefaultSize	Dimensione predefinita
+lDialogIconsInheritedSize	Dimensione ereditata
 lDialogIconsManage	Icone
 lDialogIconsManageAbout	Seleziona nuove icone per i tuoi preferiti o assegnagli l'icona di default per il loro tipo. Non dimenticare di salvare le modifiche nella finestra "Personalizzare".
 lDialogIconsManageCurrent	Icona corrente
@@ -289,8 +292,9 @@ lDialogIconsManageParentMenu	Menù superiore del Preferito
 lDialogIconsManagePrevious	Precedente
 lDialogIconsManageSetDefaultIcon	Assegna l'icona di default
 lDialogIconsManageTitle	Gestione Icone - ~1~ ~2~
-lDialogIconsSelectPrompt	Clicca su un'icona per selezionarla.
+lDialogIconsSelectPrompt	Clicca su un'icona per selezionarla, oppure usa i tasti freccia e premi Enter
 lDialogIconsSelectTitle	Seleziona Icona - ~1~ ~2~
+lDialogIconsSizeInMenu	Dimensione delle icone in questo menù:
 lDialogInputExample	Esempio di input
 lDialogInputParameter	Parametro di input - ~1~
 lDialogInvalidHotkey	Con il tuo attuale layout di tastiera di sistema, non è stato possibile usare la combinazione "~1~" per aprire il popup menù (errore: tasto scelto non valido).`n`nPer favore, apri la finestra "Personalizzare ~2~" dal menù dell'icona nell'area notifiche e clicca: "Opzioni". In questa casella di dialogo, scegli un altro shortcut per "~3~".
@@ -771,6 +775,8 @@ lOopsHotkeyAlreadyUsed	La combinazione di tasti "~1~" è già usata per ~2~.`n`nE'
 lOopsHotkeyObjectNotFound	~1~ potrebbe non trovare il preferito associato al ~2~ "~3~".`n`nQuesta può essere una situazione temporanea. Prova a riavviare ~1~.
 lOopsHotstringTriggerTooLong	Hotstring trigger too long. Hotstring triggers can be no more than 40 characters long.<<<<
 lOopsHttpLocationTransformed	La destinazione http (in formato URL) è stato convertita in un percorso di rete (formato UNC) per compatibilità con Windows :`n`n~1~`n~2~
+lOopsInvalidIcon	Le immagini delle icone devono essere quadrate e non più grandi di 64 x 64 pixels.`n`nFile: ~1~`nDimensione immagine: ~2~ x ~3~ pixels
+lOopsInvalidIconDownload	L'icona per questo sito web non è disponibile o non è valida:`n`n~1~
 lOopsInvalidWinCmdIni	File delle impostazioni di Total Commander ("wincmd.ini") non trovato.`n`nSelezionalo in "Opzioni" > "File manager".
 lOopsInvalidWindowPosition	Valori non validi per la posizione della finestra
 lOopsJLiconsError	Icona di QAP per l'area notifiche non trovata. Assicurati di aver aggiornato il file JLicons.dll in ~1~.
@@ -784,6 +790,7 @@ lOopsMenuExternalReservedBy	Questo ~1~ è RISERVATO dall'utente: ~2~.`n`nAspetta 
 lOopsMenuNotFound	Il menù "~1~" non esiste.
 lOopsMenuSorted	Questo comando non può essere eseguito perchè questo menù è ordinato automaticamente.
 lOopsMultipleContainersError	Menù, gruppi e menù condivisi possono essere copiati o spostati solo individualmente. Questi elementi saranno saltati.
+lOopsNoIconInFile	Non c'è nessuna icona nel file:`n`n~1~
 lOopsNotAdmin	Non é stato possibile ~1~ come Amministratore.`n`nE' pertanto in esecuzione in modalitá Normale.
 lOopsOptionsPathNotExist	~1~ non esiste:`n~2~`n`nPer favore, seleziona un percorso valido.
 lOopsOptionsPathTrayIcon	File dell'icona nell'area notifiche
@@ -860,7 +867,7 @@ lOptionsHotstringsDefault	Opzioni predefinite delle Sequenze di sostituzione
 lOptionsHotstringsDefaultSelect	Seleziona
 lOptionsIconReplacementList	Icone di riserva per QAP
 lOptionsIconReplacementListInstructions	Inserisci le icone di riserva per QAP, una per riga. Ciascuna linea deve iniziare col nome dell'icona per QAP (e.g. "iconaCartellaLive"), seguito dal segno di uguale "=" e il "file,indice" dell'icona di sostituzione. Il "file,indice" contiene il percorso del file (.ico, .dll o .exe) contenente l'icona, e l'indice che è la posizione dell'icona in tale file, e.g. "C:\Icone\MioFile.dll,1".
-lOptionsIconSize	Dimensione delle icone
+lOptionsIconSize	Dimensione predefinita delle icone del menù
 lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto lo spazio disponibile)
 lOptionsLanguage	Lingua
 lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian
@@ -965,7 +972,7 @@ lOptionsWaitDelayInDialogBox	Ritardo (in ms) cambiando cartella nelle caselle di
 lOptionsWaitDelayInSnippet	Ritardi (in ms) durante l'esecuzione del Frammento di testo
 lOptionsWorkingFolder	Cartella Impostazioni
 lPickIconNoLocation	Seleziona il preferito prima di scegliere un'icona.
-lReloadPrompt	~1~ cambiato in ~2~. Vuoi ricaricare ~3~ in ~2~ ora? Le modifiche non salvate al menù verranno perse.
+lReloadPrompt	~1~ cambiato in ~2~. Vuoi ricaricare ~3~ con l'opzione ~2~ ora? Le modifiche non salvate al menù verranno perse.
 lSponsoredName	Questo programma è sviluppato gazie anche al gentile contributo di ~1~
 lSponsoredNone	Si prega di cliccare qui per richiedere una licenza per questo programma
 lStartupTipsDays	Giorni prima di mostrare di nuovo Suggerimenti e Trucchi all'Avvio`n(zero per mostrarli ad ogni avvio di QAP)
@@ -1002,6 +1009,7 @@ lToolTipBrokenLinksList	Link inesistenti o privati
 lToolTipBrokenLinksWarnings	ATTENZIONE`n- Alcuni link inesistenti potrebbero impiegare del tempo prima di rispondere.`n- Link protetti da password potrebbero essere erroneamente riportati come inesistenti.`n- Link che includono dei segnaposto come {...} non verranno analizzati.
 lToolTipBuilding	Sto costruendo il menu...
 lToolTipLoading	Sto caricando i Preferiti...
+lToolTipRetrievingWebPageIcon	Sto recuperando l'icone della pagina web....
 lToolTipRetrievingWebPageTitle	Sto recuperando il titolo della pagina web...
 lToolTipSaving	Sto salvando i Preferiti...
 lTooltipSnippetKeyWait	Premere {~1~} per continuare…
