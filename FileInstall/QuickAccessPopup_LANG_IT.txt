@@ -246,7 +246,7 @@ lDialogFreeEditionLiveExceeded	Il numero di oggetti nelle Cartelle Live supera i
 lDialogFreeEditionMessage0	Stai usando la versione gratuita di Quick Access Popup.
 lDialogFreeEditionMessage1	Purtroppo, i limiti di Quick Access Popup Edizione Gratuita sono stati superati. Gli elementi che superano i limiti sono stati disabilitati.
 lDialogFreeEditionMessage2	Si prega di aprire la casella di dialogo "~1~, ~2~" per richiedere o salvare la tua licenza di QAP...
-lDialogFreeEditionMessage3	Richiedi la licenza ora per sfruttare senza limitazioni tutte le funzioni di QAP.
+lDialogFreeEditionMessage3	Richiedi la licenza ora per sfruttare senza limitazioni tutte le funzioni di QAP
 lDialogFreeEditionShared	Menù condiviso: attuale ~1~ / permesso ~2~
 lDialogGetWebPageTitle	Estrai titolo e icona
 lDialogGetWebSiteIcon	Estrai l'icona del sito web

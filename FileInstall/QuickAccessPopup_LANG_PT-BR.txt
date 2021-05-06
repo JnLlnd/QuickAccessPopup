@@ -246,7 +246,7 @@ lDialogFreeEditionLiveExceeded	O número de itens nas pastas ativas está excedend
 lDialogFreeEditionMessage0	Você está usando a Edição Gratuita do Quick Access Popup.
 lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuita do Quick Access Popup foram excedidos. Itens excedendo o limite foram desabilitados.
 lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para adquirir ou salvar sua licença do QAP...
-lDialogFreeEditionMessage3	Adquira sua licença agora para tirar o máximo proveito dos recursos do QAP.
+lDialogFreeEditionMessage3	Adquira sua licença agora para tirar o máximo proveito dos recursos do QAP
 lDialogFreeEditionShared	Menus compartilhados: atual ~1~ / permitido ~2~
 lDialogGetWebPageTitle	Obter título e ícone
 lDialogGetWebSiteIcon	Obter ícone do site

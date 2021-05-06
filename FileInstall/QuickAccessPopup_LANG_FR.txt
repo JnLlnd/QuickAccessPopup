@@ -246,7 +246,7 @@ lDialogFreeEditionLiveExceeded	Le nombre d'items dans les Dossiers actifs dépass
 lDialogFreeEditionMessage0	Vous utilisez Quick Access Popup Édition gratuite.
 lDialogFreeEditionMessage1	Malheureusement, les limites de Quick Access Popup Édition gratuite ont été dépassées. Les items excédentaires seront désactivés.
 lDialogFreeEditionMessage2	Veuillez ouvrir la boîte de dialogue "~1~, ~2~" pour obtenir ou enregistrer votre licence QAP...
-lDialogFreeEditionMessage3	Obtenez votre licence maintenant pour profiter pleinement des fonctionnalités de QAP.
+lDialogFreeEditionMessage3	Obtenez votre licence maintenant pour profiter pleinement des fonctionnalités de QAP
 lDialogFreeEditionShared	Menus partagés: actuel ~1~ / permis ~2~
 lDialogGetWebPageTitle	Récupérer le titre et l'icône
 lDialogGetWebSiteIcon	Récupérer l'icône du site web

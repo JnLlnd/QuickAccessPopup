@@ -246,7 +246,7 @@ lDialogFreeEditionLiveExceeded	Het maximum van ~1~ Live mappen wordt overschrede
 lDialogFreeEditionMessage0	Je gebruikt de gratis versie van Quick Access Popup.
 lDialogFreeEditionMessage1	De beperkingen van de gratis verie van Quick Access Popup zijn overschreden. Items die de limiet overschrijden, zijn uitgeschakeld.
 lDialogFreeEditionMessage2	Open alsjeblieft het "~1~, ~2~" dialoogvenster om jouw QAP-licentie op te halen of op te slaan...
-lDialogFreeEditionMessage3	Haal nu jouw licentie op om volledig te kunnen profiteren van alle QAP-functies.
+lDialogFreeEditionMessage3	Haal nu jouw licentie op om volledig te kunnen profiteren van alle QAP-functies
 lDialogFreeEditionShared	Gedeelde menu's: actueel ~1~ / toegestaan ~2~
 lDialogGetWebPageTitle	Haal titel en pictogram op
 lDialogGetWebSiteIcon	Website-pictogram ophalen
