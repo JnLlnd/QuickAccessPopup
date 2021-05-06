@@ -15889,6 +15889,7 @@ return
 ButtonMultipleAddSourcePath:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
+Gui, 2:+OwnDialogs
 
 if (g_strMultipleAddSourceKey = "SettingsFileMenus" or g_strMultipleAddSourceKey = "SettingsFileItems")
 	FileSelectFile, g_strMultipleAddSourceKeyPath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSwitchSettings"], *.ini
