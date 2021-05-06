@@ -4862,6 +4862,7 @@ if !(g_blnSponsor)
 	g_strAppVersion .= " " . o_L["DialogFreeEditionLabel"]
 }
 global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 75) ; limit menu items for free edition
+global g_intDynamicMenusItemsMax := (g_blnSponsor ? g_intMaximumValue : 5) ; limit menu items for free edition
 global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
 global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
 
@@ -28922,6 +28923,10 @@ class Container
 		Menu, % this.AA.strMenuPath, DeleteAll
 		
 		intMenuItemsCount := 0 ; counter of items in this menu
+		intDynamicMenuItemsCount := 0 ; counter of items in dynamic menus
+		blnCountDynamicMenusItems := o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath])
+			and (InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Popular") or InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Recent"))
+			; limit the number of enabled items only in Frequent and Recent menus for free edition
 		
 		if (this.AA.intMenuAutoSort)
 			this.SortContainer("", strSortedItems)
@@ -28938,6 +28943,8 @@ class Container
 			
 			if (this.AA.blnCountItems and !blnDoNotCountItemsNow)
 				g_intMenuItemsCount++ ; for free edition limit
+			if (blnCountDynamicMenusItems)
+				intDynamicMenuItemsCount++ ; for free edition limit
 			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
@@ -29086,6 +29093,8 @@ class Container
 					; block MenuContainerInGui menu if not in Main menu
 					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
+				else if !(g_blnSponsor) and (blnCountDynamicMenusItems and intDynamicMenuItemsCount > g_intDynamicMenusItemsMax) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
 				else if !(g_blnSponsor) and (this.AA.blnCountItems)
 					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
 					intMenuItemStatus := 0 ; disabled, free edition limit
