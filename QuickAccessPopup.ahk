@@ -6193,7 +6193,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 		; for free edition, show the Get your license message
 		GSA_strPrompt := (g_blnSponsor ? L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left
 			, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
-			: o_L["DialogFreeEditionMessage0"] . "`n`n" . o_L["DialogFreeEditionMessage3"])
+			: o_L["DialogFreeEditionMessage0"] . "`n`n" . o_L["DialogFreeEditionMessage3"] . ".")
 	}
 	else
 		return
@@ -8577,7 +8577,7 @@ else
 if (!g_blnSponsor and (g_blnIniFileCreation or StrLen(strLimitsMessage)) and !g_blnLimitExceededMessageShown)
 {
 	MsgBox, % 0, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
-		. o_L["DialogFreeEditionMessage3"] . "`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
+		. o_L["DialogFreeEditionMessage3"] . ".`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
 	if !(g_blnIniFileCreation) ; show limit again if in limit exceeded in the first session
 		g_blnLimitExceededMessageShown := true
 }
@@ -29122,6 +29122,11 @@ class Container
 			this.AddMenuIcon(o_L["DonateMenu"] . g_strEllipse, "GuiDonate", "iconDonate")
 		}
 		
+		if !(g_blnSponsor) and (blnCountDynamicMenusItems and intDynamicMenuItemsCount > g_intDynamicMenusItemsMax)
+		{
+			Menu, % this.AA.strMenuPath, Add
+			this.AddMenuIcon(o_L["DialogFreeEditionMessage3"], "GuiDonate", "iconQAP")
+		}
 		if (!IsObject(this.AA.oParentMenu) and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
