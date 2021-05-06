@@ -4953,6 +4953,7 @@ if !(g_blnSponsor)
 	g_strAppVersion .= " " . o_L["DialogFreeEditionLabel"]
 }
 global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 75) ; limit menu items for free edition
+global g_intDynamicMenusItemsMax := (g_blnSponsor ? g_intMaximumValue : 5) ; limit menu items for free edition
 global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
 global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
 
@@ -6306,7 +6307,7 @@ GetSponsorAction(GSA_strStatus, strFromLabel)
 		; for free edition, show the Get your license message
 		GSA_strPrompt := (g_blnSponsor ? L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left
 			, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
-			: o_L["DialogFreeEditionMessage0"] . "`n`n" . o_L["DialogFreeEditionMessage3"])
+			: o_L["DialogFreeEditionMessage0"] . "`n`n" . o_L["DialogFreeEditionMessage3"] . ".")
 	}
 	else
 		return
@@ -8906,7 +8907,7 @@ else
 if (!g_blnSponsor and (g_blnIniFileCreation or StrLen(strLimitsMessage)) and !g_blnLimitExceededMessageShown)
 {
 	MsgBox, % 0, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
-		. o_L["DialogFreeEditionMessage3"] . "`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
+		. o_L["DialogFreeEditionMessage3"] . ".`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
 	if !(g_blnIniFileCreation) ; show limit again if in limit exceeded in the first session
 		g_blnLimitExceededMessageShown := true
 }
@@ -29739,6 +29740,10 @@ class Container
 		Menu, % this.AA.strMenuPath, DeleteAll
 		
 		intMenuItemsCount := 0 ; counter of items in this menu
+		intDynamicMenuItemsCount := 0 ; counter of items in dynamic menus
+		blnCountDynamicMenusItems := o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath])
+			and (InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Popular") or InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Recent"))
+			; limit the number of enabled items only in Frequent and Recent menus for free edition
 		
 		if (this.AA.intMenuAutoSort)
 			this.SortContainer("", strSortedItems)
@@ -29755,6 +29760,8 @@ class Container
 			
 			if (this.AA.blnCountItems and !blnDoNotCountItemsNow)
 				g_intMenuItemsCount++ ; for free edition limit
+			if (blnCountDynamicMenusItems)
+				intDynamicMenuItemsCount++ ; for free edition limit
 			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
@@ -29916,6 +29923,8 @@ class Container
 					; block MenuContainerInGui menu if not in Main menu
 					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
+				else if !(g_blnSponsor) and (blnCountDynamicMenusItems and intDynamicMenuItemsCount > g_intDynamicMenusItemsMax) ; free edition limit
+					intMenuItemStatus := 0 ; disabled, free edition limit
 				else if !(g_blnSponsor) and (this.AA.blnCountItems)
 					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
 					intMenuItemStatus := 0 ; disabled, free edition limit
@@ -29943,6 +29952,11 @@ class Container
 			this.AddMenuIcon(o_L["DonateMenu"] . g_strEllipse, "GuiDonate", "iconDonate")
 		}
 		
+		if !(g_blnSponsor) and (blnCountDynamicMenusItems and intDynamicMenuItemsCount > g_intDynamicMenusItemsMax)
+		{
+			Menu, % this.AA.strMenuPath, Add
+			this.AddMenuIcon(o_L["DialogFreeEditionMessage3"], "GuiDonate", "iconQAP")
+		}
 		if (!IsObject(this.AA.oParentMenu) and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
