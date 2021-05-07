@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.2.9.10 (2021-05-07)
+- fix bug displaying icons when "Display icon" checkbox is unchecked in "Options, Menu Icons"
+- fix bug when setting a custom icons size for menu open with a shortcut or hotstring
+- in "Add/Edit Favorite" dialog box, "Menu Options" tab, fix a bug if user hits Cancel in "Edit icon resource" dialog box
+- in Free Edition, limit "Frequent Folders", Frequent Files", "Recent Folders" and "Recent Files" menus to 5 enabled items
+- Italian and Portuguese translation update
+
 Version BETA: 11.2.9.9 (2021-04-28)
 - use the current menu's icons size when showing the "Show menu" eye icon in the "Customize" window
 - make the select icons file always on top
@@ -4535,7 +4542,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.9.9
+;@Ahk2Exe-SetVersion 11.2.9.10
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4603,7 +4610,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.9.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.2.9.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -32243,7 +32250,7 @@ class Container
 				if StrLen(this.AA.strFavoriteLaunchWith) and !InStr("Application|Snippet", this.AA.strFavoriteType) ; ignore for Application or Snippet favorites
 					this.aaTemp.strFullLocation := this.aaTemp.strExpandedLaunchWith . " """ . this.aaTemp.strFullLocation . """" ; enclose document path in double-quotes
 				
-				if StrLen(this.AA.strFavoriteArguments)
+				if StrLen(this.AA.strFavoriteArguments) and !this.IsContainer() ; not for menu (containing menu icons size)
 				{
 					if (this.AA.strFavoriteType = "URL")
 						strBrowserLocation := GetDefaultBrowserPath(this.aaTemp.strFullLocation) ; get path of default browser using URL (before changing strFullLocation)
