@@ -29164,7 +29164,7 @@ class Container
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
 		this.AA.blnCountItems := blnCountItems ; increment items counter for free edition limit
-		this.AA.intMenuIconsSize := (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? o_Settings.MenuIcons.intIconSize.IniValue : 0) ; default size from Options
+		this.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		
 		if (oParentMenu)
 		{
@@ -29833,7 +29833,7 @@ class Container
 					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue
 				else if (aaThisFavorite.strFavoriteArguments = -1) ; parent menu
 					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := aaThisFavorite.oParentMenu.AA.intMenuIconsSize
-				else if (aaThisFavorite.strFavoriteArguments = -2) ; no menu
+				else if (aaThisFavorite.strFavoriteArguments = -2) ; no icon
 					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := 0
 				else
 					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := aaThisFavorite.strFavoriteArguments ; size from dropdown menu
@@ -30221,7 +30221,7 @@ class Container
 		else
 			Menu, % this.AA.strMenuPath, Add, %strMenuItemName%, %strAction%, % (blnHasColumnBreak ? "BarBreak" : "")
 		
-		if (this.AA.intMenuIconsSize) and (strIconValue <> "iconNoIcon")
+        if (o_Settings.MenuIcons.blnDisplayIcons.IniValue and this.AA.intMenuIconsSize and strIconValue <> "iconNoIcon")
 		{
 			Menu, % this.AA.strMenuPath, UseErrorLevel, on
 			ParseIconResource(strIconValue, strIconFile, intIconIndex)
