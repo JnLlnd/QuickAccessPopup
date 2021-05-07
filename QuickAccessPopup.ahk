@@ -14435,12 +14435,15 @@ if InStr("GuiEditIconDialog|GuiPickIconDialogNo|", A_ThisLabel . "|")
 	{
 		Gui, 2:+OwnDialogs
 		; InputBox, outVar, title, prompt, hide, width, height, x, y, font, timeout, %g_strNewFavoriteIconResource%
-		InputBox, strTempNewFavoriteIconResource, % g_strAppNameFile . " - " . o_L["DialogEditIcon"], % o_L["DialogEditIconPrompt"], , 400, 160, , , , , %g_strNewFavoriteIconResource%
+		InputBox, strTempNewFavoriteIconResource, % g_strAppNameFile . " - " . o_L["DialogEditIcon"], % o_L["DialogEditIconPrompt"],
+			, 400, 160, , , , , %g_strNewFavoriteIconResource%
+		if (ErrorLevel = 0 ; ErrorLevel is 1 if user cancelled or 2 if dialog box timed out
+			and StrLen(strTempNewFavoriteIconResource))
+			g_strNewFavoriteIconResource := strTempNewFavoriteIconResource
 	}
 	else ; GuiPickIconDialogNo
-		strTempNewFavoriteIconResource := "iconNoIcon"
+        g_strNewFavoriteIconResource := "iconNoIcon"
 	
-	g_strNewFavoriteIconResource := (StrLen(strTempNewFavoriteIconResource) ? strTempNewFavoriteIconResource : g_strNewFavoriteIconResource)
 	Gosub, GuiFavoriteIconDisplay
 	return
 }
