@@ -224,9 +224,10 @@ lDialogFreeEditionLiveExceeded	La cantidad artículos en las Carpetas Activas exc
 lDialogFreeEditionMessage0	Usted está usando la versión gratuita de Quick Access Popup.
 lDialogFreeEditionMessage1	Desafortunadamente, se han excedido los límites de la versión gratuita de Quick Access Popup. Los artículos que exceden los límites se han deshabilitado.
 lDialogFreeEditionMessage2	Por favor, abra el cuadro de diálogo "~1~, ~2~" para obtener o guardar su licencia de QAP...
-lDialogFreeEditionMessage3	Obtenga su licencia ahora para aprovechar al máximo las funciones de QAP.
+lDialogFreeEditionMessage3	Obtenga su licencia ahora para aprovechar al máximo las funciones de QAP
 lDialogFreeEditionShared	Menús compartidos: actual ~1~ / permitidos ~2~
-lDialogGetWebPageTitle	Obtener título
+lDialogGetWebPageTitle	Obtener título e icono
+lDialogGetWebSiteIcon	Obtener el icono del sitio web
 lDialogGetWinInfo	Para identificar la ventana de la que desea obtener el título, clase o nombre del proceso, haga clic en la ventana de destino con la tecla de acceso directo del menú QAP [~1~].
 lDialogGetWInInfo2Clippoard	Título de la ventana:`n"~1~"`n`nClass:`n"~2~"`n`nNombre del proceso:`n"~3~"`n`n¿Copiar esta información al portapapeles?
 lDialogHotkeyInvisibleKeys	<a id="~1~">barra espaciadora</a>, <a id="~2~">tabulador</a>, <a id="~3~">intro</a>, <a id="~4~">escape</a>`tampoco <a id="~5~">tecla de menú (aplicación)</a>
@@ -254,6 +255,8 @@ lDialogHotstringsDescription	Visualizar una ventana de diálogo que ofrece un res
 lDialogHotstringTriggerAbbreviation	Lanzador (abbreviation):
 lDialogHotstringTriggerOptions	Cadenas activas (trigger and options)
 lDialogIcon	Icono Favorito
+lDialogIconsDefaultSize	Tamaño predeterminado
+lDialogIconsInheritedSize	Tamaño heredado
 lDialogIconsManage	Iconos 
 lDialogIconsManageCurrent	Icono actual 
 lDialogIconsManageDefault	Icono por defecto 
@@ -264,6 +267,8 @@ lDialogIconsManageParentMenu	Menú principal favorito
 lDialogIconsManagePrevious	Anterior 
 lDialogIconsManageSetDefaultIcon	Establecer predeterminado
 lDialogIconsManageTitle	Administrar iconos - ~1~ ~2~ 
+lDialogIconsSelectPrompt	Para seleccionar un icono, haga doble clic en él o use las teclas de flecha y presione la tecla de Enter.
+lDialogIconsSizeInMenu	Tamaño de los iconos en este menú:
 lDialogInvalidHotkeyFavorite	Con la disposición actual del teclado del sistema, la tecla de acceso directo "~1~" no puede ser usada como un lanzador para este favorito (no es un error de nombre de clave válido).`n`nPor favor, elija otro atajo para el favorito "~2~" y ubicación "~3~".
 lDialogKeyboard	Teclado
 lDialogLaunchWith	Lanzar con esta aplicación
@@ -619,6 +624,8 @@ lOopsHotkeyAlreadyUsed	Este acceso directo "~1~" ya se utiliza para "~2~".`n`nPo
 lOopsHotkeyObjectNotFound	~1~ no se pudo localizar el favorito asociado al ~2~ "~3~".`n`nEsta puede ser una situación temporal. Trate de reiniciar ~1~.
 lOopsHotstringTriggerTooLong	El disparador de Cadenas Activas es demasiado largo. Los disparadores de Cadenas Activas no pueden tener más de 40 caracteres de longitud.
 lOopsHttpLocationTransformed	La ubicación HTTP (formato URL) se convirtió en ruta de red (UNC) para ser compatible con Windows
+lOopsInvalidIcon	Las imágenes de los iconos deben ser cuadradas y no mayores de 64 x 64 píxeles.`n`n Archivo: ~1~ `nTamaño de imagen: ~2~ x ~3~ píxeles
+lOopsInvalidIconDownload	El icono de este sitio web no está disponible o no es válido:`n`n ~1~
 lOopsInvalidWinCmdIni	Archivo de configuración de Total Commander "wincmd.ini" no encontrado.`n`nSeleccione el archivo en "Opciones", "Gestores de archivos" tab. 
 lOopsInvalidWindowPosition	Valor de posición de la ventana no válido (s)
 lOopsJLiconsError	No se ha encontrado el icono de la bandeja QAP. Asegúrese de haber actualizado el archivo JLicons.dll a ~1~.
@@ -628,6 +635,7 @@ lOopsMenuExternalCentralized	menú compartido centralizado
 lOopsMenuExternalCollaborative	menú compartido colaborativo
 lOopsMenuExternalPersonalChangedBy	Este menú compartido personal ha sido MODIFICADO o contiene modificaciones NO guardadas en el ordenador: ~1~.`n`nSi guardas los cambios en este menú ahora se perderán los cambios no guardados en otro ordenador y tendrás que cancelar tus cambios en este equipo cuando vuelvas.
 lOopsMenuExternalReservedBy	Este ~1~ esta RESERVADO para el usuario: ~2~.`n`nEspera que este usuario libere el menú o contacta con tu administrador de sistema.
+lOopsNoIconInFile	No hay iconos en el archivo:`n`n ~1~
 lOopsNotAdmin	~1~ no se pudo iniciar como administrador.`n`nIt ahora se ejecuta como Normal.
 lOopsOSVerrsionError	~1~ se requiere Windows 7 o un sistema operativo más reciente. Se invita a los usuarios de Windows Vista y XP de usar Folders Popup que es compatible con estos versions.`n`n¿Quiere visitar el sitio web de Folders Popup?
 lOopsSelectedItemDialogBoxes	El elemento seleccionado no se puede detectar en las ventanas de diálogo.
@@ -684,7 +692,7 @@ lOptionsHotstringsDefault	Opciones por defecto de Cadena Activa
 lOptionsHotstringsDefaultSelect	Seleccionar
 lOptionsIconReplacementList	QAP Reemplazo de Iconos
 lOptionsIconReplacementListInstructions	Introducir reemplazos de iconos QAP, uno por línea. Cada línea debe comenzar con el nombre del icono QAP (por ejemplo, "iconFolderLive"), seguido del signo igual "=" y el "file,index" del icono de sustitución. El "file,index" es la ruta al archivo (.ico,.dll o.exe) que contiene el icono y el index es la posición del icono en este archivo, por ejemplo "C:\Icons\MyFile.dll,1".
-lOptionsIconSize	Tamaño de iconos del menú
+lOptionsIconSize	Tamaño predeterminado de los iconos del menú
 lOptionsIconsManageRows	Gestión de filas Iconos de la ventana`n(0 para máximo disponible) 
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglés|Francés|Alemán|Español|Portugués brasileño|Italiano|Portugués|Holandés|Korean|Simplified Chinese|Russian
@@ -759,7 +767,7 @@ lOptionsUserVariablesList	Variables de Usuario
 lOptionsUserVariablesListInstructions	Introduzca sus variables de usuario, una por línea. Cada línea debe comenzar con el nombre de la variable entre corchetes. (e.g. "{MiVariable}"), seguido del signo igual "=" y del contenido variable (e.g. "{MiVariable}=MiContenido").`n`nPor ejemplo, si una línea contiene "{SuCarpetaCompartida}=S:\EstaCarpeta", el marcador{SuCarpetaCompartida} se sustituirá por "S:\EstaCarpeta" en las rutas o fragmentos de contenido de los favoritos.
 lOptionsWorkingFolder	Carpeta de configuración
 lPickIconNoLocation	Por favor, primero elegir un favorito antes de seleccionar un icono.
-lReloadPrompt	Cambio de ~1~ guardado: ~2~. Quieres relanzar ~3~ en ~2~ ahora? Los cambios no guardados en el menú se perderán.
+lReloadPrompt	~1~ cambiado a ~2~. ¿Quieres cargar ~3~ nuevamente con la opción ~2~ ahora? Los cambios no guardados en el menú se perderán.
 lSponsoredNone	Haga clic aquí para obtener una licencia para este programa
 lStartupTipsDays	Días entre Consejos de Inicio y Trucos `n(cero para mostrar en cada inicio de QAP)
 lStartupTipsLater	Leer Más Tarde
@@ -774,7 +782,7 @@ lTipCreateSubmenuDetails	Mejore su menú agrupando sus favoritos por tipos, temas
 lTipCreateSubmenuTitle	Si su menú de QAP se vuelve demasiado grande, ¡divida y conquiste!
 lTipCustomIconsDetails	Elija los iconos que se muestran en el menú emergente de Quick Access Popup <a>reemplazando los iconos predeterminados</a> utilizados por QAP con sus imágenes preferidas. Este consejo le mostrará cómo convertir un archivo de imagen en un icono (.ico).`n`nVea también cómo puede < a>administrar todos los iconos de su menú</a> en una sola pantalla.
 lTipCustomIconsTitle	Embellece tu menú emergente con tus iconos preferidos
-lTipCustomizeStartupDetails	De forma predeterminada, Quick Access Popup muestra la ventana "Personalizar" (donde puede editar su menú) al inicio.`n`nSi prefiere que abra solo manualmente, de-seleccione la casilla "Abra la ventana Personalizar al inicio" en el cuadro de diálogo <a>Opciones, Personalizar la ventana</a>.`n`nMás información en la <a> Base de conocimiento</a>.
+lTipCustomizeStartupDetails	De forma predeterminada, Quick Access Popup muestra la ventana "Personalizar" (donde puede editar su menú) al inicio.`n`nSi prefiere que abra solo manualmente, de-seleccione la casilla "Abrir la ventana Personalizar al inicio" en <a>Opciones, Personalizar la ventana</a> .`n`nMás información en la <a>Base de conocimiento</a>.
 lTipCustomizeStartupTitle	¿Siempre desea abrir la ventana de personalización de QAP al inicio?
 lTipDefaultHotkeysDetails	Al instalarlo, Quick Access Popup toma el control de su botón central del ratón y de estos atajos de teclado: Windows + W, Shift + Windows + W, Control + Shift + A, Control + Shift + C, Control + Shift + F y Control + Shift + U.`n`nPuede cambiar esto! Abra el cuadro de diálogo <a>Herramientas, Accesos directos</a> para eliminar o cambiar estas asignaciones.`n`nMás información en la <a>Base de conocimiento</a>.
 lTipDefaultHotkeysTitle	Decida qué atajos de teclado se asignan mediante Quick Access Popup
@@ -794,6 +802,7 @@ lToolTipBrokenLinksList	Enlaces rotos o privados
 lToolTipBrokenLinksWarnings	ADVERTENCIASn- Algunos enlaces rotos podrían tomar tiempo para responder.n- Los enlaces protegidos por contraseña pueden identificarse erróneamente como rotos.`n - Enlaces incluyendo los marcadores {...} no serán verificados.
 lToolTipBuilding	Menú en elaboración...
 lToolTipLoading	Cargando favoritos...
+lToolTipRetrievingWebPageIcon	Recuperando el icono de la página web....
 lToolTipRetrievingWebPageTitle	Recuperar el título de la página web...
 lToolTipSaving	Guardando favoritos...
 lTooltipSnippetKeyWait	Pulsar {~1~} para continuar…
