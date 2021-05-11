@@ -5682,11 +5682,11 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			MenuBackgroundColor=edfdf1
 			[Favorites]
 			Favorite1=Menu|%strMenuDynamicMenus%|> %strMenuDynamicMenus%|iconQAP
-			Favorite2=QAP||{Popular Folders}
-			Favorite3=QAP||{Popular Files}
+			Favorite2=QAP||{Recent Folders}
+			Favorite3=QAP||{Recent Files}
 			Favorite4=X
-			Favorite5=QAP||{Recent Folders}
-			Favorite6=QAP||{Recent Files}
+			Favorite5=QAP||{Popular Folders}
+			Favorite6=QAP||{Popular Files}
 			Favorite7=X
 			Favorite8=QAP||{Switch Folder or App}
 			Favorite9=Z
@@ -6973,11 +6973,11 @@ g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main m
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 
-AddToIniOneDefaultMenu("{Popular Folders}", "", "QAP")
-AddToIniOneDefaultMenu("{Popular Files}", "", "QAP")
-AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{Recent Folders}", "", "QAP")
 AddToIniOneDefaultMenu("{Recent Files}", "", "QAP")
+AddToIniOneDefaultMenu("", "", "X")
+AddToIniOneDefaultMenu("{Popular Folders}", "", "QAP")
+AddToIniOneDefaultMenu("{Popular Files}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{Switch Folder or App}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "Z") ; close Popular Contents menu
