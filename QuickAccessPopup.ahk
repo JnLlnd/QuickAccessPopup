@@ -31,6 +31,54 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.3 (2021-05-11)
+ 
+In short:
+- Custom icons size for each submenu
+- Improved "Select Icon" dialog box
+- Retrieve website icons automatically for favorites links (favicon)
+- Shortened long paths in "Recent..." and "Frequent..." menus
+- Tips and tricks shown when you launch QAP
+ 
+Menu Icons Size
+- allow to set custom menu icons size for each submenu
+- for each menu, a new dropdown list in the "Menu Options" tab of the "Add/Edit Favorite" dialog box, allows to:
+  - select a custom size (from 16 to 64 pixels) for this menu
+  - inherit the size from the parent menu
+  - use the default size from "Options, Menu Icons" dialog box
+  - choose to display no icon in this menu
+- the Main menu always has the default icon size
+ 
+Menu Icons Selection
+- improve the "Select Icon" dialog box when selecting an icon for a favorite
+- support for image files (*.png, *.bmp, *.gif, *.jpg) in addition to previously supported icon files (*.dll, *.exe, *.ico, *.ocx, *.cpl)
+- image file (*.png, *.bmp, *.gif, *.jpg) must be square and between 16x16 and 64x64 pixels
+- support keyboard navigation and selection of menu icons
+- move links to select banks of icons in dll files (JLicons.dll, Shell32.dll and ImageRes.dll) from the "Edit Favorite" dialog box to the "Select Icon" dialog box
+- in the "Add/Edit Favorite" dialog box, "Menu Options" tab, fix a bug if user hits Cancel in "Edit icon resource" dialog box
+ 
+Startup tips
+- tips and tricks shown when you launch QAP- you can choose the interval between tips in "Options, General" or you can browse them as you wish- each tip includes links to dialog boxes or Knowledge Base web pages
+
+Customize window
+- keep moving items in favorites list when holding the mouse click on "Up" and "Down" arrow buttons in "Customize" window
+ 
+Retrieve icon automatically for favorite links
+- a new button to retrieve the web site icon (favicon) and assign it to the added or edited favorite (replacing the existing icon if it has one)
+- website icon images are saved in the folder "icons" under the QAP working directory (it is created the first time if it did not exist)
+- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon" and retrieve both- retrieve website icon and webpage title using asynchronous HTTP requests with a timeout after 10 seconds (each) avoiding hanging QAP if the website does not respond
+ 
+Various
+- added a new option in "Options, Menu Appearance" to shorten long paths in "Recent Folders", "Recent Files", "Frequent Folders" and "Frequent Files" menus
+- for new installations, under the "In the Works" submenu, move the "Recent Folders" and "Recent Files" menus to the top
+- in the "Free Edition", limit "Frequent Folders", Frequent Files", "Recent Folders" and "Recent Files" menus to 5 enabled items
+- add two QAP Features "Current Folders" and "Current Applications" to show only open folders or only running applications as an alternatives to the "Current Windows" menu that shows both (add a favorite of type "QAP Feature" and select the category "Dynamic Menus")
+- when building a menu, prevent the unexpected situation where a favorite would not have a short name for the menu by giving it a temporary name
+ 
+Translation
+- French, Italian, Spanish, German, Korean, Portuguese, Brazilian Portuguese, Russian and Chinese language files updates
+- fix encoding errors in some translation files
+
 Version BETA: 11.2.9.10 (2021-05-07)
 - fix bug displaying icons when "Display icon" checkbox is unchecked in "Options, Menu Icons"
 - fix bug when setting a custom icons size for menu open with a shortcut or hotstring
@@ -4542,7 +4590,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.2.9.10
+;@Ahk2Exe-SetVersion 11.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4610,8 +4658,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.2.9.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
