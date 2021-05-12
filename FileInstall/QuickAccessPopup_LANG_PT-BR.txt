@@ -255,6 +255,7 @@ lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nNome d
 lDialogHotkeyInvisibleKeys	<a id="~1~">barra de espaço</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>`nor <a id="~5~">tecla menu (aplicativo)</a>
 lDialogHotkeys	Teclas de Atalho
 lDialogHotkeysHelpHeader	Atalho|Ação
+lDialogHotkeysManage	Gerenciar Teclas de Atalho
 lDialogHotkeysManageAboutHotstrings	Strings de substituição atualmente ativas em ~1~
 lDialogHotkeysManageAboutShortcuts	Atalhos atualmente ativos em ~1~
 lDialogHotkeysManageAlternative	Alternativo
@@ -276,12 +277,13 @@ lDialogHotstringNotWaitEndingKey	Não aguardar tecla de conclusão
 lDialogHotstringOmitEndChar	Omitir caractere final ao colar recortes
 lDialogHotstrings	Strings de Substituição
 lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma visão global de suas strings de substituição (pequenas sequências de chaves que automaticamente disparam favoritos do QAP). Você pode classificar os favoritos clicando no cabeçalho.`n`nClique duplo em uma string de substituição para editá-la.`n`nClique na caixa de marcação "Ver todos os favoritos" para atribuir strings de substituição para outros favoritos.
+lDialogHotstringsManage	Strings de Substituição
 lDialogHotstringTriggerAbbreviation	Disparador (abreviação):
 lDialogHotstringTriggerOptions	String de substituição (disparador e opções)
 lDialogIcon	Ícone do Favorito
 lDialogIconsDefaultSize	Tamanho padrão
 lDialogIconsInheritedSize	Tamanho herdado
-lDialogIconsManage	Ícones
+lDialogIconsManage	Gerenciar Ícones
 lDialogIconsManageAbout	Selecione novos ícones para seus favoritos ou defina o ícone padrão para o tipo. Não esqueça de salvar as alterações na janela "Personalizar".
 lDialogIconsManageCurrent	Ícone atual
 lDialogIconsManageDefault	Ícone padrão

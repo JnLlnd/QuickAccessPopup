@@ -255,6 +255,7 @@ lDialogGetWInInfo2Clippoard	Titre de la fenêtre:`n"~1~"`n`nClasse:`n"~2~"`n`nNom
 lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>`nou <a id="~5~">touche menu (application)</a>
 lDialogHotkeys	Raccourcis
 lDialogHotkeysHelpHeader	Raccourci|Action
+lDialogHotkeysManage	Gérer les raccourcis
 lDialogHotkeysManageAboutHotstrings	Chaînes de substitution actuellement actives dans ~1~
 lDialogHotkeysManageAboutShortcuts	Raccourcis actuellement actifs dans ~1~
 lDialogHotkeysManageAlternative	Alternatif
@@ -275,12 +276,13 @@ lDialogHotstringKeepHotstring	Conserver l'abréviation
 lDialogHotstringNotWaitEndingKey	Ne pas attendre de caractère de fin
 lDialogHotstrings	Chaînes de substitution
 lDialogHotstringsDescription	Afficher une boîte de dialogue offrant une vue globale de vos chaînes de substitution (petites séquences de caractères qui déclenchent automatiquement un favori de QAP). Vous pouvez trier les favoris en cliquant sur l'entête des colonnes.`n`nFaites un double-clic sur une chaîne de substitution pour la modifier.`n`nCliquez sur la case à cocher "Voir tous les favoris" pour assigner des chaînes de substitution à d'autres favoris.
+lDialogHotstringsManage	Chaînes de substitution
 lDialogHotstringTriggerAbbreviation	Déclencheur (abréviation):
 lDialogHotstringTriggerOptions	Chaîne de substitution (déclencheur et options)
 lDialogIcon	Icône
 lDialogIconsDefaultSize	Taille par défaut
 lDialogIconsInheritedSize	Taille héritée
-lDialogIconsManage	Icônes
+lDialogIconsManage	Gérer les icônes
 lDialogIconsManageAbout	Choisissez de nouveaux icônes pour vos favoris ou rétablissez l'icône par défaut selon le type de favori. N'oubliez pas d'enregistrer vos changements dans la fenêtre "Personnaliser".
 lDialogIconsManageCurrent	Icône actuel
 lDialogIconsManageDefault	Icône par défaut

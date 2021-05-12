@@ -255,6 +255,7 @@ lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nProces
 lDialogHotkeyInvisibleKeys	(OLD version *UPDATE next line and DELETE this line*) <a id="~1~">barra de espaços</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a> ou <a id="~4~">escape</a>
 lDialogHotkeys	Teclas de Atalho
 lDialogHotkeysHelpHeader	Atalho|Acção
+lDialogHotkeysManage	Gerir Teclas de atalho
 lDialogHotkeysManageAboutHotstrings	Cadeias de substituição actualmente activas em ~1~
 lDialogHotkeysManageAboutShortcuts	Teclas de atalho actualmente activas em ~1~
 lDialogHotkeysManageAlternative	Alternativo
@@ -276,12 +277,13 @@ lDialogHotstringNotWaitEndingKey	Não esperar por tecla final
 lDialogHotstringOmitEndChar	Omitir o caractere final ao colar snippets
 lDialogHotstrings	Cadeias de substituição
 lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma vista geral das cadeias de substituição (pequenas sequência de teclas que activam automaticamente os favoritos QAP). Pode ordenar os favoritos clicando no cabeçalho.`n`nFaça duplo clique numa cadeia de substituição para editá-la.`n`nClique na caixa de selecção "Ver todos os favoritos" para atribuir cadeias de substituição a outros favoritos.
+lDialogHotstringsManage	Cadeias de substituição
 lDialogHotstringTriggerAbbreviation	Activador (abreviatura):
 lDialogHotstringTriggerOptions	Cadeia de substituição (activador e opções)
 lDialogIcon	Ícone do Favorito
 lDialogIconsDefaultSize	Tamanho padrão
 lDialogIconsInheritedSize	Tamanho herdado
-lDialogIconsManage	Ícones
+lDialogIconsManage	Gerir Ícones
 lDialogIconsManageAbout	Seleccione novos ícones para os seus favoritos ou defina-os para o ícone padrão do seu tipo. Não se esqueça de guardar as alterações na janela "Personalizar".
 lDialogIconsManageCurrent	Ícone actual
 lDialogIconsManageDefault	Ícone padrão

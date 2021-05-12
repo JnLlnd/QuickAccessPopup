@@ -232,6 +232,7 @@ lDialogGetWinInfo	Para identificar la ventana de la que desea obtener el título,
 lDialogGetWInInfo2Clippoard	Título de la ventana:`n"~1~"`n`nClass:`n"~2~"`n`nNombre del proceso:`n"~3~"`n`n¿Copiar esta información al portapapeles?
 lDialogHotkeyInvisibleKeys	<a id="~1~">barra espaciadora</a>, <a id="~2~">tabulador</a>, <a id="~3~">intro</a>, <a id="~4~">escape</a>`tampoco <a id="~5~">tecla de menú (aplicación)</a>
 lDialogHotkeys	Atajos de teclado
+lDialogHotkeysManage	Gestionar atajos de teclado
 lDialogHotkeysManageAboutHotstrings	Cadenas activas actualmente en ~1~
 lDialogHotkeysManageAboutShortcuts	Accesos directos activos actualmente en ~1~
 lDialogHotkeysManageAlternative	Alternativa
@@ -252,12 +253,13 @@ lDialogHotstringKeepHotstring	Mantenga la abreviatura de cadena activa
 lDialogHotstringNotWaitEndingKey	No espere a la tecla Finalizar
 lDialogHotstrings	Cadenas activas
 lDialogHotstringsDescription	Visualizar una ventana de diálogo que ofrece un resumen de los strings de sustitución (pequeñas secuencias de caracteres que desencadenan automáticamente un favorito QAP). Puede ordenar los favoritos haciendo clic en las cabeceras de las columnas.`n`nDoble clic en una cadena de sustitución para editarla.`nClic en la casilla "Ver todos los favoritos" para asignar cadenas de sustitución a otros favoritos.
+lDialogHotstringsManage	Cadenas activas
 lDialogHotstringTriggerAbbreviation	Lanzador (abbreviation):
 lDialogHotstringTriggerOptions	Cadenas activas (trigger and options)
 lDialogIcon	Icono Favorito
 lDialogIconsDefaultSize	Tamaño predeterminado
 lDialogIconsInheritedSize	Tamaño heredado
-lDialogIconsManage	Iconos 
+lDialogIconsManage	Administrar iconos
 lDialogIconsManageCurrent	Icono actual 
 lDialogIconsManageDefault	Icono por defecto 
 lDialogIconsManageDescription	Muestra un cuadro de diálogo que muestra todos los favoritos del menú con su icono actual y el icono predeterminado para ese tipo de favorito. Los favoritos están agrupados por submenú, en el orden en que aparecen en su menú.`nClic en los botones para seleccionar otro icono o restaurar el icono por defecto para ese favorito.

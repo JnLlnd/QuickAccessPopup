@@ -7658,15 +7658,15 @@ o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
 aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial"
-	, "DialogShortcuts", "DialogHotstrings", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
+	, "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
 	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
 saMenuItemsTable.Push([":menuBarSpecialSearch", aaMenuToolsL["DialogSearchSpecial"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiHotkeysManage", aaMenuToolsL["DialogShortcuts"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiHotkeysManageHotstrings", aaMenuToolsL["DialogHotstrings"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiHotkeysManage", aaMenuToolsL["DialogHotkeysManage"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiHotkeysManageHotstrings", aaMenuToolsL["DialogHotstringsManage"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiIconsManage", aaMenuToolsL["DialogIconsManage"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["RefreshQAPMenu", aaMenuToolsL["MenuRefreshMenu"], "", "iconNoIcon"])
@@ -28126,10 +28126,10 @@ class QAPfeatures
 			, o_L["MenuExitAppDescription"], 0, "iconExit", "", "")
 		this.AddQAPFeatureObject("Help",					o_L["GuiHelp"],								"", "GuiHelp",								"7-QAPManagement"
 			, o_L["GuiHelpDescription"], 0, "iconHelp", "", "")
-		this.AddQAPFeatureObject("Hotkeys",					o_L["DialogShortcuts"],						"", "GuiHotkeysManageFromQAPFeature",		"3-QAPMenuEditing"
+		this.AddQAPFeatureObject("Hotkeys",					o_L["DialogHotkeysManage"],					"", "GuiHotkeysManageFromQAPFeature",		"3-QAPMenuEditing"
 			, o_L["DialogShortcutsDescription"], 0, "iconHotkeys", ""
 			, "can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts")
-		this.AddQAPFeatureObject("Hotstrings",				o_L["DialogHotstrings"],					"", "GuiHotkeysManageHotstringsFromQAPFeature",	"3-QAPMenuEditing"
+		this.AddQAPFeatureObject("Hotstrings",				o_L["DialogHotstringsManage"],					"", "GuiHotkeysManageHotstringsFromQAPFeature",	"3-QAPMenuEditing"
 			, o_L["DialogHotstringsDescription"], 0, "iconHotkeys", ""
 			, "what-are-hotstrings")
 		this.AddQAPFeatureObject("Icons",					o_L["DialogIconsManage"],					"", "GuiIconsManageFromQAPFeature",			"3-QAPMenuEditing"
