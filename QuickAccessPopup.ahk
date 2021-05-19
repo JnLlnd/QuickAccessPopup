@@ -27483,8 +27483,11 @@ TODO
 					if StrLen(strAlternativeWinCmdIniFile)
 					{
 						SplitPath, % this.AA.strTCIniFileExpanded, , strTCDir
+						; replace TC environement variable %Commander_Path% with WinCmd.ini folder's location
+						strAlternativeWinCmdIniFile := StrReplace(strAlternativeWinCmdIniFile, "%Commander_Path%", strTCDir)
 						; the EnVars commands will not expand Total Commander "pseudo" environment variables
 						; see: https://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/
+						; expand relative path and Windows environement variables
 						this.AA.strTCIniFileExpanded := PathCombine(strTCDir, EnvVars(strAlternativeWinCmdIniFile))
 					}
 				}
