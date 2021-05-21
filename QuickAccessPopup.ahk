@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.2 (2021-05-21)
+
 Version BETA: 11.3.0.9.1 (2021-05-21)
 - change menu labels under "Tools" menu to "Manage hotkeys", "Manage hotstrings" and "Manage icons"
 - trying to solve the "menu keyboard focus issue" by moving the mouse pointer at the menu position when the menu is open with a keyboard shortcut
@@ -4596,7 +4598,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.1
+;@Ahk2Exe-SetVersion 11.3.0.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4664,7 +4666,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -8762,12 +8764,11 @@ if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{TC Directory hotlist}")
 
 ; Init TC Directory hotlist if wincmd.ini file exists
 
-If o_FileManagers.SA[3].TotalCommanderWinCmdIniFileExist() ; TotalCommander settings file exists
+If o_FileManagers.SA[3].TotalCommanderDirMenuFileExist() ; TotalCommander DirMenu file exists
 {
 	; character for hidden menu item - read at each refresh because it can be changed or disabled anytime
 	strMenuHideChar := o_Settings.ReadIniValue("MenuHideChar", " ", "Configuration", g_aaFileManagerTotalCommander.strTCIniFileExpanded) ; empty by default
-	
-	o_Containers.AA[o_L["TCMenuName"]].LoadTCFavoritesFromIniFile(g_aaFileManagerTotalCommander.strTCIniFileExpanded, true
+	o_Containers.AA[o_L["TCMenuName"]].LoadTCFavoritesFromIniFile(g_aaFileManagerTotalCommander.strTCDirMenuFileExpanded, true
 		, (SubStr(strMenuHideChar, 1, 1) <> "-" ? SubStr(strMenuHideChar, 1, 1) : ""))
 	o_Containers.AA[o_L["TCMenuName"]].BuildMenu() ; recurse for submenus
 	ToolTip
@@ -17091,7 +17092,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 				Oops(2, o_L["OopsHttpLocationTransformed"], (o_EditedFavorite.AA.strFavoriteType <> "External" ? strNewFavoriteLocation : strFavoriteAppWorkingDir))
 				; do not abort
 
-	if (strNewFavoriteLocation = "{TC Directory hotlist}" and !o_FileManagers.SA[3].TotalCommanderWinCmdIniFileExist())
+	if (strNewFavoriteLocation = "{TC Directory hotlist}" and !o_FileManagers.SA[3].TotalCommanderDirMenuFileExist())
 	{
 		Oops(2, o_L["OopsInvalidWinCmdIni"])
 		g_blnAbortSave := true
@@ -27490,20 +27491,19 @@ TODO
 				; was BuildTotalCommanderHotlistPrepare:
 				if StrLen(this.AA.strTCIniFileExpanded)
 				{
-					strAlternativeWinCmdIniFile := o_Settings.ReadIniValue("AlternateUserIni", " ", "Configuration", this.AA.strTCIniFileExpanded) ; empty by default
-					if !StrLen(strAlternativeWinCmdIniFile)
-						;  only wincmd.ini can redirect, redirection is not recursive (https://ghisler.ch/board/viewtopic.php?p=315939#315939 or https://ghisler.ch/board/viewtopic.php?t=45434)
-						strAlternativeWinCmdIniFile := o_Settings.ReadIniValue("RedirectSection", " ", "DirMenu", this.AA.strTCIniFileExpanded) ; empty by default
-					if StrLen(strAlternativeWinCmdIniFile)
-					{
-						SplitPath, % this.AA.strTCIniFileExpanded, , strTCDir
-						; replace TC environement variable %Commander_Path% with WinCmd.ini folder's location
-						strAlternativeWinCmdIniFile := StrReplace(strAlternativeWinCmdIniFile, "%Commander_Path%", strTCDir)
+					SplitPath, % this.AA.strTCIniFileExpanded, , strTCDir ; in case we have a relative path for AlternateUserIni or DirMenu
+					strDirMenuWinCmdIniFile := o_Settings.ReadIniValue("AlternateUserIni", " ", "Configuration", this.AA.strTCIniFileExpanded) ; empty by default
+					if !StrLen(strDirMenuWinCmdIniFile) ; check if we have a redirection in WinCmd.ini
+						; only wincmd.ini can redirect, redirection is not recursive (https://ghisler.ch/board/viewtopic.php?p=315939#315939 or https://ghisler.ch/board/viewtopic.php?t=45434)
+						strDirMenuWinCmdIniFile := o_Settings.ReadIniValue("RedirectSection", " ", "DirMenu", this.AA.strTCIniFileExpanded) ; empty by default
+					if StrLen(strDirMenuWinCmdIniFile) ; use the alternate or redirected file to read DirMenu
 						; the EnVars commands will not expand Total Commander "pseudo" environment variables
 						; see: https://www.quickaccesspopup.com/how-do-i-enable-total-commander-support-in-quick-access-popup/
-						; expand relative path and Windows environement variables
-						this.AA.strTCIniFileExpanded := PathCombine(strTCDir, EnvVars(strAlternativeWinCmdIniFile))
-					}
+						; Total Commander "pseudo" environment variables must not be used in Alternate or DirMenu files path to work with QAP
+						; expand relative path based on WinCmd.ini location and Windows environement variables
+						this.AA.strTCDirMenuFileExpanded := PathCombine(strTCDir, EnvVars(strDirMenuWinCmdIniFile)) ; read DirMenu in this file
+					else
+						this.AA.strTCDirMenuFileExpanded := this.AA.strTCIniFileExpanded ; read DirMenu in wincmd.ini
 				}
 				
 				o_JLicons.AddIcon("TotalCommander", this.AA.strFileManagerPathExpanded . ",1")
@@ -27512,10 +27512,10 @@ TODO
 		;-----------------------------------------------------
 		
 		;-----------------------------------------------------
-		TotalCommanderWinCmdIniFileExist()
+		TotalCommanderDirMenuFileExist()
 		;-----------------------------------------------------
 		{
-			return StrLen(this.AA.strTCIniFileExpanded) and FileExist(this.AA.strTCIniFileExpanded) ; TotalCommander settings file exists
+			return StrLen(this.AA.strTCDirMenuFileExpanded) and FileExist(this.AA.strTCDirMenuFileExpanded) ; TotalCommander ini file containing DirMenu exists
 		}
 		;-----------------------------------------------------
 		
