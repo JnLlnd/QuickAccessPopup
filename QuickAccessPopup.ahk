@@ -8758,11 +8758,16 @@ if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{TC Directory hotlist}")
 
 If o_FileManagers.SA[3].TotalCommanderWinCmdIniFileExist() ; TotalCommander settings file exists
 {
-	o_Containers.AA[o_L["TCMenuName"]].LoadTCFavoritesFromIniFile(g_aaFileManagerTotalCommander.strTCIniFileExpanded)
+	; character for hidden menu item - read at each refresh because it can be changed or disabled anytime
+	strMenuHideChar := o_Settings.ReadIniValue("MenuHideChar", " ", "Configuration", g_aaFileManagerTotalCommander.strTCIniFileExpanded) ; empty by default
+	
+	o_Containers.AA[o_L["TCMenuName"]].LoadTCFavoritesFromIniFile(g_aaFileManagerTotalCommander.strTCIniFileExpanded, true
+		, (SubStr(strMenuHideChar, 1, 1) <> "-" ? SubStr(strMenuHideChar, 1, 1) : ""))
 	o_Containers.AA[o_L["TCMenuName"]].BuildMenu() ; recurse for submenus
 	ToolTip
 }
 
+strMenuHideChar := ""
 ; Diag(A_ThisLabel, "", "STOP")
 return
 ;------------------------------------------------------------
@@ -29570,7 +29575,7 @@ class Container
 	;------------------------------------------------------------
 	
 	;---------------------------------------------------------
-	LoadTCFavoritesFromIniFile(strIniFile, blnRoot := true)
+	LoadTCFavoritesFromIniFile(strIniFile, blnRoot := true, strMenuhideChar := "")
 	;---------------------------------------------------------
 	{
 		static s_intIniLineLoadTC := 1
@@ -29594,14 +29599,18 @@ class Container
 					continue ; disregard end of menu indicator in main menu, continue with next line
 				else
 					return, "EOM" ; end of menu
-		
+			
+			if (StrLen(strMenuhideChar) and SubStr(strWinCmdItemName, 1, 1) = strMenuhideChar) ; if there is a hide char and it is the first char of the name, skip this item
+				continue
+			; #### if sub Title is "-;Title", have to skip the whole submenu
+			
 			blnItemIsMenu := SubStr(strWinCmdItemName, 1, 1) = "-" and StrLen(strWinCmdItemName) > 1 ; begin a submenu "-MenuName", not "-"
 			
 			if (blnItemIsMenu)
 			{
 				strWinCmdItemName := SubStr(strWinCmdItemName, 2)
 				oNewSubMenu := new Container("Menu", strWinCmdItemName, , this, "init", false) ; last parameter for blnDoubleAmpersands
-				oNewSubMenu.LoadTCFavoritesFromIniFile(strIniFile, false) ; RECURSIVE
+				oNewSubMenu.LoadTCFavoritesFromIniFile(strIniFile, false, strMenuhideChar) ; RECURSIVE
 			}
 			else if (SubStr(strWinCmdItemCommand, 1, 3) <> "cd ")
 				
