@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.1 (2021-05-21)
+- change menu labels under "Tools" menu to "Manage hotkeys", "Manage hotstrings" and "Manage icons"
+- trying to solve the "menu keyboard focus issue" by moving the mouse pointer at the menu position when the menu is open with a keyboard shortcut
+- in Total Commander, when loading the Hotlist (DirMenu) from a redirected location, replace the TC pseudo-environment variable %Commander_Path% with WinCmd.ini folder's location
+- read Total Commander Hotlist hide menu character (new in beta release v10) before each menu refresh; use this hiding character to skip menu items in the Hotlist (work in progress - hiding submenus is not supported yet); if the hide character starts with "-", disable hiding
+
 Version: 11.3 (2021-05-11)
  
 In short:
