@@ -23596,6 +23596,9 @@ ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDef
 	intComaPos := InStr(strIconResource, ",", , 0) - 1 ; search from the end because filename could also include a coma (ex.: "file,name.ico,1")
 	strIconFile := SubStr(strIconResource, 1, intComaPos)
 	intIconIndex := StrReplace(strIconResource, strIconFile . ",")
+	
+	intIconIndex := (intIconIndex = 0 ? 1 : intIconIndex) ; replace index 0 that does not exist in icon files
+
 	; if strExpandedIconResource has a relative path, make it absolute based on the QAP working directory
 	strIconFile := PathCombine(A_WorkingDir, EnvVars(strIconFile))
 }
