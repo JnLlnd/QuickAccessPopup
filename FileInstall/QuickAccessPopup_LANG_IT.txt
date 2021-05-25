@@ -248,7 +248,8 @@ lDialogFreeEditionMessage1	Purtroppo, i limiti di Quick Access Popup Edizione Gr
 lDialogFreeEditionMessage2	Si prega di aprire la casella di dialogo "~1~, ~2~" per richiedere o salvare la tua licenza di QAP...
 lDialogFreeEditionMessage3	Richiedi la licenza ora per sfruttare senza limitazioni tutte le funzioni di QAP
 lDialogFreeEditionShared	MenÃ¹ condiviso: attuale ~1~ / permesso ~2~
-lDialogGetWebPageTitle	Estrai titolo e icona
+lDialogGetWebPageTitle	Estrai il titolo
+lDialogGetWebPageTitleIcon	Estrai titolo e icona
 lDialogGetWebSiteIcon	Estrai l'icona del sito web
 lDialogGetWinInfo	Per identificare la finestra di cui vuoi trovare titolo, classe o nome del processo, clicca sulla finestra desiderata premendo la scorciatoia del menù QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titolo della Finestra:`n"~1~"`n`nClasse:`n"~2~"`n`nNome del Processo:`n"~3~"`n`nVuoi copiare queste informazioni negli Appunti?

@@ -248,7 +248,8 @@ lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuíta do Quick 
 lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para obter ou guardar a sua licença QAP...
 lDialogFreeEditionMessage3	Obtenha a sua licença já para beneficiar de todas as funcionalidades do QAP
 lDialogFreeEditionShared	Menus partilhados: actual ~1~ / permitidos ~2~
-lDialogGetWebPageTitle	Obter título e ícone
+lDialogGetWebPageTitle	Obter título
+lDialogGetWebPageTitleIcon	Obter título e ícone
 lDialogGetWebSiteIcon	Obter ícone do site
 lDialogGetWinInfo	Para identificar a janela da qual pretende obter o título, classe ou nome do processo, clique na janela alvo com a combimação [~1~] do menu QAP.
 lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nProcesso:`n"~3~"`n`nCopiar esta informação para a Área de transferência?

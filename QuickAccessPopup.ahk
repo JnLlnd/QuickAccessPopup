@@ -32,6 +32,16 @@ HISTORY
 =======
 
 Version BETA: 11.3.0.9.2 (2021-05-21)
+- 
+
+Version: 11.3.0.1 (2021-05-25)
+- revert some changes done in v11.3 under the title "Retrieve icon automatically for favorite links":
+  - stop loading the web page title and the web site favicon together in the same command (you can retreve the favicon under the "Menu options" tab);
+  - prevent disabling favorite name text box when retrieving the web page title;
+  - retrieve web page title and website icon using HTTP requests as before v11.3 (until additional testing of the new commands using asynchronous HTTP requests)
+- change menu labels under "Tools" menu to "Manage hotkeys", "Manage hotstrings" and "Manage icons"
+- mitigate the "menu keyboard focus issue" (probably caused by Windows) by moving the mouse pointer at the menu position when the menu is open with a keyboard shortcut
+- fix minor bug when retrieving the icon of a favorite document in dynamic menus (like "Recent Files")
 
 Version BETA: 11.3.0.9.1 (2021-05-21)
 - change menu labels under "Tools" menu to "Manage hotkeys", "Manage hotstrings" and "Manage icons"
@@ -74,7 +84,8 @@ Customize window
 Retrieve icon automatically for favorite links
 - a new button to retrieve the web site icon (favicon) and assign it to the added or edited favorite (replacing the existing icon if it has one)
 - website icon images are saved in the folder "icons" under the QAP working directory (it is created the first time if it did not exist)
-- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon" and retrieve both- retrieve website icon and webpage title using asynchronous HTTP requests with a timeout after 10 seconds (each) avoiding hanging QAP if the website does not respond
+- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon" and retrieve both
+- retrieve website icon and webpage title using asynchronous HTTP requests with a timeout after 10 seconds (each) avoiding hanging QAP if the website does not respond
  
 Various
 - added a new option in "Options, Menu Appearance" to shorten long paths in "Recent Folders", "Recent Files", "Frequent Folders" and "Frequent Files" menus
@@ -12711,9 +12722,9 @@ Gosub, ShowGui2AndDisableGui1
 
 if (o_EditedFavorite.AA.strFavoriteName = o_L["ToolTipRetrievingWebPageTitle"])
 {
-	GuiControl, Disable, f_strFavoriteShortName
+	; GuiControl, Disable, f_strFavoriteShortName ; stop disabling the control to avoid locking in case of error when getting the title
 	o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
-	GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource)
+	; GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource) ; stop retrieving icon until fix bug that breaks/interrupt getting title
 	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
 	GuiControl, Enable, f_strFavoriteShortName
 }
@@ -12904,7 +12915,7 @@ else ; add favorite
 				if InStr(strGuiFavoriteLabel, "Xpress")
 				{
 					o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
-					GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource, true) ; true for no Oops message
+					; GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource, true) ; true for no Oops message ; only retrieve title until fixing issues with getting title and icon
 				}
 				else
 					o_EditedFavorite.AA.strFavoriteName := o_L["ToolTipRetrievingWebPageTitle"]
@@ -13041,7 +13052,7 @@ Gui, 2:Add, Edit
 if (InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true) and InStr(strGuiFavoriteLabel, "GuiEditFavorite"))
 	Gui, 2:Add, Button, x+10 yp gGuiOpenThisMenu, % (o_EditedFavorite.AA.strFavoriteType = "Group" ? o_L["DialogOpenThisGroup"] : o_L["DialogOpenThisMenu"])
 else if (o_EditedFavorite.AA.strFavoriteType = "URL")
-	Gui, 2:Add, Button, x+10 yp gGuiGetWebPageTitle, % o_L["DialogGetWebPageTitle"]
+	Gui, 2:Add, Button, x+10 yp gGuiGetWebPageTitle, % o_L["DialogGetWebPageTitle"] ; o_L["DialogGetWebPageTitleIcon"] if also retrieving icon again
 
 if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 {
@@ -23611,6 +23622,9 @@ ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDef
 	intComaPos := InStr(strIconResource, ",", , 0) - 1 ; search from the end because filename could also include a coma (ex.: "file,name.ico,1")
 	strIconFile := SubStr(strIconResource, 1, intComaPos)
 	intIconIndex := StrReplace(strIconResource, strIconFile . ",")
+	
+	intIconIndex := (intIconIndex = 0 ? 1 : intIconIndex) ; replace index 0 that does not exist in icon files
+
 	; if strExpandedIconResource has a relative path, make it absolute based on the QAP working directory
 	strIconFile := PathCombine(A_WorkingDir, EnvVars(strIconFile))
 }
@@ -23941,7 +23955,8 @@ GetWebPageTitle(strLocation)
 ;------------------------------------------------------------
 {
 	ShowToolTip(o_L["ToolTipRetrievingWebPageTitle"] . "`n" . strLocation)
-	strHTML := Url2Var(strLocation, false, "ResponseText", true) ; last true for async
+	; strHTML := Url2Var(strLocation, false, "ResponseText", true) ; last true for async
+	strHTML := Url2Var(strLocation, false, "ResponseText", false) ; use not async until async fixed
 	ToolTip
 	
 	RegExMatch(strHTML, "is)<title(.*?)</title>", strTitle) ; extract title with tags
@@ -23973,10 +23988,12 @@ GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := false)
 	
 	strIconURL := strProtocolDomain . "/" . "favicon.ico"
 	ShowToolTip(o_L["ToolTipRetrievingWebPageIcon"] . "`n" . strIconURL)
-	blnSuccess := Url2File(strIconURL, strIconFilename, intStatus, true) ; UrlDownloadToFile not used because not async
+	; blnSuccess := Url2File(strIconURL, strIconFilename, intStatus, true) ; UrlDownloadToFile not used because not async
+	UrlDownloadToFile, %strIconURL%, %strIconFilename% ; using UrlDownloadToFile until Url2File sync is fixed
+	blnSuccess := (ErrorLevel = 0) 
 	ToolTip
 	
-	if !(blnError)
+	if (blnSuccess)
 		GetImageSize(strIconFilename, intWidth, intHeight)
 	; else intWidth and intHeight are 0
 	

@@ -248,7 +248,8 @@ lDialogFreeEditionMessage1	Malheureusement, les limites de Quick Access Popup Éd
 lDialogFreeEditionMessage2	Veuillez ouvrir la boîte de dialogue "~1~, ~2~" pour obtenir ou enregistrer votre licence QAP...
 lDialogFreeEditionMessage3	Obtenez votre licence maintenant pour profiter pleinement des fonctionnalités de QAP
 lDialogFreeEditionShared	Menus partagés: actuel ~1~ / permis ~2~
-lDialogGetWebPageTitle	Récupérer le titre et l'icône
+lDialogGetWebPageTitle	Récupérer le titre
+lDialogGetWebPageTitleIcon	Récupérer le titre et l'icône
 lDialogGetWebSiteIcon	Récupérer l'icône du site web
 lDialogGetWinInfo	Pour identifier la fenêtre dont vous voulez obtenir le titre, la classe ou le nom du processus, cliquez dans la fenêtre désirée avec le raccouricis de menu de QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titre de la fenêtre:`n"~1~"`n`nClasse:`n"~2~"`n`nNom du processus:`n"~3~"`n`nCopier ces informations dans le Presse-papiers?

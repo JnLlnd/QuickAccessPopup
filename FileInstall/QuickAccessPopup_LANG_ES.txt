@@ -226,7 +226,8 @@ lDialogFreeEditionMessage1	Desafortunadamente, se han excedido los límites de la
 lDialogFreeEditionMessage2	Por favor, abra el cuadro de diálogo "~1~, ~2~" para obtener o guardar su licencia de QAP...
 lDialogFreeEditionMessage3	Obtenga su licencia ahora para aprovechar al máximo las funciones de QAP
 lDialogFreeEditionShared	Menús compartidos: actual ~1~ / permitidos ~2~
-lDialogGetWebPageTitle	Obtener título e icono
+lDialogGetWebPageTitle	Obtener título
+lDialogGetWebPageTitleIcon	Obtener título e icono
 lDialogGetWebSiteIcon	Obtener el icono del sitio web
 lDialogGetWinInfo	Para identificar la ventana de la que desea obtener el título, clase o nombre del proceso, haga clic en la ventana de destino con la tecla de acceso directo del menú QAP [~1~].
 lDialogGetWInInfo2Clippoard	Título de la ventana:`n"~1~"`n`nClass:`n"~2~"`n`nNombre del proceso:`n"~3~"`n`n¿Copiar esta información al portapapeles?

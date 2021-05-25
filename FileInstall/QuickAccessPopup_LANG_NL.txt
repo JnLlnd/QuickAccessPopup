@@ -248,13 +248,15 @@ lDialogFreeEditionMessage1	De beperkingen van de gratis verie van Quick Access P
 lDialogFreeEditionMessage2	Open alsjeblieft het "~1~, ~2~" dialoogvenster om jouw QAP-licentie op te halen of op te slaan...
 lDialogFreeEditionMessage3	Haal nu jouw licentie op om volledig te kunnen profiteren van alle QAP-functies
 lDialogFreeEditionShared	Gedeelde menu's: actueel ~1~ / toegestaan ~2~
-lDialogGetWebPageTitle	Haal titel en pictogram op
+lDialogGetWebPageTitle	Haal titel op
+lDialogGetWebPageTitleIcon	Haal titel en pictogram op
 lDialogGetWebSiteIcon	Website-pictogram ophalen
 lDialogGetWinInfo	Klik in het doelvenster met de QAP sneltoets [~1~] om de titel, klasse of procesnaam van het venster op te halen.
 lDialogGetWInInfo2Clippoard	Venstertitel:`n"~1~"`n`nKlasse:`n"~2~"`n`nProcesnaam:`n"~3~"`n`nDeze informatie naar het klembord kopiëren?
 lDialogHotkeyInvisibleKeys	<a id="~1~">Spatiebalk</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>`nof <a id="~5~">menu toets (applicatie)</a>
 lDialogHotkeys	Sneltoetsen
 lDialogHotkeysHelpHeader	Sneltoets|Actie
+lDialogHotkeysManage	Sneltoetsen beheren
 lDialogHotkeysManageAboutHotstrings	Actieve Hotstrings in ~1~
 lDialogHotkeysManageAboutShortcuts	Actieve Sneltoetsen in ~1~
 lDialogHotkeysManageAlternative	Alternatief
@@ -276,12 +278,13 @@ lDialogHotstringNotWaitEndingKey	Niet wachten op de eindtoets
 lDialogHotstringOmitEndChar	Laat het laatste teken weg bij het plakken van fragmenten
 lDialogHotstrings	Hotstrings
 lDialogHotstringsDescription	Geeft het venster weer met een globaal overzicht van jouw hotstrings (kleine toetsenreeks die automatisch QAP-favorieten activeren). Je kunt favorieten sorteren door op de kop te klikken.`n`nDubbelklik op een hotstring om deze te bewerken.`n`nKlik op het selectievakje "Alle favorieten bekijken" om hotstrings aan andere favorieten toe te wijzen.
+lDialogHotstringsManage	Hotstrings
 lDialogHotstringTriggerAbbreviation	Trigger (afkorting):
 lDialogHotstringTriggerOptions	Hotstring (trigger en opties)
 lDialogIcon	Pictogram
 lDialogIconsDefaultSize	Standaard formaat
 lDialogIconsInheritedSize	Inherited size
-lDialogIconsManage	Pictogrammen
+lDialogIconsManage	Beheer pictogrammen
 lDialogIconsManageAbout	Selecteer een nieuw pictogram voor de gewenste favoriet, of herstel het standaardpictogram, vergeet niet om de wijzigingen op te slaan in het voorkeurenmenu.
 lDialogIconsManageCurrent	Huidig pictogram
 lDialogIconsManageDefault	Standaard pictogram
