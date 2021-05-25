@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.3.0.1 (2021-05-25)
+- revert some changes done in v11.3 under the title "Retrieve icon automatically for favorite links":
+  - stop loading the web page title and the web site favicon together in the same command (you can retreve the favicon under the "Menu options" tab);
+  - prevent disabling favorite name text box when retrieving the web page title;
+  - retrieve web page title and website icon using HTTP requests as before v11.3 (until additional testing of the new commands using asynchronous HTTP requests)
+- change menu labels under "Tools" menu to "Manage hotkeys", "Manage hotstrings" and "Manage icons"
+- mitigate the "menu keyboard focus issue" (probably caused by Windows) by moving the mouse pointer at the menu position when the menu is open with a keyboard shortcut
+- fix minor bug when retrieving the icon of a favorite document in dynamic menus (like "Recent Files")
+
 Version: 11.3 (2021-05-11)
  
 In short:
@@ -4591,7 +4600,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.1
+;@Ahk2Exe-SetVersion 11.3.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4659,8 +4668,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.3.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
