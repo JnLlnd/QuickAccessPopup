@@ -248,13 +248,15 @@ lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuíta do Quick 
 lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para obter ou guardar a sua licença QAP...
 lDialogFreeEditionMessage3	Obtenha a sua licença já para beneficiar de todas as funcionalidades do QAP
 lDialogFreeEditionShared	Menus partilhados: actual ~1~ / permitidos ~2~
-lDialogGetWebPageTitle	Obter título e ícone
+lDialogGetWebPageTitle	Obter título
+lDialogGetWebPageTitleIcon	Obter título e ícone
 lDialogGetWebSiteIcon	Obter ícone do site
 lDialogGetWinInfo	Para identificar a janela da qual pretende obter o título, classe ou nome do processo, clique na janela alvo com a combimação [~1~] do menu QAP.
 lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nProcesso:`n"~3~"`n`nCopiar esta informação para a Área de transferência?
 lDialogHotkeyInvisibleKeys	(OLD version *UPDATE next line and DELETE this line*) <a id="~1~">barra de espaços</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a> ou <a id="~4~">escape</a>
 lDialogHotkeys	Teclas de Atalho
 lDialogHotkeysHelpHeader	Atalho|Acção
+lDialogHotkeysManage	Gerir Teclas de atalho
 lDialogHotkeysManageAboutHotstrings	Cadeias de substituição actualmente activas em ~1~
 lDialogHotkeysManageAboutShortcuts	Teclas de atalho actualmente activas em ~1~
 lDialogHotkeysManageAlternative	Alternativo
@@ -276,12 +278,13 @@ lDialogHotstringNotWaitEndingKey	Não esperar por tecla final
 lDialogHotstringOmitEndChar	Omitir o caractere final ao colar snippets
 lDialogHotstrings	Cadeias de substituição
 lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma vista geral das cadeias de substituição (pequenas sequência de teclas que activam automaticamente os favoritos QAP). Pode ordenar os favoritos clicando no cabeçalho.`n`nFaça duplo clique numa cadeia de substituição para editá-la.`n`nClique na caixa de selecção "Ver todos os favoritos" para atribuir cadeias de substituição a outros favoritos.
+lDialogHotstringsManage	Cadeias de substituição
 lDialogHotstringTriggerAbbreviation	Activador (abreviatura):
 lDialogHotstringTriggerOptions	Cadeia de substituição (activador e opções)
 lDialogIcon	Ícone do Favorito
 lDialogIconsDefaultSize	Tamanho padrão
 lDialogIconsInheritedSize	Tamanho herdado
-lDialogIconsManage	Ícones
+lDialogIconsManage	Gerir Ícones
 lDialogIconsManageAbout	Seleccione novos ícones para os seus favoritos ou defina-os para o ícone padrão do seu tipo. Não se esqueça de guardar as alterações na janela "Personalizar".
 lDialogIconsManageCurrent	Ícone actual
 lDialogIconsManageDefault	Ícone padrão
