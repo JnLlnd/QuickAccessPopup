@@ -66,7 +66,8 @@ Customize window
 Retrieve icon automatically for favorite links
 - a new button to retrieve the web site icon (favicon) and assign it to the added or edited favorite (replacing the existing icon if it has one)
 - website icon images are saved in the folder "icons" under the QAP working directory (it is created the first time if it did not exist)
-- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon" and retrieve both- retrieve website icon and webpage title using asynchronous HTTP requests with a timeout after 10 seconds (each) avoiding hanging QAP if the website does not respond
+- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon" and retrieve both
+- retrieve website icon and webpage title using asynchronous HTTP requests with a timeout after 10 seconds (each) avoiding hanging QAP if the website does not respond
  
 Various
 - added a new option in "Options, Menu Appearance" to shorten long paths in "Recent Folders", "Recent Files", "Frequent Folders" and "Frequent Files" menus
@@ -12699,9 +12700,9 @@ Gosub, ShowGui2AndDisableGui1
 
 if (o_EditedFavorite.AA.strFavoriteName = o_L["ToolTipRetrievingWebPageTitle"])
 {
-	GuiControl, Disable, f_strFavoriteShortName
+	; GuiControl, Disable, f_strFavoriteShortName ; stop disabling the control to avoid locking in case of error when getting the title
 	o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
-	GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource)
+	; GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource) ; stop retrieving icon until fix bug that breaks/interrupt getting title
 	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
 	GuiControl, Enable, f_strFavoriteShortName
 }
@@ -12892,7 +12893,7 @@ else ; add favorite
 				if InStr(strGuiFavoriteLabel, "Xpress")
 				{
 					o_EditedFavorite.AA.strFavoriteName := GetWebPageTitle(g_strNewLocation)
-					GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource, true) ; true for no Oops message
+					; GetWebPageIcon(g_strNewLocation, g_strNewFavoriteIconResource, true) ; true for no Oops message ; only retrieve title until fixing issues with getting title and icon
 				}
 				else
 					o_EditedFavorite.AA.strFavoriteName := o_L["ToolTipRetrievingWebPageTitle"]
@@ -13029,7 +13030,7 @@ Gui, 2:Add, Edit
 if (InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true) and InStr(strGuiFavoriteLabel, "GuiEditFavorite"))
 	Gui, 2:Add, Button, x+10 yp gGuiOpenThisMenu, % (o_EditedFavorite.AA.strFavoriteType = "Group" ? o_L["DialogOpenThisGroup"] : o_L["DialogOpenThisMenu"])
 else if (o_EditedFavorite.AA.strFavoriteType = "URL")
-	Gui, 2:Add, Button, x+10 yp gGuiGetWebPageTitle, % o_L["DialogGetWebPageTitle"]
+	Gui, 2:Add, Button, x+10 yp gGuiGetWebPageTitle, % o_L["DialogGetWebPageTitle"] ; o_L["DialogGetWebPageTitleIcon"] if also retrieving icon again
 
 if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 {
@@ -23929,7 +23930,8 @@ GetWebPageTitle(strLocation)
 ;------------------------------------------------------------
 {
 	ShowToolTip(o_L["ToolTipRetrievingWebPageTitle"] . "`n" . strLocation)
-	strHTML := Url2Var(strLocation, false, "ResponseText", true) ; last true for async
+	; strHTML := Url2Var(strLocation, false, "ResponseText", true) ; last true for async
+	strHTML := Url2Var(strLocation, false, "ResponseText", false) ; use not async until async fixed
 	ToolTip
 	
 	RegExMatch(strHTML, "is)<title(.*?)</title>", strTitle) ; extract title with tags
@@ -23961,10 +23963,12 @@ GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := false)
 	
 	strIconURL := strProtocolDomain . "/" . "favicon.ico"
 	ShowToolTip(o_L["ToolTipRetrievingWebPageIcon"] . "`n" . strIconURL)
-	blnSuccess := Url2File(strIconURL, strIconFilename, intStatus, true) ; UrlDownloadToFile not used because not async
+	; blnSuccess := Url2File(strIconURL, strIconFilename, intStatus, true) ; UrlDownloadToFile not used because not async
+	UrlDownloadToFile, %strIconURL%, %strIconFilename% ; using UrlDownloadToFile until Url2File sync is fixed
+	blnSuccess := (ErrorLevel = 0) 
 	ToolTip
 	
-	if !(blnError)
+	if (blnSuccess)
 		GetImageSize(strIconFilename, intWidth, intHeight)
 	; else intWidth and intHeight are 0
 	

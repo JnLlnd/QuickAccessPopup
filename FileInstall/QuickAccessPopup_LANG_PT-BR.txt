@@ -248,13 +248,15 @@ lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuita do Quick 
 lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para adquirir ou salvar sua licença do QAP...
 lDialogFreeEditionMessage3	Adquira sua licença agora para tirar o máximo proveito dos recursos do QAP
 lDialogFreeEditionShared	Menus compartilhados: atual ~1~ / permitido ~2~
-lDialogGetWebPageTitle	Obter título e ícone
+lDialogGetWebPageTitle	Obter título
+lDialogGetWebPageTitleIcon	Obter título e ícone
 lDialogGetWebSiteIcon	Obter ícone do site
 lDialogGetWinInfo	Para identificar a janela da qual deseja obter título, classe ou nome do processo, clique na janela de destino com a tecla de atalho do menu QAP [~1~].
 lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nNome do processo:`n"~3~"`n`nCopiar informações para a Área de Transferência?
 lDialogHotkeyInvisibleKeys	<a id="~1~">barra de espaço</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>`nor <a id="~5~">tecla menu (aplicativo)</a>
 lDialogHotkeys	Teclas de Atalho
 lDialogHotkeysHelpHeader	Atalho|Ação
+lDialogHotkeysManage	Gerenciar Teclas de Atalho
 lDialogHotkeysManageAboutHotstrings	Strings de substituição atualmente ativas em ~1~
 lDialogHotkeysManageAboutShortcuts	Atalhos atualmente ativos em ~1~
 lDialogHotkeysManageAlternative	Alternativo
@@ -276,12 +278,13 @@ lDialogHotstringNotWaitEndingKey	Não aguardar tecla de conclusão
 lDialogHotstringOmitEndChar	Omitir caractere final ao colar recortes
 lDialogHotstrings	Strings de Substituição
 lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma visão global de suas strings de substituição (pequenas sequências de chaves que automaticamente disparam favoritos do QAP). Você pode classificar os favoritos clicando no cabeçalho.`n`nClique duplo em uma string de substituição para editá-la.`n`nClique na caixa de marcação "Ver todos os favoritos" para atribuir strings de substituição para outros favoritos.
+lDialogHotstringsManage	Strings de Substituição
 lDialogHotstringTriggerAbbreviation	Disparador (abreviação):
 lDialogHotstringTriggerOptions	String de substituição (disparador e opções)
 lDialogIcon	Ícone do Favorito
 lDialogIconsDefaultSize	Tamanho padrão
 lDialogIconsInheritedSize	Tamanho herdado
-lDialogIconsManage	Ícones
+lDialogIconsManage	Gerenciar Ícones
 lDialogIconsManageAbout	Selecione novos ícones para seus favoritos ou defina o ícone padrão para o tipo. Não esqueça de salvar as alterações na janela "Personalizar".
 lDialogIconsManageCurrent	Ícone atual
 lDialogIconsManageDefault	Ícone padrão

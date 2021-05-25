@@ -248,13 +248,15 @@ lDialogFreeEditionMessage1	Purtroppo, i limiti di Quick Access Popup Edizione Gr
 lDialogFreeEditionMessage2	Si prega di aprire la casella di dialogo "~1~, ~2~" per richiedere o salvare la tua licenza di QAP...
 lDialogFreeEditionMessage3	Richiedi la licenza ora per sfruttare senza limitazioni tutte le funzioni di QAP
 lDialogFreeEditionShared	MenÃ¹ condiviso: attuale ~1~ / permesso ~2~
-lDialogGetWebPageTitle	Estrai titolo e icona
+lDialogGetWebPageTitle	Estrai il titolo
+lDialogGetWebPageTitleIcon	Estrai titolo e icona
 lDialogGetWebSiteIcon	Estrai l'icona del sito web
 lDialogGetWinInfo	Per identificare la finestra di cui vuoi trovare titolo, classe o nome del processo, clicca sulla finestra desiderata premendo la scorciatoia del menù QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titolo della Finestra:`n"~1~"`n`nClasse:`n"~2~"`n`nNome del Processo:`n"~3~"`n`nVuoi copiare queste informazioni negli Appunti?
 lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>`nor <a id="~5~">tasto del menú (applicazione)</a>
 lDialogHotkeys	Scorciatoie
 lDialogHotkeysHelpHeader	Scorciatoia|Azione
+lDialogHotkeysManage	Gestione Scorciatoie
 lDialogHotkeysManageAboutHotstrings	Sequenze di sostituzione correntemente attive in ~1~
 lDialogHotkeysManageAboutShortcuts	Scorciatoie correntemente attive in ~1~
 lDialogHotkeysManageAlternative	Alternativo
@@ -276,12 +278,13 @@ lDialogHotstringNotWaitEndingKey	Non aspettare il tasto di finalizzazione
 lDialogHotstringOmitEndChar	Ometti il carattere finale quando incollo gli snippet (frammenti di testo)
 lDialogHotstrings	Sequenze di sostituzione
 lDialogHotstringsDescription	Visualizza una casella di dialogo con una visione complessiva delle sequenze di sostituzione (corte sequenze di tasti, di solito caratteri, che attivano automaticamente preferiti, di solito uno, di QAP). Puoi ordinare i preferiti cliccando sull'intestazione.`n`nFai doppio click su una sequenza di sostituzione per editarla.`n`nClicca la casella di spunta "Vedi tutti i preferiti" per assegnare sequenze di sostituzione ad altri preferiti.
+lDialogHotstringsManage	Sequenze di sostituzione
 lDialogHotstringTriggerAbbreviation	Attivatore (abbreviazione):
 lDialogHotstringTriggerOptions	Sequenza di sostituzione (attivatore e opzioni)
 lDialogIcon	Icona del Preferito
 lDialogIconsDefaultSize	Dimensione predefinita
 lDialogIconsInheritedSize	Dimensione ereditata
-lDialogIconsManage	Icone
+lDialogIconsManage	Gestione Icone
 lDialogIconsManageAbout	Seleziona nuove icone per i tuoi preferiti o assegnagli l'icona di default per il loro tipo. Non dimenticare di salvare le modifiche nella finestra "Personalizzare".
 lDialogIconsManageCurrent	Icona corrente
 lDialogIconsManageDefault	Icona di default
