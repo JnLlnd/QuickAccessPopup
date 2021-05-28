@@ -29601,7 +29601,9 @@ class Container
 	;------------------------------------------------------------
 	
 	;---------------------------------------------------------
-	LoadTCFavoritesFromIniFile(strIniFile, blnRoot := true, strMenuhideChar := "")
+	LoadTCFavoritesFromIniFile(strIniFile, blnRoot := true, strMenuHideChar := "", blnHideThisMenu := false)
+	; if strMenuHideChar is empty, do not process hide char
+	; blnHideThisMenu is true when parent menu is hidden
 	;---------------------------------------------------------
 	{
 		static s_intIniLineLoadTC := 1
@@ -29626,21 +29628,22 @@ class Container
 				else
 					return, "EOM" ; end of menu
 			
-			if (StrLen(strMenuhideChar) and SubStr(strWinCmdItemName, 1, 1) = strMenuhideChar) ; if there is a hide char and it is the first char of the name, skip this item
-				continue
-			; #### if sub Title is "-;Title", have to skip the whole submenu
-			
 			blnItemIsMenu := SubStr(strWinCmdItemName, 1, 1) = "-" and StrLen(strWinCmdItemName) > 1 ; begin a submenu "-MenuName", not "-"
 			
 			if (blnItemIsMenu)
 			{
 				strWinCmdItemName := SubStr(strWinCmdItemName, 2)
+				blnHideSubMenu := blnHideThisMenu ; this parent menu is already hidden
+					or (StrLen(strMenuHideChar) and SubStr(strWinCmdItemName, 1, 1) = strMenuHideChar) ; hide this submenu
 				oNewSubMenu := new Container("Menu", strWinCmdItemName, , this, "init", false) ; last parameter for blnDoubleAmpersands
-				oNewSubMenu.LoadTCFavoritesFromIniFile(strIniFile, false, strMenuhideChar) ; RECURSIVE
+				oNewSubMenu.LoadTCFavoritesFromIniFile(strIniFile, false, strMenuHideChar, blnHideSubMenu) ; RECURSIVE
 			}
 			else if (SubStr(strWinCmdItemCommand, 1, 3) <> "cd ")
 				
 				continue ; not a menu and not a change directory command (folder)
+			
+			if (StrLen(strMenuHideChar) and (blnHideThisMenu or SubStr(strWinCmdItemName, 1, 1) = strMenuHideChar)) ; if there is a hide char and it is the first char of the name, skip this item
+				continue
 			
 			saThisFavorite := Object() ; insert TC item values in standard QAP item values object
 			if (strWinCmdItemName = "-") ; menu separator
