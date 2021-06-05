@@ -31,8 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.3.0.9.2 (2021-05-21)
-- 
+Version BETA: 11.3.0.9.2 (2021-05-28)
+- in Total Commander Hotlist, support the hide menu character for submenus
+- fix bug when the Directory hotlis is saved in a redirected file
+- other changes released in master release v11.3.0.1
 
 Version: 11.3.0.1 (2021-05-25)
 - revert some changes done in v11.3 under the title "Retrieve icon automatically for favorite links":
