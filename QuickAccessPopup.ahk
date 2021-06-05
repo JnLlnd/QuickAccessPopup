@@ -32380,7 +32380,7 @@ class Container
 					if !this.CheckIfEditFavorite(o_L["DialogFavoriteDoesNotExistTitle"]
 						, L(o_L["DialogFavoriteDoesNotExistPrompt"], this.AA.strFavoriteLocation
 						, (StrLen(strTemp) and strTemp <> this.AA.strFavoriteLocation ? " (" . strTemp . ")" : ""))
-						. (this.AA.blnFavoritePseudo ? "" : "`n`n" . o_L["DialogFavoriteDoesNotExistEdit"]))
+						. (this.FavoriteIsNotEditable() ? "" : "`n`n" . o_L["DialogFavoriteDoesNotExistEdit"]))
 						
 						return false
 				
@@ -32419,9 +32419,7 @@ class Container
 		;---------------------------------------------------------
 		{
 			Gui, 1:+OwnDialogs
-			MsgBox, % (this.AA.blnFavoritePseudo ? 0 : 4)
-				, % L(strTitle, g_strAppNameText)
-				, %strMessage%
+			MsgBox, % (this.FavoriteIsNotEditable() ? 0 : 4), % L(strTitle, g_strAppNameText), %strMessage%
 			IfMsgBox, Yes
 			{
 				g_blnAlternativeMenu := true
@@ -32911,7 +32909,7 @@ class Container
 			return !FileExist(oItemTemp.aaTemp.strFullLocation)
 		}
 		;---------------------------------------------------------
-
+		
 		;---------------------------------------------------------
 		LinkBroken()
 		;---------------------------------------------------------
@@ -32937,7 +32935,16 @@ class Container
 			return  (intStatus <> 200)
 		}
 		;---------------------------------------------------------
-
+		
+		;---------------------------------------------------------
+		FavoriteIsNotEditable()
+		;---------------------------------------------------------
+		{
+			return this.AA.blnFavoritePseudo
+				or o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.oParentMenu.AA.strMenuPath])
+		}
+		;---------------------------------------------------------
+		
 /*
 		;---------------------------------------------------------
 		Method()
