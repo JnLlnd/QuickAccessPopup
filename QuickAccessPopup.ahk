@@ -7718,7 +7718,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "StartupTipsShow", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
-	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "DonateActionManageLicense", "MenuAbout")
+	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "DonateActionManageLicense", "MenuShareQAP", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -7737,6 +7737,11 @@ saMenuItemsTable.Push(["X"])
 if (o_EDDLicense.strProduct <> "Sponsor" or !g_blnSponsor)
 	saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
+if (o_EDDLicense.strProduct = "Sponsor" or g_blnSponsor)
+{
+	saMenuItemsTable.Push(["X"])
+	saMenuItemsTable.Push(["HelpShareQAP", aaHelpL["MenuShareQAP"], "", "iconNoIcon"])
+}
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -7762,6 +7767,7 @@ HelpKnowledgeBase:
 HelpVideosFirstSteps:
 HelpVideosAll:
 HelpSupportForum:
+HelpShareQAP:
 ;------------------------------------------------------------
 
 if (A_ThisLabel = "HelpQuickStart")
@@ -7774,6 +7780,8 @@ else if (A_ThisLabel = "HelpVideosAll")
 	Run, % AddUtm2Url("https://www.quickaccesspopup.com/videos/", A_ThisLabel, "Help")
 else if (A_ThisLabel = "HelpSupportForum")
 	Run, % AddUtm2Url("https://forum.quickaccesspopup.com", A_ThisLabel, "Support")
+else if (A_ThisLabel = "HelpShareQAP")
+	Run, https://www.quickaccesspopup.com/tell_your_friend
 
 return
 ;------------------------------------------------------------
