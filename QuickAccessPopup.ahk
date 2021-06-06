@@ -32381,7 +32381,8 @@ class Container
 						, L(o_L["DialogFavoriteDoesNotExistPrompt"], this.AA.strFavoriteLocation
 						, (StrLen(strTemp) and strTemp <> this.AA.strFavoriteLocation ? " (" . strTemp . ")" : ""))
 							. (this.FavoriteIsNotEditable() ? "" : "`n`n" . o_L["DialogFavoriteDoesNotExistEdit"]))
-						
+							
+					; if user accepted, CheckIfEditFavorite launched the edit dialog box; now return false to abort the original open favorite command
 					return false
 				}
 				
