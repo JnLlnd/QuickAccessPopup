@@ -25496,12 +25496,16 @@ GetLocalizedNameForClassId(strClassId, strClsIdFolderPath := "")
 {
 	; first try to get the localized name from the folder's desktop.ini file
 	if StrLen(strClsIdFolderPath)
+	{
 		strLocalizedString := GetLocalizedNameFromDesktopIni(strClsIdFolderPath) ; get localized name
-
+		if StrLen(strLocalizedString)
+			return strLocalizedString
+		; else continue
+	}
+	; else continue
+	
 	; or get the name from the registry
-	if !StrLen(strLocalizedString)
-		RegRead, strLocalizedString, HKEY_CLASSES_ROOT, CLSID\%strClassId%, LocalizedString
-
+	RegRead, strLocalizedString, HKEY_CLASSES_ROOT, CLSID\%strClassId%, LocalizedString
 	; strLocalizedString example: "@%SystemRoot%\system32\shell32.dll,-9216", convert it to a name
 	return GetNameForLocalizedResourceName(strLocalizedString)
 }
@@ -27665,7 +27669,7 @@ class SpecialFolders
 	
 	AA := Object()
 	aaClassIdOrPathByDefaultName := Object()
-	aaConvertToClassId := Object() ; associative array of hardcoded location to convert to ClsId
+	aaReplaceSpecialFolderLocation := Object() ; associative array of hardcoded location to replace (convert to ClsId or other change)
 	strDownloadPath := ""
 	strMyPicturesPath := ""
 	
@@ -27828,12 +27832,26 @@ class SpecialFolders
 			, "Windows Search", "iconApplication"
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "1-Basic")
+			
+		; added with parameter for aaReplaceSpecialFolderLocation
+		
 		RegRead, strException, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, {374DE290-123F-4565-9164-39C4925E467B}
 		this.AddSpecialFolderObject("{374DE290-123F-4565-9164-39C4925E467B}", "", -1, "", "downloads", ""
 			, o_L["MenuDownloads"], "iconDownloads" ; does not return localized name but returns icon
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
-			, "1-Basic~4-Contents", strException) ; strException for aaConvertToClassId
+			, "1-Basic~4-Contents", strException) ; strException for aaReplaceSpecialFolderLocation
         this.strDownloadPath := "{374DE290-123F-4565-9164-39C4925E467B}"
+		
+        ; strPathUsername := StrReplace(A_AppData, "\AppData\Roaming")
+        ; strPathUsers := StrReplace(strPathUsername, "\" . A_UserName)
+        ; this.AddSpecialFolderObject(strPathUsers . "\Public", "Public", -1, "", "common", ""
+            ; , "Public Folder", "" ; Public
+            ; , "SCT", "SCT", "SCT", "CLS", "DOA", "CLS", "CLS"
+            ; , "3-Sysadmin")
+		this.AddSpecialFolderObject("?{DFDF76A2-C82A-4D63-906A-5644AC457385}", "Public", -1, "", "common", ""
+			, "Public Folder", "" ; Public
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "3-Sysadmin", StrReplace(StrReplace(A_AppData, "\AppData\Roaming"), "\" . A_UserName) . "\Public") ; last param for aaReplaceSpecialFolderLocation
 		
 		;---------------------
 		; v11.3 and before: Path from registry (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
@@ -27843,25 +27861,24 @@ class SpecialFolders
 		this.AddSpecialFolderObject("?{4BD8D571-6D19-48D3-BE97-422220080E43}", "", -1, "", "mymusic", ""
 			, o_L["MenuMyMusic"], "iconMyMusic"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "1-Basic~4-Contents", strException) ; strException for aaConvertToClassId
+			, "1-Basic~4-Contents", strException) ; strException for aaReplaceSpecialFolderLocation
 		RegRead, strException, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, My Video
 		this.AddSpecialFolderObject("?{18989B1D-99B5-455B-841C-AB7C74E4DDFC}", "", -1, "", "myvideos", ""
 			, o_L["MenuMyVideo"], "iconMyVideo"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "1-Basic~4-Contents", strException) ; strException for aaConvertToClassId
+			, "1-Basic~4-Contents", strException) ; strException for aaReplaceSpecialFolderLocation
 		RegRead, strException, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, Templates
 		this.AddSpecialFolderObject("?{A63293E8-664E-48DB-A079-DF759E0509F7}", "", -1, "", "templates", ""
 			, o_L["MenuTemplates"], "iconTemplates"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "2-Power User", strException) ; strException for aaConvertToClassId
+			, "2-Power User", strException) ; strException for aaReplaceSpecialFolderLocation
 		RegRead, strException, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, My Pictures
 		this.AddSpecialFolderObject("?{33E28130-4E1E-4676-835A-98395C3BC3BB}", "", 39, "", "mypictures", ""
 			, o_L["MenuPictures"], "iconPictures"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "1-Basic~4-Contents", strException) ; strException for aaConvertToClassId
+			, "1-Basic~4-Contents", strException) ; strException for aaReplaceSpecialFolderLocation
 		this.strMyPicturesPath := "?{33E28130-4E1E-4676-835A-98395C3BC3BB}"
 		
-
 /*
 Notes to remove later
 
@@ -27991,7 +28008,6 @@ FOLDERID_VideosLibrary           := "{491E922F-5643-4AF4-A7EB-4E7A138D8174}" ; W
 FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"  
 
 */
-
 		;---------------------
 		; Path under %APPDATA% (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
 		
@@ -28084,39 +28100,48 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 			, "3-Sysadmin")
 		
 		;---------------------
-		; Path under the Users folder (no CLSID, localized name and icon provided), no Shell Command
-		; #####
-		
-		strPathUsername := StrReplace(A_AppData, "\AppData\Roaming")
-		strPathUsers := StrReplace(strPathUsername, "\" . A_UserName)
-		this.AddSpecialFolderObject(strPathUsers . "\Public", "Public", -1, "", "common", ""
-			, "Public Folder", "" ; Public
-			, "SCT", "SCT", "SCT", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin")
-		
-		;---------------------
 		; Path using AHK constants (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
 		
-		this.AddSpecialFolderObject(A_Desktop, "", 0, "A_Desktop", "desktop", 2121
+		; this.AddSpecialFolderObject(A_Desktop, "", 0, "A_Desktop", "desktop", 2121
+			; , o_L["MenuDesktop"], "iconDesktop"
+			; , "CLS", "CLS", "CLS", "CLS", "DOA", "TCC", "CLS"
+			; , "1-Basic")
+		this.AddSpecialFolderObject("{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}", "", 0, "A_Desktop", "desktop", 2121
 			, o_L["MenuDesktop"], "iconDesktop"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "TCC", "CLS"
-			, "1-Basic")
-		this.AddSpecialFolderObject(A_DesktopCommon, "", -1, "A_DesktopCommon", "commondesktopdir", ""
+			, "1-Basic", A_Desktop)
+		; this.AddSpecialFolderObject(A_DesktopCommon, "", -1, "A_DesktopCommon", "commondesktopdir", ""
+			; , o_L["MenuCommonDesktop"], "iconDesktop"
+			; , "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			; , "3-Sysadmin")
+		this.AddSpecialFolderObject("?{C4AA340D-F20F-4863-AFEF-F87EF2E6BA25}", "", -1, "A_DesktopCommon", "commondesktopdir", ""
 			, o_L["MenuCommonDesktop"], "iconDesktop"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin")
-		this.AddSpecialFolderObject(A_Temp, "", -1, "A_Temp", "temp", ""
+			, "3-Sysadmin", A_DesktopCommon)
+		; this.AddSpecialFolderObject(A_Temp, "", -1, "A_Temp", "temp", ""
+			; , o_L["MenuTemporaryFiles"], "iconTemporary"
+			; , "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			; , "2-Power User")
+		this.AddSpecialFolderObject("%temp%", "", -1, "A_Temp", "temp", ""
 			, o_L["MenuTemporaryFiles"], "iconTemporary"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "2-Power User")
-		this.AddSpecialFolderObject(A_WinDir, "", -1, "A_WinDir", "windows", ""
+			, "2-Power User", A_Temp)
+		; this.AddSpecialFolderObject(A_WinDir, "", -1, "A_WinDir", "windows", ""
+			; , "Windows", "iconWinver"
+			; , "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			; , "3-Sysadmin")
+		this.AddSpecialFolderObject("%windir%", "", -1, "A_WinDir", "windows", ""
 			, "Windows", "iconWinver"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin")
-		this.AddSpecialFolderObject(A_Programs, "", -1, "A_Programs", "programs", "" ; CLSID was "{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}" but not working under Win 10
+			, "3-Sysadmin", A_WinDir)
+		; this.AddSpecialFolderObject(A_Programs, "", -1, "A_Programs", "programs", "" ; CLSID was "{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}" but not working under Win 10
+			; , o_L["MenuProgramsFolderStartMenu"], "" ; Menu Démarrer / Programmes (Menu Start/Programs)
+			; , "CLS", "CLS", "CLS", "CLS", "DOA", "AHK", "AHK"
+			; , "2-Power User")
+		this.AddSpecialFolderObject("?{A77F5D77-2E2B-44C3-A6A2-ABA601054A51}", "", -1, "A_Programs", "programs", "" ; CLSID was "{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}" but not working under Win 10
 			, o_L["MenuProgramsFolderStartMenu"], "" ; Menu Démarrer / Programmes (Menu Start/Programs)
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "AHK", "AHK"
-			, "2-Power User")
+			, "2-Power User", A_Programs)
 			
 		;-----------------------
 		; Special Folders categories
@@ -28132,7 +28157,7 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 	AddSpecialFolderObject(strClassIdOrPath, strShellConstantText, intShellConstantNumeric, strAHKConstant, strDOpusAlias, strTCCommand
 		, strDefaultName, strDefaultIcon
 		, strUse4NavigateExplorer, strUse4NewExplorer, strUse4Dialog, strUse4Console, strUse4DOpus, strUse4TC, strUse4FPc
-		, strCategories, strLocationToConvertToClassId := "")
+		, strCategories, strReplaceSpecialFolderLocation := "")
 
 	; strClassIdOrPath: CLSID or Path, used as key to access objSpecialFolder objects
 	;		CLSID Win_7: http://www.sevenforums.com/tutorials/110919-clsid-key-list-windows-7-a.html
@@ -28198,15 +28223,15 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 	
 	; strCategories: for Add Special folder treeview
 	
-	; strLocationToConvertToClassId: to convert locations that were hardcoded in previous versions to ClsId entry
+	; strReplaceSpecialFolderLocation: to convert locations that were hardcoded in previous versions to ClsId entry
 
 	;---------------------------------------------------------
 	{
 		aaOneSpecialFolder := Object()
 		
 		; flag to convert location that were hardcoded in previous versions
-		if StrLen(strLocationToConvertToClassId)
-			this.aaConvertToClassId[strLocationToConvertToClassId] := strClassIdOrPath
+		if StrLen(strReplaceSpecialFolderLocation)
+			this.aaReplaceSpecialFolderLocation[strReplaceSpecialFolderLocation] := strClassIdOrPath
 		
 		blnIsClsId := (SubStr(strClassIdOrPath, 1, 1) = "{")
 		
@@ -31227,8 +31252,8 @@ class Container
 			else if (saFavorite[1] = "Special")
 			{
 				; if item loaded from ini file have a hardcoded location flagged to be converted to ClsId, convert it here (to be saved by user eventualy)
-				if o_SpecialFolders.aaConvertToClassId.HasKey(saFavorite[3])
-					saFavorite[3] := o_SpecialFolders.aaConvertToClassId[saFavorite[3]]
+				if o_SpecialFolders.aaReplaceSpecialFolderLocation.HasKey(saFavorite[3])
+					saFavorite[3] := o_SpecialFolders.aaReplaceSpecialFolderLocation[saFavorite[3]]
 				
 				; if name is empty, get QAP feature's name in current language or set unknown name
 				if !StrLen(saFavorite[2])
