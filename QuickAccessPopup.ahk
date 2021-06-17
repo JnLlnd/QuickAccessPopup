@@ -27833,8 +27833,7 @@ class SpecialFolders
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "1-Basic")
 			
-		; added with parameter for aaReplaceSpecialFolderLocation
-		
+		; ClsId with added parameter for aaReplaceSpecialFolderLocation
 		RegRead, strException, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, {374DE290-123F-4565-9164-39C4925E467B}
 		this.AddSpecialFolderObject("{374DE290-123F-4565-9164-39C4925E467B}", "", -1, "", "downloads", ""
 			, o_L["MenuDownloads"], "iconDownloads" ; does not return localized name but returns icon
@@ -27842,20 +27841,14 @@ class SpecialFolders
 			, "1-Basic~4-Contents", strException) ; strException for aaReplaceSpecialFolderLocation
         this.strDownloadPath := "{374DE290-123F-4565-9164-39C4925E467B}"
 		
-        ; strPathUsername := StrReplace(A_AppData, "\AppData\Roaming")
-        ; strPathUsers := StrReplace(strPathUsername, "\" . A_UserName)
-        ; this.AddSpecialFolderObject(strPathUsers . "\Public", "Public", -1, "", "common", ""
-            ; , "Public Folder", "" ; Public
-            ; , "SCT", "SCT", "SCT", "CLS", "DOA", "CLS", "CLS"
-            ; , "3-Sysadmin")
-		this.AddSpecialFolderObject("?{DFDF76A2-C82A-4D63-906A-5644AC457385}", "Public", -1, "", "common", ""
-			, "Public Folder", "" ; Public
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin", StrReplace(StrReplace(A_AppData, "\AppData\Roaming"), "\" . A_UserName) . "\Public") ; last param for aaReplaceSpecialFolderLocation
-		
+		this.AddSpecialFolderObject("{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}", "", 0, "A_Desktop", "desktop", 2121
+			, o_L["MenuDesktop"], "iconDesktop"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "TCC", "CLS"
+			, "1-Basic", A_Desktop)
+			
 		;---------------------
 		; v11.3 and before: Path from registry (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
-		; v11.4+: prefix ClsId with "?" to flag ClsId special folders that cannot be open with shell:::
+		; v11.4+: prefix FolderId (ClsId) with "?" to flag to retrieve path with (instead of using shell:::)
 		
 		RegRead, strException, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders, My Music
 		this.AddSpecialFolderObject("?{4BD8D571-6D19-48D3-BE97-422220080E43}", "", -1, "", "mymusic", ""
@@ -27879,7 +27872,55 @@ class SpecialFolders
 			, "1-Basic~4-Contents", strException) ; strException for aaReplaceSpecialFolderLocation
 		this.strMyPicturesPath := "?{33E28130-4E1E-4676-835A-98395C3BC3BB}"
 		
+		this.AddSpecialFolderObject("?{DFDF76A2-C82A-4D63-906A-5644AC457385}", "Public", -1, "", "common", ""
+			, "Public Folder", "" ; Public
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "3-Sysadmin", StrReplace(StrReplace(A_AppData, "\AppData\Roaming"), "\" . A_UserName) . "\Public") ; last param for aaReplaceSpecialFolderLocation
+		this.AddSpecialFolderObject("?{A77F5D77-2E2B-44C3-A6A2-ABA601054A51}", "", -1, "A_Programs", "programs", "" ; CLSID was "{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}" but not working under Win 10
+			, o_L["MenuProgramsFolderStartMenu"], "" ; Menu Démarrer / Programmes (Menu Start/Programs)
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "AHK", "AHK"
+			, "2-Power User", A_Programs)
+		this.AddSpecialFolderObject("?{D9DC8A3B-B784-432E-A781-5A1130A75963}", "", -1, "", "history", ""
+			, o_L["MenuHistory"], "iconHistory"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "2-Power User", "%LOCALAPPDATA%\Microsoft\Windows\History")
+		this.AddSpecialFolderObject("?{48DAF80B-E6CF-4F4E-B800-0E69D84EE384}", "", -1, "", "", ""
+			, o_L["MenuPublicLibraries"], "iconFolder"
+			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "3-Sysadmin", "%PUBLIC%\Libraries")
+		this.AddSpecialFolderObject("?{52a4f021-7b75-48a9-9f6b-4b87a210bc8f}", "", -1, "", "", ""
+			, o_L["MenuQuickLaunch"], "iconFolder"
+			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
+			, "2-Power User~4-Contents", "%APPDATA%\Microsoft\Internet Explorer\Quick Launch")
+		this.AddSpecialFolderObject("?{AE50C081-EBD2-438A-8655-8A092E34987A}", "", -1, "", "recent", ""
+			, o_L["MenuRecentItems"], "iconRecentFolders"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "2-Power User~4-Contents", "%APPDATA%\Microsoft\Windows\Recent")
+		this.AddSpecialFolderObject("?{625B53C3-AB48-4EC1-BA1F-A1EF4146FC19}", "", -1, "A_StartMenu", "start", ""
+			, o_L["MenuStartMenu"], "iconFolder"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "2-Power User", "%APPDATA%\Microsoft\Windows\Start Menu")
+		this.AddSpecialFolderObject("?{B97D20BB-F46A-4C97-BA10-5E3608430854}", "", -1, "A_Startup", "startup", ""
+			, o_L["MenuStartup"], "iconFolder"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "2-Power User", "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup")
+		this.AddSpecialFolderObject("?{C4AA340D-F20F-4863-AFEF-F87EF2E6BA25}", "", -1, "A_DesktopCommon", "commondesktopdir", ""
+			, o_L["MenuCommonDesktop"], "iconDesktop"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "3-Sysadmin", A_DesktopCommon)
+		this.AddSpecialFolderObject("?{A4115719-D62E-491D-AA7C-E74B8BE3B067}", "", -1, "A_StartMenuCommon", "commonstartmenu", ""
+			, o_L["MenuCommonStartMenu"], "iconFolder"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "3-Sysadmin", "%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu")
+		this.AddSpecialFolderObject("?{82A5EA35-D9CD-47C5-9629-E15D2F714E6E}", "", -1, "A_StartupCommon", "commonstartup", ""
+			, o_L["MenuCommonStartupMenu"], "iconFolder"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "3-Sysadmin", "%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Startup")
+			
 /*
+
+List officielle de Microsoft: https://docs.microsoft.com/en-us/windows/win32/shell/knownfolderid
+
 Notes to remove later
 
 - FOLDERID_Downloads               := "{374DE290-123F-4565-9164-39C4925E467B}"  
@@ -28011,22 +28052,10 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 		;---------------------
 		; Path under %APPDATA% (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
 		
-		this.AddSpecialFolderObject("%APPDATA%\Microsoft\Windows\Start Menu", "", -1, "A_StartMenu", "start", ""
-			, o_L["MenuStartMenu"], "iconFolder"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "2-Power User")
-		this.AddSpecialFolderObject("%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup", "", -1, "A_Startup", "startup", ""
-			, o_L["MenuStartup"], "iconFolder"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "2-Power User")
 		this.AddSpecialFolderObject("%APPDATA%", "", -1, "A_AppData", "appdata", ""
 			, o_L["MenuAppData"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
 			, "3-Sysadmin")
-		this.AddSpecialFolderObject("%APPDATA%\Microsoft\Windows\Recent", "", -1, "", "recent", ""
-			, o_L["MenuRecentItems"], "iconRecentFolders"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "2-Power User~4-Contents")
 		if (GetOsVersion() = "WIN_10")
 			this.AddSpecialFolderObject("%LocalAppData%\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cookies", "", -1, "", "cookies", ""
 				, o_L["MenuCookies"], "iconFolder"
@@ -28037,10 +28066,6 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 				, o_L["MenuCookies"], "iconFolder"
 				, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
 				, "2-Power User")
-		this.AddSpecialFolderObject("%APPDATA%\Microsoft\Internet Explorer\Quick Launch", "", -1, "", "", ""
-			, o_L["MenuQuickLaunch"], "iconFolder"
-			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
-			, "2-Power User~4-Contents")
 		this.AddSpecialFolderObject("%APPDATA%\Microsoft\SystemCertificates", "", -1, "", "", ""
 			, o_L["MenuSystemCertificates"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
@@ -28049,14 +28074,6 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 		;---------------------
 		; Path under other environment variables (no CLSID), localized name and icon provided, no Shell Command - to be tested with TC and QAPconnect
 		
-		this.AddSpecialFolderObject("%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu", "", -1, "A_StartMenuCommon", "commonstartmenu", ""
-			, o_L["MenuCommonStartMenu"], "iconFolder"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin")
-		this.AddSpecialFolderObject("%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Startup", "", -1, "A_StartupCommon", "commonstartup", ""
-			, o_L["MenuCommonStartupMenu"], "iconFolder"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin")
 		this.AddSpecialFolderObject("%ALLUSERSPROFILE%", "", -1, "A_AppDataCommon", "commonappdata", ""
 			, o_L["MenuCommonAppData"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
@@ -28064,10 +28081,6 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 		this.AddSpecialFolderObject("%LOCALAPPDATA%\Microsoft\Windows\Temporary Internet Files", "", -1, "", "", ""
 			, o_L["MenuCache"], "iconTemporary"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
-			, "2-Power User")
-		this.AddSpecialFolderObject("%LOCALAPPDATA%\Microsoft\Windows\History", "", -1, "", "history", ""
-			, o_L["MenuHistory"], "iconHistory"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
 			, "2-Power User")
 		this.AddSpecialFolderObject("%ProgramFiles%", "", -1, "A_ProgramFiles", "programfiles", ""
 			, o_L["MenuProgramFiles"], "iconFolder"
@@ -28078,10 +28091,6 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 				, o_L["MenuProgramFiles"] . " (x86)", "iconFolder"
 				, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
 				, "3-Sysadmin")
-		this.AddSpecialFolderObject("%PUBLIC%\Libraries", "", -1, "", "", ""
-			, o_L["MenuPublicLibraries"], "iconFolder"
-			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
-			, "3-Sysadmin")
 		this.AddSpecialFolderObject("%windir%\system32\taskmgr.exe", "", -1, "", "", ""
 			, o_L["MenuTaskManager"], "iconControlPanel"
 			, "CLS", "CLS", "CLS", "CLS", "NEW", "NEW", "CLS"
@@ -28098,30 +28107,6 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 			, o_L["MenuEventViewer"], "iconMyComputer"
 			, "CLS", "CLS", "CLS", "CLS", "NEW", "NEW", "CLS"
 			, "3-Sysadmin")
-		
-		;---------------------
-		; Path using AHK constants (no CLSID), localized name and icon provided, no Shell Command - to be tested with DOpus, TC and FPc
-		
-		; this.AddSpecialFolderObject(A_Desktop, "", 0, "A_Desktop", "desktop", 2121
-			; , o_L["MenuDesktop"], "iconDesktop"
-			; , "CLS", "CLS", "CLS", "CLS", "DOA", "TCC", "CLS"
-			; , "1-Basic")
-		this.AddSpecialFolderObject("{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}", "", 0, "A_Desktop", "desktop", 2121
-			, o_L["MenuDesktop"], "iconDesktop"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "TCC", "CLS"
-			, "1-Basic", A_Desktop)
-		; this.AddSpecialFolderObject(A_DesktopCommon, "", -1, "A_DesktopCommon", "commondesktopdir", ""
-			; , o_L["MenuCommonDesktop"], "iconDesktop"
-			; , "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			; , "3-Sysadmin")
-		this.AddSpecialFolderObject("?{C4AA340D-F20F-4863-AFEF-F87EF2E6BA25}", "", -1, "A_DesktopCommon", "commondesktopdir", ""
-			, o_L["MenuCommonDesktop"], "iconDesktop"
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin", A_DesktopCommon)
-		; this.AddSpecialFolderObject(A_Temp, "", -1, "A_Temp", "temp", ""
-			; , o_L["MenuTemporaryFiles"], "iconTemporary"
-			; , "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			; , "2-Power User")
 		this.AddSpecialFolderObject("%temp%", "", -1, "A_Temp", "temp", ""
 			, o_L["MenuTemporaryFiles"], "iconTemporary"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
@@ -28134,15 +28119,6 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 			, "Windows", "iconWinver"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
 			, "3-Sysadmin", A_WinDir)
-		; this.AddSpecialFolderObject(A_Programs, "", -1, "A_Programs", "programs", "" ; CLSID was "{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}" but not working under Win 10
-			; , o_L["MenuProgramsFolderStartMenu"], "" ; Menu Démarrer / Programmes (Menu Start/Programs)
-			; , "CLS", "CLS", "CLS", "CLS", "DOA", "AHK", "AHK"
-			; , "2-Power User")
-		this.AddSpecialFolderObject("?{A77F5D77-2E2B-44C3-A6A2-ABA601054A51}", "", -1, "A_Programs", "programs", "" ; CLSID was "{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}" but not working under Win 10
-			, o_L["MenuProgramsFolderStartMenu"], "" ; Menu Démarrer / Programmes (Menu Start/Programs)
-			, "CLS", "CLS", "CLS", "CLS", "DOA", "AHK", "AHK"
-			, "2-Power User", A_Programs)
-			
 		;-----------------------
 		; Special Folders categories
 		
