@@ -7736,7 +7736,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "StartupTipsShow", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
-	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "DonateActionManageLicense", "MenuAbout")
+	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "DonateActionManageLicense", "MenuShareQAP", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -7755,6 +7755,11 @@ saMenuItemsTable.Push(["X"])
 if (o_EDDLicense.strProduct <> "Sponsor" or !g_blnSponsor)
 	saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
+if (o_EDDLicense.strProduct = "Sponsor" or g_blnSponsor)
+{
+	saMenuItemsTable.Push(["X"])
+	saMenuItemsTable.Push(["HelpShareQAP", aaHelpL["MenuShareQAP"], "", "iconNoIcon"])
+}
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -7780,6 +7785,7 @@ HelpKnowledgeBase:
 HelpVideosFirstSteps:
 HelpVideosAll:
 HelpSupportForum:
+HelpShareQAP:
 ;------------------------------------------------------------
 
 if (A_ThisLabel = "HelpQuickStart")
@@ -7792,6 +7798,8 @@ else if (A_ThisLabel = "HelpVideosAll")
 	Run, % AddUtm2Url("https://www.quickaccesspopup.com/videos/", A_ThisLabel, "Help")
 else if (A_ThisLabel = "HelpSupportForum")
 	Run, % AddUtm2Url("https://forum.quickaccesspopup.com", A_ThisLabel, "Support")
+else if (A_ThisLabel = "HelpShareQAP")
+	Run, https://www.quickaccesspopup.com/tell_your_friend
 
 return
 ;------------------------------------------------------------
@@ -32616,7 +32624,7 @@ class Container
 					if !this.CheckIfEditFavorite(o_L["DialogFavoriteDoesNotExistTitle"]
 						, L(o_L["DialogFavoriteDoesNotExistPrompt"], this.AA.strFavoriteLocation
 						, (StrLen(strTemp) and strTemp <> this.AA.strFavoriteLocation ? " (" . strTemp . ")" : ""))
-						. (this.AA.blnFavoritePseudo ? "" : "`n`n" . o_L["DialogFavoriteDoesNotExistEdit"]))
+						. (this.FavoriteIsNotEditable() ? "" : "`n`n" . o_L["DialogFavoriteDoesNotExistEdit"]))
 						
 						return false
 				
@@ -32655,9 +32663,7 @@ class Container
 		;---------------------------------------------------------
 		{
 			Gui, 1:+OwnDialogs
-			MsgBox, % (this.AA.blnFavoritePseudo ? 0 : 4)
-				, % L(strTitle, g_strAppNameText)
-				, %strMessage%
+			MsgBox, % (this.FavoriteIsNotEditable() ? 0 : 4), % L(strTitle, g_strAppNameText), %strMessage%
 			IfMsgBox, Yes
 			{
 				g_blnAlternativeMenu := true
@@ -33147,7 +33153,7 @@ class Container
 			return !FileExist(oItemTemp.aaTemp.strFullLocation)
 		}
 		;---------------------------------------------------------
-
+		
 		;---------------------------------------------------------
 		LinkBroken()
 		;---------------------------------------------------------
@@ -33173,7 +33179,16 @@ class Container
 			return  (intStatus <> 200)
 		}
 		;---------------------------------------------------------
-
+		
+		;---------------------------------------------------------
+		FavoriteIsNotEditable()
+		;---------------------------------------------------------
+		{
+			return this.AA.blnFavoritePseudo
+				or o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.oParentMenu.AA.strMenuPath])
+		}
+		;---------------------------------------------------------
+		
 /*
 		;---------------------------------------------------------
 		Method()
