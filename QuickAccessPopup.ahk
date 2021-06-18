@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.1 (2021-06-17)
+- replace some Special folders "hard-coded" locations with codes that will continue to work even after user moved the Special folder to a new location
+- more precisely, replace "hard-coded" paths with onme of the followings: envrionement variables, Known Folders IDs or ClsIds; Special Folder updated are: Desktop, Common Desktop, Common Start Menu, Common Startup Menu, History, My Music, My Video, Pictures, Programs Folder (Start Menu), Public Folder, Public Libraries, Quick Launch, Recent Items, Start Menu, Startup, Templates, Temporary Files, Téléchargements and Windows
+- when launching Special Folders, temporarily convert the location codes to its actual path (if required)
+- when a desktop.ini (hidden file) is found in at a Special Folder location, retrieve the localized name and icon from this file, else continue as before: retreive them from the Windows Registry or use default names and icons set by QAP
+- when getting the name from a regular favorite folder, check if we can get the name from a desktop.ini file before using the last part of the path
+
 Version: 11.3.0.1 (2021-05-25)
 - revert some changes done in v11.3 under the title "Retrieve icon automatically for favorite links":
   - stop loading the web page title and the web site favicon together in the same command (you can retreve the favicon under the "Menu options" tab);
@@ -4600,7 +4607,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.1
+;@Ahk2Exe-SetVersion  11.3.0.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4668,8 +4675,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := " 11.3.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
