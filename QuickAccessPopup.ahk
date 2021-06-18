@@ -23738,11 +23738,13 @@ GetLocationPathName(strLocation)
 ;------------------------------------------------------------
 {
 	strLocation := StripFolderEndingBackslash(strLocation) ; remove ending backslash in folder location
-	strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
+	blnLocationIsFolder := InStr(FileExist(strLocation), "D")
+	if (blnLocationIsFolder)
+		strName := GetLocalizedNameFromDesktopIni(strLocation) ; if desktop.ini exists, try to retrieve the localized name resource
 	if !StrLen(strName)
 	{
 		SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
-		strName := (InStr(FileExist(strLocation), "D") ? strOutFileName : strOutNameNoExt)
+		strName := (blnLocationIsFolder ? strOutFileName : strOutNameNoExt)
 		if !StrLen(strName) ; we are probably at the root of a drive
 			return strDrive
 	}
@@ -25567,11 +25569,13 @@ GetKnownFolderPath(strFolderId, intFlag := 0)
 	strClsID := ""
 	pPath := ""
 	
-	return Format("{4:}", VarSetCapacity(strClsID, 16, 0)
+	strPath := Format("{4:}", VarSetCapacity(strClsID, 16, 0)
 		, DllCall("ole32\CLSIDFromString", "Str", strFolderId, "Ptr", &strClsID)
 		, DllCall("shell32\SHGetKnownFolderPath", "Ptr", &strClsID, "UInt", intFlag, "Ptr",0, "PtrP", pPath)
 		, StrGet(pPath, "utf-16")
 		, DllCall("ole32\CoTaskMemFree", "Ptr", pPath))
+	
+	return strPath
 }
 ;------------------------------------------------------------
 
@@ -27689,9 +27693,9 @@ class SpecialFolders
 	; AddSpecialFolderObject(strClassIdOrPath, strShellConstant, intShellConstant, strAHKConstant, strDOpusAlias, strTCCommand
 	;	, strDefaultName, strDefaultIcon
 	;	, strUse4NavigateExplorer, strUse4NewExplorer, strUse4Dialog, strUse4Console, strUse4DOpus, strUse4TC, strUse4FPc
-	;	, strCategories)
+	;	, strCategories, strReplaceSpecialFolderLocation, blnIsCommon)
 
-	; 		CLS: Class ID
+	; 		CLS: Class ID (or Known Folder ID with "?" prefix)
 	;		SCT: Shell Constant Text
 	;		SCN: Shell Constant Numeric
 	;		DOA: Directory Opus Alias
@@ -27707,7 +27711,7 @@ class SpecialFolders
 		; AddSpecialFolderObject(strClassIdOrPath, strShellConstantText, intShellConstantNumeric, strAHKConstant, strDOpusAlias, strTCCommand
 			; , strDefaultName, strDefaultIcon
 			; , strUse4NavigateExplorer, strUse4NewExplorer, strUse4Dialog, strUse4Console, strUse4DOpus, strUse4TC, strUse4FPc
-			; , strCategories)
+			; , strCategories, strReplaceSpecialFolderLocation, blnIsCommon)
 		
 		;---------------------
 		; CLSID giving localized name and icon, with valid Shell Command
@@ -27887,7 +27891,8 @@ class SpecialFolders
 		this.AddSpecialFolderObject("?{48DAF80B-E6CF-4F4E-B800-0E69D84EE384}", "", -1, "", "", ""
 			, o_L["MenuPublicLibraries"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
-			, "3-Sysadmin", "%PUBLIC%\Libraries")
+			, "3-Sysadmin", "%PUBLIC%\Libraries" ; param for aaReplaceSpecialFolderLocation
+			, true) ; true to avoid duplicate name for common and non-common folders
 		this.AddSpecialFolderObject("?{52a4f021-7b75-48a9-9f6b-4b87a210bc8f}", "", -1, "", "", ""
 			, o_L["MenuQuickLaunch"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
@@ -27907,15 +27912,18 @@ class SpecialFolders
 		this.AddSpecialFolderObject("?{C4AA340D-F20F-4863-AFEF-F87EF2E6BA25}", "", -1, "A_DesktopCommon", "commondesktopdir", ""
 			, o_L["MenuCommonDesktop"], "iconDesktop"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin", A_DesktopCommon)
+			, "3-Sysadmin", A_DesktopCommon ; param for aaReplaceSpecialFolderLocation
+			, true) ; true to avoid duplicate name for common and non-common folders
 		this.AddSpecialFolderObject("?{A4115719-D62E-491D-AA7C-E74B8BE3B067}", "", -1, "A_StartMenuCommon", "commonstartmenu", ""
 			, o_L["MenuCommonStartMenu"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin", "%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu")
+			, "3-Sysadmin", "%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu" ; param for aaReplaceSpecialFolderLocation
+			, true) ; true to avoid duplicate name for common and non-common folders
 		this.AddSpecialFolderObject("?{82A5EA35-D9CD-47C5-9629-E15D2F714E6E}", "", -1, "A_StartupCommon", "commonstartup", ""
 			, o_L["MenuCommonStartupMenu"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin", "%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Startup")
+			, "3-Sysadmin", "%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Startup" ; param for aaReplaceSpecialFolderLocation
+			, true) ; true to avoid duplicate name for common and non-common folders
 			
 /*
 
@@ -28077,7 +28085,7 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 		this.AddSpecialFolderObject("%ALLUSERSPROFILE%", "", -1, "A_AppDataCommon", "commonappdata", ""
 			, o_L["MenuCommonAppData"], "iconFolder"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			, "3-Sysadmin")
+			, "3-Sysadmin", , true) ; true to avoid duplicate name for common and non-common folders
 		this.AddSpecialFolderObject("%LOCALAPPDATA%\Microsoft\Windows\Temporary Internet Files", "", -1, "", "", ""
 			, o_L["MenuCache"], "iconTemporary"
 			, "CLS", "CLS", "CLS", "CLS", "CLS", "CLS", "CLS"
@@ -28111,10 +28119,6 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 			, o_L["MenuTemporaryFiles"], "iconTemporary"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
 			, "2-Power User", A_Temp)
-		; this.AddSpecialFolderObject(A_WinDir, "", -1, "A_WinDir", "windows", ""
-			; , "Windows", "iconWinver"
-			; , "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
-			; , "3-Sysadmin")
 		this.AddSpecialFolderObject("%windir%", "", -1, "A_WinDir", "windows", ""
 			, "Windows", "iconWinver"
 			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
@@ -28133,7 +28137,7 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 	AddSpecialFolderObject(strClassIdOrPath, strShellConstantText, intShellConstantNumeric, strAHKConstant, strDOpusAlias, strTCCommand
 		, strDefaultName, strDefaultIcon
 		, strUse4NavigateExplorer, strUse4NewExplorer, strUse4Dialog, strUse4Console, strUse4DOpus, strUse4TC, strUse4FPc
-		, strCategories, strReplaceSpecialFolderLocation := "")
+		, strCategories, strReplaceSpecialFolderLocation := "", blnIsCommon := false)
 
 	; strClassIdOrPath: CLSID or Path, used as key to access objSpecialFolder objects
 	;		CLSID Win_7: http://www.sevenforums.com/tutorials/110919-clsid-key-list-windows-7-a.html
@@ -28210,10 +28214,13 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 			this.aaReplaceSpecialFolderLocation[strReplaceSpecialFolderLocation] := strClassIdOrPath
 		
 		blnIsClsId := (SubStr(strClassIdOrPath, 1, 1) = "{")
+		blnIsKnownFolderId := (SubStr(strClassIdOrPath, 1, 2) = "?{")
 		
 		; get default menu name
-		if (blnIsClsId)
-			strThisDefaultName := GetLocalizedNameForClassId(strClassIdOrPath, GetKnownFolderPath(strClassIdOrPath)) ; get name from desktop.ini or registry
+		if (blnIsClsId or blnIsKnownFolderId)
+			strThisDefaultName := GetLocalizedNameForClassId(strClassIdOrPath ; get name from registry except if we have a path
+				; if we have a path, get name from desktop.ini except if folder is "common" to avoid duplicate names with same folder not common
+				, (blnIsCommon ? "" : GetKnownFolderPath(blnIsKnownFolderId ? SubStr(strClassIdOrPath, 2) : strClassIdOrPath)))
 		If !StrLen(strThisDefaultName)
 			strThisDefaultName := strDefaultName
 		this.aaClassIdOrPathByDefaultName[strThisDefaultName] := strClassIdOrPath
@@ -28227,7 +28234,7 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 		if !StrLen(strThisDefaultIcon)
 			strThisDefaultIcon := "%SystemRoot%\System32\shell32.dll,4" ; fallback folder icon from shell32.dll
 		aaOneSpecialFolder.strDefaultIcon := strThisDefaultIcon
-
+		
 		aaOneSpecialFolder.strShellConstantText := strShellConstantText
 		aaOneSpecialFolder.strShellConstantNumeric := intShellConstantNumeric
 		aaOneSpecialFolder.strAHKConstant := strAHKConstant
@@ -28241,9 +28248,10 @@ FOLDERID_Windows                 := "{F38BF404-1D43-42F2-9305-67DE0B28FC23}"
 		aaOneSpecialFolder.strUse4DOpus := strUse4DOpus
 		aaOneSpecialFolder.strUse4TC := strUse4TC
 		aaOneSpecialFolder.strUse4FPc := strUse4FPc
-
+		
 		aaOneSpecialFolder.strCategories := strCategories
-
+		aaOneSpecialFolder.strReplaceSpecialFolderLocation := strReplaceSpecialFolderLocation
+		
 		this.AA[strClassIdOrPath] := aaOneSpecialFolder
 	}
 	;---------------------------------------------------------
@@ -33002,7 +33010,7 @@ class Container
 				saValues[4] := g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine
 			else if (this.AA.strFavoriteType = "QAP") ; this is a QAP Feature
 				saValues[4] := o_QAPfeatures.AA[this.AA.strFavoriteLocation].strLocalizedName
-			else if (this.AA.strFavoriteType = "Special" and SubStr(this.AA.strFavoriteLocation, 1, 1) = "{") ; this is a Special folder with CLSID
+			else if (this.AA.strFavoriteType = "Special")
 				saValues[4] := o_SpecialFolders.AA[this.AA.strFavoriteLocation].strDefaultName
 			else if (this.AA.strFavoriteType = "Snippet")
 				saValues[4] :=StringLeftDotDotDot(this.AA.strFavoriteLocation, 100)
