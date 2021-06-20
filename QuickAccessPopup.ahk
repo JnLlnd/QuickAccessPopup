@@ -31,12 +31,20 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.3.0.9.3 (2021-06-17)
-- replace some Special folders "hard-coded" locations with codes that will continue to work even after user moved the Special folder to a new location
-- more precisely, replace "hard-coded" paths with onme of the followings: envrionement variables, Known Folders IDs or ClsIds; Special Folder updated are: Desktop, Common Desktop, Common Start Menu, Common Startup Menu, History, My Music, My Video, Pictures, Programs Folder (Start Menu), Public Folder, Public Libraries, Quick Launch, Recent Items, Start Menu, Startup, Templates, Temporary Files, Téléchargements and Windows
-- when launching Special Folders, temporarily convert the location codes to its actual path (if required)
-- when a desktop.ini (hidden file) is found in at a Special Folder location, retrieve the localized name and icon from this file, else continue as before: retreive them from the Windows Registry or use default names and icons set by QAP
-- when getting the name from a regular favorite folder, check if we can get the name from a desktop.ini file before using the last part of the path
+Version BETA: 11.3.0.9.3 (2021-06-20)
+ 
+Special Folders
+- in the settings file, replace some Special Folders "hard-coded" locations with codes that will continue to work even after user moved the Special Folder to a new location
+- more precisely, replace "hard-coded" paths with one of the following codes: environment variables, Known Folders IDs or ClsIds; Special Folders updated are: Desktop, Common Desktop, Common Start Menu, Common Startup Menu, History, My Music, My Video, Pictures, Programs Folder (Start Menu), Public Folder, Public Libraries, Quick Launch, Recent Items, Start Menu, Startup, Templates, Temporary Files, Downloads and Windows directory
+- replace existing Special Folders favorites locations with the new codes
+- when a desktop.ini (hidden file) is found in a Special Folder, retrieve the localized name and icon from this file, else continue as before and retreive them from the Windows Registry or use default names and icons set by QAP
+ 
+Various
+- when getting the name for a regular favorite folder, check if we can get it from a desktop.ini file, else continue as before and use the last part of the path
+- fix bug when opening a favorite from a dynamic menu (like "Recent Folders") and when that favorite is not found
+- fix bug trying to open the favorite not found if user selected to edit the favorite
+- add menu item "Share QAP" under "Help" menu to open QAP website referrer page
+- Russian language file update
 
 Version BETA: 11.3.0.9.2 (2021-05-28)
 - in Total Commander Hotlist, support the hide menu character for submenus
