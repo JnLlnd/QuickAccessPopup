@@ -32628,13 +32628,15 @@ class Container
 			{
 				strTemp := this.aaTemp.strLocationWithPlaceholders ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 				if !FileExistInPath(strTemp) ; return g_strLocationWithPlaceholders with expanded relative path and envvars, also search in PATH
-					
-					if !this.CheckIfEditFavorite(o_L["DialogFavoriteDoesNotExistTitle"]
+				{
+					this.CheckIfEditFavorite(o_L["DialogFavoriteDoesNotExistTitle"]
 						, L(o_L["DialogFavoriteDoesNotExistPrompt"], this.AA.strFavoriteLocation
 						, (StrLen(strTemp) and strTemp <> this.AA.strFavoriteLocation ? " (" . strTemp . ")" : ""))
-						. (this.FavoriteIsNotEditable() ? "" : "`n`n" . o_L["DialogFavoriteDoesNotExistEdit"]))
-						
-						return false
+							. (this.FavoriteIsNotEditable() ? "" : "`n`n" . o_L["DialogFavoriteDoesNotExistEdit"]))
+							
+					; if user accepted, CheckIfEditFavorite launched the edit dialog box; now return false to abort the original open favorite command
+					return false
+				}
 				
 				this.aaTemp.strLocationWithPlaceholders := strTemp
 				
@@ -33192,8 +33194,14 @@ class Container
 		FavoriteIsNotEditable()
 		;---------------------------------------------------------
 		{
+			intSubmenuSeparatorPosition := InStr(this.AA.oParentMenu.AA.strMenuPath, g_strMenuPathSeparatorWithSpaces) 
+			if (intSubmenuSeparatorPosition) ; for dynamic menus having submenus (e.g. TC Hotlist or DOpus favorites), remove subdirectories from path
+				strMenuPath := SubStr(this.AA.oParentMenu.AA.strMenuPath, 1, intSubmenuSeparatorPosition - 1)
+			else
+				strMenuPath := this.AA.oParentMenu.AA.strMenuPath
+			
 			return this.AA.blnFavoritePseudo
-				or o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.oParentMenu.AA.strMenuPath])
+				or o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[strMenuPath])
 		}
 		;---------------------------------------------------------
 		
