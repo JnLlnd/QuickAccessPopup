@@ -68,7 +68,7 @@ lDialogArgumentsLabel	Parametri
 lDialogArgumentsLabelHelp	(racchiudi ciascun parametro fra doppi apici, se richiesto)
 lDialogArgumentsPlaceholdersCheckLabel	Parametri correnti con segnaposto estesi
 lDialogArgumentsPlaceholdersCurrentExample	x:\cartella_contenitore\ultima_cartella
-lDialogArgumentsPlaceholdersSelectedExample	x:\cartella_contenitore\cartella_o_file_selezionato
+lDialogArgumentsPlaceholdersSelectedExample	x:\cartella_contenitore\cartella_o_file_selezionato.ext
 lDialogAscending	Ascendente
 lDialogBrowseButton	Sfoglia
 lDialogBrowseOrSelectApplication	Ricerca un file eseguibile o`nseleziona una applicazione in esecuzione in questo elenco

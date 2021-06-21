@@ -68,7 +68,7 @@ lDialogArgumentsLabel	Parâmetros
 lDialogArgumentsLabelHelp	(Se for necessário ponha cada parâmetro entre aspas)
 lDialogArgumentsPlaceholdersCheckLabel	Parâmetros actuais com recipientes expandidos
 lDialogArgumentsPlaceholdersCurrentExample	x:\pasta_respectiva\última_pasta
-lDialogArgumentsPlaceholdersSelectedExample	x:\pasta_respectiva\ficheiro_ou_pasta seleccionado(a)
+lDialogArgumentsPlaceholdersSelectedExample	x:\pasta_respectiva\ficheiro_ou_pasta seleccionado(a).ext
 lDialogAscending	Ascendente
 lDialogBrowseButton	Procurar
 lDialogBrowseOrSelectApplication	Procurar um ficheiro executável ou`nseleccionar um programa activo desta lista

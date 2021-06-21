@@ -58,7 +58,7 @@ lDialogArgumentsLabel	Ajustes
 lDialogArgumentsLabelHelp	(poner cada elemento entre comillas si es necesario)
 lDialogArgumentsPlaceholdersCheckLabel	Ajustes actuales reemplazados por los códigos de ubicación
 lDialogArgumentsPlaceholdersCurrentExample	x:\contenedor_carpeta\última_carpeta
-lDialogArgumentsPlaceholdersSelectedExample	x:\carpeta_contenedora\archivo_o_carpeta_seleccionado 
+lDialogArgumentsPlaceholdersSelectedExample	x:\carpeta_contenedora\archivo_o_carpeta_seleccionado.ext
 lDialogAscending	Ascendente
 lDialogBrowseButton	Revisar
 lDialogBrowseOrSelectApplication	Examinar para seleccionar un archivo ejecutable o elegir una aplicación activa en esta lista

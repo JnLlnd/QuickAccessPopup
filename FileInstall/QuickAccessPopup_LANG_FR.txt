@@ -68,7 +68,7 @@ lDialogArgumentsLabel	Paramètres
 lDialogArgumentsLabelHelp	(mettre chaque paramètre entre guillemets si nécessaire)
 lDialogArgumentsPlaceholdersCheckLabel	Paramètres actuels incluant les codes de remplacement
 lDialogArgumentsPlaceholdersCurrentExample	x:\dossier_parent\dernier_dossier
-lDialogArgumentsPlaceholdersSelectedExample	x:\dossier_parent\fichier_ou_dossier_sélectionné
+lDialogArgumentsPlaceholdersSelectedExample	x:\dossier_parent\fichier_ou_dossier_sélectionné.ext
 lDialogAscending	Ascendant
 lDialogBrowseButton	Parcourir
 lDialogBrowseOrSelectApplication	Parcourir pour sélectionner un fichier exécutable ou`nchoisir une application active dans cette liste

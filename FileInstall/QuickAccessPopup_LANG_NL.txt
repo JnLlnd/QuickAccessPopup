@@ -68,7 +68,7 @@ lDialogArgumentsLabel	Parameters
 lDialogArgumentsLabelHelp	(Bij het gebruik van meerdere parameters dient elke parameter van dubbele aanhalingstekens voorzien te zijn)
 lDialogArgumentsPlaceholdersCheckLabel	Huidige parameters met dubbele aanhalingstekens
 lDialogArgumentsPlaceholdersCurrentExample	x:\Hoofdmap\Submap
-lDialogArgumentsPlaceholdersSelectedExample	x:\map\geselecteerde_map_of_bestand
+lDialogArgumentsPlaceholdersSelectedExample	x:\map\geselecteerde_map_of_bestand.ext
 lDialogAscending	Oplopend
 lDialogBrowseButton	Bladeren...
 lDialogBrowseOrSelectApplication	Blader naar een uitvoerbaar bestand of selecteer een uitvoerbaar bestand in deze lijst
