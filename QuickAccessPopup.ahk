@@ -4805,7 +4805,7 @@ global g_intNbExternalMenusCount ; number of external menus built (vs maximum fo
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
-global g_aaTreeViewItemsByIDs := Object() ; items in TreevView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
+global g_aaTreeViewItemsByIDs := Object() ; items in TreeView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
 global g_blnUsageDbUpdateFavoritesCompleted := false ; prevent special search NotInDatabase if favorites has not been completely updated with database data
 global g_strBrokenLinks ; for ToolTip listing broken favorites
@@ -15590,10 +15590,11 @@ else
 {
 	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
+	; (1) Favorite Name, (2) Type, (3) Favorite Location or Content, (4) Internal type (hidden), (5) Favorite code (hidden) filled for QAP Features only,
+	; (6) Menu Path (hidden) and (7) Item position in menu (hidden), 6 and 7 filled for import of Settings flat view only
 	Gui, 2:Add, ListView, % "x10 y+5 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
-		. "|Favorite Code (hidden)"
-		; Favorite Name, Type, Favorite Location or Content, Internal type (hidden), Favorite code (hidden) filled for QAP Features only
+		. "|Favorite Code (hidden)|Menu Path (hidden)|Item position in menu (hidden)"
 }
 
 Gui, 2:Add, Button, x10 y+15 vf_btnGuiMultipleAddAddFavorites gButtonMultipleAddFavorites disabled Default, % aaL["GuiAddFavorite"]
@@ -15697,6 +15698,8 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 		LV_ModifyCol(0, "AutoHdr")
 	LV_ModifyCol(4, 0) ; hide internal type column
 	LV_ModifyCol(5, 0) ; hide favorite code column
+	LV_ModifyCol(6, 0) ; hide favorite menu path
+	LV_ModifyCol(7, 0) ; hide favorite position in menu
 	
 	GuiControl, , f_blnMultipleAddSelectAllNone, % 0 ; reset select all/none to none
 }
@@ -15904,7 +15907,8 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, blnCondition, strName := "")
+GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter
+	, blnCondition, strName := "", strMenuPath := "", intItemPositionInMenu := "")
 ;------------------------------------------------------------
 {
 	if !StrLen(strName)
@@ -15920,8 +15924,11 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 	if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			, (strInternalType = "QAP" ? SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "") : oMultipleAddFavorite.AA.strFavoriteLocation)
-			, oMultipleAddFavorite.AA.strFavoriteType, (strInternalType = "QAP" ? strLocation : ""))
-		; Favorite Name, Type, Favorite Location or Content (Description for QAP Features), Internal type (hidden), Favorite code (hidden) (for QAP Features only)
+			, oMultipleAddFavorite.AA.strFavoriteType, (strInternalType = "QAP" ? strLocation : ""), strMenuPath, intItemPositionInMenu)
+		; (1) Favorite Name, (2) Type, (3) Favorite Location or Content, (4) Internal type (hidden), (5) Favorite code (hidden) filled for QAP Features only,
+		; (6) Menu Path (hidden) and (7) Item position in menu (hidden), 6 and 7 filled for import of Settings flat view only
+
+
 }
 ;------------------------------------------------------------
 
@@ -15946,7 +15953,6 @@ if (oMultipleAddMain.LoadFavoritesFromIniFile(false, true, g_strMultipleAddSourc
 	else ; GuiMultipleAddSourceSettingsItemsLoad
 		oMultipleAddMain.LoadInListViewItems(f_blnMultipleAddExcludeExisting, f_strMultipleAddFilter) ; assign items objects to g_aaTreeViewItemsByIDs
 
-oMultipleAddMain := ""
 strSettingsBK := ""
 
 return
@@ -16172,24 +16178,20 @@ Loop
 	intRow := LV_GetNext(intRow, "C")
 	if !(intRow)
 		break
-	; Name, Type Label, Location, Internal type (hidden), Favorite code (hidden), Help (hidden)
-	LV_GetText(strFavoriteName, intRow, 1)
-	LV_GetText(strFavoriteLocation, intRow, 3)
-	LV_GetText(strFavoriteType, intRow, 4)
-	
-	if (g_strMultipleAddSourceKey = "Folder")
-	{
-		SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
-		strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
-	}
-	else if (g_strMultipleAddSourceKey = "QAP" or strFavoriteType = "QAP")
-		LV_GetText(strFavoriteLocation, intRow, 5)
-	
-	o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
+	; (1) Favorite Name, (2) Type, (3) Favorite Location or Content, (4) Internal type (hidden), (5) Favorite code (hidden) filled for QAP Features only,
+	; (6) Menu Path (hidden) and (7) Item position in menu (hidden), 6 and 7 filled for import of Settings flat view only
+    LV_GetText(strMultipleAddMenuPath, intRow, 6)
+    LV_GetText(intMultipleAddItemPosition, intRow, 7)
+
+	o_EditedFavorite := o_Containers.AA[strMultipleAddMenuPath].SA[intMultipleAddItemPosition]
 	g_strNewFavoriteIconResource := "" ; avoid variable re-use when saving
-	
 	gosub, GuiAddFavoriteSaveFromMultipleAdd
 }
+
+oMultipleAddMain := ""
+strMultipleAddMenuPath := ""
+intMultipleAddItemPosition := ""
+intRow := ""
 
 return
 ;------------------------------------------------------------
@@ -16391,8 +16393,8 @@ if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalS
 
 o_EditedFavoriteMenu := o_EditedFavorite.AA.oParentMenu
 
-; update menu object except if we multiple move or copy favorites, or drag and drop a favorite
-if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
+; update item object except if we multiple move or copy favorites, or drag and drop a favorite, or save after multiple add
+if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|GuiAddFavoriteSaveFromMultipleAdd|", "|" . strThisLabel . "|")
 {
 	; if external menu file exists, load the submenu from the external settings ini file
 	if (o_EditedFavorite.AA.strFavoriteType = "External")
@@ -30984,7 +30986,8 @@ class Container
 			if oItem.IsContainer()
 				oItem.AA.oSubMenu.LoadInListViewItems(blnMultipleAddExcludeExisting, strMultipleAddFilter) ; RECURSIVE
 			else if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oItem) : true)
-				GuiMultipleAddSourceLoadLV(oItem.AA.strFavoriteType, oItem.AA.strFavoriteLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter, true, oItem.AA.strFavoriteName)
+				GuiMultipleAddSourceLoadLV(oItem.AA.strFavoriteType, oItem.AA.strFavoriteLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter
+					, true, oItem.AA.strFavoriteName, this.AA.strMenuPath, intKey)
 		}
 	}
 	;------------------------------------------------------------
