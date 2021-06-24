@@ -25602,6 +25602,7 @@ GetIconForClassId(strClassId, strClsIdFolderPath := "")
 ;------------------------------------------------------------
 GetKnownFolderPath(strFolderId, intFlag := 0)
 ; from SKAN https://www.autohotkey.com/boards/viewtopic.php?f=6&t=75602
+; Known Folders IDs list: https://docs.microsoft.com/en-us/windows/win32/shell/knownfolderid
 ;------------------------------------------------------------
 {
 	strClsID := ""
