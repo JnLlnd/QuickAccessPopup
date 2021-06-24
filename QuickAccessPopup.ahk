@@ -14143,7 +14143,8 @@ DropdownRunningApplicationChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-GuiControl, , f_strFavoriteLocation, %f_drpRunningApplication%
+GuiControl, 2:, f_strFavoriteLocation, %f_drpRunningApplication%
+GuiControl, 2:, f_strFavoriteShortName, % GetLocationPathName(f_drpRunningApplication)
 
 return
 ;------------------------------------------------------------
@@ -14347,7 +14348,7 @@ Gui, 2:Submit, NoHide
 if (o_EditedFavorite.AA.strFavoriteType = "URL")
 	return
 
-if !StrLen(f_strFavoriteShortName) or (o_EditedFavorite.AA.strFavoriteType = "Application") ; always update when browsing the running apps list
+if !StrLen(f_strFavoriteShortName)
 	GuiControl, 2:, f_strFavoriteShortName, % GetLocationPathName((A_ThisLabel = "EditFavoriteLocationChanged" ? f_strFavoriteLocation : f_strFavoriteAppWorkingDir))
 
 if InStr("|Folder|Document|Application", "|" . o_EditedFavorite.AA.strFavoriteType)
