@@ -15590,7 +15590,7 @@ else
 {
 	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
 	saDialogHotkeysManageListHeader := StrSplit(o_L["DialogHotkeysManageListHeader"], "|") ; Menu|Favorite Name|Type|(unused here)|Favorite Location or Content
-	; (1) Favorite Name, (2) Type, (3) Favorite Location or Content, (4) Internal type (hidden), (5) Favorite code (hidden) filled for QAP Features only,
+	; (1) Favorite Name, (2) Type, (3) Favorite Location or Content, (4) Internal type (hidden), (5) Favorite code (hidden) filled for QAP Features and Special Folders only,
 	; (6) Menu Path (hidden) and (7) Item position in menu (hidden), 6 and 7 filled for import of Settings flat view only
 	Gui, 2:Add, ListView, % "x10 y+5 w" . intGuiContentWidth . " Checked Count100 -LV0x10 -ReadOnly r20 vf_lvMultipleAddList AltSubmit gGuiMultipleAddListEvents section"
 		, % saDialogHotkeysManageListHeader[2] . "|" . saDialogHotkeysManageListHeader[3] . "|" . saDialogHotkeysManageListHeader[5] . "|Internal Type (hidden)"
@@ -15913,18 +15913,29 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 {
 	if !StrLen(strName)
 		strName := GetLocationPathName(strLocation)
-	strFilterSearchIn := (strInternalType = "QAP" ? strName . "|" . strDescription : strName . "|" . strLocation)
+	strDescription := (strInternalType = "QAP" ? o_QAPFeatures.AA[strLocation].strQAPFeatureDescription : "")
+	
+	strFilterSearchIn := strName
+	if (strInternalType = "QAP")
+		strFilterSearchIn .= "|" . strDescription
+	else if (strInternalType <> "Special") ; search only the name for Special
+		strFilterSearchIn .= "|" . strLocation
 	
 	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
 		return
 	
 	oMultipleAddFavorite := new Container.Item([strInternalType, strName, strLocation]) ; type, name, path
 	
-	strDescription := (strInternalType = "QAP" ? o_QAPFeatures.AA[strLocation].strQAPFeatureDescription : "")
-	if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
-		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-			, (strInternalType = "QAP" ? SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "") : oMultipleAddFavorite.AA.strFavoriteLocation)
-			, oMultipleAddFavorite.AA.strFavoriteType, (strInternalType = "QAP" ? strLocation : ""), strMenuPath, intItemPositionInMenu)
+    if (strInternalType = "QAP")
+        strContent := SubStr(strDescription, 1, 65) . (StrLen(strDescription) > 65 ? g_strEllipse : "")
+    else if (strInternalType = "Special")
+        strContent := o_SpecialFolders.AA[oMultipleAddFavorite.AA.strFavoriteLocation].strDefaultName ; do not use strLocation that is not converted if old special folder
+    else
+        strContent := oMultipleAddFavorite.AA.strFavoriteLocation
+    if (blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
+        LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
+			, strContent, oMultipleAddFavorite.AA.strFavoriteType, (InStr("QAP|Special", strInternalType) ? oMultipleAddFavorite.AA.strFavoriteLocation : "")
+			, strMenuPath, intItemPositionInMenu)
 		; (1) Favorite Name, (2) Type, (3) Favorite Location or Content, (4) Internal type (hidden), (5) Favorite code (hidden) filled for QAP Features only,
 		; (6) Menu Path (hidden) and (7) Item position in menu (hidden), 6 and 7 filled for import of Settings flat view only
 
@@ -31029,7 +31040,8 @@ class Container
 			
 			if (saFavorite[1] = "QAP")
 			{
-				if !StrLen(saFavorite[2]) ; if empty, get QAP feature's name in current language
+				; if name is empty, get QAP feature's name in current language
+				if !StrLen(saFavorite[2])
 					or RegExMatch(saFavorite[2], "\* Unknown QAP feature \* [0-9]* \*") ; QAP unknown in a previous release - check if it is known in this release
 					saFavorite[2] := o_QAPfeatures.aaQAPFeaturesDefaultNameByCode[saFavorite[3]]
 				if !StrLen(saFavorite[2]) ; if QAP feature is unknown
@@ -31039,11 +31051,15 @@ class Container
 				; to keep track of QAP features in menus to allow enable/disable menu items
 				o_QAPfeatures.aaQAPfeaturesInMenus.Insert(saFavorite[3], 1) ; boolean just to flag that we have this QAP feature in menus
 			}
-			else if ((saFavorite[1] = "Special") and !StrLen(saFavorite[2])) ; if empty, get QAP feature's name in current language or set unknown name
-				if StrLen(o_SpecialFolders.AA[saFavorite[3]].strDefaultName)
+			else if (saFavorite[1] = "Special")
+			{
+				; if name is empty, get Special Folder's name in current language or set unknown name
+				if !StrLen(saFavorite[2])
+                    or RegExMatch(saFavorite[2], "\* Unknown Special Folder \* [0-9]* \*") ; Special Folder unknown in a previous release - check if it is known in this release
 					saFavorite[2] := o_SpecialFolders.AA[saFavorite[3]].strDefaultName
-				else ; in case favorites are imported from another system with different Special folders locations
+				if !StrLen(saFavorite[2]) ; if Special Folder is unknown
 					saFavorite[2] := "* Unknown Special Folder * " . RandomBetween() . " *"
+			}
 			
 			; this is a regular favorite, add it to the current menu
 			this.InsertItemValue("strFavoriteType", saFavorite[1]) ; see Favorite Types
