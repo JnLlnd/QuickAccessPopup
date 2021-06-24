@@ -14107,31 +14107,41 @@ DropdownParentMenuChanged:
 strPrevParentMenu := f_drpParentMenu ; backup previous menu in case we have to cancel
 Gui, 2:Submit, NoHide
 
-saThisMenu := o_Containers.AA[f_drpParentMenu].SA
+oThisMenu := o_Containers.AA[f_drpParentMenu]
 
-for intIndex, oItem in saThisMenu
-	if (o_EditedFavorite.AA.strFavoriteName = oItem.AA.strFavoriteName and o_EditedFavorite.AA.strFavoriteType = oItem.AA.strFavoriteType) ; to cover items of diff types with empty name
-			and (o_MenuInGui.AA.strMenuPath = o_Containers.AA[f_drpParentMenu].AA.strMenuPath ; skip edited item itself
-			and !InStr(strGuiFavoriteLabel, "Copy")) ; and that we are not copying a favorite
-		Continue
-	else if (oItem.AA.strFavoriteType = "X")
-		strDropdownParentMenuItems .= g_strGuiMenuSeparator . g_strGuiMenuSeparator . "|"
-	else if (oItem.AA.strFavoriteType = "K")
-		strDropdownParentMenuItems .= g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine . "|"
-	else
-		strDropdownParentMenuItems .= oItem.AA.strFavoriteName . "|"
-
-GuiControl, , f_drpParentMenuItems, % "|" . strDropdownParentMenuItems . g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
-if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition <> 0xFFFF)
-	GuiControl, Choose, f_drpParentMenuItems, %g_intOriginalMenuPosition%
+if (oThisMenu.AA.intMenuAutoSort)
+	strDropdownParentMenuItems := "|" . g_strGuiDoubleLine . " " . o_L["DialogEndOfMenuSorted"] . " " . g_strGuiDoubleLine
 else
-	GuiControl, ChooseString, f_drpParentMenuItems, % g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
-g_intNewItemPos := "" ; if new item position g_intNewItemPos is set, reset it and let f_drpParentMenuItems set it later #### not sure if safe...
+{
+	for intIndex, oItem in oThisMenu.SA
+		if (o_EditedFavorite.AA.strFavoriteName = oItem.AA.strFavoriteName and o_EditedFavorite.AA.strFavoriteType = oItem.AA.strFavoriteType) ; to cover items of diff types with empty name
+				and (o_MenuInGui.AA.strMenuPath = o_Containers.AA[f_drpParentMenu].AA.strMenuPath ; skip edited item itself
+				and !InStr(strGuiFavoriteLabel, "Copy")) ; and that we are not copying a favorite
+			Continue
+		else if (oItem.AA.strFavoriteType = "X")
+			strDropdownParentMenuItems .= g_strGuiMenuSeparator . g_strGuiMenuSeparator . "|"
+		else if (oItem.AA.strFavoriteType = "K")
+			strDropdownParentMenuItems .= g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine . "|"
+		else
+			strDropdownParentMenuItems .= oItem.AA.strFavoriteName . "|"
 
-GuiControl, % (o_Containers.AA[f_drpParentMenu].AA.intMenuAutoSort ? "Disable" : "Enable"), f_drpParentMenuItems
+	strDropdownParentMenuItems := "|" . strDropdownParentMenuItems . g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
+}
+
+GuiControl, , f_drpParentMenuItems, %strDropdownParentMenuItems%
+if (oThisMenu.AA.intMenuAutoSort)
+	GuiControl, Choose, f_drpParentMenuItems, 1 ; select first and only item
+else
+	if (f_drpParentMenu = o_MenuInGui.AA.strMenuPath) and (g_intOriginalMenuPosition <> 0xFFFF)
+		GuiControl, Choose, f_drpParentMenuItems, %g_intOriginalMenuPosition%
+	else
+		GuiControl, ChooseString, f_drpParentMenuItems, % g_strGuiDoubleLine . " " . o_L["DialogEndOfMenu"] . " " . g_strGuiDoubleLine
+GuiControl, % (oThisMenu.AA.intMenuAutoSort ? "Disable" : "Enable"), f_drpParentMenuItems
+
+g_intNewItemPos := "" ; if new item position g_intNewItemPos is set, reset it and let f_drpParentMenuItems set it later
 
 strDropdownParentMenuItems := ""
-saThisMenu := ""
+oThisMenu := ""
 oItem := ""
 
 return
