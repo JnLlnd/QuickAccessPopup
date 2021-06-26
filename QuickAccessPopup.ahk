@@ -16003,7 +16003,7 @@ g_aaTreeViewItemsByIDs := Object() ; reset objects in TreeView
 if !StrLen(f_strMultipleAddSourcePath)
 	return
 
-oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "", "init", false, false)
+oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "", "init", false, false) ; deleted after use in GuiMultipleAddFromListView
 
 g_strMultipleAddSourceKeySettingsFile := f_strMultipleAddSourcePath
 
@@ -16240,18 +16240,51 @@ Loop
 		break
 	; (1) Favorite Name, (2) Type, (3) Favorite Location or Content, (4) Internal type (hidden), (5) Favorite code (hidden) filled for QAP Features only,
 	; (6) Menu Path (hidden) and (7) Item position in menu (hidden), 6 and 7 filled for import of Settings flat view only
-    LV_GetText(strMultipleAddMenuPath, intRow, 6)
-    LV_GetText(intMultipleAddItemPosition, intRow, 7)
+	LV_GetText(strFavoriteName, intRow, 1)
+	LV_GetText(strFavoriteLocation, intRow, 3)
+	LV_GetText(strFavoriteType, intRow, 4)
+    LV_GetText(strFavoriteCode, intRow, 5)
+    LV_GetText(strFavoriteMenuPath, intRow, 6)
+    LV_GetText(strFavoriteItemPosition, intRow, 7)
 
-	o_EditedFavorite := o_Containers.AA[strMultipleAddMenuPath].SA[intMultipleAddItemPosition]
-	g_strNewFavoriteIconResource := "" ; avoid variable re-use when saving
-	gosub, GuiAddFavoriteSaveFromMultipleAdd
+	if (g_strMultipleAddSourceKey = "Folder")
+	{
+		SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
+		strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
+	}
+	else if (g_strMultipleAddSourceKey = "QAP" or strFavoriteType = "QAP" or g_strMultipleAddSourceKey = "Special" or strFavoriteType = "Special")
+		strFavoriteLocation := strFavoriteCode
+
+	if (g_strMultipleAddSourceKey = "SettingsFileItems")
+	{
+		o_EditedFavorite := o_Containers.AA[strFavoriteMenuPath].SA[strFavoriteItemPosition]
+		o_EditedFavorite.AA.strFavoriteName := strFavoriteName ; in case the name was edited in ListView
+	}
+	else
+		o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
+
+	if (g_strMultipleAddSourceKey = "SettingsFileItems")
+	{
+		oParentMenu := o_Containers.AA[g_strMultipleAddDestinationMenu] ; get parent menu object
+		o_EditedFavorite.AA.oParentMenu := oParentMenu ; set item's parent menu
+		oParentMenu.SA.Push(o_EditedFavorite) ; add new item to parent menu object simple array
+	}
+	else
+	{
+		g_strNewFavoriteIconResource := "" ; avoid re-use of variable from saving previous favorite
+		gosub, GuiAddFavoriteSaveFromMultipleAdd
+	}
 }
 
-oMultipleAddMain := ""
-strMultipleAddMenuPath := ""
-intMultipleAddItemPosition := ""
+oMultipleAddMain := "" ; created in GuiMultipleAddSourceSettingsItemsLoad or GuiMultipleAddSourceSettingsMenusLoad
+
 intRow := ""
+strFavoriteName := ""
+strFavoriteLocation := ""
+strFavoriteType := ""
+strFavoriteCode := ""
+strFavoriteMenuPath := ""
+strFavoriteItemPosition := ""
 
 return
 ;------------------------------------------------------------
@@ -16275,6 +16308,14 @@ Loop
 	TV_GetText(strTvFavoriteName, strItemId)
 	oAddedItem.AA.strFavoriteName := strTvFavoriteName ; update favorite name with name in treeview
 	
+	if oAddedItem.IsContainer()
+	{
+		strNewMenuPath := strMenuPath . g_strMenuPathSeparatorWithSpaces . oAddedItem.AA.strFavoriteName ; build container's path
+		if o_Containers.AA.HasKey(strNewMenuPath) ; this container exists
+			continue ;  go to next checked item
+		; else proceed with this item
+	}
+	
 	strUniqueName := oAddedItem.AA.strFavoriteName
 	oAddedItem.GetUniqueName(strUniqueName, "", strMenuPath, true) ; last true for blnRename
 	if (strUniqueName <> oAddedItem.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
@@ -16290,18 +16331,14 @@ Loop
 	
 	if oAddedItem.IsContainer()
 	{
-		strNewMenuPath := strMenuPath . g_strMenuPathSeparatorWithSpaces . oAddedItem.AA.strFavoriteName ; build container's path
-		if !o_Containers.AA.HasKey(strNewMenuPath) ; this is a new container
-		{
-			; update item object and its container object
-			oAddedItem.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", "")
-			oAddedItem.AA.oSubMenu.AA.strMenuPath := strNewMenuPath
-			oAddedItem.AA.oSubMenu.AA.strMenuType := "Menu"
-			oAddedItem.AA.oSubMenu.AA.oParentMenu := oParentMenu
-			oAddedItem.AA.oSubMenu.SA := Object() ; reset submenu (items will be re-inserted if they are selected
-			
-			o_Containers.AA[strNewMenuPath] := oAddedItem.AA.oSubMenu ; add new menu to containers list
-		}
+		; update item object and its container object
+		oAddedItem.AA.strFavoriteLocation := StrReplace(strNewMenuPath, o_L["MainMenuName"] . " ", "")
+		oAddedItem.AA.oSubMenu.AA.strMenuPath := strNewMenuPath
+		oAddedItem.AA.oSubMenu.AA.strMenuType := "Menu"
+		oAddedItem.AA.oSubMenu.AA.oParentMenu := oParentMenu
+		oAddedItem.AA.oSubMenu.SA := Object() ; reset submenu (items will be re-inserted if they are selected
+		
+		o_Containers.AA[strNewMenuPath] := oAddedItem.AA.oSubMenu ; add new menu to containers list
 	}
 }
 
@@ -16453,8 +16490,8 @@ if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalS
 
 o_EditedFavoriteMenu := o_EditedFavorite.AA.oParentMenu
 
-; update item object except if we multiple move or copy favorites, or drag and drop a favorite, or save after multiple add
-if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|GuiAddFavoriteSaveFromMultipleAdd|", "|" . strThisLabel . "|")
+; update menu object except if we multiple move or copy favorites, or drag and drop a favorite
+if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
 {
 	; if external menu file exists, load the submenu from the external settings ini file
 	if (o_EditedFavorite.AA.strFavoriteType = "External")
