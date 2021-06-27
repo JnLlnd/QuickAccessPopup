@@ -4836,6 +4836,7 @@ global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Ad
 global g_blnUsageDbUpdateFavoritesCompleted := false ; prevent special search NotInDatabase if favorites has not been completely updated with database data
 global g_strBrokenLinks ; for ToolTip listing broken favorites
 global g_intMaximumValue := 0x7FFFFFFFFFFFFFFF ; max value for integers
+global g_blnReplaceSpecialFolderLocationBackup := false ; create a backup of the settings if a special folder location was replaced
 
 global g_aaPopularFoldersShortNames := Object() ; search for g_aaPopular%strFoldersOrFiles%ShortNames
 global g_aaPopularFilesShortNames := Object() ; search for g_aaPopular%strFoldersOrFiles%ShortNames
@@ -18459,9 +18460,14 @@ GuiControl, , f_btnGuiCancel, % aaSettingsL["GuiClose"]
 Menu, menuBarFile, Disable, % aaMenuFileL["GuiSave"] . "`tCtrl+S"
 Menu, menuBarFile, Disable, % L(aaMenuFileL["GuiSaveAndClose"], g_strAppNameText)
 
+if (g_blnReplaceSpecialFolderLocationBackup)
+	Settings.BackupIniFile(o_Settings.strIniFile, g_blnReplaceSpecialFolderLocationBackup) ; backup external settings ini file, if required
+	
 SetCursor(true, "wait") ; set wait cursor during saving, was ToolTip, % o_L["ToolTipSaving"]
 o_MainMenu.SaveFavoritesToIniFile()
 SetCursor(false) ; reset cursor after refresh
+
+g_blnReplaceSpecialFolderLocationBackup := false
 
 if (A_ThisLabel = "GuiSaveAndReloadQAP") or (g_blnHotstringNeedRestart)
 	Gosub, ReloadQAP
@@ -29170,34 +29176,44 @@ TODO
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	BackupIniFile(strIniFile, blnIsExternal := false)
+	BackupIniFile(strIniFile, blnReplaceSpecialFolderLocationBackup := false)
 	; call as base class function Settings.BackupIniFile() only, not as an instance method
 	; (because various ini files are not instances of this class - could be done later)
+	; do not update global variable g_blnReplaceSpecialFolderLocationBackup here because its value must be reset only after last call to this function
 	;---------------------------------------------------------
 	{
 		SplitPath, strIniFile, strIniFileFilename, strIniFileFolder
 		
-		strThisBackupFolder := o_Settings.ReadIniValue("BackupFolder", "", "Global", strIniFile) ; can be main ini file, alternative ini or external ini file backup folder
+		strThisBackupFolder := o_Settings.ReadIniValue("BackupFolder", " ", "Global", strIniFile) ; can be main ini file, alternative ini or external ini file backup folder
 		if !StrLen(strThisBackupFolder) ; if no backup folder in ini file, backup in ini file's folder
 			strThisBackupFolder := strIniFileFolder
 		
 		strThisBackupFolder := PathCombine(A_WorkingDir, EnvVars(strThisBackupFolder))
 		
-		; delete old backup files (keep only 5/10 most recent files)
-		strIniBackupFile := strThisBackupFolder . "\" . StrReplace(strIniFileFilename, ".ini", "-backup-????????.ini")
-		Loop, %strIniBackupFile%
-			strFilesList .= A_LoopFileFullPath . "`n"
-		Sort, strFilesList, R ; reverse alphabetical order - most recent first 
-		intNumberOfBackups := (g_strCurrentBranch <> "prod" ? 10 : 5)
-		Loop, Parse, strFilesList, `n
-			if (A_Index > intNumberOfBackups)
-				if StrLen(A_LoopField)
-					FileDelete, %A_LoopField%
-
+		if (blnReplaceSpecialFolderLocationBackup) ; different name and do not delete old files
+			strIniBackupFile := strThisBackupFolder . "\" . StrReplace(strIniFileFilename, ".ini", "-backup-special_folders-??????????????.ini")
+		else
+		{
+			; delete old backup files (keep only 5/10 most recent files)
+			strIniBackupFile := strThisBackupFolder . "\" . StrReplace(strIniFileFilename, ".ini", "-backup-????????.ini")
+			Loop, %strIniBackupFile%
+				strFilesList .= A_LoopFileFullPath . "`n"
+			Sort, strFilesList, R ; reverse alphabetical order - most recent first 
+			intNumberOfBackups := (g_strCurrentBranch <> "prod" ? 10 : 5)
+			Loop, Parse, strFilesList, `n
+				if (A_Index > intNumberOfBackups)
+					if StrLen(A_LoopField)
+						FileDelete, %A_LoopField%
+		}
 		; create a daily backup of the ini file
-		strIniBackupFile := StrReplace(strIniBackupFile, "????????", SubStr(A_Now, 1, 8))
+		strIniBackupFile := StrReplace(strIniBackupFile, "????????" . (blnReplaceSpecialFolderLocationBackup ? "??????" : "")
+			, SubStr(A_Now, 1, (blnReplaceSpecialFolderLocationBackup ? 14 : 8)))
+		
 		; always keep the most recent backup for a given day
 		FileCopy, %strIniFile%, %strIniBackupFile%, 1
+		
+		; if this is a shared menu, delete the lock flag from the backup (it does nothing in a regular settings file)
+		IniDelete, %strIniBackupFile%, Global, MenuReservedBy
 	}
 	;---------------------------------------------------------
 
@@ -30932,7 +30948,7 @@ class Container
 					s_strIniFile := oItem.AA.oSubMenu.AA.strMenuExternalSettingsPath
 					s_intIniLineSave := 1 ; reset to 1 for the external file
 					
-					Settings.BackupIniFile(s_strIniFile, true) ; backup external settings ini file, if required
+					Settings.BackupIniFile(s_strIniFile, g_blnReplaceSpecialFolderLocationBackup) ; backup external settings ini file, if required
 				}
 				
 				oItem.AA.oSubMenu.SaveFavoritesToIniFile(false) ; RECURSIVE false not root
@@ -31352,7 +31368,10 @@ class Container
 			{
 				; if item loaded from ini file have a hardcoded location flagged to be converted to ClsId, convert it here (to be saved by user eventualy)
 				if o_SpecialFolders.aaReplaceSpecialFolderLocation.HasKey(saFavorite[3])
+				{
 					saFavorite[3] := o_SpecialFolders.aaReplaceSpecialFolderLocation[saFavorite[3]]
+					g_blnReplaceSpecialFolderLocationBackup := true
+				}
 				
 				; if name is empty, get Special Folder's name in current language or set unknown name
 				if !StrLen(saFavorite[2])
