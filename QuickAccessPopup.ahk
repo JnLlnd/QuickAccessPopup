@@ -31,6 +31,26 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.4 (2021-06-27)
+ 
+Add Multiple Favorites dialog box (various improvements)
+- when loading favorites from a QAP Settings file (flat view), load item's menu path and position in hidden columns to retrieve source objects and copy them with all theirs properties (parameters, etc.)
+- when adding from QAP features, extend search to features descriptions in Content column and stop searching in location or codes
+- when adding from Special Folders, stop showing the codes in the content column and show default name instead
+- when loading a Special Folder favorite having for name "Unknown Special Folder", replace the name with the Special Folder default name if its code is valid
+- when loading favorites from a QAP Settings file (tree view), fix bug when adding an item in an existing submenu, stop creating a duplicate submenu
+
+Various
+- in Edit Favorite dialog box, for Application favorites, stop updating the short menu name when the location is changed and update the name only when the location is changed using the Running applications dropdown list
+- when adding or editing a favorite in a sorted menu, in the menu options tab, fill the position dropdown list with the message "menu sorted automatically" in addition to disabling the control as before
+- in Options, Alternative Menu Hotkeys
+  - rename the button "Reset default modifiers" to "Reset to saved modifiers" (to restore modifiers to their currently saved value) and add a new button "Reset to default modifiers" (to reset the modifiers to their default value)
+  - stop doubling the Modifiers lists content when resetting them
+- fix error in language files when previewing the expansion of a placeholder for file extension name
+- fix bug stop offering to edit a favorite not found when opened from a dynamic menu
+- when saving favorites, create a backup of the settings if a special folder location was replaced
+- fix bug preventing creation of backups for shared menus ini file and alternative ini files; when creating a backup for a shared menu file, delete the file reservartion flag in the backup
+
 Version BETA: 11.3.0.9.3 (2021-06-20)
  
 Special Folders
@@ -4626,7 +4646,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.3
+;@Ahk2Exe-SetVersion 11.3.0.9.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4694,7 +4714,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
