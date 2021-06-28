@@ -20411,7 +20411,8 @@ if !(g_blnAlternativeMenu) ; do not collect Alternative menu features
 ; always navigate
 if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and (g_strAlternativeMenu <> o_L["MenuAlternativeNewWindow"])
 	and InStr("|Folder|Special|FTP", "|" . o_ThisFavorite.AA.strFavoriteType)
-	and !WindowIsDialog(g_strTargetClass, g_strTargetWinId))
+	and !WindowIsDialog(g_strTargetClass, g_strTargetWinId)
+	and !WindowIsConsole(g_strTargetClass))
 {
 	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, true) ; get and activate last used file manager
