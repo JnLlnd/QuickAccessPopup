@@ -4646,7 +4646,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.4
+;@Ahk2Exe-SetVersion 11.3.0.9.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4714,7 +4714,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -32603,6 +32603,7 @@ class Container
 		{
 			; Directory Opus pidl value like "?AAAAFAAfUOBP0CDqOmkQotgIACswMJ0AAA=="
 			if (o_FileManagers.P_intActiveFileManager = 2 and SubStr(this.AA.strFavoriteLocation, 1, 1) = "?")
+				and (SubStr(this.AA.strFavoriteLocation, 1, 2) <> "?{") ; but this is not a KnownFolderPath
 			{
 				this.aaTemp.strFullLocation := this.AA.strFavoriteLocation
 				this.aaTemp.strTargetAppName := "DirectoryOpus"
@@ -32649,7 +32650,7 @@ class Container
 						strTemp := this.aaTemp.strFullLocation ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 						blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strFullLocation with expanded relative path, envvars and user variables, and absolute location if in PATH
 						this.aaTemp.strFullLocation := strTemp
-
+						
 						if StrLen(this.AA.intFavoriteOpenSubFolder) and (this.AA.intFavoriteOpenSubFolder)
 							this.aaTemp.strFullLocation .= "\" . this.GetSubFolderToOpen() ; get subfolder to open
 					}	
