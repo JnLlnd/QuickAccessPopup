@@ -22,38 +22,61 @@ rem Check current version file
 IF NOT EXIST "QAP-v%QAPVERSIONPREV%.txt" ECHO QAP-v%QAPVERSIONPREV%.txt INTROUVABLE...
 IF EXIST "QAP-v%QAPVERSIONFILE%.txt" ECHO MAIS QAP-v%QAPVERSIONFILE%.txt EXISTE - OK!
 rem Compile exe files
-ECHO Ahk2Exe-QAP-v8.ahk 32 %QAPBETAPROD%
-"C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Ahk2Exe-Custom\Ahk2Exe-QAP-v8.ahk" 32 %QAPBETAPROD%
-ECHO Ahk2Exe-QAP-v8.ahk 64 %QAPBETAPROD%
-"C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Ahk2Exe-Custom\Ahk2Exe-QAP-v8.ahk" 64 %QAPBETAPROD%
-rem Compile Setup file
-ECHO Inno Setup Compile-QAP-v10.iss
-"C:\Program Files (x86)\Inno Setup 5\compil32" /cc "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Compile-QAP-v10.iss"
+ECHO Ahk2Exe-QAP-v10.ahk 32 %QAPBETAPROD%
+"C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Ahk2Exe-Custom\Ahk2Exe-QAP-v10.ahk" 32 %QAPBETAPROD%
+ECHO Ahk2Exe-QAP-v10.ahk 64 %QAPBETAPROD%
+"C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Ahk2Exe-Custom\Ahk2Exe-QAP-v10.ahk" 64 %QAPBETAPROD%
+rem Paude a few seconds
+ping 127.0.0.1 -n 3 > nul
+ECHO Sign 32 %QAPBETAPROD%
+CALL "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Sign-certificat.bat" "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-32-bit.exe"
 IF %ERRORLEVEL% NEQ 0 ECHO UNE ERREUR EST SURVENUE...
 IF %ERRORLEVEL% NEQ 0 PAUSE
 IF %ERRORLEVEL% NEQ 0 EXIT
+ECHO Sign 64 %QAPBETAPROD%
+CALL "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Sign-certificat.bat" "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-64-bit.exe"
+IF %ERRORLEVEL% NEQ 0 ECHO UNE ERREUR EST SURVENUE...
+IF %ERRORLEVEL% NEQ 0 PAUSE
+IF %ERRORLEVEL% NEQ 0 EXIT
+rem Compile Setup file
+ECHO Inno Setup Compile-QAP-v10.iss
+"C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Compile-QAP-v10.iss"
+IF %ERRORLEVEL% NEQ 0 ECHO UNE ERREUR EST SURVENUE...
+IF %ERRORLEVEL% NEQ 0 PAUSE
+IF %ERRORLEVEL% NEQ 0 EXIT
+rem Paude a few seconds
+ping 127.0.0.1 -n 3 > nul
+ECHO Sign Setup file
+CALL "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Sign-certificat.bat" "C:\Temp\QAP_Compile\quickaccesspopup-setup%QAPBETAPROD%.exe"
+IF %ERRORLEVEL% NEQ 0 ECHO UNE ERREUR EST SURVENUE...
+IF %ERRORLEVEL% NEQ 0 PAUSE
+IF %ERRORLEVEL% NEQ 0 EXIT
+ECHO Copy 32 %QAPBETAPROD%
+COPY "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-32-bit.exe"
+ECHO Copy 64 %QAPBETAPROD%
+COPY "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-64-bit.exe"
 ECHO Copy quickaccesspopup-setup%QAPBETAPROD%.exe
-COPY "C:\temp\InnoSetup-OutputDir\quickaccesspopup-setup%QAPBETAPROD%.exe"
+COPY "C:\Temp\QAP_Compile\quickaccesspopup-setup%QAPBETAPROD%.exe"
 ECHO Copy quickaccesspopup-setup-%QAPVERSIONFILE%.exe (for Chocolatey and archives)
 COPY "quickaccesspopup-setup%QAPBETAPROD%.exe" "quickaccesspopup-setup-%QAPVERSIONFILE%.exe"
 rem Update version file
 IF NOT EXIST "QAP-v%QAPVERSIONFILE%.txt" REN "QAP-v%QAPVERSIONPREV%.txt" "QAP-v%QAPVERSIONFILE%.txt"
 ECHO Remove previous version and executable files from zip file
-7z d -bso0 "%QAPZIPFILE%.zip" QAP-v*.txt QuickAccessPopup-??-bit.exe
+"C:\Program Files\7-Zip\7z.exe" d -bso0 "%QAPZIPFILE%.zip" QAP-v*.txt QuickAccessPopup-??-bit.exe
 ECHO Add new version and executable files to zip file
-7z a -bso0 "%QAPZIPFILE%.zip" QAP-v%QAPVERSIONFILE%.txt QuickAccessPopup-??-bit.exe
+"C:\Program Files\7-Zip\7z.exe" a -bso0 "%QAPZIPFILE%.zip" QAP-v%QAPVERSIONFILE%.txt QuickAccessPopup-??-bit.exe
 ECHO Check if ZIP file is good
 IF EXIST "*.tmp*" ECHO Erreur dans le fichier ZIP...
 IF EXIST "*.tmp*" GOTO:finish
 ECHO Copy %QAPZIPFILE%.zip %QAPZIPFILE%-%QAPVERSIONFILE%.zip (for archives)
 COPY "%QAPZIPFILE%.zip" "quickaccesspopup-%QAPVERSIONFILE%.zip"
 IF [%QAPBETAPROD%] == [] CALL "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Backup-sources.bat"
-IF [%QAPBETAPROD%] == [] GOTO:messages
+IF [%QAPBETAPROD%] == [] GOTO:messagesbeta
 ECHO Copy %QAPZIPFILE%.zip to %QAPZIPFILEVERSION%.zip
 COPY %QAPZIPFILE%.zip %QAPZIPFILEVERSION%.zip
 ECHO Delete previous ZIP file quickaccesspopup-%QAPVERSIONPREV%.zip
 IF EXIST quickaccesspopup-%QAPVERSIONPREV%.zip DEL quickaccesspopup-%QAPVERSIONPREV%.zip
-:messages
+:messagesbeta
 ECHO TERMINE DE v%QAPVERSIONPREV% A v%QAPVERSIONFILE% AVEC SUCCES
 IF [%QAPBETAPROD%] == [] GOTO:messagesprod
 ECHO COPIER quickaccesspopup-setup-%QAPVERSIONFILE%.exe dans FTP ftp://www.quickaccesspopup/download
