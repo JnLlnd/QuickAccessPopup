@@ -44,7 +44,7 @@ AppCopyright={#MyAppCopyright}{#MyDateYearString}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile=C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\license.txt
-OutputDir=C:\temp\InnoSetup-OutputDir\
+OutputDir=C:\Temp\QAP_Compile\
 OutputBaseFilename={#MyAppNameLower}-setup{#MyBetaProd}
 SetupIconFile=C:\Dropbox\AutoHotkey\{#MyAppNameNoSpace}\Distribution-files\{#MyAppNameNoSpace}{#MyBetaProd}.ico
 Compression=lzma
@@ -60,7 +60,9 @@ AlwaysShowDirOnReadyPage=yes
 ; display Group page only at first install but show group on ready page
 DisableProgramGroupPage=auto
 AlwaysShowGroupOnReadyPage=yes
-SignTool=JeanLalondeCustom sign /t http://timestamp.digicert.com /a $f
+; PLUS UTILISÉ SignTool=JeanLalondeCustom sign /t http://timestamp.digicert.com /a $f
+; NE FONCTIONNE PAS SignTool=JeanLalondeCustom sign /t http://timestamp.digicert.com /f "C:\Temp\InnoSetup-OutputDir\Certificat-Sectigo.p12" /p Iabdd2019! $f
+; Signatures faites avant et après Inno Setup
 VersionInfoVersion={#MyAppVersionNumber}
 VersionInfoCopyright={#MyAppCopyright}{#MyDateYearString}
 VersionInfoCompany={#MyAppPublisher}
