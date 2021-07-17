@@ -10615,11 +10615,15 @@ return
 
 ;------------------------------------------------------------
 GuiOptionsGroupButtonClicked:
+GuiOptionsGroupLinkClicked:
 ;------------------------------------------------------------
 
 if StrLen(A_GuiControl) or StrLen(strGotoGroup)
 {
-	strSettingsGroupPrev := (StrLen(strGotoGroup) ? "" : g_strSettingsGroup)
+	if (A_ThisLabel = "GuiOptionsGroupLinkClicked")
+		strSettingsGroupPrev := g_strSettingsGroup
+	else
+		strSettingsGroupPrev := (StrLen(strGotoGroup) ? "" : g_strSettingsGroup)
 	g_strSettingsGroup := (StrLen(strGotoGroup) ? strGotoGroup : StrReplace(A_GuiControl, "f_btnOptionsGroup"))
 }
 
@@ -10921,7 +10925,7 @@ Gui, 2:Submit, NoHide
 
 ; GuiControl, Choose, f_intOptionsTab, 6
 strGotoGroup := "PopupMenu"
-Gosub, GuiOptionsGroupButtonClicked
+Gosub, GuiOptionsGroupLinkClicked
 
 return
 ;------------------------------------------------------------
