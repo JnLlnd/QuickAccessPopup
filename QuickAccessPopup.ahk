@@ -31,10 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.3.0.9.5 (2021-07-16)
+Version BETA: 11.3.0.9.5 (2021-07-18)
+ 
+Special Folders
+- add new Special Folders "Send To" and "System32"
+- fix bug when opening in file dialog boxes with some Special folders changed in v11.3.0.9.3
 - fix bug getting Special Folders paths from new codes introduced in v11.3.0.9.3 when Directory Opus is the selected file manager
-- fix bug when changing folder in a CMD, PowerShell, ConEmu or Terminal window, stop opening the folder in current window (or tab) if the "File manager preferences" in "Options, File Managers" is set to "the current Windows Explorer window" (or "the current tab" for Total Commander or Directory Opus users)
+ 
+Other
 - fix a display bug in "Options" when opening the "Popup Menu" tab using the link "excluded applications" under the "Popup Hotkeys" tab
+- fix bug when changing folder in a CMD, PowerShell, ConEmu or Terminal window when file manager preferences is set to open in "the current Windows Explorer window" (or "the current tab" for Total Commander or Directory Opus users)
 
 Version BETA: 11.3.0.9.4 (2021-06-27)
  
