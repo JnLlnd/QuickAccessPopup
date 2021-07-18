@@ -6749,7 +6749,7 @@ Gui, StartupTips:Font, s8 w400, Verdana
 
 Gui, StartupTips:Add, Link, x65 y+10 w448 gStartupTipsLinkClicked, % g_aaTip2Show.strDetails
 Gui, Font, s12, Arial
-Gui, StartupTips:Add, Button, y+20 x15 gStartupTipsButtonClicked vf_btnStartupTipsButtonPrev, % chr(0x25C4) ; o_L["DialogIconsManagePrevious"]
+Gui, StartupTips:Add, Button, y+20 x15 gStartupTipsButtonClicked vf_btnStartupTipsButtonPrev, % chr(0x25C4)
 Gui, Font
 Gui, StartupTips:Add, Button, % "yp+5 x1 gStartupTipsButtonClicked vf_btnStartupTipsButtonClose "
 	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "" : "default"), % o_L["GuiClose"]
@@ -6757,7 +6757,7 @@ Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTip
 Gui, StartupTips:Add, Button, yp x+10 gStartupTipsButtonClicked vf_btnStartupTipsButtonOptions, % o_L["GuiOptions"]
 Gui, Font, s12, Arial
 Gui, StartupTips:Add, Button, % "yp-5 x480 gStartupTipsButtonClicked vf_btnStartupTipsButtonNext "
-	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "default" : ""), % chr(0x25BA) ; "->" ; o_L["DialogIconsManageNext"]
+	. (o_StartupTips.OtherTipAvailable(g_aaTip2Show.intPriorityGroup, o_Settings.Launch.arrStartupTips.IniValue[4]) ? "default" : ""), % chr(0x25BA)
 Gui, Font
 GuiCenterButtons(g_strGuiStartupTipsHwnd, , , , "f_btnStartupTipsButtonClose", "f_btnStartupTipsButtonLater", "f_btnStartupTipsButtonOptions")
 Gui, StartupTips:Add, Text
@@ -18097,17 +18097,19 @@ Loop, %g_intIconsManageRows%
 	Gui, 2:Add, Button, % "yp+7 x+" . intMarginWidth // 2 . " h" . intButtonsHeight . " w" . intButtonsWidth . " gIconsManageSetDefault vf_btnSetDefault" . A_Index, % o_L["DialogIconsManageSetDefaultIcon"]
 }
 
-aaL := o_L.InsertAmpersand(false, "DialogIconsManagePrevious", "DialogIconsManageNext", "GuiClose") 
-
-Gui, 2:Add, Button, x10 y+25 vf_btnIconsManagePrev gLoadIconsManageListPrev h20, % aaL["DialogIconsManagePrevious"]
-Gui, 2:Add, Button, x10 yp vf_btnIconsManageNext gLoadIconsManageListNext, % aaL["DialogIconsManageNext"]
-Gui, 2:Add, Button, x10 yp vf_btnIconsManageClose g2GuiClose, % aaL["GuiClose"]
-Gui, 2:Add, Text, x10, %A_Space%
+aaL := o_L.InsertAmpersand(false, "GuiClose") 
+Gui, 2:Font, s12, Arial
+Gui, 2:Add, Button, y+20 x15 vf_btnIconsManagePrev gLoadIconsManageListPrev, % chr(0x25C4)
+Gui, 2:Font
+Gui, 2:Add, Button, yp+5 x1 vf_btnIconsManageClose g2GuiClose, % aaL["GuiClose"]
+Gui, 2:Font, s12, Arial
+Gui, 2:Add, Button, yp-5 x1080 vf_btnIconsManageNext gLoadIconsManageListNext, % chr(0x25BA)
+Gui, 2:Font
+GuiCenterButtons(g_strGui2Hwnd, 50, 12, , "f_btnIconsManageClose")
 
 Gosub, LoadIconsManageList
 
 ; GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVerticalMargin := 0, intDistanceBetweenButtons := 20, arrControls*)
-GuiCenterButtons(g_strGui2Hwnd, 20, 10, 40, "f_btnIconsManagePrev", "f_btnIconsManageNext", "f_btnIconsManageClose")
 Gosub, ShowGui2AndDisableGui1
 
 intTop := ""
@@ -19097,21 +19099,19 @@ SelectIcon(P_strActualIcon)
 		SI_intCurrentRow++
 	}
 
-	SI_aaL := o_L.InsertAmpersand(false, "DialogIconsManagePrevious", "DialogIconsManageNext", "GuiCancel") 
-	Gui, Add, Button, x10 y+25 vf_btnIconsManagePrev gSI_PickIconLoadPrev h20, % SI_aaL["DialogIconsManagePrevious"]
-	Gui, Add, Button, x10 yp vf_btnIconsManageNext gSI_PickIconLoadNext, % SI_aaL["DialogIconsManageNext"]
-	Gui, Add, Button, x10 yp vf_btnIconsManageClose g3GuiEscape, % SI_aaL["GuiCancel"]
-	Gui, Add, Text, x10, %A_Space%
-	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnIconsManagePrev", "f_btnIconsManageNext", "f_btnIconsManageClose")
+	SI_aaL := o_L.InsertAmpersand(false, "DialogOK", "GuiCancel")
+	Gui, Font, s12, Arial
+	Gui, Add, Button, y+20 x15 vf_btnIconsManagePrev gSI_PickIconLoadPrev, % chr(0x25C4)
+	Gui, Font
+	Gui, Add, Button, yp+5 x1 vf_btnChangeIconOK gButtonChangeIconOK, % SI_aaL["DialogOK"]
+	Gui, Add, Button, yp x+10 vf_btnChangeIconCancel gButtonChangeIconCancel, % SI_aaL["GuiCancel"]
+	Gui, Font, s12, Arial
+	Gui, Add, Button, yp-5 x415 vf_btnIconsManageNext gSI_PickIconLoadNext, % chr(0x25BA)
+	Gui, Font
+	GuiCenterButtons(g_strGui3Hwnd, 40, 12, , "f_btnChangeIconOK", "f_btnChangeIconCancel")
 
 	Gosub, SI_GetIconsCount
 	Gosub, SI_PickIconLoad
-
-	SI_aaL := o_L.InsertAmpersand(false, "DialogOK", "GuiCancel")
-	Gui, Add, Button, y+25 x10 vf_btnChangeIconOK gButtonChangeIconOK, % SI_aaL["DialogOK"]
-	Gui, Add, Button, yp x+20 vf_btnChangeIconCancel gButtonChangeIconCancel, % SI_aaL["GuiCancel"]
-	
-	GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnChangeIconOK", "f_btnChangeIconCancel")
 
 	Gui, Add, Progress, % "x1 y1 w" . SI_intDistance - 5 . " h1 BackgroundBlue vf_prgTop"
 	Gui, Add, Progress, % "x1 y1 w1 h" . SI_intDistance - 5 . " BackgroundBlue vf_prgRight"
