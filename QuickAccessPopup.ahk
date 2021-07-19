@@ -7573,18 +7573,23 @@ return
 BuildSortMenusFavoriteSection:
 ;------------------------------------------------------------
 
+aaSortMenusFavoriteL := o_L.InsertAmpersand(false, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "DialogCopy", "GuiMove", "MenuSelectAll")
+
 Menu, %strMenuName%, Add, % "-- " . o_L["MenuFavorite"] . " --", DoNothing
 Menu, %strMenuName%, Disable, % "-- " . o_L["MenuFavorite"] . " --"
-Menu, %strMenuName%, Add, % aaFavoriteL["DialogAdd"] . g_strEllipse, GuiAddFavoriteSelectType
-Menu, %strMenuName%, Add, % aaFavoriteL["DialogEdit"] . g_strEllipse, SettingsCtrlE
+Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["DialogAdd"] . g_strEllipse, GuiAddFavoriteSelectType
+Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["DialogEdit"] . g_strEllipse, SettingsCtrlE
 Menu, %strMenuName%, Add ; separator
-Menu, %strMenuName%, Add, % aaFavoriteL["GuiRemoveFavorite"] . g_strEllipse, SettingsCtrlR
-Menu, %strMenuName%, Add, % aaFavoriteL["DialogCopy"] . g_strEllipse, SettingsCtrlY
-Menu, %strMenuName%, Add, % aaFavoriteL["GuiMove"] . g_strEllipse, SettingsCtrlM
+Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["GuiRemoveFavorite"] . g_strEllipse, SettingsCtrlR
+Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["DialogCopy"] . g_strEllipse, SettingsCtrlY
+Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["GuiMove"] . g_strEllipse, SettingsCtrlM
 Menu, %strMenuName%, Add ; separator
-Menu, %strMenuName%, Add, % aaFavoriteL["MenuSelectAll"] . g_strEllipse, SettingsCtrlA
+Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["MenuSelectAll"] . g_strEllipse, SettingsCtrlA
 Menu, %strMenuName%, Add ; separator
+
 g_intNbItemsInContextMenuFavoritesSection := 10
+
+aaSortMenusFavoriteL := ""
 
 return
 ;------------------------------------------------------------
