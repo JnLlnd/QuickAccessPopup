@@ -19848,6 +19848,11 @@ if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see NavigateFromM
 
 SetCursor(false) 
 
+; ##### add option intMousFocusIssue with values:
+; 0: MouseMove
+; 1: do not MouseMove
+; 2: MouseMove after Menu Show
+
 if InStr(g_strMenuTriggerLabel, "Keyboard")
 	MouseMove, % g_intMenuPosX + 5, % g_intMenuPosY + 5
 
