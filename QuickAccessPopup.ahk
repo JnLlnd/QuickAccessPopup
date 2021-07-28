@@ -4964,13 +4964,14 @@ global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 blnDoNotCheckLicense := true ; true / false ; ####
-g_blnSponsor := true ; value when in dev mode without checking license
 ; / End of code for developement phase only - won't be compiled
 ;@Ahk2Exe-IgnoreEnd
 
-global g_SponsoredMessage ; displayed in BuildBui
-if (blnDoNotCheckLicense) ; for developement
-	or !StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; this is a free edition without license
+global g_SponsoredMessage ; displayed in BuildGui
+global g_blnLicenseFree := FileExist(A_WorkingDir . "\license_free*.*")
+if (blnDoNotCheckLicense ; for developement
+	or g_blnLicenseFree ; for license free
+	or !StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue)) ; for free edition without license
 {
 	o_EDDLicense := Object()
 	o_EDDLicense.oLicense := Object()
@@ -4979,6 +4980,13 @@ if (blnDoNotCheckLicense) ; for developement
 	{
 		o_EDDLicense.oLicense.item_name := "Quick Access Popup (developement)"
 		o_EDDLicense.strUniqueSystemId := "00000000"
+		g_blnSponsor := true ; when in dev mode without checking license
+	}
+	else if (g_blnLicenseFree)
+	{
+		o_EDDLicense.oLicense.item_name := "Quick Access Popup (license free)"
+		o_EDDLicense.strUniqueSystemId := "00000000"
+		g_blnSponsor := true ; license free, not checking license
 	}
 	else
 		g_blnSponsor := false ; free edition
