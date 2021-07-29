@@ -18226,7 +18226,7 @@ else
 	g_intIconsManageRows:= o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue
 
 intMarginWidth := 10
-intIconSize := 32
+; intIconSize := 32 ; now use SI_intIconSize := 32
 intMenuPathWidth := 400
 intFavoriteNameWidth := 300
 intButtonsHeight := 20
@@ -18244,8 +18244,8 @@ Gui, 2:Add, Text, x10 y10 w1000, % L(o_L["DialogIconsManageAbout"], g_strAppName
 Gui, 2:Font, w600
 Gui, 2:Add, Edit, % "readonly center x" . intMarginWidth . " w" . intMenuPathWidth, % o_L["DialogIconsManageParentMenu"]
 Gui, 2:Add, Edit, % "readonly center yp x+" . intMarginWidth . " w" . intFavoriteNameWidth, % o_L["DialogIconsManageFavoriteName"]
-Gui, 2:Add, Edit, % "readonly center yp x+" . intMarginWidth . " w" . intButtonsWidth + intIconSize + (intMarginWidth // 2), % o_L["DialogIconsManageCurrent"]
-Gui, 2:Add, Edit, % "readonly center yp x+" . intMarginWidth . " w" . intButtonsWidth + intIconSize + (intMarginWidth // 2), % o_L["DialogIconsManageDefault"]
+Gui, 2:Add, Edit, % "readonly center yp x+" . intMarginWidth . " w" . intButtonsWidth + SI_intIconSize + (intMarginWidth // 2), % o_L["DialogIconsManageCurrent"]
+Gui, 2:Add, Edit, % "readonly center yp x+" . intMarginWidth . " w" . intButtonsWidth + SI_intIconSize + (intMarginWidth // 2), % o_L["DialogIconsManageDefault"]
 Gui, 2:Font
 
 Loop, %g_intIconsManageRows%
@@ -18254,9 +18254,9 @@ Loop, %g_intIconsManageRows%
 	Gui, 2:Add, Edit, % "readonly -vscroll x" . intMarginWidth . " y" . 15 + (A_Index * intIconsManageRowsHeight) . " w" . intMenuPathWidth . " h" . intIconsManageRowsHeight - 5 . " vf_lblMenuPath" . A_Index
 	Gui, 2:Font
 	Gui, 2:Add, Edit, % "readonly -vscroll yp x+" . intMarginWidth . " w" . intFavoriteNameWidth . " h" . intIconsManageRowsHeight - 5 . " vf_lblFavoriteName" . A_Index
-	Gui, 2:Add, Picture, % "yp x+" . intMarginWidth . " w" . intIconSize . " h" . intIconSize . " gIconsManagePickIconDialog vf_picIconCurrent" . A_Index
+	Gui, 2:Add, Picture, % "yp x+" . intMarginWidth . " w" . SI_intIconSize . " h" . SI_intIconSize . " gIconsManagePickIconDialog vf_picIconCurrent" . A_Index
 	Gui, 2:Add, Button, % "yp+7 x+" . intMarginWidth // 2 . " h" . intButtonsHeight . " w" . intButtonsWidth . " gIconsManagePickIconDialog vf_btnPickDialog" . A_Index, % o_L["DialogSelectIcon"]
-	Gui, 2:Add, Picture, % "yp-7 x+" . intMarginWidth . " w" . intIconSize . " h" . intIconSize . " gIconsManageSetDefault vf_picIconDefault" . A_Index
+	Gui, 2:Add, Picture, % "yp-7 x+" . intMarginWidth . " w" . SI_intIconSize . " h" . SI_intIconSize . " gIconsManageSetDefault vf_picIconDefault" . A_Index
 	Gui, 2:Add, Button, % "yp+7 x+" . intMarginWidth // 2 . " h" . intButtonsHeight . " w" . intButtonsWidth . " gIconsManageSetDefault vf_btnSetDefault" . A_Index, % o_L["DialogIconsManageSetDefaultIcon"]
 }
 
@@ -18281,7 +18281,6 @@ intWidth := ""
 intMonitorHeight := ""
 intIconsManageRowsHeight := ""
 intMarginWidth := ""
-intIconSize := ""
 intCurrentWidth := ""
 intDefaultWidth := ""
 intMenuPathWidth := ""
@@ -18328,8 +18327,10 @@ Loop, %g_intIconsManageRows%
 		aaItem.strFavoriteIconResource := g_saManageIcons[intThisItemInMenu].GetDefaultIcon4Type(aaItem.strFavoriteLocation)
 	ParseIconResource(aaItem.strFavoriteIconResource, strInconFile, intIconIndex, "iconFolder") ; only folder favorite may need the default icon
 	GuiControl, , f_picIconCurrent%A_Index%, % "*icon" . intIconIndex . " " . strInconFile
+	GuiControl, Move, f_picIconCurrent%A_Index%, % "w" . SI_intIconSize . " h" . SI_intIconSize
 	ParseIconResource(g_saManageIcons[intThisItemInMenu].GetDefaultIcon4Type(aaItem.strFavoriteLocation), strInconFile, intIconIndex)
 	GuiControl, , f_picIconDefault%A_Index%, % "*icon" . intIconIndex . " " . strInconFile
+	GuiControl, Move, f_picIconDefault%A_Index%, % "w" . SI_intIconSize . " h" . SI_intIconSize
 	strShowHide := (A_Index = 1 or (aaItem.oParentMenu.AA.strMenuPath <> strPreviousMenuPath
 		and intThisItemInMenu <= g_saManageIcons.MaxIndex()) ? "Show" : "Hide")
 	GuiControl, %strShowHide%, f_lblMenuPath%A_Index%
@@ -18383,6 +18384,7 @@ strIconResource := (StrLen(strTempNewIconResource) ? strTempNewIconResource : st
 
 ParseIconResource(strIconResource, strInconFile, intIconIndex)
 GuiControl, 2:, f_picIconCurrent%intIconRow%, % "*icon" . intIconIndex . " " . strInconFile
+GuiControl, 2:Move, f_picIconCurrent%intIconRow%, % "w" . SI_intIconSize . " h" . SI_intIconSize
 
 if (g_saManageIcons[intManageIconsIndex].AA.strFavoriteIconResource <> strIconResource)
 {
@@ -19579,6 +19581,7 @@ Loop, %SI_intPickIconRows%
 		SI_intThisIconPos := ((SI_intCurrentRow - 1) * SI_intPickIconCols) + SI_intCurrentCol
 		SI_intThisIconIndex := SI_intThisIconPos + SI_intIconsManageStartingIcon - 1
 		GuiControl, 3:, f_picIcon%SI_intThisIconPos%, % (SI_intThisIconIndex <= SI_intIconsCount ? "*icon" . SI_intThisIconIndex . " " . SI_strCurrentIconFile : "") ; assign new icon or remove previous icon
+		GuiControl, 3:Move, f_picIcon%SI_intThisIconPos%, % "w" . SI_intIconSize . " h" . SI_intIconSize
 		GuiControl, % "3:" . (SI_intThisIconIndex <= SI_intIconsCount ? "+gSI_PickIconClicked" : "-g") , f_picIcon%SI_intThisIconPos% ; set or remove gosub
 		
 		SI_intCurrentCol++
