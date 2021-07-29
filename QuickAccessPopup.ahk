@@ -20585,15 +20585,11 @@ if (g_blnShowChangeFolderInDialogAlert and InStr("Folder|Special", o_ThisFavorit
 		IniWrite, 1, % o_Settings.strIniFile, Global, ChangeFolderInDialogAlertRead
 }
 
-gosub, ProcessAlternativeMenuModifier
-
-; collect last actions
-if !(g_blnAlternativeMenu) ; do not collect Alternative menu features
-	and !InStr(A_ThisMenu, "menuBar") ; do not collect actions from menu bar
-	gosub, CollectLastActions ; update g_aaLastActions
+; process Alternative menu keyboard modifiers
+gosub, ProcessAlternativeMenuModifier ; can change g_strHotkeyTypeDetected and g_blnAlternativeMenu
 
 ; always navigate
-if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and (g_strAlternativeMenu <> o_L["MenuAlternativeNewWindow"])
+if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and !(g_blnAlternativeMenu)
 	and InStr("|Folder|Special|FTP", "|" . o_ThisFavorite.AA.strFavoriteType)
 	and !WindowIsDialog(g_strTargetClass, g_strTargetWinId)
 	and !WindowIsConsole(g_strTargetClass))
@@ -20602,6 +20598,11 @@ if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and (g_strAlternativeMenu
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, true) ; get and activate last used file manager
 	g_strHotkeyTypeDetected := "Navigate"
 }
+
+; collect last actions
+if !(g_blnAlternativeMenu) ; do not collect Alternative menu features
+	and !InStr(A_ThisMenu, "menuBar") ; do not collect actions from menu bar
+	gosub, CollectLastActions ; update g_aaLastActions
 
 ; preparation for Alternative menu features before setting the full location
 if (g_blnAlternativeMenu) and (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
@@ -31622,6 +31623,9 @@ class Container
 			; CHECK IF FILE/FOLDER MUST EXIST
 			else if this.FileExistIfMust()
 			{
+				if (this.aaTemp.blnDoNotOpen) ; when editing a not found favorite
+					return
+				
 				; WINDOW POSITION PREPARATION
 				; DOpus or TC: L Left / R Right / Explorer or TC: Monitor 1 / Monitor 2...; for example: "1,0,100,50,640,480,200" or "0,,,,,,,L"
 				if StrLen(this.aaTemp.strTargetAppName) and InStr("Explorer|TotalCommander", this.aaTemp.strTargetAppName) ; if we need to position the new Explorer or Total Commander window on the active monitor
@@ -32726,6 +32730,7 @@ class Container
 				g_blnAlternativeMenu := true
 				g_strAlternativeMenu := o_L["MenuAlternativeEditFavorite"]
 				this.OpenFavorite(strMenuTriggerLabel, strOpenFavoriteLabel, strTargetWinId, "Alternative")
+				this.aaTemp.blnDoNotOpen := true ; to avoid opening this favorite with not found location
 				return true
 			}
 			else
