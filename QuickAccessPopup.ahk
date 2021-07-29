@@ -15038,20 +15038,24 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 	or !IsObject(o_MenuInGui.AA) ; or in some situation at startup where o_MenuInGui is not defined
 {
 	if (o_Containers.AA[A_ThisMenu].AA.blnIsLiveMenu)
+		
 		strThisMenu := o_Containers.AA[A_ThisMenu].AA.oParentMenu.AA.strMenuPath
-	else if (A_ThisMenu = "Tray" or A_ThisMenu = "" or !o_Containers.AA.HasKey(A_ThisMenu)
-		or o_Containers.AA[A_ThisMenu].AA.strMenuType = "MenuBar" ; A_ThisMenu is empty or menu not in containers or menu is menu bar
-		or A_ThisMenu = o_L["MenuLastActions"] ; A_ThisMenu is empty or menu not in containers or menu is menu bar
-		or A_ThisLabel = "GuiShowFromAddThisFolderMsg") ; force add to main menu when called from QAPmessenger
-		or o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey("{" . A_ThisMenu . "}") ; last A_ThisMenu was a dynamic menu
-		strThisMenu := o_L["MainMenuName"] ; not "Main" for non-English
-	else
+		
+	else if (A_ThisLabel = "GuiShowFromGuiAddFavoriteQAPFeature") ; open gui in the menu where the add command was called ONLY if A_ThisMenu...
+		and StrLen(A_ThisMenu) ; by safety, check that menu is defined
+		and o_Containers.AA.HasKey(A_ThisMenu) ; by safety, check if menu object exists
+		and (A_ThisMenu <> o_L["MenuLastActions"]) ; is not called from the last actions menu
+		
 		strThisMenu := A_ThisMenu
+		
+	else
+		
+		strThisMenu := o_L["MainMenuName"] ; not "Main" for non-English
 	
 	if SearchIsVisible() ; reset favorites list
 		gosub, GuiFavoritesListFilterHide
 		
-	o_MenuInGui := o_Containers.AA[strThisMenu] ; A_ThisMenu is "Main" or "Main > Submenu"...
+	o_MenuInGui := o_Containers.AA[strThisMenu] ; strThisMenu is "Main" or "Main > Submenu"...
 }
 
 if (A_ThisLabel = "GuiShowRestoreDefaultPosition" or ScreenConfigurationChanged())
@@ -15093,6 +15097,8 @@ if (blnExist) ; keep the gui as-is if it is not closed
 	return
 }
 ; else continue
+
+Gosub, UpdatePreviousAndUpPictures
 
 GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
 if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
