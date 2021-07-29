@@ -17575,7 +17575,7 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 
 if InStr(A_ThisLabel, "One")
 {
-	if (g_intSelectedRow = (InStr(A_ThisLabel, "Up") ? 1 : LV_GetCount())) ; if first or last item
+	if IsFirstOrLastRow(g_intSelectedRow, A_ThisLabel)
 	{
 		g_blnAbortMultipleMove := true
 		return
@@ -17590,12 +17590,15 @@ else
 	GuiControl, Focus, f_lvFavoritesList
 	Gui, 1:ListView, f_lvFavoritesList
 	
+	if IsFirstOrLastRow(LV_GetNext(), A_ThisLabel)
+		return
+
 	intRepeatsSingle := 0
 	loop
 	{
 		g_intSelectedRow := LV_GetNext()
-		if (g_intSelectedRow = (InStr(A_ThisLabel, "Up") ? 1 : LV_GetCount())) ; if first or last item
-			return
+		if IsFirstOrLastRow(g_intSelectedRow, A_ThisLabel)
+			break
 		
 		if (g_intSelectedRow = 0)
 		{
@@ -17627,6 +17630,16 @@ intRepeatsSingle := ""
 
 return
 
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+IsFirstOrLastRow(intRow, strLabel)
+; returs true if intRow is the first or last rwo of the active ListView
+;------------------------------------------------------------
+{
+	return intRow = (InStr(strLabel, "Up") ? 1 : LV_GetCount())
+}
 ;------------------------------------------------------------
 
 
