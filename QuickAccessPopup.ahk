@@ -33013,7 +33013,7 @@ class Container
 			strGetLastUsedDate := "SELECT CollectDateTime FROM Usage WHERE TargetPath='" . EscapeQuote(this.AA.strFavoriteLocation) . "' COLLATE NOCASE ORDER BY CollectDateTime DESC"
 			if !o_UsageDb.Query(strGetLastUsedDate, o_RecordSet)
 			{
-				Oops(0, "Database error (#2): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
+				Oops(0, "Database error (#2): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetLastUsedDate)
 				g_blnUsageDbEnabled := false
 				return
 			}
