@@ -5980,6 +5980,7 @@ if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
 o_Settings.ReadIniOption("MenuPopup", "blnOpenMenuOnTaskbar", "OpenMenuOnTaskbar", 1, "MenuAdvanced", "f_blnOpenMenuOnTaskbar") ; g_blnOpenMenuOnTaskbar
 o_Settings.ReadIniOption("MenuAdvanced", "intClipboardMaxSize", "ClipboardMaxSize", 10000, "MenuAdvanced", "f_lblClipboardMaxSize|f_lblClipboardMaxSizeDefault|f_intClipboardMaxSize") ; default 10000 chars ; g_intClipboardMaxSize
 o_Settings.ReadIniOption("MenuAdvanced", "blnShowAdvancedSettingsMenusItems", "ShowAdvancedSettingsMenusItems", 0, "MenuAdvanced", "f_blnShowAdvancedSettingsMenusItems")
+o_Settings.ReadIniOption("MenuAdvanced", "intMovePointerAfterHotkeyKeyboard", "MovePointerAfterHotkeyKeyboard", 1, "MenuAdvanced", "80") ; move pointer if value > 0, also duration in ms of pause before showing the menu
 
 ; Group AdvancedLaunch
 o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
@@ -20019,10 +20020,14 @@ if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see NavigateFromM
 
 SetCursor(false) 
 
-if InStr(g_strMenuTriggerLabel, "Keyboard")
-	MouseMove, % g_intMenuPosX + 5, % g_intMenuPosY + 5
-
 ; o_FileManagers.CopyClassStructure() ; #### used in dev to copy class structure to clipboard
+
+if InStr(g_strMenuTriggerLabel, "Keyboard") and (o_Settings.MenuAdvanced.intMovePointerAfterHotkeyKeyboard.IniValue)
+{
+	MouseMove, % g_intMenuPosX + 5, % g_intMenuPosY + 5
+	sleep, % o_Settings.MenuAdvanced.intMovePointerAfterHotkeyKeyboard.IniValue ; duration in ms of pause before showing the menu
+}
+
 Menu, %g_strShowMenu%, Show, %g_intMenuPosX%, %g_intMenuPosY% ; at mouse pointer if option 1, 20x20 offset of active window if option 2 and fix location if option 3
 
 g_strShowMenu := ""
