@@ -31,6 +31,25 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.6 (2021-07-29)
+ 
+"Customize" window bug fixes and improvements
+- fix bug not updating correctly the menu navigation buttons up/back/forward when the "Customize" window is open from "Customize" menu item not located in the Main menu
+- in the favorites list, fix bug not enabling the "Save" button if moving a favorite by continuously pressing the up/down button until the top/bottom of the list is reached
+- remove numeric shortcuts from parts of the favorites list context menu
+- rename the favorites list context menu label "Sort this menu" to "Sort this menu (or group)"
+ 
+Other bugs and improvements
+- fix bug when the option under "File managers" labeled "when opening QAP menu outside Explorer: open folders in the current window" is enabled that was breaking some Alternative menu features
+- in the "Select icon" dialog box, replace the next/previous text button with arrow buttons and remove duplicate "Cancel" buttons
+- in the "Manage icons" dialog box, replace the next/previous text button with arrow buttons
+- fix error in a SQLite database dialog box message
+- when editing a favorite from the dialog box shown when a favorite's location is not found, stop showing an error message about not being able to open the favorite
+ 
+Various issues
+- "icons larger than expected" issue in the "Select icons" and "Manage icons" dialog boxes: try to solve an intermittent bug displaying icons larger than the expected size by resizing the icons when changing page
+- "menu keyboard focus issue": about the fix in v11.3.0.1, add a new option in the settings file (quickaccesspopup.ini) that determines if the mouse move is done or not; for now, this option has to be inserted in the ini file under the [General] section, as "MovePointerAfterHotkeyKeyboard=1" to do the mouse move (else, the situation is as in v11.3 and before; also, a pause of the value of MovePointerAfterHotkeyKeyboard in milliseconds is inserted after the mouse move (this is to try to mitigate the " "201 hotkeys have bin received in the last 0ms" error message that seems to be a side effect of the mouse move)
+
 Version BETA: 11.3.0.9.5 (2021-07-18)
  
 Special Folders
@@ -4657,7 +4676,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.5
+;@Ahk2Exe-SetVersion 11.3.0.9.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4725,7 +4744,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
