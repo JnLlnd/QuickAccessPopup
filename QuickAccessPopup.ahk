@@ -48,7 +48,7 @@ Other bugs and improvements
  
 Various issues
 - "icons larger than expected" issue in the "Select icons" and "Manage icons" dialog boxes: try to solve an intermittent bug displaying icons larger than the expected size by resizing the icons when changing page
-- "menu keyboard focus issue": about the fix in v11.3.0.1, add a new option in the settings file (quickaccesspopup.ini) that determines if the mouse move is done or not; for now, this option has to be inserted in the ini file under the [General] section, as "MovePointerAfterHotkeyKeyboard=1" to do the mouse move (else, the situation is as in v11.3 and before; also, a pause of the value of MovePointerAfterHotkeyKeyboard in milliseconds is inserted after the mouse move (this is to try to mitigate the " "201 hotkeys have bin received in the last 0ms" error message that seems to be a side effect of the mouse move)
+- "menu keyboard focus issue": about the fix in v11.3.0.1, add a new option in the settings file (quickaccesspopup.ini) that determines if the mouse move is done or not; for now, this option has to be inserted in the ini file under the [General] section, as "MovePointerAfterHotkeyKeyboard=1" to do the mouse move (else, the situation is as in v11.3 and before; also, a pause of the value of MovePointerAfterHotkeyKeyboard in milliseconds is inserted after the mouse move (this is to try to mitigate the " "201 hotkeys have been received in the last 0ms" error message that seems to be a side effect of the mouse move)
 
 Version BETA: 11.3.0.9.5 (2021-07-18)
  
@@ -4869,6 +4869,11 @@ global g_strIconsFiles := A_WorkingDir . "\icons"
 
 global g_strLastConfiguration ; last screen configuration updated by GetScreenConfiguration
 
+global g_saSearchAndReplaceValueKeys ; favorite item properties searched and replaced
+global g_strSearcAndReplaceConfirmTitle ; title of the Search and replace confirmation window, used for pausing search in Container class
+global g_oSearchAndReplaceCandidate ; item where properties can be replaced in a Search and replace command
+global g_strSearcAndReplaceConfirmResponse ; response from Search and replace confirmation window
+
 global g_saDialogListApplicationsDropdown := StrSplit(o_L["DialogListApplicationsDropdown"], "|") ; "List All||Current Windows menu|Running Applications|Close All Windows menu"
 g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) List All 2) Current Windows menu 3) Running Applications 4) Close All Windows menu"
 
@@ -7758,13 +7763,15 @@ saMenuItemsTable.Push(["SpecialSearchBrokenLinks", aaL["DialogSearchBrokenLinks"
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial"
+aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiSearchAndReplaceTitle"
 	, "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
 	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
 saMenuItemsTable.Push([":menuBarSpecialSearch", aaMenuToolsL["DialogSearchSpecial"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["GuiSearchAndReplace", aaMenuToolsL["GuiSearchAndReplaceTitle"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysManage", aaMenuToolsL["DialogHotkeysManage"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiHotkeysManageHotstrings", aaMenuToolsL["DialogHotstringsManage"], "", "iconNoIcon"])
@@ -15055,9 +15062,10 @@ GuiShowFromAlternative:
 GuiShowRestoreDefaultPosition:
 GuiShowFromGuiSettings:
 GuiShowFromGuiAddFavoriteQAPFeature:
+GuiShowFromGuiOutside:
+GuiShowFromSearchAndReplace:
 ; next labels are not required, they could be GuiShow (but keep them in case of future debugging needs)
 GuiShowFromTray:
-GuiShowFromGuiOutside:
 GuiShowFromAddThisFolder:
 GuiShowFromAddThisFolderMsg:
 GuiShowFromHotkeysManage:
@@ -15067,7 +15075,7 @@ GuiShowFromAddSnippetAndHotstring:
 GuiShowNeverCalled:
 ;------------------------------------------------------------
 
-if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|", A_ThisLabel . "|") ; menu object already set in these cases
+if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|GuiShowFromSearchAndReplace|", A_ThisLabel . "|") ; menu object already set in these cases
 	or !IsObject(o_MenuInGui.AA) ; or in some situation at startup where o_MenuInGui is not defined
 {
 	if (o_Containers.AA[A_ThisMenu].AA.blnIsLiveMenu)
@@ -23555,6 +23563,201 @@ return
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+GuiSearchAndReplace:
+;------------------------------------------------------------
+
+if !(g_blnMenuReady)
+	return
+
+Gosub, GuiShowFromSearchAndReplace
+if SearchIsVisible()
+	Gosub, GuiGotoMenuPrev
+
+Gui, 1:Submit, NoHide
+
+strGuiTitle := L(o_L["GuiSearchAndReplaceTitle"] . " - ~1~ ~2~", g_strAppNameText, g_strAppVersion)
+Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:+Owner1
+if (g_blnUseColors)
+	Gui, 2:Color, %g_strGuiWindowColor%
+
+Gui, 2:Add, Text, x10 y10, % o_L["GuiSearchAndReplaceTopMenu"]
+Gui, 2:Add, Edit, x10 y+5 vf_strSearchAndReplaceTopMenu h21 w500 ReadOnly, % o_MenuInGui.AA.strMenuPath
+
+Gui, 2:Add, Text, x10 y+10, % o_L["GuiSearchAndReplaceReplaceSearchFor"] . ":"
+Gui, 2:Add, Edit, x10 y+5 vf_strSearchAndReplaceSearch h21 w500
+
+Gui, 2:Add, Text, x10 y+10, % o_L["GuiSearchAndReplaceReplaceWith"] . ":"
+Gui, 2:Add, Edit, x10 y+5 vf_strSearchAndReplaceReplace h21 w500
+
+Gui, 2:Add, Text, x10 y+10 Section, % o_L["GuiSearchAndReplaceReplaceTypes"]
+; checkboxes for favorite types: Folder, Document, Application, URL, FTP, Snippet, WindowsApp
+Loop, Parse, % "Folder|Document|Application|URL|FTP|Snippet", |
+	Gui, 2:Add, Checkbox, % (A_Index = 1 or A_Index = 4 ? "ys+20" : "y+5") . " " (A_Index < 4 ? "x10 Checked" : "x260")
+		. " vf_strSearchAndReplaceType" . A_LoopField, % o_Favorites.GetFavoriteTypeObject(A_LoopField).strFavoriteTypeLabel
+
+Gui, 2:Add, Text, x10 y+10 Section, % o_L["GuiSearchAndReplaceReplaceValues"] . ":"
+; checkboxes for fields: strFavoriteName, strFavoriteLocation, strFavoriteIconResource, strFavoriteArguments, strFavoriteAppWorkingDir, FavoriteLaunchWith (except for types Application and Snippet) and strFavoriteSoundLocation
+; g_saSortCriteria := StrSplit(o_L["GuiLvFavoritesHeader"], "|") ; Name|Type|Hotkey|Location or content
+
+; properties than can be searched and replaced
+g_saSearchAndReplaceValueKeys := Object() ; items to be prefixed with "AA.strFavorite..."
+g_saSearchAndReplaceValueKeys[1] := "Name"
+g_saSearchAndReplaceValueKeys[2] := "Location"
+g_saSearchAndReplaceValueKeys[3] := "IconResource"
+g_saSearchAndReplaceValueKeys[4] := "Arguments"
+
+aaSearchAndReplaceValueLabels := Object()
+aaSearchAndReplaceValueLabels["Name"] :=  g_saSortCriteria[1] ; Name
+aaSearchAndReplaceValueLabels["Location"] :=  g_saSortCriteria[4] ; Location
+aaSearchAndReplaceValueLabels["IconResource"] :=  o_L["GuiSearchAndReplaceReplaceIconResource"] ; Icons
+aaSearchAndReplaceValueLabels["Arguments"] :=  o_L["DialogArgumentsLabel"] ; Parameters
+
+for intIndex, strKey in g_saSearchAndReplaceValueKeys
+	Gui, 2:Add, Checkbox, % (A_Index = 1 or A_Index = 3 ? "ys+20" : "y+5") . " " (A_Index < 3 ? "x10" : "x260") . " " (A_Index = 2 ? "Checked" : "")
+		. " vf_strSearchAndReplaceValues" . strKey, % aaSearchAndReplaceValueLabels[strKey]
+
+; future options: RegEx search and replace with RegExReplace(), match whole word only, case sensitive, from beginning only, from end only
+
+aaL := o_L.InsertAmpersand(false, "GuiSearchAndReplaceStart", "GuiCancel") 
+Gui, 2:Add, Button, y+20 vf_btnSearchAndReplaceStart gGuiSearchAndReplaceStart default, % aaL["GuiSearchAndReplaceStart"]
+Gui, 2:Add, Button, yp vf_btnSearchAndReplaceCancel gGuiSearchAndReplaceCancel, % aaL["GuiCancel"]
+Gui, 2:Add, Text, x10, %A_Space%
+
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnSearchAndReplaceStart", "f_btnSearchAndReplaceCancel")
+GuiControl, Focus, f_strSearchAndReplaceSearch
+Gosub, ShowGui2AndDisableGui1
+
+strGuiTitle := ""
+intIndex := ""
+strKey := ""
+aaL := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSearchAndReplaceStart:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strSearchAndReplaceSearch := f_strSearchAndReplaceSearch
+strSearchAndReplaceReplace := f_strSearchAndReplaceReplace
+
+strSearchAndReplaceTypes := ""
+Loop, Parse, % "Folder|Document|Application|URL|FTP|Snippet", |
+{
+	GuiControlGet, blnThisType, , % "f_strSearchAndReplaceType" . A_LoopField
+	if (blnThisType)
+		strSearchAndReplaceTypes .= A_LoopField . "|"
+}
+strSearchAndReplaceTypes := SubStr(strSearchAndReplaceTypes, 1, -1)
+
+strSearchAndReplaceKeysSearched := ""
+for intIndex, strKey in g_saSearchAndReplaceValueKeys
+{
+	GuiControlGet, blnThisValue, , % "f_strSearchAndReplaceValues" . strKey
+	if (blnThisValue)
+		strSearchAndReplaceKeysSearched .= strKey . "|"
+}
+strSearchAndReplaceKeysSearched := SubStr(strSearchAndReplaceKeysSearched, 1, -1)
+
+if o_MenuInGui.SearchAndReplace(strSearchAndReplaceSearch, strSearchAndReplaceReplace, strSearchAndReplaceTypes, strSearchAndReplaceKeysSearched)
+	Gosub, EnableSaveAndCancel
+
+strSearchAndReplaceSearch := ""
+strSearchAndReplaceReplace := ""
+strSearchAndReplaceTypes := ""
+strSearchAndReplaceKeysSearched := ""
+intIndex := ""
+strKey := ""
+blnThisValue := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSearchAndReplaceConfirm:
+;------------------------------------------------------------
+
+Gui, 3:New, +Hwndg_strGui3Hwnd, %g_strSearcAndReplaceConfirmTitle%
+Gui, 3:+Owner2
+if (g_blnUseColors)
+	Gui, 3:Color, %g_strGuiWindowColor%
+
+Gui, 3:Add, Text, x10 y10 w800, % o_L["DialogIconsManageFavoriteName"] . " (" . o_Favorites.GetFavoriteTypeObject(g_oSearchAndReplaceCandidate.AA.strFavoriteType).strFavoriteTypeLabel . ")"
+Gui, 3:Add, Edit, x10 y+5 w800 ReadOnly, % g_oSearchAndReplaceCandidate.AA.strFavoriteName
+Gui, 3:Add, Text, x10 y+5 w800, % o_L["MenuMenuOrGroup"]
+Gui, 3:Add, Edit, x10 y+5 w800 ReadOnly, % g_oSearchAndReplaceCandidate.AA.oParentMenu.AA.strMenuPath
+
+Gui, Font, s10, Arial
+Loop, Parse, strSearchAndReplaceKeysSearched, |
+	if StrLen(g_oSearchAndReplaceCandidate.aaReplaceChanged[A_LoopField])
+	{
+		Gui, 3:Add, ListView, % (A_Index = 1 ? "y+10" : "y+5") . " x10 r2 w800 -Hdr ReadOnly Disabled", Label|Arrow|Content
+		LV_Add(, aaSearchAndReplaceValueLabels[A_LoopField], chr(0x25BA), g_oSearchAndReplaceCandidate.AA["strFavorite" . A_LoopField])
+		LV_Add(, o_L["GuiSearchAndReplaceReplaceWith"], chr(0x25BA), g_oSearchAndReplaceCandidate.aaReplaceValues[A_LoopField])
+		LV_ModifyCol(1, "Right")
+		LV_ModifyCol()
+	}
+Gui, Font
+
+Gui, 3:Add, Button, y+25 x10 vf_btnSearchAndReplaceConfirmFindNext gGuiSearchAndReplaceConfirmFindNext default, % o_L["GuiSearchAndReplaceFindNext"]
+Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmReplaceThis gGuiSearchAndReplaceConfirmReplace, % o_L["GuiSearchAndReplaceReplaceThis"]
+Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmReplaceAll gGuiSearchAndReplaceConfirmReplaceAll, % o_L["GuiSearchAndReplaceReplaceAll"]
+Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmCancel gGuiSearchAndReplaceConfirmStop, % o_L["GuiCancel"]
+Gui, 3:Add, Text
+	
+GuiCenterButtons(g_strGui3Hwnd, , , , "f_btnSearchAndReplaceConfirmFindNext", "f_btnSearchAndReplaceConfirmReplaceThis", "f_btnSearchAndReplaceConfirmReplaceAll", "f_btnSearchAndReplaceConfirmCancel")
+GuiControl, Focus, f_btnSearchAndReplaceConfirmFindNext
+
+CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, intX, intY)
+Gui, 3:Show, AutoSize x%intX% y%intY%
+Gui, 2:+Disabled
+
+intX := ""
+intY := ""
+
+return
+;------------------------------------------------------------
+
+;------------------------------------------------------------
+GuiSearchAndReplaceConfirmFindNext:
+GuiSearchAndReplaceConfirmReplace:
+GuiSearchAndReplaceConfirmReplaceAll:
+GuiSearchAndReplaceConfirmStop:
+;------------------------------------------------------------
+Gui, 3:Submit, NoHide
+
+g_strSearcAndReplaceConfirmResponse := StrReplace(A_ThisLabel, "GuiSearchAndReplaceConfirm")
+
+Gui, 2:-Disabled
+Gui, 3:Destroy
+if (WinExist("A") <> g_strGui2WinID)
+	WinActivate, ahk_id %g_strGui2WinID%
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSearchAndReplaceCancel:
+;------------------------------------------------------------
+
+aaSearchAndReplaceValueLabels := ""
+g_strSearcAndReplaceConfirmResponse := ""
+g_saSearchAndReplaceValueKeys := ""
+g_oSearchAndReplaceCandidate := ""
+
+Gosub, 2GuiClose
+
+return
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS COMMANDS
 ;========================================================================================================================
@@ -31295,6 +31498,60 @@ class Container
 	}
 	;------------------------------------------------------------
 
+	;---------------------------------------------------------
+	SearchAndReplace(strSearch, strReplace, strTypes, strKeysSearched)
+	; strValues: Name|Location|IconResource|Arguments
+	; g_strSearcAndReplaceConfirmResponse: FindNext, Replace, ReplaceAll, Stop
+	; return true if replacement executed
+	;---------------------------------------------------------
+	{
+		for intKey, oItem in this.SA
+		{
+			if oItem.SearchAndReplaceFound(strSearch, strTypes, strKeysSearched)
+			{
+				g_oSearchAndReplaceCandidate := oItem
+				g_oSearchAndReplaceCandidate.aaReplaceValues := Object()
+				g_oSearchAndReplaceCandidate.aaReplaceChanged := Object()
+				for intIndex, strKey in g_saSearchAndReplaceValueKeys
+					if InStr(strKeysSearched, strKey)
+					{
+						g_oSearchAndReplaceCandidate.aaReplaceValues[strKey] := g_oSearchAndReplaceCandidate.SearchAndReplaceExecute(strSearch, strReplace, strKey, blnChanged)
+						g_oSearchAndReplaceCandidate.aaReplaceChanged[strKey] := blnChanged
+						blnChanged := false
+					}
+				
+				if (g_strSearcAndReplaceConfirmResponse <> "ReplaceAll")
+				{
+					g_strSearcAndReplaceConfirmTitle := o_L["GuiSearchAndReplaceTitle"] . " - " o_L["GuiSearchAndReplaceConfirm"]
+					Gosub, GuiSearchAndReplaceConfirm
+					WinWaitActive, %g_strSearcAndReplaceConfirmTitle% ; wait for confirmation window creation
+					WinWaitClose, %g_strSearcAndReplaceConfirmTitle% ; wait for response after confirmation window is closed
+				}
+				
+				if (g_strSearcAndReplaceConfirmResponse = "Stop")
+					return
+				else if (g_strSearcAndReplaceConfirmResponse <> "FindNext") ; Replace, ReplaceAll
+					for intIndex, strKey in g_saSearchAndReplaceValueKeys
+						if (g_oSearchAndReplaceCandidate.aaReplaceChanged[strKey])
+						{
+							g_oSearchAndReplaceCandidate.AA["strFavorite" . strKey]:= g_oSearchAndReplaceCandidate.aaReplaceValues[strKey]
+							blnGlobalChanged := true
+						}
+			}
+			
+			if oItem.IsContainer()
+				oItem.AA.oSubMenu.SearchAndReplace(strSearch, strReplace) ; recursive
+			
+			if (g_strSearcAndReplaceConfirmResponse = "Stop")
+				return
+			
+		}
+		g_oSearchAndReplaceCandidate.aaReplaceValues := "" ; delete temporary values for replacements
+		
+		return blnGlobalChanged
+	}
+	;---------------------------------------------------------
+
 	; === end of methods for class Container ===
 	
 	;=============================================================
@@ -33276,6 +33533,30 @@ class Container
 		}
 		;---------------------------------------------------------
 		
+		;---------------------------------------------------------
+		SearchAndReplaceFound(strSearch, strTypes, strKeysSearched)
+		; strValues: Name|Location|IconResource|Arguments
+		;---------------------------------------------------------
+		{
+			if InStr(strTypes, this.AA.strFavoriteType)
+				loop, Parse, strKeysSearched, |
+					if InStr(this.AA["strFavorite" . A_LoopField], strSearch)
+						return true
+			
+			return false
+		}
+		;---------------------------------------------------------
+		
+		;---------------------------------------------------------
+		SearchAndReplaceExecute(strSearch, strReplace, strValue, ByRef blnChanged)
+		; strValue: one of Name|Location|IconResource|Arguments
+		;---------------------------------------------------------
+		{
+			strResult := RegExReplace(this.AA["strFavorite" . strValue], "i)\Q" . strSearch . "\E", strReplace)
+			blnChanged := (strResult <> this.AA["strFavorite" . strValue]) ; return false if no replacement
+			return strResult
+		}
+		;---------------------------------------------------------
 /*
 		;---------------------------------------------------------
 		Method()
