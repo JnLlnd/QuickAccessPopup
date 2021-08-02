@@ -23664,8 +23664,15 @@ for intIndex, strKey in g_saSearchAndReplaceValueKeys
 }
 strSearchAndReplaceKeysSearched := SubStr(strSearchAndReplaceKeysSearched, 1, -1)
 
+blnGuiSearchAndReplaceNotFound := true
 if o_MenuInGui.SearchAndReplace(strSearchAndReplaceSearch, strSearchAndReplaceReplace, strSearchAndReplaceTypes, strSearchAndReplaceKeysSearched)
+	; returns true if at least one value was changed
+{
+	Gosub, LoadFavoritesInGui
 	Gosub, EnableSaveAndCancel
+}
+else if (blnGuiSearchAndReplaceNotFound)
+	Oops(2, o_L["GuiSearchAndReplaceNotFound"])
 
 strSearchAndReplaceSearch := ""
 strSearchAndReplaceReplace := ""
@@ -23682,6 +23689,8 @@ return
 ;------------------------------------------------------------
 GuiSearchAndReplaceConfirm:
 ;------------------------------------------------------------
+
+blnGuiSearchAndReplaceNotFound := false ; at least one favorite was found
 
 Gui, 3:New, +Hwndg_strGui3Hwnd, %g_strSearcAndReplaceConfirmTitle%
 Gui, 3:+Owner2
@@ -31540,7 +31549,7 @@ class Container
 			}
 			
 			if oItem.IsContainer()
-				oItem.AA.oSubMenu.SearchAndReplace(strSearch, strReplace) ; recursive
+				blnGlobalChanged := blnGlobalChanged or oItem.AA.oSubMenu.SearchAndReplace(strSearch, strReplace, strTypes, strKeysSearched) ; recursive
 			
 			if (g_strSearcAndReplaceConfirmResponse = "Stop")
 				return
