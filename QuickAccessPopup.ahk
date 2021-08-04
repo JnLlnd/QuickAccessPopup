@@ -4676,7 +4676,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.6
+;@Ahk2Exe-SetVersion 11.3.0.9.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4744,7 +4744,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -23665,6 +23665,7 @@ for intIndex, strKey in g_saSearchAndReplaceValueKeys
 strSearchAndReplaceKeysSearched := SubStr(strSearchAndReplaceKeysSearched, 1, -1)
 
 blnGuiSearchAndReplaceNotFound := true
+g_strSearcAndReplaceConfirmResponse := ""
 if o_MenuInGui.SearchAndReplace(strSearchAndReplaceSearch, strSearchAndReplaceReplace, strSearchAndReplaceTypes, strSearchAndReplaceKeysSearched)
 	; returns true if at least one value was changed
 {
@@ -23674,10 +23675,6 @@ if o_MenuInGui.SearchAndReplace(strSearchAndReplaceSearch, strSearchAndReplaceRe
 else if (blnGuiSearchAndReplaceNotFound)
 	Oops(2, o_L["GuiSearchAndReplaceNotFound"])
 
-strSearchAndReplaceSearch := ""
-strSearchAndReplaceReplace := ""
-strSearchAndReplaceTypes := ""
-strSearchAndReplaceKeysSearched := ""
 intIndex := ""
 strKey := ""
 blnThisValue := ""
@@ -23704,7 +23701,7 @@ Gui, 3:Add, Edit, x10 y+5 w800 ReadOnly, % g_oSearchAndReplaceCandidate.AA.oPare
 
 Gui, Font, s10, Arial
 Loop, Parse, strSearchAndReplaceKeysSearched, |
-	if StrLen(g_oSearchAndReplaceCandidate.aaReplaceChanged[A_LoopField])
+	if (g_oSearchAndReplaceCandidate.aaReplaceChanged[A_LoopField])
 	{
 		Gui, 3:Add, ListView, % (A_Index = 1 ? "y+10" : "y+5") . " x10 r2 w800 -Hdr ReadOnly Disabled", Label|Arrow|Content
 		LV_Add(, aaSearchAndReplaceValueLabels[A_LoopField], chr(0x25BA), g_oSearchAndReplaceCandidate.AA["strFavorite" . A_LoopField])
@@ -23717,7 +23714,7 @@ Gui, Font
 Gui, 3:Add, Button, y+25 x10 vf_btnSearchAndReplaceConfirmFindNext gGuiSearchAndReplaceConfirmFindNext default, % o_L["GuiSearchAndReplaceFindNext"]
 Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmReplaceThis gGuiSearchAndReplaceConfirmReplace, % o_L["GuiSearchAndReplaceReplaceThis"]
 Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmReplaceAll gGuiSearchAndReplaceConfirmReplaceAll, % o_L["GuiSearchAndReplaceReplaceAll"]
-Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmCancel gGuiSearchAndReplaceConfirmStop, % o_L["GuiCancel"]
+Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmCancel gGuiSearchAndReplaceConfirmStop, % o_L["GuiSearchAndReplaceStop"]
 Gui, 3:Add, Text
 	
 GuiCenterButtons(g_strGui3Hwnd, , , , "f_btnSearchAndReplaceConfirmFindNext", "f_btnSearchAndReplaceConfirmReplaceThis", "f_btnSearchAndReplaceConfirmReplaceAll", "f_btnSearchAndReplaceConfirmCancel")
@@ -23755,6 +23752,11 @@ return
 ;------------------------------------------------------------
 GuiSearchAndReplaceCancel:
 ;------------------------------------------------------------
+
+strSearchAndReplaceSearch := ""
+strSearchAndReplaceReplace := ""
+strSearchAndReplaceTypes := ""
+strSearchAndReplaceKeysSearched := ""
 
 aaSearchAndReplaceValueLabels := ""
 g_strSearcAndReplaceConfirmResponse := ""
