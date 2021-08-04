@@ -12402,7 +12402,7 @@ if o_MenuInGui.FavoriteIsUnderExternalMenu(o_ExternalMenu) and !o_ExternalMenu.E
 	
 Gui, 1:Submit, NoHide
 Gui, 1:ListView, f_lvFavoritesList
-g_intOriginalMenuPosition := (LV_GetCount() ? (LV_GetNext() ? LV_GetNext() : 0xFFFF) : 1) ; to restore position in listview after save
+g_intOriginalMenuPosition := (LV_GetCount() ? (LV_GetNext() ? LV_GetNext() : 0xFFFF) : 1)
 
 strGuiTitle := L(o_L["DialogAddFavoriteSelectTitle"], g_strAppNameText, g_strAppVersion)
 Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
@@ -23573,6 +23573,7 @@ GuiSearchAndReplace:
 if !(g_blnMenuReady)
 	return
 
+g_intOriginalMenuPosition := (LV_GetCount() ? (LV_GetNext() ? LV_GetNext() : 0xFFFF) : 1) ; to restore position in listview after save
 Gosub, GuiShowFromSearchAndReplace
 if SearchIsVisible()
 	Gosub, GuiGotoMenuPrev
