@@ -15079,6 +15079,7 @@ GuiShowNeverCalled:
 
 if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|GuiShowFromSearchAndReplace|", A_ThisLabel . "|") ; menu object already set in these cases
 	or !IsObject(o_MenuInGui.AA) ; or in some situation at startup where o_MenuInGui is not defined
+	or (o_MenuInGui.AA.strMenuType = "Search") ; or when the menu in GUI is a search result
 {
 	if (o_Containers.AA[A_ThisMenu].AA.blnIsLiveMenu)
 		
@@ -28722,6 +28723,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
 			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
 			, "how-do-i-setup-or-manage-my-qap-license")
+		this.AddQAPFeatureObject("Search and Replace",		o_L["GuiSearchAndReplaceTitle"] . g_strEllipse, "", "GuiSearchAndReplace",				"3-QAPMenuEditing"
+			, o_L["GuiSearchAndReplaceDescription"], 0, "iconSwitch", ""
+			, "can-i-search-and-replace-values-globally-in-my-favorites")
 		
 		; Close computer various command features
 		
@@ -31555,7 +31559,11 @@ class Container
 			}
 			
 			if oItem.IsContainer()
-				blnGlobalChanged := blnGlobalChanged or oItem.AA.oSubMenu.SearchAndReplace(strSearch, strReplace, strTypes, strKeysSearched) ; recursive
+			{
+				; SearchAndReplace method must not be placed as second part of an "or" to be always executed
+				blnSubContainerChanged := oItem.AA.oSubMenu.SearchAndReplace(strSearch, strReplace, strTypes, strKeysSearched) ; recursive
+				blnGlobalChanged := blnSubContainerChanged or blnGlobalChanged
+			}
 			
 			if (g_strSearcAndReplaceConfirmResponse = "Stop")
 				return
