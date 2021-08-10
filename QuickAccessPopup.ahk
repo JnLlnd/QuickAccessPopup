@@ -31,6 +31,27 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.7 (2021-08-10)
+ 
+Search and replace
+- add menu item "Search and replace" under the "Tools" menu
+- "Search and replace" dialog box with:
+  - Text boxes for "Search for" and "Replace with" values
+  - Checkboxes for favorite type(s) to include in search and replace: Folder, Document, Application, Link (URL), FTP Site and Snippet
+  - Checkboxes for favorites property(ies) to search and replace: Location or content, Name, Icon resource or Parameters
+- search starts from the menu currently in "Customize" window and covers all its submenus
+- "Search and replace - Confirmation" dialog box to indicate for each favorite if you want to:
+  - "Find next" favorite (skip this one)
+  - "Replace this favorite"
+  - "Replace all favorites" (all remaining favorites at once)
+  - or "Stop" the search and replace command
+- add the QAP feature "Search and replace" under the "QAP Menu Editing" section, allowing to launch the command from your QAP menu
+ 
+Other
+- fix bug when showing the "Customize" window from an external command and the previous content of the favorites list was a search result
+- fix bug after closing the "Options" and "Manage Hotkeys" dialog boxes to restore the previous position in favorites list
+- fix bug in favorites list when using drag and drop to move an item and droping it beyond the first or last item of the list, sometimes causing an "empty favorite name" error later
+
 Version BETA: 11.3.0.9.6 (2021-07-29)
  
 "Customize" window bug fixes and improvements
