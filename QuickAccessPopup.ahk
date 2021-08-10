@@ -23724,22 +23724,23 @@ Gui, 3:+Owner2
 if (g_blnUseColors)
 	Gui, 3:Color, %g_strGuiWindowColor%
 
-Gui, 3:Add, Text, x10 y10 w800, % o_L["DialogIconsManageFavoriteName"] . " (" . o_Favorites.GetFavoriteTypeObject(g_oSearchAndReplaceCandidate.AA.strFavoriteType).strFavoriteTypeLabel . ")"
+Gui, Font, s10, Arial
+Gui, 3:Add, Text, x10 y10 w800, % o_Favorites.GetFavoriteTypeObject(g_oSearchAndReplaceCandidate.AA.strFavoriteType).strFavoriteTypeLabel
+Gui, Font
 Gui, 3:Add, Edit, x10 y+5 w800 ReadOnly, % g_oSearchAndReplaceCandidate.AA.strFavoriteName
 Gui, 3:Add, Text, x10 y+5 w800, % o_L["MenuMenuOrGroup"]
 Gui, 3:Add, Edit, x10 y+5 w800 ReadOnly, % g_oSearchAndReplaceCandidate.AA.oParentMenu.AA.strMenuPath
 
-Gui, Font, s10, Arial
 Loop, Parse, strSearchAndReplaceKeysSearched, |
 	if (g_oSearchAndReplaceCandidate.aaReplaceChanged[A_LoopField])
 	{
-		Gui, 3:Add, ListView, % (A_Index = 1 ? "y+10" : "y+5") . " x10 r2 w800 -Hdr ReadOnly Disabled", Label|Arrow|Content
-		LV_Add(, aaSearchAndReplaceValueLabels[A_LoopField], chr(0x25BA), g_oSearchAndReplaceCandidate.AA["strFavorite" . A_LoopField])
-		LV_Add(, o_L["GuiSearchAndReplaceReplaceWith"], chr(0x25BA), g_oSearchAndReplaceCandidate.aaReplaceValues[A_LoopField])
-		LV_ModifyCol(1, "Right")
-		LV_ModifyCol()
+		Gui, Font, s10, Arial
+		Gui, 3:Add, Text, x10 y+10 w800, % chr(0x25BA) . " " . aaSearchAndReplaceValueLabels[A_LoopField] . ":"
+		Gui, Font
+		Gui, 3:Add, Edit, x10 y+2 w800 r1 ReadOnly, % g_oSearchAndReplaceCandidate.AA["strFavorite" . A_LoopField]
+		Gui, 3:Add, Text, x10 y+2 w800, % o_L["GuiSearchAndReplaceReplaceWith"] . ":"
+		Gui, 3:Add, Edit, x10 y+2 w800 r1 ReadOnly, % g_oSearchAndReplaceCandidate.aaReplaceValues[A_LoopField]
 	}
-Gui, Font
 
 Gui, 3:Add, Button, y+25 x10 vf_btnSearchAndReplaceConfirmFindNext gGuiSearchAndReplaceConfirmFindNext default, % o_L["GuiSearchAndReplaceFindNext"]
 Gui, 3:Add, Button, yp x+20 vf_btnSearchAndReplaceConfirmReplaceThis gGuiSearchAndReplaceConfirmReplace, % o_L["GuiSearchAndReplaceReplaceThis"]
