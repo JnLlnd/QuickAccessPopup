@@ -6007,7 +6007,7 @@ if (o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue = "ERROR")
 o_Settings.ReadIniOption("MenuPopup", "blnOpenMenuOnTaskbar", "OpenMenuOnTaskbar", 1, "MenuAdvanced", "f_blnOpenMenuOnTaskbar") ; g_blnOpenMenuOnTaskbar
 o_Settings.ReadIniOption("MenuAdvanced", "intClipboardMaxSize", "ClipboardMaxSize", 10000, "MenuAdvanced", "f_lblClipboardMaxSize|f_lblClipboardMaxSizeDefault|f_intClipboardMaxSize") ; default 10000 chars ; g_intClipboardMaxSize
 o_Settings.ReadIniOption("MenuAdvanced", "blnShowAdvancedSettingsMenusItems", "ShowAdvancedSettingsMenusItems", 0, "MenuAdvanced", "f_blnShowAdvancedSettingsMenusItems")
-o_Settings.ReadIniOption("MenuAdvanced", "intMovePointerAfterHotkeyKeyboard", "MovePointerAfterHotkeyKeyboard", 1, "MenuAdvanced", "80") ; move pointer if value > 0, also duration in ms of pause before showing the menu
+o_Settings.ReadIniOption("MenuAdvanced", "intMovePointerAfterHotkeyKeyboard", "MovePointerAfterHotkeyKeyboard", 1, "MenuAdvanced") ; move pointer if value > 0, also duration in ms of pause before showing the menu; #### add visible field if required
 
 ; Group AdvancedLaunch
 o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
