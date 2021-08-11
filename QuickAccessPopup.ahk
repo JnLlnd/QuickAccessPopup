@@ -33,7 +33,7 @@ HISTORY
 
 Version BETA: 11.3.0.9.8 (2021-08-11)
 - in "Search and replace Confirmation" dialog box, improve the presentation of values to replace
-- prevent sheduled menu refresh during Search and replace operations
+- prevent scheduled menu refresh during Search and replace operations
 - fix bug not enabling the "Save" or "Cancel" buttons in "Customize" dialog box in some situation after Search and replace operations
 
 Version BETA: 11.3.0.9.7 (2021-08-10)
