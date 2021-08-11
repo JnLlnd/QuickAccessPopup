@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.8 (2021-08-11)
+- in "Search and replace Confirmation" dialog box, improve the presentation of values to replace
+- prevent sheduled menu refresh during Search and replace operations
+- fix bug not enabling the "Save" or "Cancel" buttons in "Customize" dialog box in some situation after Search and replace operations
+
 Version BETA: 11.3.0.9.7 (2021-08-10)
  
 Search and replace
@@ -4697,7 +4702,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.7
+;@Ahk2Exe-SetVersion 11.3.0.9.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4765,7 +4770,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4839,6 +4844,7 @@ global g_blnMenuReady := false
 global g_blnChangeShortcutInProgress := false
 global g_blnChangeHotstringInProgress := false
 global g_blnChangeIconInProgress := false
+global g_blnSearchAndReplaceInProgress := false
 
 global g_saSubmenuStackPrev := Object() ; simple array of previous menus objects opened in gui
 global g_saSubmenuStackNext := Object() ; simple array of menus objects opened then closes using the Previous arrow
@@ -9191,8 +9197,11 @@ RefreshQAPMenuExternalOnly:
 ;------------------------------------------------------------
 
 if (SettingsUnsaved() or !g_blnMenuReady ; these two required
-	or (g_blnRefreshQAPMenuInProgress)
-	or g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress) ; these three by safety (required?)
+	or g_blnRefreshQAPMenuInProgress
+	or g_blnSearchAndReplaceInProgress
+	or g_blnChangeShortcutInProgress
+	or g_blnChangeHotstringInProgress
+	or g_blnChangeIconInProgress)
 	return
 
 ; Diag(A_ThisLabel, "", "START-REFRESH")
@@ -23599,6 +23608,8 @@ GuiSearchAndReplace:
 if !(g_blnMenuReady)
 	return
 
+g_blnSearchAndReplaceInProgress := true
+
 g_intOriginalMenuPosition := (LV_GetCount() ? (LV_GetNext() ? LV_GetNext() : 0xFFFF) : 1) ; to restore position in listview after save
 Gosub, GuiShowFromSearchAndReplace
 if SearchIsVisible()
@@ -23793,6 +23804,8 @@ aaSearchAndReplaceValueLabels := ""
 g_strSearcAndReplaceConfirmResponse := ""
 g_saSearchAndReplaceValueKeys := ""
 g_oSearchAndReplaceCandidate := ""
+
+g_blnSearchAndReplaceInProgress := false
 
 Gosub, 2GuiClose
 
@@ -31574,7 +31587,7 @@ class Container
 				}
 				
 				if (g_strSearcAndReplaceConfirmResponse = "Stop")
-					return
+					return blnGlobalChanged
 				else if (g_strSearcAndReplaceConfirmResponse <> "FindNext") ; Replace, ReplaceAll
 					for intIndex, strKey in g_saSearchAndReplaceValueKeys
 						if (g_oSearchAndReplaceCandidate.aaReplaceChanged[strKey])
@@ -31592,7 +31605,7 @@ class Container
 			}
 			
 			if (g_strSearcAndReplaceConfirmResponse = "Stop")
-				return
+				return blnGlobalChanged
 			
 		}
 		g_oSearchAndReplaceCandidate.aaReplaceValues := "" ; delete temporary values for replacements
