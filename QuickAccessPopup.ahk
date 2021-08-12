@@ -23661,12 +23661,12 @@ for intIndex, strKey in g_saSearchAndReplaceValueKeys
 
 ; future options: RegEx search and replace with RegExReplace(), match whole word only, case sensitive, from beginning only, from end only
 
-aaL := o_L.InsertAmpersand(false, "GuiSearchAndReplaceStart", "GuiCancel") 
+aaL := o_L.InsertAmpersand(false, "GuiSearchAndReplaceStart", "GuiClose") 
 Gui, 2:Add, Button, y+20 vf_btnSearchAndReplaceStart gGuiSearchAndReplaceStart default, % aaL["GuiSearchAndReplaceStart"]
-Gui, 2:Add, Button, yp vf_btnSearchAndReplaceCancel gGuiSearchAndReplaceCancel, % aaL["GuiCancel"]
+Gui, 2:Add, Button, yp vf_btnSearchAndReplaceClose gGuiSearchAndReplaceClose, % aaL["GuiClose"]
 Gui, 2:Add, Text, x10, %A_Space%
 
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnSearchAndReplaceStart", "f_btnSearchAndReplaceCancel")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnSearchAndReplaceStart", "f_btnSearchAndReplaceClose")
 GuiControl, Focus, f_strSearchAndReplaceSearch
 Gosub, ShowGui2AndDisableGui1
 
@@ -23686,6 +23686,12 @@ Gui, 2:Submit, NoHide
 
 strSearchAndReplaceSearch := f_strSearchAndReplaceSearch
 strSearchAndReplaceReplace := f_strSearchAndReplaceReplace
+
+if (strSearchAndReplaceSearch = strSearchAndReplaceReplace)
+{
+	Oops(2, o_L["GuiSearchAndReplaceIdentical"])
+	return
+}
 
 strSearchAndReplaceTypes := ""
 Loop, Parse, % "Folder|Document|Application|URL|FTP|Snippet", |
@@ -23792,7 +23798,7 @@ return
 
 
 ;------------------------------------------------------------
-GuiSearchAndReplaceCancel:
+GuiSearchAndReplaceClose:
 ;------------------------------------------------------------
 
 strSearchAndReplaceSearch := ""
