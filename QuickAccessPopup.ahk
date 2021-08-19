@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.9 (2021-08-19)
+- error message if search string and replace string are identical
+- in "Search and replace" dialog box, replace "Cancel" label with "Close"
+- Italian, Russian, German, French, Korean, Portuguese and Brazilian Portuguese language translation for search and replace
+
 Version BETA: 11.3.0.9.8 (2021-08-11)
 - in "Search and replace Confirmation" dialog box, improve the presentation of values to replace
 - prevent scheduled menu refresh during Search and replace operations
@@ -4702,7 +4707,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.8
+;@Ahk2Exe-SetVersion 11.3.0.9.9
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4770,7 +4775,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
