@@ -5680,6 +5680,9 @@ FileInstall, FileInstall\submenu-26_c.png, %g_strTempDir%\submenu-26_c.png
 FileInstall, FileInstall\thumb_up-48_c.png, %g_strTempDir%\thumb_up-48_c.png ; default image for Startup Tips
 FileInstall, FileInstall\uac_logo-16.png, %g_strTempDir%\uac_logo-16.png
 
+FileInstall, FileInstall\QAP-logo-100x100.png, %g_strTempDir%\QAP-logo-100x100.png
+FileInstall, FileInstall\QAP_First_Steps_Video-300x167.jpg, %g_strTempDir%\QAP_First_Steps_Video-300x167.jpg
+
 if FileExist(A_WorkingDir . "\QAPconnect.ini")
 	FileInstall, FileInstall\QAPconnect-default.ini, %A_WorkingDir%\QAPconnect-default.ini, 1 ; overwrite
 else
@@ -6410,9 +6413,13 @@ RemoveSponsorOnlineTrace(strEddLicense)
 ;------------------------------------------------------------
 GuiManageLicense:
 GuiManageLicenseWhenExpired:
+GuiManageLicenseFromCreation:
 ;------------------------------------------------------------
 
-strSponsorCodeAction := GetSponsorAction((StrLen(g_strSponsorCodeError) ? g_strSponsorCodeError : "valid"), A_ThisLabel)
+if (A_ThisLabel = "GuiManageLicenseFromCreation") ; first run of QAP
+	strSponsorCodeAction := "save-key" ; will open the GuiSponsorCodeInput dialog box
+else
+	strSponsorCodeAction := GetSponsorAction((StrLen(g_strSponsorCodeError) ? g_strSponsorCodeError : "valid"), A_ThisLabel)
 
 strMsgBoxTitle := g_strAppNameText . " - " . g_strAppVersion
 
@@ -6440,9 +6447,13 @@ else if (strSponsorCodeAction = "manage-installations")
 	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id, A_ThisLabel, "License Management")
 }	
 else if (strSponsorCodeAction = "save-key")
-	
+{
 	Gosub, GuiSponsorCodeInput
 	
+	; if first run of QAP, wait for save license dialog box closing (we return here only if save is cancelled, else QAP is reloaded)
+	if (A_ThisLabel = "GuiManageLicenseFromCreation") and WinExist("ahk_id " . g_strGuiSponsorCodeInputHwnd)
+		WinWaitClose, ahk_id %g_strGuiSponsorCodeInputHwnd%
+}	
 else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
 {
 	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strUniqueSystemId, g_strAppNameText)
@@ -6651,8 +6662,12 @@ blnSponsorCodeInputInProgress := true
 
 strGuiTitle := g_strAppNameText . " " . g_strAppVersion
 Gui, SaveCode:New, +Hwndg_strGuiSponsorCodeInputHwnd, %strGuiTitle%
-if WinExist("ahk_id " . g_strGui1Hwnd) ; set owner only if main gui exists (not when saving from Manage License with expired license)
+if WinExist("ahk_id " . g_strGui1Hwnd) ; set owner only if main gui exists
 	Gui, SaveCode:+Owner1
+else if WinExist("ahk_id " . g_strGuiWelcomeCreationHwnd) ; set owner only if welcome gui exists
+	Gui, % "SaveCode:+Owner" . g_strGuiWelcomeCreationHwnd
+; else no owner when saving from Manage License with expired license
+
 if (g_blnUseColors)
 	Gui, SaveCode:Color, %g_strGuiWindowColor%
 Gui, SaveCode:Font, s10 w700, Verdana
@@ -9113,6 +9128,13 @@ else
 
 if (!g_blnSponsor and (g_blnIniFileCreation or StrLen(strLimitsMessage)) and !g_blnLimitExceededMessageShown)
 {
+	if (g_blnIniFileCreation) ; first run of QAP
+	{
+		gosub, GuiWelcomeCreation ; ask if user has a license, if yes save license, else continue here
+		if WinExist("ahk_id " . g_strGuiWelcomeCreationHwnd) ; wait for welcome dialog box to close
+			WinWaitClose, ahk_id %g_strGuiWelcomeCreationHwnd%
+	}
+	
 	MsgBox, % 0, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
 		. o_L["DialogFreeEditionMessage3"] . ".`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
 	if !(g_blnIniFileCreation) ; show limit again if in limit exceeded in the first session
@@ -9120,6 +9142,55 @@ if (!g_blnSponsor and (g_blnIniFileCreation or StrLen(strLimitsMessage)) and !g_
 }
 
 strLimitsMessage := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiWelcomeCreation:
+;------------------------------------------------------------
+
+Gui, WelcomeCreation:New, +Hwndg_strGuiWelcomeCreationHwnd, %strGuiTitle%
+Gui, Color, White
+
+Gui, Add, Picture, x10 y1, %g_strTempDir%\QAP-logo-100x100.png
+Gui, Font, w700 s14
+Gui, Add, Text, x120 yp+10 w500, % o_L["DialogWelcomeThankYou"]
+Gui, Add, Picture, x160 yp+50 gGuiWelcomeCreationVideoClicked, %g_strTempDir%\QAP_First_Steps_Video-300x167.jpg
+Gui, Font, w400 s8 italic
+Gui, Add, Text, x160 w300 yp+170 gGuiWelcomeCreationVideoClicked w300 center, % o_L["DialogWelcomeVideo"]
+Gui, Font, w400 s12 normal
+Gui, Add, Text, x120 yp+30 w500, % o_L["DialogWelcomeDetail"]
+Gui, Add, Button, x10 y+30 gGuiManageLicenseFromCreation vf_btnWelcomeCreationSave, % o_L["DialogWelcomeSaveCode"]
+Gui, Add, Button, x40 yp x+10 gWelcomeCreationGuiCancel vf_btnWelcomeCreationFree, % o_L["DialogWelcomeTryFree"]
+Gui, Font
+Gui, Add, Text, x10 y+40
+
+GuiCenterButtons(g_strGuiWelcomeCreationHwnd, 40, 25, 40, "f_btnWelcomeCreationSave", "f_btnWelcomeCreationFree")
+Gui, Show, AutoSize Center
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiWelcomeCreationVideoClicked:
+;------------------------------------------------------------
+
+Run, https://www.quickaccesspopup.com/qap-welcome-first-steps-video
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+WelcomeCreationGuiCancel: ; if user hits button Try free version
+WelcomeCreationGuiClose: ; if user close the dialog box clicking the X
+WelcomeCreationGuiEscape: ; if user hits the Escape key
+;------------------------------------------------------------
+
+Gui, WelcomeCreation:Destroy
 
 return
 ;------------------------------------------------------------
@@ -15169,6 +15240,7 @@ o_MainMenuBK := o_MainMenu.BackupContainer() ; backup menu content
 	; , o_MainMenu.SA[2].AA.oSubMenu.SA[2].AA.oSubMenu.SA[1].AA.strFavoriteName)
 
 Gosub, LoadFavoritesInGui
+Gosub, UpdatePreviousAndUpPictures
 
 ; if gui already visible, just activate the window
 DetectHiddenWindows, Off ; to detect the gui window only if it is visible (not hidden)
@@ -15180,8 +15252,6 @@ if (blnExist) ; keep the gui as-is if it is not closed
 	return
 }
 ; else continue
-
-Gosub, UpdatePreviousAndUpPictures
 
 GetPositionFromMouseOrKeyboard(g_strMenuTriggerLabel, A_ThisHotkey, intActiveX, intActiveY)
 if (o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.IniValue
