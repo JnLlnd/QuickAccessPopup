@@ -413,6 +413,11 @@ lDialogTreeView	vue hiérarchique
 lDialogTriggerFor	Déclencheur pour:
 lDialogUnavailableWithLiveFolders	(Non disponible pour les Dossiers actifs)
 lDialogUseDefaultWindowPosition	Utiliser la position de fenêtre par défaut
+lDialogWelcomeDetail	Si vous avez votre code de licence, veuillez l'enregistrer maintenant.`n`nSinon, bienvenue dans la version d'essai de Quick Access Popup.
+lDialogWelcomeSaveCode	Enregistrer`nvotre licence
+lDialogWelcomeThankYou	Merci d'utiliser Quick Access Popup!
+lDialogWelcomeTryFree	Essayer`nl'édition gratuite
+lDialogWelcomeVideo	Cliquez pour visionner la vidéo
 lDialogWin	Windows
 lDialogWindowMonitor	Écran
 lDialogWindowPosition	Position de la fenêtre:
@@ -440,7 +445,6 @@ lDialogWindowsFolderIconUpdate	mettre à jour
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Démarrer dans
 lDonateActionChoose	Veuillez sélectionner une des actions.
-lDonateActionEnterLicense	Enregistrer votre code de licence
 lDonateActionGroupQAP	Dans ~1~:
 lDonateActionGroupWebsite	Sur le site web:
 lDonateActionManageInstallations	Gérer les installations
