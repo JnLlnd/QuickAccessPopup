@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.3.0.9.10 (2021-08-31)
+- Welcome dialog box
+  - a new more friendly "Welcome" dialog box is shown at the first QAP launch
+  - it includes buttons to "Save license code or to "Try the free version" and a link to the "QAP First Steps" video
+- fix bug update navigation buttons even when main gui already exists
+- add QAPconnect-default.ini file added to QAP Settings folder when user already has the QAPconnect.ini file (avoiding overwriting user's changes)
+- add One Commander to QAPconnect file managers
+- DE, FR, KO, IT, RU and PT-BR language for Welcome dialog box
+
 Version BETA: 11.3.0.9.9 (2021-08-19)
 - error message if search string and replace string are identical
 - in "Search and replace" dialog box, replace "Cancel" label with "Close"
@@ -4707,7 +4716,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.9
+;@Ahk2Exe-SetVersion 11.3.0.9.10
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4775,7 +4784,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.3.0.9.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
