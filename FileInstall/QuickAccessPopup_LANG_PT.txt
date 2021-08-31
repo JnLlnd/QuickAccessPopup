@@ -68,7 +68,7 @@ lDialogArgumentsLabel	Parâmetros
 lDialogArgumentsLabelHelp	(Se for necessário ponha cada parâmetro entre aspas)
 lDialogArgumentsPlaceholdersCheckLabel	Parâmetros actuais com recipientes expandidos
 lDialogArgumentsPlaceholdersCurrentExample	x:\pasta_respectiva\última_pasta
-lDialogArgumentsPlaceholdersSelectedExample	x:\pasta_respectiva\ficheiro_ou_pasta seleccionado(a)
+lDialogArgumentsPlaceholdersSelectedExample	x:\pasta_respectiva\ficheiro_ou_pasta seleccionado(a).ext
 lDialogAscending	Ascendente
 lDialogBrowseButton	Procurar
 lDialogBrowseOrSelectApplication	Procurar um ficheiro executável ou`nseleccionar um programa activo desta lista
@@ -132,6 +132,7 @@ lDialogEditIcon	Editar recursos do ícone
 lDialogEditIconPrompt	Editar recursos do ícone no formato "ficheiro,índice" (por exemplo, "shell32.dll,2"):
 lDialogElevate	Executar o programa com previlégios de administrador
 lDialogEndOfMenu	Fim do menu
+lDialogEndOfMenuSorted	menu ordenado automaticamente
 lDialogErrorMoving	Não é possível redimensionar o favorito:`n"~1~"
 lDialogExtendedSearch	Procura alargada
 lDialogExternalLocation	Localização do ficheiro das definições externas do menu
@@ -278,7 +279,7 @@ lDialogHotstringNotWaitEndingKey	Não esperar por tecla final
 lDialogHotstringOmitEndChar	Omitir o caractere final ao colar snippets
 lDialogHotstrings	Cadeias de substituição
 lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma vista geral das cadeias de substituição (pequenas sequência de teclas que activam automaticamente os favoritos QAP). Pode ordenar os favoritos clicando no cabeçalho.`n`nFaça duplo clique numa cadeia de substituição para editá-la.`n`nClique na caixa de selecção "Ver todos os favoritos" para atribuir cadeias de substituição a outros favoritos.
-lDialogHotstringsManage	Cadeias de substituição
+lDialogHotstringsManage	Gerir cadeias de substituição
 lDialogHotstringTriggerAbbreviation	Activador (abreviatura):
 lDialogHotstringTriggerOptions	Cadeia de substituição (activador e opções)
 lDialogIcon	Ícone do Favorito
@@ -290,9 +291,7 @@ lDialogIconsManageCurrent	Ícone actual
 lDialogIconsManageDefault	Ícone padrão
 lDialogIconsManageDescription	Exibe uma caixa de diálogo listando todos os favoritos no seu menu QAP com os seus ícones actuais e o ícone padrão para este tipo de favorito. Os favoritos são agrupados em sub-menus, pela ordem que aparecem no seu menu.`n`nClique nos botões para seleccionar um ícone personalizado para um favorito oureponha um favorito para o seu ícone padrão.
 lDialogIconsManageFavoriteName	Nome do favorito
-lDialogIconsManageNext	Seguinte
 lDialogIconsManageParentMenu	Menu principal do Favorito
-lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir ícone padrão
 lDialogIconsManageTitle	Gerir Ícones - ~1~ ~2~
 lDialogIconsSelectPrompt	Para seleccionar um ícone, faça duplo-clique nele ou use as teclas de setas e prima Enter.
@@ -311,7 +310,7 @@ lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla de Menu
 lDialogMenuNotMoveUnderItself	O menu "~1~" não pode ser movido para si próprio
 lDialogMenuSortCreated	Data de criação
-lDialogMenuSortEditMenu	Editar este menu
+lDialogMenuSortEditMenu	Editar este menu (ou grupo)
 lDialogMenuSortEnable	Ordenar menu automaticamente
 lDialogMenuSortFavoriteName	Nome do favorito
 lDialogMenuSortHeaderAutomatic	Ordenar menu automaticamente por...
@@ -538,6 +537,23 @@ lGuiResetDefault	Repor tecla de atalho padrão
 lGuiSave	Guardar
 lGuiSaveAndClose	Guardar && Fechar
 lGuiSaving	A guardar
+lGuiSearchAndReplaceConfirm	Confirmação
+lGuiSearchAndReplaceDescription	Procura e substitui valores em localização ou conteúdo, nome favorito, ícones ou parâmetros.`n`nSeleccione os tipos de favoritos onde executar a substituição.`n`nConfirme para cada favorito se deseja executar a substituição ou substituir valores em todos os favoritos ao mesmo tempo.
+lGuiSearchAndReplaceFindNext	Localizar srguinte
+lGuiSearchAndReplaceIdentical	Os valores de procura e substituição são idênticos...
+lGuiSearchAndReplaceNotFound	Nenhum favorito encontrado...
+lGuiSearchAndReplaceReplace	Substituir
+lGuiSearchAndReplaceReplaceAll	Substituir todos os favoritos
+lGuiSearchAndReplaceReplaceIconResource	Recurso de ícone
+lGuiSearchAndReplaceReplaceSearchFor	Procurar por
+lGuiSearchAndReplaceReplaceThis	Substituir este favorito
+lGuiSearchAndReplaceReplaceTypes	Substituir nos favoritos dos tipos:
+lGuiSearchAndReplaceReplaceValues	Substituir valores em
+lGuiSearchAndReplaceReplaceWith	Substituir com
+lGuiSearchAndReplaceStart	Iniciar
+lGuiSearchAndReplaceStop	Parar
+lGuiSearchAndReplaceTitle	Procurar e Substituir
+lGuiSearchAndReplaceTopMenu	Procurar e substituir neste menu e seus sub-menus
 lGuiSubmenuDropdownLabel	Menu ou grupo para editar:
 lGuiTitle	Personalizar - ~1~ ~2~
 lHelpMenuKnowledgeBase	Base de Conhecimento
@@ -633,7 +649,7 @@ lMenuColumnBreak	coluna
 lMenuCommonAppData	Dados de Aplicações (comum)
 lMenuCommonDesktop	Ambiente de Trabalho (comum)
 lMenuCommonStartMenu	Menu Iniciar (comum)
-lMenuCommonStartupMenu	Menu de Arranque (comum)
+lMenuCommonStartupMenu	Arranque comum
 lMenuComputerManagement	Gestão do Computador
 lMenuContainerInGui	Favoritos na janela Personalizar
 lMenuContainerInGuiDescription	Mostra um menu com os favoritos exibidos na janela Personalizar, inclusivé quando contém um resultado da pesquisa. Nos resultados da pesquisa, aos nomes dos menus duplicados é anexado o sufixo "[!]" para torná-los únicos.
@@ -669,6 +685,7 @@ lMenuLastActionsDescription	Exibe um menu dinâmico contendo os dez mais recentes
 lMenuListApplications	Listar Janelas de Aplicações
 lMenuListApplicationsDescription	Listar título, caminho do process0 e outras propriedades das janelas em execução. Faça Duplo-clique numa janela para exibir uma caixa de diálogo onde pode mudar para a janela ou fechá-la.
 lMenuMenu	Menu
+lMenuMenuOrGroup	Menu ou grupo
 lMenuMyMusic	A Minha Música
 lMenuMyQAPMenu	O Meu QAP Básico
 lMenuMySnippetsMenu	Os meus Snippets
@@ -710,8 +727,10 @@ lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e posição da ja
 lMenuRunAtStartup	Executar no Arranque
 lMenuSearchOrder	Ordem de pesquisa original
 lMenuSelectAll	Seleccionar todos os itens
+lMenuSendTo	Enviar Para
 lMenuSettings	Personalizar
 lMenuSettingsDescription	Exibe a janela "Personalizar" onde pode personalizar o seu menu emergente do QAP, gerir os seus favoritos e definir diversas opções.`n`nPor defeito esta funcionalidade faz parte do meu Principal.
+lMenuShareQAP	Fale no QAP aos seus amigos
 lMenuStartMenu	Menu Iniciar
 lMenuStartup	Arranque
 lMenuSuspendHotkeys	Suspender Teclas de Atalho
@@ -725,6 +744,7 @@ lMenuSwitchSettings	Mudar de ficheiro de definições
 lMenuSwitchSettingsDefault	Mudar para o ficheiro de definições padrão
 lMenuSwitchSettingsDefaultDescription	Reinicia o Quick Access Popup com o ficheiro de definições na sua localização padrão.`n`nSe nstalou o QAP usando o procedimento "instalação em um passo", a localização padrão é na pasta Utilizador (por exemplo, "C:\Utilizadores\Lus\AppData\Roaming\Quick Access Popup").`n`nSe optou pela instalação portátil, a localização padrão é na pasta onde se encontra o programa QuickAccessPopup.exe.
 lMenuSwitchSettingsDescription	 Selecciona outro ficheiro de definições do QAP e reinicia o Quick Access Popup com essas definições (incluindo favoritos e diversas opções).`n`nCertifique-se de que guarda as alterações na janela "Personalizar" antes de reiniciar o QAP.
+lMenuSystem32	System32
 lMenuSystemCertificates	Certificados do Sistema
 lMenuTaskManager	Gestor de Tarefas
 lMenuTemplates	Modelos
@@ -819,6 +839,7 @@ lOptionsAdvancedOther	Opções Avançadas Diversas
 lOptionsAlternativeMenuFeatures	Teclas de Atalho do Menu Alternativo
 lOptionsAlternativeMenuFeaturesIntro	Gerir os atalhos que irão dar acesso às funções do menu Alternativo.
 lOptionsAlternativeMenuResetModifiers	Repor modificadores padrão
+lOptionsAlternativeMenuResetModifiersSaved	Redefinir modificadores guardados
 lOptionsAlternativeMenuShowNotification	Exibir Notificação quando usar o Menu Alternativo
 lOptionsAlternativeModifiers	Modificadores
 lOptionsAlternativeTrayIcon	Substituição do ícone da área de notificação do QAP (ficheiro,índice)

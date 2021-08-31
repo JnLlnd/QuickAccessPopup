@@ -68,7 +68,7 @@ lDialogArgumentsLabel	Parâmetros
 lDialogArgumentsLabelHelp	(coloque cada parâmetro entre aspas, se necessário)
 lDialogArgumentsPlaceholdersCheckLabel	Parâmetros atuais com marcadores expandidos
 lDialogArgumentsPlaceholdersCurrentExample	x:\pasta_contendo\última_pasta
-lDialogArgumentsPlaceholdersSelectedExample	x:\pasta_de_trabalho\arquivo_ou_pasta_selecionada
+lDialogArgumentsPlaceholdersSelectedExample	x:\pasta_de_trabalho\arquivo_ou_pasta_selecionada.ext
 lDialogAscending	Ascendente
 lDialogBrowseButton	Procurar
 lDialogBrowseOrSelectApplication	Procure por um arquivo executável ou`nselecione um aplicativo em execução na lista
@@ -132,6 +132,7 @@ lDialogEditIcon	Editar ícone
 lDialogEditIconPrompt	Edite o ícone no formato "arquivo de ícone,índice" (por exemplo: "shell32.dll,2")
 lDialogElevate	Execute o aplicativo com privilégios de Administrador
 lDialogEndOfMenu	final do menu
+lDialogEndOfMenuSorted	menu classificado automaticamente
 lDialogErrorMoving	Não foi possível redimensionar o favorito:`n"~1~"
 lDialogExtendedSearch	Pesquisa Estendida
 lDialogExternalLocation	Local do arquivo de configurações do menu externo
@@ -278,7 +279,7 @@ lDialogHotstringNotWaitEndingKey	Não aguardar tecla de conclusão
 lDialogHotstringOmitEndChar	Omitir caractere final ao colar recortes
 lDialogHotstrings	Strings de Substituição
 lDialogHotstringsDescription	Exibe uma caixa de diálogo com uma visão global de suas strings de substituição (pequenas sequências de chaves que automaticamente disparam favoritos do QAP). Você pode classificar os favoritos clicando no cabeçalho.`n`nClique duplo em uma string de substituição para editá-la.`n`nClique na caixa de marcação "Ver todos os favoritos" para atribuir strings de substituição para outros favoritos.
-lDialogHotstringsManage	Strings de Substituição
+lDialogHotstringsManage	 Gerenciar strings de substituição
 lDialogHotstringTriggerAbbreviation	Disparador (abreviação):
 lDialogHotstringTriggerOptions	String de substituição (disparador e opções)
 lDialogIcon	Ícone do Favorito
@@ -290,9 +291,7 @@ lDialogIconsManageCurrent	Ícone atual
 lDialogIconsManageDefault	Ícone padrão
 lDialogIconsManageDescription	Exibe uma caixa de diálogo listando todos os favoritos no seu menu do QAP com o seu ícone atual e o ícone padrão deste tipo de favorito. Os favoritos são agrupados em submenus, na ordem em que aparecem em seu menu.`n`nClique nos botões para selecionar um ícone personalizado para um favorito ou para redefinir um favorito para seu ícone padrão.
 lDialogIconsManageFavoriteName	Nome do favorito
-lDialogIconsManageNext	Próximo
 lDialogIconsManageParentMenu	Menu principal do favorito
-lDialogIconsManagePrevious	Anterior
 lDialogIconsManageSetDefaultIcon	Definir ícone padrão
 lDialogIconsManageTitle	Gerenciar Ícones - ~1~ ~2~
 lDialogIconsSelectPrompt	Para selecionar um ícone, dê um duplo clique nele ou use as teclas direcionais e pressione Enter.
@@ -311,7 +310,7 @@ lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla Menu
 lDialogMenuNotMoveUnderItself	O menu "~1~" não pode ser movido abaixo de si mesmo
 lDialogMenuSortCreated	Data de criação
-lDialogMenuSortEditMenu	Editar este menu
+lDialogMenuSortEditMenu	Editar este menu (ou grupo)
 lDialogMenuSortEnable	Classificar menu automaticamente
 lDialogMenuSortFavoriteName	Nome do favorito
 lDialogMenuSortHeaderAutomatic	Classificar menu automaticamente por...
@@ -420,6 +419,11 @@ lDialogTreeView	visualização em árvore
 lDialogTriggerFor	Disparador para:
 lDialogUnavailableWithLiveFolders	(Indisponível para Pastas Ativas)
 lDialogUseDefaultWindowPosition	Usar posição padrão da janela
+lDialogWelcomeDetail	Se você possui seu código de licença, por favor, salve-o agora.`n`nSe não, você é bem-vindo para testar o Quick Access Popup.
+lDialogWelcomeSaveCode	Salvar seu`ncódigo de licença
+lDialogWelcomeThankYou	Obrigado por usar o Quick Access Popup!
+lDialogWelcomeTryFree	Teste a`nedição Grátis
+lDialogWelcomeVideo	Clique para ver o vídeo de introdução
 lDialogWin	Windows
 lDialogWindowMonitor	Monitor
 lDialogWindowPosition	Posição da janela
@@ -447,7 +451,6 @@ lDialogWindowsFolderIconUpdate	atualizar
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Iniciar em
 lDonateActionChoose	Por favor, selecione uma das ações.
-lDonateActionEnterLicense	Salvar seu código da licença
 lDonateActionGroupQAP	Em ~1~:
 lDonateActionGroupWebsite	No site:
 lDonateActionManageInstallations	Gerenciar instalações
@@ -538,6 +541,23 @@ lGuiResetDefault	Redefinir tecla de atalho padrão
 lGuiSave	Salvar
 lGuiSaveAndClose	Salvar && Fechar
 lGuiSaving	Salvando
+lGuiSearchAndReplaceConfirm	Confirmação
+lGuiSearchAndReplaceDescription	Pesquise e substitua valores na localização ou conteúdo, nome do favorito, recurso de ícone ou parâmetros.`n`nSelecione os tipos de favoritos onde executar a substituição.`n`nConfirme para cada favorito se você deseja executar a substituição ou substituir os valores em todos os favoritos de uma vez.
+lGuiSearchAndReplaceFindNext	Localizar próximo
+lGuiSearchAndReplaceIdentical	Os valores pesquisar e substituir são idênticos...
+lGuiSearchAndReplaceNotFound	Nenhum favorito encontrado...
+lGuiSearchAndReplaceReplace	Substituir
+lGuiSearchAndReplaceReplaceAll	Substituir todos os favoritos
+lGuiSearchAndReplaceReplaceIconResource	Recurso de ícone
+lGuiSearchAndReplaceReplaceSearchFor	Pesquisar por
+lGuiSearchAndReplaceReplaceThis	Substituir este favorito
+lGuiSearchAndReplaceReplaceTypes	Substituir em favoritos de tipos:
+lGuiSearchAndReplaceReplaceValues	Substituir valores em
+lGuiSearchAndReplaceReplaceWith	Substituir por
+lGuiSearchAndReplaceStart	Iniciar
+lGuiSearchAndReplaceStop	Parar
+lGuiSearchAndReplaceTitle	Pesquisar e substituir
+lGuiSearchAndReplaceTopMenu	Pesquisar e substituir neste menu e seus submenus
 lGuiSubmenuDropdownLabel	Menu ou grupo para editar:
 lGuiTitle	Personalizar - ~1~ ~2~
 lHelpMenuKnowledgeBase	Base de Conhecimento
@@ -633,7 +653,7 @@ lMenuColumnBreak	coluna
 lMenuCommonAppData	Dados de Aplicativos Comuns
 lMenuCommonDesktop	Área de Trabalho Comum
 lMenuCommonStartMenu	Menu Iniciar Comum
-lMenuCommonStartupMenu	Menu Inicializar Comum
+lMenuCommonStartupMenu	Inicializar Comum
 lMenuComputerManagement	Gerenciamento do Computador
 lMenuContainerInGui	Favoritos na janela Personalizar
 lMenuContainerInGuiDescription	Exibir um menu com os favoritos exibidos na janela Personalizar, incluindo quando ele conter um resultado de pesquisa. Nos resultados da pesquisa, nomes d menu duplicados são anexados com o sufixo "[!]" para torná-los únicos.
@@ -669,6 +689,7 @@ lMenuLastActionsDescription	Exibe um menu dinâmico contendo os 10 favoritos mais
 lMenuListApplications	Listar Aplicativos do Windows
 lMenuListApplicationsDescription	Lista o título, caminho do processo e outras propriedades da janela em execução. Dê um duplo clique em uma janela para exibir uma caixa de diálogo onde você pode alternar para a janela ou fechá-la.
 lMenuMenu	Menu
+lMenuMenuOrGroup	Menu ou grupo
 lMenuMyMusic	Minhas Músicas
 lMenuMyQAPMenu	Meus Essenciais do QAP
 lMenuMySnippetsMenu	Meus Recortes
@@ -710,8 +731,10 @@ lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e a posição da 
 lMenuRunAtStartup	Executar na Inicialização
 lMenuSearchOrder	Ordem de pesquisa original
 lMenuSelectAll	Selecionar todos os itens
+lMenuSendTo	Enviar para
 lMenuSettings	Personalizar
 lMenuSettingsDescription	Exibe a janela "Personalizar" onde você pode personalizar seu menu popup do QAP, gerenciar seus favoritos e definir várias opções.`n`nPor padrão, este recurso é incluído no menu Principal.
+lMenuShareQAP	Indicar o QAP para seus amigos
 lMenuStartMenu	Menu Iniciar
 lMenuStartup	Inicialização
 lMenuSuspendHotkeys	Teclas de Atalho de Suspensão
@@ -725,6 +748,7 @@ lMenuSwitchSettings	Mudar arquivo de Configurações
 lMenuSwitchSettingsDefault	Mudar para o arquivo de configurações padrão
 lMenuSwitchSettingsDefaultDescription	Reinicia o Quick Access Popup com o arquivo de Configurações em seu local padrão.`n`nSe você instalou o QAP usando o procedimento de "instalação em um passo", o local padrão é a pasta do Usuário (por exemplo: "C:\Users\Jean\AppData\Roaming\Quick Access Popup").`n`nSe você preferiu a instalação da versão portátil, o local padrão é onde o programa QuickAccessPopup.exe está sendo executado.
 lMenuSwitchSettingsDescription	Seleciona outro arquivo de configurações do QAP  e reinicia o Quick Access Popup com estas configurações (incluindo favoritos e várias opções).`n`nCertifique-se de salvar as alterações em "Personalizar" antes de reiniciar o QAP.
+lMenuSystem32	System32
 lMenuSystemCertificates	Certificados do Sistema
 lMenuTaskManager	Gerenciador de Tarefas
 lMenuTemplates	Modelos
@@ -819,6 +843,7 @@ lOptionsAdvancedOther	Várias Opções Avançadas
 lOptionsAlternativeMenuFeatures	Teclas de Atalho do Menu Alternativo
 lOptionsAlternativeMenuFeaturesIntro	Gerencie os atalhos que irão disparar os recursos do menu Alternativo.
 lOptionsAlternativeMenuResetModifiers	Redefinir modificadores padrão
+lOptionsAlternativeMenuResetModifiersSaved	Redefinir modificadores salvos
 lOptionsAlternativeMenuShowNotification	Exibir Notificações ao usar o Menu ALternativo
 lOptionsAlternativeModifiers	Modificadores
 lOptionsAlternativeTrayIcon	Substituição do ícone do QAP da Área de Notificação (arquivo,índice)

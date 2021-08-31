@@ -38,6 +38,12 @@ CALL "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Sign-certificat.
 IF %ERRORLEVEL% NEQ 0 ECHO UNE ERREUR EST SURVENUE...
 IF %ERRORLEVEL% NEQ 0 PAUSE
 IF %ERRORLEVEL% NEQ 0 EXIT
+rem Paude a few seconds
+ping 127.0.0.1 -n 3 > nul
+ECHO Copy 32 %QAPBETAPROD%
+COPY "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-32-bit.exe"
+ECHO Copy 64 %QAPBETAPROD%
+COPY "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-64-bit.exe"
 rem Compile Setup file
 ECHO Inno Setup Compile-QAP-v10.iss
 "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Compile-QAP-v10.iss"
@@ -51,10 +57,6 @@ CALL "C:\Dropbox\AutoHotkey\QuickAccessPopup\Setup Script files\Sign-certificat.
 IF %ERRORLEVEL% NEQ 0 ECHO UNE ERREUR EST SURVENUE...
 IF %ERRORLEVEL% NEQ 0 PAUSE
 IF %ERRORLEVEL% NEQ 0 EXIT
-ECHO Copy 32 %QAPBETAPROD%
-COPY "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-32-bit.exe"
-ECHO Copy 64 %QAPBETAPROD%
-COPY "C:\Temp\QAP_Compile\Build%QAPBETAPROD%\QuickAccessPopup-64-bit.exe"
 ECHO Copy quickaccesspopup-setup%QAPBETAPROD%.exe
 COPY "C:\Temp\QAP_Compile\quickaccesspopup-setup%QAPBETAPROD%.exe"
 ECHO Copy quickaccesspopup-setup-%QAPVERSIONFILE%.exe (for Chocolatey and archives)
