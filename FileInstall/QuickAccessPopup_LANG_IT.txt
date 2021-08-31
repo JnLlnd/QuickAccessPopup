@@ -419,6 +419,11 @@ lDialogTreeView	vista albero
 lDialogTriggerFor	Condizione di attivazione per:
 lDialogUnavailableWithLiveFolders	(Non disponibile per Cartelle Live)
 lDialogUseDefaultWindowPosition	Usa la posizione di default della finestra
+lDialogWelcomeDetail	Se possiedi un codice di licenza, puoi salvarlo adesso.`n`nAltrimenti, ti invitiamo a provare Quick Access Popup.
+lDialogWelcomeSaveCode	Salva il tuo`ncodice di licenza
+lDialogWelcomeThankYou	Grazie di usare Quick Access Popup!
+lDialogWelcomeTryFree	Prova la`nversione gratuita
+lDialogWelcomeVideo	Clicca per vedere questo video introduttivo
 lDialogWin	Tasto Windows
 lDialogWindowMonitor	Monitor
 lDialogWindowPosition	Posizione della finestra:
@@ -446,7 +451,6 @@ lDialogWindowsFolderIconUpdate	Aggiorna
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Avvia in
 lDonateActionChoose	Si prega di selezionare una delle opzioni.
-lDonateActionEnterLicense	Salva il tuo codice licenza
 lDonateActionGroupQAP	In ~1~:
 lDonateActionGroupWebsite	Sul sito web:
 lDonateActionManageInstallations	Gestione installazioni
