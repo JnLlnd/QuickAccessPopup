@@ -31,6 +31,84 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.4 (2021-09-01)
+ 
+SUMMARY
+-------
+- Search and replace: search values in all the favorites of the selected types (folders, documents, applications, links, FTP sites and snippets) and replace these values (location or content, favorite name, icon resource or parameters fields) one at a time or all in one step.
+  see: https://www.quickaccesspopup.com/can-i-search-and-replace-values-globally-in-my-favorites/
+- Special folders: new location codes for some Special Folders allowing to change their location in Windows without breaking the favorite (conversion of existing Special folder favorites is NOT backward compatible).
+- Multiple improvements in: "Add Multiple Favorites" command, Total Commander support, "Add/Edit Favorite" dialog box and Shared menus.
+- Bug fixes: fix various unnoticed or rarely visible bugs in the "Customize" window, "Add/Edit Favorite" dialog box, "Add Multiple Favorites" command, "Options" window, CMD/PowerShell support, Total Commander support and others.
+ 
+IN DETAIL
+---------
+Search and replace
+- new menu item "Search and replace" under the "Tools" menu
+- new "Search and replace" dialog box to search and replace values in location or content, favorite name, icon resource or parameters fields
+- select the types of favorites included in the search and replace command: Folder, Document, Application, Link (URL), FTP Site and Snippet
+- in the "Confirmation" dialog box, indicate for each favorite if you want to:
+  - "Find next" favorite (skip this one)
+  - "Replace this favorite"
+  - "Replace all favorites" (all remaining favorites at once)
+  - or "Stop" to interrupt the search and replace command
+- search starts from the menu currently in "Customize" window and covers all its submenus
+- the new QAP feature "Search and replace" under the "QAP Menu Editing" section allows to launch the command from your QAP menu
+ 
+Special Folders
+- internal change (in the Settings file) to use new location codes for some Special Folders, allowing to change their location in Windows without breaking the favorite
+- Special Folders updated are: Common Desktop, Common Start Menu, Common Startup Menu, Desktop, Downloads, History, My Music, My Video, Pictures, Programs Folder (Start Menu), Public Folder, Public Libraries, Quick Launch, Recent Items, Start Menu, Startup, Templates, Temporary Files and Windows directory
+- replace existing Special Folders favorite's locations with the new codes *** Take note that this conversion is NOT backward compatible. If you need to revert to an older version of QAP, the location for the updated Special Folders will not be recognized in the older version. They will show as "* Unknown Special Folder *" (with a random number to make the menu entry unique) and you will have to re-create these Special Folders entries.
+- before saving favorites after this conversion, QAP creates a backup named QuickAccessPopup-HOME-backup-special_folders-[date and time].ini
+- when a desktop.ini hidden file is found in a Special Folder, QAP uses the localized name and the icon defined in this file
+- two new Special Folders items "Send To" and "System32"
+ 
+Welcome dialog box
+- a new more friendly "Welcome" dialog box is shown at the first QAP launch
+- it includes buttons to "Save license code or to "Try the free version" and a link to the "QAP First Steps" video
+ 
+Add Multiple Favorites
+- when loading favorites from a "QAP Settings file (flat view)", load all item's properties (parameters, etc.), not only name and location
+- when adding from "Special Folder" list, stop showing the codes in the "Content" column and show their default names instead
+- when loading favorites from a "QAP Settings file (tree view)", fix a bug when adding an item in an existing submenu, stop creating a duplicate submenu
+ 
+Customize window
+- fix a bug not updating correctly the menu navigation buttons up/back/forward when the "Customize" window is open from a "Customize" menu item in the QAP menu not located in the Main menu
+- in the favorites list, fix a bug not enabling the "Save" button if moving a favorite by continuously pressing the up/down button until the top/bottom of the list is reached
+- in the "Select icon" and "Manage icons" dialog box, replace the next/previous text button with arrow buttons and remove duplicate "Cancel" buttons in "Select icon"
+- fix a bug when showing the "Customize" window from an external command and when the previous content of the favorites list was a search result
+- fix a bug in favorites list when using drag and drop to move an item and dropping it beyond the first or last item of the list, sometimes causing an "empty favorite name" error
+- add the menu item "Share QAP" under "Help" menu to open QAP website referrer page
+ 
+Add/Edit Favorite dialog box
+- for Application favorites, stop updating the short menu name when the location is changed; update the name only when the location is changed using the "Running applications" dropdown list
+- when adding or editing a favorite in a sorted menu, in the menu options tab, fill the position dropdown list with the read-only message "menu sorted automatically"
+- when getting the name for a regular favorite folder, check if we can get it from a desktop.ini hidden file, else continue as before and use the last part of the path
+- fix a bug when trying to open a favorite not found after user selected to edit the favorite
+ 
+Options
+- in "Options, Alternative Menu Hotkeys", rename the button "Reset default modifiers" to "Reset to saved modifiers" (to restore modifiers to their currently saved value) and add a new button "Reset to default modifiers" (to reset the modifiers to their default value)
+- fix a display bug when opening the "Popup Menu" tab using the link "excluded applications" under the "Popup Hotkeys" tab
+ 
+Shared menus
+- create backups for Shared menus ini file (one per day for the last five days)
+- the backup is created in the same folder as the Shared menu file except if a value "BackupFolder=" is found under the "[Global]" section of the Shared menu settings file
+ 
+File managers
+- in "Total Commander Directory hotlist", support the hide menu character for submenus
+- fix bug when the "Total Commander Directory hotlist" is saved in a redirected file
+- add support for One Commander in QAPconnect file managers
+- add the most recent QAPconnect-default.ini file to QAP Settings folder if a QAPconnect.ini file already exists
+- fix a bug when changing the folder in a CMD, PowerShell, ConEmu or Terminal windows and when the file manager preferences is set to "open in the current Windows Explorer window" (or "the current tab")
+ 
+Various issues
+- "Icons larger than expected" issue in the "Select icons" and "Manage icons" dialog boxes: try to solve this intermittent and infrequent issue by setting the size of the icons again when changing page
+- "Menu keyboard focus issue": after the change in v11.3.0.1 trying to fix this intermittent issue, add a new option in the Settings file that determines if the mouse move is done or not; this option must be inserted in the ini file under the [Global] section, as "MovePointerAfterHotkeyKeyboard=1" to do the mouse move (else, the situation is as in v11.3 and before)
+- "201 hotkeys have been received in the last 0ms": intermittent and infrequent issue that seems to be caused by the change in v11.3.0.1 for the previous issue; not inserting the value "MovePointerAfterHotkeyKeyboard=1" (or setting it to 0) seems to resolve this issue
+ 
+Language updates
+- Italian, Russian, German, French, Korean, Portuguese and Brazilian Portuguese language translation for search and replace
+
 Version BETA: 11.3.0.9.10 (2021-08-31)
 - Welcome dialog box
   - a new more friendly "Welcome" dialog box is shown at the first QAP launch
@@ -4716,7 +4794,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.3.0.9.10
+;@Ahk2Exe-SetVersion 11.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4784,8 +4862,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.3.0.9.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
