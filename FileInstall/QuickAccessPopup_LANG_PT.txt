@@ -419,6 +419,11 @@ lDialogTreeView	vista em árvore
 lDialogTriggerFor	Desencadeador para:
 lDialogUnavailableWithLiveFolders	(Não disponível para Pastas Live)
 lDialogUseDefaultWindowPosition	Usar posição padrão da janela
+lDialogWelcomeDetail	Se possui o seu código de licença, por favor, guarde-o agora.`n`nSe não tem, está convidado a dar uma chance ao Quick Access Popup.
+lDialogWelcomeSaveCode	Guarde o seu`ncódigo de licença
+lDialogWelcomeThankYou	Obrigado por usar o Quick Access Popup!
+lDialogWelcomeTryFree	Experimente a`nEdição gratuíta
+lDialogWelcomeVideo	Clique para ver este vídeo de introdução
 lDialogWin	Windows
 lDialogWindowMonitor	Monitor
 lDialogWindowPosition	Posição da janela:
@@ -446,7 +451,6 @@ lDialogWindowsFolderIconUpdate	actualizar
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Iniciar em
 lDonateActionChoose	Por favor, seleccione uma das acções.
-lDonateActionEnterLicense	Guardar o seu código de licença
 lDonateActionGroupQAP	Em ~1~:
 lDonateActionGroupWebsite	No website:
 lDonateActionManageInstallations	Gerir instalações
