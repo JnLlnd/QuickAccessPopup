@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5 (2021-09-06)
+- return to freeware/donorware model
+- remove license validation and various related menu items
+- fix bug with the Check for update link in "Options, General" tab
+- fix label error in "Options, File Managers" for Directory Opus options
+
 Version: 11.4 (2021-09-01)
  
 SUMMARY
@@ -4794,7 +4800,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.4
+;@Ahk2Exe-SetVersion 11.4.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4862,7 +4868,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.4.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -6428,8 +6434,8 @@ CheckValidLicenseTrace(ByRef intDaysAlert)
 		EnvSub, strDecoded, A_NowUTC, D
 		if (strDecoded > 0)
 			return "reject" ; the trace has been modified, it is in the future
-		intDaysAlert := 14
-		intDaysReject := 21
+		intDaysAlert := 66 ; 52 (server issue) + 14 (nortmal)
+		intDaysReject := 73 ; 52 (server issue) + 21 (notmal)
 		if (strDecoded < -intDaysReject) ; passed Reject day
 			return "reject"
 		else if (strDecoded < -intDaysAlert) ; between Alert day and Reject day
@@ -7955,7 +7961,7 @@ saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["ResetAndShowStartupTips", aaHelpL["StartupTipsShow"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["Check4Update", aaHelpL["MenuUpdate"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["Check4UpdateNow", aaHelpL["MenuUpdate"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["HelpQuickStart", aaHelpL["HelpMenuQuickStart"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["HelpKnowledgeBase", aaHelpL["HelpMenuKnowledgeBase"], "", "iconNoIcon"])
@@ -9956,7 +9962,7 @@ Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
-Gui, 2:Add, Checkbox, yp x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusLayoutsName"])
+Gui, 2:Add, Checkbox, yp x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowLayouts gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowLayout"], o_L["DOpusMenuName"])
 GuiControl, , f_blnFileManagerDirectoryOpusShowLayouts, % (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts = true)
 
 ; QAPconnectFileManager buttons (must be after UseTabs checkbox)
@@ -21769,7 +21775,7 @@ strQuery := strUrlCheck4Update
 	. "&nbi=" . g_intMenuItemsCount
 strLatestVersions := Url2Var(strQuery)
 if !StrLen(strLatestVersions)
-	if (A_ThisMenuItem = aaHelpL["MenuUpdate"])
+	if (A_ThisLabel = "Check4UpdateNow")
 	{
 		Oops(0, o_L["UpdateError"])
 		gosub, Check4UpdateCleanup
@@ -21837,7 +21843,7 @@ else if ProposeUpdate(strLatestVersionProd, g_strCurrentVersion, strLatestSkippe
 	g_strUpdateLatestVersion := strLatestVersionProd
 	Gosub, GuiCheck4Update
 }
-else if (A_ThisMenuItem = aaHelpL["MenuUpdate"]) or (A_ThisLabel = "Check4UpdateNow")
+else if (A_ThisLabel = "Check4UpdateNow")
 {
 	MsgBox, 4, % l(o_L["UpdateTitle"], g_strAppNameText), % l(o_L["UpdateYouHaveLatest"], g_strAppVersion, g_strAppNameText)
 	IfMsgBox, Yes
@@ -22129,7 +22135,6 @@ Gui, 2:Add, Button, yp x+20 vf_btnImpExpClose gButtonImpExpClose, % aaImportExpo
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnImpExpGo", "f_btnImpExpClose")
 Gui, 2:Add, Text
 
-; GuiControl, Focus, f_btnCheck4UpdateDialogDownloadSetup
 gosub, ImpExpClicked
 CalculateTopGuiPosition(g_strGui2Hwnd, g_strGui1Hwnd, intX, intY)
 Gosub, ShowGui2AndDisableGui1
