@@ -4800,7 +4800,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.4.0.1
+;@Ahk2Exe-SetVersion 11.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4824,7 +4824,6 @@ ComObjError(False) ; we will do our own error handling
 
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
 #Include %A_ScriptDir%\QAPtools.ahk ; by Jean Lalonde
-#Include %A_ScriptDir%\..\EDD\EDDLicense.ahk ; by Jean Lalonde (Aug. 2020)
 #Include %A_ScriptDir%\Class_LV_Rows.ahk ; https://github.com/Pulover/Class_LV_Rows from Rodolfo U. Batista / Pulover (as of 2020-11-22)
 
 ; avoid error message when shortcut destination is missing
@@ -4868,7 +4867,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.4.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -4956,7 +4955,6 @@ global g_strGroupIndicatorPrefix := Chr(171) ; group item indicator, not allolow
 global g_strGroupIndicatorSuffix := Chr(187) ; displayed in Settings with g_strGroupIndicatorPrefix, and with number of items in menus, allowed in item names
 global g_intListW := "" ; Gui width captured by GuiSize and used to adjust columns in fav list
 global g_strEscapePipe := "Ð¡þ€" ; used to escape pipe in ini file, should not be in item names or location but not checked
-global g_strSponsorHash := "!" ; used to hash the sponsor name
 global g_strAmpersandPlaceholder := "$?%" ; used as temporary marker for numeric shortcuts in menu item names
 global g_strEllipse := "…" ; "..."
 global g_strUniqueSuffix := "[!]"
@@ -5160,81 +5158,10 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 	strLaunchSettingsFolderDiag := ""
 }
 
-;---------------------------------
-; Constants for EDD license - must be after InitDiagMode
-global g_strUniqueSystemId := GetUniqueSystemId()
-global g_strSponsorCodeSiteURL := "https://shop.quickaccesspopup.com/"
-global g_LicenseScrambleSeed := 890313 ; (could be any number between 0 and 4294967295 but must stay 890313 forever here)
-
-; Init Sponsor code
-
-;@Ahk2Exe-IgnoreBegin
-; Start of code for developement phase only - won't be compiled
-blnDoNotCheckLicense := true ; true / false ; ####
-; / End of code for developement phase only - won't be compiled
-;@Ahk2Exe-IgnoreEnd
-
-global g_SponsoredMessage ; displayed in BuildGui
-global g_blnLicenseFree := FileExist(A_WorkingDir . "\license_free*.*")
-if (blnDoNotCheckLicense ; for developement
-	or g_blnLicenseFree ; for license free
-	or !StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue)) ; for free edition without license
-{
-	o_EDDLicense := Object()
-	o_EDDLicense.oLicense := Object()
-	o_EDDLicense.oLicense.license := "valid"
-	if (blnDoNotCheckLicense)
-	{
-		o_EDDLicense.oLicense.item_name := "Quick Access Popup (developement)"
-		o_EDDLicense.strUniqueSystemId := "00000000"
-		g_blnSponsor := true ; when in dev mode without checking license
-	}
-	else if (g_blnLicenseFree)
-	{
-		o_EDDLicense.oLicense.item_name := "Quick Access Popup (license free)"
-		o_EDDLicense.strUniqueSystemId := "00000000"
-		g_blnSponsor := true ; license free, not checking license
-	}
-	else
-		g_blnSponsor := false ; free edition
-}
-else
-{
-	Gosub, ProcessSponsorCode
-	
-	if (o_EDDLicense.oLicense.license <> "valid")
-	{
-		g_blnSponsor := false ; use as free edition
-		if (g_blnSponsorCodeInProgressGetting) ; called from Manage License when license expired
-		{
-			OnExit
-			ExitApp ; end app while user gets the new key
-		}
-		else if (g_blnSponsorCodeInProgressSaving) ; called from Manage License when license expired
-		{
-			Gosub, RemoveLicenseInfoFromIniFile
-			return ; end this process and let the save-key process terminate
-		}
-		else if (o_EDDLicense.oLicense.license = "invalid")
-		{
-			Gosub, RemoveLicenseInfoFromIniFile
-			Oops(0, o_L["DonateInvalidLicense"] . "`n`n" . o_L["DonateInvalidLicenseRunAsFreeEdition"]) ; run as free edition
-		}
-	}
-	else if (g_blnSponsorCodeInProgressSaving) ; license valid
-		return
-	; else license is valid, continue loading
-}
-
-; Free Edition setup
-if !(g_blnSponsor)
-{
-	g_SponsoredMessage :=  "<a id=""none"">" . o_L["SponsoredNone"] . "</a>" ; link in footer
-	g_strAppVersion .= " " . o_L["DialogFreeEditionLabel"]
-}
-global g_intMenuItemsMax := (g_blnSponsor ? g_intMaximumValue : 75) ; limit menu items for free edition
-global g_intDynamicMenusItemsMax := (g_blnSponsor ? g_intMaximumValue : 5) ; limit menu items for free edition
-global g_intNbExternalMenusMax := (g_blnSponsor ? g_intMaximumValue : 1) ; limit number of external menus
+; Menu global variables
+global g_intMenuItemsMax := g_intMaximumValue
+global g_intDynamicMenusItemsMax := g_intMaximumValue
+global g_intNbExternalMenusMax := g_intMaximumValue
 global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
 
 ; Build main menus
@@ -5855,8 +5782,6 @@ InsertGuiControlPos("f_strFavoritesListFilter",			  40,   23)
 InsertGuiControlPos("f_lvFavoritesList",				  40,   57)
 InsertGuiControlPos("f_lvFavoritesListSearch",			  40,   57)
 
-InsertGuiControlPos("f_lnkSponsoredBy",             	  10,  -25)
-
 return
 ;------------------------------------------------------------
 
@@ -6161,24 +6086,7 @@ if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
-o_Settings.ReadIniOption("Launch", "strSponsorName", "SponsorNameOptional", " ") ; rename ini name from SponsorName to SponsorNameOptional to avoid overwriting the name associated to the pre-v11 sponsor code
-o_Settings.ReadIniOption("Launch", "strSponsorProductId", "SponsorProductId", " ")
 
-; read the license code and scramble it if neccesary (for codes saved with v11.0, v11.0.1 or v11.0.2)
-o_Settings.ReadIniOption("Launch", "strSponsorCode", "SponsorCode", " ")
-if StrLen(o_Settings.Launch.strSponsorCode.IniValue)
-; this is the license code unscrambled, scramble it under the name SponsorCodeConverted in the ini file
-; and remove the original SponsorCode value from ini file and validation trace in registry or working directory
-{
-	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCode.IniValue) ; remove trace using the unscramlbed license code
-	o_Settings.ReadIniOption("Launch", "strSponsorCodeConverted", "SponsorCodeConverted", Scramble(o_Settings.Launch.strSponsorCode.IniValue)) ; set SponsorCodeConverted ini name with the scrambled value
-	o_Settings.Launch.strSponsorCodeConverted.WriteIni(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; write scrambled value to ini file using the new ini name SponsorCodeConverted
-	IniDelete, % o_Settings.strIniFile, Global, SponsorCode ; remove the old unscrambled value
-	o_Settings.Launch.strSponsorCode.IniValue := ""
-}
-o_Settings.ReadIniOption("Launch", "strSponsorCodeConverted", "SponsorCodeConverted", " ") ; read the scrambled license code
-
-o_Settings.ReadIniOption("Launch", "strUserBanner", "UserBanner", " ") ; g_strUserBanner
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
  	Gosub, AddToIniDynamicDefaultMenu ; modify the ini file Favorites section before reading it
@@ -6237,620 +6145,6 @@ global g_aaFileManagerExplorer := o_FileManagers.SA[1].AA
 global g_aaFileManagerDirectoryOpus := o_FileManagers.SA[2].AA
 global g_aaFileManagerTotalCommander := o_FileManagers.SA[3].AA
 global g_aaFileManagerQAPconnect := o_FileManagers.SA[4].AA
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-ProcessSponsorCode:
-;------------------------------------------------------------
-
-global g_blnSponsor := false
-global g_strSponsorCodeError := "" ; track license statut if invalid
-
-strProductIdFree := "51"
-strProductIdYearly := "62"
-strProductIdMonthly := "59"
-strProductIdLifeTime := "57"
-strProductIdCustomLifetime := "110"
-strProductIdCustomYearly := "112"
-global g_saEddProduct := {(strProductIdYearly): "Y", (strProductIdMonthly): "M", (strProductIdLifeTime): "L", (strProductIdFree): "F", (strProductIdCustomYearly): "CY", (strProductIdCustomLifetime): "CL"}
-
-; Diag(strName, strData, strStartElapsedStop, blnForceForFirstStartup := false)
-Diag(A_ThisLabel . " o_Settings.Launch.strSponsorProductId.IniValue", o_Settings.Launch.strSponsorProductId.IniValue, "")
-Diag(A_ThisLabel . " g_strSponsorCodeSiteURL", g_strSponsorCodeSiteURL, "")
-Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (scrambled)", o_Settings.Launch.strSponsorCodeConverted.IniValue, "")
-Diag(A_ThisLabel . " o_Settings.Launch.strSponsorCodeConverted.IniValue (descrambled)", Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), "")
-
-loop, parse, % StrLen(o_Settings.Launch.strSponsorProductId.IniValue) ? o_Settings.Launch.strSponsorProductId.IniValue
-	: strProductIdFree . "|" . strProductIdYearly . "|" . strProductIdMonthly . "|" . strProductIdLifeTime . "|" . strProductIdCustomLifetime . "|" . strProductIdCustomYearly, |
-	; if we have the product id, check license for this product, else, check for all products in order
-	; 1) free (most frequent), 2) yearly, 3) monthly, 4) lifetime, 5) custom lifetime, 6) custom yearly
-{
-	Diag(A_ThisLabel . " A_LoopField", A_LoopField, "")
-	; descramble license code before verification
-	o_EDDLicense := new EDDLicense(g_strSponsorCodeSiteURL, A_LoopField, Descramble(o_Settings.Launch.strSponsorCodeConverted.IniValue), g_strUniqueSystemId)
-	o_EDDLicense.strProductId := A_LoopField ; capture or update product id
-	
-	; TEST VALUES
-	
-	; QAP offline or website down
-	; o_EDDLicense.oLicense := ""
-	
-	; expired
-	; o_EDDLicense.oLicense.activations_left := "0"
-	; o_EDDLicense.oLicense.license := "expired"
-	; missing renew link
-	
-	; no activation left
-	; o_EDDLicense.oLicense.activations_left := "0"
-	; o_EDDLicense.oLicense.license := "valid"
-	
-	; new license
-	; o_EDDLicense.oLicense.license := "invalid"
-	
-	; valid license
-	; o_EDDLicense.oLicense.license := "valid"
-	
-	if (o_EDDLicense.oLicense.license = "invalid_item_id") ; the license is valid but for another product
-	{
-		if (o_Settings.Launch.strSponsorProductId.IniValue = o_EDDLicense.oLicense.item_id) ; product in registry is invalid, delete it
-		{
-			IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
-			blnInvalidProductIdRemoved := true
-		}
-		strPossibleBadNumber := A_LoopField
-		continue
-	}
-	else ; the license is either valid, invalid, expired or missing
-		
-		break
-		
-}
-; ###_O2("EDD", o_EDDLicense, o_EDDLicense.oLicense)
-
-; set the status before asking user for next action
-
-Diag(A_ThisLabel . " o_EDDLicense.oLicense.license", o_EDDLicense.oLicense.license, "")
-Diag(A_ThisLabel . " o_EDDLicense.strProductId", o_EDDLicense.strProductId, "")
-Diag(A_ThisLabel . " o_EDDLicense.oLicense.item_id", o_EDDLicense.oLicense.item_id, "")
-if (o_EDDLicense.oLicense.license = "valid")
-{
-	o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
-	; when valid free license, run as sponsor (no limitations) until the license expires
-	; keep track that it is a free license in o_EDDLicense.strProduct
-	g_blnSponsor := true ; was g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
-	strPossibleBadNumber := ""
-	o_Settings.Launch.strSponsorProductId.WriteIni(o_EDDLicense.oLicense.item_id)
-	SetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
-	g_strSponsorCodeError := "" ; QAP will launch
-}
-else if (o_EDDLicense.oLicense.license = "invalid_item_id")
-{
-	if (blnInvalidProductIdRemoved)
-	{
-		MsgBox, 0, %g_strAppNameText%, % "Your previous license info was removed.`n`nThe app will restart in a moment.", 5
-		OnExit ; disable exit subroutine
-		Reload
-	}
-	else
-		MsgBox, % "Please report this error to support@quickaccesspopup.com`n`nERROR: Bad item number #" . strPossibleBadNumber
-	return ; will remove files created if first launch and exit
-}
-else if (o_EDDLicense.oLicense.license = "expired")
-{
-	g_strSponsorCodeError := "expired"
-	Gosub, GuiManageLicenseWhenExpired ; offer to renew, get a new license or save a new license
-}
-else ; the license is site_inactive, invalid or missing
-{
-	strCheckValidLicenseTrace := CheckValidLicenseTrace(intDaysAlert)
-	Diag(A_ThisLabel . " strCheckValidLicenseTrace", strCheckValidLicenseTrace, "")
-	if (o_EDDLicense.oLicense.license = "site_inactive" and o_EDDLicense.oLicense.activations_left = 0) ; "site_inactive" because no installation left
-	{
-		g_strSponsorCodeError := "no_activation_left"
-		Oops(1, o_L["DonateCodeNoInstallationsMessage"] . " " . o_L["DonateCodeNoInstallationOops"] . "`n`n" . o_L["DonateInvalidLicenseRunAsFreeEdition"]
-			, o_EDDLicense.oLicense.site_count, g_strAppNameText, o_L["MenuHelp"], o_L["DonateActionManageLicense"], "support@quickaccesspopup.com")
-	}
-	else if StrLen(o_Settings.Launch.strSponsorCodeConverted.IniValue) and (strCheckValidLicenseTrace <> "reject")
-	{
-		if (strCheckValidLicenseTrace = "alert")
-			Oops(1, o_L["DonateOnline"], intDaysAlert)
-		; consider license is good, set values and continue
-		o_EDDLicense := Object() ; for temporary offline usage
-		o_EDDLicense.strProductId := o_Settings.Launch.strSponsorProductId.IniValue ; use product id saved in ini file
-		if !StrLen(o_EDDLicense.strProductId) ; if no product id saved in ini file (should not happen), consider as free edition
-			o_EDDLicense.strProductId := strProductIdFree
-		o_EDDLicense.strProduct := (o_EDDLicense.strProductId <> strProductIdFree ? "Sponsor" : "Free")
-		g_blnSponsor := (o_EDDLicense.strProduct = "Sponsor")
-		o_EDDLicense.oLicense := Object() ; for temporary offline usage
-		o_EDDLicense.oLicense.license := "valid"
-		o_EDDLicense.oLicense.item_name := o_L["DonateCodeNotAvailable"]
-		o_EDDLicense.strUniqueSystemId := GetUniqueSystemId()
-		g_strSponsorCodeError := "" ; QAP will launch
-	}
-	else
-		
-		g_strSponsorCodeError := "invalid"
-}
-
-Diag(A_ThisLabel . " g_strSponsorCodeError", g_strSponsorCodeError, "")
-if StrLen(g_strSponsorCodeError)
-{
-	RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; if we had a valid license trace, remove it, using scrambled license code
-	
-	Diag(A_ThisLabel . " strSponsorCodeAction", strSponsorCodeAction, "")
-	
-	if InStr("|get-new-key|renew-key|", "|" . strSponsorCodeAction . "|") ; called from Manage License dialog box when license expired
-	{
-		g_blnSponsorCodeInProgressGetting := true
-		return ; end this process and let the get-new-key continue
-	}
-	else if (strSponsorCodeAction = "save-key") ; called from Manage License dialog box when license expired and saving a new key
-	{
-		g_blnSponsorCodeInProgressSaving := true
-		return ; end this process and let the save-key process continue
-	}
-	else
-		gosub, ProcessSponsorCodeCancel
-}
-; else launch QAP
-
-g_SponsoredMessage := (StrLen(o_Settings.Launch.strSponsorName.IniValue) ? L(o_L["SponsoredName"], o_Settings.Launch.strSponsorName.IniValue) : "")
-if StrLen(g_SponsoredMessage)
-	g_SponsoredMessage := "                    " . g_SponsoredMessage . "                    " ; give extra space to control in case it is replaced with longer text
-
-strProductIdYearly := ""
-strProductIdMonthly := ""
-strProductIdLifeTime := ""
-strProductIdFree := ""
-strPossibleBadNumber := ""
-strSponsorOnlineTrace := ""
-intDaysAlert := ""
-intDaysExit := ""
-strSponsorCodeAction := ""
-blnInvalidProductIdRemoved := ""
- 
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-CheckValidLicenseTrace(ByRef intDaysAlert)
-;------------------------------------------------------------
-{
-	strSponsorOnlineTrace := GetSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
-	if StrLen(strSponsorOnlineTrace)
-	{
-		Loop, % StrLen(strSponsorOnlineTrace) / 2
-		{
-			strDecoded := Chr(SubStr(strSponsorOnlineTrace, 1, 2)) . strDecoded
-			strSponsorOnlineTrace := SubStr(strSponsorOnlineTrace, 3)
-		}
-		; strDecoded := "20200822181414" ; datetime example
-		if RegExMatch(strDecoded, "[^0-9]")
-			return "reject" ; the trace has been modified, it is not a valid datetime
-		EnvSub, strDecoded, A_NowUTC, D
-		if (strDecoded > 0)
-			return "reject" ; the trace has been modified, it is in the future
-		intDaysAlert := 66 ; 52 (server issue) + 14 (nortmal)
-		intDaysReject := 73 ; 52 (server issue) + 21 (notmal)
-		if (strDecoded < -intDaysReject) ; passed Reject day
-			return "reject"
-		else if (strDecoded < -intDaysAlert) ; between Alert day and Reject day
-			return "alert"
-		else ; before Alert day
-			return "ok"
-	}
-	else ; no online trace
-		return "reject"
-}
-;------------------------------------------------------------
-
-
-;---------------------------------------------------------
-SetSponsorOnlineTrace(strEddLicense)
-;---------------------------------------------------------
-{
-	Loop, Parse, A_NowUTC
-		strSponsorOnlineTrace := Asc(A_LoopField) . strSponsorOnlineTrace
-	
-	if (g_blnPortableMode)
-	{
-		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
-		FileSetAttrib, -R-H-S, %strFileName%
-		FileDelete, %strFileName%
-		FileAppend, %strSponsorOnlineTrace%, %strFileName%
-		FileSetAttrib, +R+H+S, %strFileName%
-	}
-	else
-		SetRegistry(strSponsorOnlineTrace, "HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
-}
-;---------------------------------------------------------
-
-
-;---------------------------------------------------------
-GetSponsorOnlineTrace(strEddLicenseConverted)
-;---------------------------------------------------------
-{
-	if (g_blnPortableMode)
-	{
-		strFileName :=  A_WorkingDir . "\" . strEddLicenseConverted . "."
-		FileRead, strSponsorOnlineTrace, %strFileName%
-		return %strSponsorOnlineTrace%
-	}
-	else
-		return GetRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicenseConverted)
-}
-;---------------------------------------------------------
-
-
-;---------------------------------------------------------
-RemoveSponsorOnlineTrace(strEddLicense)
-;---------------------------------------------------------
-{
-	if (g_blnPortableMode)
-	{
-		strFileName :=  A_WorkingDir . "\" . strEddLicense . "."
-		FileSetAttrib, -R-H-S, %strFileName%
-		FileDelete, %strFileName%
-	}
-	else
-		if StrLen(strEddLicense) ; safety
-			RemoveRegistry("HKEY_CURRENT_USER\Software\Jean Lalonde\" . g_strAppNameText, strEddLicense)
-}
-;---------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiManageLicense:
-GuiManageLicenseWhenExpired:
-GuiManageLicenseFromCreation:
-;------------------------------------------------------------
-
-if (A_ThisLabel = "GuiManageLicenseFromCreation") ; first run of QAP
-	strSponsorCodeAction := "save-key" ; will open the GuiSponsorCodeInput dialog box
-else
-	strSponsorCodeAction := GetSponsorAction((StrLen(g_strSponsorCodeError) ? g_strSponsorCodeError : "valid"), A_ThisLabel)
-
-strMsgBoxTitle := g_strAppNameText . " - " . g_strAppVersion
-
-if (strSponsorCodeAction = "renew-key")
-{
-	MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionRenewConfirm"], g_strAppNameText)
-	if (o_EDDLicense.strProductId = strProductIdFree)
-		Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "products/", A_ThisLabel, "License Management")
-	else
-		Run, % o_EDDLicense.RenewLink()
-}
-else if (strSponsorCodeAction = "get-new-key")
-{
-	if (A_ThisLabel = "GuiManageLicenseWhenExpired")
-		MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionNewLicenseConfirm"], g_strAppNameText)
-	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "products/", A_ThisLabel, "License Management")
-}
-else if (strSponsorCodeAction = "manage-key")
-	
-	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "checkout/purchase-history/", A_ThisLabel, "License Management")
-	
-else if (strSponsorCodeAction = "manage-installations")
-{
-	MsgBox, , %strMsgBoxTitle%, % L(o_L["DonateActionManageInstallationsConfirm"], g_strAppNameText, o_EDDLicense.oLicense.item_name)
-	Run, % AddUtm2Url(g_strSponsorCodeSiteURL . "checkout/purchase-history/?action=manage_licenses&payment_id=" . o_EDDLicense.oLicense.payment_id, A_ThisLabel, "License Management")
-}	
-else if (strSponsorCodeAction = "save-key")
-{
-	Gosub, GuiSponsorCodeInput
-	
-	; if first run of QAP, wait for save license dialog box closing (we return here only if save is cancelled, else QAP is reloaded)
-	if (A_ThisLabel = "GuiManageLicenseFromCreation") and WinExist("ahk_id " . g_strGuiSponsorCodeInputHwnd)
-		WinWaitClose, ahk_id %g_strGuiSponsorCodeInputHwnd%
-}	
-else if (strSponsorCodeAction = "remove-key") ; user choose to remove the key
-{
-	MsgBox, % 3 + 48 + 256, %strMsgBoxTitle%, % L(o_L["DonateActionRemoveLicenseConfirm"], o_EDDLicense.oLicense.item_name, g_strUniqueSystemId, g_strAppNameText)
-	
-	IfMsgBox, Yes
-	{
-		o_EDDLicense.Deactivate()
-		Gosub, RemoveLicenseInfoFromIniFile
-		RemoveSponsorOnlineTrace(o_Settings.Launch.strSponsorCodeConverted.IniValue) ; using scrambled license code
-	}
-}
-; else (if empty) do nothing
-
-strMsgBoxTitle := ""
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GetSponsorAction(GSA_strStatus, strFromLabel)
-;------------------------------------------------------------
-; GSA_strStatus: "valid", "invalid, "expired", "no_activation_left"
-{
-	; To create a global variable inside a function without knowing in advance what the variable's name is, the function must be assume-global. (Lexikos)
-	; (https://autohotkey.com/board/topic/84822-error-when-creating-gui-with-global-var-as-a-name/#entry540615)
-	; Use GSA_ prefix in local variable names to avoid conflicts outside the function and empty these variable because the function will not do it.
-	
-	global
-
-	if (GSA_strStatus = "invalid")
-	{
-		GSA_strGuiTitle := o_L["DonateActionManageLicense"] . " - " . g_strAppVersion
-		GSA_strPrompt := L(o_L["DonateCodeInvalidMessage"], g_strAppNameText)
-	}
-	else if (GSA_strStatus = "expired")
-	{
-		GSA_strGuiTitle := L(o_L["DonateCodeExpiredTitle"], g_strAppVersion)
-		GSA_strPrompt := L(o_L["DonateCodeExpiredMessage"], g_strAppNameText)
-	}
-	else if (GSA_strStatus = "no_activation_left")
-	{
-		GSA_strGuiTitle := L(o_L["DonateCodeNoInstallationsTitle"], g_strAppVersion)
-		GSA_strPrompt := L(o_L["DonateCodeNoInstallationsMessage"], o_EDDLicense.oLicense.site_count, g_strAppNameText)
-	}
-	else if (GSA_strStatus = "valid") ; including free edition
-	{
-		GSA_strGuiTitle := o_L["DonateActionManageLicense"] . " - " . g_strAppVersion
-		; for sponsors, show current number of installations vs maximum
-		; for free edition, show the Get your license message
-		GSA_strPrompt := (g_blnSponsor ? L(o_L["DonateCodeManageMessage"], o_EDDLicense.oLicense.activations_left
-			, (o_EDDLicense.oLicense.activations_left = "unlimited" ? "unlimited" : o_EDDLicense.oLicense.license_limit))
-			: o_L["DialogFreeEditionMessage0"] . "`n`n" . o_L["DialogFreeEditionMessage3"] . ".")
-	}
-	else
-		return
-
-	if (strFromLabel = "GuiManageLicense")
-		Gui, 1:Submit, NoHide
-
-	; every control in this Gui has the -Group option to allow the non-contiguous radio buttons to considered as one group
-	; https://autohotkey.com/board/topic/64482-tip-non-contiguous-radio-group/
-	
-	Gui, 2:New, +HwndstrGuiSponsorActionHwnd, %GSA_strGuiTitle%
-	if (strFromLabel = "GuiManageLicense")
-	{
-		Gui, 2:+Owner1
-		Gui, 2:+OwnDialogs
-	}
-	if (g_blnUseColors)
-		Gui, 2:Color, %g_strGuiWindowColor%
-	Gui, 2:Font, w700
-	Gui, 2:Add, Text, -Group, % (StrLen(o_EDDLicense.oLicense.item_name) ? o_EDDLicense.oLicense.item_name : g_strAppNameText)
-	Gui, 2:Font
-	
-	Gui, 2:Add, Link, -Group y+10 w420, %GSA_strPrompt%
-
-	Gui, 2:Add, Link, -Group y+10 gSponsorActionHelp, % "<a>" . o_L["AboutLicenseHelp"] . "</a>"
-	
-	Gui, 2:Font, w700
-	Gui, 2:Add, Text, -Group y+10, % o_L["DonateActionGroupWebsite"]
-	Gui, 2:Font
-	if (GSA_strStatus = "expired" and o_EDDLicense.strItemId <> strProductIdFree) ; do not show renew option for free license
-		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRenew, % o_L["DonateActionRenew"]
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionNewLicense, % o_L["DonateActionNewLicense"]
-	if (GSA_strStatus <> "invalid" and g_blnSponsor)
-		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageLicense, % o_L["DonateActionManageLicense"]
-	if (GSA_strStatus = "no_activation_left")
-		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionManageInstallations, % o_L["DonateActionManageInstallations"]
-	
-	Gui, 2:Font, w700
-	Gui, 2:Add, Text, -Group x10 y+15, % L(o_L["DonateActionGroupQAP"], g_strAppNameText)
-	Gui, 2:Font
-	Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionEnterLicense, % o_L["DonateActionSaveLicense"]
-	if ((GSA_strStatus <> "invalid" and g_blnSponsor) or GSA_strStatus = "expired")
-		Gui, 2:Add, Radio, -Group y+5 x20 w400 gGetSponsorActionRadioButtonsChanged vf_blnSponsorActionRemoveLicense, % o_L["DonateActionRemoveLicense"]
-
-	aaL := o_L.InsertAmpersand(false, "DialogContinue", "DialogCancelButton")
-
-	Gui, 2:Font, s8 w400, Verdana
-	Gui, 2:Add, Button, -Group x175 y+20 gButtonSponsorActionContinue vf_btnSponsorActionContinue Default, % aaL["DialogContinue"]
-	Gui, 2:Add, Button, -Group x175 yp gButtonSponsorActionCancel vf_btnSponsorActionCancel, % aaL["DialogCancelButton"]
-	
-	Gui, 2:Add, Text
-	Gui, 2:Add, Text
-
-	GuiCenterButtons(strGuiSponsorActionHwnd, 10, 5, 20, "f_btnSponsorActionContinue", "f_btnSponsorActionCancel")
-	
-	if (GSA_strStatus = "invalid")
-		GuiControl, , f_blnSponsorActionNewLicense, 1
-	else if (GSA_strStatus = "expired")
-		GuiControl, , f_blnSponsorActionRenew, 1
-	else if (GSA_strStatus = "no_activation_left")
-		GuiControl, , f_blnSponsorActionManageInstallations, 1
-	else ; "no_activation_left" or "valid"
-		GuiControl, , f_blnSponsorActionManageLicense, 1
-
-	GuiControl, Focus, f_btnSponsorActionContinue
-	
-	Gui, 2:Show
-
-	WinWaitClose, %GSA_strGuiTitle% ; waiting for Gui to close
-	
-	return GSA_strAction ; returning value
-	
-	;------------------------------------------------------------
-	
-	;------------------------------------------------------------
-	SponsorActionHelp:
-	;------------------------------------------------------------
-	
-	Run, % AddUtm2Url("https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/", A_ThisLabel, "Help")
-	
-	return
-	;------------------------------------------------------------
-	
-	;------------------------------------------------------------
-	GetSponsorActionRadioButtonsChanged:
-	;------------------------------------------------------------
-
-	if (A_GuiEvent = "DoubleClick")
-		Gosub, ButtonSponsorActionContinue
-
-	return
-	;------------------------------------------------------------
-	
-	;------------------------------------------------------------
-	ButtonSponsorActionContinue:
-	;------------------------------------------------------------
-	GuiControlGet, GSA_blnRadioSponsorActionRenew, , f_blnSponsorActionRenew
-	GuiControlGet, GSA_blnRadioSponsorActionNewLicense, , f_blnSponsorActionNewLicense
-	GuiControlGet, GSA_blnRadioSponsorActionManageLicense, , f_blnSponsorActionManageLicense
-	GuiControlGet, GSA_blnRadioSponsorActionManageInstallations, , f_blnSponsorActionManageInstallations
-	GuiControlGet, GSA_blnRadioSponsorActionEnterLicense, , f_blnSponsorActionEnterLicense
-	GuiControlGet, GSA_blnRadioSponsorActionRemove, , f_blnSponsorActionRemoveLicense
-
-	if (GSA_blnRadioSponsorActionRenew)
-		GSA_strAction := "renew-key"
-	else if (GSA_blnRadioSponsorActionNewLicense)
-		GSA_strAction := "get-new-key"
-	else if (GSA_blnRadioSponsorActionManageLicense)
-		GSA_strAction := "manage-key"
-	else if (GSA_blnRadioSponsorActionManageInstallations)
-		GSA_strAction := "manage-installations"
-	else if (GSA_blnRadioSponsorActionEnterLicense)
-		GSA_strAction := "save-key"
-	else if (GSA_blnRadioSponsorActionRemove)
-		GSA_strAction := "remove-key"
-	else
-	{
-		Oops(1, o_L["DonateActionChoose"])
-		return ; do not destroy window
-	}
-	
-	; closing the window will trigger the function return value
-	gosub, ButtonSponsorActionClose
-	
-	return
-	;------------------------------------------------------------
-	
-	;------------------------------------------------------------
-	ButtonSponsorActionCancel:
-	ButtonSponsorActionClose:
-	;------------------------------------------------------------
-	
-	if (A_ThisLabel = "ButtonSponsorActionCancel")
-		GSA_strAction := ""
-	
-	if (strFromLabel = "GuiManageLicense")
-		gosub, 2GuiClose
-	else
-		Gui, 2:Destroy
-	
-	return
-	;------------------------------------------------------------
-	
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiSponsorCodeInput:
-;------------------------------------------------------------
-
-blnSponsorCodeInputInProgress := true
-
-strGuiTitle := g_strAppNameText . " " . g_strAppVersion
-Gui, SaveCode:New, +Hwndg_strGuiSponsorCodeInputHwnd, %strGuiTitle%
-if WinExist("ahk_id " . g_strGui1Hwnd) ; set owner only if main gui exists
-	Gui, SaveCode:+Owner1
-else if WinExist("ahk_id " . g_strGuiWelcomeCreationHwnd) ; set owner only if welcome gui exists
-	Gui, % "SaveCode:+Owner" . g_strGuiWelcomeCreationHwnd
-; else no owner when saving from Manage License with expired license
-
-if (g_blnUseColors)
-	Gui, SaveCode:Color, %g_strGuiWindowColor%
-Gui, SaveCode:Font, s10 w700, Verdana
-Gui, SaveCode:Add, Link, y10 w420, % L(o_L["DonateTextSaveLicense"], g_strAppNameText)
-Gui, SaveCode:Font, s8 w400, Verdana
-
-Gui, SaveCode:Add, Text, y+20, % o_L["GuiDonateCodeInputDonorLabel"]
-Gui, SaveCode:Add, Edit, y+10 w300 vf_strSponsorCode
-
-Gui, SaveCode:Add, Text, y+20, % o_L["GuiDonateCodeInputSponsorLabel"]
-Gui, SaveCode:Add, Edit, y+10 w300 vf_strSponsorName
-
-aaL := o_L.InsertAmpersand(false, "GuiSave", "GuiHelp", "DialogCancelButton")
-
-Gui, SaveCode:Font, s8 w400, Verdana
-Gui, SaveCode:Add, Button, x175 y+20 gGuiSponsorCodeInputSave vf_btnSponsorCodeInputSave Default, % aaL["GuiSave"]
-Gui, SaveCode:Add, Button, x175 yp gGuiSponsorCodeInputCancel vf_btnSponsorCodeInputCancel, % aaL["DialogCancelButton"]
-Gui, SaveCode:Add, Text
-GuiCenterButtons(g_strGuiSponsorCodeInputHwnd, 10, 5, 20, "f_btnSponsorCodeInputSave", "f_btnSponsorCodeInputCancel")
-
-GuiControl, Focus, f_strSponsorCode
-Gui, SaveCode:Show
-if WinExist("ahk_id " . g_strGui1Hwnd)
-	Gui, 1:+Disabled ; ui 1: wioll not need to be re-enabled because app will be restarted if user Save or Cancel dialog box
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiSponsorCodeInputSave:
-;------------------------------------------------------------
-Gui, SaveCode:Submit, NoHide
-
-strSponsorCode := Trim(f_strSponsorCode)
-strSponsorName := Trim(f_strSponsorName)
-
-; Donor code must contain only numbers and lowercase letters and be 32 digits
-if StrLen(strSponsorCode) <> 32 ; sponsor code must be 32 characters
-	or RegExMatch(strSponsorCode, "[^a-z^0-9]") ; sponsor code must be made only of digits in ranges a-z (lowercase) and 0-9
-{
-	Oops(2, o_L["GuiDonateCodeInputDonorInvalid"])
-	return
-}
-
-o_Settings.Launch.strSponsorCodeConverted.WriteIni(Scramble(strSponsorCode)) ; scramble license code before saving
-o_Settings.Launch.strSponsorName.WriteIni(strSponsorName)
-
-MsgBox, 0, %g_strAppNameText%, % L(o_L["DonateThankyouRestart"], g_strAppNameText), 5
-
-OnExit ; disable exit subroutine
-Reload
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiSponsorCodeInputCancel:
-;------------------------------------------------------------
-
-OnExit ; disable exit subroutine
-Reload
-
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-ProcessSponsorCodeCancel:
-;------------------------------------------------------------
-
-if (g_blnIniFileCreation) ; remove files created when launching for the first time
-{
-	; FileDelete, % o_Settings.strIniFile ; do not delete to keep the o_FileManagers config
-	FileDelete, %g_strWindosListAppsCacheFile%
-	FileDelete, %g_strPsScriptPathFile%
-}
-
-return
-
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-RemoveLicenseInfoFromIniFile:
-;------------------------------------------------------------
-
-IniDelete, % o_Settings.strIniFile, Global, SponsorCodeConverted
-IniDelete, % o_Settings.strIniFile, Global, SponsorNameOptional
-IniDelete, % o_Settings.strIniFile, Global, SponsorProductId
 
 return
 ;------------------------------------------------------------
@@ -7675,7 +6969,7 @@ BuildTrayMenuRefresh:
 ;------------------------------------------------------------
 
 global g_aaMenuTrayL := o_L.InsertAmpersand(true, "MenuSettings", "MenuFile", "MenuFavorite", "MenuTools", "MenuOptions"
-	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText, "DonateMenu")
+	, "MenuHelp", "MenuSuspendHotkeys", "MenuRunAtStartup", "MenuExitApp@" . g_strAppNameText)
 
 if (A_ThisLabel = "BuildTrayMenuRefresh")
 	Menu, Tray, DeleteAll
@@ -7694,11 +6988,6 @@ Menu, Tray, Add
 Menu, Tray, Add, % g_aaMenuTrayL["MenuSuspendHotkeys"], ToggleSuspendHotkeys
 Menu, Tray, Add, % g_aaMenuTrayL["MenuRunAtStartup"], ToggleRunAtStartup ; function ToggleRunAtStartup replaces RunAtStartup
 Menu, Tray, Add, % g_aaMenuTrayL["MenuExitApp@" . g_strAppNameText], GuiCancelAndExitApp
-if (!g_blnSponsor)
-{
-	Menu, Tray, Add
-	Menu, Tray, Add, % g_aaMenuTrayL["DonateMenu"] . g_strEllipse, GuiDonate ; "Get a license"
-}
 ;@Ahk2Exe-IgnoreBegin
 ; Start of code for developement phase only - won't be compiled
 Menu, Tray, Add
@@ -7708,8 +6997,7 @@ Menu, Tray, Add
 Menu, Tray, NoDefault ; do not open the Customize window on tray icon double-click
 if (g_blnUseColors)
 	Menu, Tray, Color, %g_strMenuBackgroundColor%
-Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)`n"
-	. (g_blnSponsor ? L(o_L["DonateThankyou"], o_Settings.Launch.strSponsorName.IniValue) : o_L["DonateMenu"]) ; A_PtrSize * 8 = 32 or 64
+Menu, Tray, Tip, % g_strAppNameText . " " . g_strAppVersion . " (" . (A_PtrSize * 8) . "-bit)" ; A_PtrSize * 8 = 32 or 64
 	
 return
 ;------------------------------------------------------------
@@ -7956,7 +7244,7 @@ o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "StartupTipsShow", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
-	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "DonateActionManageLicense", "MenuShareQAP", "MenuAbout")
+	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -7972,14 +7260,7 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiHotkeysHelpClicked", aaHelpL["GuiHotkeysHelp"] . "`tF1", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiDropFilesHelpClicked", aaHelpL["GuiDropFilesHelp"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-if (o_EDDLicense.strProduct <> "Sponsor" or !g_blnSponsor)
-	saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiManageLicense", aaHelpL["DonateActionManageLicense"] . g_strEllipse, "", "iconNoIcon"])
-if (o_EDDLicense.strProduct = "Sponsor" or g_blnSponsor)
-{
-	saMenuItemsTable.Push(["X"])
-	saMenuItemsTable.Push(["HelpShareQAP", aaHelpL["MenuShareQAP"], "", "iconNoIcon"])
-}
+saMenuItemsTable.Push(["GuiDonate", aaHelpL["DonateMenu"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAbout", aaHelpL["MenuAbout"], "", "iconNoIcon"])
 o_Containers.AA["menuBarHelp"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -9202,7 +8483,7 @@ g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for fr
 g_intNbExternalMenusCount := 0 ; number of external menus (vs maximum set in ini file)
 
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
-g_intNbLiveFolderItemsMax := (g_blnSponsor ? o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue : 50) ; limit number of live folders
+g_intNbLiveFolderItemsMax := o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue
 
 if InStr(A_ThisLabel, "WithStatus")
 	SetCursor(true, "wait") ; set wait cursor during building menu, was ToolTip, % o_L["ToolTipBuilding"]
@@ -9219,20 +8500,14 @@ if (g_blnIniFileCreation)
 else
 	strLimitsMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLiveExceeded"], g_intNbLiveFolderItemsMax) . "`n" : "")
 
-if (!g_blnSponsor and (g_blnIniFileCreation or StrLen(strLimitsMessage)) and !g_blnLimitExceededMessageShown)
+/*
+if (g_blnIniFileCreation) ; first run of QAP
 {
-	if (g_blnIniFileCreation) ; first run of QAP
-	{
-		gosub, GuiWelcomeCreation ; ask if user has a license, if yes save license, else continue here
-		if WinExist("ahk_id " . g_strGuiWelcomeCreationHwnd) ; wait for welcome dialog box to close
-			WinWaitClose, ahk_id %g_strGuiWelcomeCreationHwnd%
-	}
-	
-	MsgBox, % 0, Quick Access Popup Free Edition, % strLimitsIntro . "`n`n" . strLimitsMessage . "`n"
-		. o_L["DialogFreeEditionMessage3"] . ".`n`n" . L(o_L["DialogFreeEditionMessage2"], o_L["MenuHelp"], o_L["DonateActionManageLicense"])
-	if !(g_blnIniFileCreation) ; show limit again if in limit exceeded in the first session
-		g_blnLimitExceededMessageShown := true
+	gosub, GuiWelcomeCreation
+	if WinExist("ahk_id " . g_strGuiWelcomeCreationHwnd) ; wait for welcome dialog box to close
+		WinWaitClose, ahk_id %g_strGuiWelcomeCreationHwnd%
 }
+*/
 
 strLimitsMessage := ""
 
@@ -9240,6 +8515,7 @@ return
 ;------------------------------------------------------------
 
 
+/*
 ;------------------------------------------------------------
 GuiWelcomeCreation:
 ;------------------------------------------------------------
@@ -9287,7 +8563,7 @@ Gui, WelcomeCreation:Destroy
 
 return
 ;------------------------------------------------------------
-
+*/
 
 ;------------------------------------------------------------
 LiveFolderHasContent(o_LiveFolder)
@@ -10843,9 +10119,7 @@ g_intOptionsFooterY += 20 ; place buttons below highest options group
 
 Gui, 2:Add, Button, x10 y%g_intOptionsFooterY% vf_btnOptionsSave gGuiOptionsGroupSave disabled Default, % aaL["GuiSave"]
 Gui, 2:Add, Button, yp vf_btnOptionsCancel gButtonOptionsCancel, % aaL["GuiCancel"]
-if (!g_blnSponsor)
-	Gui, 2:Add, Button, yp vf_btnOptionsDonate gGuiDonate, % o_L["DonateMenu"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel", (!g_blnSponsor ? "f_btnOptionsDonate" : ""))
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnOptionsSave", "f_btnOptionsCancel")
 
 Gui, 2:Add, Text
 GuiControl, Focus, f_btnOptionsSave
@@ -11941,13 +11215,6 @@ Gui, 1:Add, Button, vf_btnGuiCancel gGuiCancel Default x500 yp w100 h35, % aaSet
 
 Gui, 1:Font, s8 w400 c404040 normal, Verdana
 
-if StrLen(g_SponsoredMessage)
-{
-	Gui, 1:Add, Link, vf_lnkSponsoredBy x0 y+1 gSponsoredByClicked, %g_SponsoredMessage% ; SysLink, center option not working for links
-	GuiControlGet, arrPos, Pos, f_lnkSponsoredBy
-	g_intLnkSponsoredByWidth := arrPosW
-}
-
 GetSavedSettingsWindowPosition(saSettingsPosition) ; format: x|y|w|h with optional |M if maximized
 
 Gui, 1:Show, % "Hide "
@@ -12193,8 +11460,6 @@ GuiControl, 1:Move, f_blnFavoritesListFilterExtended, % "y" . arrFavoritesListFi
 GuiControl, 1:Move, f_btnFavoritesListNoFilter, % "y" . arrFavoritesListFilterPosY . " x" . arrFavoritesListFilterPosX + arrFavoritesListFilterPosW + arrFavoritesListFilterExtendedPosW + 16
 GuiControl, 1:Move, f_lvFavoritesList, w%g_intListW% h%intListH%
 GuiControl, 1:Move, f_lvFavoritesListSearch, w%g_intListW% h%intListH%
-if StrLen(g_SponsoredMessage)
-	GuiControl, 1:Move, f_lnkSponsoredBy, % "x" . (A_GuiWidth - g_intLnkSponsoredByWidth) // 2
 
 Gosub, AdjustColumnsWidth
 
@@ -12206,23 +11471,6 @@ intX := ""
 intY := ""
 arrPos := ""
 intFavoritesListFilterCloseW := ""
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-SponsoredByClicked:
-;------------------------------------------------------------
-
-strLink := ErrorLevel
-if (strLink = "update")
-	Run, % AddUtm2Url("https://www.quickaccesspopup.com/upgrading-donor-code/", A_ThisLabel, "License management")
-else if (strLink = "none")
-	Gosub, GuiDonate
-; else do nothing
-
-strLink := ""
 
 return
 ;------------------------------------------------------------
@@ -19938,10 +19186,6 @@ GuiCancel:
 GuiCancelAndExitApp:
 ;------------------------------------------------------------
 
-if (blnSponsorCodeInputInProgress)
-; when user click X or hit Escape in the GuiSponsorCodeInput dialog box not sure if this happens but keep it for safety)
-	gosub, ProcessSponsorCodeCancel
-
 if GetKeyState("LShift") and GetKeyState("LCtrl")
 	Gosub, ReloadQAPDontSave ; undocumented
 
@@ -21761,7 +21005,7 @@ strQuery := strUrlCheck4Update
 	. "&os=" . GetOSVersion()
 	. "&is64=" . A_Is64bitOS
 	. "&setup=" . (blnSetup)
-				+ (2 * (g_blnSponsor ? 1 : 0))
+				+ 0 ; was (2 * (g_blnSponsor ? 1 : 0))
 				+ (4 * (o_FileManagers.P_intActiveFileManager = 2 ? 1 : 0)) ; DirectoryOpus
 				+ (8 * (o_FileManagers.P_intActiveFileManager = 3 ? 1 : 0)) ; TotalCommander
 				+ (16 * (o_FileManagers.P_intActiveFileManager = 4 ? 1 : 0)) ; QAPconnect
@@ -22468,15 +21712,6 @@ Gui, 2:Add, Link, x10 w%intWidthTotal%, % L(o_L["AboutText3"], chr(169), strYear
 ; user info (left)
 Gui, 2:Add, Text, x10 w%intWidthHalf% section, % L(o_L["AboutUserComputerName"], A_UserName, A_ComputerName)
 Gui, 2:Add, Link, x10 w%intWidthHalf%, % L(o_L["AboutText4"])
-; license (right)
-if (g_blnSponsor)
-{
-	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% ys gGuiAboutCopyLicense, % L(o_L["AboutLicense"], o_EDDLicense.oLicense.item_name, o_EDDLicense.strUniqueSystemId, o_L["AboutLicenseCopy"])
-	if (o_EDDLicense.oLicense.expires <> "lifetime")
-		Gui, 2:Add, Text, x%intXCol2% w%intWidthHalf% y+1, % L(o_L["AboutLicenseExpires"], o_EDDLicense.oLicense.expires)
-	Gui, 2:Add, Link, x%intXCol2% w%intWidthHalf% y+1, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/how-do-i-setup-or-manage-my-qap-license/", A_ThisLabel, "Help")
-		. """>" . o_L["AboutLicenseHelp"] . "</a>"
-}
 
 ; credits translators (left)
 Gui, 2:Font, s8 w700, Verdana
@@ -22507,29 +21742,11 @@ return
  
 
 ;------------------------------------------------------------
-GuiAboutCopyLicense:
-;------------------------------------------------------------
-
-blnShowLicenseCode := GetKeyState("LShift") and GetKeyState("LControl")
-
-MsgBox, 1, g_strAppNameText, % o_L["AboutLicenseCopyMessage"]
-IfMsgBox, Cancel
-	return
-
-Clipboard := (blnShowLicenseCode ? o_EDDLicense.strEddLicense . " " : "") . o_EDDLicense.strUniqueSystemId ; only here we can see the unscrambled license code
-
-blnShift := ""
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
 ButtonDonate:
 GuiDonate:
 ;------------------------------------------------------------
 
-Run, % AddUtm2Url(g_strSponsorCodeSiteURL, A_ThisLabel, "Get License")
+Run, % AddUtm2Url("https://www.paypal.com/donate?hosted_button_id=MKS3LBZSUGT6N", A_ThisLabel, "Donation")
 
 return
 ;------------------------------------------------------------
@@ -26786,46 +26003,6 @@ ExtensionIsApplication(strFilePathName)
 
 
 ;---------------------------------------------------------
-Scramble(strContent)
-; https://autohotkey.com/board/topic/90663-way-to-randomize-a-string-and-be-able-to-restore-it-again-later/#entry573327
-;---------------------------------------------------------
-{
-	Random, , g_LicenseScrambleSeed
-	intLength := StrLen(strContent)
-	Loop, % intLength
-	{
-		Random, intPosition, 1, (intLength - A_Index + 1)
-		strOut .= SubStr(strContent, intPosition, 1)
-		strContent := SubStr(strContent, 1, intPosition - 1) . SubStr(strContent, intPosition + 1)
-	}
-	return strOut
-}
-;---------------------------------------------------------
-
-
-;---------------------------------------------------------
-Descramble(strContent)
-; https://autohotkey.com/board/topic/90663-way-to-randomize-a-string-and-be-able-to-restore-it-again-later/#entry573327
-;---------------------------------------------------------
-{
-	Random, , g_LicenseScrambleSeed
-	intLength := StrLen(strContent)
-	Loop, % intLength
-	{
-		Random, intPosition, 1, (intLength - A_Index + 1)
-		strChar%A_Index% := intPosition
-	}
-	loop, % intLength
-	{
-		strNewString := SubStr(strNewString, 1, strChar%intLength% - 1) . SubStr(strContent, intLength, 1) . SubStr(strNewString, strChar%intLength%)
-		intLength--
-	}
-	return strNewString
-}
-;---------------------------------------------------------
-
-
-;---------------------------------------------------------
 SQLiteErrorMessage(strQuery)
 ;---------------------------------------------------------
 {
@@ -28928,13 +28105,11 @@ class QAPfeatures
 			, o_L["MenuWindowAlwaysonTopDescription"], 0, "iconDesktop", ""
 			, "can-i-make-the-active-window-always-on-top")
 		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiQuickAddSnippet"] . g_strEllipse, "", "GuiQuickAddSnippet",					"1-Featured~3-QAPMenuEditing"
-			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", "", "sponsoring")
+			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", ""
+			, "can-i-create-a-snippet-using-the-clipboard-and-define-its-hotstring-in-one-step")
 		this.AddQAPFeatureObject("Add Multiple Favorite",	o_L["DialogMultipleAdd"] . g_strEllipse,		"", "GuiMultipleAddSelectSourceFromQAPFeature", "3-QAPMenuEditing"
 			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
 			, "can-i-add-multiple-favorites-in-one-click")
-		this.AddQAPFeatureObject("Manage License",			o_L["DonateActionManageLicense"] . g_strEllipse, "", "GuiManageLicense",				"7-QAPManagement"
-			, o_L["DonateActionManageLicenseDescription"], 0, "iconAddThisFolder", ""
-			, "how-do-i-setup-or-manage-my-qap-license")
 		this.AddQAPFeatureObject("Search and Replace",		o_L["GuiSearchAndReplaceTitle"] . g_strEllipse, "", "GuiSearchAndReplace",				"3-QAPMenuEditing"
 			, o_L["GuiSearchAndReplaceDescription"], 0, "iconSwitch", ""
 			, "can-i-search-and-replace-values-globally-in-my-favorites")
@@ -30740,13 +29915,6 @@ class Container
 					; block MenuContainerInGui menu if not in Main menu
 					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
-				else if !(g_blnSponsor) and (blnCountDynamicMenusItems and intDynamicMenuItemsCount > g_intDynamicMenusItemsMax) ; free edition limit
-					intMenuItemStatus := 0 ; disabled, free edition limit
-				else if !(g_blnSponsor) and (this.AA.blnCountItems)
-					and (StrLen(strMenuItemLabel) and g_intMenuItemsCount and (g_intMenuItemsCount > g_intMenuItemsMax)) ; free edition limit
-					intMenuItemStatus := 0 ; disabled, free edition limit
-				else if !(g_blnSponsor) and (this.AA.strMenuType = "External" and g_intNbExternalMenusCount > g_intNbExternalMenusMax) ; free edition limit
-					intMenuItemStatus := 0 ; disabled, free edition limit
 				else
 					intMenuItemStatus := 1
 			}
@@ -30763,17 +29931,6 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
-		if !(g_blnSponsor) and (this.AA.strMenuPath = o_L["MainMenuName"])
-		{
-			this.AddMenuIcon("", "", "")
-			this.AddMenuIcon(o_L["DonateMenu"] . g_strEllipse, "GuiDonate", "iconDonate")
-		}
-		
-		if !(g_blnSponsor) and (blnCountDynamicMenusItems and intDynamicMenuItemsCount > g_intDynamicMenusItemsMax)
-		{
-			Menu, % this.AA.strMenuPath, Add
-			this.AddMenuIcon(o_L["DialogFreeEditionMessage3"], "GuiDonate", "iconQAP")
-		}
 		if (!IsObject(this.AA.oParentMenu) and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
@@ -30884,8 +30041,7 @@ class Container
 			strFolderName .= "_"
 		strSelfFolder := "`tFolder`t" . strFolderName . "`t" . strExpandedLocation . "`t" . strFolderIcon . "`n"
 		
-		if (g_blnSponsor and g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
-		; non sponsor users will see the free edition limitation report if maximum number is exceeded
+		if (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax) ; maximum number of live folders is exceeded
 		{
 			Oops(0, o_L["OopsMaxLiveFolder"], g_intNbLiveFolderItemsMax)
 			return
