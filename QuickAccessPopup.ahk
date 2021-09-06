@@ -32,8 +32,10 @@ HISTORY
 =======
 
 Version: 11.5 (2021-09-06)
-- return to freeware/donorware model
-- remove license validation and various related menu items
+- QAP returns to freeware/donorware model
+- remove license validation and various license related menu items or labels
+- remove donation/get license incentives in main menu and tray menu (QAP icon menu in notification zone)
+- add a "Make donation" menu item under "Help" menu (linking to Paypal only for the moment)
 - fix bug with the Check for update link in "Options, General" tab
 - fix label error in "Options, File Managers" for Directory Opus options
 
