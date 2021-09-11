@@ -1,24 +1,15 @@
-Quick Access Popup – Copyright (c) 2013-2020 Jean Lalonde
+Quick Access Popup – Copyright (c) 2013-2021 Jean Lalonde
 ---------------------------------------------------------
 
 QUICK ACCESS POPUP LICENSE
 
-Quick Access Popup (hereafter the "software") is supplied under the following license conditions, is valid for the original purchaser only and is not transferable. You accept responsibility for all license certificates issued by Jean Lalonde (hereafter, the "developer") to you.
+Quick Access Popup can be freely distributed over the internet in an unchanged form.
 
-Unless required by applicable law or agreed to in writing, this software is distributed under the license is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied.
+Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
-The software may only be installed on the number of machines specified by the program license and associated certificate.
+http://www.apache.org/licenses/LICENSE-2.0
 
-You may not redistribute this software and/or any accompanying registration certificates to any person, organization or third party without the prior written consent of the developer. You may not use, copy, or transfer the software, or a copy, except as expressly provided. If you transfer possession of any copy of the software to another party, your license is automatically terminated. You may not lease the software to a third party.
-
-LIMITED TERM EVALUATION LICENSE
-
-You may install a free license or trial the software for a limited time. After this period, you must either purchase a valid license, or cease using the software and uninstall all copies of the software and any related material from your computer.
-
-TERMINATION
-
-This license is effective unless terminated. This license may be terminated immediately without notice from the developer if you fail to comply with any provision of this license. Upon knowledge or notification of termination, you must immediately uninstall and destroy the software and all associated materials and all copies thereof, and all certificates that have been issued to you. The licensee may terminate the license at any time by destroying the software and all copies thereof.
-
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 Jean Lalonde, support@quickaccesspopup.com
 http://www.QuickAccessPopup.com
