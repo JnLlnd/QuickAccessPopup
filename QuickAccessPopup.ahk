@@ -27275,25 +27275,36 @@ TODO
 				Run, % """" . this.AA.strDirectoryOpusRtPath . """ " . strCommand . " """ . strLocation . """" . strParam
 		}
 		;-----------------------------------------------------
-
+		
 		;-----------------------------------------------------
 		DirectoryOpusFavoritesFileExist()
 		;-----------------------------------------------------
 		{
-			this.AA.strDirectoryOpusFavoritesFile := EnvVars("%APPDATA%\GPSoftware\Directory Opus\ConfigFiles\favorites.ofv")
+			this.AA.strDirectoryOpusFavoritesFile := this.DirectoryOpusConfigTypeRoot() . "favorites.ofv"
 			return FileExist(this.AA.strDirectoryOpusFavoritesFile)
 		}
 		;-----------------------------------------------------
-
+		
 		;-----------------------------------------------------
 		DirectoryOpusLayoutsFileExist()
 		;-----------------------------------------------------
 		{
-			this.AA.strDirectoryOpusLayoutsFile := EnvVars("%APPDATA%\GPSoftware\Directory Opus\Layouts\order.xml")
+			this.AA.strDirectoryOpusLayoutsFile := this.DirectoryOpusConfigTypeRoot() . "order.xml"
 			return FileExist(this.AA.strDirectoryOpusLayoutsFile)
 		}
 		;-----------------------------------------------------
-
+		
+		;-----------------------------------------------------
+		DirectoryOpusConfigTypeRoot()
+		; see https://forum.quickaccesspopup.com/showthread.php?tid=1700&pid=4260#pid4260
+		;-----------------------------------------------------
+		{
+			FileRead, strUserData, % EnvVars("%APPDATA%\GPSoftware\Directory Opus\userdata.omd")
+			strRoot := EnvVars(InStr(strUserData, "config_type=""shared""") ? "%PROGRAMDATA%" : "%APPDATA%")
+			return strRoot . "\GPSoftware\Directory Opus\ConfigFiles\"
+		}
+		;-----------------------------------------------------
+		
 	}
 	;---------------------------------------------------------
 	
