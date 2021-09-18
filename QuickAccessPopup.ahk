@@ -5320,11 +5320,24 @@ Hotkey, If
 if (g_blnUsageDbEnabled)
 	SetTimer, UsageDbCollectMenuData, % (o_Settings.Database.intUsageDbIntervalSeconds.IniValue * 1000), -50 ; delay before repeating UsageDbCollectMenuData / priority -50 (not sure?)
 
+;---------------------------------
+; Show welcome screen at first use
+
+if (g_blnIniFileCreation) ; first run of QAP
+{
+	gosub, GuiWelcomeCreation
+	if WinExist("ahk_id " . g_strGuiWelcomeCreationHwnd) ; wait for welcome dialog box to close
+		WinWaitClose, ahk_id %g_strGuiWelcomeCreationHwnd%
+	
+	; at first launch, set the end of ini creation process (initiated in LoadIniFile)
+	g_blnIniFileCreation := false
+}
+
+;---------------------------------
+; Show Gui
+
 if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 	gosub, GuiShow
-
-if (g_blnIniFileCreation) ; at first launch, set the end of ini creation process
-	g_blnIniFileCreation := false
 
 ;---------------------------------
 ; Init class for StatupTips
@@ -7245,13 +7258,14 @@ saMenuItemsTable.Push(["GuiOptionsGroupAdvancedOther", aaL["OptionsAdvancedOther
 o_Containers.AA["menuBarOptions"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarOptions"].BuildMenu(true) ; true for numeric shortcut already inserted
 
-aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "StartupTipsShow", "MenuUpdate", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
+aaHelpL := o_L.InsertAmpersand(true, "MenuHelp", "StartupTipsShow", "MenuUpdate", "DialogWelcomeShow", "HelpMenuQuickStart", "HelpMenuKnowledgeBase", "HelpMenuVideosFirstStep"
 	, "HelpMenuVideosAll", "HelpMenuSupportForum", "GuiHotkeysHelp", "GuiDropFilesHelp", "DonateMenu", "MenuAbout")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiHelp", aaHelpL["MenuHelp"] . "`tCtrl+H", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["ResetAndShowStartupTips", aaHelpL["StartupTipsShow"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["Check4UpdateNow", aaHelpL["MenuUpdate"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiWelcomeCreation", aaHelpL["DialogWelcomeShow"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["HelpQuickStart", aaHelpL["HelpMenuQuickStart"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["HelpKnowledgeBase", aaHelpL["HelpMenuKnowledgeBase"], "", "iconNoIcon"])
@@ -8502,70 +8516,12 @@ if (g_blnIniFileCreation)
 else
 	strLimitsMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLiveExceeded"], g_intNbLiveFolderItemsMax) . "`n" : "")
 
-/*
-if (g_blnIniFileCreation) ; first run of QAP
-{
-	gosub, GuiWelcomeCreation
-	if WinExist("ahk_id " . g_strGuiWelcomeCreationHwnd) ; wait for welcome dialog box to close
-		WinWaitClose, ahk_id %g_strGuiWelcomeCreationHwnd%
-}
-*/
 
 strLimitsMessage := ""
 
 return
 ;------------------------------------------------------------
 
-
-/*
-;------------------------------------------------------------
-GuiWelcomeCreation:
-;------------------------------------------------------------
-
-Gui, WelcomeCreation:New, +Hwndg_strGuiWelcomeCreationHwnd, %strGuiTitle%
-Gui, Color, White
-
-Gui, Add, Picture, x10 y1, %g_strTempDir%\QAP-logo-100x100.png
-Gui, Font, w700 s14
-Gui, Add, Text, x120 yp+10 w500, % o_L["DialogWelcomeThankYou"]
-Gui, Add, Picture, x160 yp+50 gGuiWelcomeCreationVideoClicked, %g_strTempDir%\QAP_First_Steps_Video-300x167.jpg
-Gui, Font, w400 s8 italic
-Gui, Add, Text, x160 w300 yp+170 gGuiWelcomeCreationVideoClicked w300 center, % o_L["DialogWelcomeVideo"]
-Gui, Font, w400 s12 normal
-Gui, Add, Text, x120 yp+30 w500, % o_L["DialogWelcomeDetail"]
-Gui, Add, Button, x10 y+30 gGuiManageLicenseFromCreation vf_btnWelcomeCreationSave, % o_L["DialogWelcomeSaveCode"]
-Gui, Add, Button, x40 yp x+10 gWelcomeCreationGuiCancel vf_btnWelcomeCreationFree, % o_L["DialogWelcomeTryFree"]
-Gui, Font
-Gui, Add, Text, x10 y+40
-
-GuiCenterButtons(g_strGuiWelcomeCreationHwnd, 40, 25, 40, "f_btnWelcomeCreationSave", "f_btnWelcomeCreationFree")
-Gui, Show, AutoSize Center
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiWelcomeCreationVideoClicked:
-;------------------------------------------------------------
-
-Run, https://www.quickaccesspopup.com/qap-welcome-first-steps-video
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-WelcomeCreationGuiCancel: ; if user hits button Try free version
-WelcomeCreationGuiClose: ; if user close the dialog box clicking the X
-WelcomeCreationGuiEscape: ; if user hits the Escape key
-;------------------------------------------------------------
-
-Gui, WelcomeCreation:Destroy
-
-return
-;------------------------------------------------------------
-*/
 
 ;------------------------------------------------------------
 LiveFolderHasContent(o_LiveFolder)
@@ -21684,7 +21640,7 @@ return
 
 
 ;========================================================================================================================
-!_078_ABOUT-DONATE-HELP:
+!_078_ABOUT-DONATE-HELP-WELCOME:
 ;========================================================================================================================
 
 ;------------------------------------------------------------
@@ -21855,8 +21811,68 @@ return
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+GuiWelcomeCreation:
+;------------------------------------------------------------
+
+Gui, WelcomeCreation:New, +Hwndg_strGuiWelcomeCreationHwnd, %strGuiTitle%
+Gui, Color, White
+
+Gui, Add, Picture, x10 y1, %g_strTempDir%\QAP-logo-100x100.png
+Gui, Font, w700 s14
+Gui, Add, Text, x120 yp+10 w500, % o_L["DialogWelcomeThankYou"]
+Gui, Add, Picture, x160 yp+50 gGuiWelcomeCreationVideoClicked, %g_strTempDir%\QAP_First_Steps_Video-300x167.jpg
+Gui, Font, w400 s8 italic
+Gui, Add, Text, x160 w300 yp+170 gGuiWelcomeCreationVideoClicked w300 center, % o_L["DialogWelcomeVideo"]
+Gui, Font, w400 s10 normal
+Gui, Add, Text, x120 yp+30 w500, % o_L["DialogWelcomeDetail"]
+Gui, Font, w400 s12 normal
+Gui, Add, Button, x10 y+30 gGuiWelcomeCreationButton1Clicked vf_btnWelcomeCreation1, % o_L["DialogWelcomeButton1"]
+Gui, Add, Button, x40 yp x+10 gGuiWelcomeCreationButton2Clicked vf_btnWelcomeCreation2, % o_L["DialogWelcomeButton2"]
+GuiCenterButtons(g_strGuiWelcomeCreationHwnd, 40, 25, 40, "f_btnWelcomeCreation1", "f_btnWelcomeCreation2")
+Gui, Font, w400 s10 normal
+Gui, Add, Button, x40 y+60 x+10 Default gWelcomeCreationGuiClose vf_btnWelcomeCreationClose, % o_L["GuiClose"]
+GuiCenterButtons(g_strGuiWelcomeCreationHwnd, , , , "f_btnWelcomeCreationClose")
+Gui, Font
+Gui, Add, Text, x10 y+20
+GuiControl, Focus, f_btnWelcomeCreationClose
+
+Gui, Show, AutoSize Center
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiWelcomeCreationVideoClicked:
+GuiWelcomeCreationButton1Clicked:
+GuiWelcomeCreationButton2Clicked:
+;------------------------------------------------------------
+
+if InStr(A_ThisLabel, "Video")
+	Run, https://www.quickaccesspopup.com/qap-welcome-first-steps-video
+else if InStr(A_ThisLabel, "Button1")
+	Run, https://www.quickaccesspopup.com/what-should-i-know-about-quick-access-popup-before-starting/
+else ; 2
+	Run, https://www.quickaccesspopup.com/frequently-asked-questions/
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+WelcomeCreationGuiClose: ; if user hits the Close button or close the dialog box clicking the X
+WelcomeCreationGuiEscape: ; if user hits the Escape key
+;------------------------------------------------------------
+
+Gui, WelcomeCreation:Destroy
+
+return
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
-; END OF ABOUT-DONATE-HELP
+; END OF ABOUT-DONATE-HELP-WELCOME
 ;========================================================================================================================
 
 
