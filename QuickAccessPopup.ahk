@@ -27299,9 +27299,15 @@ TODO
 		; see https://forum.quickaccesspopup.com/showthread.php?tid=1700&pid=4260#pid4260
 		;-----------------------------------------------------
 		{
-			FileRead, strUserData, % EnvVars("%APPDATA%\GPSoftware\Directory Opus\userdata.omd")
-			strRoot := EnvVars(InStr(strUserData, "config_type=""shared""") ? "%PROGRAMDATA%" : "%APPDATA%")
-			return strRoot . "\GPSoftware\Directory Opus\ConfigFiles\"
+			strUserDatePath := EnvVars("%APPDATA%\GPSoftware\Directory Opus\userdata.omd")
+			if FileExist(strUserDatePath)
+			{
+				FileRead, strUserData, % EnvVars("%APPDATA%\GPSoftware\Directory Opus\userdata.omd")
+				strRoot := EnvVars(InStr(strUserData, "config_type=""shared""") ? "%PROGRAMDATA%" : "%APPDATA%") . "\GPSoftware\Directory Opus"
+			}
+			else ; this is a portable installation
+				strRoot := StrReplace(this.AA.strFileManagerPath, "\dopus.exe")
+			return strRoot . "\ConfigFiles\"
 		}
 		;-----------------------------------------------------
 		
