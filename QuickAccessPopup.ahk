@@ -13067,7 +13067,10 @@ if !(blnIsGroupMember)
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
 		Gui, 2:Add, Link, x270 yp w240 vf_lblSetWindowsFolderIcon gSetWindowsFolderIcon, % "<a>" . o_L["DialogWindowsFolderIconSet"] . "</a>"
 	else if (o_EditedFavorite.AA.strFavoriteType = "URL")
-		Gui, 2:Add, Button, x+35 yp vf_btnGetWebsiteIcon gGuiGetWebSiteIcon, % o_L["DialogGetWebSiteIcon"]
+	{
+		Gui, 2:Add, Button, x+35 yp vf_btnGetWebsiteIcon gGuiWebSiteIconRetrieve, % o_L["DialogGetWebSiteIcon"]
+		Gui, 2:Add, Button, x+20 yp vf_btnEnterWebsiteIcon gGuiWebSiteEnterURL, % o_L["DialogEnterWebSiteIcon"]
+	}
 	else if InStr("|Menu|External", "|" . o_EditedFavorite.AA.strFavoriteType, true)
 	{
 		Gui, 2:Add, Text, yp x+35, % o_L["DialogIconsSizeInMenu"]
@@ -14068,7 +14071,8 @@ return
 GuiPickIconDialog:
 GuiPickIconDialogNo:
 GuiEditIconDialog:
-GuiGetWebSiteIcon:
+GuiWebSiteIconRetrieve:
+GuiWebSiteEnterURL:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -14097,8 +14101,15 @@ if InStr("GuiEditIconDialog|GuiPickIconDialogNo|", A_ThisLabel . "|")
 	return
 }
 
-if (A_ThisLabel = "GuiGetWebSiteIcon")
+if (A_ThisLabel = "GuiWebSiteIconRetrieve")
 	GetWebPageIcon(f_strFavoriteLocation, g_strNewFavoriteIconResource)
+else if (A_ThisLabel = "GuiWebSiteEnterURL")
+{
+	; InputBox, outVar, title, prompt, hide, width, height, x, y, font, timeout, %g_strNewFavoriteIconResource%
+	InputBox, strTempNewFavoriteIconResource, % g_strAppNameFile . " - " . o_L["DialogEditIcon"], % o_L["DialogEnterWebSiteIcon"], , 400, 160
+	if !(ErrorLevel) and StrLen(strTempNewFavoriteIconResource) ; ErrorLevel is 1 if user cancel
+		GetWebPageIcon("*" . strTempNewFavoriteIconResource, g_strNewFavoriteIconResource) ; * prefix to flag a favicon URL instead of web page URL
+}
 else
 {
 	strTempNewFavoriteIconResource := SelectIcon(g_strNewFavoriteIconResource)
@@ -23822,8 +23833,13 @@ GetWebPageTitle(strLocation)
 
 ;------------------------------------------------------------
 GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := false)
+; if strLocation starts with * this is an URL to use as-is
 ;------------------------------------------------------------
 {
+	blnFaviconURL := (SubStr(strLocation, 1, 1) = "*")
+	if (blnFaviconURL)
+		strLocation := SubStr(strLocation, 2) ; remove * prefix
+	
 	If !FileExist(g_strIconsFiles) ; check if icons folder exists
 		FileCreateDir, %g_strIconsFiles%
 
@@ -23832,7 +23848,7 @@ GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := false)
 	strIconFilename := g_strIconsFiles . "\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
 		. ".ico"
 	
-	strIconURL := strProtocolDomain . "/" . "favicon.ico"
+	strIconURL := (blnFaviconURL ? strLocation : strProtocolDomain . "/" . "favicon.ico")
 	ShowToolTip(o_L["ToolTipRetrievingWebPageIcon"] . "`n" . strIconURL)
 	; blnSuccess := Url2File(strIconURL, strIconFilename, intStatus, true) ; UrlDownloadToFile not used because not async
 	UrlDownloadToFile, %strIconURL%, %strIconFilename% ; using UrlDownloadToFile until Url2File sync is fixed
