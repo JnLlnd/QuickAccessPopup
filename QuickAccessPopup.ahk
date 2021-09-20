@@ -11868,30 +11868,62 @@ Gui, 2:Add, Text, x10 y+20, % o_L["DialogAdd"] . ":"
 Gui, 2:Add, Text, x+10 yp section
 
 ; Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|Text
-Gui, 2:Add, Radio, xs yp vf_intRadioFavoriteTypeFolder gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeSpecial gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabel
+ParseIconResource("iconFolder", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs yp w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+ParseIconResource("iconSpecialFolders", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
 
-Gui, 2:Add, Radio, xs y+15 vf_intRadioFavoriteTypeDocument gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Document").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeApplication gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Application").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeWindowsApp gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("WindowsApp").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeURL gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("URL").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeFTP gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("FTP").strFavoriteTypeLabel
+ParseIconResource("iconDocuments", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+ParseIconResource("iconApplication", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+ParseIconResource("iconDesktop", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+ParseIconResource(GetIcon4Location(g_strTempDir . "\default_browser_icon.html"), strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+ParseIconResource("iconFTP", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
 
-Gui, 2:Add, Radio, xs y+15 vf_intRadioFavoriteTypeSnippet gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLabel
+ParseIconResource("iconPaste", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
 
-Gui, 2:Add, Radio, y+15 xs vf_intRadioFavoriteTypeQAP gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabel
+ParseIconResource("iconQAP", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
 
-Gui, 2:Add, Radio, y+15 xs vf_intRadioFavoriteTypeMenu gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Menu").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeExternal gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("External").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs vf_intRadioFavoriteTypeGroup gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Group").strFavoriteTypeLabel
+ParseIconResource("iconSubmenu", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+ParseIconResource("iconNetwork", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+ParseIconResource("iconGroup", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
 
-Gui, 2:Add, Radio, xs y+15 vf_intRadioFavoriteTypeText gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Text").strFavoriteTypeLabel
+ParseIconResource("iconTextDocument", strThisIconFile, intThisIconIndex)
+Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
+
+Gui, 2:Add, Radio, xs+22 ys vf_intRadioFavoriteTypeFolder gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabel
+Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeSpecial gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabel
+
+Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeDocument gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Document").strFavoriteTypeLabel
+Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeApplication gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Application").strFavoriteTypeLabel
+Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeWindowsApp gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("WindowsApp").strFavoriteTypeLabel
+Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeURL gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("URL").strFavoriteTypeLabel
+Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeFTP gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("FTP").strFavoriteTypeLabel
+
+Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeSnippet gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLabel
+
+Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeQAP gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabel
+
+Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeMenu gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Menu").strFavoriteTypeLabel
+Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeExternal gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("External").strFavoriteTypeLabel
+Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeGroup gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Group").strFavoriteTypeLabel
+
+Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeText gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Text").strFavoriteTypeLabel
 
 Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavoriteSelectTypeContinue default, % o_L["DialogContinue"]
 Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, % o_L["GuiCancel"]
 Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteMultiple gGuiMultipleAddSelectSource, % o_L["DialogMultipleAdd"]
 Gui, Add, Text
-Gui, 2:Add, Text, xs+120 ys vf_lblAddFavoriteTypeHelp w250 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
+Gui, 2:Add, Text, xs+140 ys vf_lblAddFavoriteTypeHelp w260 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSelectTypeContinue", "f_btnAddFavoriteSelectTypeCancel")
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteMultiple")
@@ -11909,26 +11941,11 @@ FavoriteSelectTypeRadioButtonsChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-g_strAddFavoriteType := "" ; start fresh
-
-; Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|External|Text|WindowsApp
-Loop, % o_Favorites.s_SA.Length()
-{
-	strThisType := o_Favorites.s_SA[A_Index].strFavoriteTypeSystemName
-	GuiControlGet, blnThisType, , % "f_intRadioFavoriteType" . strThisType
-	if (blnThisType)
-	{
-		GuiControl, , f_lblAddFavoriteTypeHelp, % o_Favorites.s_SA[A_Index].strFavoriteTypeHelp
-		g_strAddFavoriteType := strThisType
-		break
-	}
-}
+g_strAddFavoriteType := StrReplace(A_GuiControl, "f_intRadioFavoriteType")
+GuiControl, , f_lblAddFavoriteTypeHelp, % o_Favorites.s_saFavoriteTypesByName[g_strAddFavoriteType].strFavoriteTypeHelp
 
 if (A_GuiEvent = "DoubleClick")
 	Gosub, GuiAddFavoriteSelectTypeContinue
-
-strThisType := ""
-blnThisType := ""
 
 return
 ;------------------------------------------------------------
