@@ -31249,7 +31249,7 @@ class Container
 				blnOpenOK := true
 			}
 			; QAP COMMAND
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction", strOpenFavoriteLabel)
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction", this.aaTemp.strOpenFavoriteLabel)
 				and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
@@ -31687,7 +31687,7 @@ class Container
 				}
 				else if (this.aaTemp.strTargetAppName = "TotalCommander")
 				{
-					if (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 					{
 						; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay, RestoreSide/Monitor; for example: "0,,,,,,,L"
 						if StrLen(this.aaTemp.saFavoriteWindowPosition[8])
@@ -31703,7 +31703,7 @@ class Container
 					{
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
 							or InStr(g_aaFileManagerTotalCommander.strNewTabOrWindow, "/N") ; or open a new instance
-							or (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows))
+							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows))
 						{
 							Run, % g_aaFileManagerTotalCommander.strFileManagerPath
 							WinWaitActive, ahk_class TTOTAL_CMD, , 10
@@ -31737,7 +31737,7 @@ class Container
 					}
 					else ; normal folder
 					{
-						if (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 								strTabParameter := "/N" ; /N new window
 							else
@@ -32398,7 +32398,7 @@ class Container
 			{
 				g_blnAlternativeMenu := true
 				g_strAlternativeMenu := o_L["MenuAlternativeEditFavorite"]
-				this.OpenFavorite(strMenuTriggerLabel, strOpenFavoriteLabel, strTargetWinId, "Alternative")
+				this.OpenFavorite(strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel, strTargetWinId, "Alternative")
 				this.aaTemp.blnDoNotOpen := true ; to avoid opening this favorite with not found location
 				return true
 			}
