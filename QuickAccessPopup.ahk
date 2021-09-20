@@ -9516,6 +9516,8 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 	{
 		strTempLocation := f_strFileManagerPath ; avoid change in f_strFileManagerPath by FileExistInPath
 		blnOptionsPathsOK := FileExistInPath(strTempLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
+		if (blnOptionsPathsOK and g_intClickedFileManager = 2) ; 2 DirectoryOpus
+			blnOptionsPathsOK := FileExist(StrReplace(strTempLocation, "dopus.exe", "dopusrt.exe"))
 	}
 	if (g_intClickedFileManager = 3) ; 3 TotalCommander
 	{
@@ -27280,7 +27282,7 @@ TODO
 		DirectoryOpusFavoritesFileExist()
 		;-----------------------------------------------------
 		{
-			this.AA.strDirectoryOpusFavoritesFile := this.DirectoryOpusConfigTypeRoot() . "favorites.ofv"
+			this.AA.strDirectoryOpusFavoritesFile := this.DirectoryOpusConfigTypeRoot() . "\ConfigFiles\favorites.ofv"
 			return FileExist(this.AA.strDirectoryOpusFavoritesFile)
 		}
 		;-----------------------------------------------------
@@ -27289,7 +27291,7 @@ TODO
 		DirectoryOpusLayoutsFileExist()
 		;-----------------------------------------------------
 		{
-			this.AA.strDirectoryOpusLayoutsFile := this.DirectoryOpusConfigTypeRoot() . "order.xml"
+			this.AA.strDirectoryOpusLayoutsFile := this.DirectoryOpusConfigTypeRoot() . "\Layouts\order.xml"
 			return FileExist(this.AA.strDirectoryOpusLayoutsFile)
 		}
 		;-----------------------------------------------------
@@ -27299,15 +27301,14 @@ TODO
 		; see https://forum.quickaccesspopup.com/showthread.php?tid=1700&pid=4260#pid4260
 		;-----------------------------------------------------
 		{
-			strUserDatePath := EnvVars("%APPDATA%\GPSoftware\Directory Opus\userdata.omd")
-			if FileExist(strUserDatePath)
+			if FileExist(StrReplace(this.AA.strFileManagerPath, "\dopus.exe", "\ConfigFiles")) ; this is a portable installation
+				strRoot := StrReplace(this.AA.strFileManagerPath, "\dopus.exe") ; use the folder where is the exe file as root
+			else ; this is a setup installation (private or shared)
 			{
 				FileRead, strUserData, % EnvVars("%APPDATA%\GPSoftware\Directory Opus\userdata.omd")
 				strRoot := EnvVars(InStr(strUserData, "config_type=""shared""") ? "%PROGRAMDATA%" : "%APPDATA%") . "\GPSoftware\Directory Opus"
 			}
-			else ; this is a portable installation
-				strRoot := StrReplace(this.AA.strFileManagerPath, "\dopus.exe")
-			return strRoot . "\ConfigFiles\"
+			return strRoot
 		}
 		;-----------------------------------------------------
 		
