@@ -27228,7 +27228,8 @@ TODO
 			
 			strPath := o_Settings.ReadIniOption("FileManagers", "strDirectoryOpusPath", "DirectoryOpusPath", " ", "FileManagers", "f_lblFileManagerPrompt|f_strFileManagerPath")
 			if !StrLen(strPath)
-				strPath := A_ProgramFiles . "\GPSoftware\Directory Opus\dopus.exe"
+				; see https://resource.dopus.com/t/directory-opus-favorites-favorites-ofv-file-location/39351/15
+				RegRead, strPath, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\DOpus.exe ; retrieve default value
 			if !FileExist(strPath)
 				strPath := "dopus.exe"
 			this.AA.strFileManagerPath := strPath
