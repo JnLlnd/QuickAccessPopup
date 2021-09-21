@@ -29436,7 +29436,18 @@ class Container
 			{
 				oNewItem.AA.oSubMenu := oNewSubMenu ; link to the submenu object
 				oNewItem.AA.strFavoriteLocation := saThisFavorite[3] ; update location with container path
+				
+				if (oNewItem.AA.strFavoriteType = "Group")
+				{
+					; 1 boolean value (replace existing Explorer windows if true, add to existing Explorer Windows if false)
+					; 2 restore folders with "Windows Explorer" or "Other" (Directory Opus, Total Commander or FPconnect)
+					; 3 delay in milliseconds to insert between each favorite to restore
+					saTemp := StrSplit(this.AA.strFavoriteGroupSettings, ",")
+					oNewItem.AA.oSubMenu.AA.blnGroupReplaceWindows := saTemp[1]
+					oNewItem.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
+					oNewItem.AA.oSubMenu.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
 			}
+/*			
 			; else because group items cannot also be container
 			else if (this.AA.strMenuType = "Group")
 			{
@@ -29446,11 +29457,12 @@ class Container
 				saTemp := StrSplit(this.AA.strFavoriteGroupSettings, ",")
 				oNewItem.AA.blnGroupReplaceWindows := saTemp[1]
 				oNewItem.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
-				oNewItem.AA.intGroupRestoringDelay := saTemp[3]
+				oNewItem.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
 				
 				oNewItem.AA.blnFavoritePseudo := true
 				oNewItem.AA.blnIsGroupMember := true
 			}
+*/
 			this.SA.Push(oNewItem) ; add to the current container object
 		}
 	}
@@ -31687,7 +31699,8 @@ class Container
 					
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 					{
-						if (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows) or !(g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
+						###_V("DOpus this.AA.oParentMenu.AA.blnGroupReplaceWindows", this.AA.oParentMenu.AA.blnGroupReplaceWindows)
+						if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
 							strTabParameter := "NEW=nodual" ; force left in new lister
 						else
 						{
@@ -31731,9 +31744,10 @@ class Container
 						
 					if IsInteger(this.aaTemp.strFullLocation)
 					{
+						###_V("TC this.AA.oParentMenu.AA.blnGroupReplaceWindows", this.AA.oParentMenu.AA.blnGroupReplaceWindows)
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
 							or InStr(g_aaFileManagerTotalCommander.strNewTabOrWindow, "/N") ; or open a new instance
-							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows))
+							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows))
 						{
 							Run, % g_aaFileManagerTotalCommander.strFileManagerPath
 							WinWaitActive, ahk_class TTOTAL_CMD, , 10
@@ -31767,8 +31781,9 @@ class Container
 					}
 					else ; normal folder
 					{
+						###_V("Explorer this.AA.oParentMenu.AA.blnGroupReplaceWindows", this.AA.oParentMenu.AA.blnGroupReplaceWindows)
 						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
-							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 								strTabParameter := "/N" ; /N new window
 							else
 								strTabParameter := "/O /T" ; /O same instance, /T new tab
@@ -31906,6 +31921,7 @@ class Container
 		OpenGroup()
 		;---------------------------------------------------------
 		{
+			###_O("OpenGroup() this.AA.blnGroupReplaceWindows", this.AA.blnGroupReplaceWindows)
 			if (this.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
 				gosub, OpenGroupOfFavoritesCloseExplorers
 				
@@ -31914,7 +31930,7 @@ class Container
 			{
 				if !(o_GroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
 				{
-					Sleep, % o_GroupMember.AA.intGroupRestoringDelay + 200 ; add 200 ms as minimal default delay
+					Sleep, % o_GroupMember.AA.intGroupRestoringDelay + StrSplit(o_GroupMember.AA.strFavoriteGroupRestoreOptions, ";")[2] + 200 ; add 200 ms as minimal default delay
 					
 					if (o_GroupMember.AA.strFavoriteType = "Folder" and o_GroupMember.AA.intFavoriteFolderLiveLevels)
 					{
