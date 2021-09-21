@@ -12162,7 +12162,7 @@ g_blnAbortEdit := false
 g_strTypesForTabWindowOptions := "|Folder|Special|FTP" . (o_Settings.Execution.blnTryWindowPosition.IniValue ? "|Document|Application|URL|WindowsApp" : "") ; must start with "|"
 g_strTypesForTabAdvancedOptions := "|Folder|Document|Application|Special|URL|FTP|Snippet|QAP|Group|WindowsApp" ; must start with "|"
 
-Gosub, GuiFavoriteInit
+Gosub, GuiFavoriteInit ; set blnIsGroupMember
 
 if (g_blnAbortEdit)
 {
@@ -12197,7 +12197,7 @@ if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
 intTabHeight := 490
-g_strTabsList := BuildTabsList(o_EditedFavorite.AA.strFavoriteType)
+g_strTabsList := BuildTabsList(o_EditedFavorite.AA.strFavoriteType, blnIsGroupMember)
 Gui, 2:Add, Tab2, % "vf_intAddFavoriteTab w520 h" . intTabHeight . " gGuiAddFavoriteTabChanged AltSubmit", %g_strTabsList%
 intTabNumber := 0
 
@@ -12313,13 +12313,13 @@ return
 
 
 ;------------------------------------------------------------
-BuildTabsList(strFavoriteType)
+BuildTabsList(strFavoriteType, blnIsGoupMember)
 ;------------------------------------------------------------
 {
 	global
 
 	; 1 Basic Settings, 2 Menu Options, 3 Window Options, 4 Advanced Settings
-	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . g_objFavoriteGuiTabs[2]
+	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . (blnIsGoupMember ? o_L["DialogGroupMemberOptions"] : g_objFavoriteGuiTabs[2])
 	
 	if (strFavoriteType = "Folder")
 		strTabsList .= " | " . o_L["DialogAddFavoriteTabsLive"]
@@ -13050,7 +13050,8 @@ GuiFavoriteTabMenuOptions:
 Gui, 2:Tab, % ++intTabNumber
 
 Gui, 2:Add, Text, x20 y50 vf_lblFavoriteParentMenu
-	, % (InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["DialogSubmenuParentMenu"] : o_L["DialogFavoriteParentMenu"])
+	, % (InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["DialogSubmenuParentMenu"]
+		: (o_EditedFavorite.AA.strFavoriteType = "Group" ? o_L["DialogGroupParentMenu"] : o_L["DialogFavoriteParentMenu"]))
 Gui, 2:Add, DropDownList, x20 y+5 w500 vf_drpParentMenu gDropdownParentMenuChanged
 	, % o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath
 		, (InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["MainMenuName"] . " " . o_EditedFavorite.AA.strFavoriteLocation : "") ; exclude self
@@ -13059,7 +13060,25 @@ Gui, 2:Add, DropDownList, x20 y+5 w500 vf_drpParentMenu gDropdownParentMenuChang
 Gui, 2:Add, Text, x30 y+10 vf_lblFavoriteParentMenuPosition, % o_L["DialogFavoriteMenuPosition"]
 Gui, 2:Add, DropDownList, x30 y+5 w490 vf_drpParentMenuItems AltSubmit
 
-if !(blnIsGroupMember)
+if (blnIsGroupMember)
+{
+	Gui, 2:Add, Text, y+10 x20, % o_L["DialogGroupMemberOptions"]
+	Gui, 2:Add, Text, y+10 x20, % o_L["GuiGroupRestoreLaunchAndWait"] . ":"
+	Gui, 2:Add, Edit, yp x+5 w36 center number limit7 vf_intGroupRestoreDelayAfter, % StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[1] ; 1 integer additional delay after launching member (in ms)
+	Gui, 2:Add, Text, yp x+5, % o_L["GuiGroupRestoreDelayMilliseconds"]
+
+	if (o_EditedFavorite.AA.strFavoriteType = "Application")
+	{
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreWaitFinish "
+			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[2] ? "checked" : ""), % o_L["GuiGroupRestoreWaitFinish"] ; 2 boolean wait for program to finish
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreStopIfError "
+			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[3] ? "checked" : ""), % o_L["GuiGroupRestoreStopIfError"] ; 3 boolean stop if the app returns an error
+	}
+	if InStr("Folder|Document|Application|Special|URL|FTP|", o_EditedFavorite.AA.strFavoriteType . "|")
+		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnintGroupRestoreMinimized "
+			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[4] ? "checked" : ""), % o_L["GuiGroupRestoreMinimized"] ; 4 boolean launch minimized
+}
+else
 {
 	Gui, 2:Add, Text, x20 y+20 gGuiPickIconDialog section, % o_L["DialogIcon"]
 	Gui, 2:Add, Picture, x20 y+5 w32 h32 vf_picIcon gGuiPickIconDialog
@@ -13225,7 +13244,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Application")
 else if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
 	Gui, 2:Add, Text, x20 y50, % o_L["GuiGroupRestoreDelay"]
-	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit4 vf_intGroupRestoreDelay, % g_saGroupInGuiSettings[3]
+	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit7 vf_intGroupRestoreDelay, % g_saGroupInGuiSettings[3]
 	Gui, 2:Add, Text, x+10 yp, % o_L["GuiGroupRestoreDelayMilliseconds"]
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
@@ -16193,6 +16212,9 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		else
 			o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0
 	}
+	
+	o_EditedFavorite.AA.strFavoriteGroupRestoreOptions := f_intGroupRestoreDelayAfter . ";" . f_blnintGroupRestoreWaitFinish . ";" . blnintGroupRestoreStopIfError . ";" . f_blnintGroupRestoreMinimized
+
 }
 else if (strThisLabel <> "GuiFavoritesListDropSave") ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave, not required for GuiFavoritesListDropSave because container not changed
 	if o_EditedFavorite.IsContainer()
@@ -16386,6 +16408,11 @@ f_radFavoriteFolderLiveInclude := ""
 f_radFavoriteFolderLiveExclude := ""
 f_strFavoriteFolderLiveExtensions := ""
 f_blnFavoriteFolderLiveRefreshManual := ""
+f_intGroupRestoreDelayAfter := ""
+f_blnintGroupRestoreWaitFinish := ""
+f_blnintGroupRestoreStopIfError := ""
+f_blnintGroupRestoreMinimized := ""
+
 objExternalMenu := ""
 strItemSelectedName := ""
 strGuiFavoriteLabel := ""
@@ -29240,7 +29267,7 @@ class Container
 			; 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude, 19 strFavoriteFolderLiveExtensions,
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
-			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder 31 blnFavoriteFolderLiveRefreshManual
+			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder 31 blnFavoriteFolderLiveRefreshManual 32 strFavoriteGroupRestoreOptions
 
 	;---------------------------------------------------------
 	{
@@ -30501,6 +30528,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveHideExtensions . "|" ; 29
 			strIniLine .= oItem.AA.intFavoriteOpenSubFolder . "|" ; 30
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveRefreshManual . "|" ; 31
+			strIniLine .= oItem.AA.strFavoriteGroupRestoreOptions . "|" ; 32
 
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -30976,7 +31004,8 @@ class Container
 			; 15 intFavoriteFolderLiveLevels, 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude,
 			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
-			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual
+			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
+			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -31062,6 +31091,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveHideExtensions", (StrLen(saFavorite[29]) ? saFavorite[29] : false)) ; hide file extensions in live folders, pre-existing and default false
 			this.InsertItemValue("intFavoriteOpenSubFolder", (StrLen(saFavorite[30]) ? saFavorite[30] : 0)) ; folder to open, 0 folder itself, most recently(+)/anciently(-) 1 created, 2 modified or 3 accessed subfolder
 			this.InsertItemValue("blnFavoriteFolderLiveRefreshManual", saFavorite[31]) ; refresh live folder only when using the Refresh Live Folders command
+			this.InsertItemValue("strFavoriteGroupRestoreOptions", saFavorite[32]) ; semi-colon separated values for group members options
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
