@@ -6198,7 +6198,7 @@ o_StartupTips.AddTip("DefaultHotkeys", "1", o_L["TipDefaultHotkeysTitle"], o_L["
 o_StartupTips.AddTip("CustomizeStartup", "1", o_L["TipCustomizeStartupTitle"], o_L["TipCustomizeStartupDetails"]
 	, "GuiOptionsGroupSettingsWindow`n/how-do-i-open-the-qap-settings-window/", "iconOptions")
 o_StartupTips.AddTip("MenuTriggers", "1", o_L["TipMenuTriggersTitle"], o_L["TipMenuTriggersDetails"]
-	, "GuiOptionsGroupPopupHotkeys`nhttps://www.quickaccesspopup.com/how-do-i-display-the-quick-access-popup-menu/`nhttps://www.quickaccesspopup.com/video-12-ways-to-popup-you-qap-menu-16-min/", "")
+	, "GuiOptionsGroupPopupHotkeys`n/how-do-i-display-the-quick-access-popup-menu/`n/video-12-ways-to-popup-you-qap-menu-16-min/", "")
 o_StartupTips.AddTip("CustomIcons", "1", o_L["TipCustomIconsTitle"], o_L["TipCustomIconsDetails"]
 	, "/can-i-embellish-my-popup-menu-with-my-preferred-icons/`n/can-i-manage-all-my-menu-icons-in-one-screen/", "iconIcons")
 o_StartupTips.AddTip("FolderDialogBox", "1", o_L["TipFolderDialogBoxTitle"], o_L["TipFolderDialogBoxDetails"]
