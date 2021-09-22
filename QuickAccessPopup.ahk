@@ -9472,6 +9472,8 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 	{
 		strTempLocation := f_strFileManagerPath ; avoid change in f_strFileManagerPath by FileExistInPath
 		blnOptionsPathsOK := FileExistInPath(strTempLocation) ; return strTempLocation with expanded relative path and envvars, and absolute location if in PATH
+		if (blnOptionsPathsOK and g_intClickedFileManager = 2) ; 2 DirectoryOpus
+			blnOptionsPathsOK := FileExist(StrReplace(strTempLocation, "dopus.exe", "dopusrt.exe"))
 	}
 	if (g_intClickedFileManager = 3) ; 3 TotalCommander
 	{
@@ -27242,7 +27244,8 @@ TODO
 			
 			strPath := o_Settings.ReadIniOption("FileManagers", "strDirectoryOpusPath", "DirectoryOpusPath", " ", "FileManagers", "f_lblFileManagerPrompt|f_strFileManagerPath")
 			if !StrLen(strPath)
-				strPath := A_ProgramFiles . "\GPSoftware\Directory Opus\dopus.exe"
+				; see https://resource.dopus.com/t/directory-opus-favorites-favorites-ofv-file-location/39351/15
+				RegRead, strPath, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\DOpus.exe ; retrieve default value
 			if !FileExist(strPath)
 				strPath := "dopus.exe"
 			this.AA.strFileManagerPath := strPath
@@ -27291,25 +27294,41 @@ TODO
 				Run, % """" . this.AA.strDirectoryOpusRtPath . """ " . strCommand . " """ . strLocation . """" . strParam
 		}
 		;-----------------------------------------------------
-
+		
 		;-----------------------------------------------------
 		DirectoryOpusFavoritesFileExist()
 		;-----------------------------------------------------
 		{
-			this.AA.strDirectoryOpusFavoritesFile := EnvVars("%APPDATA%\GPSoftware\Directory Opus\ConfigFiles\favorites.ofv")
+			this.AA.strDirectoryOpusFavoritesFile := this.DirectoryOpusConfigTypeRoot() . "\ConfigFiles\favorites.ofv"
 			return FileExist(this.AA.strDirectoryOpusFavoritesFile)
 		}
 		;-----------------------------------------------------
-
+		
 		;-----------------------------------------------------
 		DirectoryOpusLayoutsFileExist()
 		;-----------------------------------------------------
 		{
-			this.AA.strDirectoryOpusLayoutsFile := EnvVars("%APPDATA%\GPSoftware\Directory Opus\Layouts\order.xml")
+			this.AA.strDirectoryOpusLayoutsFile := this.DirectoryOpusConfigTypeRoot() . "\Layouts\order.xml"
 			return FileExist(this.AA.strDirectoryOpusLayoutsFile)
 		}
 		;-----------------------------------------------------
-
+		
+		;-----------------------------------------------------
+		DirectoryOpusConfigTypeRoot()
+		; see https://forum.quickaccesspopup.com/showthread.php?tid=1700&pid=4260#pid4260
+		;-----------------------------------------------------
+		{
+			if FileExist(StrReplace(this.AA.strFileManagerPath, "\dopus.exe", "\ConfigFiles")) ; this is a portable installation
+				strRoot := StrReplace(this.AA.strFileManagerPath, "\dopus.exe") ; use the folder where is the exe file as root
+			else ; this is a setup installation (private or shared)
+			{
+				FileRead, strUserData, % EnvVars("%APPDATA%\GPSoftware\Directory Opus\userdata.omd")
+				strRoot := EnvVars(InStr(strUserData, "config_type=""shared""") ? "%PROGRAMDATA%" : "%APPDATA%") . "\GPSoftware\Directory Opus"
+			}
+			return strRoot
+		}
+		;-----------------------------------------------------
+		
 	}
 	;---------------------------------------------------------
 	
