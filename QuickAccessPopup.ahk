@@ -12190,7 +12190,7 @@ if (strGuiFavoriteLabel = "GuiAddFavorite")
 strGuiTitle := L(o_L["DialogAddEditFavoriteTitle"]
 	, (InStr(strGuiFavoriteLabel, "GuiEditFavorite") ? o_L["DialogEdit"] : (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_L["DialogCopy"] : o_L["DialogAdd"]))
 	, g_strAppNameText, g_strAppVersion, o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand)
-Gui, 2:New, +Resize -MaximizeBox +MinSize560x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:New, +Resize -MaximizeBox +MinSize570x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 if (g_blnUseColors)
@@ -13069,14 +13069,13 @@ if (blnIsGroupMember)
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Application")
 	{
-		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreWaitFinish "
+		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnintGroupRestoreWaitFinish "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[2] ? "checked" : ""), % o_L["GuiGroupRestoreWaitFinish"] ; 2 boolean wait for program to finish
 		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreStopIfError "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[3] ? "checked" : ""), % o_L["GuiGroupRestoreStopIfError"] ; 3 boolean stop if the app returns an error
-	}
-	if InStr("Folder|Document|Application|Special|URL|FTP|", o_EditedFavorite.AA.strFavoriteType . "|")
-		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnintGroupRestoreMinimized "
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreMinimized "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[4] ? "checked" : ""), % o_L["GuiGroupRestoreMinimized"] ; 4 boolean launch minimized
+	}
 }
 else
 {
@@ -19942,66 +19941,6 @@ TrayTip, %g_strAppNameText%, %strMessage%, , 17 ; 1 info icon + 16 no sound
 Sleep, 20 ; tip from Lexikos for Windows 10 "Just sleep for any amount of time after each call to TrayTip" (http://ahkscript.org/boards/viewtopic.php?p=50389&sid=29b33964c05f6a937794f88b6ac924c0#p50389)
 
 strMessage := ""
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-OpenGroupOfFavoritesCloseExplorers:
-;------------------------------------------------------------
-
-intSleepTime := 67 ; for visual effect only...
-ShowToolTip(o_L["GuiGroupClosing"])
-
-if (g_arrGroupSettingsOpen2 = "Other")
-{
-	if (o_FileManagers.P_intActiveFileManager = 2) ; Directory Opus
-	{
-		WinGet, arrIDs, List, ahk_class dopus.lister
-		Loop, %arrIDs%
-		{
-			WinClose, % "ahk_id " . arrIDs%A_Index%
-			Sleep, %intSleepTime%
-		}
-	}
-	else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
-	{
-		WinGet, arrIDs, List, ahk_class TTOTAL_CMD
-		Loop, %arrIDs%
-		{
-			WinClose, % "ahk_id " . arrIDs%A_Index%
-			Sleep, %intSleepTime%
-		}
-	}
-}
-else ; g_arrGroupSettingsOpen2 = "Windows Explorer" or ""
-{
-	strWindowsId := ""
-	for pExplorer in ComObjCreate("Shell.Application").Windows
-	{
-		; do not close in this loop as it mess up the handlers
-		strType := ""
-		try strType := pExplorer.Type ; Gets the type name of the contained document object. "Document HTML" for IE windows. Should be empty for file Explorer windows.
-		strWindowID := ""
-		try strWindowID := pExplorer.HWND ; Try to get the handle of the window. Some ghost Explorer in the ComObjCreate may return an empty handle
-		if !StrLen(strType) and StrLen(strWindowID) ; strType must be empty and strWindowID must not be empty
-			strWindowsId .= pExplorer.HWND . "|"
-	}
-	strWindowsId := SubStr(1, -1) ; remove last | separator
-	Loop, Parse, strWindowsId, |
-	{
-		WinClose, ahk_id %A_LoopField%
-		Sleep, %intSleepTime%
-	}
-}
-
-ToolTip ; clear tooltip
-
-intSleepTime := ""
-strWindowsId := ""
-pExplorer := ""
-ResetArray("arrIDs")
 
 return
 ;------------------------------------------------------------
@@ -29442,28 +29381,13 @@ class Container
 					; 1 boolean value (replace existing Explorer windows if true, add to existing Explorer Windows if false)
 					; 2 restore folders with "Windows Explorer" or "Other" (Directory Opus, Total Commander or FPconnect)
 					; 3 delay in milliseconds to insert between each favorite to restore
-					saTemp := StrSplit(this.AA.strFavoriteGroupSettings, ",")
+					saTemp := StrSplit(oNewItem.AA.oSubMenu.AA.strFavoriteGroupSettings, ",")
 					oNewItem.AA.oSubMenu.AA.blnGroupReplaceWindows := saTemp[1]
 					oNewItem.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
 					oNewItem.AA.oSubMenu.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
 				}
 			}
-/*			
-			; else because group items cannot also be container
-			else if (this.AA.strMenuType = "Group")
-			{
-				; 1 boolean value (replace existing Explorer windows if true, add to existing Explorer Windows if false)
-				; 2 restore folders with "Windows Explorer" or "Other" (Directory Opus, Total Commander or FPconnect)
-				; 3 delay in milliseconds to insert between each favorite to restore
-				saTemp := StrSplit(this.AA.strFavoriteGroupSettings, ",")
-				oNewItem.AA.blnGroupReplaceWindows := saTemp[1]
-				oNewItem.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
-				oNewItem.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
-				
-				oNewItem.AA.blnFavoritePseudo := true
-				oNewItem.AA.blnIsGroupMember := true
-			}
-*/
+			
 			this.SA.Push(oNewItem) ; add to the current container object
 		}
 	}
@@ -31745,7 +31669,6 @@ class Container
 						
 					if IsInteger(this.aaTemp.strFullLocation)
 					{
-						###_V("TC this.AA.oParentMenu.AA.blnGroupReplaceWindows", this.AA.oParentMenu.AA.blnGroupReplaceWindows)
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
 							or InStr(g_aaFileManagerTotalCommander.strNewTabOrWindow, "/N") ; or open a new instance
 							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows))
@@ -31782,7 +31705,6 @@ class Container
 					}
 					else ; normal folder
 					{
-						###_V("Explorer this.AA.oParentMenu.AA.blnGroupReplaceWindows", this.AA.oParentMenu.AA.blnGroupReplaceWindows)
 						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 								strTabParameter := "/N" ; /N new window
@@ -31922,41 +31844,94 @@ class Container
 		OpenGroup()
 		;---------------------------------------------------------
 		{
-			###_O("OpenGroup() this.AA.blnGroupReplaceWindows", this.AA.blnGroupReplaceWindows)
-			if (this.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
-				gosub, OpenGroupOfFavoritesCloseExplorers
+			if (this.AA.oSubMenu.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
+				this.OpenGroupCloseExplorers()
 				
 			intFolderItemsCount := 0
-			for intMemberNumber, o_GroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
+			for intMemberNumber, oGroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
 			{
-				if !(o_GroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
+				if !(oGroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
 				{
-					Sleep, % o_GroupMember.AA.intGroupRestoringDelay + StrSplit(o_GroupMember.AA.strFavoriteGroupRestoreOptions, ";")[2] + 200 ; add 200 ms as minimal default delay
-					
-					if (o_GroupMember.AA.strFavoriteType = "Folder" and o_GroupMember.AA.intFavoriteFolderLiveLevels)
+					if (oGroupMember.AA.strFavoriteType = "Folder" and oGroupMember.AA.intFavoriteFolderLiveLevels)
 					{
 						oGroupLiveFolderMenu := new Container("Menu", "GroupLiveFolderMenu") ; create a temporary container
-						oGroupLiveFolderMenu.SA[1] := o_GroupMember ; attach to it the live folder menu to build and display
-						oGroupLiveFolderMenu.BuildLiveFolderMenu(o_GroupMember, "GroupLiveFolderMenu", 0) ; build the live folder menu
+						oGroupLiveFolderMenu.SA[1] := oGroupMember ; attach to it the live folder menu to build and display
+						oGroupLiveFolderMenu.BuildLiveFolderMenu(oGroupMember, "GroupLiveFolderMenu", 0) ; build the live folder menu
 						oGroupLiveFolderMenu.BuildMenu() ; build the temporary menu and its children live folder menu
-						Menu, % oGroupLiveFolderMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_GroupMember.AA.strFavoriteName, Show
+						Menu, % oGroupLiveFolderMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oGroupMember.AA.strFavoriteName, Show
 					}
 					else 
 					{
-						If InStr("Folder|Special|FTP", o_GroupMember.AA.strFavoriteType)
+						If InStr("Folder|Special|FTP", oGroupMember.AA.strFavoriteType)
 							intFolderItemsCount++ ; do it that way because first member could be other than a folder
-						o_GroupMember.aaTemp.blnFirstFolderOfGroup := (intFolderItemsCount = 1) ; was g_blnFirstFolderOfGroup
+						oGroupMember.aaTemp.blnFirstFolderOfGroup := (intFolderItemsCount = 1) ; was g_blnFirstFolderOfGroup
 						
 						g_strNewWindowId := "" ; start fresh for next group member if it is another Folder
 						
-						o_GroupMember.OpenFavorite(this.aaTemp.strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel
+						oGroupMember.OpenFavorite(this.aaTemp.strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel
 							, "" ; never use target window when launched in a group
 							, "Launch") ; all favorites in group are for Launch, never navigate
 					}
+					
+					; parent menu delay + group member (1) integer additional delay after launching member (in ms) + 200 ms as minimal default delay
+					Sleep, % oGroupMember.AA.oParentMenu.AA.intGroupRestoringDelay + StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] + 200
 				}
 			}
 		}
 		;---------------------------------------------------------
+		
+		;------------------------------------------------------------
+		OpenGroupCloseExplorers()
+		;------------------------------------------------------------
+		{
+			intSleepTime := 67 ; for visual effect only...
+			ShowToolTip(o_L["GuiGroupClosing"])
+			
+			if (this.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther = "Other")
+			{
+				if (o_FileManagers.P_intActiveFileManager = 2) ; Directory Opus
+				{
+					WinGet, arrIDs, List, ahk_class dopus.lister
+					Loop, %arrIDs%
+					{
+						WinClose, % "ahk_id " . arrIDs%A_Index%
+						Sleep, %intSleepTime%
+					}
+				}
+				else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
+				{
+					WinGet, arrIDs, List, ahk_class TTOTAL_CMD
+					Loop, %arrIDs%
+					{
+						WinClose, % "ahk_id " . arrIDs%A_Index%
+						Sleep, %intSleepTime%
+					}
+				}
+			}
+			else ; "Windows Explorer" or ""
+			{
+				strWindowsId := ""
+				for pExplorer in ComObjCreate("Shell.Application").Windows
+				{
+					; do not close in this loop as it mess up the handlers
+					strType := ""
+					try strType := pExplorer.Type ; Gets the type name of the contained document object. "Document HTML" for IE windows. Should be empty for file Explorer windows.
+					strWindowID := ""
+					try strWindowID := pExplorer.HWND ; Try to get the handle of the window. Some ghost Explorer in the ComObjCreate may return an empty handle
+					if !StrLen(strType) and StrLen(strWindowID) ; strType must be empty and strWindowID must not be empty
+						strWindowsId .= pExplorer.HWND . "|"
+				}
+				strWindowsId := SubStr(strWindowsId, 1, -1) ; remove last | separator
+				Loop, Parse, strWindowsId, |
+				{
+					WinClose, ahk_id %A_LoopField%
+					Sleep, %intSleepTime%
+				}
+			}
+			
+			ToolTip ; clear tooltip
+		}
+		;------------------------------------------------------------
 		
 		;---------------------------------------------------------
 		PasteSnippet()
@@ -32122,7 +32097,8 @@ class Container
 			; Diag(A_ThisLabel . ":strAppWorkingDirWithPlaceholders", strAppWorkingDirWithPlaceholders)
 			
 			Run, % (this.AA.blnFavoriteElevate or g_strAlternativeMenu = o_L["MenuAlternativeRunAs"] ? "*RunAs " : "") . this.aaTemp.strFullLocation
-				, % this.aaTemp.strAppWorkingDirWithPlaceholders, UseErrorLevel, intPid
+				, % this.aaTemp.strAppWorkingDirWithPlaceholders, % "UseErrorLevel" . (StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[4] ? "Min" : "") ; 4 boolean launch minimized
+				, intPid
 			
 			if (ErrorLevel = "ERROR")
 			{
