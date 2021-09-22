@@ -29446,6 +29446,7 @@ class Container
 					oNewItem.AA.oSubMenu.AA.blnGroupReplaceWindows := saTemp[1]
 					oNewItem.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
 					oNewItem.AA.oSubMenu.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
+				}
 			}
 /*			
 			; else because group items cannot also be container
