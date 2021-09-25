@@ -256,6 +256,7 @@ this["DialogGetWinInfo"] := "To identify the window you want to get the title of
 this["DialogGetWInInfo2Clippoard"] := "Window title:`n""~1~""`n`nClass:`n""~2~""`n`nProcess name:`n""~3~""`n`nCopy this info to your Clipboard?"
 this["DialogGroupMemberOptions"] := "Group Member Options"
 this["DialogGroupParentMenu"] := "Group parent menu"
+this["DialogGroupRestoreStopIfError"] := "An error has occurred while opening group member #~1~:`n`n~2~`n~3~`n`nGroup opening stopped."
 this["DialogHotkeyInvisibleKeys"] := "<a id=""~1~"">space bar</a>, <a id=""~2~"">tab</a>, <a id=""~3~"">enter</a>, <a id=""~4~"">escape</a>`nor <a id=""~5~"">menu key (application)</a>"
 this["DialogHotkeys"] := "Hotkeys"
 this["DialogHotkeysHelpHeader"] := "Shortcut|Action"
