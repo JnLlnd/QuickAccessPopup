@@ -31,6 +31,45 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.0.9.1 (2021-09-26)
+#####
+in edit fav, menu options tab, add button to enter favicon url; retrieve favicon from this url
+add icons in add favorite select type dialog box
+fix bug not opening folder on the specified side when opening in group with Total Commander
+fix missing parameter (apparently having no effect) when opening a not found favorite to edit it
+increase limit for group delay to 7 digits (167 seconds)
+add group member options in advanced tab: minimized and restore delay before launching the member
+move group options values to submenu object insteasd of in each item (work in progress, to be continued)
+in add/edit fav Menu Options tab, rename menu dropdown to "menu or group"
+when add/edit fav member of a group, replace "Menu Options" tab with "Group Member Options"
+add controls for 1) delay after (not before) launch in ms, 2) checkbox wait finish, 3) checkbox stop if error and 4) launch minimized (2 and 3 only for applications, 4 only for selected types)
+remove these controls from Advanced tab
+save to ini and load from ini;
+increase min width of add/edit fav 10 px for new group member tab label
+in edit fav, group member tab, restrict miniize option to applications
+move close Explorer or file manager windows when opening a group to container method OpenGroupCloseExplorers()
+fix bug with group restore options
+fix bug in code closing windows
+move delay between group members after opening, adding delay for group and delay for member
+when launching application member of a group, add the reun minimized option if this group member option is enabled;
+reset delay in group execution when not a group
+item method OpenFavorite returns 0 if success or an error code
+item methods AlternativeOpenContainer, LaunchWindowsApp, LaunchFullLocation, PasteSnippet, LaunchApplication, OpenFolder return an error code to OpenFavorite method
+item method OpenGroup return an error code if a group member returns an error that stops group execution
+return error code 1 if alternative menu command for a type not supported
+if target no set, return error code 1
+PasteSnippet returns error code 1 when snippet prompt is timeout
+LaunchApplication returns error code from the application launched
+in LaunchApplication, use RunWait if group member option wait end of ececution is enabled
+ignore launch with parameter for QAP and WindowsApp types
+when location not found, return false regardless if user edit or not
+remove unused code for alternative menu command open in a new window
+when opening a document, check if location is valid and offer to edit if not
+move code showing error when opening an application from LaunchApplication to OpenFavorite method
+in item method OpenGroup, after opening a member with option stop, show error message and stop group opening if OpenFavorite returns an error
+if no error pause for duration total of global group delay and member delay
+in SetFullLocation, leave bad location in strFullLocation (instead of empty) to allow user edit the favorite
+
 Version: 11.5.0.1 (2021-09-26)
  
 Directory Opus:
@@ -4815,7 +4854,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.0.1
+;@Ahk2Exe-SetVersion 11.5.0.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4882,8 +4921,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
