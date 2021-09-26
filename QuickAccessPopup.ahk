@@ -31,6 +31,19 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.0.1 (2021-09-26)
+ 
+Directory Opus:
+- support "shared" and "portable" installations (in addition to default "private" setup) when creating the DOpus "Favorites" and "Layouts" menus in QAP
+- when first running QAP, check if DOpus is install by looking at the registry (instead of looking the "Program Files" folder)
+ 
+Various additions and bug fixes
+- fix  broken link to the website in QAP Startup Tips
+- for new installations, show a welcome dialog box; add menu item "Show welcome window again" under the "Help" menu
+- add  menu item "Make a donation" under the "Help" menu
+- license text update for freeware model
+- Dutch translation update
+
 Version: 11.5 (2021-09-06)
 - QAP returns to freeware/donorware model
 - remove license validation and various license related menu items or labels
@@ -4802,7 +4815,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5
+;@Ahk2Exe-SetVersion 11.5.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4869,7 +4882,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
