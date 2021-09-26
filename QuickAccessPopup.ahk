@@ -12137,7 +12137,7 @@ g_blnAbortEdit := false
 g_strTypesForTabWindowOptions := "|Folder|Special|FTP" . (o_Settings.Execution.blnTryWindowPosition.IniValue ? "|Document|Application|URL|WindowsApp" : "") ; must start with "|"
 g_strTypesForTabAdvancedOptions := "|Folder|Document|Application|Special|URL|FTP|Snippet|QAP|Group|WindowsApp" ; must start with "|"
 
-Gosub, GuiFavoriteInit
+Gosub, GuiFavoriteInit ; set blnIsGroupMember
 
 if (g_blnAbortEdit)
 {
@@ -12165,14 +12165,14 @@ if (strGuiFavoriteLabel = "GuiAddFavorite")
 strGuiTitle := L(o_L["DialogAddEditFavoriteTitle"]
 	, (InStr(strGuiFavoriteLabel, "GuiEditFavorite") ? o_L["DialogEdit"] : (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_L["DialogCopy"] : o_L["DialogAdd"]))
 	, g_strAppNameText, g_strAppVersion, o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand)
-Gui, 2:New, +Resize -MaximizeBox +MinSize560x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
+Gui, 2:New, +Resize -MaximizeBox +MinSize570x555 +MaxSizex555 +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
 if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
 intTabHeight := 490
-g_strTabsList := BuildTabsList(o_EditedFavorite.AA.strFavoriteType)
+g_strTabsList := BuildTabsList(o_EditedFavorite.AA.strFavoriteType, blnIsGroupMember)
 Gui, 2:Add, Tab2, % "vf_intAddFavoriteTab w520 h" . intTabHeight . " gGuiAddFavoriteTabChanged AltSubmit", %g_strTabsList%
 intTabNumber := 0
 
@@ -12273,7 +12273,6 @@ if (SubStr(o_EditedFavorite.AA.strFavoriteName, 1, 3) = "::{")
 
 
 GuiAddFavoriteCleanup:
-blnIsGroupMember := ""
 g_strNewLocation := ""
 g_blnAbortEdit := ""
 o_ExternalMenu := ""
@@ -12288,13 +12287,13 @@ return
 
 
 ;------------------------------------------------------------
-BuildTabsList(strFavoriteType)
+BuildTabsList(strFavoriteType, blnIsGoupMember)
 ;------------------------------------------------------------
 {
 	global
 
 	; 1 Basic Settings, 2 Menu Options, 3 Window Options, 4 Advanced Settings
-	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . g_objFavoriteGuiTabs[2]
+	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . (blnIsGoupMember ? o_L["DialogGroupMemberOptions"] : g_objFavoriteGuiTabs[2])
 	
 	if (strFavoriteType = "Folder")
 		strTabsList .= " | " . o_L["DialogAddFavoriteTabsLive"]
@@ -13025,7 +13024,8 @@ GuiFavoriteTabMenuOptions:
 Gui, 2:Tab, % ++intTabNumber
 
 Gui, 2:Add, Text, x20 y50 vf_lblFavoriteParentMenu
-	, % (InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["DialogSubmenuParentMenu"] : o_L["DialogFavoriteParentMenu"])
+	, % (InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["DialogSubmenuParentMenu"]
+		: (o_EditedFavorite.AA.strFavoriteType = "Group" ? o_L["DialogGroupParentMenu"] : o_L["DialogFavoriteParentMenu"]))
 Gui, 2:Add, DropDownList, x20 y+5 w500 vf_drpParentMenu gDropdownParentMenuChanged
 	, % o_MainMenu.BuildMenuListDropDown(o_MenuInGui.AA.strMenuPath
 		, (InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType, true) ? o_L["MainMenuName"] . " " . o_EditedFavorite.AA.strFavoriteLocation : "") ; exclude self
@@ -13034,7 +13034,24 @@ Gui, 2:Add, DropDownList, x20 y+5 w500 vf_drpParentMenu gDropdownParentMenuChang
 Gui, 2:Add, Text, x30 y+10 vf_lblFavoriteParentMenuPosition, % o_L["DialogFavoriteMenuPosition"]
 Gui, 2:Add, DropDownList, x30 y+5 w490 vf_drpParentMenuItems AltSubmit
 
-if !(blnIsGroupMember)
+if (blnIsGroupMember)
+{
+	Gui, 2:Add, Text, y+10 x20, % o_L["DialogGroupMemberOptions"]
+	Gui, 2:Add, Text, y+10 x20, % o_L["GuiGroupRestoreLaunchAndWait"] . ":"
+	Gui, 2:Add, Edit, yp x+5 w36 center number limit7 vf_intGroupRestoreDelayAfter, % StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[1] ; 1 integer additional delay after launching member (in ms)
+	Gui, 2:Add, Text, yp x+5, % o_L["GuiGroupRestoreDelayMilliseconds"]
+
+	if (o_EditedFavorite.AA.strFavoriteType = "Application")
+	{
+		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnintGroupRestoreWaitFinish "
+			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[2] ? "checked" : ""), % o_L["GuiGroupRestoreWaitFinish"] ; 2 boolean wait for program to finish
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreStopIfError "
+			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[3] ? "checked" : ""), % o_L["GuiGroupRestoreStopIfError"] ; 3 boolean stop if the app returns an error
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreMinimized "
+			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[4] ? "checked" : ""), % o_L["GuiGroupRestoreMinimized"] ; 4 boolean launch minimized
+	}
+}
+else
 {
 	Gui, 2:Add, Text, x20 y+20 gGuiPickIconDialog section, % o_L["DialogIcon"]
 	Gui, 2:Add, Picture, x20 y+5 w32 h32 vf_picIcon gGuiPickIconDialog
@@ -13203,7 +13220,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Application")
 else if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
 	Gui, 2:Add, Text, x20 y50, % o_L["GuiGroupRestoreDelay"]
-	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit4 vf_intGroupRestoreDelay, % g_saGroupInGuiSettings[3]
+	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit7 vf_intGroupRestoreDelay, % g_saGroupInGuiSettings[3]
 	Gui, 2:Add, Text, x+10 yp, % o_L["GuiGroupRestoreDelayMilliseconds"]
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
@@ -16179,6 +16196,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		else
 			o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0
 	}
+
+	o_EditedFavorite.AA.strFavoriteGroupRestoreOptions := (o_EditedFavorite.AA.oParentMenu.AA.strMenuType = "Group"
+		? f_intGroupRestoreDelayAfter . ";" . f_blnintGroupRestoreWaitFinish . ";" . f_blnintGroupRestoreStopIfError . ";" . f_blnintGroupRestoreMinimized
+		: "") ; if not in a group, reset variable (in case favorite was moved from a group before)
 }
 else if (strThisLabel <> "GuiFavoritesListDropSave") ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave, not required for GuiFavoritesListDropSave because container not changed
 	if o_EditedFavorite.IsContainer()
@@ -16372,6 +16393,11 @@ f_radFavoriteFolderLiveInclude := ""
 f_radFavoriteFolderLiveExclude := ""
 f_strFavoriteFolderLiveExtensions := ""
 f_blnFavoriteFolderLiveRefreshManual := ""
+f_intGroupRestoreDelayAfter := ""
+f_blnintGroupRestoreWaitFinish := ""
+f_blnintGroupRestoreStopIfError := ""
+f_blnintGroupRestoreMinimized := ""
+
 objExternalMenu := ""
 strItemSelectedName := ""
 strGuiFavoriteLabel := ""
@@ -19906,66 +19932,6 @@ return
 ;------------------------------------------------------------
 
 
-;------------------------------------------------------------
-OpenGroupOfFavoritesCloseExplorers:
-;------------------------------------------------------------
-
-intSleepTime := 67 ; for visual effect only...
-ShowToolTip(o_L["GuiGroupClosing"])
-
-if (g_arrGroupSettingsOpen2 = "Other")
-{
-	if (o_FileManagers.P_intActiveFileManager = 2) ; Directory Opus
-	{
-		WinGet, arrIDs, List, ahk_class dopus.lister
-		Loop, %arrIDs%
-		{
-			WinClose, % "ahk_id " . arrIDs%A_Index%
-			Sleep, %intSleepTime%
-		}
-	}
-	else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
-	{
-		WinGet, arrIDs, List, ahk_class TTOTAL_CMD
-		Loop, %arrIDs%
-		{
-			WinClose, % "ahk_id " . arrIDs%A_Index%
-			Sleep, %intSleepTime%
-		}
-	}
-}
-else ; g_arrGroupSettingsOpen2 = "Windows Explorer" or ""
-{
-	strWindowsId := ""
-	for pExplorer in ComObjCreate("Shell.Application").Windows
-	{
-		; do not close in this loop as it mess up the handlers
-		strType := ""
-		try strType := pExplorer.Type ; Gets the type name of the contained document object. "Document HTML" for IE windows. Should be empty for file Explorer windows.
-		strWindowID := ""
-		try strWindowID := pExplorer.HWND ; Try to get the handle of the window. Some ghost Explorer in the ComObjCreate may return an empty handle
-		if !StrLen(strType) and StrLen(strWindowID) ; strType must be empty and strWindowID must not be empty
-			strWindowsId .= pExplorer.HWND . "|"
-	}
-	strWindowsId := SubStr(1, -1) ; remove last | separator
-	Loop, Parse, strWindowsId, |
-	{
-		WinClose, ahk_id %A_LoopField%
-		Sleep, %intSleepTime%
-	}
-}
-
-ToolTip ; clear tooltip
-
-intSleepTime := ""
-strWindowsId := ""
-pExplorer := ""
-ResetArray("arrIDs")
-
-return
-;------------------------------------------------------------
-
-
 ;-----------------------------------------------------------
 RepeatLastAction:
 RepeatLastActionShortcut:
@@ -20080,7 +20046,7 @@ if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected))
 
 ; beginning of OpenFavorite execution
 
-o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected)
+o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
 
 OpenFavoriteCleanup:
 
@@ -29308,7 +29274,7 @@ class Container
 			; 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude, 19 strFavoriteFolderLiveExtensions,
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
-			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder 31 blnFavoriteFolderLiveRefreshManual
+			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder 31 blnFavoriteFolderLiveRefreshManual 32 strFavoriteGroupRestoreOptions
 
 	;---------------------------------------------------------
 	{
@@ -29477,21 +29443,19 @@ class Container
 			{
 				oNewItem.AA.oSubMenu := oNewSubMenu ; link to the submenu object
 				oNewItem.AA.strFavoriteLocation := saThisFavorite[3] ; update location with container path
-			}
-			; else because group items cannot also be container
-			else if (this.AA.strMenuType = "Group")
-			{
-				; 1 boolean value (replace existing Explorer windows if true, add to existing Explorer Windows if false)
-				; 2 restore folders with "Windows Explorer" or "Other" (Directory Opus, Total Commander or FPconnect)
-				; 3 delay in milliseconds to insert between each favorite to restore
-				saTemp := StrSplit(this.AA.strFavoriteGroupSettings, ",")
-				oNewItem.AA.blnGroupReplaceWindows := saTemp[1]
-				oNewItem.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
-				oNewItem.AA.intGroupRestoringDelay := saTemp[3]
 				
-				oNewItem.AA.blnFavoritePseudo := true
-				oNewItem.AA.blnIsGroupMember := true
+				if (oNewItem.AA.strFavoriteType = "Group")
+				{
+					; 1 boolean value (replace existing Explorer windows if true, add to existing Explorer Windows if false)
+					; 2 restore folders with "Windows Explorer" or "Other" (Directory Opus, Total Commander or FPconnect)
+					; 3 delay in milliseconds to insert between each favorite to restore
+					saTemp := StrSplit(oNewItem.AA.oSubMenu.AA.strFavoriteGroupSettings, ",")
+					oNewItem.AA.oSubMenu.AA.blnGroupReplaceWindows := saTemp[1]
+					oNewItem.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
+					oNewItem.AA.oSubMenu.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
+				}
 			}
+			
 			this.SA.Push(oNewItem) ; add to the current container object
 		}
 	}
@@ -30569,6 +30533,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveHideExtensions . "|" ; 29
 			strIniLine .= oItem.AA.intFavoriteOpenSubFolder . "|" ; 30
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveRefreshManual . "|" ; 31
+			strIniLine .= oItem.AA.strFavoriteGroupRestoreOptions . "|" ; 32
 
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -31044,7 +31009,8 @@ class Container
 			; 15 intFavoriteFolderLiveLevels, 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude,
 			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
-			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual
+			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
+			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -31130,6 +31096,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveHideExtensions", (StrLen(saFavorite[29]) ? saFavorite[29] : false)) ; hide file extensions in live folders, pre-existing and default false
 			this.InsertItemValue("intFavoriteOpenSubFolder", (StrLen(saFavorite[30]) ? saFavorite[30] : 0)) ; folder to open, 0 folder itself, most recently(+)/anciently(-) 1 created, 2 modified or 3 accessed subfolder
 			this.InsertItemValue("blnFavoriteFolderLiveRefreshManual", saFavorite[31]) ; refresh live folder only when using the Refresh Live Folders command
+			this.InsertItemValue("strFavoriteGroupRestoreOptions", saFavorite[32]) ; semi-colon separated values for group members options
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
@@ -31181,8 +31148,11 @@ class Container
 		
 		;---------------------------------------------------------
 		OpenFavorite(strMenuTriggerLabel, strOpenFavoriteLabel, strTargetWinId, strHotkeyTypeDetected)
+		; return 0 if success or error code (error code only used by OpenGroup (as of 2021-09-23)
 		;---------------------------------------------------------
 		{
+			intOpenError := 0 ; no error by default
+			
 			this.aaTemp := Object() ; reset item temporary values
 			this.aaTemp.strMenuTriggerLabel := strMenuTriggerLabel
 			this.aaTemp.strOpenFavoriteLabel := strOpenFavoriteLabel
@@ -31213,19 +31183,20 @@ class Container
 				, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
 			
 			; LAUNCH WITH
-			if StrLen(this.AA.strFavoriteLaunchWith) and !InStr("Application|Snippet", this.AA.strFavoriteType) ; ignore for Application or Snippet favorites
+			if StrLen(this.AA.strFavoriteLaunchWith) and !InStr("Application|Snippet|QAP|WindowsApp|", this.AA.strFavoriteType . "|")
+			; ignore for Application or Snippet favorites because strFavoriteLaunchWith contains data for other options
 			{
 				strTemp := this.AA.strFavoriteLaunchWith ; use strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 				blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strExpandedLaunchWith expanded and searched in PATH
 				this.aaTemp.strExpandedLaunchWith := strTemp
 				
 				if !(blnFileExist) and (g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"])
-					
-					if !this.CheckIfEditFavorite(o_L["DialogFavoriteLaunchWithDoesNotExistTitle"]
+				{
+					this.CheckIfEditFavorite(o_L["DialogFavoriteLaunchWithDoesNotExistTitle"]
 						, L(o_L["OopsLaunchWithNotFound"], this.aaTemp.strExpandedLaunchWith)
 						. " " . o_L["DialogFavoriteDoesNotExistEdit"])
-						
-						return false
+					return 1 ; error code
+				}
 			}
 			
 			; ALTERNATIVE
@@ -31234,19 +31205,14 @@ class Container
 			{
 				if (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"] or g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingNew"])
 				{
-					if InStr("Folder|Document|Application|Special", this.AA.strFavoriteType)
-						this.AlternativeOpenContainer()
+					if InStr("Folder|Document|Application|", this.AA.strFavoriteType . "|")
+						intOpenError := this.AlternativeOpenContainer()
 					else
-						blnAlternativeMenuTypeNotSupported := true
-				}	
-				else if (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
-				{
-					if !InStr("Folder|Document|Application|Special", this.AA.strFavoriteType)
 						blnAlternativeMenuTypeNotSupported := true
 				}	
 				else if (g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"] and A_ThisMenu <> o_L["MenuLastActions"])
 				{
-					this.AlternativeEditFavorite()
+					this.AlternativeEditFavorite() ; no error code returned
 				}	
 				else if (g_strAlternativeMenu = o_L["MenuCopyLocation"]) ; EnvVars expanded
 				{
@@ -31268,36 +31234,35 @@ class Container
 				if (blnAlternativeMenuTypeNotSupported)
 				{
 					Oops(1, o_L["OopsAlternativeNotSupported"], g_strAlternativeMenu, o_Favorites.GetFavoriteTypeObject(this.AA.strFavoriteType).strFavoriteTypeLocationLabelNoAmpersand)
-					return
+					return 1 ; error code
 				}
 				
-				; Log and Return except for Run As that be launched and collected under APPLICATION below
+				; Log and Return except for Run As that will be launched and collected under APPLICATION below
 				if (g_strAlternativeMenu <> o_L["MenuAlternativeRunAs"])
 				{
 					; LOG ACTION
 					this.CollectUsageDb() ; was UsageDbCollectMenu:
-					return
+					return intOpenError
 				}
 			}
 			
 			if InStr("|Folder|Special|FTP", "|" . this.AA.strFavoriteType) ; must be before SetFullLocation()
 				if !this.SetTargetName() ; sets old g_strTargetAppName, can change this.aaTemp.strHotkeyTypeDetected to "Launch", can empty this.aaTemp.strTargetWinId if Desktop
-					return
+					return 1 ; error code if target is unknown
 			
 			if (this.AA.strFavoriteType <> "Text") ; text separators don't have location
 				if !this.SetFullLocation()
-					return
+					return 1 ; error code if location is empty
 				
 			if (this.AA.strFavoriteType = "Text")
-				return
+				return intOpenError ; do nothing, do not flag error
 			
 			; GROUP
 			if (this.AA.strFavoriteType = "Group") and !(g_blnAlternativeMenu)
 			{
 				; fake use of the old command label OpenFavoriteFromGroup used in different places to flag that a group member is being processed
 				this.aaTemp.strOpenFavoriteLabel := "OpenFavoriteFromGroup"
-				this.OpenGroup()
-				blnOpenOK := true
+				intOpenError := this.OpenGroup()
 			}
 			; MENU or LIVE FOLDER
 			else if (InStr("Menu|External", this.AA.strFavoriteType, true)
@@ -31308,32 +31273,27 @@ class Container
 					Menu, % this.AA.oSubMenu.AA.strMenuPath, Show, %g_intMenuPosX%, %g_intMenuPosY%
 				else
 					Menu, % o_L["MainMenuName"] . " " . this.aaTemp.strFullLocation, Show, %g_intMenuPosX%, %g_intMenuPosY%
-				blnOpenOK := true
 			}
 			; WINDOWS APPS
 			else if (this.AA.strFavoriteType = "WindowsApp")
 			{
-				this.LaunchWindowsApp()
-				blnOpenOK := true
+				intOpenError := this.LaunchWindowsApp() ; returns 0 if no error
 			}
 			; QAP COMMAND
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction", strOpenFavoriteLabel)
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction", this.aaTemp.strOpenFavoriteLabel)
 				and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
-				blnOpenOK := true
 			}
 			; SWITCH APP
 			else if (this.AA.strFavoriteType = "OpenSwitchFolderOrApp")
 			{
 				this.SwitchFolderOrApp()
-				blnOpenOK := true
 			}
 			; DIRECTORY OPUS LAYOUT
 			else if (this.AA.strFavoriteType = "OpenDOpusLayout")
 			{
 				this.OpenDirectoryOpusLayout()
-				blnOpenOK := true
 			}
 			; ACTIVATE RUNNING APPLICATION
 			else if (this.AA.strFavoriteType = "Application")
@@ -31342,26 +31302,23 @@ class Container
 			{
 				this.aaTemp.strAppID := strThisAppID
 				this.ActivateRunningApplication()
-				blnOpenOK := true
 			}
-			; DOCUMENTS and LINK
-			else if (InStr("Document|URL", this.AA.strFavoriteType) and !this.aaTemp.blnProcessAsApp)
+			; LINK
+			else if (this.AA.strFavoriteType = "URL" and !this.aaTemp.blnProcessAsApp) ; blnProcessAsApp if URL has arguments, consider as Application
 			{
-				this.LaunchFullLocation()
-				blnOpenOK := true
+				intOpenError := this.LaunchFullLocation()
 			}
 			; SNIPPETS
 			else if (this.AA.strFavoriteType = "Snippet")
 				and (!g_blnAlternativeMenu or (g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"]))
 			{
-				this.PasteSnippet() ; using this.AA.strLocationWithPlaceholders
-				blnOpenOK := true
+				intOpenError := this.PasteSnippet() ; using this.AA.strLocationWithPlaceholders
 			}	
 			; CHECK IF FILE/FOLDER MUST EXIST
 			else if this.FileExistIfMust()
 			{
 				if (this.aaTemp.blnDoNotOpen) ; when editing a not found favorite
-					return
+					return 1 ; error
 				
 				; WINDOW POSITION PREPARATION
 				; DOpus or TC: L Left / R Right / Explorer or TC: Monitor 1 / Monitor 2...; for example: "1,0,100,50,640,480,200" or "0,,,,,,,L"
@@ -31380,17 +31337,23 @@ class Container
 				; APPLICATION
 				if (this.AA.strFavoriteType = "Application" or this.aaTemp.blnProcessAsApp)
 				{
-					this.LaunchApplication()
-					blnOpenOK := true
+					intOpenError := this.LaunchApplication()
+					if (intOpenError and (intOpenError <> 1223))
+						Oops(0, o_L["OopsUnknownTargetAppName"]) ; error 1223 because user canceled on the Run as admnistrator prompt
 				}
 				; FOLDER
 				if InStr("Folder|FTP|Special", this.AA.strFavoriteType)
-					blnOpenOK := this.OpenFolder()
+					intOpenError := this.OpenFolder() ; return 0 if no error
+				; DOCUMENT
+				if (this.AA.strFavoriteType = "Document")
+					intOpenError := this.LaunchFullLocation()
 			}
 			else
-				blnOpenOK := false
+				intOpenError := 1 ; error
 			
-			if (blnOpenOK)
+			if (intOpenError) ; error
+				return intOpenError ;  return error
+			else
 			{
 				; SET WINDOW POSITION
 				if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ;  we need to position window
@@ -31405,19 +31368,22 @@ class Container
 				
 				; LOG ACTION
 				this.CollectUsageDb() ; was UsageDbCollectMenu:
+				
+				return 0 ; no error
 			}
 		}
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
 		AlternativeOpenContainer()
+		; return 0 if success or error code
 		;---------------------------------------------------------
 		{
 			SplitPath, % this.aaTemp.strLocationWithPlaceholders, , strContainingFolder
 			if StrLen(strContainingFolder)
 				strContainingFolder .= "\"
 			else
-				return ; this is probably a Special folder with CLSID (not with a regular folder path)
+				return 1 ; error code this is probably a Special folder with CLSID (not with a regular folder path)
 			
 			saContainingItem := ["Folder", "Containing Folder", strContainingFolder]
 			oContainingFolderItem := new Container.Item(saContainingItem)
@@ -31437,7 +31403,7 @@ class Container
 				strHotkeyTypeDetected := "Launch"
 			}
 			
-			oContainingFolderItem.OpenFavorite(strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel, this.aaTemp.strTargetWinId, strHotkeyTypeDetected)
+			return oContainingFolderItem.OpenFavorite(strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel, this.aaTemp.strTargetWinId, strHotkeyTypeDetected) ; returns 0 or error code
 		}
 		;---------------------------------------------------------
 		
@@ -31470,7 +31436,7 @@ class Container
 		
 		;---------------------------------------------------------
 		OpenFolder()
-		; returns true if open went well, otherwhise false
+		; return 0 if no error or error code
 		;---------------------------------------------------------
 		{
 			; Navigate
@@ -31603,8 +31569,8 @@ class Container
 						else if ControlIsVisible("ahk_id " . g_strTargetWinId, "Edit2")
 							strEditControl := "Edit2"
 							; but sometimes in MS office, if condition above fails, "Edit2" control is the right choice 
-						else ; if above fails - just return false and do nothing.
-							return false
+						else ; if above fails - just return error code and do nothing
+							return 1 ; error code
 					
 					;=== In this part (if we reached it), we'll send strLocation to control and restore control's initial text after navigating to specified folder===
 					
@@ -31614,10 +31580,10 @@ class Container
 					strFullLocationTemp := this.aaTemp.strFullLocation . (SubStr(this.aaTemp.strFullLocation, StrLen(this.aaTemp.strFullLocation), 1) <> "\" ? "\" : "")
 					
 					if !ControlSetTextR(strEditControl, strFullLocationTemp, "ahk_id " . g_strTargetWinId) ; set control's text to strLocation
-						return false ; abort if control is not set
+						return 1 ; error code, abort if control is not set
 					
 					if !ControlSetFocusR(strEditControl, "ahk_id " . g_strTargetWinId) ; focus control
-						return false
+						return 1 ; error code
 					
 					if (WinExist("A") <> g_strTargetWinId) ; in case that some window just popped out, and initialy active window lost focus
 						WinActivate, ahk_id %g_strTargetWinId% ; we'll activate initialy active window
@@ -31646,9 +31612,8 @@ class Container
 				}
 				else ; Unknown
 				{
-					; avoid an error message if target app name is unknown
 					Oops(0, o_L["OopsUnknownTargetAppName"])
-					return false
+					return 1 ; error code
 				}
 			}
 			else ; New window
@@ -31725,7 +31690,8 @@ class Container
 					
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 					{
-						if (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows) or !(g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
+						###_V("DOpus this.AA.oParentMenu.AA.blnGroupReplaceWindows", this.AA.oParentMenu.AA.blnGroupReplaceWindows)
+						if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
 							strTabParameter := "NEW=nodual" ; force left in new lister
 						else
 						{
@@ -31755,7 +31721,7 @@ class Container
 				}
 				else if (this.aaTemp.strTargetAppName = "TotalCommander")
 				{
-					if (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 					{
 						; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay, RestoreSide/Monitor; for example: "0,,,,,,,L"
 						if StrLen(this.aaTemp.saFavoriteWindowPosition[8])
@@ -31771,7 +31737,7 @@ class Container
 					{
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
 							or InStr(g_aaFileManagerTotalCommander.strNewTabOrWindow, "/N") ; or open a new instance
-							or (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows))
+							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows))
 						{
 							Run, % g_aaFileManagerTotalCommander.strFileManagerPath
 							WinWaitActive, ahk_class TTOTAL_CMD, , 10
@@ -31796,17 +31762,12 @@ class Container
 						}
 						Sleep, 100 ; wait to improve SendMessage reliability in OpenFavoriteNavigateTotalCommander
 						this.aaTemp.strHotkeyTypeDetected := "Navigate"
-						this.OpenFolder()
-						; ??? check this:
-						; Since this.aaTemp.strFullLocation is integer, OpenFavoriteNavigateTotalCommander is doing:
-						; SendMessage, 0x433, %intTCCommand%, , , ahk_class TTOTAL_CMD
-						; Sleep, 100 ; wait to improve SendMessage reliability
-						; WinActivate, ahk_class TTOTAL_CMD
+						this.OpenFolder() ; recursive call to navigate special folder in new tab, no error code
 					}
 					else ; normal folder
 					{
-						if (g_strOpenFavoriteLabel = "OpenFavoriteFromGroup")
-							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 								strTabParameter := "/N" ; /N new window
 							else
 								strTabParameter := "/O /T" ; /O same instance, /T new tab
@@ -31858,7 +31819,7 @@ class Container
 					; avoid an error message if target app name is unknown
 					Oops(0, o_L["OopsUnknownTargetAppName"])
 			}
-			return true
+			return 0 ; no error
 		}
 		;---------------------------------------------------------
 		
@@ -31944,43 +31905,110 @@ class Container
 		OpenGroup()
 		;---------------------------------------------------------
 		{
-			if (this.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
-				gosub, OpenGroupOfFavoritesCloseExplorers
-				
+			if (this.AA.oSubMenu.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
+				this.OpenGroupCloseExplorers()
+			
 			intFolderItemsCount := 0
-			for intMemberNumber, o_GroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
+			for intMemberNumber, oGroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
 			{
-				if !(o_GroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
+				if !(oGroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
 				{
-					Sleep, % o_GroupMember.AA.intGroupRestoringDelay + 200 ; add 200 ms as minimal default delay
-					
-					if (o_GroupMember.AA.strFavoriteType = "Folder" and o_GroupMember.AA.intFavoriteFolderLiveLevels)
+					if (oGroupMember.AA.strFavoriteType = "Folder" and oGroupMember.AA.intFavoriteFolderLiveLevels)
 					{
 						oGroupLiveFolderMenu := new Container("Menu", "GroupLiveFolderMenu") ; create a temporary container
-						oGroupLiveFolderMenu.SA[1] := o_GroupMember ; attach to it the live folder menu to build and display
-						oGroupLiveFolderMenu.BuildLiveFolderMenu(o_GroupMember, "GroupLiveFolderMenu", 0) ; build the live folder menu
+						oGroupLiveFolderMenu.SA[1] := oGroupMember ; attach to it the live folder menu to build and display
+						oGroupLiveFolderMenu.BuildLiveFolderMenu(oGroupMember, "GroupLiveFolderMenu", 0) ; build the live folder menu
 						oGroupLiveFolderMenu.BuildMenu() ; build the temporary menu and its children live folder menu
-						Menu, % oGroupLiveFolderMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . o_GroupMember.AA.strFavoriteName, Show
+						Menu, % oGroupLiveFolderMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oGroupMember.AA.strFavoriteName, Show
 					}
 					else 
 					{
-						If InStr("Folder|Special|FTP", o_GroupMember.AA.strFavoriteType)
+						If InStr("Folder|Special|FTP", oGroupMember.AA.strFavoriteType)
 							intFolderItemsCount++ ; do it that way because first member could be other than a folder
-						o_GroupMember.aaTemp.blnFirstFolderOfGroup := (intFolderItemsCount = 1) ; was g_blnFirstFolderOfGroup
+						oGroupMember.aaTemp.blnFirstFolderOfGroup := (intFolderItemsCount = 1) ; was g_blnFirstFolderOfGroup
 						
 						g_strNewWindowId := "" ; start fresh for next group member if it is another Folder
 						
-						o_GroupMember.OpenFavorite(this.aaTemp.strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel
+						; OpenFavorite returns 0 if success or integer error code
+						intOpenFavoriteError := oGroupMember.OpenFavorite(this.aaTemp.strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel
 							, "" ; never use target window when launched in a group
 							, "Launch") ; all favorites in group are for Launch, never navigate
 					}
+					
+					if (intOpenFavoriteError and StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[3]) ; 3 boolean stop if the app returns an error
+					{
+						Oops(0, o_L["DialogGroupRestoreStopIfError"], A_Index, oGroupMember.AA.strFavoriteName, oGroupMember.AA.strFavoriteLocation)
+						return intOpenFavoriteError ; break loop
+					}
+					else
+					{
+						intMemberDelay := (StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] ? StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] : 0) ; make sure empty value doe not break the addition below
+						; parent menu delay + group member (1) integer additional delay after launching member (in ms) + 200 ms as minimal default delay
+						Sleep, % oGroupMember.AA.oParentMenu.AA.intGroupRestoringDelay + intMemberDelay + 200 ; 200 ms minimum delay
+					}
 				}
 			}
+			
+			return 0 ; no error
 		}
 		;---------------------------------------------------------
 		
+		;------------------------------------------------------------
+		OpenGroupCloseExplorers()
+		;------------------------------------------------------------
+		{
+			intSleepTime := 67 ; for visual effect only...
+			ShowToolTip(o_L["GuiGroupClosing"])
+			
+			if (this.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther = "Other")
+			{
+				if (o_FileManagers.P_intActiveFileManager = 2) ; Directory Opus
+				{
+					WinGet, arrIDs, List, ahk_class dopus.lister
+					Loop, %arrIDs%
+					{
+						WinClose, % "ahk_id " . arrIDs%A_Index%
+						Sleep, %intSleepTime%
+					}
+				}
+				else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
+				{
+					WinGet, arrIDs, List, ahk_class TTOTAL_CMD
+					Loop, %arrIDs%
+					{
+						WinClose, % "ahk_id " . arrIDs%A_Index%
+						Sleep, %intSleepTime%
+					}
+				}
+			}
+			else ; "Windows Explorer" or ""
+			{
+				strWindowsId := ""
+				for pExplorer in ComObjCreate("Shell.Application").Windows
+				{
+					; do not close in this loop as it mess up the handlers
+					strType := ""
+					try strType := pExplorer.Type ; Gets the type name of the contained document object. "Document HTML" for IE windows. Should be empty for file Explorer windows.
+					strWindowID := ""
+					try strWindowID := pExplorer.HWND ; Try to get the handle of the window. Some ghost Explorer in the ComObjCreate may return an empty handle
+					if !StrLen(strType) and StrLen(strWindowID) ; strType must be empty and strWindowID must not be empty
+						strWindowsId .= pExplorer.HWND . "|"
+				}
+				strWindowsId := SubStr(strWindowsId, 1, -1) ; remove last | separator
+				Loop, Parse, strWindowsId, |
+				{
+					WinClose, ahk_id %A_LoopField%
+					Sleep, %intSleepTime%
+				}
+			}
+			
+			ToolTip ; clear tooltip
+		}
+		;------------------------------------------------------------
+		
 		;---------------------------------------------------------
 		PasteSnippet()
+		; return 0 if success or 1 if timeout error
 		;---------------------------------------------------------
 		{
 			strWaitTime := 10
@@ -31999,7 +32027,7 @@ class Container
 				strErrorLevel := ErrorLevel
 				ToolTip
 				if !InStr(strErrorLevel, "EndKey:") or InStr(strErrorLevel, "Escape")
-					return
+					return 1 ; time out error
 			}
 			else
 				WinActivate, % "ahk_id " . this.aaTemp.strTargetWinId
@@ -32020,7 +32048,7 @@ class Container
 				ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
 				intErrorLevel := ErrorLevel
 				if (intErrorLevel)
-					return
+					return intErrorLevel ; 1 if wait time exceeded
 				
 				; avoid using SendInput to send ^v
 				; (see: https://autohotkey.com/board/topic/77928-ctrl-v-sendinput-v-is-not-working-in-many-applications/#entry495555)
@@ -32106,7 +32134,7 @@ class Container
 				
 				SendMode, Input ; restore default SendMode to Input mode
 			}
-			;------------------------------------------------------------
+			return 0 ; no error
 		}
 		;---------------------------------------------------------
 		
@@ -32134,6 +32162,7 @@ class Container
 		
 		;---------------------------------------------------------
 		LaunchApplication()
+		; return 0 if success or error code
 		;---------------------------------------------------------
 		{
 			; since 1.0.95.00, Run supports verbs with parameters, such as Run *RunAs %A_ScriptFullPath% /Param.
@@ -32142,17 +32171,26 @@ class Container
 			; Diag(A_ThisLabel . ":g_strFullLocation", g_strFullLocation)
 			; Diag(A_ThisLabel . ":strAppWorkingDirWithPlaceholders", strAppWorkingDirWithPlaceholders)
 			
-			Run, % (this.AA.blnFavoriteElevate or g_strAlternativeMenu = o_L["MenuAlternativeRunAs"] ? "*RunAs " : "") . this.aaTemp.strFullLocation
-				, % this.aaTemp.strAppWorkingDirWithPlaceholders, UseErrorLevel, intPid
+			; TAKE CARE to keep RunWait and Run parameters identical
+			
+			strTarget := (this.AA.blnFavoriteElevate or g_strAlternativeMenu = o_L["MenuAlternativeRunAs"] ? "*RunAs " : "") . this.aaTemp.strFullLocation
+			strWorkingDir := this.aaTemp.strAppWorkingDirWithPlaceholders
+			strOptions := "UseErrorLevel" . (StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[4] ? " Min" : "") ; 4 boolean launch minimized
+			
+			if StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[2] ; 2 boolean wait for program to finish
+				RunWait, %strTarget%, %strWorkingDir%, %strOptions%, intPid
+			else
+				Run, %strTarget%, %strWorkingDir%, %strOptions%, intPid
 			
 			if (ErrorLevel = "ERROR")
+				return A_LastError
+			else
 			{
-				if (A_LastError <> 1223)
-					Oops(0, o_L["OopsUnknownTargetAppName"])
-				; else no error message - error 1223 because user canceled on the Run as admnistrator prompt
+				if (this.aaTemp.saFavoriteWindowPosition[1] and intPid and o_Settings.Execution.blnTryWindowPosition.IniValue)
+					g_strNewWindowId := "ahk_pid " . intPid
+				
+				return 0 ; no error
 			}
-			else if (this.aaTemp.saFavoriteWindowPosition[1] and intPid and o_Settings.Execution.blnTryWindowPosition.IniValue)
-				g_strNewWindowId := "ahk_pid " . intPid
 		}
 		;---------------------------------------------------------
 		
@@ -32174,7 +32212,9 @@ class Container
 				, "Str", strTempArguments
 				, "UInt", 0
 				, "IntP", intProcessId)
+			intError := ErrorLevel ; 0 if no error (but no error code if location does not exist
 			ObjRelease(objIApplicationActivationManager)
+			return intError
 		}
 		;---------------------------------------------------------
 		
@@ -32196,6 +32236,7 @@ class Container
 		
 		;---------------------------------------------------------
 		LaunchFullLocation()
+		; return 0 if success or error code
 		;---------------------------------------------------------
 		{
 			Run, % this.aaTemp.strFullLocation, , UseErrorLevel, intPid
@@ -32205,6 +32246,7 @@ class Container
 				; intPid may not be set for some doc types; could help if document is launch with a FavoriteLaunchWith
 				if (this.aaTemp.saFavoriteWindowPosition[1] and intPid and o_Settings.Execution.blnTryWindowPosition.IniValue)
 					g_strNewWindowId := "ahk_pid " . intPid
+			return (ErrorLevel = "ERROR" ? A_LastError : 0)
 		}
 		;---------------------------------------------------------
 		
@@ -32329,7 +32371,9 @@ class Container
 						; make the location absolute based on the current working directory
 						strTemp := this.aaTemp.strFullLocation ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 						blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strFullLocation with expanded relative path, envvars and user variables, and absolute location if in PATH
-						this.aaTemp.strFullLocation := strTemp
+						if (blnFileExist)
+							this.aaTemp.strFullLocation := strTemp
+						; else leave bad location in strFullLocation
 						
 						if StrLen(this.AA.intFavoriteOpenSubFolder) and (this.AA.intFavoriteOpenSubFolder)
 							this.aaTemp.strFullLocation .= "\" . this.GetSubFolderToOpen() ; get subfolder to open
@@ -32352,7 +32396,7 @@ class Container
 						this.aaTemp.strHotkeyTypeDetected := strTempHotkeyTypeDetected
 						this.aaTemp.strTargetAppName := strTempTargetAppName
 					}
-					; else URL or QAP (no need to expand or make absolute), keep this.aaTemp.strFullLocation as in g_objThisFavorite.FavoriteLocation
+					; else URL or QAP (no need to expand or make absolute), keep this.aaTemp.strFullLocation as in this.AA.strFavoriteLocation
 				
 				if StrLen(this.AA.strFavoriteLaunchWith) and !InStr("Application|Snippet", this.AA.strFavoriteType) ; ignore for Application or Snippet favorites
 					this.aaTemp.strFullLocation := this.aaTemp.strExpandedLaunchWith . " """ . this.aaTemp.strFullLocation . """" ; enclose document path in double-quotes
@@ -32466,8 +32510,8 @@ class Container
 			{
 				g_blnAlternativeMenu := true
 				g_strAlternativeMenu := o_L["MenuAlternativeEditFavorite"]
-				this.OpenFavorite(strMenuTriggerLabel, strOpenFavoriteLabel, strTargetWinId, "Alternative")
-				this.aaTemp.blnDoNotOpen := true ; to avoid opening this favorite with not found location
+				this.OpenFavorite(strMenuTriggerLabel, this.aaTemp.strOpenFavoriteLabel, strTargetWinId, "Alternative") ; returns intResult not used here
+				this.aaTemp.blnDoNotOpen := true ; to avoid opening this favorite with not found location, not used I think but keep for safety for now
 				return true
 			}
 			else
