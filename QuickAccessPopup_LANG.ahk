@@ -251,6 +251,7 @@ this["DialogFreeEditionMessage3"] := "Get your license now to take full advantag
 this["DialogFreeEditionShared"] := "Shared menus: actual ~1~ / allowed ~2~"
 this["DialogGetWebPageTitle"] := "Get title"
 this["DialogGetWebPageTitleIcon"] := "Get title and icon"
+this["DialogEnterWebSiteIcon"] := "Enter favicon.ico URL"
 this["DialogGetWebSiteIcon"] := "Get website icon"
 this["DialogGetWinInfo"] := "To identify the window you want to get the title of, its class, or process name, click in the target window with the QAP menu hotkey [~1~]."
 this["DialogGetWInInfo2Clippoard"] := "Window title:`n""~1~""`n`nClass:`n""~2~""`n`nProcess name:`n""~3~""`n`nCopy this info to your Clipboard?"
