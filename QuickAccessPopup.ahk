@@ -34,16 +34,16 @@ HISTORY
 Version BETA: 11.5.0.9.1 (2021-09-26)
  
 Groups
-- for "Group" favorites, replace the "Menu Options" tab with "Group Member Options" for new options specific to each item in the group
+- for favorites included in a group, replace the "Menu Options" tab with "Group Member Options" for new options specific to each item in the group
 - group member option "Launch and wait" to enter a delay (in milliseconds) to wait after a favorite is launched before launching the next favorite in the group
 - group member options for "Application" favorite types:
   - checkbox to "Wait until the program finishes" before launching the next favorite in the group
   - checkbox "Stop in case of error" to interrupt group opening if an application favorite returns a non-zero error code (show an error message if group opening was stopped)
-  - checkbox to launch the favorite "Mimimized"
+  - checkbox to launch the favorite "Minimized"
 - increase groups global delay to 7 digits (maximum 167 minutes after each group member)
  
 Various
-- for Link favorites, add a button in "Edit Favorite" dialog box, "Menu Options" tab, to enter a favicon.ico URL (in case automatic retrieve did not work)
+- for Link favorites, add a button in "Edit Favorite" dialog box, "Menu Options" tab, to "Enter favicon.ico URL" (in case automatic retrieve did not work)
 - add icons in add favorite "Add Favorite Type" dialog box
 - fix bug not opening folder on the specified side when opening a folder with Total Commander
 - when opening a "Document" favorite, if the location does not exist, offer to edit the favorite
