@@ -13143,6 +13143,9 @@ Gui, 2:Add, Text, y+20 x260 section vf_lblLiveFolderSortOrderLabel hidden, % o_L
 Gui, 2:Add, Radio, % "y+5 x260 vf_radLiveFolderSortA hidden group" . (strLiveFolderSortOrder = "A" ? " checked" : ""), % o_L["DialogAscending"]
 Gui, 2:Add, Radio, % "y+5 x260 vf_radLiveFolderSortD hidden" . (strLiveFolderSortOrder = "D" ? " checked" : ""), % o_L["DialogDescending"]
 
+Gui, 2:Add, Text, y+15 x260 vf_lblFavoriteFolderLiveIconsSize hidden, % o_L["DialogIconsSizeInMenu"]
+Gui, 2:Add, DropDownList, yp x+5 vf_drpFavoriteFolderLiveIconsSize hidden, % GetMenuIconSizeList(o_EditedFavorite.AA.intFavoriteFolderLiveIconsSize)
+
 strLiveFolderSortCriteria := SubStr(o_EditedFavorite.AA.strFavoriteFolderLiveSort, 2, 1)
 Gui, 2:Add, Text, ys x20 vf_lblLiveFolderSortCriteriaLabel hidden, % o_L["DialogSortBy"] . ":"
 Gui, 2:Add, Radio, % "y+5 x20 vf_radLiveFolderSort1 hidden section" . (strLiveFolderSortCriteria = "1" ? " checked" : ""), % o_L["DialogFileName"]
@@ -13173,6 +13176,7 @@ Gui, 2:Add, Checkbox, % "x20 y+15 w400 vf_blnFavoriteFolderLiveDocuments gCheckb
 	, % o_L["DialogFavoriteFolderLiveDocuments"]
 Gui, 2:Add, Radio, % "x20 y+10 vf_radFavoriteFolderLiveInclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "checked" : ""), % o_L["DialogFavoriteFolderLiveInclude"]
 Gui, 2:Add, Radio, % "x+5 yp vf_radFavoriteFolderLiveExclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "" : "checked"), % o_L["DialogFavoriteFolderLiveExclude"]
+Gui, 2:Add, Checkbox, % "yp x260 vf_blnLiveFolderExcludeFolders hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders ? "checked" : ""), % o_L["DialogFavoriteFolderLiveExcludeFolders"]
 Gui, 2:Add, Text, x20 y+10 w400 vf_lblFavoriteFolderLiveExtensions hidden, % o_L["DialogFavoriteFolderLiveExtensions"]
 Gui, 2:Add, Edit, x20 y+10 w400 vf_strFavoriteFolderLiveExtensions hidden, % o_EditedFavorite.AA.strFavoriteFolderLiveExtensions
 
@@ -14241,6 +14245,9 @@ GuiControl, %strShowHideCommand%, f_lblLiveFolderSortOrderLabel
 GuiControl, %strShowHideCommand%, f_radLiveFolderSortA
 GuiControl, %strShowHideCommand%, f_radLiveFolderSortD
 
+GuiControl, %strShowHideCommand%, f_lblFavoriteFolderLiveIconsSize
+GuiControl, %strShowHideCommand%, f_drpFavoriteFolderLiveIconsSize
+
 GuiControl, %strShowHideCommand%, f_lblLiveFolderSortCriteriaLabel
 GuiControl, %strShowHideCommand%, f_radLiveFolderSort1
 GuiControl, %strShowHideCommand%, f_radLiveFolderSort2
@@ -14293,8 +14300,10 @@ strShowHideCommand := (f_blnFavoriteFolderLiveDocuments ? "Show" : "Hide")
 
 GuiControl, %strShowHideCommand%, f_radFavoriteFolderLiveInclude
 GuiControl, %strShowHideCommand%, f_radFavoriteFolderLiveExclude
+GuiControl, %strShowHideCommand%, f_nlnLiveFolderExcludeFolders
 GuiControl, %strShowHideCommand%, f_lblFavoriteFolderLiveExtensions
 GuiControl, %strShowHideCommand%, f_strFavoriteFolderLiveExtensions
+GuiControl, %strShowHideCommand%, f_blnLiveFolderExcludeFolders
 GuiControl, , % (f_blnFavoriteFolderLiveDocuments ? "" : f_strFavoriteFolderLiveExtensions)
 
 strShowHideCommand := ""
@@ -16190,6 +16199,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude := f_radFavoriteFolderLiveInclude
 		o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := f_strFavoriteFolderLiveExtensions
 		o_EditedFavorite.AA.blnFavoriteFolderLiveRefreshManual := f_blnFavoriteFolderLiveRefreshManual
+		o_EditedFavorite.AA.intFavoriteFolderLiveIconsSize := f_drpFavoriteFolderLiveIconsSize
+		o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders := f_blnLiveFolderExcludeFolders
 		
 		strLoopCriteria := 0
 		loop
@@ -16423,6 +16434,8 @@ f_radFavoriteFolderLiveInclude := ""
 f_radFavoriteFolderLiveExclude := ""
 f_strFavoriteFolderLiveExtensions := ""
 f_blnFavoriteFolderLiveRefreshManual := ""
+f_drpFavoriteFolderLiveIconsSize := ""
+f_blnLiveFolderExcludeFolders := ""
 f_intGroupRestoreDelayAfter := ""
 f_blnintGroupRestoreWaitFinish := ""
 f_blnintGroupRestoreStopIfError := ""
@@ -29304,7 +29317,8 @@ class Container
 			; 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude, 19 strFavoriteFolderLiveExtensions,
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
-			; 29 blnFavoriteFolderLiveHideExtensions 30 intFavoriteOpenSubFolder 31 blnFavoriteFolderLiveRefreshManual 32 strFavoriteGroupRestoreOptions
+			; 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
+			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
 
 	;---------------------------------------------------------
 	{
@@ -30564,6 +30578,8 @@ class Container
 			strIniLine .= oItem.AA.intFavoriteOpenSubFolder . "|" ; 30
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveRefreshManual . "|" ; 31
 			strIniLine .= oItem.AA.strFavoriteGroupRestoreOptions . "|" ; 32
+			strIniLine .= oItem.AA.intFavoriteFolderLiveIconsSize . "|" ; 33
+			strIniLine .= oItem.AA.blnFavoriteFolderLiveExcludeFolders . "|" ; 34
 
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -31040,7 +31056,7 @@ class Container
 			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
 			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
-			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
+			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -31127,6 +31143,8 @@ class Container
 			this.InsertItemValue("intFavoriteOpenSubFolder", (StrLen(saFavorite[30]) ? saFavorite[30] : 0)) ; folder to open, 0 folder itself, most recently(+)/anciently(-) 1 created, 2 modified or 3 accessed subfolder
 			this.InsertItemValue("blnFavoriteFolderLiveRefreshManual", saFavorite[31]) ; refresh live folder only when using the Refresh Live Folders command
 			this.InsertItemValue("strFavoriteGroupRestoreOptions", saFavorite[32]) ; semi-colon separated values for group members options
+			this.InsertItemValue("intFavoriteFolderLiveIconsSize", saFavorite[33]) ; integer value, icons size in Live Folders
+			this.InsertItemValue("blnFavoriteFolderLiveExcludeFolders", saFavorite[34]) ; boolean, exclude folders in Live Folders
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
