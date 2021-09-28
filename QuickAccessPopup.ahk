@@ -16160,14 +16160,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := g_intNewSortCriteria ; for future load of this menu before relaunching QAP
 		
 		; store menu icons size in strFavoriteArguments
-		if (f_drpMenuIconsSize = o_L["DialogIconsDefaultSize"])
-			o_EditedFavorite.AA.strFavoriteArguments := 0
-		else if (f_drpMenuIconsSize = o_L["DialogIconsInheritedSize"])
-			o_EditedFavorite.AA.strFavoriteArguments := -1
-		else if (f_drpMenuIconsSize = o_L["DialogSelectIconNo"])
-			o_EditedFavorite.AA.strFavoriteArguments := -2
-		else
-			o_EditedFavorite.AA.strFavoriteArguments := f_drpMenuIconsSize
+		o_EditedFavorite.AA.strFavoriteArguments := ProcessMenuIconsSize(f_drpMenuIconsSize)
 	}
 	else
 		o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments
@@ -16199,7 +16192,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude := f_radFavoriteFolderLiveInclude
 		o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := f_strFavoriteFolderLiveExtensions
 		o_EditedFavorite.AA.blnFavoriteFolderLiveRefreshManual := f_blnFavoriteFolderLiveRefreshManual
-		o_EditedFavorite.AA.intFavoriteFolderLiveIconsSize := f_drpFavoriteFolderLiveIconsSize
+		o_EditedFavorite.AA.intFavoriteFolderLiveIconsSize := ProcessMenuIconsSize(f_drpFavoriteFolderLiveIconsSize)
 		o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders := f_blnLiveFolderExcludeFolders
 		
 		strLoopCriteria := 0
@@ -26191,6 +26184,22 @@ GetMenuIconSizeList(intMenuIconsSize)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+ProcessMenuIconsSize(strSize)
+;------------------------------------------------------------
+{
+	if (strSize = o_L["DialogIconsDefaultSize"])
+		return 0
+	else if (strSize = o_L["DialogIconsInheritedSize"])
+		return -1
+	else if (strSize = o_L["DialogSelectIconNo"])
+		return -2
+	else
+		return strSize
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -29889,6 +29898,7 @@ class Container
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
+					aaThisFavorite.strFavoriteArguments := aaThisFavorite.intFavoriteFolderLiveIconsSize ; copy live folder icons size in strFavoriteArguments used for menu size
 					if StrLen(aaThisFavorite.oSubMenu.AA.strMenuPath) ; in case building live folder was aborted
 						o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
 				}
