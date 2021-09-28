@@ -13172,11 +13172,11 @@ Gui, 2:Add, Text, x+5 yp w385 vf_lblFavoriteFolderLiveColumns hidden, % o_L["Dia
 Gui, 2:Add, Checkbox, % "x20 y+20 w400 vf_blnFavoriteFolderLiveRefreshManual hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveRefreshManual ? "checked" : "")
 	, % L(o_L["DialogFavoriteFolderLiveRefreshManual"], o_L["MenuRefreshMenu"])
 
-Gui, 2:Add, Checkbox, % "x20 y+15 w400 vf_blnFavoriteFolderLiveDocuments gCheckboxFolderLiveDocumentsClicked hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveDocuments ? "checked" : "")
+Gui, 2:Add, Checkbox, % "x20 y+15 vf_blnFavoriteFolderLiveDocuments gCheckboxFolderLiveDocumentsClicked hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveDocuments ? "checked" : "")
 	, % o_L["DialogFavoriteFolderLiveDocuments"]
+Gui, 2:Add, Checkbox, % "yp x260 vf_blnFavoriteFolderLiveExcludeFolders hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders ? "checked" : ""), % o_L["DialogFavoriteFolderLiveExcludeFolders"]
 Gui, 2:Add, Radio, % "x20 y+10 vf_radFavoriteFolderLiveInclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "checked" : ""), % o_L["DialogFavoriteFolderLiveInclude"]
 Gui, 2:Add, Radio, % "x+5 yp vf_radFavoriteFolderLiveExclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "" : "checked"), % o_L["DialogFavoriteFolderLiveExclude"]
-Gui, 2:Add, Checkbox, % "yp x260 vf_blnLiveFolderExcludeFolders hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders ? "checked" : ""), % o_L["DialogFavoriteFolderLiveExcludeFolders"]
 Gui, 2:Add, Text, x20 y+10 w400 vf_lblFavoriteFolderLiveExtensions hidden, % o_L["DialogFavoriteFolderLiveExtensions"]
 Gui, 2:Add, Edit, x20 y+10 w400 vf_strFavoriteFolderLiveExtensions hidden, % o_EditedFavorite.AA.strFavoriteFolderLiveExtensions
 
@@ -14303,7 +14303,7 @@ GuiControl, %strShowHideCommand%, f_radFavoriteFolderLiveExclude
 GuiControl, %strShowHideCommand%, f_nlnLiveFolderExcludeFolders
 GuiControl, %strShowHideCommand%, f_lblFavoriteFolderLiveExtensions
 GuiControl, %strShowHideCommand%, f_strFavoriteFolderLiveExtensions
-GuiControl, %strShowHideCommand%, f_blnLiveFolderExcludeFolders
+GuiControl, %strShowHideCommand%, f_blnFavoriteFolderLiveExcludeFolders
 GuiControl, , % (f_blnFavoriteFolderLiveDocuments ? "" : f_strFavoriteFolderLiveExtensions)
 
 strShowHideCommand := ""
@@ -16193,7 +16193,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		o_EditedFavorite.AA.strFavoriteFolderLiveExtensions := f_strFavoriteFolderLiveExtensions
 		o_EditedFavorite.AA.blnFavoriteFolderLiveRefreshManual := f_blnFavoriteFolderLiveRefreshManual
 		o_EditedFavorite.AA.intFavoriteFolderLiveIconsSize := ProcessMenuIconsSize(f_drpFavoriteFolderLiveIconsSize)
-		o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders := f_blnLiveFolderExcludeFolders
+		o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders := f_blnFavoriteFolderLiveExcludeFolders
 		
 		strLoopCriteria := 0
 		loop
@@ -16428,7 +16428,7 @@ f_radFavoriteFolderLiveExclude := ""
 f_strFavoriteFolderLiveExtensions := ""
 f_blnFavoriteFolderLiveRefreshManual := ""
 f_drpFavoriteFolderLiveIconsSize := ""
-f_blnLiveFolderExcludeFolders := ""
+f_blnFavoriteFolderLiveExcludeFolders := ""
 f_intGroupRestoreDelayAfter := ""
 f_blnintGroupRestoreWaitFinish := ""
 f_blnintGroupRestoreStopIfError := ""
@@ -30058,7 +30058,10 @@ class Container
 			}
 		}
 		
-		Sort, strFolders, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
+		if (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveExcludeFolders and o_FavoriteLiveFolder.AA.intFavoriteFolderLiveLevels = 1)
+			strFolders := ""
+		else
+			Sort, strFolders, % "CL " . (SubStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort, 1, 1) = "D" ? "R" : "") ; R for reverse order, CL for Case insensitive sort based on the current user's locale
 		
 		; scan files in live folder
 		strFiles := ""
@@ -30186,6 +30189,7 @@ class Container
 				oNewItem.AA.strFavoriteFolderLiveExtensions := o_FavoriteLiveFolder.AA.strFavoriteFolderLiveExtensions
 				oNewItem.AA.strFavoriteFolderLiveSort := o_FavoriteLiveFolder.AA.strFavoriteFolderLiveSort
 				oNewItem.AA.blnFavoriteFolderLiveRefreshManual := o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveRefreshManual
+				oNewItem.AA.blnFavoriteFolderLiveExcludeFolders := o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveExcludeFolders
 			}
 			if (oNewItem.AA.strFavoriteType = "Menu") ; this is a submenu favorite, link to the submenu object
 				oNewItem.AA.oSubMenu := oNewSubMenu
