@@ -13177,8 +13177,9 @@ Gui, 2:Add, Checkbox, % "x20 y+15 vf_blnFavoriteFolderLiveDocuments gCheckboxFol
 Gui, 2:Add, Checkbox, % "yp x260 vf_blnFavoriteFolderLiveExcludeFolders hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveExcludeFolders ? "checked" : ""), % o_L["DialogFavoriteFolderLiveExcludeFolders"]
 Gui, 2:Add, Radio, % "x20 y+10 vf_radFavoriteFolderLiveInclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "checked" : ""), % o_L["DialogFavoriteFolderLiveInclude"]
 Gui, 2:Add, Radio, % "x+5 yp vf_radFavoriteFolderLiveExclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "" : "checked"), % o_L["DialogFavoriteFolderLiveExclude"]
-Gui, 2:Add, Text, x20 y+10 w400 vf_lblFavoriteFolderLiveExtensions hidden, % o_L["DialogFavoriteFolderLiveExtensions"]
-Gui, 2:Add, Edit, x20 y+10 w400 vf_strFavoriteFolderLiveExtensions hidden, % o_EditedFavorite.AA.strFavoriteFolderLiveExtensions
+Gui, 2:Add, Text, yp x+0 vf_lblFavoriteFolderLiveFiles hidden, % o_L["DialogFavoriteFolderLiveFiles"]
+Gui, 2:Add, Edit, x20 y+5 w400 vf_strFavoriteFolderLiveExtensions hidden, % o_EditedFavorite.AA.strFavoriteFolderLiveExtensions
+Gui, 2:Add, Text, x20 y+5 w500 vf_lblFavoriteFolderLiveExtensions hidden, % o_L["DialogFavoriteFolderLiveExtensions"]
 
 strLiveFolderSortOrder := ""
 strLiveFolderSortCriteria := ""
@@ -14301,6 +14302,7 @@ strShowHideCommand := (f_blnFavoriteFolderLiveDocuments ? "Show" : "Hide")
 GuiControl, %strShowHideCommand%, f_radFavoriteFolderLiveInclude
 GuiControl, %strShowHideCommand%, f_radFavoriteFolderLiveExclude
 GuiControl, %strShowHideCommand%, f_nlnLiveFolderExcludeFolders
+GuiControl, %strShowHideCommand%, f_lblFavoriteFolderLiveFiles
 GuiControl, %strShowHideCommand%, f_lblFavoriteFolderLiveExtensions
 GuiControl, %strShowHideCommand%, f_strFavoriteFolderLiveExtensions
 GuiControl, %strShowHideCommand%, f_blnFavoriteFolderLiveExcludeFolders
@@ -25043,7 +25045,7 @@ FolderOrFileIsExcluded(strFolderOrFile, strPath)
 	Loop, parse, % o_Settings.Execution.strFoldersExclusionList.IniValue, |
 		; if StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField))) ; folder path starts with an exclusion
 	{
-		if (StrLen(A_LoopField) and RegExMatch(strPath, Wildcards2RegEx(A_LoopField . "*"))) ; folder path starts with an exclusion
+		if (StrLen(A_LoopField) and RegExMatch(strPath, Wildcards2RegEx(A_LoopField . "*")))
 			return true ; folder or file under this folder is excluded
 	}
 	
@@ -30067,9 +30069,7 @@ class Container
 		strFiles := ""
 		if (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveDocuments)
 			Loop, Files, %strExpandedLocation%\*.*, F ; files
-				if (!StrLen(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveExtensions) ; include all
-					or (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveIncludeExclude and StrLen(A_LoopFileExt) and InStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileExt)) ; include
-					or (!o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveIncludeExclude and !InStr(o_FavoriteLiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileExt))) ; exclude
+				if this.LiveFolderFileIncluded(o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveIncludeExclude, o_FavoriteLiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileName, A_LoopFileExt)
 					and !(InStr(A_LoopFileAttrib, "H") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if file is hidden and include hidden items is false
 					and !(InStr(A_LoopFileAttrib, "S") and !o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if file is system and include system items is false
 				{
@@ -30202,6 +30202,56 @@ class Container
 	}
 	;------------------------------------------------------------
 
+	;------------------------------------------------------------
+	LiveFolderFileIncluded(blnIncludeExclude, strFilter, strFileName, strFileExt)
+	; strFilter examples:
+	;   Regex: "Regex:i)^\Q\E.*\Q.sys\E$" (for *.sys)
+	;   Wildcards: "*.sys *.txt"
+	;   Extensions: "sys txt"
+	;------------------------------------------------------------
+	{
+		if !StrLen(strFilter)
+			return !blnIncludeExclude ; all if exclude, none if include
+		
+		strRegex := "Regex:"
+		strLenRegex := StrLen(strRegex)
+		
+		if (SubStr(strFilter, 1, strLenRegex) = strRegex) ; regex expression, non case sensitive
+			
+			return (blnIncludeExclude and RegexMatch(strFileName, SubStr(strFilter, strLenRegex + 1))
+				or (!blnIncludeExclude and !RegexMatch(strFileName, SubStr(strFilter, strLenRegex + 1))))
+				
+		else if RegexMatch(strFilter, "[\*\?]") ; one or more wildcards expressions separated by spaces ("..." supported yet)
+		{
+			; Regular expression from teadrinker https://www.autohotkey.com/boards/viewtopic.php?p=422922#p422922
+			saGroups := Object()
+			while RegExMatch(strFilter, "O)[^""]+(?=""( |$))|[\w*.?]+", aaMatch, aaMatch ? aaMatch.Pos + aaMatch.Len : 1)
+				saGroups.Push(StrReplace(aaMatch[0], g_strEscapePipe, """"))
+			
+			for intKey, strWildcards in saGroups
+			{
+				blnFound := RegexMatch(strFileName, Wildcards2RegEx(strWildcards))
+				if (blnIncludeExclude and blnFound)
+					return true ; as soon as one if found return true
+				if (!blnIncludeExclude and blnFound)
+					return false
+			}
+			if (blnIncludeExclude)
+				return false ; all not included, return false
+			else
+				return true ; all not excluded, return true
+		}
+		else ; one or more extensions separated by spaces
+		{
+			blnIncluded := (blnIncludeExclude and StrLen(strFileExt) and InStr(strFilter, strFileExt))
+			blnNotExcluded := (!blnIncludeExclude and StrLen(strFileExt) and !InStr(strFilter, strFileExt))
+			return blnIncluded or blnNotExcluded
+		}
+		
+		return false ; line never executed
+	}
+	;------------------------------------------------------------
+	
 	;------------------------------------------------------------
 	GetCriteriaSortLiveFolder(strSort)
 	;------------------------------------------------------------
