@@ -31,6 +31,19 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.0.9.2 (2021-09-30)
+ 
+Live Folders
+- when building a Live Folder with documents, support wildcards (* and ?) and regular expressions to include or exclude documents
+- in "Edit favorite" dialog box, "Live Folders" tab
+  - add a checkbox "Exclude folders" when "Include documents" is selected (if there are multiple levels of folders, folders are excluded only in the deepest level)
+  - update "Include/Exclude" documents instructions: Enter extensions separated by spaces (for example "bak bk") or wildcards expressions separated by spaces ("*.bak "my file??.ext" *copy*.*"). Or enter a regular expression with "Regex:<your expression>".
+  - add a dropdown list to select "Size of icons" in the Live folder menu:
+    - select a custom size (from 16 to 64 pixels)
+    - inherit the size from the parent menu
+    - use the default size from "Options, Menu Icons" dialog box
+    - choose to display no icon in this menu
+
 Version BETA: 11.5.0.9.1 (2021-09-26)
  
 Groups
@@ -4832,7 +4845,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.0.9.1
+;@Ahk2Exe-SetVersion 11.5.0.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4899,7 +4912,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.0.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.0.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -31802,7 +31815,6 @@ class Container
 					
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 					{
-						###_V("DOpus this.AA.oParentMenu.AA.blnGroupReplaceWindows", this.AA.oParentMenu.AA.blnGroupReplaceWindows)
 						if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
 							strTabParameter := "NEW=nodual" ; force left in new lister
 						else
