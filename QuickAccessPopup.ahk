@@ -20118,6 +20118,9 @@ OpenFavoriteGetFavoriteObject:
 
 g_strLastActionRepeated := "" ; if we are here, we are not repeating an action, so kill this variable
 
+if (g_strOpenFavoriteLabel <> "OpenFavoriteFromHotstring")
+	g_strHotstringEndChar := "" ; reset in case a snippet is pasted with menu or shorcut after snippet was launched with a hotstring
+
 if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|")
 {
 	o_ThisFavorite := (g_strOpenFavoriteLabel = "OpenFavoriteFromShortcut"
@@ -20156,9 +20159,6 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 		}
 	}
 
-	if (g_strOpenFavoriteLabel <> "OpenFavoriteFromHotstring")
-		g_strHotstringEndChar := "" ; reset in case a snippet is pasted with menu or shorcut
-	
 	if (g_strOpenFavoriteLabel = "OpenFavoriteFromHotstring")
 	{
 		g_strTargetWinId := "" ; never use target window when launched from hotstring
