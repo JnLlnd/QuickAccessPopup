@@ -27,6 +27,12 @@
 ; Example
 ; VariableName=Text
 ; Filename: "https://www.quickaccesspopup.com/example/"; Description: "{cm:VariableName}"; Flags: postinstall shellexec unchecked
+HelpMePayExpenses=&HELP me pay EXPENSES for making QAP
+dutch.HelpMePayExpenses=&Help me om de uitgaven te betalen om QAP
+french.HelpMePayExpenses=&Aidez-moi à payer mes frais
+PaypalCredit=(Paypal or credit cards)
+dutch.PaypalCredit=(Paypal of creditcards)
+french.PaypalCredit=(Paypal ou cartes de crédit)
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -194,6 +200,7 @@ Root: HKLM; Subkey: "Software\Classes\lnkfile\shell\Import Shortcut to Quick Acc
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{commonappdata}\{#MyAppName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: waituntilidle postinstall skipifsilent
+Filename: "https://www.paypal.com/donate?hosted_button_id=MKS3LBZSUGT6N"; Description: "{cm:HelpMePayExpenses} {cm:PaypalCredit}"; Flags: postinstall shellexec unchecked
 
 [Tasks]
 Name: startmenu; Description: "Create a Start Menu folder";
