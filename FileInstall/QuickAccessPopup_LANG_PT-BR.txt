@@ -133,6 +133,7 @@ lDialogEditIconPrompt	Edite o ícone no formato "arquivo de ícone,índice" (por ex
 lDialogElevate	Execute o aplicativo com privilégios de Administrador
 lDialogEndOfMenu	final do menu
 lDialogEndOfMenuSorted	menu classificado automaticamente
+lDialogEnterWebSiteIcon	Entre o URL do favicon.ico
 lDialogErrorMoving	Não foi possível redimensionar o favorito:`n"~1~"
 lDialogExtendedSearch	Pesquisa Estendida
 lDialogExternalLocation	Local do arquivo de configurações do menu externo
@@ -170,7 +171,9 @@ lDialogFavoriteFolderLive	Pasta Ativa (menu incluindo subpastas)
 lDialogFavoriteFolderLiveColumns	Número de itens por coluna (0 para sem quebra de coluna)
 lDialogFavoriteFolderLiveDocuments	Incluir documentos
 lDialogFavoriteFolderLiveExclude	Excluir
-lDialogFavoriteFolderLiveExtensions	estas extensões (separe as extensões com espaços, por exemplo: "bak bk")
+lDialogFavoriteFolderLiveExcludeFolders	Excluir pastas (somente último nível)
+lDialogFavoriteFolderLiveExtensions	Entre extensões separadas por espaços (por exemplo: "bak bk") ou expressões curinga separadas por espaços ("*.bak "meu arquivo??.ext" *cópia*.*"). Ou entre uma expressão regular com "Regex:<sua expressão>".
+lDialogFavoriteFolderLiveFiles	arquivos
 lDialogFavoriteFolderLiveHideExtensions	Extensões de arquivos
 lDialogFavoriteFolderLiveHideIcons	Ícones
 lDialogFavoriteFolderLiveHideInMenu	Ocultar nos menus
@@ -189,7 +192,7 @@ lDialogFavoriteNameEmpty	O nome do favorito está vazio. Por favor, escolha um no
 lDialogFavoriteNameNoSeparator	O nome deste item não pode incluir o caractere reservado "~1~".
 lDialogFavoriteNameNotAllowed	Favoritos do tipo "~1~" não são permitidos em grupos. Por favor, selecione outro menu pai na aba "Opções do Menu".
 lDialogFavoriteNameNotNew	O nome "~1~" já está em uso neste menu. Por favor, escolha um novo nome.
-lDialogFavoriteParentMenu	Menu pai do favorito
+lDialogFavoriteParentMenu	Menu ou grupo pai do favorito
 lDialogFavoriteParentMenuMove	Mover favorito para este menu
 lDialogFavoriteRemoveExternalPrompt	Remover o submenu externo "~1~"`n(arquivo ini de configurações externas NÃO será excluído)?
 lDialogFavoriteRemoveGroupPrompt	Remover o grupo "~1~"`n(itens no grupo também serão excluídos)?
@@ -215,11 +218,11 @@ lDialogFavoriteSnippetSendModeText	Modo texto
 lDialogFavoritesParentMenuCopy	Copiar ~1~ favoritos para este menu
 lDialogFavoritesParentMenuMove	Mover favoritos do ~1~ para este menu
 lDialogFavoriteType	Tipo do Favorito
-lDialogFavoriteTypeNoteApplication	Nota: Há um novo tipo de aplicativo do Windows que não usa mais os arquivos executáveis tradicionais. Sendo chamados de "Aplicativos do Windows", eles estão pré-instalados no Windows 8 e 10 ou foram baixados a partir da Loja do Windows. Você pode adicioná-los usando o novo tipo de favorito "Aplicativo do Windows".
-lDialogFavoriteTypeNoteWindowsApps	Nota: "Aplicativos do Windows" é um novo tipo de aplicativo do Windows que não usa mais os arquivos executáveis tradicionais. Eles estão pré-instalados no Windows 8 e 10 ou foram baixados a partir da LOja do Windows. Se você deseja adicionar arquivos executáveis tradicionais (.exe, .com, .bat ou outros scripts), você pode adicioná-los usando o tipo de favorito "Aplicativo".
+lDialogFavoriteTypeNoteApplication	Nota: Há um novo tipo de aplicativo do Windows que não usa mais os arquivos executáveis tradicionais. Sendo chamados de "Aplicativos do Windows", eles estão pré-instalados no Windows ou foram baixados a partir da Loja do Windows. Você pode adicioná-los usando o novo tipo de favorito "Aplicativo do Windows".
+lDialogFavoriteTypeNoteWindowsApps	Nota: "Aplicativos do Windows" é um novo tipo de aplicativo do Windows que não usa mais os arquivos executáveis tradicionais. Eles estão pré-instalados no Windows ou foram baixados a partir da LOja do Windows. Se você deseja adicionar arquivos executáveis tradicionais (.exe, .com, .bat ou outros scripts), você pode adicioná-los usando o tipo de favorito "Aplicativo".
 lDialogFavoriteTypesHelp1	Crie um atalho para uma "Pasta" usada com frequência.`n`nDefina o nome do menu do favorito, caminho e várias opções de menu.`n`nAs Opções de Pasta Ativa permitem atualizar o conteúdo do menu com o conteúdo atual da pasta.`n`nConfigurações avançadas permitem definir a posição da janela e opções do gerenciador de arquivos.
 lDialogFavoriteTypesHelp13	Crie um "Recorte". Defina o título do recorte para o menu, seu conteúdo e várias opções de menu.`n`nNas opções avançadas, escolha "Modo texto" para colar recortes de texto como faria pela Área de Transferência ou escolha "Modo macro" para enviar recortes como faria ao pressionar teclas (incluindo teclas especiais, veja a Ajuda).
-lDialogFavoriteTypesHelp14	Crie um "Menu compartilhado" para usar favoritos em vários sistemas a partir do mesmo arquivo de configurações em um local externo. Defina o nome do menu compartilhado para o menu, o local do arquivo de configurações externo e várias opções.`n`nMenus compartilhados podem ser usados no modo "Pessoal", "Colaborativo" ou "Centralizado". Um Catálogo de Menus Compartilhados pode ser definido na aba "Geral" em Opções para facilitar a adição de menus compartilhados.`n`nMenus compartilhados podem ser editados como menus regulares. Somente usuários selecionados podem editar menus compartilhados Centralizados. Consulte as Perguntas Frequentes (FAQ) no site para mais ajuda. 
+lDialogFavoriteTypesHelp14	Crie um "Menu compartilhado" para usar favoritos em vários sistemas a partir de um arquivo de configurações comum em um local externo. Defina o nome do menu compartilhado para o menu, o local do arquivo de configurações externo e várias opções.`n`nMenus compartilhados podem ser usados no modo "Pessoal", "Colaborativo" ou "Centralizado". Um Catálogo de Menus Compartilhados pode ser definido na aba "Opções > Várias Opções Avançadas" para facilitar a adição de menus compartilhados.`n`nMenus compartilhados podem ser editados como menus regulares. Somente usuários selecionados podem editar menus compartilhados Centralizados. Consulte as Perguntas Frequentes (FAQ) no site para mais ajuda. 
 lDialogFavoriteTypesHelp15	Cria um "Separador de Texto" para inserir cabeçalhos, dando mais clareza ao seu menu.`n`nPor padrão, separadores de texto não possuem ícone, mas você pode selecionar um na aba "Opções do Menu".
 lDialogFavoriteTypesHelp16	Crie um atalho para um "Aplicativo do Windows".`n`nSelecione o aplicativo do Windows da lista de aplicativos instalados em seu sistema.`n`nEsta lista é atualizada na inicialização do QAP e pode ser atualizada sob demanda.
 lDialogFavoriteTypesHelp2	Crie um atalho para um "Documento".`n`nDefina o nome do menu do favorito, caminho e várias opções de menu.`n`nConfigurações avançadas permitem escolher um aplicativo específico para exibir o documento e adicionar parâmetros adicionais.
@@ -254,6 +257,9 @@ lDialogGetWebPageTitleIcon	Obter título e ícone
 lDialogGetWebSiteIcon	Obter ícone do site
 lDialogGetWinInfo	Para identificar a janela da qual deseja obter título, classe ou nome do processo, clique na janela de destino com a tecla de atalho do menu QAP [~1~].
 lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nNome do processo:`n"~3~"`n`nCopiar informações para a Área de Transferência?
+lDialogGroupMemberOptions	Opções de Membro do Grupo
+lDialogGroupParentMenu	Menu pai do grupo
+lDialogGroupRestoreStopIfError	Ocorreu um erro ao abrir o membro do grupo #~1~:`n`n~2~`n~3~`n`nAbertura do grupo interrompida.
 lDialogHotkeyInvisibleKeys	<a id="~1~">barra de espaço</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>`nor <a id="~5~">tecla menu (aplicativo)</a>
 lDialogHotkeys	Teclas de Atalho
 lDialogHotkeysHelpHeader	Atalho|Ação
@@ -419,10 +425,11 @@ lDialogTreeView	visualização em árvore
 lDialogTriggerFor	Disparador para:
 lDialogUnavailableWithLiveFolders	(Indisponível para Pastas Ativas)
 lDialogUseDefaultWindowPosition	Usar posição padrão da janela
-lDialogWelcomeDetail	Se você possui seu código de licença, por favor, salve-o agora.`n`nSe não, você é bem-vindo para testar o Quick Access Popup.
-lDialogWelcomeSaveCode	Salvar seu`ncódigo de licença
+lDialogWelcomeButton1	Curso Intensivo 101 do QAP
+lDialogWelcomeButton2	Base de Conhecimento do QAP
+lDialogWelcomeDetail	Veja no vídeo acima como o Quick Access Popup pode tornar você mais produtivo. Faça nosso curso intensivo de 5 minutos ou consulte a base de conhecimento do QAP.
+lDialogWelcomeShow	Mostrar janela de boas vindas novamente
 lDialogWelcomeThankYou	Obrigado por usar o Quick Access Popup!
-lDialogWelcomeTryFree	Teste a`nedição Grátis
 lDialogWelcomeVideo	Clique para ver o vídeo de introdução
 lDialogWin	Windows
 lDialogWindowMonitor	Monitor
@@ -477,7 +484,10 @@ lDonateCodeNotAvailable	não disponível quando offline
 lDonateEnterCode	Você possui o código de licença do ~1~?`n`nSe sim, entre o código e reinicie o ~1~.`n`nSe não, obtenha o código da licença no site do  ~1~.
 lDonateInvalidLicense	Código de licença inválido.
 lDonateInvalidLicenseRunAsFreeEdition	O QAP será executado com as limitações da versão gratuita até que uma licença válida seja salva.
-lDonateMenu	Adquira uma licença para este software
+lDonateMenu	Fazer uma doação
+lDonateMenuPaypalMonthly	Doação mensal com o Paypal
+lDonateMenuPaypalOneTime	Doação única com o Paypal
+lDonateMenuStripe	Com cartão de crédito (Tarja)
 lDonateOnline	Sua licença não foi verificada nos últimos ~1~ dias.`n`nPor favor, conecte-se à Internet para validar seu código.
 lDonateTextSaveLicense	Salvar sia licença ~1~
 lDonateThankyou	Obrigado ~1~ por ajudar este software!
@@ -506,7 +516,11 @@ lGuiFileManagerNewTabSideActive	Lado ativo
 lGuiGroupClosing	Fechando janelas do Explorer
 lGuiGroupRestoreDelay	Atraso entre a restauração de favoritos
 lGuiGroupRestoreDelayMilliseconds	millisegundos
+lGuiGroupRestoreLaunchAndWait	Iniciar e aguardar
+lGuiGroupRestoreMinimized	Iniciar minimizado
 lGuiGroupRestoreSide	Exibir em qual lado de ~1~?
+lGuiGroupRestoreStopIfError	Parar em caso de erro
+lGuiGroupRestoreWaitFinish	Aguardar até o programa finalizar
 lGuiGroupSaveAddWindowsLabel	Adicionar pastas a janelas existentes
 lGuiGroupSaveReplaceWindowsLabel	Substituir pastas nas janelas existentes
 lGuiGroupSaveRestoreOption	Ao restaurar pastas neste grupo:

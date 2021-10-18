@@ -133,6 +133,7 @@ lDialogEditIconPrompt	Modifica l'icona della risorsa nel formato "fileicona,indi
 lDialogElevate	Esegui l'applicazione con privilegi di Amministratore
 lDialogEndOfMenu	Fine del menù
 lDialogEndOfMenuSorted	menù ordinato automaticamente
+lDialogEnterWebSiteIcon	Inserisci l'URL Di favicon.ico
 lDialogErrorMoving	Non è possibile spostare il preferito:`n"~1~"
 lDialogExtendedSearch	Ricerca estesa
 lDialogExternalLocation	Impostazioni nel menù esterno per la destinazione del file
@@ -170,7 +171,9 @@ lDialogFavoriteFolderLive	Cartella Live (menù con incluse sottocartelle)
 lDialogFavoriteFolderLiveColumns	Numero di oggetti per colonna (0 per non usare separatori di colonna)
 lDialogFavoriteFolderLiveDocuments	Includi documenti
 lDialogFavoriteFolderLiveExclude	Escludi
-lDialogFavoriteFolderLiveExtensions	queste estensioni (separa le estensioni con spazi, per esempio "bak bk")
+lDialogFavoriteFolderLiveExcludeFolders	Cartelle da escludere (ultimo livello soltanto)
+lDialogFavoriteFolderLiveExtensions	Inserisci le estensioni separate da spazi (per esempio "bak bk") o espressioni con caratteri jolly separate da spazi ("*.bak "miofile??.ext" *copia*.*"). Oppure inserisci una espressione regolare con "Regex:<tua expressione>".
+lDialogFavoriteFolderLiveFiles	file
 lDialogFavoriteFolderLiveHideExtensions	Estensioni di file
 lDialogFavoriteFolderLiveHideIcons	Icone
 lDialogFavoriteFolderLiveHideInMenu	Nascondi nei menù
@@ -189,7 +192,7 @@ lDialogFavoriteNameEmpty	Il nome del Preferito non può essere vuoto. Per favore,
 lDialogFavoriteNameNoSeparator	Questo oggetto non può contenere il carattere riservato "~1~".
 lDialogFavoriteNameNotAllowed	Preferiti del tipo "~1~" non sono permessi nei Gruppi. Per favore, seleziona un altro menù di destinazione dalla scheda "Menù Opzioni".
 lDialogFavoriteNameNotNew	Il nome "~1~" è già in uso in questo menù. Si prega di scegliere un altro nome.
-lDialogFavoriteParentMenu	Scegli il menù in cui inserirlo
+lDialogFavoriteParentMenu	Menù o gruppo preferito superiore
 lDialogFavoriteParentMenuMove	Sposta il Preferito in questo menù
 lDialogFavoriteRemoveExternalPrompt	Vuoi eliminare il sottomenù esterno "~1~"?`n(il file .ini delle impostazioni "esterne" NON verrà cancellato)
 lDialogFavoriteRemoveGroupPrompt	Rimuovere il gruppo "~1~"`n(anche gli elementi del gruppo verranno cancellati)?
@@ -215,11 +218,11 @@ lDialogFavoriteSnippetSendModeText	Modalità Testo
 lDialogFavoritesParentMenuCopy	Copia ~1~ Preferiti in questo menú
 lDialogFavoritesParentMenuMove	Sposta i preferiti di ~1~ in questo menù.
 lDialogFavoriteType	Favorite Tipo
-lDialogFavoriteTypeNoteApplication	Nota: C'è un nuovo tipo di applicazione Windows che non usa più i tradizionali file eseguibili. Queste cosiddette "App Windows" sono preinstallate in Windows 8 e 10 o sono state scaricate dal Windows Store. Puoi aggiungerle usando il nuovo tipo di preferito "App Windows".
-lDialogFavoriteTypeNoteWindowsApps	Nota: "App Windows" è un nuovo tipo di applicazione Windows che non usa più i tradizionali file eseguibili. Tali app vengono preinstallate in Windows 8 e 10 o scaricate dal Windows Store. Se vuoi aggiungere dei file eseguibili tradizionali (.exe, .com, .bat e altri file script), puoi aggiungerli usando il preferito di tipo "Applicazione".
+lDialogFavoriteTypeNoteApplication	Nota: C'è un nuovo tipo di applicazione Windows che non usa più i tradizionali file eseguibili. Queste cosiddette "App Windows" sono preinstallate in Windows o sono state scaricate dal Windows Store. Puoi aggiungerle usando il nuovo tipo di preferito "App Windows".
+lDialogFavoriteTypeNoteWindowsApps	Nota: "App Windows" è un nuovo tipo di applicazione Windows che non usa più i tradizionali file eseguibili. Tali app vengono preinstallate in Windows o scaricate dal Windows Store. Se vuoi aggiungere dei file eseguibili tradizionali (.exe, .com, .bat e altri file script), puoi aggiungerli usando il preferito di tipo "Applicazione".
 lDialogFavoriteTypesHelp1	Crea un collegamento ad una "Cartella" usata di frequente.`n`nAssegna il nome del menù del Preferito, il percorso e impostazioni varie del menù.`n`nLe Impostazioni della Cartella Live permettono di aggiornare il contenuto del menù con il contenuto corrente della cartella.`n`nLe impostazioni avanzate permettono di selezionare la posizione della finestra e impostazioni del file manager.
 lDialogFavoriteTypesHelp13	Crea uno "Snippet". Assegna il titolo dello snippet per il menù, il suo contenuto e varie opzioni del menù.`n`nIn Opzioni Avanzate, scegli "Modalità Testo" per incollare snippet di testo come faresti con gli Appunti o scegli "Modalità macro" per inviare snippet come se premessi dei tasti (inclusi tasti speciali, vedi Aiuto).
-lDialogFavoriteTypesHelp14	Crea un "Menù Condiviso" per usare dei Preferiti su sistemi differenti usando uno stesso file di impostazioni, posto in una posizione esterna. Assegna al menù il nome del menù condiviso, la posizione esterna del file delle impostazioni e varie opzioni.`n`nI Menù Condivisi possono essere usati in Modo "Personale", "Collaborativo" o "Centralizzato". Un Catalogo di Menù Condivisi può essere impostato nel tab "Generale" delle Impostazioni per facilitare l'aggiunta di menù condivisi.`n`nI Menù Condivisi possono essere editati come i normali menù. Solo utenti selezionati possono invece modificare menù condivisi Centralizzati. Vedi le FAQ sul sito web per un maggior supporto.
+lDialogFavoriteTypesHelp14	Crea un "Menù Condiviso" per usare dei Preferiti su molteplici computer usando uno stesso file di impostazioni, posto in una posizione esterna. Assegna al menù il nome del menù condiviso, la posizione esterna del file delle impostazioni e varie opzioni.`n`nI Menù Condivisi possono essere usati in Modo "Personale", "Collaborativo" o "Centralizzato". Un Catalogo di Menù Condivisi può essere impostato nel tab "Opzioni, Varie Opzioni Avanzate" delle Impostazioni per facilitare l'aggiunta di menù condivisi.`n`nI Menù Condivisi possono essere editati come i normali menù. Solo utenti selezionati possono invece modificare menù condivisi Centralizzati. Vedi le FAQ sul sito web per un maggior supporto.
 lDialogFavoriteTypesHelp15	Crea un "Separatore di testo" per inserire intestazioni, rendendo piú chiaro il tuo menú.`n`nPer default, i separatori di testo non hanno icone ma puoi selezionarne una nel tab "Opzioni del Menú".
 lDialogFavoriteTypesHelp16	Crea una scorciatoia ad una "App Windows".`n`nSeleziona l'App Windows dalla lista di app installate nel tuo sistema.`n`nQuesta lista viene generata all'avvio di QAP e può essere aggiornata a piacere dall'utente in qualsiasi momento.
 lDialogFavoriteTypesHelp2	Crea una scorciatoia per un "Documento".`n`nAssegna il nome del menù del Preferito, il percorso e impostazioni varie del menù.`n`nLe impostazioni avanzate permettono di selezionare una applicazione specifica per aprire il documento e aggiungere parametri opzionali.
@@ -254,6 +257,9 @@ lDialogGetWebPageTitleIcon	Estrai titolo e icona
 lDialogGetWebSiteIcon	Estrai l'icona del sito web
 lDialogGetWinInfo	Per identificare la finestra di cui vuoi trovare titolo, classe o nome del processo, clicca sulla finestra desiderata premendo la scorciatoia del menù QAP [~1~].
 lDialogGetWInInfo2Clippoard	Titolo della Finestra:`n"~1~"`n`nClasse:`n"~2~"`n`nNome del Processo:`n"~3~"`n`nVuoi copiare queste informazioni negli Appunti?
+lDialogGroupMemberOptions	Opzioni Elemento di Gruppo
+lDialogGroupParentMenu	Menù Gruppo superiore
+lDialogGroupRestoreStopIfError	C'è stato un errore nell'aprire un elemento del Gruppo #~1~:`n`n~2~`n~3~`n`nApertura del Gruppo interrotta.
 lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>`nor <a id="~5~">tasto del menú (applicazione)</a>
 lDialogHotkeys	Scorciatoie
 lDialogHotkeysHelpHeader	Scorciatoia|Azione
@@ -419,10 +425,11 @@ lDialogTreeView	vista albero
 lDialogTriggerFor	Condizione di attivazione per:
 lDialogUnavailableWithLiveFolders	(Non disponibile per Cartelle Live)
 lDialogUseDefaultWindowPosition	Usa la posizione di default della finestra
-lDialogWelcomeDetail	Se possiedi un codice di licenza, puoi salvarlo adesso.`n`nAltrimenti, ti invitiamo a provare Quick Access Popup.
-lDialogWelcomeSaveCode	Salva il tuo`ncodice di licenza
+lDialogWelcomeButton1	QAP 101 Corso introduttivo
+lDialogWelcomeButton2	QAP FAQ (Knowledge Base)
+lDialogWelcomeDetail	Vedi nel video sopra come Quick Access Popup può aiutarti ad essere più produttivo. Segui il nostro corso introduttivo di 5 min. (QAP 101) o ricerca nelle FAQ (Knowledge base) di QAP.
+lDialogWelcomeShow	Mostra di nuovo la finestra di Benvenuto
 lDialogWelcomeThankYou	Grazie di usare Quick Access Popup!
-lDialogWelcomeTryFree	Prova la`nversione gratuita
 lDialogWelcomeVideo	Clicca per vedere questo video introduttivo
 lDialogWin	Tasto Windows
 lDialogWindowMonitor	Monitor
@@ -477,7 +484,10 @@ lDonateCodeNotAvailable	non disponibile quando sei offline
 lDonateEnterCode	Hai il tuo codice licenza di ~1~?`n`nSe si, inserisci il codice e riavvia ~1~.`n`nAltrimenti, si prega di ottenere un codice licenza sul sito di ~1~.
 lDonateInvalidLicense	Codice di licenza non valido.
 lDonateInvalidLicenseRunAsFreeEdition	QAP sarà eseguito con le limitazioni della edizione gratuita fino a che non venga salvata una licenza valida.
-lDonateMenu	Rihiedi una licenza per questo programma
+lDonateMenu	Fai una donazione
+lDonateMenuPaypalMonthly	Donazione mensile con Paypal
+lDonateMenuPaypalOneTime	Donazione singola con Paypal
+lDonateMenuStripe	Tramite Carta di credito (Striscia)
 lDonateOnline	La tua licenza non è stata controllata per più di ~1~ giorni.`n`nSi prega di collegarsi ad Internet per validare la tua licenza.
 lDonateTextSaveLicense	Salva la tua licenza ~1~
 lDonateThankyou	Grazie ~1~ per il supporto di questo programma!
@@ -506,7 +516,11 @@ lGuiFileManagerNewTabSideActive	Lato attivo
 lGuiGroupClosing	Chiusura delle finestre di Explorer
 lGuiGroupRestoreDelay	Ritardo tra ogni Preferito da ripristinare:
 lGuiGroupRestoreDelayMilliseconds	millisecondi
+lGuiGroupRestoreLaunchAndWait	Esegui ed aspetta
+lGuiGroupRestoreMinimized	Esegui e riduci ad icona
 lGuiGroupRestoreSide	Lato di visualizzazione di ~1~
+lGuiGroupRestoreStopIfError	Stop in caso di errore 
+lGuiGroupRestoreWaitFinish	Attendi la fine dell'esecuzione del programma 
 lGuiGroupSaveAddWindowsLabel	Aggiungi cartelle a finestre esistenti
 lGuiGroupSaveReplaceWindowsLabel	Sostituisci delle cartelle nelle finestre esistenti
 lGuiGroupSaveRestoreOption	Nel ripristinare delle cartelle in questo gruppo:

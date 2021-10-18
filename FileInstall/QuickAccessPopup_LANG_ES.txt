@@ -156,7 +156,6 @@ lDialogFavoriteFolderLive	Carpeta dinámica (menú que incluye subcarpetas, ver "C
 lDialogFavoriteFolderLiveColumns	Número de objetos por columna  (0 si no hay columnas) 
 lDialogFavoriteFolderLiveDocuments	Incluir documentos 
 lDialogFavoriteFolderLiveExclude	Excluir
-lDialogFavoriteFolderLiveExtensions	estas extensiones (extensiones separadas con espacios, por ejemplo "bak bk")
 lDialogFavoriteFolderLiveInclude	Incluir
 lDialogFavoriteFolderLiveLevels	Número de niveles de subcarpetas a incluir en el menú Carpeta dinámica 
 lDialogFavoriteFolderLiveType	Carpeta dinámica
@@ -192,8 +191,8 @@ lDialogFavoriteSnippetSendModeText	Modo texto
 lDialogFavoritesParentMenuCopy	Copiar ~1~ favoritos a este menú
 lDialogFavoritesParentMenuMove	Mover ~1~ favoritos hacia este menú
 lDialogFavoriteType	Tipo de favorito
-lDialogFavoriteTypeNoteApplication	Nota: Hay un nuevo tipo de aplicación de Windows que ya no utiliza los archivos ejecutables tradicionales. Las llamadas "aplicaciones de Windows" están preinstaladas en Windows 8 y 10 o se han descargado de la tienda de Windows. Puede añadirlos usando el nuevo tipo favorito "Windows App".
-lDialogFavoriteTypeNoteWindowsApps	Nota: "Windows Apps" es un nuevo tipo de aplicación de Windows que ya no utiliza los archivos ejecutables tradicionales. Están preinstalados en Windows 8 y 10 o se descargaron de la tienda de Windows. Si desea añadir archivos ejecutables tradicionales (archivos.exe,.com,.bat y otros archivos de script), puede añadirlos utilizando el tipo favorito " Aplicación ".
+lDialogFavoriteTypeNoteApplication	Nota: Hay un nuevo tipo de aplicación de Windows que ya no utiliza los archivos ejecutables tradicionales. Las llamadas "aplicaciones de Windows" están preinstaladas en Windows o se han descargado de la tienda de Windows. Puede añadirlos usando el nuevo tipo favorito "Windows App".
+lDialogFavoriteTypeNoteWindowsApps	Nota: "Windows Apps" es un nuevo tipo de aplicación de Windows que ya no utiliza los archivos ejecutables tradicionales. Están preinstalados en Windows o se descargaron de la tienda de Windows. Si desea añadir archivos ejecutables tradicionales (archivos.exe,.com,.bat y otros archivos de script), puede añadirlos utilizando el tipo favorito " Aplicación ".
 lDialogFavoriteTypesHelp1	Crear un acceso directo a "Carpeta" de uso frecuente.`n`nEstablecer el nombre del menú favorito, ruta de acceso y varias opciones de menú.`n`nOpciones de Live Folder permite actualizar el contenido del menú con el contenido actual de la carpeta.`n`nLa configuración avanzada permite definir la posición de la ventana y las opciones del gestor de archivos. 
 lDialogFavoriteTypesHelp13	Crear un "Fragmento". Proporcionar el nombre, el contenido y varias opciones.`n`nEn las configuraciones avanzadas, seleccione "Modo de texto" para pegar un trozo de texto al igual que con el portapapeles o elige "Modo macro" para enviar el fragmento como pulsaciones de teclas en el teclado (incluyendo teclas especiales, consulte la Ayuda).
 lDialogFavoriteTypesHelp14	Crear un "Menú compartido" para utilizar favoritos en varios sistemas desde el mismo archivo de configuración en una ubicación externa. Defina el nombre del menú compartido para el menú, la ubicación del archivo de configuración externa y varias opciones.`n`nLos menús compartidos se pueden utilizar en los modos "Personal", "Colaborativo" o "Centralizado". Se puede configurar un Catálogo de Menús Compartidos en la pestaña Opciones "General" para facilitar las adiciones de Menús Compartidos.`n`nLos menús compartidos se pueden editar como menús normales. Sólo los usuarios seleccionados pueden editar menús compartidos Centralizados. Consulte las FAQ del sitio web para obtener más ayuda.
@@ -266,9 +265,7 @@ lDialogIconsManageCurrent	Icono actual
 lDialogIconsManageDefault	Icono por defecto 
 lDialogIconsManageDescription	Muestra un cuadro de diálogo que muestra todos los favoritos del menú con su icono actual y el icono predeterminado para ese tipo de favorito. Los favoritos están agrupados por submenú, en el orden en que aparecen en su menú.`nClic en los botones para seleccionar otro icono o restaurar el icono por defecto para ese favorito.
 lDialogIconsManageFavoriteName	Nombre favorito 
-lDialogIconsManageNext	Siguiente 
 lDialogIconsManageParentMenu	Menú principal favorito
-lDialogIconsManagePrevious	Anterior 
 lDialogIconsManageSetDefaultIcon	Establecer predeterminado
 lDialogIconsManageTitle	Administrar iconos - ~1~ ~2~ 
 lDialogIconsSelectPrompt	Para seleccionar un icono, haga doble clic en él o use las teclas de flecha y presione la tecla de Enter.
@@ -368,7 +365,6 @@ lDialogWindowsFolderIconUpdate	actualización
 lDialogWinShort	Win
 lDialogWorkingDirLabel	Empezar con
 lDonateActionChoose	"Por favor, seleccione una de las acciones."
-lDonateActionEnterLicense	Guarde su código de licencia
 lDonateActionGroupQAP	En ~1~:
 lDonateActionGroupWebsite	En el sitio web:
 lDonateActionManageInstallations	Administrar instalaciones
@@ -393,7 +389,6 @@ lDonateCodeNoInstallationsTitle	No hay instalaciones disponibles - ~1~
 lDonateEnterCode	"¿Tiene su código de licencia de ~1~?`n`nEn caso de que si, ingrese su código y reinicie ~1~.`n`nSi no, por favor obtenga su código de licencia en el sitio web de ~1~."
 lDonateInvalidLicense	Código de licencia inválido.
 lDonateInvalidLicenseRunAsFreeEdition	QAP se ejecutará con limitaciones de edición gratuita hasta que se guarde una licencia válida.
-lDonateMenu	Obtenga una licencia para este software
 lDonateOnline	"Su licencia no ha sido revisada durante más de ~1~ días.`n`nPor favor, conéctese a Internet para validar su código."
 lDonateThankyou	¡Gracias ~1~ por apoyar este programa!
 lDOpusLayoutsName	Disposiciones
@@ -524,7 +519,6 @@ lMenuColumnBreak	columna
 lMenuCommonAppData	Datos de la aplicación (común)
 lMenuCommonDesktop	Oficina (común)
 lMenuCommonStartMenu	Menu De Inicio (común)
-lMenuCommonStartupMenu	Inicio (común)
 lMenuCookies	Cookies
 lMenuCopyLocation	Copiar Ruta o dirección URL favorita
 lMenuCurrentFolders	Vuelva a abrir una carpeta 
