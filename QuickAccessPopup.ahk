@@ -31,6 +31,38 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.1 (2021-10-17)
+ 
+Live Folders
+- in "Edit favorite" dialog box, "Live Folders" tab
+  - add a checkbox "Exclude folders" when "Include documents" is selected (if there are multiple levels of folders, folders are excluded only in the deepest level)
+  - support wildcards (* and ?) and regular expressions (in addition to a list of extensions) to specify which documents to "Include/Exclude" in Live Folders
+	- enter extensions separated by spaces (for example "bak bk")
+	- or wildcards expressions separated by spaces ("*.bak "my file??.ext" *copy*.*")
+	- or enter a regular expression with "Regex:<your expression>"
+  - add a dropdown list to select "Size of icons" in the Live Folders:
+    - select a custom size (from 16 to 64 pixels)
+    - inherit the size from the parent menu
+    - use the default size from "Options, Menu Icons" dialog box
+    - choose to display no icon in this menu
+ 
+Groups
+- new option "Launch and wait" to enter a delay (in milliseconds) to wait after a favorite in a group is launched before launching the next favorite in the group
+- for favorite if type "Application" in a group:
+  - new option "Wait until the program finishes" before launching the next favorite in the group
+  - new option "Stop in case of error" to interrupt group opening if an application favorite returns a non-zero error code (show an error message if group opening was stopped)
+  - new option to launch the application in a "Minimized" window
+- for favorites included in a group, rename the "Menu Options" tab to "Group Member Options"
+- increase the optional delay after each group member to a maximum of 999,999,999 ms (167 minutes)
+ 
+Various
+- add icons in "Add Favorite Type" dialog box
+- in "Edit Favorite" dialog box for "Link" favorites, under the "Menu Options" tab, add the text box "Enter favicon.ico URL"
+- when opening a "Document" favorite, if the location does not exist, offer to edit the favorite
+- fix bug adding an undesired character at the end of snippets in some situations
+- fix bug not opening folder on the specified side when opening a folder with Total Commander
+- French, German, Italian, Portuguese, Brazilian Portuguese and Korean language files update
+
 Version BETA: 11.5.0.9.2 (2021-09-30)
  
 Live Folders
@@ -4845,7 +4877,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.0.9.2
+;@Ahk2Exe-SetVersion 11.5.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4912,8 +4944,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.0.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
 
