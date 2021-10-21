@@ -5983,10 +5983,12 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 			Favorite9=Z
 			Favorite10=X
 			Favorite11=Folder|C:\|C:\
-			Favorite12=Folder|User Profile|`%USERPROFILE`%
-			Favorite13=Application|Notepad|%A_WinDir%\system32\notepad.exe
-			Favorite14=URL|%g_strAppNameText% web site|https://www.quickaccesspopup.com
-			Favorite15=Z
+			Favorite12=Folder|Windows|%A_WinDir%
+			Favorite13=Folder|Program Files|%A_ProgramFiles%
+			Favorite14=Folder|User Profile|`%USERPROFILE`%
+			Favorite15=Application|Notepad|%A_WinDir%\system32\notepad.exe
+			Favorite16=URL|%g_strAppNameText% web site|https://www.quickaccesspopup.com
+			Favorite17=Z
 
 ) ; leave the last extra line above
 			, % o_Settings.strIniFile, % (A_IsUnicode ? "UTF-16" : "")
@@ -31495,6 +31497,9 @@ class Container
 				if (this.AA.strFavoriteType = "Application" or this.aaTemp.blnProcessAsApp)
 				{
 					intOpenError := this.LaunchApplication()
+					if (this.AA.oParentMenu.AA.strMenuType = "Group" and StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[3]) ; group member with stop if error option
+						return intOpenError
+					; else continue
 					if (intOpenError and (intOpenError <> 1223))
 						Oops(0, o_L["OopsUnknownTargetAppName"]) ; error 1223 because user canceled on the Run as admnistrator prompt
 				}
@@ -32093,7 +32098,7 @@ class Container
 					
 					if (intOpenFavoriteError and StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[3]) ; 3 boolean stop if the app returns an error
 					{
-						Oops(0, o_L["DialogGroupRestoreStopIfError"], A_Index, oGroupMember.AA.strFavoriteName, oGroupMember.AA.strFavoriteLocation)
+						Oops(0, o_L["DialogGroupRestoreStopIfError"], A_Index, oGroupMember.AA.strFavoriteName, oGroupMember.AA.strFavoriteLocation . "`nError code: " . intOpenFavoriteError)
 						return intOpenFavoriteError ; break loop
 					}
 					else
@@ -32334,6 +32339,7 @@ class Container
 			strOptions := "UseErrorLevel" . (StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[4] ? " Min" : "") ; 4 boolean launch minimized
 			
 			if StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[2] ; 2 boolean wait for program to finish
+				or StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[3] ; 3 boolean stop if the app returns an error
 				RunWait, %strTarget%, %strWorkingDir%, %strOptions%, intPid
 			else
 				Run, %strTarget%, %strWorkingDir%, %strOptions%, intPid
@@ -32345,7 +32351,7 @@ class Container
 				if (this.aaTemp.saFavoriteWindowPosition[1] and intPid and o_Settings.Execution.blnTryWindowPosition.IniValue)
 					g_strNewWindowId := "ahk_pid " . intPid
 				
-				return 0 ; no error
+				return ErrorLevel ; contains 0 if no error
 			}
 		}
 		;---------------------------------------------------------
