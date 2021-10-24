@@ -11207,6 +11207,16 @@ if (saSettingsPosition[1] <> -1)
 
 GuiControl, Focus, f_lvFavoritesList
 
+; document #####
+WinGet,ControlList,ControlList, ahk_id %g_strGui1Hwnd%
+Gui,Color,0x404040,0xFFFFFF
+for a,b in StrSplit(ControlList,"`n","`r`n"){
+	ControlGet,HWND,HWND,,%b%,%ID%
+	GuiControl,+Background0x404040,%b%
+	Gui,Font,c0xFFFFFF
+	GuiControl,Font,%b%
+}
+
 saSettingsPosition := ""
 strTextColor := ""
 
