@@ -5235,6 +5235,18 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 	strLaunchSettingsFolderDiag := ""
 }
 
+; Set Dark Mode compatibility
+; https://www.autohotkey.com/boards/viewtopic.php?p=426437#p426437 (I think it requires Windows 1903+)
+; https://stackoverflow.com/a/58547831/894589
+if (o_Settings.LaunchAdvanced.blnDarkModeCompatibility.IniValue)
+{
+	uxtheme := DllCall("GetModuleHandle", "str", "uxtheme", "ptr")
+	SetPreferredAppMode := DllCall("GetProcAddress", "ptr", uxtheme, "ptr", 135, "ptr")
+	FlushMenuThemes := DllCall("GetProcAddress", "ptr", uxtheme, "ptr", 136, "ptr")
+	DllCall(SetPreferredAppMode, "int", 1) ; Dark
+	DllCall(FlushMenuThemes)
+}
+
 ; Menu global variables
 global g_intMenuItemsMax := g_intMaximumValue
 global g_intDynamicMenusItemsMax := g_intMaximumValue
@@ -6178,6 +6190,7 @@ if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
+o_Settings.ReadIniOption("LaunchAdvanced", "blnDarkModeCompatibility", "DarkModeCompatibility", 0)
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
