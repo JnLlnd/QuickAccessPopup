@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.5.1 (2021-10-17)
+Version: 11.5.1 (2021-10-25)
  
 Live Folders
 - in "Edit favorite" dialog box, "Live Folders" tab
