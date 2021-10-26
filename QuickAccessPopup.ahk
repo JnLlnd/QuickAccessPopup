@@ -11684,6 +11684,14 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 		return
 	
 	; drop item in gui using LV_Rows class
+	
+	; if multiple items are selected keep only the last one until multiple drag-and-drop is supported
+	if (LV_GetCount("S") > 1)
+	{
+		intSelected := LV_GetNext() + LV_GetCount("S") - 1
+		LV_Modify(0, "-Select")
+		LV_Modify(intSelected, "Select")
+	}
 	LvHandle.SetHwnd(h%A_GuiControl%) ; select active hwnd in Handle.
 	g_intOriginalMenuPosition := A_EventInfo ; original position
     g_intNewItemPos := LvHandle.Drag("D", true, 80, 2, "3F51B5") ; returns the new item position, 3F51B5 is the color of the up/down buttons
@@ -11695,7 +11703,7 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition] ; set edited favorite
 		g_strDragDropDestinationMenu := o_MenuInGui.AA.strMenuPath ; set destination menu to menu in gui
 		
-		gosub, GuiFavoritesListDropSave
+		gosub, GuiFavoritesListDropSave ; mobing object to g_intNewItemPos
 	}
 	
 	g_intOriginalMenuPosition := ""
