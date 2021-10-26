@@ -11688,7 +11688,7 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 	; if multiple items are selected keep only the last one until multiple drag-and-drop is supported
 	if (LV_GetCount("S") > 1)
 	{
-		intSelected := LV_GetNext() + LV_GetCount("S") - 1
+		intSelected := LV_GetLastSelected()
 		LV_Modify(0, "-Select")
 		LV_Modify(intSelected, "Select")
 	}
@@ -26266,6 +26266,19 @@ ProcessMenuIconsSize(strSize)
 		return -2
 	else
 		return strSize
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+LV_GetLastSelected()
+;------------------------------------------------------------
+; returns the last selected row in the current listview (supporting non-consecutive multiple selections)
+{
+	intCurrentRow := 0
+	Loop, % LV_GetCount("S")
+		intCurrentRow := LV_GetNext(intCurrentRow) ; return the next selected row
+	return intCurrentRow
 }
 ;------------------------------------------------------------
 
