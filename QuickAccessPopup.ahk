@@ -24222,10 +24222,16 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 				if (ErrorLevel) ; user clicked Cancel, delete typed text if any (execution cannot be cancelled however)
 					strInputContent := ""
 				strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
+				
+				; add user input as a temporary user variable
+				strUserVariablesBackup := o_Settings.UserVariables.strUserVariablesList.IniValue
+				o_Settings.UserVariables.strUserVariablesList.IniValue .= "|{" . strInputPrompt . "}=" . strInputContent ; add temporary content to user variables list
 			}
 	}
 
 	strExpanded := ExpandUserVariables(strExpanded)
+	if StrLen(strUserVariablesBackup) ; if we added a temporary user vairable, restore original user variables
+		o_Settings.UserVariables.strUserVariablesList.IniValue := strUserVariablesBackup
 
 	; restore escaped open curly brackets and remove tick {
 	strExpanded := StrReplace(strExpanded, "!r4nd0mt3xt!", "{") ; restore ticked open curly brackets
