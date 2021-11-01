@@ -6177,6 +6177,7 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup",
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
+o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFavoriteDebugOption", 1, "AdvancedOther", "f_blnEnableFavoriteDebugOption") ; enable debug checkbox in favorites basic settings tab
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
@@ -9494,6 +9495,10 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% vf_lblWaitDelayInDialogBox hidden, % o_L["OptionsWaitDelayInDialogBox"]
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intWaitDelayInDialogBox gGuiOptionsGroupChanged hidden, % o_Settings.DialogBoxes.intWaitDelayInDialogBox.IniValue
 
+; EnableFavoriteDebugOption
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnEnableFavoriteDebugOption gGuiOptionsGroupChanged hidden, % o_L["OptionsEnableFavoriteDebugOption"]
+GuiControl, , f_blnEnableFavoriteDebugOption, % (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue = true)
+
 ; SendToConsoleWithAlt
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnSendToConsoleWithAlt gGuiOptionsGroupChanged hidden, % o_L["OptionsSendToConsoleWithAlt"]
 GuiControl, , f_blnSendToConsoleWithAlt, % (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue = true)
@@ -9953,6 +9958,7 @@ blnRunAsAdminPrev := ""
 ; === AdvancedOther ===
 
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
+o_Settings.Execution.blnEnableFavoriteDebugOption.WriteIni(f_blnEnableFavoriteDebugOption)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
@@ -12868,6 +12874,9 @@ Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFa
 if !(blnIsGroupMember)
 	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteHidden " . (o_EditedFavorite.AA.intFavoriteDisabled ? "checked" : "")
 		, % o_L["DialogFavoriteHidden"]
+if (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue)
+	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteDebug " . (o_EditedFavorite.AA.blnFavoriteDebug ? "checked" : "")
+		, % o_L["DialogFavoriteDebug"]
 
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	gosub, MenuAutoSortClicked ; must be after f_blnFavoriteDisabled and f_blnFavoriteHidden are created
@@ -13133,11 +13142,11 @@ if (blnIsGroupMember)
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Application")
 	{
-		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnintGroupRestoreWaitFinish "
+		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnGroupRestoreWaitFinish "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[2] ? "checked" : ""), % o_L["GuiGroupRestoreWaitFinish"] ; 2 boolean wait for program to finish
-		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreStopIfError "
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnGroupRestoreStopIfError "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[3] ? "checked" : ""), % o_L["GuiGroupRestoreStopIfError"] ; 3 boolean stop if the app returns an error
-		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreMinimized "
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnGroupRestoreMinimized "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[4] ? "checked" : ""), % o_L["GuiGroupRestoreMinimized"] ; 4 boolean launch minimized
 	}
 }
@@ -16239,6 +16248,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		o_EditedFavorite.AA.intFavoriteDisabled := -1
 	else
 		o_EditedFavorite.AA.intFavoriteDisabled := 0
+	o_EditedFavorite.AA.blnFavoriteDebug := f_blnFavoriteDebug
 	
 	o_EditedFavorite.AA.strFavoriteSoundLocation := strNewFavoriteSoundLocation
 
@@ -16294,7 +16304,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 	}
 
 	o_EditedFavorite.AA.strFavoriteGroupRestoreOptions := (o_EditedFavorite.AA.oParentMenu.AA.strMenuType = "Group"
-		? f_intGroupRestoreDelayAfter . ";" . f_blnintGroupRestoreWaitFinish . ";" . f_blnintGroupRestoreStopIfError . ";" . f_blnintGroupRestoreMinimized
+		? f_intGroupRestoreDelayAfter . ";" . f_blnGroupRestoreWaitFinish . ";" . f_blnGroupRestoreStopIfError . ";" . f_blnGroupRestoreMinimized
 		: "") ; if not in a group, reset variable (in case favorite was moved from a group before)
 }
 else if (strThisLabel <> "GuiFavoritesListDropSave") ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave, not required for GuiFavoritesListDropSave because container not changed
@@ -16492,9 +16502,10 @@ f_blnFavoriteFolderLiveRefreshManual := ""
 f_drpFavoriteFolderLiveIconsSize := ""
 f_blnFavoriteFolderLiveExcludeFolders := ""
 f_intGroupRestoreDelayAfter := ""
-f_blnintGroupRestoreWaitFinish := ""
-f_blnintGroupRestoreStopIfError := ""
-f_blnintGroupRestoreMinimized := ""
+f_blnGroupRestoreWaitFinish := ""
+f_blnGroupRestoreStopIfError := ""
+f_blnGroupRestoreMinimized := ""
+f_blnFavoriteDebug := ""
 
 objExternalMenu := ""
 strItemSelectedName := ""
@@ -23412,6 +23423,23 @@ Oops(varOwner, strMessage, objVariables*)
 ;------------------------------------------------
 
 
+;------------------------------------------------
+PlaceholderDebug(strMessage, blnFavoriteDebug)
+; return true if debug was displayed
+;------------------------------------------------
+{
+	if (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue and blnFavoriteDebug)
+	{
+		MsgBox, 0, % L("Debug Favorite", g_strAppNameText, g_strAppVersion)
+			, % o_L["DialogFavoriteDebugBefore"] . ":`n`n`n" . L(strMessage, objVariables*) . "`n`n`n" . o_L["DialogFavoriteDebugAfter"]
+		return true
+	}
+		
+	return false
+}
+;------------------------------------------------
+
+
 ;------------------------------------------------------------
 GetOSVersion()
 ;------------------------------------------------------------
@@ -29389,7 +29417,7 @@ class Container
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
 			; 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
-			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
+			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug
 
 	;---------------------------------------------------------
 	{
@@ -30704,6 +30732,7 @@ class Container
 			strIniLine .= oItem.AA.strFavoriteGroupRestoreOptions . "|" ; 32
 			strIniLine .= oItem.AA.intFavoriteFolderLiveIconsSize . "|" ; 33
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveExcludeFolders . "|" ; 34
+			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
 
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -31181,6 +31210,7 @@ class Container
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
 			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
 			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
+			; 35 blnFavoriteDebug
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -31269,6 +31299,7 @@ class Container
 			this.InsertItemValue("strFavoriteGroupRestoreOptions", saFavorite[32]) ; semi-colon separated values for group members options
 			this.InsertItemValue("intFavoriteFolderLiveIconsSize", saFavorite[33]) ; integer value, icons size in Live Folders
 			this.InsertItemValue("blnFavoriteFolderLiveExcludeFolders", saFavorite[34]) ; boolean, exclude folders in Live Folders
+			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, exclude folders in Live Folders
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
@@ -32411,9 +32442,11 @@ class Container
 		
 		;---------------------------------------------------------
 		LaunchFullLocation()
-		; return 0 if success or error code
+		; called for links and documents only, return 0 if success or error code
 		;---------------------------------------------------------
 		{
+			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
+				return -1
 			Run, % this.aaTemp.strFullLocation, , UseErrorLevel, intPid
 			if (ErrorLevel = "ERROR")
 				Oops(0, o_L["OopsUnknownTargetAppName"])
