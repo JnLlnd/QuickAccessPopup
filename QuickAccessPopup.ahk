@@ -12874,7 +12874,7 @@ Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFa
 if !(blnIsGroupMember)
 	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteHidden " . (o_EditedFavorite.AA.intFavoriteDisabled ? "checked" : "")
 		, % o_L["DialogFavoriteHidden"]
-if (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue)
+if (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue and InStr("Folder|Document|Application|URL|FTP|Snippet|", o_EditedFavorite.AA.strFavoriteType . "|"))
 	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteDebug " . (o_EditedFavorite.AA.blnFavoriteDebug ? "checked" : "")
 		, % o_L["DialogFavoriteDebug"]
 
@@ -31544,8 +31544,10 @@ class Container
 					if (this.AA.oParentMenu.AA.strMenuType = "Group" and StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[3]) ; group member with stop if error option
 						return intOpenError
 					; else continue
-					if (intOpenError and (intOpenError <> 1223))
-						Oops(0, o_L["OopsUnknownTargetAppName"]) ; error 1223 because user canceled on the Run as admnistrator prompt
+					if (intOpenError and intOpenError <> 1223 and intOpenError <> -1)
+						; error 1223 because user canceled on the Run as admnistrator prompt
+						; error -1 because debug option was enabled
+						Oops(0, o_L["OopsUnknownTargetAppName"])
 				}
 				; FOLDER
 				if InStr("Folder|FTP|Special", this.AA.strFavoriteType)
@@ -31645,6 +31647,9 @@ class Container
 		; return 0 if no error or error code
 		;---------------------------------------------------------
 		{
+			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
+				return -1
+			
 			; Navigate
 			if (this.aaTemp.strHotkeyTypeDetected = "Navigate")
 				and StrLen(g_strTargetClass) and (g_strTargetWinId)
@@ -32216,6 +32221,9 @@ class Container
 		; return 0 if success or 1 if timeout error
 		;---------------------------------------------------------
 		{
+			if PlaceholderDebug(DecodeSnippet(this.aaTemp.strLocationWithPlaceholders), this.AA.blnFavoriteDebug)
+				return -1
+			
 			strWaitTime := 10
 			
 			WinGetClass, strClassSnippet, % "ahk_id " . this.aaTemp.strTargetWinId
@@ -32381,6 +32389,9 @@ class Container
 			strTarget := (this.AA.blnFavoriteElevate or g_strAlternativeMenu = o_L["MenuAlternativeRunAs"] ? "*RunAs " : "") . this.aaTemp.strFullLocation
 			strWorkingDir := this.aaTemp.strAppWorkingDirWithPlaceholders
 			strOptions := "UseErrorLevel" . (StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[4] ? " Min" : "") ; 4 boolean launch minimized
+			
+			if PlaceholderDebug(strTarget . "`n`n" . o_L["DialogWorkingDirLabel"] . ":`n" . strWorkingDir, this.AA.blnFavoriteDebug)
+				return -1
 			
 			if StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[2] ; 2 boolean wait for program to finish
 				or StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[3] ; 3 boolean stop if the app returns an error
