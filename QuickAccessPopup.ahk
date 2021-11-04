@@ -31,6 +31,20 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.2 (2021-11-03)
+ 
+This release fixes a bug when using drag-and-drop to move multiple items in the favorites liste of the Customize window. Upgrade strongly recommended.
+ 
+- support multiple selection (contiguous or not) when moving items in the , using names after drag and drop as reference ot reorder the items in container object; stop using the favorite save GuiFavoritesListDropSave command ans remove all exceptions related to drag and drop
+
+add global option to display or not debug option in favorites basic settings tab; display debug favorites option for all types (to be displayed only for some types later); rename group variables with typos; display debug message for links and documents
+
+favorite debug implemented for FTP, applications, folders and snippets (text and macro); restric debug checkbox in add/edit favorite to types Folder|Document|Application|URL|FTP|Snippet
+
+when pasting a placeholder {Input:Prompt}, create a temporary user variable with the name {Prompt} available later in the same target string
+
+dark mode
+
 Version: 11.5.1 (2021-10-25)
  
 Live Folders
@@ -5235,11 +5249,10 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 	strLaunchSettingsFolderDiag := ""
 }
 
-; Set Dark Mode compatibility
-; https://www.autohotkey.com/boards/viewtopic.php?p=426437#p426437 (I think it requires Windows 1903+)
-; https://stackoverflow.com/a/58547831/894589
-; #####
-if (o_Settings.LaunchAdvanced.blnDarkModeCompatibility.IniValue)
+; Set Dark Mode compatibility - menus will be dark if dark mode is selected in Windows display settings
+; known issue: dark mode not applied to menu containing column breaks
+; fromk Lexikos: https://www.autohotkey.com/boards/viewtopic.php?p=426437#p426437 (I think it requires Windows 1903+)
+if (o_Settings.Menu.blnDarkModeMenus.IniValue)
 {
 	uxtheme := DllCall("GetModuleHandle", "str", "uxtheme", "ptr")
 	SetPreferredAppMode := DllCall("GetProcAddress", "ptr", uxtheme, "ptr", 135, "ptr")
@@ -6079,6 +6092,8 @@ o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0,
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+	o_Settings.ReadIniOption("SettingsWindow", "blnDarkModeCustomize", "DarkModeCustomize", 0, "SettingsWindow", "f_blnDarkModeCustomize")
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -6100,6 +6115,8 @@ o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMe
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
 o_Settings.ReadIniOption("Menu", "intRecentPopularLevelsMax", "RecentPopularLevelsMax", 0, "MenuAppearance", "f_lblRecentPopularLevelsMax|f_intRecentPopularLevelsMaxEdit|f_intRecentPopularLevelsMax|f_lblRecentPopularLevelsMaxTitle")
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+	o_Settings.ReadIniOption("Menu", "blnDarkModeMenus", "DarkModeMenus", 0, "MenuAppearance", "f_blnDarkModeMenus")
 o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus
 
 ; Group PopupMenu
@@ -8938,6 +8955,13 @@ GuiControl, , f_blnOpenSettingsOnActiveMonitor, % (o_Settings.SettingsWindow.bln
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnCheckIfExistingFavoriteForSameLocation gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsCheckIfSameLocation"]
 GuiControl, , f_blnCheckIfExistingFavoriteForSameLocation, % (o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue = true)
 
+; DarkModeCustomize
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+{
+	Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnDarkModeCustomize gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsDarkModeCustomize"] . " (beta)"
+	GuiControl, , f_blnDarkModeCustomize, % (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue = true)
+}
+
 ; AddAutoAtTop
 Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblAddAutoAtTop, % o_L["OptionsAddAutoAtTop"]
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w220 vf_blnAddAutoAtTop0 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? "Checked" : ""), % o_L["OptionsAddAutoTopOfMenu"]
@@ -9057,7 +9081,14 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
 Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
 GuiControl, , f_blnAddCloseToDynamicMenus, % (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue = true)
 
-GuiControlGet, arrPos, Pos, f_blnAddCloseToDynamicMenus
+; DarkModeMenus
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+{
+	Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnDarkModeMenus gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsDarkModeMenus"] . " (beta)"
+	GuiControl, , f_blnDarkModeMenus, % (o_Settings.Menu.blnDarkModeMenus.IniValue = true)
+}
+
+GuiControlGet, arrPos, Pos, % (GetOSVersionInfo().BuildNumber >= 18362 ? "f_blnDarkModeMenus" : "f_blnAddCloseToDynamicMenus")
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -9721,6 +9752,10 @@ o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 
+blnDarkModeCustomizePrev := o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+	o_Settings.SettingsWindow.blnDarkModeCustomize.WriteIni(f_blnDarkModeCustomize)
+
 ; === MenuIcons ===
 
 blnDisplayIconsPrev := o_Settings.MenuIcons.blnDisplayIcons.IniValue
@@ -9757,6 +9792,9 @@ o_Settings.Menu.intRecentFoldersMax.WriteIni(f_intRecentFoldersMax)
 o_Settings.Menu.intRecentPopularLevelsMax.WriteIni(f_intRecentPopularLevelsMax)
 o_Settings.Menu.intNbLastActions.WriteIni(f_intNbLastActions)
 o_Settings.Menu.blnAddCloseToDynamicMenus.WriteIni(f_blnAddCloseToDynamicMenus)
+blnDarkModeMenusPrev := o_Settings.Menu.blnDarkModeMenus.IniValue
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+	o_Settings.Menu.blnDarkModeMenus.WriteIni(f_blnDarkModeMenus)
 
 ; === PopupMenu ===
 
@@ -10029,6 +10067,8 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
 	or (blnDisplayIconsPrev <> o_Settings.MenuIcons.blnDisplayIcons.IniValue)
 	or (intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue)
+	or (blnDarkModeCustomizePrev <> o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue)
+	or (blnDarkModeMenuPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
@@ -10055,6 +10095,16 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
 		strOption := o_L["OptionsDisplayIcons"]
 		strValue := (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
+	}
+	else if (blnDarkModeCustomizePrev <> o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue)
+	{
+		strOption := o_L["OptionsDarkModeCustomize"]
+		strValue := (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
+	}
+	else if (blnDarkModeMenuPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
+	{
+		strOption := o_L["OptionsDarkModeMenus"]
+		strValue := (o_Settings.Menu.blnDarkModeMenus.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
 	else ; intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue
 	{
@@ -11291,14 +11341,32 @@ if (saSettingsPosition[1] <> -1)
 
 GuiControl, Focus, f_lvFavoritesList
 
-; document #####
-WinGet,ControlList,ControlList, ahk_id %g_strGui1Hwnd%
-Gui,Color,0x404040,0xFFFFFF
-for a,b in StrSplit(ControlList,"`n","`r`n"){
-	ControlGet,HWND,HWND,,%b%,%ID%
-	GuiControl,+Background0x404040,%b%
-	Gui,Font,c0xFFFFFF
-	GuiControl,Font,%b%
+; testing the dark mode display on Customize window (see https://www.autohotkey.com/boards/viewtopic.php?p=426678&sid=0f08bed4b46e1ed1f59601053df8c959#p426678)
+RegRead, blnLightMode, HKCU, SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize, AppsUseLightTheme ; check SystemUsesLightTheme for Windows system preference
+if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !blnLightMode)
+	; si dark mode forcer theme "Windows"
+{
+	intWindowColor := 0x404040
+	intControlColor := 0xFFFFFF
+		
+	WinGet, strControlList, ControlList, ahk_id %g_strGui1Hwnd%
+	Gui, Color, %intWindowColor%, %intControlColor%
+	for strKey, strControl in StrSplit(strControlList,"`n","`r`n")
+	{
+		ControlGet, strControlHwnd, HWND, , %strControl%, ahk_id %strHwnd%
+		
+		if InStr(strControl, "ListView") ; for ListView control
+		{
+			GuiControl, +Background%intWindowColor%,%strControl%
+			Gui,Font, c%intControlColor%
+			GuiControl, Font, %strControl%
+		}
+		if InStr(strControl, "Static")
+		{
+			Gui,Font, c%intControlColor%
+			GuiControl, Font, %strControl%
+		}
+	}
 }
 
 saSettingsPosition := ""
