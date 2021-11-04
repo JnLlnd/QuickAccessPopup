@@ -6178,6 +6178,7 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup",
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
+o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFavoriteDebugOption", 1, "AdvancedOther", "f_blnEnableFavoriteDebugOption") ; enable debug checkbox in favorites basic settings tab
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
@@ -9495,6 +9496,10 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% vf_lblWaitDelayInDialogBox hidden, % o_L["OptionsWaitDelayInDialogBox"]
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intWaitDelayInDialogBox gGuiOptionsGroupChanged hidden, % o_Settings.DialogBoxes.intWaitDelayInDialogBox.IniValue
 
+; EnableFavoriteDebugOption
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnEnableFavoriteDebugOption gGuiOptionsGroupChanged hidden, % o_L["OptionsEnableFavoriteDebugOption"]
+GuiControl, , f_blnEnableFavoriteDebugOption, % (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue = true)
+
 ; SendToConsoleWithAlt
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnSendToConsoleWithAlt gGuiOptionsGroupChanged hidden, % o_L["OptionsSendToConsoleWithAlt"]
 GuiControl, , f_blnSendToConsoleWithAlt, % (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue = true)
@@ -9954,6 +9959,7 @@ blnRunAsAdminPrev := ""
 ; === AdvancedOther ===
 
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
+o_Settings.Execution.blnEnableFavoriteDebugOption.WriteIni(f_blnEnableFavoriteDebugOption)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
@@ -11247,8 +11253,8 @@ if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnable
 	LV_ModifyCol(8, "Integer") ; usage column
 
 ; initialize LV_Rows class (https://github.com/Pulover/Class_LV_Rows)
-LvHandle := New LV_Rows(g_strFavoritesListHwnd)
-LvHandle.SetHwnd(g_strFavoritesListHwnd)
+o_LvRowsHandle := New LV_Rows(g_strFavoritesListHwnd)
+o_LvRowsHandle.SetHwnd(g_strFavoritesListHwnd)
 
 ; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 Gui, 1:Add, ListView
@@ -11691,29 +11697,48 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 }
 else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 {
-	if SearchIsVisible()
+	if SearchIsVisible() ; no drag and drop in search results
 		return
 	
 	; drop item in gui using LV_Rows class
-	LvHandle.SetHwnd(h%A_GuiControl%) ; select active hwnd in Handle.
-	g_intOriginalMenuPosition := A_EventInfo ; original position
-    g_intNewItemPos := LvHandle.Drag("D", true, 80, 2, "3F51B5") ; returns the new item position, 3F51B5 is the color of the up/down buttons
+	o_LvRowsHandle.SetHwnd(h%A_GuiControl%) ; select active hwnd in Handle.
+	; A_EventInfo ; original position, not used
+    intNewItemPos := o_LvRowsHandle.Drag("D", true, 80, 2, "3F51B5") ; returns the new item position, 3F51B5 is the color of the up/down buttons
+	; intNewItemPos not used
+
+	; reorder items in o_MenuInGui.SA based on the content of the listview
+	saTempContainer := Object() ; to store the items in the same order as the listview (to store after in o_MenuInGui.SA)
 	
-	if (g_intNewItemPos) ; make sure drop was not before first position or after last position
+	loop, % o_MenuInGui.SA.MaxIndex()
 	{
-		if (g_intNewItemPos > g_intOriginalMenuPosition) ; adjust new position to position before drag & drop
-			g_intNewItemPos--
-		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition] ; set edited favorite
-		g_strDragDropDestinationMenu := o_MenuInGui.AA.strMenuPath ; set destination menu to menu in gui
+		LV_GetText(strLvName, A_Index, 1) ; next line in listview to search in o_MenuInGui.SA
+		if (strLvName = g_strGuiMenuSeparator) ; this is a line separator
+			strSearchType := "X"
+		else if (strLvName = g_strGuiDoubleLine . " " . o_L["MenuColumnBreak"] . " " . g_strGuiDoubleLine) ; this is a column break
+			strSearchType := "K"
+		else
+			strSearchType := "" ; search based on strFavoriteName
 		
-		gosub, GuiFavoritesListDropSave
+		loop
+			if (StrLen(strSearchType) and strSearchType = o_MenuInGui.SA[A_Index].AA.strFavoriteType)
+				or (o_MenuInGui.SA[A_Index].AA.strFavoriteName = strLvName)
+			; this is the next favorite in the listview
+			{
+				saTempContainer.Push(o_MenuInGui.SA[A_Index]) ; push it to the temporary container
+				o_MenuInGui.SA.RemoveAt(A_Index) ; remove it from the source container (to avoid confusion if multiple "X" or "K")
+				break ; continue with next line in listview
+			}
 	}
 	
-	g_intOriginalMenuPosition := ""
-    g_intNewItemPos := ""
-	o_EditedFavorite := ""
-	g_strDragDropDestinationMenu := ""
+	; here o_MenuInGui.SA is empty
+	for intKey, oItem in saTempContainer ; copy items in the new order after drag and drop
+		o_MenuInGui.SA.Push(oItem)
+	gosub, EnableSaveAndCancel
 }
+
+intNewItemPos := ""
+saTempContainer := ""
+strSearchType := ""
 
 return
 ;------------------------------------------------------------
@@ -12879,6 +12904,9 @@ Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFa
 if !(blnIsGroupMember)
 	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteHidden " . (o_EditedFavorite.AA.intFavoriteDisabled ? "checked" : "")
 		, % o_L["DialogFavoriteHidden"]
+if (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue and InStr("Folder|Document|Application|URL|FTP|Snippet|", o_EditedFavorite.AA.strFavoriteType . "|"))
+	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteDebug " . (o_EditedFavorite.AA.blnFavoriteDebug ? "checked" : "")
+		, % o_L["DialogFavoriteDebug"]
 
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	gosub, MenuAutoSortClicked ; must be after f_blnFavoriteDisabled and f_blnFavoriteHidden are created
@@ -13144,11 +13172,11 @@ if (blnIsGroupMember)
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Application")
 	{
-		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnintGroupRestoreWaitFinish "
+		Gui, 2:Add, Checkbox, % "y+15 x20 vf_blnGroupRestoreWaitFinish "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[2] ? "checked" : ""), % o_L["GuiGroupRestoreWaitFinish"] ; 2 boolean wait for program to finish
-		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreStopIfError "
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnGroupRestoreStopIfError "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[3] ? "checked" : ""), % o_L["GuiGroupRestoreStopIfError"] ; 3 boolean stop if the app returns an error
-		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnintGroupRestoreMinimized "
+		Gui, 2:Add, Checkbox, % "y+10 x20 vf_blnGroupRestoreMinimized "
 			. (StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[4] ? "checked" : ""), % o_L["GuiGroupRestoreMinimized"] ; 4 boolean launch minimized
 	}
 }
@@ -16115,7 +16143,6 @@ GuiCopyFavoriteSave:
 GuiAddExternalSave:
 GuiQuickAddSnippetSave:
 GuiAddFavoriteSaveFromMultipleAdd:
-GuiFavoritesListDropSave:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
@@ -16147,8 +16174,8 @@ if (o_EditedFavorite.IsContainer() and InStr("GuiAddFavoriteSave|GuiAddExternalS
 
 o_EditedFavoriteMenu := o_EditedFavorite.AA.oParentMenu
 
-; update menu object except if we multiple move or copy favorites, or drag and drop a favorite
-if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
+; update menu object except if we multiple move or copy favorites
+if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel . "|")
 {
 	; if external menu file exists, load the submenu from the external settings ini file
 	if (o_EditedFavorite.AA.strFavoriteType = "External")
@@ -16250,6 +16277,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 		o_EditedFavorite.AA.intFavoriteDisabled := -1
 	else
 		o_EditedFavorite.AA.intFavoriteDisabled := 0
+	o_EditedFavorite.AA.blnFavoriteDebug := f_blnFavoriteDebug
 	
 	o_EditedFavorite.AA.strFavoriteSoundLocation := strNewFavoriteSoundLocation
 
@@ -16305,11 +16333,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 	}
 
 	o_EditedFavorite.AA.strFavoriteGroupRestoreOptions := (o_EditedFavorite.AA.oParentMenu.AA.strMenuType = "Group"
-		? f_intGroupRestoreDelayAfter . ";" . f_blnintGroupRestoreWaitFinish . ";" . f_blnintGroupRestoreStopIfError . ";" . f_blnintGroupRestoreMinimized
+		? f_intGroupRestoreDelayAfter . ";" . f_blnGroupRestoreWaitFinish . ";" . f_blnGroupRestoreStopIfError . ";" . f_blnGroupRestoreMinimized
 		: "") ; if not in a group, reset variable (in case favorite was moved from a group before)
 }
-else if (strThisLabel <> "GuiFavoritesListDropSave") ; GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave, not required for GuiFavoritesListDropSave because container not changed
-	if o_EditedFavorite.IsContainer()
+else if o_EditedFavorite.IsContainer()
 		; update container and its children AA values strFavoriteLocation, oParentMenu and oSubMenu with the new path of this container, update o_Containers
 		o_EditedFavorite.UpdateMenusPathAndLocation(strDestinationMenu, InStr(strThisLabel, "Copy"))
 
@@ -16319,7 +16346,7 @@ if !o_EditedFavorite.IsContainer() ; if it is a container, parent menu is proces
 
 ; alert user if an existing favorite has the same location + parameters
 
-if (InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd or GuiFavoritesListDropSave
+if (InStr("GuiAddFavoriteSave|GuiEditFavoriteSave|GuiCopyFavoriteSave|", strThisLabel . "|") ; not for GuiAddFavoriteSaveFromMultipleAdd
 	and o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue)
 {
 	oDuplicateFavorite := o_MainMenu.FoundIdenticalFavorite(o_EditedFavorite)
@@ -16374,7 +16401,7 @@ else if (strThisLabel <> "GuiAddFavoriteSaveFromMultipleAdd") ; update listview
 {
 	if (strThisLabel = "GuiAddExternalSave")
 		g_blnExternalMenusAdded := true
-	else if !InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiFavoritesListDropSave|", strThisLabel . "|")
+	else if !InStr("GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|", strThisLabel . "|")
 		Gosub, 2GuiClose
 
 	if (SearchIsVisible() or o_EditedFavorite.AA.oParentMenu.AA.intMenuAutoSort)
@@ -16387,7 +16414,7 @@ else if (strThisLabel <> "GuiAddFavoriteSaveFromMultipleAdd") ; update listview
 			LV_Modify(o_MenuInGui.AA.intSearchPositionBeforeEdit, "Select Focus Vis")
 		}
 	}
-	else if (strThisLabel <> "GuiFavoritesListDropSave") ; not required because already updated by LV_Rows class
+	else
 		Gosub, GuiAddFavoriteSaveUpdateListView
 
 	Gosub, EnableSaveAndCancel
@@ -16396,8 +16423,8 @@ else if (strThisLabel <> "GuiAddFavoriteSaveFromMultipleAdd") ; update listview
 }
 
 o_EditedFavorite.AA.strFavoriteDateModified := A_NowUTC
-if !InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
-	; item is created except for GuiEditFavoriteSave, GuiMoveOneFavoriteSave and GuiFavoritesListDropSave where item is modified
+if !InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|", "|" . strThisLabel . "|")
+	; item is created except for GuiEditFavoriteSave and GuiMoveOneFavoriteSave where item is modified
 	o_EditedFavorite.AA.strFavoriteDateCreated := A_NowUTC
 
 ; if favorite's original or destination menu are in an external settings file, flag that they need to be saved
@@ -16503,9 +16530,10 @@ f_blnFavoriteFolderLiveRefreshManual := ""
 f_drpFavoriteFolderLiveIconsSize := ""
 f_blnFavoriteFolderLiveExcludeFolders := ""
 f_intGroupRestoreDelayAfter := ""
-f_blnintGroupRestoreWaitFinish := ""
-f_blnintGroupRestoreStopIfError := ""
-f_blnintGroupRestoreMinimized := ""
+f_blnGroupRestoreWaitFinish := ""
+f_blnGroupRestoreStopIfError := ""
+f_blnGroupRestoreMinimized := ""
+f_blnFavoriteDebug := ""
 
 objExternalMenu := ""
 strItemSelectedName := ""
@@ -16573,7 +16601,7 @@ if (strThisLabel = "GuiQuickAddSnippetSave")
 	g_strSnippetFormat := "display"
 }
 
-if InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|GuiEditMenuFromGui|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
+if InStr("|GuiEditFavoriteSave|GuiMoveOneFavoriteSave|GuiEditMenuFromGui|", "|" . strThisLabel . "|")
 	strOriginalMenu := o_MenuInGui.AA.strMenuPath
 else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiCopyFavoriteSave|GuiCopyOneFavoriteSave|GuiAddExternalSave|GuiQuickAddSnippetSave
 {
@@ -16585,7 +16613,7 @@ else ; GuiAddFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromM
 if (strThisLabel = "GuiAddExternalSave")
 	strExternalMenuName := o_Settings.ReadIniValue("MenuName", " ", "Global", o_EditedFavorite.AA.strFavoriteAppWorkingDir) ; empty if not found
 
-if InStr("|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
+if InStr("|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|", "|" . strThisLabel . "|")
 {
 	strNewFavoriteShortName := (StrLen(o_EditedFavorite.AA.strFavoriteName) ? o_EditedFavorite.AA.strFavoriteName : strExternalMenuName)
 	strNewFavoriteLocation := o_EditedFavorite.AA.strFavoriteLocation
@@ -16604,7 +16632,7 @@ if InStr("|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExtern
 			strDestinationMenu := A_ThisMenu
 		g_intNewItemPos := (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? 1 : o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1) ; 
 	}
-	else if (strThisLabel = "GuiAddExternalSave")
+	else ; GuiAddExternalSave
 	{
 		; add new shared menu in current Main menu
 		Gui, 1:Default
@@ -16612,8 +16640,6 @@ if InStr("|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExtern
 		g_intNewItemPos := LV_GetNext()
 		strDestinationMenu := o_MenuInGui.AA.strMenuPath
 	}
-	else ; GuiFavoritesListDropSave
-		strDestinationMenu := o_MenuInGui.AA.strMenuPath
 }
 else
 {
@@ -16621,10 +16647,7 @@ else
 	strNewFavoriteLocation := f_strFavoriteLocation
 	strFavoriteAppWorkingDir := f_strFavoriteAppWorkingDir
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
-	if (strThisLabel = "GuiFavoritesListDropSave")
-		strDestinationMenu := g_strDragDropDestinationMenu
-	else
-		strDestinationMenu := f_drpParentMenu
+	strDestinationMenu := f_drpParentMenu
 
 	; if gui was closed from Live Folder Options tab (without changing tab), update Live folder icon
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder" and f_blnFavoriteFolderLive
@@ -16672,7 +16695,6 @@ if (!g_intNewItemPos)
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
 	and !(ContainsPlaceholder(strNewFavoriteLocation) or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
-	and (strThisLabel <> "GuiFavoritesListDropSave") ; not required for drag and drop
 {
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
@@ -16737,9 +16759,9 @@ if (o_EditedFavorite.AA.strFavoriteType = "External") and !InStr("|GuiEditFavori
 	}
 }
 
-; various validations (not required for GuiMoveOneFavoriteSave, GuiCopyOneFavoriteSave and GuiFavoritesListDropSave because info in o_EditedFavorite is not changed)
+; various validations (not required for GuiMoveOneFavoriteSave and GuiCopyOneFavoriteSave because info in o_EditedFavorite is not changed)
 
-if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
+if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel . "|")
 {
 	if !StrLen(strNewFavoriteShortName)
 		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
@@ -16869,7 +16891,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSa
 
 ; avoid duplicate names when saving, rename if saving express or multiple
 
-strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|GuiFavoritesListDropSave|", "|" . strThisLabel . "|")
+strUniqueName := (InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel . "|")
 	? o_EditedFavorite.AA.strFavoriteName : strNewFavoriteShortName)
 blnRename := InStr("|GuiCopyOneFavoriteSave|GuiMoveOneFavoriteSave|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExternalSave|GuiAddFavoriteSaveFromMultipleAdd|GuiFavoritesListDropMoveSave|"
 	, "|" . strThisLabel . "|")
@@ -23423,6 +23445,23 @@ Oops(varOwner, strMessage, objVariables*)
 ;------------------------------------------------
 
 
+;------------------------------------------------
+PlaceholderDebug(strMessage, blnFavoriteDebug)
+; return true if debug was displayed
+;------------------------------------------------
+{
+	if (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue and blnFavoriteDebug)
+	{
+		MsgBox, 0, % L("Debug Favorite", g_strAppNameText, g_strAppVersion)
+			, % o_L["DialogFavoriteDebugBefore"] . ":`n`n`n" . L(strMessage, objVariables*) . "`n`n`n" . o_L["DialogFavoriteDebugAfter"]
+		return true
+	}
+		
+	return false
+}
+;------------------------------------------------
+
+
 ;------------------------------------------------------------
 GetOSVersion()
 ;------------------------------------------------------------
@@ -24233,10 +24272,16 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 				if (ErrorLevel) ; user clicked Cancel, delete typed text if any (execution cannot be cancelled however)
 					strInputContent := ""
 				strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
+				
+				; add user input as a temporary user variable
+				strUserVariablesBackup := o_Settings.UserVariables.strUserVariablesList.IniValue
+				o_Settings.UserVariables.strUserVariablesList.IniValue .= "|{" . strInputPrompt . "}=" . strInputContent ; add temporary content to user variables list
 			}
 	}
 
 	strExpanded := ExpandUserVariables(strExpanded)
+	if StrLen(strUserVariablesBackup) ; if we added a temporary user vairable, restore original user variables
+		o_Settings.UserVariables.strUserVariablesList.IniValue := strUserVariablesBackup
 
 	; restore escaped open curly brackets and remove tick {
 	strExpanded := StrReplace(strExpanded, "!r4nd0mt3xt!", "{") ; restore ticked open curly brackets
@@ -26269,6 +26314,19 @@ ProcessMenuIconsSize(strSize)
 		return -2
 	else
 		return strSize
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+LV_GetLastSelected()
+;------------------------------------------------------------
+; returns the last selected row in the current listview (supporting non-consecutive multiple selections)
+{
+	intCurrentRow := 0
+	Loop, % LV_GetCount("S")
+		intCurrentRow := LV_GetNext(intCurrentRow) ; return the next selected row
+	return intCurrentRow
 }
 ;------------------------------------------------------------
 
@@ -29400,7 +29458,7 @@ class Container
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
 			; 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
-			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
+			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug
 
 	;---------------------------------------------------------
 	{
@@ -30715,6 +30773,7 @@ class Container
 			strIniLine .= oItem.AA.strFavoriteGroupRestoreOptions . "|" ; 32
 			strIniLine .= oItem.AA.intFavoriteFolderLiveIconsSize . "|" ; 33
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveExcludeFolders . "|" ; 34
+			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
 
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -31192,6 +31251,7 @@ class Container
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
 			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
 			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
+			; 35 blnFavoriteDebug
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -31280,6 +31340,7 @@ class Container
 			this.InsertItemValue("strFavoriteGroupRestoreOptions", saFavorite[32]) ; semi-colon separated values for group members options
 			this.InsertItemValue("intFavoriteFolderLiveIconsSize", saFavorite[33]) ; integer value, icons size in Live Folders
 			this.InsertItemValue("blnFavoriteFolderLiveExcludeFolders", saFavorite[34]) ; boolean, exclude folders in Live Folders
+			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, exclude folders in Live Folders
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
@@ -31524,8 +31585,10 @@ class Container
 					if (this.AA.oParentMenu.AA.strMenuType = "Group" and StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[3]) ; group member with stop if error option
 						return intOpenError
 					; else continue
-					if (intOpenError and (intOpenError <> 1223))
-						Oops(0, o_L["OopsUnknownTargetAppName"]) ; error 1223 because user canceled on the Run as admnistrator prompt
+					if (intOpenError and intOpenError <> 1223 and intOpenError <> -1)
+						; error 1223 because user canceled on the Run as admnistrator prompt
+						; error -1 because debug option was enabled
+						Oops(0, o_L["OopsUnknownTargetAppName"])
 				}
 				; FOLDER
 				if InStr("Folder|FTP|Special", this.AA.strFavoriteType)
@@ -31625,6 +31688,9 @@ class Container
 		; return 0 if no error or error code
 		;---------------------------------------------------------
 		{
+			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
+				return -1
+			
 			; Navigate
 			if (this.aaTemp.strHotkeyTypeDetected = "Navigate")
 				and StrLen(g_strTargetClass) and (g_strTargetWinId)
@@ -32196,6 +32262,9 @@ class Container
 		; return 0 if success or 1 if timeout error
 		;---------------------------------------------------------
 		{
+			if PlaceholderDebug(DecodeSnippet(this.aaTemp.strLocationWithPlaceholders), this.AA.blnFavoriteDebug)
+				return -1
+			
 			strWaitTime := 10
 			
 			WinGetClass, strClassSnippet, % "ahk_id " . this.aaTemp.strTargetWinId
@@ -32362,6 +32431,9 @@ class Container
 			strWorkingDir := this.aaTemp.strAppWorkingDirWithPlaceholders
 			strOptions := "UseErrorLevel" . (StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[4] ? " Min" : "") ; 4 boolean launch minimized
 			
+			if PlaceholderDebug(strTarget . "`n`n" . o_L["DialogWorkingDirLabel"] . ":`n" . strWorkingDir, this.AA.blnFavoriteDebug)
+				return -1
+			
 			if StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[2] ; 2 boolean wait for program to finish
 				or StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[3] ; 3 boolean stop if the app returns an error
 				RunWait, %strTarget%, %strWorkingDir%, %strOptions%, intPid
@@ -32422,9 +32494,11 @@ class Container
 		
 		;---------------------------------------------------------
 		LaunchFullLocation()
-		; return 0 if success or error code
+		; called for links and documents only, return 0 if success or error code
 		;---------------------------------------------------------
 		{
+			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
+				return -1
 			Run, % this.aaTemp.strFullLocation, , UseErrorLevel, intPid
 			if (ErrorLevel = "ERROR")
 				Oops(0, o_L["OopsUnknownTargetAppName"])
