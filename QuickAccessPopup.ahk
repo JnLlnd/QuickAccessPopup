@@ -31,19 +31,29 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.5.2 (2021-11-03)
+Version: 11.5.2 (2021-11-04)
  
-This release fixes a bug when using drag-and-drop to move multiple items in the favorites liste of the Customize window. Upgrade strongly recommended.
+* This release fixes a bug when using drag and drop to move multiple items in the favorites liste of the Customize window. Upgrade strongly recommended.
  
-- support multiple selection (contiguous or not) when moving items in the , using names after drag and drop as reference ot reorder the items in container object; stop using the favorite save GuiFavoritesListDropSave command ans remove all exceptions related to drag and drop
-
-add global option to display or not debug option in favorites basic settings tab; display debug favorites option for all types (to be displayed only for some types later); rename group variables with typos; display debug message for links and documents
-
-favorite debug implemented for FTP, applications, folders and snippets (text and macro); restric debug checkbox in add/edit favorite to types Folder|Document|Application|URL|FTP|Snippet
-
-when pasting a placeholder {Input:Prompt}, create a temporary user variable with the name {Prompt} available later in the same target string
-
-dark mode
+Windows 10 Dark mode compatibility (beta)
+- new dark mode option for menus under "Options, Menu appearance" (requires Windows 10 version 1903/build 18362 or more recent)
+- new dark mode option for "Customize" window under "Options, Customize" (only for the "Customize" window at this time, not other QAP dialog boxes)
+- display dark mode "Customize" window and menus if Windows 10 dark mode for apps option is enabled in Windows Settings (Personalization, Colors)
+- dark mode compatibility options are released as a "beta" options and could be changed or removed based on users feedback
+- known issue: menus including column breaks do not support dark mode
+ 
+Customize window - Drag and drop
+- fix bug in the favorites list when using drag and drop to move more than one favorite at a time
+- support drag and drop of multiple favorites with contiguous selection (with Shift+Click) or non-contiguous selection (with Ctrl+Click)
+ 
+Debugging Placeholders and User variables
+- add under "Options, Various Advanced Options" an option to display or not the debug option in "Add/Edit Favorites", "Basic Settings" tab
+- when launching a favorite with debug option enabled, display a dialog box with the location, parameters and start in option with placeholders and user variables expanded 
+- debug option is available for Folders, Documents, Applications, Links, FTP sites and Snippets (text and macro)
+ 
+Reusable Input placeholders
+- when pasting a favorite with a placeholder {Input:Prompt}, place the content entered by the user in a temporary user variable named based on the Input's prompt (e.g. for "{Input:Email?}, the variable name is "{Email?})
+- this temporary user variable allows to re-use the content entered by the user more than once in the current favorite
 
 Version: 11.5.1 (2021-10-25)
  
@@ -4891,7 +4901,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.1
+;@Ahk2Exe-SetVersion 11.5.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4958,7 +4968,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
@@ -10068,7 +10078,7 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (blnDisplayIconsPrev <> o_Settings.MenuIcons.blnDisplayIcons.IniValue)
 	or (intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue)
 	or (blnDarkModeCustomizePrev <> o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue)
-	or (blnDarkModeMenuPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
+	or (blnDarkModeMenusPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
@@ -10101,7 +10111,7 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 		strOption := o_L["OptionsDarkModeCustomize"]
 		strValue := (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
-	else if (blnDarkModeMenuPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
+	else if (blnDarkModeMenusPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
 	{
 		strOption := o_L["OptionsDarkModeMenus"]
 		strValue := (o_Settings.Menu.blnDarkModeMenus.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
