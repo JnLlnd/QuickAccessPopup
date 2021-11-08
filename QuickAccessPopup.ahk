@@ -24358,7 +24358,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	}
 
 	strExpanded := ExpandUserVariables(strExpanded)
-	if StrLen(strUserVariablesBackup) ; if we added a temporary user vairable, restore original user variables
+	if StrLen(strUserVariablesBackup) ; if we added a temporary user variable, restore original user variables
 		o_Settings.UserVariables.strUserVariablesList.IniValue := strUserVariablesBackup
 
 	; restore escaped open curly brackets and remove tick {
@@ -26392,19 +26392,6 @@ ProcessMenuIconsSize(strSize)
 		return -2
 	else
 		return strSize
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-LV_GetLastSelected()
-;------------------------------------------------------------
-; returns the last selected row in the current listview (supporting non-consecutive multiple selections)
-{
-	intCurrentRow := 0
-	Loop, % LV_GetCount("S")
-		intCurrentRow := LV_GetNext(intCurrentRow) ; return the next selected row
-	return intCurrentRow
 }
 ;------------------------------------------------------------
 
@@ -31418,7 +31405,7 @@ class Container
 			this.InsertItemValue("strFavoriteGroupRestoreOptions", saFavorite[32]) ; semi-colon separated values for group members options
 			this.InsertItemValue("intFavoriteFolderLiveIconsSize", saFavorite[33]) ; integer value, icons size in Live Folders
 			this.InsertItemValue("blnFavoriteFolderLiveExcludeFolders", saFavorite[34]) ; boolean, exclude folders in Live Folders
-			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, exclude folders in Live Folders
+			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, enable favorite debugging
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
