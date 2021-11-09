@@ -32726,9 +32726,9 @@ class Container
 				if StrLen(this.AA.strFavoriteLaunchWith) and !InStr("Application|Snippet", this.AA.strFavoriteType) ; ignore for Application or Snippet favorites
 					this.aaTemp.strFullLocation := this.aaTemp.strExpandedLaunchWith . " """ . this.aaTemp.strFullLocation . """" ; enclose document path in double-quotes
 				
-				if StrLen(this.AA.strFavoriteArguments) and !this.IsContainer() ; not for menu (containing menu icons size)
+				if StrLen(this.AA.strFavoriteArguments) and !this.IsContainer() ; not for menu (containing menu icons size in arguments)
 				{
-					if (this.AA.strFavoriteType = "URL")
+					if (this.AA.strFavoriteType = "URL" and !StrLen(this.AA.strFavoriteLaunchWith))
 						strBrowserLocation := GetDefaultBrowserPath(this.aaTemp.strFullLocation) ; get path of default browser using URL (before changing strFullLocation)
 					
 					; let user enter double-quotes as required by his arguments
@@ -32736,7 +32736,7 @@ class Container
 						, (InStr(this.AA.strFavoriteArguments, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
 						, (InStr(this.AA.strFavoriteArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
 						
-					if (this.AA.strFavoriteType = "URL") ; if it is an URL with arguments, process it as an App
+					if (this.AA.strFavoriteType = "URL"and !StrLen(this.AA.strFavoriteLaunchWith)) ; if it is an URL with arguments, process it as an App
 					{
 						this.aaTemp.strFullLocation := strBrowserLocation . " " . this.aaTemp.strFullLocation ; insert browser's path before the URL and arguments
 						this.aaTemp.blnProcessAsApp := true ; will be considered as Application favorite with path and arguments in strFullLocation
