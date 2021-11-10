@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.2.1 (2021-11-10)
+- fix bug when launching an URL or Document favorite with values in both "Launch with" and "Parameters" fields
+ 
 Version: 11.5.2 (2021-11-04)
  
 * This release fixes a bug when using drag and drop to move multiple items in the favorites liste of the Customize window. Upgrade strongly recommended.
@@ -4901,7 +4904,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.2
+;@Ahk2Exe-SetVersion 11.5.2.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4968,7 +4971,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.1"
