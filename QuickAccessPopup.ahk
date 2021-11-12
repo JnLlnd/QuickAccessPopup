@@ -5963,10 +5963,6 @@ if (g_blnIniFileCreation) ; if it exists, it is not first launch or it was creat
 	blnExplorerContextMenus := (g_blnPortableMode ? 0 : 1) ; context menus enabled if installed with the setup program (not if portable)
 
 	strLanguageCode := o_Settings.Launch.strLanguageCode.IniValue
-	strNavigateOrLaunchHotkeyMouseDefault := g_arrPopupHotkeyDefaults1 ; "MButton"
-	strNavigateOrLaunchHotkeyKeyboardDefault := g_arrPopupHotkeyDefaults2 ; "W"
-	strAlternativeHotkeyMouseDefault := g_arrPopupHotkeyDefaults3 ; "+MButton"
-	strAlternativeHotkeyKeyboardDefault := g_arrPopupHotkeyDefaults4 ; "+#W"
 	strMenuDynamicMenus := o_L["MenuDynamicMenus"]
 	
 	FileAppend,
@@ -6222,7 +6218,6 @@ if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
-o_Settings.ReadIniOption("LaunchAdvanced", "blnDarkModeCompatibility", "DarkModeCompatibility", 0)
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
@@ -6255,10 +6250,6 @@ Gosub, ConvertLocationHotkeys ; if pre v8.8, convert name|location hotkeys to fa
 
 strLanguageCode := ""
 blnExplorerContextMenus := ""
-strNavigateOrLaunchHotkeyMouseDefault := ""
-strNavigateOrLaunchHotkeyKeyboard := ""
-strAlternativeHotkeyMouseDefault := ""
-strAlternativeHotkeyKeyboardDefault := ""
 objThisFavorite := ""
 objLoadIniFavorite := ""
 strFileList := ""
@@ -24552,7 +24543,7 @@ ExpandUserVariables(str)
     loop, parse, % o_Settings.UserVariables.strUserVariablesList.IniValue, |
         if (StrLen(A_LoopField) and SubStr(A_LoopField, 1, 1) ="{")
         {
-            saUserVariable := StrSplit(A_LoopField, "=")
+            saUserVariable := StrSplit(A_LoopField, "=", , 2) ; MaxParts = 2 to avoid a third part if A_LoopField includes an = sign
             if (SubStr(saUserVariable[1], 1, 1) = "{" and SubStr(saUserVariable[1], StrLen(saUserVariable[1]), 1) = "}")
                 str := StrReplace(str, saUserVariable[1], saUserVariable[2])
         }
