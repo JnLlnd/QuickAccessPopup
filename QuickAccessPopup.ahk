@@ -29122,6 +29122,11 @@ TODO
 		{
 			if !(blnDoNotSave)
 				this.IniValue := varNewValue
+			
+			if InStr(this.strIniFile, "-setup")
+			; if value was read from quickaccesspopup-setup.ini file, now save it to quickaccesspopup.ini
+				this.strIniFile := o_Settings.strIniFile
+			
 			IniWrite, % this.IniValue, % (StrLen(this.strIniFile) ? this.strIniFile : o_Settings.strIniFile)
 				, % (StrLen(this.strSection) ? this.strSection : "Global"), % this.strIniValueName
 		}
