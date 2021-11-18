@@ -6506,6 +6506,10 @@ else
 	
 	if (A_ThisLabel = "LoadFavoritesFromIniWithStatus")
 		SetCursor(true, "wait") ; set wait cursur during loading, was ToolTip, % o_L["ToolTipLoading"]
+
+	; if we have a section [Favorites-New], the last save was incomplete
+	CheckLastSaveIncomplete(o_Settings.strIniFile)
+
 	if (o_MainMenu.LoadFavoritesFromIniFile() <> "EOM")
 	{
 		OnExit ; disable exit subroutine
@@ -26390,6 +26394,24 @@ ProcessMenuIconsSize(strSize)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+CheckLastSaveIncomplete(strIniFile)
+;------------------------------------------------------------
+{
+	; if we have a section [Favorites-New], the last save was incomplete
+	IniRead, strFavoritesNew, %strIniFile%, Favorites-New
+	if StrLen(strFavoritesNew)
+	{
+		if o_Settings.RenameIniSection(strIniFile, "[Favorites-Backup]", "[Favorites]")
+		{
+			IniDelete, %strIniFile%, Favorites-New
+			Oops(0, o_L["OopsLastSaveIncomplete"], g_strAppNameText, strIniFile)
+		}
+	}
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -29086,6 +29108,28 @@ TODO
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
+	RenameIniSection(strIniFile, strReplaceThis, strReplaceWithThat)
+	;---------------------------------------------------------
+	{
+		; make sure we remplace only section names (not favorite content)
+		strReplaceThis .= Chr(13) . Chr(10)
+		strReplaceWithThat .= Chr(13) . Chr(10)
+		
+		FileRead, strIniFileContent, %strIniFile%
+		blnSectionExists := InStr(strIniFileContent, strReplaceThis)
+		if (blnSectionExists)
+		{
+			Sleep, 20 ; safety
+			FileDelete, %strIniFile%
+			Sleep, 20 ; safety
+			FileAppend, % StrReplace(strIniFileContent, strReplaceThis, strReplaceWithThat), %strIniFile%, % (A_IsUnicode ? "UTF-16" : "")
+			Sleep, 20 ; safety
+		}
+		return blnSectionExists ; used only when loading favorites
+	}
+	;---------------------------------------------------------
+	
+	;---------------------------------------------------------
 	class IniValue
 	;---------------------------------------------------------
 	{
@@ -29572,6 +29616,7 @@ class Container
 		
 		if (this.AA.strMenuType = "External")
 		{
+			CheckLastSaveIncomplete(s_strIniFile)
 			this.AA.strMenuExternalSettingsPath := s_strIniFile
 			
 			if this.AA.oParentMenu.FavoriteIsUnderExternalMenu(o_ExternalMenu)
@@ -30776,13 +30821,8 @@ class Container
 			s_intIniLineSave := 1
 			s_strIniFile := o_Settings.strIniFile
 			
-			IniRead, strTempIniFavoritesSection, %s_strIniFile%, Favorites ; to make an undocumented internal backup
-			IniDelete, %s_strIniFile%, Favorites
-			
-			if StrLen(strTempIniFavoritesSection) <= 65532 ; ini section is OK, make the internal backup
-				IniWrite, %strTempIniFavoritesSection%, %s_strIniFile%, Favorites-backup
-			else ; ini section is incomplete because IniRead cannot read more than 65,533 characters, delete previous backup
-				IniDelete, %s_strIniFile%, Favorites-backup
+			IniDelete, %s_strIniFile%, Favorites-Backup			
+			o_Settings.RenameIniSection(s_strIniFile, "[Favorites]", "[Favorites-Backup]") ; to make an undocumented internal backup
 		}
 		
 		for intKey, oItem in this.SA
@@ -30791,7 +30831,7 @@ class Container
 			if (intKey > 1)
 				if (oItem.AA.strFavoriteType = "X") and (this.SA[intKey - 1].AA.strFavoriteType = "K")
 					continue
-
+			
 			strIniLine := oItem.AA.strFavoriteType . "|" ; 1
 			if (oItem.AA.strFavoriteType = "QAP" and oItem.AA.strFavoriteName = o_QAPfeatures.aaQAPFeaturesDefaultNameByCode[oItem.AA.strFavoriteLocation])
 				or (oItem.AA.strFavoriteType = "Special" and oItem.AA.strFavoriteName = o_SpecialFolders.AA[oItem.AA.strFavoriteLocation].strDefaultName)
@@ -30840,8 +30880,8 @@ class Container
 			strIniLine .= oItem.AA.intFavoriteFolderLiveIconsSize . "|" ; 33
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveExcludeFolders . "|" ; 34
 			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
-
-			IniWrite, %strIniLine%, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave
+			
+			IniWrite, %strIniLine%, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
 			
 			if InStr("Menu|Group", oItem.AA.strFavoriteType, true)
@@ -30858,7 +30898,9 @@ class Container
 					s_strIniFile := oItem.AA.oSubMenu.AA.strMenuExternalSettingsPath
 					s_intIniLineSave := 1 ; reset to 1 for the external file
 					
-					Settings.BackupIniFile(s_strIniFile, g_blnReplaceSpecialFolderLocationBackup) ; backup external settings ini file, if required
+					o_Settings.BackupIniFile(s_strIniFile, g_blnReplaceSpecialFolderLocationBackup) ; backup external settings ini file, if required
+					IniDelete, %s_strIniFile%, Favorites-Backup
+					o_Settings.RenameIniSection(s_strIniFile, "[Favorites]", "[Favorites-Backup]")
 				}
 				
 				oItem.AA.oSubMenu.SaveFavoritesToIniFile(false) ; RECURSIVE false not root
@@ -30866,6 +30908,7 @@ class Container
 				if (oItem.AA.strFavoriteType = "External")
 				{
 					Sleep, 20 ; for safety
+					o_Settings.RenameIniSection(s_strIniFile, "[Favorites-New]", "[Favorites]")
 					strIniDateTimeAfter := ExternalMenuGetModifiedDateTime(s_strIniFile)
 					oItem.AA.oSubMenu.strMenuExternalLastModifiedWhenLoaded := strIniDateTimeAfter
 					oItem.AA.oSubMenu.strMenuExternalLastModifiedNow := strIniDateTimeAfter
@@ -30878,8 +30921,10 @@ class Container
 			}
 		}
 		
-		IniWrite, Z, %s_strIniFile%, Favorites, % "Favorite" . s_intIniLineSave ; end of menu marker
+		IniWrite, Z, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave ; end of menu marker
 		s_intIniLineSave++
+		if (blnRoot) ; return to the top container, saving is completed
+			o_Settings.RenameIniSection(s_strIniFile, "[Favorites-New]", "[Favorites]")
 	}
 	;---------------------------------------------------------
 
