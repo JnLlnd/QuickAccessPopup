@@ -26400,7 +26400,8 @@ CheckLastSaveIncomplete(strIniFile)
 	IniRead, strFavoritesNew, %strIniFile%, Favorites-New
 	if StrLen(strFavoritesNew)
 	{
-		if o_Settings.RenameIniSection(strIniFile, "[Favorites-Backup]", "[Favorites]")
+		if o_Settings.RenameIniSection(strIniFile, "Favorites-Backup", "Favorites")
+		; if we don't have a backup section (should not), leave as-is an make loading error
 		{
 			IniDelete, %strIniFile%, Favorites-New
 			Oops(0, o_L["OopsLastSaveIncomplete"], g_strAppNameText, strIniFile)
@@ -29107,20 +29108,25 @@ TODO
 
 	;---------------------------------------------------------
 	RenameIniSection(strIniFile, strReplaceThis, strReplaceWithThat)
+	; do not include [] in strReplaceThis and strReplaceWithThat
 	;---------------------------------------------------------
 	{
-		; make sure we remplace only section names (not favorite content)
-		strReplaceThis .= Chr(13) . Chr(10)
-		strReplaceWithThat .= Chr(13) . Chr(10)
+		strRegexBefore := "m)^\[" ; m) for multiple lines, ^ anchor to the beginning of a line
+		strRegExAfter := "\]"
 		
 		FileRead, strIniFileContent, %strIniFile%
-		blnSectionExists := InStr(strIniFileContent, strReplaceThis)
+		blnSectionExists := RegExMatch(strIniFileContent, strRegexBefore . strReplaceThis . strRegExAfter) ; [ at the beginning of a line
+		
 		if (blnSectionExists)
 		{
 			Sleep, 20 ; safety
 			FileDelete, %strIniFile%
 			Sleep, 20 ; safety
-			FileAppend, % StrReplace(strIniFileContent, strReplaceThis, strReplaceWithThat), %strIniFile%, % (A_IsUnicode ? "UTF-16" : "")
+			
+			; make sure we remplace only section names (not favorite content)
+			strIniFileContentNew := RegExReplace(strIniFileContent, strRegexBefore . strReplaceThis . strRegExAfter, "[" . strReplaceWithThat . "]")
+			
+			FileAppend, %strIniFileContentNew%, %strIniFile%, % (A_IsUnicode ? "UTF-16" : "")
 			Sleep, 20 ; safety
 		}
 		return blnSectionExists ; used only when loading favorites
@@ -30820,7 +30826,7 @@ class Container
 			s_strIniFile := o_Settings.strIniFile
 			
 			IniDelete, %s_strIniFile%, Favorites-Backup			
-			o_Settings.RenameIniSection(s_strIniFile, "[Favorites]", "[Favorites-Backup]") ; to make an undocumented internal backup
+			o_Settings.RenameIniSection(s_strIniFile, "Favorites", "Favorites-Backup") ; to make an undocumented internal backup
 		}
 		
 		for intKey, oItem in this.SA
@@ -30898,7 +30904,7 @@ class Container
 					
 					o_Settings.BackupIniFile(s_strIniFile, g_blnReplaceSpecialFolderLocationBackup) ; backup external settings ini file, if required
 					IniDelete, %s_strIniFile%, Favorites-Backup
-					o_Settings.RenameIniSection(s_strIniFile, "[Favorites]", "[Favorites-Backup]")
+					o_Settings.RenameIniSection(s_strIniFile, "Favorites", "Favorites-Backup")
 				}
 				
 				oItem.AA.oSubMenu.SaveFavoritesToIniFile(false) ; RECURSIVE false not root
@@ -30906,7 +30912,7 @@ class Container
 				if (oItem.AA.strFavoriteType = "External")
 				{
 					Sleep, 20 ; for safety
-					o_Settings.RenameIniSection(s_strIniFile, "[Favorites-New]", "[Favorites]")
+					o_Settings.RenameIniSection(s_strIniFile, "Favorites-New", "Favorites")
 					strIniDateTimeAfter := ExternalMenuGetModifiedDateTime(s_strIniFile)
 					oItem.AA.oSubMenu.strMenuExternalLastModifiedWhenLoaded := strIniDateTimeAfter
 					oItem.AA.oSubMenu.strMenuExternalLastModifiedNow := strIniDateTimeAfter
@@ -30922,7 +30928,7 @@ class Container
 		IniWrite, Z, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave ; end of menu marker
 		s_intIniLineSave++
 		if (blnRoot) ; return to the top container, saving is completed
-			o_Settings.RenameIniSection(s_strIniFile, "[Favorites-New]", "[Favorites]")
+			o_Settings.RenameIniSection(s_strIniFile, "Favorites-New", "Favorites")
 	}
 	;---------------------------------------------------------
 
