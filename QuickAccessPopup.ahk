@@ -11328,8 +11328,6 @@ Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavo
 Gui, 1:Add, Button, vf_btnGuiSaveAndStayFavorites Disabled gGuiSaveAndStayFavorites x350 yp w100 h35, % aaSettingsL["GuiSave"] ; Button4
 Gui, 1:Add, Button, vf_btnGuiCancel gGuiCancel Default x500 yp w100 h35, % aaSettingsL["GuiClose"] ; Close until changes occur - Button5
 
-Gui, 1:Font, s8 w400 c404040 normal, Verdana
-
 GetSavedSettingsWindowPosition(saSettingsPosition) ; format: x|y|w|h with optional |M if maximized
 
 Gui, 1:Show, % "Hide "
@@ -11354,7 +11352,7 @@ RegRead, blnLightMode, HKCU, SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Pe
 if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !blnLightMode)
 	; si dark mode forcer theme "Windows"
 {
-	intWindowColor := 0x404040
+	intWindowColor := 0x2B2B2B
 	intControlColor := 0xFFFFFF
 		
 	WinGet, strControlList, ControlList, ahk_id %g_strGui1Hwnd%
