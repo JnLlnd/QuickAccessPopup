@@ -31,6 +31,21 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.2.1.1 (2021-11-20)
+ 
+Setttings file (quickaccesspopup.ini)
+- prevent the error message "An error occurred while reading this settings file" displayed when QAP tries to load incomplete settings incomplete settings files (for main menu and shared menus)
+- instead, QAP will revert to the previous favorites list and inform the user that the last saving was incomplete
+  (technical notes: this is done when saving favorites in a temporary section of the ini file named [Favorites-New] and remane it [Favorites] if all favorites has been saved; when loading favorites, if the section [Favorites-New] exists, it means that the saving was interrupted, then QAP renames the [Favorites-Backup] section to [Favorites] and displays a message to user)
+- now make an internal backup of the [Favorites] section to [Favorites-Backup] even when [Favorites] section is larger than 65532 chars (bypass a limitation by renaming section name instead of copying the section)
+ 
+Various bug fixes and improvements
+- in some dialog boxes, adapt button centering for screens with scaling (under Windows 10 Settings, Ease of Access, Display)
+- fix bug when user variable content includes an equal (=) sign
+- fix a bug preventing loading of a new language file when language is changed immediately after installation
+- addition of Russian language to setup file
+- new JLicons.dll file v1.6.2 including icons for a new project to be announced (user of the portable version must replace the previous JLicons.dll file)
+
 Version: 11.5.2.1 (2021-11-10)
 - fix bug when launching an URL or Document favorite with values in both "Launch with" and "Parameters" fields
  
@@ -4904,7 +4919,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.2.1
+;@Ahk2Exe-SetVersion 11.5.2.1.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4971,8 +4986,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.2.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.2"
 
@@ -23763,7 +23778,8 @@ GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVert
 	; A_DetectHiddenWindows must be on (app's default); Gui, Show acts on current default gui (1: or 2: , etc)
 	Gui, Show, Hide ; hides the window and activates the one beneath it, allows a hidden window to be moved, resized, or given a new title without showing it
 	WinGetPos, , , intWidth, , ahk_id %strWindowHandle%
-
+	intWidth := intWidth // (A_ScreenDPI / 96) ; compensate for scaling
+	
 	; find largest control height and width
 	intMaxControlWidth := 0
 	intMaxControlHeight := 0
