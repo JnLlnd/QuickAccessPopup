@@ -33,13 +33,14 @@ HISTORY
 
 Version BETA: 11.5.2.1.1 (2021-11-20)
  
-Setttings file (quickaccesspopup.ini)
+Settings file (quickaccesspopup.ini)
 - prevent the error message "An error occurred while reading this settings file" displayed when QAP tries to load incomplete settings incomplete settings files (for main menu and shared menus)
 - instead, QAP will revert to the previous favorites list and inform the user that the last saving was incomplete
   (technical notes: this is done when saving favorites in a temporary section of the ini file named [Favorites-New] and remane it [Favorites] if all favorites has been saved; when loading favorites, if the section [Favorites-New] exists, it means that the saving was interrupted, then QAP renames the [Favorites-Backup] section to [Favorites] and displays a message to user)
 - now make an internal backup of the [Favorites] section to [Favorites-Backup] even when [Favorites] section is larger than 65532 chars (bypass a limitation by renaming section name instead of copying the section)
  
 Various bug fixes and improvements
+- add an option under "Various Advanced Options" to keep file extension when setting the "Short name" for a Document or an Application favorite
 - in some dialog boxes, adapt button centering for screens with scaling (under Windows 10 Settings, Ease of Access, Display)
 - fix bug when user variable content includes an equal (=) sign
 - fix a bug preventing loading of a new language file when language is changed immediately after installation
@@ -6220,6 +6221,7 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup",
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
 o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFavoriteDebugOption", 0, "AdvancedOther", "f_blnEnableFavoriteDebugOption") ; enable debug checkbox in favorites basic settings tab
+o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "f_blnKeepExtensionInShortName") ; keep file extension when gettig short name from a document or application location
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
@@ -6233,6 +6235,7 @@ if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
+o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "42")
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
@@ -9554,6 +9557,10 @@ Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intWaitDelayInDialogBox gGuiO
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnEnableFavoriteDebugOption gGuiOptionsGroupChanged hidden, % o_L["OptionsEnableFavoriteDebugOption"]
 GuiControl, , f_blnEnableFavoriteDebugOption, % (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue = true)
 
+; KeepExtensionInShortName
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnKeepExtensionInShortName gGuiOptionsGroupChanged hidden, % o_L["OptionsKeepExtensionInShortName"]
+GuiControl, , f_blnKeepExtensionInShortName, % (o_Settings.Execution.blnKeepExtensionInShortName.IniValue = true)
+
 ; SendToConsoleWithAlt
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnSendToConsoleWithAlt gGuiOptionsGroupChanged hidden, % o_L["OptionsSendToConsoleWithAlt"]
 GuiControl, , f_blnSendToConsoleWithAlt, % (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue = true)
@@ -10021,6 +10028,7 @@ blnRunAsAdminPrev := ""
 
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
 o_Settings.Execution.blnEnableFavoriteDebugOption.WriteIni(f_blnEnableFavoriteDebugOption)
+o_Settings.Execution.blnKeepExtensionInShortName.WriteIni(f_blnKeepExtensionInShortName)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
@@ -23849,7 +23857,7 @@ GetLocationPathName(strLocation)
 	if !StrLen(strName)
 	{
 		SplitPath, strLocation, strOutFileName, , , strOutNameNoExt, strDrive
-		strName := (blnLocationIsFolder ? strOutFileName : strOutNameNoExt)
+		strName := (blnLocationIsFolder or o_Settings.Execution.blnKeepExtensionInShortName.IniValue ? strOutFileName : strOutNameNoExt)
 		if !StrLen(strName) ; we are probably at the root of a drive
 			return strDrive
 	}
