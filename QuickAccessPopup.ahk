@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+- new JLicons.dll file v1.6.3 fixing a missing icon
+
 Version BETA: 11.5.2.1.1 (2021-11-20)
  
 Settings file (quickaccesspopup.ini)
@@ -4990,7 +4992,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 global g_strCurrentVersion := "11.5.2.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
-global g_strJLiconsVersion := "1.6.2"
+global g_strJLiconsVersion := "1.6.3"
 
 ;---------------------------------
 ; Init class for JLicons
