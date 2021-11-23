@@ -6236,6 +6236,7 @@ o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly"
 o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition", 0) ; g_blnTryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "42")
+o_Settings.ReadIniOption("LaunchAdvanced", "blnExpandEnvVarsInParameters", "ExpandEnvVarsInParameters", 1)
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
@@ -24377,7 +24378,10 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			}
 	}
 
-	strExpanded := ExpandUserVariables(strExpanded)
+	strExpanded := (o_Settings.LaunchAdvanced.blnExpandEnvVarsInParameters.IniValue
+		? EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
+		: ExpandUserVariables(strExpanded)) ; bypass Envvars()
+	
 	if StrLen(strUserVariablesBackup) ; if we added a temporary user variable, restore original user variables
 		o_Settings.UserVariables.strUserVariablesList.IniValue := strUserVariablesBackup
 
