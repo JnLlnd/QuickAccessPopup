@@ -5888,12 +5888,12 @@ InitGuiControls:
 
 ; InsertGuiControlPos(strControlName, intX, intY, blnCenter := false, blnDraw := false)
 
-InsertGuiControlPos("f_picGuiAddFavorite",				 -44,   54, true, true)
-InsertGuiControlPos("f_picGuiEditFavorite",				 -44,  127, true)
-InsertGuiControlPos("f_picGuiEditFavorited",			 -44,  127, true)
-InsertGuiControlPos("f_picGuiRemoveFavorite",			 -44,  202, true)
-InsertGuiControlPos("f_picGuiCopyFavorite",				 -44,  277, true)
-InsertGuiControlPos("f_picGuiMoveFavorite",				 -44,  352, true)
+InsertGuiControlPos("f_picGuiAddFavorite",				 -42,   54, true, true)
+InsertGuiControlPos("f_picGuiEditFavorite",				 -42,  127, true)
+InsertGuiControlPos("f_picGuiEditFavorited",			 -42,  127, true)
+InsertGuiControlPos("f_picGuiRemoveFavorite",			 -42,  202, true)
+InsertGuiControlPos("f_picGuiCopyFavorite",				 -42,  277, true)
+InsertGuiControlPos("f_picGuiMoveFavorite",				 -42,  352, true)
 
 InsertGuiControlPos("f_picAddTextSeparator",			  10,  209)
 InsertGuiControlPos("f_picAddColumnBreak",				  10,  174)
@@ -11312,7 +11312,7 @@ Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_str
 g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
 
 Gui, 1:Font, s8 w400, Arial ; button legend
-Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType x0 y+20, % o_L["GuiAddFavorite"] ; Static21
+Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType w88 x0 y+20, % o_L["GuiAddFavorite"] ; Static21
 Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static22, w88 to make room fot when multiple favorites are selected
 Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static23
 Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static24
@@ -11353,6 +11353,7 @@ Gui, 1:Font, s8 w600, Verdana
 Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavorites x200 y400 w140 h35, % aaSettingsL["GuiSaveAndClose"] ; Button3
 Gui, 1:Add, Button, vf_btnGuiSaveAndStayFavorites Disabled gGuiSaveAndStayFavorites x350 yp w100 h35, % aaSettingsL["GuiSave"] ; Button4
 Gui, 1:Add, Button, vf_btnGuiCancel gGuiCancel Default x500 yp w100 h35, % aaSettingsL["GuiClose"] ; Close until changes occur - Button5
+Gui, 1:Font ; reset default font
 
 GetSavedSettingsWindowPosition(saSettingsPosition) ; format: x|y|w|h with optional |M if maximized
 
@@ -11395,7 +11396,7 @@ if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !blnLightMode)
 		}
 		if InStr(strControl, "Static")
 		{
-			Gui,Font, c%intControlColor%
+			Gui, Font, c%intControlColor%
 			GuiControl, Font, %strControl%
 		}
 	}
