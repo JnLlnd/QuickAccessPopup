@@ -31,6 +31,30 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.3 (2021-11-30)
+ 
+Settings file (quickaccesspopup.ini)
+- prevent the error message "An error occurred while reading this settings file" displayed when QAP tries to load incomplete settings files
+- instead, QAP will revert to the previous favorites list and inform the user that the last saving was incomplete
+- now make an internal backup of the [Favorites] section of the ini file even when the size of the section is larger than 65532 chars
+- more info: https://www.quickaccesspopup.com/qap-stops-loading-with-an-error-message-what-can-i-do/
+ 
+Screen scaling
+- in various QAP windows, adapt buttons centering on screens with scaling (under Windows 10: Settings, Ease of Access, Display) often used by users with High-DPI screens
+- more info: https://www.quickaccesspopup.com/why-are-buttons-icons-so-small-in-the-settings-window/
+ 
+Bug fixes
+- fix bug when user variable content includes an equal (=) sign
+- fix a bug preventing loading of a new language file when language is changed immediately after installation
+- fix bug in Customize window showing bold text (labels and listview) by error in dark mode
+ 
+Other improvements
+- expand environment variables (like %windir%) in favorites parameters (a new ini value "ExpandEnvVarsInParameters=0" allows to disable expansion if required)
+- add an option under "Various Advanced Options" to keep file extension when setting the "Short name" for a Document or an Application favorite
+- new JLicons.dll file v1.6.3 including icons for a new project to be announced (user of the portable version must replace the previous JLicons.dll file)
+- addition of Russian language in the setup program
+- Russian translation file update
+
 Version BETA: 11.5.2.1.2 (2021-11-24)
 - expand environment variables (like %windir%) in favorites parameters; add ini value ExpandEnvVarsInParameters to disable expansion if required
 - fix bug in Customize window showing bold text (labels and listview) by error in dark mode
@@ -4926,7 +4950,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.2.1.2
+;@Ahk2Exe-SetVersion 11.5.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -4993,8 +5017,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.2.1.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
@@ -5041,7 +5065,7 @@ global g_strTempDir := g_strTempDirParent . "\_QAP_temp_" . RandomBetween()
 FileCreateDir, %g_strTempDir%
 
 ; remove temporary folders older than 7 days
-SetTimer, RemoveOldTemporaryFolders, -10000, -100 ; run once in 60 seconds, low priority -100
+SetTimer, RemoveOldTemporaryFolders, -10000, -100 ; run once in 10 seconds, low priority -100
 
 ;---------------------------------
 ; Init temporary folder
