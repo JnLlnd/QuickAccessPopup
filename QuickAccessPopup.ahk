@@ -12051,6 +12051,8 @@ GuiAddFavoriteFromQAPFeature:
 if !(g_blnMenuReady)
 	return
 
+g_strAddFavoriteType := ""
+
 if (A_ThisLabel = "GuiAddFavoriteFromQAPFeature")
 {
 	gosub, GuiShowFromGuiAddFavoriteQAPFeature
