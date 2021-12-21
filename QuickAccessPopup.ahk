@@ -27716,7 +27716,7 @@ TODO
 				if (this.AA.strTotalCommanderCustomNewTabOrWindow <> "ERROR")
 					; allow user to customize (other than "/O /T" or "/N")
 					this.AA.strNewTabOrWindow := this.AA.strTotalCommanderCustomNewTabOrWindow
-				if (this.AA.blnFileManagerUseTabs)
+				else if (this.AA.blnFileManagerUseTabs)
 					this.AA.strNewTabOrWindow := "/O /T" ; open new folder in a new tab
 				else
 					this.AA.strNewTabOrWindow := "/N" ; open new folder in a new window (TC instance)
@@ -32160,7 +32160,7 @@ class Container
 					else
 						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 							strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
-						
+					
 					if IsInteger(this.aaTemp.strFullLocation)
 					{
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
