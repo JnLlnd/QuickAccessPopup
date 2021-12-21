@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.3.1 (2021-12-21)
+- fix bug introduced in v11.5.3 expanding environment variables in other field than parameters, especially snippets content
+- fix bug ignoring the content of the unpublished ini option TotalCommanderNewTabOrWindow allowing user to choose a new tab option other than "/O /T" or "/N"
+- in the Select favorite type dialog box, fix bug adding a favorite of the type previously selected user click Continue without having selected a type
+ 
 Version: 11.5.3 (2021-11-30)
  
 Settings file (quickaccesspopup.ini)
@@ -4950,7 +4955,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.3
+;@Ahk2Exe-SetVersion 11.5.3.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5017,7 +5022,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.3.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
