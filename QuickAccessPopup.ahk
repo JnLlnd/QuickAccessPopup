@@ -14230,7 +14230,7 @@ strCommand := (RegExMatch(f_strFavoriteArguments, "i){[a-z_]*}") or RegExMatch(f
 
 GuiControl, %strCommand%, f_PlaceholdersCheckLabel
 GuiControl, %strCommand%, f_strPlaceholdersCheck 
-GuiControl, 2:, f_strPlaceholdersCheck, % ExpandPlaceholders(f_strFavoriteArguments, f_strFavoriteLocation, o_L["DialogArgumentsPlaceholdersCurrentExample"], o_L["DialogArgumentsPlaceholdersSelectedExample"])
+GuiControl, 2:, f_strPlaceholdersCheck, % ExpandPlaceholders(f_strFavoriteArguments, f_strFavoriteLocation, o_L["DialogArgumentsPlaceholdersCurrentExample"], o_L["DialogArgumentsPlaceholdersSelectedExample"], true)
 
 strCommand := ""
 
@@ -24357,7 +24357,7 @@ ComUnHTML(html)
 
 
 ;------------------------------------------------------------
-ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLocation)
+ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLocation, blnIsParameters := false)
 ; Location replacements:
 ;   strOriginal: string to be expanded
 ;   strLocation: {LOC} (full location), {NAME} (file name), {DIR} (directory), {EXT} (extension), {NOEXT} (file name without extension) or {DRIVE} (drive)
@@ -24411,10 +24411,11 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			}
 	}
 
-	strExpanded := (o_Settings.LaunchAdvanced.blnExpandEnvVarsInParameters.IniValue
-		? EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
-		: ExpandUserVariables(strExpanded)) ; bypass Envvars()
-	
+	if (blnIsParameters and o_Settings.LaunchAdvanced.blnExpandEnvVarsInParameters.IniValue)
+		EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
+	else
+		strExpanded := ExpandUserVariables(strExpanded) ; bypass Envvars() (as always before v11.5.3)
+		
 	if StrLen(strUserVariablesBackup) ; if we added a temporary user variable, restore original user variables
 		o_Settings.UserVariables.strUserVariablesList.IniValue := strUserVariablesBackup
 
@@ -32634,12 +32635,12 @@ class Container
 		{
 			strTempArguments := ExpandPlaceholders(this.AA.strFavoriteArguments, this.aaTemp.strFullLocation
 				, (InStr(strTempArguments, "{CUR_") ? GetCurrentLocation(g_strTargetClass, g_strTargetWinId) : -1)
-				, (InStr(strTempArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, g_strTargetWinId) : -1))
+				, (InStr(strTempArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, g_strTargetWinId) : -1), true)
 			; from https://www.reddit.com/r/windows/comments/4aac5b/how_do_i_run_edge_browser_with_autohotkey/
 			objIApplicationActivationManager := ComObjCreate("{45BA127D-10A8-46EA-8AB7-56EA9078943C}", "{2e941141-7f97-4756-ba1d-9decde894a3d}")
 			strTempArguments := ExpandPlaceholders(this.AA.strFavoriteArguments, this.aaTemp.strFullLocation
 				, (InStr(strTempArguments, "{CUR_") ? GetCurrentLocation(g_strTargetClass, g_strTargetWinId) : "")
-				, (InStr(strTempArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, g_strTargetWinId) : ""))
+				, (InStr(strTempArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, g_strTargetWinId) : ""), true)
 			DllCall(NumGet(NumGet(objIApplicationActivationManager + 0) + 3 * A_PtrSize)
 				, "Ptr", objIApplicationActivationManager
 				, "Str", this.aaTemp.strFullLocation
@@ -32845,7 +32846,7 @@ class Container
 					; let user enter double-quotes as required by his arguments
 					this.aaTemp.strFullLocation .= " " . ExpandPlaceholders(this.AA.strFavoriteArguments, this.aaTemp.strFullLocation
 						, (InStr(this.AA.strFavoriteArguments, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
-						, (InStr(this.AA.strFavoriteArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
+						, (InStr(this.AA.strFavoriteArguments, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1), true)
 						
 					if (this.AA.strFavoriteType = "URL"and !StrLen(this.AA.strFavoriteLaunchWith)) ; if it is an URL with arguments, process it as an App
 					{
