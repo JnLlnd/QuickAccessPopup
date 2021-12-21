@@ -24412,7 +24412,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	}
 
 	if (blnIsParameters and o_Settings.LaunchAdvanced.blnExpandEnvVarsInParameters.IniValue)
-		EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
+		strExpanded := EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
 	else
 		strExpanded := ExpandUserVariables(strExpanded) ; bypass Envvars() (as always before v11.5.3)
 		
