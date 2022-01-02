@@ -20987,14 +20987,39 @@ return
 WindowsAlwaysOnTop:
 ;------------------------------------------------------------
 
-WinSet, AlwaysOnTop, Toggle, ahk_id %g_strTargetWinId%
+Clipboard := ""
 
+WinGet, strCompareId, , A
+
+WinGetTitle, strTitle, ahk_id %g_strTargetWinId%
+WinGet, intExStyleBefore, ExStyle, ahk_id %g_strTargetWinId%
+; ###_V(A_ThisLabel, A_ThisHotkey, g_strTargetWinId, str, intExStyleBefore, intExStyleBefore & 0x8, intExStyle,  intExStyle & 0x8)
+str := A_ThisLabel
+	. "`n" . "A_ThisHotkey: " . A_ThisHotkey
+	. "`n" . "win id: " . g_strTargetWinId
+	. "`n" . "Title: " . strTitle
+	. "`n" . "ExStyle Before: " . intExStyleBefore
+	. "`n" . "ExStyle Before: " . (intExStyleBefore & 0x8 ? "ON TOP" : "not on top")
+IfMsgBox, No
+	return
+
+; WinGet, intExStyleBefore, ExStyle, ahk_id %g_strTargetWinId%
+; WinSet, AlwaysOnTop, Toggle, ahk_id %g_strTargetWinId%
+WinSet, AlwaysOnTop, % (intExStyleBefore & 0x8 ? "Off" : "On"), ahk_id %g_strTargetWinId%
 WinGet, intExStyle, ExStyle, ahk_id %g_strTargetWinId%
+
+str .= "`n" . "ExStyle After: " . intExStyle
+	. "`n" . "ExStyle After: " . (intExStyle & 0x8 ? "ON TOP" : "not on top")
+	. "`n" . "strCompareId: " . strCompareId
+
 if !(intExStyle & 0x8) ; 0x8 is WS_EX_TOPMOST
 {
 	ToolTip, % L(o_L["ToolTipAlwaysOnTop"], g_strTargetWinTitle)
 	SetTimer, RemoveToolTip, 2500 ; will remove tooltip
 }
+
+Clipboard .= str
+MsgBox, %str%
 
 return
 ;------------------------------------------------------------
