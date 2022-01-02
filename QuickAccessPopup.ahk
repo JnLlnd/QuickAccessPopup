@@ -20987,39 +20987,30 @@ return
 WindowsAlwaysOnTop:
 ;------------------------------------------------------------
 
-Clipboard := ""
-
-WinGet, strCompareId, , A
-
-WinGetTitle, strTitle, ahk_id %g_strTargetWinId%
 WinGet, intExStyleBefore, ExStyle, ahk_id %g_strTargetWinId%
-; ###_V(A_ThisLabel, A_ThisHotkey, g_strTargetWinId, str, intExStyleBefore, intExStyleBefore & 0x8, intExStyle,  intExStyle & 0x8)
-str := A_ThisLabel
-	. "`n" . "A_ThisHotkey: " . A_ThisHotkey
-	. "`n" . "win id: " . g_strTargetWinId
-	. "`n" . "Title: " . strTitle
-	. "`n" . "ExStyle Before: " . intExStyleBefore
-	. "`n" . "ExStyle Before: " . (intExStyleBefore & 0x8 ? "ON TOP" : "not on top")
-IfMsgBox, No
-	return
-
-; WinGet, intExStyleBefore, ExStyle, ahk_id %g_strTargetWinId%
-; WinSet, AlwaysOnTop, Toggle, ahk_id %g_strTargetWinId%
+Sleep, 200 ; required to make it work on Explorer.exe when called from the menu (https://forum.quickaccesspopup.com/showthread.php?tid=1864)
 WinSet, AlwaysOnTop, % (intExStyleBefore & 0x8 ? "Off" : "On"), ahk_id %g_strTargetWinId%
-WinGet, intExStyle, ExStyle, ahk_id %g_strTargetWinId%
+WinGet, intExStyleAfter, ExStyle, ahk_id %g_strTargetWinId%
 
-str .= "`n" . "ExStyle After: " . intExStyle
-	. "`n" . "ExStyle After: " . (intExStyle & 0x8 ? "ON TOP" : "not on top")
-	. "`n" . "strCompareId: " . strCompareId
-
-if !(intExStyle & 0x8) ; 0x8 is WS_EX_TOPMOST
+if (intExStyleBefore & 0x8) = (intExStyleAfter & 0x8) ; 0x8 is WS_EX_TOPMOST
 {
-	ToolTip, % L(o_L["ToolTipAlwaysOnTop"], g_strTargetWinTitle)
-	SetTimer, RemoveToolTip, 2500 ; will remove tooltip
+	strToolTip := o_L["ToolTipAlwaysOnTopFailed"]
+	intDelay := 3500
+}
+else if (intExStyleAfter & 0x8)
+{
+	strToolTip := o_L["ToolTipAlwaysOnTopOn"]
+	intDelay := 1750
+}
+else
+{
+	strToolTip := o_L["ToolTipAlwaysOnTop"] ; off
+	intDelay := 2500
 }
 
-Clipboard .= str
-MsgBox, %str%
+Sleep, 200
+ToolTip, % L(strToolTip, g_strTargetWinTitle)
+SetTimer, RemoveToolTip, %intDelay% ; will remove tooltip
 
 return
 ;------------------------------------------------------------
