@@ -25461,18 +25461,20 @@ CalculateTopGuiPosition(g_strTopHwnd, g_strRefHwnd, ByRef intTopGuiX, ByRef intT
 ;------------------------------------------------------------
 {
 	WinGetPos, intRefGuiX, intRefGuiY, intRefGuiW, intRefGuiH, ahk_id %g_strRefHwnd%
+	SysGet, intWindowBorderWidth, 32 ; width of window border
+	SysGet, intWindowBorderHeight, 33 ; height of window border
+	; to take into account window border
+	intRefGuiX += intWindowBorderWidth
+	intRefGuiY += intWindowBorderHeight
+
 	intRefGuiCenterX := intRefGuiX + (intRefGuiW // 2)
 	intRefGuiCenterY := intRefGuiY + (intRefGuiH // 2)
 
 	WinGetPos, , , intTopGuiW, intTopGuiH, ahk_id %g_strTopHwnd%
-	intTopGuiX := intRefGuiCenterX - (intTopGuiW // 2) + 5 ; + 5 correction from trial/error
+	intTopGuiX := intRefGuiCenterX - (intTopGuiW // 2)
 	intTopGuiY := intRefGuiCenterY - (intTopGuiH // 2)
 	
-	WinGetPos, intWindowX, intWindowY, intWindowWidth, intWindowHeight, ahk_id %g_strRefHwnd%
-	WinGetTitle, v, ahk_id %g_strRefHwnd%
-	SysGet, arrCurrentMonitor, Monitor, % GetActiveMonitorForPosition(intWindowX, intWindowY, intNbMonitors)
-
-	; ###_V(A_ThisFunc, v, g_strRefHwnd, intWindowX, intWindowY, GetActiveMonitorForPosition(intWindowX, intWindowY, intNbMonitors))
+	SysGet, arrCurrentMonitor, Monitor, % GetActiveMonitorForPosition(intRefGuiX, intRefGuiY, intNbMonitors)
 	intTopGuiX := (intTopGuiX < arrCurrentMonitorLeft ? arrCurrentMonitorLeft : intTopGuiX)
 	intTopGuiY := (intTopGuiY < arrCurrentMonitorTop ? arrCurrentMonitorTop : intTopGuiY)
 }
