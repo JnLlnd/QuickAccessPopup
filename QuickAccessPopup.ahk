@@ -5508,6 +5508,11 @@ if (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue)
 ; Init class for StatupTips
 gosub, InitStartupTips
 
+;---------------------------------
+; Launch autoexecute favorites
+if !GetKeyState("Shift")
+	o_MainMenu.LaunchAutoExec()
+
 ; ####
 ; Gosub, GuiShow
 ; Gosub, GuiEditFavorite
@@ -13040,8 +13045,10 @@ Gui, 2:Add, Checkbox, % "x20 y+" (InStr("Special|QAP", o_EditedFavorite.AA.strFa
 if !(blnIsGroupMember)
 	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteHidden " . (o_EditedFavorite.AA.intFavoriteDisabled ? "checked" : "")
 		, % o_L["DialogFavoriteHidden"]
+if !(o_EditedFavorite.AA.strFavoriteType = "Text") and !(blnIsGroupMember)
+	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteAutoExec " . (o_EditedFavorite.AA.blnFavoriteAutoExec ? "checked" : ""), % o_L["DialogFavoriteAutoExec"]
 if (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue and InStr("Folder|Document|Application|URL|FTP|Snippet|", o_EditedFavorite.AA.strFavoriteType . "|"))
-	Gui, 2:Add, Checkbox, % "x+20 yp vf_blnFavoriteDebug " . (o_EditedFavorite.AA.blnFavoriteDebug ? "checked" : "")
+	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteDebug " . (o_EditedFavorite.AA.blnFavoriteDebug ? "checked" : "")
 		, % o_L["DialogFavoriteDebug"]
 
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
@@ -16416,6 +16423,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 	o_EditedFavorite.AA.blnFavoriteDebug := f_blnFavoriteDebug
 	
 	o_EditedFavorite.AA.strFavoriteSoundLocation := strNewFavoriteSoundLocation
+	o_EditedFavorite.AA.blnFavoriteAutoExec := blnFavoriteAutoExec
 
 	if (f_blnFavoriteFolderLive)
 	{
@@ -16670,6 +16678,7 @@ f_blnGroupRestoreWaitFinish := ""
 f_blnGroupRestoreStopIfError := ""
 f_blnGroupRestoreMinimized := ""
 f_blnFavoriteDebug := ""
+f_blnFavoriteAutoExec := ""
 
 objExternalMenu := ""
 strItemSelectedName := ""
@@ -16783,6 +16792,8 @@ else
 	strNewFavoriteLocation := f_strFavoriteLocation
 	strFavoriteAppWorkingDir := f_strFavoriteAppWorkingDir
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
+	blnFavoriteAutoExec := f_blnFavoriteAutoExec
+	
 	strDestinationMenu := f_drpParentMenu
 
 	; if gui was closed from Live Folder Options tab (without changing tab), update Live folder icon
@@ -29639,7 +29650,7 @@ class Container
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
 			; 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
-			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug
+			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug, 36 blnFavoriteAutoExec
 
 	;---------------------------------------------------------
 	{
@@ -30951,6 +30962,7 @@ class Container
 			strIniLine .= oItem.AA.intFavoriteFolderLiveIconsSize . "|" ; 33
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveExcludeFolders . "|" ; 34
 			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
+			strIniLine .= oItem.AA.blnFavoriteAutoExec . "|" ; 36
 			
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -31400,6 +31412,18 @@ class Container
 	}
 	;---------------------------------------------------------
 
+	;---------------------------------------------------------
+	LaunchAutoExec()
+	; launch favorites with property .blnAutoExec on
+	;---------------------------------------------------------
+	{
+		for intKey, oItem in this.SA
+			if (oItem.AA.blnFavoriteAutoExec)
+				; o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
+				oItem.OpenFavorite("", "OpenFavorite", "", "Launch")
+	}
+	;---------------------------------------------------------
+
 	; === end of methods for class Container ===
 	
 	;=============================================================
@@ -31433,7 +31457,7 @@ class Container
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
 			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
 			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
-			; 35 blnFavoriteDebug
+			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -31523,6 +31547,7 @@ class Container
 			this.InsertItemValue("intFavoriteFolderLiveIconsSize", saFavorite[33]) ; integer value, icons size in Live Folders
 			this.InsertItemValue("blnFavoriteFolderLiveExcludeFolders", saFavorite[34]) ; boolean, exclude folders in Live Folders
 			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, enable favorite debugging
+			this.InsertItemValue("blnFavoriteAutoExec", saFavorite[36]) ; boolean, launch favorite or group at startup
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
