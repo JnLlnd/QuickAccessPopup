@@ -159,6 +159,9 @@ lDialogExternalTypesLabel	Tipo di Menù Condiviso
 lDialogExternalTypesTitle	Tipo di menù condiviso
 lDialogExternalWriteAccessMessage	Messaggio di accesso in scrittura sul menù condiviso
 lDialogExternalWriteAccessUsers	Utenti con accesso in scrittura a questo menù
+lDialogFavoriteDebug	Debug questo preferito
+lDialogFavoriteDebugAfter	Per eseguire questo comando, disattiva l'opzione "Debug Preferito" nel tab del preferito "Impostazioni base"
+lDialogFavoriteDebugBefore	Comando con segnaposto e variabili utente inserito
 lDialogFavoriteDisabled	Disabilita questo Preferito
 lDialogFavoriteDisabledGroupMember	Disabilita questo oggetto nel gruppo
 lDialogFavoriteDoesNotExistEdit	Vuoi modificare questo preferito?
@@ -822,6 +825,7 @@ lOopsInvalidWinCmdIni	File delle impostazioni di Total Commander ("wincmd.ini") 
 lOopsInvalidWindowPosition	Valori non validi per la posizione della finestra
 lOopsJLiconsError	Icona di QAP per l'area notifiche non trovata. Assicurati di aver aggiornato il file JLicons.dll in ~1~.
 lOopsJLiconsOutdated	Il seguente file deve essere aggiornato:`n`n~1~`n`nSostituiscilo con JLicons.dll versione ~2~ dal piÃ¹ recente file ZIP di installazione (portabile) e riavvia ~3~.
+lOopsLastSaveIncomplete	Qualcosa ha interrotto ~1~ l'ultima volta che ha salvato il tuo preferito nel file impostazioni:`n`n~2~`n`nIl tuo preferito precedente in questo file è stato ripristinato.
 lOopsLaunchWithNotFound	File dell'applicazione non trovato per "Esegui con questa applicazione":`n`n~1~`n`nControlla le impostazioni avanzate del Preferito.
 lOopsMaxLiveFolder	Il massimo numero di elementi nelle Cartelle Live (~1~) è stato superato. Per favore, riduci il numero di livelli di cartelle live.`n`nPotresti anche aumentare tale limite ma fai attenzione: un numero troppo alto può comportare effetti non prevedibili. Edita il valore in "Impostazioni", sezione "Opzioni Avanzate del Menu".
 lOopsMenuExternalCentralized	menù condiviso centralizzato
@@ -874,11 +878,14 @@ lOptionsClipboardMaxSizeDefault	(valore predefinito 10000 bytes)
 lOptionsControlDoublePressed	Apri il menù principale con Ctrl + Ctrl (tasto CTRL premuto due volte)
 lOptionsControlDoublePressedLeft	Tasto CTRL sinistro attivo
 lOptionsControlDoublePressedRight	Tasto CTRL destro attivo
+lOptionsDarkModeCustomize	Support Modalità scura per la finestra Personalizza
+lOptionsDarkModeMenus	Supporto Modalità scura per i menù
 lOptionsDatabase	Database
 lOptionsDisplayIcons	Mostra Icone nel Menù
 lOptionsDisplayMenuShortcuts	Mostra scorciatoie numeriche nei Menù
 lOptionsDisplayMenuShortcutsFromOne	Comincia le Scorciatoie Numeriche del Menù da 1 (invece di 0)
 lOptionsEnableExternalMenusCatalogue	Abilita il Catalogo del Menù Condiviso
+lOptionsEnableFavoriteDebugOption	Abilita debugging del preferito per segnaposto e variabili utente
 lOptionsExclusionMouseList	Lista Esclusioni
 lOptionsExclusionMouseListDescription	Attivatore [~1~] per l'apertura tramite mouse della Lista delle esclusioni o dei valori permessi
 lOptionsExclusionMouseListDetail1	Seleziona la scelta per usare il mouse su qualunque finestra di applicazione con eccezioni (in blacklist) oppure per consentirlo soltanto su alcune applicazioni specificate (in whitelist). Per aggiungere un'applicazione alla lista, inserisci una parte qualsiasi del suo titolo di finestra. Puoi inserire applicazioni multiple, una per linea. Per esempio, per escludere Chrome e MS Word, inserisci le seguenti due linee nella lista delle esclusioni:`n`nGoogle Chrome`nMicrosoft Word
@@ -911,6 +918,7 @@ lOptionsIconReplacementList	Icone di riserva per QAP
 lOptionsIconReplacementListInstructions	Inserisci le icone di riserva per QAP, una per riga. Ciascuna linea deve iniziare col nome dell'icona per QAP (e.g. "iconaCartellaLive"), seguito dal segno di uguale "=" e il "file,indice" dell'icona di sostituzione. Il "file,indice" contiene il percorso del file (.ico, .dll o .exe) contenente l'icona, e l'indice che è la posizione dell'icona in tale file, e.g. "C:\Icone\MioFile.dll,1".
 lOptionsIconSize	Dimensione predefinita delle icone del menù
 lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto lo spazio disponibile)
+lOptionsKeepExtensionInShortName	Mantieni l'estensione del file nelle abbreviazioni dei preferiti
 lOptionsLanguage	Lingua
 lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
