@@ -31,11 +31,18 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.3.9.1 (2022-01-??)
+Version BETA: 11.5.3.9.1 (2022-01-11)
+ 
+New features
+- add the command "LaunchFavorite" to QAPmessenger with, in the second parameter, the favorite to launch; it can be "> FavName" (if the favorite "FavName" is in the Main menu), "> SubMenu > FavName" or "> SubMenu > SubMenu > FavName" if the favorite "FavName" is in a sub menu; see https://www.quickaccesspopup.com/can-i-display-the-qap-menu-from-the-command-line-or-from-a-batch-file/
+- add the "Launch at startup" option on "Basic tab" of the "Add/Edit Favorite" dialog box; available for all types of favorites including "Groups" (except "Text Separator" and individual group members); press the Shift while launching QAP to bypass the autoexecution of these favorites; see https://www.quickaccesspopup.com/can-i-launch-a-favorite-or-group-of-favorites-at-qap-startup/
+ 
+Various
 - fix issue when calling the "Always on top" QAP Feature from the popup menu on an Explorer.exe window
 - after executing the "Always on top" command, add a confirmation popup when turning it On and when the command fails
-- fix a bug when positioning a secondary dialog box (like "Edit/Add favorite" or "Options") centered on top of the main window when this window is maximized or close to top-right of a screen
- 
+- fix a bug when positioning a secondary dialog box when the main window is maximized or close to top-right of a screen
+- Italian language file update
+
 Version: 11.5.3.1 (2021-12-21)
 - fix bug introduced in v11.5.3 expanding environment variables in other field than parameters, especially snippets content
 - fix bug ignoring the content of the unpublished ini option TotalCommanderNewTabOrWindow allowing user to choose a new tab option other than "/O /T" or "/N"
