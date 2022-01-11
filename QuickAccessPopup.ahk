@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.3.9.1 (2022-01-??)
+- fix issue when calling the "Always on top" QAP Feature from the popup menu on an Explorer.exe window
+- after executing the "Always on top" command, add a confirmation popup when turning it On and when the command fails
+- fix a bug when positioning a secondary dialog box (like "Edit/Add favorite" or "Options") centered on top of the main window when this window is maximized or close to top-right of a screen
+ 
 Version: 11.5.3.1 (2021-12-21)
 - fix bug introduced in v11.5.3 expanding environment variables in other field than parameters, especially snippets content
 - fix bug ignoring the content of the unpublished ini option TotalCommanderNewTabOrWindow allowing user to choose a new tab option other than "/O /T" or "/N"
@@ -4955,7 +4960,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.3.1
+;@Ahk2Exe-SetVersion 11.5.3.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5022,8 +5027,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.3.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.3.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
@@ -5157,6 +5162,7 @@ g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) 
 
 global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
+global g_strOpenFavoriteFromMsg ; used when QAPmessenger triggers OpenFavoriteFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
@@ -20241,6 +20247,7 @@ OpenFavoriteFromHotstring:
 OpenWorkingDirectory:
 OpenBackupDirectory:
 OpenSwitchFolderOrApp:
+OpenFavoriteFromMsg:
 ;------------------------------------------------------------
 
 if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
@@ -20458,6 +20465,14 @@ else if (g_strOpenFavoriteLabel = "OpenWorkingDirectory" or g_strOpenFavoriteLab
 	o_ThisFavorite.AA.blnFavoritePseudo := true ; this is not a real favorite, it could not be edited if not found
 	g_strHotkeyTypeDetected := "Launch"
 }
+else if (g_strOpenFavoriteLabel = "OpenFavoriteFromMsg")
+{
+	o_ThisFavorite := GetFavoriteObjectFromNameInMenu(g_strOpenFavoriteFromMsg)
+	Diag(A_ThisLabel, "o_ThisFavorite Name", o_ThisFavorite.AA.strFavoriteName)
+
+	g_strTargetWinId := "" ; never use target window when launched from Msg
+	g_strHotkeyTypeDetected := "Launch"
+}
 else
 	o_ThisFavorite := GetFavoriteObjectFromMenuPosition(intMenuItemPos) ; was g_objThisFavorite
 
@@ -20547,6 +20562,30 @@ GetFavoriteObjectFromMenuPosition(ByRef intMenuItemPos)
 	intMenuItemPos := A_ThisMenuItemPos + o_Containers.AA[A_ThisMenu].GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
 	
 	return o_Containers.AA[A_ThisMenu].SA[intMenuItemPos]
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetFavoriteObjectFromNameInMenu(strFavoriteMenuName)
+; strFavoriteMenuName can be "> FavName" (if in main), "> SubMenu > FavName" or "> SubMenu > SubMenu > FavName"
+;------------------------------------------------------------
+{
+	intLastSeparator := InStr(strFavoriteMenuName, "> ", False, 0)
+	strFavoriteName := SubStr(strFavoriteMenuName, intLastSeparator + StrLen("> "))
+	strMenuPath := o_L["MainMenuName"] . (intLastSeparator > StrLen("> ") ; if in submenu
+		? " " . SubStr(strFavoriteMenuName, 1, intLastSeparator - StrLen("> "))
+		: "") ; if in Main menu
+	
+	saMenu := o_Containers.AA[strMenuPath].SA
+	Diag(A_ThisFunc, "strFavoriteMenuName", "!" . strFavoriteMenuName . "!")
+	Diag(A_ThisFunc, "strMenuPath", "!" . strMenuPath . "!")
+	Diag(A_ThisFunc, "strFavoriteName", "!" . strFavoriteName . "!")
+	Loop, % saMenu.Length()
+		if (saMenu[A_Index].AA.strFavoriteName = strFavoriteName)
+			return saMenu[A_Index]
+
+	return false ; if not found return false
 }
 ;------------------------------------------------------------
 
@@ -26189,23 +26228,19 @@ GetDefaultBrowserPath(strUrl)
 GetUniqueSystemId()
 ;---------------------------------------------------------
 {
-	Diag(A_ThisFunc . " START", "", "")
 	strUniqueId := GetMotherboardSerialNumber()
-	Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
 	if !StrLen(strUniqueId) or (strUniqueId = 0)
 		or InStr("to be filled by o.e.m.|none|na|1|invalid|n/a", strUniqueId) ; case insensitive
 		or InStr(strUniqueId, "default")
 		or InStr(strUniqueId, "serial")
 		; fallback on C: drive serial number
-	{
+		
 		strUniqueId := GetBootDriveSerialNumber()
-		Diag(A_ThisFunc . " strUniqueId", strUniqueId, "")
-	}
+		
 	if !StrLen(strUniqueId)
 		; this should not happen often
 		strUniqueId := "Unknown to QAP"
 	
-	Diag(A_ThisFunc . " strUniqueId FINAL", strUniqueId, "")
 	return strUniqueId
 }
 ;---------------------------------------------------------
@@ -26222,10 +26257,7 @@ GetMotherboardSerialNumber()
     strWQLQuery := "Select * From Win32_BaseBoard" ;  WQL = WMI Query Language
 	objColMB := objWMIService.ExecQuery(strWQLQuery)._NewEnum
     While objColMB[objMBInfo]
-	{
-		Diag(A_ThisFunc . " SerialNumber", objMBInfo["SerialNumber"], "")
 		return objMBInfo["SerialNumber"] ; return the first item in the collection
-	}
 }
 ;---------------------------------------------------------
 
@@ -26237,7 +26269,6 @@ GetBootDriveSerialNumber()
 	DriveGet, strSerialNumber, Serial, C:
 	while StrLen(strSerialNumber) < 8
 		strSerialNumber := "0" . strSerialNumber
-	Diag(A_ThisFunc . " strSerialNumber", strSerialNumber, "")
 	
 	return strSerialNumber
 	
@@ -26704,6 +26735,11 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 			Oops(0, o_L["OopsMenuNotFound"], g_strShowMenu)
 			g_strShowMenu := ""
 		}
+	}
+	else if (saData[1] = "LaunchFavorite")
+	{
+		g_strOpenFavoriteFromMsg := saData[2] ; used in OpenFavoriteFromMsg
+		Gosub, OpenFavoriteFromMsg
 	}
 	else
 		return 0
