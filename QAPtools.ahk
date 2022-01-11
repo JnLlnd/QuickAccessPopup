@@ -95,8 +95,8 @@ Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText", blnAsync :=
 	
 	loop, parse, % "MSXML2.XMLHTTP.6.0|WinHttp.WinHttpRequest.5.1", | ; if MSXML2.XMLHTTP.6.0 doesn't work, try WinHttp.WinHttpRequest.5.1
 	{
-		Diag(A_ThisFunc . " URL Root", (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl), "")
-		Diag(A_ThisFunc . " URL", strUrl, "")
+		; Diag(A_ThisFunc . " URL Root", (InStr(strUrl, "?") ? SubStr(strUrl, 1, InStr(strUrl, "?") - 1) : strUrl), "")
+		; Diag(A_ThisFunc . " URL", strUrl, "")
 		
 		oHttpRequest := ComObjCreate(A_LoopField)
 		oHttpRequest.Open("GET", strUrl, blnAsync)
@@ -105,10 +105,10 @@ Url2Var(strUrl, blnBreakCache := true,  strReturn := "ResponseText", blnAsync :=
 		oHttpRequest.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
 		oHttpRequest.Send()
 		
-		Diag(A_LoopField . " Status" , oHttpRequest.Status(), "")
-		Diag(A_LoopField . " StatusText" , oHttpRequest.StatusText(), "")
-		Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
-		Diag(A_LoopField . " ResponseText" , oHttpRequest.ResponseText(), "")
+		; Diag(A_LoopField . " Status" , oHttpRequest.Status(), "")
+		; Diag(A_LoopField . " StatusText" , oHttpRequest.StatusText(), "")
+		; Diag(A_LoopField . " GetAllResponseHeaders" , StrReplace(oHttpRequest.GetAllResponseHeaders(), Chr(13) . Chr(10), "|"), "")
+		; Diag(A_LoopField . " ResponseText" , oHttpRequest.ResponseText(), "")
 		
 		blnTimeout := false
 		While (blnAsync and oHttpRequest.ReadyState and oHttpRequest.ReadyState <> 4)
