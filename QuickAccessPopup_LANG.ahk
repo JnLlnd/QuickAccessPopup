@@ -516,6 +516,7 @@ this["GuiDropFilesIncentive2"] := "To help when dragging one or multiple files, 
 this["GuiEditFavorite"] := "Edit"
 this["GuiFileManagerNewTabSide"] := "Open new tabs on which side of the file manager?"
 this["GuiFileManagerNewTabSideActive"] := "Active side"
+this["GuiFileManagerNewTabSideDest"] := "Destination side"
 this["GuiGroupClosing"] := "Closing Explorer windows"
 this["GuiGroupRestoreDelay"] := "Delay between favorites to restore:"
 this["GuiGroupRestoreDelayMilliseconds"] := "milliseconds"
