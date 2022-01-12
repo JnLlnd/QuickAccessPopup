@@ -12978,7 +12978,7 @@ else ; "Special", "QAP" or "WindowsApp"
 	{
 		g_blnFirstInitDone := false
 		GuiControlGet, arrPosLocationLabel, Pos, f_lblLocation
-		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 43 - (blnFolderInAGroupWithSide ? 23 : 0) ; -43 space normally required below, -23 if folder in group member with a side
+		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 43 - (blnFolderInAGroupWithSide ? 46 : 0) ; -43 space normally required below, -46 if folder in group member with a side
 			
 		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 			Gui, 2:Add, Link, x+5 yp w200 vf_tvQAPFeatureURL
@@ -13027,8 +13027,10 @@ if (blnFolderInAGroupWithSide) ; folder in a group with side
 	saNewFavoriteWindowPosition := StrSplit(g_strNewFavoriteWindowPosition, ",")
 	
 	Gui, 2:Add, Text, x20 y+10, % L(o_L["GuiGroupRestoreSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
-	Gui, 2:Add, Radio, % "x+10 yp vf_intRadioGroupRestoreSide " . (saNewFavoriteWindowPosition[8] <> "R" ? "checked" : ""), % o_L["DialogWindowPositionLeft"] ; if "L" or ""
+	Gui, 2:Add, Radio, % "x20 y+5 vf_intRadioGroupRestoreSide " . (saNewFavoriteWindowPosition[8] = "A" ? "checked" : ""), % o_L["GuiFileManagerNewTabSideActive"]
+	Gui, 2:Add, Radio, % "x+10 yp " . (saNewFavoriteWindowPosition[8] = "L" or !StrLen(saNewFavoriteWindowPosition[8]) ? "checked" : ""), % o_L["DialogWindowPositionLeft"] ; if "L" or ""
 	Gui, 2:Add, Radio, % "x+10 yp " . (saNewFavoriteWindowPosition[8] = "R" ? "checked" : ""), % o_L["DialogWindowPositionRight"]
+	Gui, 2:Add, Radio, % "x+10 yp " . (saNewFavoriteWindowPosition[8] = "D" ? "checked" : ""), % o_L["GuiFileManagerNewTabSideDest"]
 }
 
 if (o_EditedFavorite.AA.strFavoriteType = "External")
@@ -17007,10 +17009,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		
 		GuiControlGet, intRadioGroupRestoreSide, , f_intRadioGroupRestoreSide
 		if !(ErrorLevel) ; if errorlevel, control does not exist
-			strNewFavoriteWindowPosition .= "," . (f_intRadioGroupRestoreSide = 1 ? "L" : "R")
+			strNewFavoriteWindowPosition .= "," . StrSplit("ALRD")[f_intRadioGroupRestoreSide] ; ALRD: Active, Left, Right and Destination
 		else
 			strNewFavoriteWindowPosition .= "," . StrReplace(f_drpWindowMonitor, o_L["DialogWindowMonitor"] . " ", "")
-
+		
 		if !ValidateWindowPosition(strNewFavoriteWindowPosition)
 		{
 			Oops(2, o_L["OopsInvalidWindowPosition"])
@@ -32220,7 +32222,7 @@ class Container
 						else
 						{
 							if StrLen(this.aaTemp.saFavoriteWindowPosition[8])
-								strTabParameter := "NEWTAB " . (this.aaTemp.saFavoriteWindowPosition[8] = "L" ? "OPENINLEFT" : "OPENINRIGHT")
+								strTabParameter := "NEWTAB " . this.GetDOpusSideParameter(this.aaTemp.saFavoriteWindowPosition[8])
 							else
 								strTabParameter := g_aaFileManagerDirectoryOpus.strNewTabOrWindow
 						}
@@ -32229,9 +32231,7 @@ class Container
 					{
 						strTabParameter := g_aaFileManagerDirectoryOpus.strNewTabOrWindow
 						if (g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
-							strTabParameter .= " " . (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "L" ? "OPENINLEFT"
-								: (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "R" ? "OPENINRIGHT" 
-								: (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "D" ? "OPENINDEST" : ""))) ; active side if empty
+							strTabParameter .= " " . this.GetDOpusSideParameter(o_Settings.FileManagers.strFileManagerNewTabSide.IniValue)
 					}
 					
 					strTabParameter := StrReplace(strTabParameter, "NEWTAB", "NEWTAB=tofront") ; instead of activating by QAP as in previous versions
@@ -32247,13 +32247,9 @@ class Container
 				else if (this.aaTemp.strTargetAppName = "TotalCommander")
 				{
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
-					{
-						; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay, RestoreSide/Monitor; for example: "0,,,,,,,L"
-						if StrLen(this.aaTemp.saFavoriteWindowPosition[8])
-							strSideParameter := this.aaTemp.saFavoriteWindowPosition[8]
-						else
-							strSideParameter := "L"
-					}
+						; empty for active side, if "D" replace with "S /R" (to be sent as "/S /R": /S for source-target and then /R stands for target)
+						strSideParameter := (this.aaTemp.saFavoriteWindowPosition[8] = "A" ? "" : (this.aaTemp.saFavoriteWindowPosition[8] = "D" ? "S /R" 
+							: this.aaTemp.saFavoriteWindowPosition[8])) ; else keep value "", "L" or "R"
 					else
 						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 							strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
@@ -32353,6 +32349,18 @@ class Container
 			return 0 ; no error
 		}
 		;---------------------------------------------------------
+		
+		
+		;---------------------------------------------------------
+		GetDOpusSideParameter(strSide)
+		;---------------------------------------------------------
+		{
+			return (strSide = "L" ? "OPENINLEFT"
+				: (strSide = "R" ? "OPENINRIGHT"
+				: (strSide = "D" ? "OPENINDEST" : ""))) ; active side if empty
+		}
+		;---------------------------------------------------------
+		
 		
 		;---------------------------------------------------------
 		SetExplorersIDs()
