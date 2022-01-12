@@ -7385,13 +7385,14 @@ o_Containers.AA["menuBarFavorite"].BuildMenu(true) ; true for numeric shortcut a
 
 ; submenu for Tools, Special Searches
 aaL := o_L.InsertAmpersand(true, "DialogSearchAllFavorites", "DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue
-	, "DialogSearchBrokenLocations", "DialogSearchBrokenLinks")
+	, "DialogSearchBrokenLocations", "DialogSearchBrokenLinks", "DialogSearchAutoExec")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SpecialSearchAll", aaL["DialogSearchAllFavorites"], "", "iconNoIcon"])
 ; if (g_blnUsageDbEnabled)
 	; saMenuItemsTable.Push(["SpecialSearchNotInDatabase", aaL["DialogSearchNotInDatabaseFavorites@" . o_Settings.Database.intUsageDbDaysInPopular.IniValue], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenLocations", aaL["DialogSearchBrokenLocations"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchBrokenLinks", aaL["DialogSearchBrokenLinks"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["SpecialSearchAutoExec", aaL["DialogSearchAutoExec"], "", "iconNoIcon"])
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
@@ -11609,6 +11610,7 @@ SpecialSearchAll:
 SpecialSearchNotInDatabase:
 SpecialSearchBrokenLocations:
 SpecialSearchBrokenLinks:
+SpecialSearchAutoExec:
 ;------------------------------------------------------------
 
 strCode := "{" . StrReplace(A_ThisLabel, "SpecialSearch" , "") . "}"
@@ -29928,7 +29930,8 @@ class Container
 				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}") ; case insensitive
 				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and oItem.ItemNotInDatabase())
 				or (o_MenuInGui.AA.strMenuPath = "{BrokenLocations}" and oItem.LocationBroken("Folder|Document|Application"))
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}" and oItem.LinkBroken()))
+				or (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}" and oItem.LinkBroken())
+				or (o_MenuInGui.AA.strMenuPath = "{AutoExec}" and oItem.AA.blnFavoriteAutoExec))
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
@@ -31479,9 +31482,13 @@ class Container
 	;---------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
+		{
 			if (oItem.AA.blnFavoriteAutoExec)
-				; o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
 				oItem.OpenFavorite("", "OpenFavorite", "", "Launch")
+			
+			if oItem.IsContainer() ; scan submenus
+				oItem.AA.oSubMenu.LaunchAutoExec() ; RECURSIVE
+		}
 	}
 	;---------------------------------------------------------
 

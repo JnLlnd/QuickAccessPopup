@@ -393,6 +393,7 @@ this["DialogSameLocartionExistsPrompt"] := "The following favorite has the same 
 this["DialogSameLocartionExistsQuestion"] := "Do you still want to save this favorite?"
 this["DialogSearch"] := "Search"
 this["DialogSearchAllFavorites"] := "Search All Favorites"
+this["DialogSearchAutoExec"] := "Search Favorites Launched at Startup"
 this["DialogSearchBrokenLinks"] := "Search Broken Favorites Links (404)"
 this["DialogSearchBrokenLocations"] := "Search Folders, Documents or Applications not found"
 this["DialogSearchNotInDatabaseFavorites"] := "Search Favorites not used in the last ~1~ days"
