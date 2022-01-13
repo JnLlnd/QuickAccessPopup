@@ -31,6 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.3.9.2 (2022-01-12)
+ 
+New features
+- with Directory Opus or Total Commander as file manager, add an option in "Options, File Managers" to open favorites of type "Folder" or "Special Folder" in the "Destination side" (or "target")
+- when opening a "Group" with Directory Opus or Total Commander as file manager, add two options to open favorites of types "Folder" or "Special Folder" in the "Active side" or the "Destination side" (or "target")
+- in "Tools, Special Searches", add a new item "Search Favorites Launched at Startup"
+ 
+Bug fix
+- fix bug launching autoexecutable favorites located in submenu
+ 
 Version BETA: 11.5.3.9.1 (2022-01-11)
  
 New features
@@ -4967,7 +4977,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.3.9.1
+;@Ahk2Exe-SetVersion 11.5.3.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5034,7 +5044,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.3.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.3.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
