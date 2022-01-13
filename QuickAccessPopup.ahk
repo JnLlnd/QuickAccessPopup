@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.3.9.3 (2022-01-13)
+- with Total Commander as file manager, when opening a folder from the QAP Feature "TC Directory Hotlist", open the folder in the active pane and, if present, open the "Target path" in the target pane
+ 
 Version BETA: 11.5.3.9.2 (2022-01-12)
  
 New features
@@ -4977,7 +4980,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.3.9.2
+;@Ahk2Exe-SetVersion 11.5.3.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5044,7 +5047,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.3.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.3.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -32064,9 +32067,12 @@ class Container
 						; /O existing file list, /S source-dest /L=source (active pane) - change folder in the active pane/tab
 					}
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))
+					{
+						Sleep, 200 ; pause between two calls to TC
 						; strFavoriteAppWorkingDir used to store target path
 						Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
 						; /O existing file list, /S source-dest /R=target - change folder in the inactive pane
+					}
 				}
 				else if (this.aaTemp.strTargetAppName = "QAPconnect")
 				{
@@ -32339,10 +32345,12 @@ class Container
 							Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " " . strTabParameter . " /S """ . this.aaTemp.strFullLocation . """"
 						
 						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))
+						{
+							Sleep, 200 ; pause between two calls to TC
 							; strFavoriteAppWorkingDir used to store target path, open in target (destination) pane
 							Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
 							; /O existing file list, /S source-dest /R=target - change folder in the inactive pane
-							
+						}
 						WinWaitActive, ahk_class TTOTAL_CMD, , 10
 					}
 					g_strNewWindowId := "ahk_class TTOTAL_CMD"
