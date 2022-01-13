@@ -30003,7 +30003,8 @@ class Container
 			if (strWinCmdItemName = "ERROR")
 				Return, "EOM" ; end of DirMenu section (there is no marker for end of DirMenu section)
 				
-			strWinCmdItemCommand := o_Settings.ReadIniValue("cmd" . s_intIniLineLoadTC, " ", "DirMenu", strIniFile) ; empty by default
+			strWinCmdItemCommand := o_Settings.ReadIniValue("cmd" . s_intIniLineLoadTC, " ", "DirMenu", strIniFile) ; command, empty by default
+			strWinCmdItemPath := o_Settings.ReadIniValue("path" . s_intIniLineLoadTC, " ", "DirMenu", strIniFile) ; target path, empty by default
 			s_intIniLineLoadTC++
 			
 			if (strWinCmdItemName = "--")
@@ -30044,6 +30045,7 @@ class Container
 					saThisFavorite[3] := SubStr(saThisFavorite[3], 3) ; FavoriteLocation
 					saThisFavorite[4] := o_SpecialFolders.AA[saThisFavorite[3]].DefaultIcon ; FavoriteIconResource
 				}
+				saThisFavorite[6] := (SubStr(strWinCmdItemPath, 1, 3) = "cd " ? SubStr(strWinCmdItemPath, 4) : strWinCmdItemPath) ; 6 strFavoriteAppWorkingDir used to store target path
 			}
 			
 			oNewItem := new this.Item(saThisFavorite, this)
@@ -32061,6 +32063,10 @@ class Container
 						Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /L=""" . this.aaTemp.strFullLocation . """"
 						; /O existing file list, /S source-dest /L=source (active pane) - change folder in the active pane/tab
 					}
+					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))
+						; strFavoriteAppWorkingDir used to store target path
+						Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
+						; /O existing file list, /S source-dest /R=target - change folder in the inactive pane
 				}
 				else if (this.aaTemp.strTargetAppName = "QAPconnect")
 				{
@@ -32267,9 +32273,10 @@ class Container
 						; empty for active side, if "D" replace with "S /R" (to be sent as "/S /R": /S for source-target and then /R stands for target)
 						strSideParameter := (this.aaTemp.saFavoriteWindowPosition[8] = "A" ? "" : (this.aaTemp.saFavoriteWindowPosition[8] = "D" ? "S /R" 
 							: this.aaTemp.saFavoriteWindowPosition[8])) ; else keep value "", "L" or "R"
-					else
-						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
-							strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
+					else if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist")
+						strSideParameter := "" ; to open TC Hotlist items in active pane
+					else if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+						strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
 					
 					if IsInteger(this.aaTemp.strFullLocation)
 					{
@@ -32316,7 +32323,7 @@ class Container
 						{
 							; g_aaFileManagerTotalCommander.strNewTabOrWindow should contain "/O /T" to open in an new tab of the existing file list (default), or "/N" to open in a new file list
 							strTabParameter := g_aaFileManagerTotalCommander.strNewTabOrWindow
-							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
+							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and this.aaTemp.strOpenFavoriteLabel <> "OpenFavoriteHotlist") ; keep strSideParameter empty for TC Hotlist items
 								if (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "D")
 									strSideParameter := "S /R" ; will be sent as "/S /R": /S for source-target and then /R stands for target
 								else
@@ -32331,6 +32338,11 @@ class Container
 							; use active parameter with /S instead of L/R side parameter
 							Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " " . strTabParameter . " /S """ . this.aaTemp.strFullLocation . """"
 						
+						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))
+							; strFavoriteAppWorkingDir used to store target path, open in target (destination) pane
+							Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
+							; /O existing file list, /S source-dest /R=target - change folder in the inactive pane
+							
 						WinWaitActive, ahk_class TTOTAL_CMD, , 10
 					}
 					g_strNewWindowId := "ahk_class TTOTAL_CMD"
