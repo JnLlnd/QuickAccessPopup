@@ -4992,6 +4992,7 @@ arrVar	refactror pseudo-array to simple array
 !_011_INITIALIZATION:
 ;========================================================================================================================
 
+#requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance force
 #KeyHistory 0
@@ -9429,9 +9430,11 @@ Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerUseTabs
 
 ; line 6
 ; FileManagerNewTabSide
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab3X%  vf_lblFileManagerNewTabSide, % L(o_L["GuiFileManagerNewTabSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab3X%  vf_lblFileManagerNewTabSide
+	, % L(o_L["GuiFileManagerNewTabSide"], (o_FileManagers.P_intActiveFileManager = 2 ? "Directory Opus" : "Total Commander"))
 Gui, 2:Add, Radio, % "x" . g_intGroupItemsTab3X . " y+5 gGuiOptionsGroupChanged vf_intFileManagerNewTabSideActive "
-	. (!StrLen(o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) ? "checked" : ""), % o_L["GuiFileManagerNewTabSideActive"] ; if empty
+	. (!StrLen(o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) or o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "A"
+		? "checked" : ""), % o_L["GuiFileManagerNewTabSideActive"] ; for legacy, if empty consider it "A"
 Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideLeft "
 	. (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "L" ? "checked" : ""), % o_L["DialogWindowPositionLeft"]
 Gui, 2:Add, Radio, % "x+10 yp gGuiOptionsGroupChanged vf_intFileManagerNewTabSideRight "
@@ -9988,7 +9991,7 @@ else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
 	o_Settings.FileManagers["str" . strClickedFileManagerSystemName . "Path"].WriteIni(f_strFileManagerPath)
 	o_Settings.FileManagers["bln" . strClickedFileManagerSystemName . "UseTabs"].WriteIni(f_blnFileManagerUseTabs)
 	o_Settings.FileManagers.strFileManagerNewTabSide.WriteIni(f_intFileManagerNewTabSideLeft ? "L" 
-		: (f_intFileManagerNewTabSideRight ? "R" : (f_intFileManagerNewTabSideDest ? "D" : "")))
+		: (f_intFileManagerNewTabSideRight ? "R" : (f_intFileManagerNewTabSideDest ? "D" : "A")))
 
 	if (g_intClickedFileManager = 2) ; DirectoryOpus
 	{
@@ -32276,13 +32279,14 @@ class Container
 				else if (this.aaTemp.strTargetAppName = "TotalCommander")
 				{
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
-						; empty for active side, if "D" replace with "S /R" (to be sent as "/S /R": /S for source-target and then /R stands for target)
-						strSideParameter := (this.aaTemp.saFavoriteWindowPosition[8] = "A" ? "" : (this.aaTemp.saFavoriteWindowPosition[8] = "D" ? "S /R" 
-							: this.aaTemp.saFavoriteWindowPosition[8])) ; else keep value "", "L" or "R"
+						; if empty or "A" for active side replace with "/S /L", if "D" replace with "S /R" (to be sent as "/S /R": /S for source-target and then /R stands for target)
+						strSideParameter := (!StrLen(this.aaTemp.saFavoriteWindowPosition[8]) or this.aaTemp.saFavoriteWindowPosition[8] = "A" ? "/S /L"
+							: (this.aaTemp.saFavoriteWindowPosition[8] = "D" ? "/S /R" 
+							: "/" . this.aaTemp.saFavoriteWindowPosition[8])) ; else keep "/" with values "L" or "R"
 					else if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist")
-						strSideParameter := "" ; to open TC Hotlist items in active pane
+						strSideParameter := "/S /L" ; to open TC Hotlist items in active pane
 					else if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
-						strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
+						strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue ; will be processed later
 					
 					if IsInteger(this.aaTemp.strFullLocation)
 					{
@@ -32295,14 +32299,16 @@ class Container
 							Sleep, 200 ; wait additional time to improve SendMessage reliability in OpenFavoriteNavigateTotalCommander
 						}
 						
-						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and StrLen(strSideParameter)) ; if empty, open on active side
+						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 						; see Total Commander file E:\Apps\totalcmd\TOTALCMD.INC for reference on cm_FocusLeft, etc.
 						{
-							if (strSideParameter = "L")
+							if (strSideParameter = "/S /L" or !StrLen(strSideParameter)) ; "A" active, check if empty for legacy
+								intTCCommandFocus := 4005 ; cm_FocusSrc
+							if (strSideParameter = "/L")
 								intTCCommandFocus := 4001 ; cm_FocusLeft
-							else if (strSideParameter = "R")
+							else if (strSideParameter = "/R")
 								intTCCommandFocus := 4002 ; cm_FocusRight
-							else ; D (destination or target)
+							else ; "/S /R" -> "D" (destination or target)
 								intTCCommandFocus := 4006 ; cm_FocusTrg
 							Sleep, 100 ; wait to improve SendMessage reliability
 							SendMessage, 0x433, %intTCCommandFocus%, , , ahk_class TTOTAL_CMD
@@ -32316,6 +32322,8 @@ class Container
 						}
 						Sleep, 100 ; wait to improve SendMessage reliability in OpenFavoriteNavigateTotalCommander
 						this.aaTemp.strHotkeyTypeDetected := "Navigate"
+						g_strTargetClass := "foo" ; not used but must not be emply for OpenFolder to execute in Navigate mode
+						g_strTargetWinId := "foo" ; not used but must not be emply for OpenFolder to execute in Navigate mode
 						this.OpenFolder() ; recursive call to navigate special folder in new tab, no error code
 					}
 					else ; normal folder
@@ -32329,20 +32337,16 @@ class Container
 						{
 							; g_aaFileManagerTotalCommander.strNewTabOrWindow should contain "/O /T" to open in an new tab of the existing file list (default), or "/N" to open in a new file list
 							strTabParameter := g_aaFileManagerTotalCommander.strNewTabOrWindow
-							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and this.aaTemp.strOpenFavoriteLabel <> "OpenFavoriteHotlist") ; keep strSideParameter empty for TC Hotlist items
-								if (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "D")
-									strSideParameter := "S /R" ; will be sent as "/S /R": /S for source-target and then /R stands for target
+							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and this.aaTemp.strOpenFavoriteLabel <> "OpenFavoriteHotlist") ; keep strSideParameter as-is for TC Hotlist items
+								if (!StrLen(o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) or o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "A") ; active, check if empty for legacy
+									strSideParameter := "/S /L" ; /S for source-target and then /L stands for source
+								else if (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "D")
+									strSideParameter := "/S /R" ; /S for source-target and then /R stands for target
 								else
-									strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
-							else
-								strSideParameter := ""
+									strSideParameter := "/" . o_Settings.FileManagers.strFileManagerNewTabSide.IniValue ; "L" or "R"
 						}
 						
-						if StrLen(strSideParameter)
-							Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " " . strTabParameter . " /" . strSideParameter . "=""" . this.aaTemp.strFullLocation . """"
-						else
-							; use active parameter with /S instead of L/R side parameter
-							Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " " . strTabParameter . " /S """ . this.aaTemp.strFullLocation . """"
+						Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " " . strTabParameter . strSideParameter . "=""" . this.aaTemp.strFullLocation . """"
 						
 						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))
 						{
