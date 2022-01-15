@@ -30031,8 +30031,8 @@ class Container
 			}
 			else if (SubStr(strWinCmdItemCommand, 1, 3) <> "cd ")
 				
-				continue ; not a menu and not a change directory command (folder)
-			
+				continue ; not a menu and not a change directory command (folder) - cm_ commands in Directory Hotlist are not supported by QAP
+				
 			if (StrLen(strMenuHideChar) and (blnHideThisMenu or SubStr(strWinCmdItemName, 1, 1) = strMenuHideChar)) ; if there is a hide char and it is the first char of the name, skip this item
 				continue
 			
@@ -32054,6 +32054,7 @@ class Container
 				else if (this.aaTemp.strTargetAppName = "TotalCommander")
 				{
 					if IsInteger(this.aaTemp.strFullLocation)
+					; https://www.ghisler.ch/wiki/index.php/Totalcmd.inc
 					{
 						SendMessage, 0x433, % this.aaTemp.strFullLocation, , , ahk_class TTOTAL_CMD
 						Sleep, 100 ; wait to improve SendMessage reliability
@@ -32066,14 +32067,18 @@ class Container
 							WinActivate, ahk_id %g_strTargetWinId% ; we'll activate initialy active window
 							Sleep, 200
 						}
-						Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /L=""" . this.aaTemp.strFullLocation . """"
+						; https://www.ghisler.ch/wiki/index.php/Command_line_parameters
+						strCommand := g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /L=""" . this.aaTemp.strFullLocation . """"
+						Run, %strCommand%
 						; /O existing file list, /S source-dest /L=source (active pane) - change folder in the active pane/tab
 					}
+					
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))
 					{
 						Sleep, 200 ; pause between two calls to TC
 						; strFavoriteAppWorkingDir used to store target path
-						Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
+						strCommand := g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
+						Run, %strCommand%
 						; /O existing file list, /S source-dest /R=target - change folder in the inactive pane
 					}
 				}
@@ -32277,6 +32282,7 @@ class Container
 					g_strNewWindowId := "ahk_class dopus.lister"
 				}
 				else if (this.aaTemp.strTargetAppName = "TotalCommander")
+				; https://www.ghisler.ch/wiki/index.php/Command_line_parameters
 				{
 					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 						; if empty or "A" for active side replace with "/S /L", if "D" replace with "S /R" (to be sent as "/S /R": /S for source-target and then /R stands for target)
@@ -32286,9 +32292,10 @@ class Container
 					else if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist")
 						strSideParameter := "/S /L" ; to open TC Hotlist items in active pane
 					else if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
-						strSideParameter := o_Settings.FileManagers.strFileManagerNewTabSide.IniValue ; will be processed later
+						strSideParameter := "/" . o_Settings.FileManagers.strFileManagerNewTabSide.IniValue ; will be processed later
 					
 					if IsInteger(this.aaTemp.strFullLocation)
+					; see https://www.ghisler.ch/wiki/index.php/Totalcmd.inc
 					{
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
 							or InStr(g_aaFileManagerTotalCommander.strNewTabOrWindow, "/N") ; or open a new instance
@@ -32302,9 +32309,9 @@ class Container
 						if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 						; see Total Commander file E:\Apps\totalcmd\TOTALCMD.INC for reference on cm_FocusLeft, etc.
 						{
-							if (strSideParameter = "/S /L" or !StrLen(strSideParameter)) ; "A" active, check if empty for legacy
+							if (strSideParameter = "/A" or strSideParameter = "/S /L" or !StrLen(strSideParameter)) ; "A" active, check if empty for legacy
 								intTCCommandFocus := 4005 ; cm_FocusSrc
-							if (strSideParameter = "/L")
+							else if (strSideParameter = "/L")
 								intTCCommandFocus := 4001 ; cm_FocusLeft
 							else if (strSideParameter = "/R")
 								intTCCommandFocus := 4002 ; cm_FocusRight
@@ -32328,7 +32335,15 @@ class Container
 					}
 					else ; normal folder
 					{
-						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
+							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows)
+						{
+							strNewInstanceSide := (InStr("LR", o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) ? o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
+								: (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "D" ? "R" : "L"))
+							strTabParameter := "/T"
+							strSideParameter := "/P=" . strNewInstanceSide . " /" . strNewInstanceSide
+						}
+						else if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
 							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 								strTabParameter := "/N" ; /N new window
 							else
@@ -32346,13 +32361,16 @@ class Container
 									strSideParameter := "/" . o_Settings.FileManagers.strFileManagerNewTabSide.IniValue ; "L" or "R"
 						}
 						
-						Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " " . strTabParameter . strSideParameter . "=""" . this.aaTemp.strFullLocation . """"
+						strCommand := g_aaFileManagerTotalCommander.strFileManagerPath . " " . strTabParameter
+							. " " . (StrLen(strSideParameter) ? strSideParameter . "=" : "") . """" . this.aaTemp.strFullLocation . """"
+						Run, %strCommand%
 						
 						if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))
 						{
 							Sleep, 200 ; pause between two calls to TC
 							; strFavoriteAppWorkingDir used to store target path, open in target (destination) pane
-							Run, % g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
+							strCommand := g_aaFileManagerTotalCommander.strFileManagerPath . " /O /S /R=""" . this.AA.strFavoriteAppWorkingDir . """"
+							Run, %strCommand%
 							; /O existing file list, /S source-dest /R=target - change folder in the inactive pane
 						}
 						WinWaitActive, ahk_class TTOTAL_CMD, , 10
