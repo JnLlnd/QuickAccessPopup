@@ -4997,7 +4997,6 @@ arrVar	refactror pseudo-array to simple array
 !_011_INITIALIZATION:
 ;========================================================================================================================
 
-#requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance force
 #KeyHistory 0
@@ -9374,9 +9373,12 @@ Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% w590 center hidden vf_lb
 Gui, Font, w600
 Gui, 2:Add, Text, x%g_intGroupItemsTab4X% y+15 w300 Section hidden vf_lblFileManagerNavigateTitle, % o_L["OptionsTabFileManagersPreferences"]
 Gui, Font
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w300 vf_lblFileManagerNavigate hidden, % L(o_L["OptionsFileManagerNavigateIntro"], o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName)
-Gui, 2:Add, Radio, % "y+10 x" . g_intGroupItemsTab4X . " w250 hidden vf_radFileManagerNavigateCurrent gGuiOptionsGroupChanged" . (o_Settings.FileManagers.blnAlwaysNavigate.IniValue ? " checked" : "")
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X . " w250 hidden vf_radFileManagerNavigateNew gGuiOptionsGroupChanged" . (! o_Settings.FileManagers.blnAlwaysNavigate.IniValue ? " checked" : "")
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w300 vf_lblFileManagerNavigate hidden, % L(o_L["OptionsFileManagerNavigateIntro"]
+	, o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName)
+Gui, 2:Add, Radio, % "y+10 x" . g_intGroupItemsTab4X . " w250 hidden vf_radFileManagerNavigateCurrent gGuiOptionsFileManagerPreferencesChanged"
+	. (o_Settings.FileManagers.blnAlwaysNavigate.IniValue ? " checked" : "")
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X . " w250 hidden vf_radFileManagerNavigateNew gGuiOptionsFileManagerPreferencesChanged"
+	. (! o_Settings.FileManagers.blnAlwaysNavigate.IniValue ? " checked" : "")
 
 ; --- column 1 ---
 ; ActiveFileManager
@@ -10403,6 +10405,27 @@ Gui, 2:Submit, NoHide
 strEnableDisable := (f_blnNetworkDrivesSometimesOffline ? "Enable" : "Disable")
 GuiControl, %strEnableDisable%, f_lblNetworkDrivesLetters
 GuiControl, %strEnableDisable%, f_strNetworkDrivesLetters
+
+Gosub, GuiOptionsGroupChanged
+
+strEnableDisable := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiOptionsFileManagerPreferencesChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strEnableDisable := (f_radFileManagerNavigateCurrent ? "Disable" : "Enable")
+GuiControl, %strEnableDisable%, f_blnFileManagerUseTabs
+GuiControl, %strEnableDisable%, f_lblFileManagerNewTabSide
+GuiControl, %strEnableDisable%, f_intFileManagerNewTabSideActive
+GuiControl, %strEnableDisable%, f_intFileManagerNewTabSideLeft
+GuiControl, %strEnableDisable%, f_intFileManagerNewTabSideRight
+GuiControl, %strEnableDisable%, f_intFileManagerNewTabSideDest
 
 Gosub, GuiOptionsGroupChanged
 
@@ -25580,7 +25603,7 @@ GetSavedSettingsWindowPosition(ByRef saSettingsPosition)
 	if !StrLen(g_strLastScreenConfiguration) or (strCurrentScreenConfiguration <> g_strLastScreenConfiguration)
 	{
 		IniWrite, %strCurrentScreenConfiguration%, % o_Settings.strIniFile, Global, LastScreenConfiguration ; always save in case QAP is not closed properly
-		arrSettingsPosition1 := -1 ; returned value by first ByRef parameter
+		saSettingsPosition[1] := -1 ; returned value by first ByRef parameter
 	}
 	else
 		if (o_Settings.SettingsWindow.blnRememberSettingsPosition.IniValue)
@@ -25591,7 +25614,7 @@ GetSavedSettingsWindowPosition(ByRef saSettingsPosition)
 		else ; delete Settings position
 		{
 			IniDelete, % o_Settings.strIniFile, Global, SettingsPosition
-			arrSettingsPosition1 := -1 ; returned value by first ByRef parameter
+			saSettingsPosition[1] := -1 ; returned value by first ByRef parameter
 		}
 	
 	g_strLastConfiguration := strCurrentScreenConfiguration
