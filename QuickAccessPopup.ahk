@@ -31,6 +31,38 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.4 (2022-01-18)
+ 
+Autoexecutable favorites or groups
+- add the "Launch at startup" option on "Basic tab" of the "Add/Edit Favorite" dialog box for all types of favorites including "Groups" (except "Text Separator" and individual group members)
+- press the Shift key while launching QAP to bypass the autoexecution of these favorites
+- in "Tools, Special Searches", add a new item "Search Favorites Launched at Startup"
+- see: https://www.quickaccesspopup.com/can-i-launch-a-favorite-or-group-of-favorites-at-qap-startup/
+ 
+Launch QAP favorites from the command line
+- add the command "LaunchFavorite" to QAPmessenger tat launches the favorite specified in the second parameter (between double-quotes)
+- for example, if the favorite "FavName" is in the Main menu, launch it with: C:\...\QAPmessenger.exe LaunchFavorite "> FavName"
+- if the favorite "FavName" is in a submenu, launch it with: C:\...\QAPmessenger.exe LaunchFavorite "> SubMenu1 > SubMenu2 > FavName"
+- if the favorite name includes ampersand (like "&FavName" or "FavName && Co.c"), make sure you enter them as they appear in the Favorite name
+- See: https://www.quickaccesspopup.com/can-i-display-the-qap-menu-from-the-command-line-or-from-a-batch-file/
+ 
+Total Commander and Directory Opus side options
+- the following changes are for users who selected "Directory Opus" (DOpus) or "Total Commander" (TC) in "Options, File Managers"
+- add an option in "Options, File Managers" to open favorites of type "Folder" or "Special Folder" in the "Destination" pane
+- when opening a "Group", add two options to open favorites of types "Folder" or "Special Folder" in the "Active side" or the "Destination" side
+- fix an "infinite loop" bug when opening a group in TC when it contains a Special folder (like "My Computer")
+- in "Options, File managers", when the option "the current TC/DOpus tab" is selected under "File manager preferences", disable the irrelevant options "Use tabs instead of opening a new window" and the side options below this checkbox
+ 
+Total Commander Directory Hotlist
+- when opening a folder from the QAP Feature "TC Directory Hotlist", open the folder in the active pane and, if specified in WinCmd.ini, open the "Target path" in the target pane
+- note: TC commands like cm_OpenDesktop or cm_OpenDrives are currently not supported in QAP TC Directory Hotlist (these entries are skipped in the "TC Directory Hotlist" menu)
+ 
+Various bug fixes and improvements
+- fix issue when calling the "Always on top" QAP Feature from the popup menu on an Explorer.exe window
+- after executing the "Always on top" command, add a confirmation popup when turning it "On" or when the command fails
+- fix a bug when positioning a secondary dialog box when the main window is maximized or close to top-right of a screen
+- Italian language file update
+
 Version BETA: 11.5.3.9.5 (2022-01-18)
 - in Options, File managers, disable the checkbox "Use tabs instead of opening a new window" and the side options below this checkbox when the option "the current TC/DOpus tab" is selected under "File manager preferences"
 
@@ -4988,7 +5020,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.3.9.5
+;@Ahk2Exe-SetVersion 11.5.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5055,8 +5087,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.3.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
