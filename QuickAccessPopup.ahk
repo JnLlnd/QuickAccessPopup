@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.3.9.5 (2022-01-18)
+- in Options, File managers, disable the checkbox "Use tabs instead of opening a new window" and the side options below this checkbox when the option "the current TC/DOpus tab" is selected under "File manager preferences"
+
 Version BETA: 11.5.3.9.4 (2022-01-15)
 - rework how side options "Active", "Left", "Right" or "Destination" are processed for Total Commander (TC running or not, in a new tab or not, from TC Hotlist, in groups)
 - note: TC commands like cm_OpenDesktop or cm_OpenDrives are currently not supported in QAP TC Directory Hotlist (these entries skipped in the QAP menu)
@@ -4985,7 +4988,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.3.9.4
+;@Ahk2Exe-SetVersion 11.5.3.9.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5052,7 +5055,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.3.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.3.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
