@@ -12744,9 +12744,10 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		g_strNewFavoriteShortcut := o_EditedFavorite.AA.strFavoriteShortcut
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Group")
-		; 1 boolean value (replace existing Explorer windows if true, add to existing Explorer Windows if false)
-		; 2 restore folders with "Explorer" or "Other" (Directory Opus, Total Commander or QAPconnect)
-		; 3 delay in milliseconds to insert between each favorite to restore
+		; 1 boolean: replace existing Explorer windows if true, add to existing Explorer Windows if false
+		; 2 string: restore folders with "Explorer" or "Other" (Directory Opus, Total Commander or QAPconnect)
+		; 3 integer: delay in milliseconds to insert between each favorite to restore
+		; 4 boolean: display group in a submenu
 		g_saGroupInGuiSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 		g_saGroupInGuiSettings := "" ; value not used if not a group
@@ -13100,6 +13101,8 @@ if (o_EditedFavorite.AA.strFavoriteType = "Group")
 		Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupRestoreWithOther " . (g_saGroupInGuiSettings[2] <> "Windows Explorer" ? "checked" : "")
 			, % o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName ; will be selected by default if empty (when Add)
 	}
+	
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnGroupInMenu " . (g_saGroupInGuiSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
 }
 
 if (blnFolderInAGroupWithSide) ; folder in a group with side
@@ -16495,6 +16498,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.strFavoriteGroupSettings := f_blnRadioGroupReplace
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer")
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupInMenu
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	{
@@ -29972,13 +29976,15 @@ class Container
 				
 				if (oNewItem.AA.strFavoriteType = "Group")
 				{
-					; 1 boolean value (replace existing Explorer windows if true, add to existing Explorer Windows if false)
-					; 2 restore folders with "Windows Explorer" or "Other" (Directory Opus, Total Commander or FPconnect)
-					; 3 delay in milliseconds to insert between each favorite to restore
+					; 1 boolean: replace existing Explorer windows if true, add to existing Explorer Windows if false
+					; 2 string: restore folders with "Explorer" or "Other" (Directory Opus, Total Commander or QAPconnect)
+					; 3 integer: delay in milliseconds to insert between each favorite to restore
+					; 4 boolean: display group in a submenu
 					saTemp := StrSplit(oNewItem.AA.oSubMenu.AA.strFavoriteGroupSettings, ",")
 					oNewItem.AA.oSubMenu.AA.blnGroupReplaceWindows := saTemp[1]
 					oNewItem.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
 					oNewItem.AA.oSubMenu.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
+					oNewItem.AA.oSubMenu.AA.blnGroupInMenu := saTemp[4]
 				}
 			}
 			
