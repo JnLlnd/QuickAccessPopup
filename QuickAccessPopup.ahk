@@ -12970,6 +12970,7 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 			; 3 encode (boolean) true: automatically encode / false: do not encode
 			; 4 fixed width (boolean) true: fixed width / false: proportional width
 			; 5 font size (integer)
+			; 6 never prompt (boolean)
 			if !StrLen(o_EditedFavorite.AA.strFavoriteLaunchWith) ; default values
 				o_EditedFavorite.AA.strFavoriteLaunchWith := o_Settings.Snippets.blnSnippetDefaultMacro.IniValue . ";;"
 					. o_Settings.Snippets.blnSnippetDefaultProcessEOLTab.IniValue . ";" 
@@ -13609,6 +13610,7 @@ else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 	
 	Gui, 2:Add, Text, x20 y+15 vf_lblSnippetPrompt w400, % L(o_L["DialogFavoriteSnippetPromptLabel"], (saFavoriteSnippetOptions[1] = 1 ? o_L["DialogFavoriteSnippetPromptLabelLaunching"] : o_L["DialogFavoriteSnippetPromptLabelPasting"]))
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteSnippetPrompt, % saFavoriteSnippetOptions[2]
+	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteSnippetNoPrompt" . (saFavoriteSnippetOptions[6] ? " checked" : ""), % o_L["DialogFavoriteSnippetPromptNever"]
 }
 else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Folder, Document, Special, URL and FTP
 {
@@ -16557,7 +16559,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		; 3 encode (boolean) true: automatically encode / false: do not encode
 		; 4 fixed width (boolean) true: fixed width / false: proportional width
 		; 5 font size (integer)
-		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnRadioSendModeMacro . ";" . f_strFavoriteSnippetPrompt . ";" . f_blnProcessEOLTab . ";" . f_blnFixedFont . ";" . f_intFontSize
+		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnRadioSendModeMacro . ";" . f_strFavoriteSnippetPrompt . ";" . f_blnProcessEOLTab . ";" . f_blnFixedFont . ";" . f_intFontSize . ";" . f_blnFavoriteSnippetNoPrompt
 	else
 	{
 		if (o_EditedFavorite.AA.strFavoriteType = "Application" and o_EditedFavorite.AA.strFavoriteLaunchWith = "1" and StrLen(o_EditedFavorite.AA.strFavoriteArguments))
@@ -31674,6 +31676,7 @@ class Container
 				saTemp := StrSplit(this.AA.strFavoriteLaunchWith, ";") ; was arrFavoriteSnippetOptions
 				this.AA.blnSnippetMacroMode := saTemp[1]
 				this.AA.strSnippetPrompt := saTemp[2]
+				this.AA.blnSnippetNeverPrompt := saTemp[6]
 			}
 			this.InsertItemValue("strFavoriteLoginName", StrReplace(saFavorite[9], g_strEscapePipe, "|")) ; login name for FTP favorite
 			this.InsertItemValue("strFavoritePassword", StrReplace(saFavorite[10], g_strEscapePipe, "|")) ; password for FTP favorite
@@ -32679,7 +32682,7 @@ class Container
 			
 			WinGetClass, strClassSnippet, % "ahk_id " . this.aaTemp.strTargetWinId
 			
-			if (g_blnLaunchFromTrayIcon or WindowIsTray(strClassSnippet) or WindowIsDesktop(strClassSnippet) or StrLen(this.AA.strSnippetPrompt))
+			if !(this.AA.blnSnippetNeverPrompt) and (g_blnLaunchFromTrayIcon or WindowIsTray(strClassSnippet) or WindowIsDesktop(strClassSnippet) or StrLen(this.AA.strSnippetPrompt))
 			{
 				this.aaTemp.strSnippetPromptExpanded := ExpandPlaceholders(this.AA.strSnippetPrompt, ""
 					, (InStr(this.AA.strSnippetPrompt, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)

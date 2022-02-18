@@ -215,6 +215,7 @@ this["DialogFavoriteSnippetProcessEOLTab"] := "Automatically encode end-of-lines
 this["DialogFavoriteSnippetPromptLabel"] := "Prompt before ~1~ the snippet"
 this["DialogFavoriteSnippetPromptLabelLaunching"] := "launching"
 this["DialogFavoriteSnippetPromptLabelPasting"] := "pasting"
+this["DialogFavoriteSnippetPromptNever"] := "Never prompt for this snippet"
 this["DialogFavoriteSnippetPromptNoPipe"] := "Pipe character (|) is not allowed in snippet prompt."
 this["DialogFavoriteSnippetSendMode"] := "Send snippet to current application in:"
 this["DialogFavoriteSnippetSendModeMacro"] := "Macro mode"
