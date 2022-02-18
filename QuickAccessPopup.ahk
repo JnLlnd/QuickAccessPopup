@@ -30376,30 +30376,16 @@ class Container
 				Hotstring(PrepareHotstringForFunction(aaThisFavorite.strFavoriteHotstring, this.SA[A_Index]), "OpenFavoriteFromHotstring", "On")
 			}
 			
+			if (aaThisFavorite.strFavoriteType = "Group" and aaThisFavorite.oSubMenu.AA.blnGroupInMenu and !aaThisFavorite.blnIsCopyOfGroup)
+			{
+				aaThisFavorite.oGroupSubmenu := this.BuildGroupInMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
+				aaThisFavorite.oGroupSubmenu.BuildMenu(blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh, blnDoNotCountItemsNow) ; RECURSIVE - one level only
+				o_Containers.AA[this.SA[A_Index].AA.oGroupSubmenu.AA.strMenuPath] := this.SA[A_Index].AA.oGroupSubmenu
+			}
 			if InStr("Menu|External", aaThisFavorite.strFavoriteType, true)
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
 					and !(g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
-					or (aaThisFavorite.strFavoriteType = "Group" and aaThisFavorite.oSubMenu.AA.blnGroupInMenu)
 			{
-				if (aaThisFavorite.strFavoriteType = "Group" and aaThisFavorite.oSubMenu.AA.blnGroupInMenu and !aaThisFavorite.blnIsCopyOfGroup)
-				{
-					###_O("this.SA[A_Index].AA BEFORE", this.SA[A_Index].AA)
-					###_O("this.SA[A_Index].AA.oSubMenu.SA BEFORE", this.SA[A_Index].AA.oSubMenu.SA, "AA", "strFavoriteName")
-					oGroupBackup := this.SA[A_Index].BackupItem(true)
-					this.BuildGroupInMenu(oGroupBackup, this.AA.strMenuPath, A_Index)
-					###_V("oGroupBackup vs this.SA[A_Index]", &oGroupBackup, &this.SA[A_Index])
-					aaThisFavorite.strFavoriteArguments := o_Settings.MenuIcons.intIconSize.IniValue ; use default icon size
-					if StrLen(aaThisFavorite.oSubMenu.AA.strMenuPath) ; in case building menu was aborted
-						o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
-					aaThisFavorite.blnGroupInMenuProcessed :=  true
-					###_O("aaThisFavorite", aathisfavorite)
-					###_O("aaThisFavorite.oSubMenu.AA.strMenuPath", aaThisFavorite.oSubMenu.SA, "AA", "strFavoriteName")
-					; oGroupInMenuItem := this.SA[A_Index].BackupItem(true)
-					; oGroupInMenuItem.AA.strFavoriteName :=  o_L["MenuLaunchAllItems"]
-					; oGroupInMenuItem.AA.oSubMenu.AA.blnGroupInMenu :=  false
-					; aaThisFavorite.oSubMenu.SA.InsertAt(1, oGroupInMenuItem)
-					; aaThisFavorite.oSubMenu.SA.InsertAt(2, new Container.Item(["X"]))
-				}
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
@@ -30420,13 +30406,6 @@ class Container
 					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := aaThisFavorite.strFavoriteArguments ; size from dropdown menu
 				
 				aaThisFavorite.oSubMenu.BuildMenu(blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh, blnDoNotCountItemsNow) ; RECURSIVE - build the submenu first
-				
-				if (aaThisFavorite.strFavoriteType = "Group" and !aaThisFavorite.blnIsCopyOfGroup)
-				{
-					this.SA[A_Index] := oGroupBackup ; .Backup(true)
-					###_O("this.SA[A_Index].AA AFTER", this.SA[A_Index].AA)
-					###_O("this.SA[A_Index].AA.oSubMenu.SA AFTER", this.SA[A_Index].AA.oSubMenu.SA, "AA", "strFavoriteName")
-				}
 				
 				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
@@ -30543,21 +30522,18 @@ class Container
 	;------------------------------------------------------------
 	{
 		oNewSubMenu := new Container("Menu", o_FavoriteGroup.AA.strFavoriteName . "-Group Submenu", , this, "init", true) ; last parameter true for blnDoubleAmpersands
-		oNewSubMenu.AA.intGroupParentPosition := intMenuParentPosition ; required? #####
-		oNewSubMenu.AA.strGroupParentPath := strMenuParentPath
 		
 		oFavoriteGroupCopy := o_FavoriteGroup.BackupItem(true)
-		oFavoriteGroupCopy.AA.strFavoriteName .= " COPY"
+		oFavoriteGroupCopy.AA.strFavoriteName := o_L["MenuLaunchAllItems"]
 		oFavoriteGroupCopy.AA.blnIsCopyOfGroup :=  true
-		; ###_O("oFavoriteGroupCopy.AA", oFavoriteGroupCopy.AA)
 		oNewSubMenu.SA.Push(oFavoriteGroupCopy)
+		
 		oNewSubMenu.SA.Push(new Container.Item(["X"]))
 		
 		loop, % o_FavoriteGroup.AA.oSubMenu.SA.MaxIndex()
 			oNewSubMenu.SA.Push(o_FavoriteGroup.AA.oSubMenu.SA[A_Index])
 		
-		; attach live folder menu to live folder favorite object
-		o_FavoriteGroup.AA.oSubMenu := oNewSubMenu
+		return oNewSubMenu
 	}
 	;------------------------------------------------------------
 
@@ -31927,9 +31903,14 @@ class Container
 			; GROUP
 			if (this.AA.strFavoriteType = "Group") and !(g_blnAlternativeMenu)
 			{
-				; fake use of the old command label OpenFavoriteFromGroup used in different places to flag that a group member is being processed
-				this.aaTemp.strOpenFavoriteLabel := "OpenFavoriteFromGroup"
-				intOpenError := this.OpenGroup()
+				if IsObject(this.AA.oGroupSubmenu) ; this is a group with submenu with open group and open group items
+					Menu, % this.AA.oGroupSubmenu.AA.strMenuPath, Show
+				else
+				{
+					; fake use of the old command label OpenFavoriteFromGroup used in different places to flag that a group member is being processed
+					this.aaTemp.strOpenFavoriteLabel := "OpenFavoriteFromGroup"
+					intOpenError := this.OpenGroup()
+				}
 			}
 			; MENU or LIVE FOLDER
 			else if (InStr("Menu|External", this.AA.strFavoriteType, true)
