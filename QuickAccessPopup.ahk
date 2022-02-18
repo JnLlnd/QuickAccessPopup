@@ -30345,7 +30345,10 @@ class Container
 				strMenuItemLabel := this.MenuNameWithNumericShortcut(strMenuItemLabel, true) ; true for blnUseAmpersandPlaceholder
 			
 			if (aaThisFavorite.strFavoriteType = "Group")
+			{
+				; ###_O("aaThisFavorite.oSubmenu.SA", aaThisFavorite.oSubmenu.SA, "AA", "strFavoriteName")
 				strMenuItemLabel .= " " . g_strGroupIndicatorPrefix . aaThisFavorite.oSubmenu.SA.MaxIndex() . g_strGroupIndicatorSuffix
+			}
 			
 			if StrLen(aaThisFavorite.strFavoriteShortcut) or StrLen(aaThisFavorite.strFavoriteHotstring)
 				strMenuItemLabel .= MenuNameReminder(aaThisFavorite.strFavoriteShortcut, GetHotstringTrigger(aaThisFavorite.strFavoriteHotstring))
@@ -30376,7 +30379,27 @@ class Container
 			if InStr("Menu|External", aaThisFavorite.strFavoriteType, true)
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
 					and !(g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax)
+					or (aaThisFavorite.strFavoriteType = "Group" and aaThisFavorite.oSubMenu.AA.blnGroupInMenu)
 			{
+				if (aaThisFavorite.strFavoriteType = "Group" and aaThisFavorite.oSubMenu.AA.blnGroupInMenu and !aaThisFavorite.blnIsCopyOfGroup)
+				{
+					###_O("this.SA[A_Index].AA BEFORE", this.SA[A_Index].AA)
+					###_O("this.SA[A_Index].AA.oSubMenu.SA BEFORE", this.SA[A_Index].AA.oSubMenu.SA, "AA", "strFavoriteName")
+					oGroupBackup := this.SA[A_Index].BackupItem(true)
+					this.BuildGroupInMenu(oGroupBackup, this.AA.strMenuPath, A_Index)
+					###_V("oGroupBackup vs this.SA[A_Index]", &oGroupBackup, &this.SA[A_Index])
+					aaThisFavorite.strFavoriteArguments := o_Settings.MenuIcons.intIconSize.IniValue ; use default icon size
+					if StrLen(aaThisFavorite.oSubMenu.AA.strMenuPath) ; in case building menu was aborted
+						o_Containers.AA[aaThisFavorite.oSubMenu.AA.strMenuPath] := aaThisFavorite.oSubMenu
+					aaThisFavorite.blnGroupInMenuProcessed :=  true
+					###_O("aaThisFavorite", aathisfavorite)
+					###_O("aaThisFavorite.oSubMenu.AA.strMenuPath", aaThisFavorite.oSubMenu.SA, "AA", "strFavoriteName")
+					; oGroupInMenuItem := this.SA[A_Index].BackupItem(true)
+					; oGroupInMenuItem.AA.strFavoriteName :=  o_L["MenuLaunchAllItems"]
+					; oGroupInMenuItem.AA.oSubMenu.AA.blnGroupInMenu :=  false
+					; aaThisFavorite.oSubMenu.SA.InsertAt(1, oGroupInMenuItem)
+					; aaThisFavorite.oSubMenu.SA.InsertAt(2, new Container.Item(["X"]))
+				}
 				if (aaThisFavorite.intFavoriteFolderLiveLevels) and (!aaThisFavorite.blnFavoriteFolderLiveRefreshManual or blnInitOrManualRefresh)
 				{
 					this.BuildLiveFolderMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
@@ -30397,6 +30420,13 @@ class Container
 					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := aaThisFavorite.strFavoriteArguments ; size from dropdown menu
 				
 				aaThisFavorite.oSubMenu.BuildMenu(blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh, blnDoNotCountItemsNow) ; RECURSIVE - build the submenu first
+				
+				if (aaThisFavorite.strFavoriteType = "Group" and !aaThisFavorite.blnIsCopyOfGroup)
+				{
+					this.SA[A_Index] := oGroupBackup ; .Backup(true)
+					###_O("this.SA[A_Index].AA AFTER", this.SA[A_Index].AA)
+					###_O("this.SA[A_Index].AA.oSubMenu.SA AFTER", this.SA[A_Index].AA.oSubMenu.SA, "AA", "strFavoriteName")
+				}
 				
 				if (g_blnUseColors and aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
@@ -30504,6 +30534,30 @@ class Container
 		if (!IsObject(this.AA.oParentMenu) and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
+	}
+	;------------------------------------------------------------
+
+	;------------------------------------------------------------
+	BuildGroupInMenu(o_FavoriteGroup, strMenuParentPath, intMenuParentPosition)
+	; this.BuildGroupInMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
+	;------------------------------------------------------------
+	{
+		oNewSubMenu := new Container("Menu", o_FavoriteGroup.AA.strFavoriteName . "-Group Submenu", , this, "init", true) ; last parameter true for blnDoubleAmpersands
+		oNewSubMenu.AA.intGroupParentPosition := intMenuParentPosition ; required? #####
+		oNewSubMenu.AA.strGroupParentPath := strMenuParentPath
+		
+		oFavoriteGroupCopy := o_FavoriteGroup.BackupItem(true)
+		oFavoriteGroupCopy.AA.strFavoriteName .= " COPY"
+		oFavoriteGroupCopy.AA.blnIsCopyOfGroup :=  true
+		; ###_O("oFavoriteGroupCopy.AA", oFavoriteGroupCopy.AA)
+		oNewSubMenu.SA.Push(oFavoriteGroupCopy)
+		oNewSubMenu.SA.Push(new Container.Item(["X"]))
+		
+		loop, % o_FavoriteGroup.AA.oSubMenu.SA.MaxIndex()
+			oNewSubMenu.SA.Push(o_FavoriteGroup.AA.oSubMenu.SA[A_Index])
+		
+		; attach live folder menu to live folder favorite object
+		o_FavoriteGroup.AA.oSubMenu := oNewSubMenu
 	}
 	;------------------------------------------------------------
 
@@ -32321,7 +32375,7 @@ class Container
 						Sleep, 200 ; sometimes without delay DOpus left the new tab empty
 					}
 					
-					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
 					{
 						if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerDirectoryOpus.blnFileManagerUseTabs)
 							strTabParameter := "NEW=nodual" ; force left in new lister
@@ -32353,7 +32407,7 @@ class Container
 				else if (this.aaTemp.strTargetAppName = "TotalCommander")
 				; https://www.ghisler.ch/wiki/index.php/Command_line_parameters
 				{
-					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+					if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
 						; if empty or "A" for active side replace with "/S /L", if "D" replace with "S /R" (to be sent as "/S /R": /S for source-target and then /R stands for target)
 						strSideParameter := (!StrLen(this.aaTemp.saFavoriteWindowPosition[8]) or this.aaTemp.saFavoriteWindowPosition[8] = "A" ? "/S /L"
 							: (this.aaTemp.saFavoriteWindowPosition[8] = "D" ? "/S /R" 
@@ -32368,7 +32422,8 @@ class Container
 					{
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
 							or InStr(g_aaFileManagerTotalCommander.strNewTabOrWindow, "/N") ; or open a new instance
-							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows))
+							or ((this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
+								and (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows))
 						{
 							Run, % g_aaFileManagerTotalCommander.strFileManagerPath
 							WinWaitActive, ahk_class TTOTAL_CMD, , 10
@@ -32405,14 +32460,15 @@ class Container
 					else ; normal folder
 					{
 						if !WinExist("ahk_class TTOTAL_CMD") ; open a first instance
-							or (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows)
+							or ((this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
+								and this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows)
 						{
 							strNewInstanceSide := (InStr("LR", o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) ? o_Settings.FileManagers.strFileManagerNewTabSide.IniValue
 								: (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "D" ? "R" : "L"))
 							strTabParameter := "/T"
 							strSideParameter := "/P=" . strNewInstanceSide . " /" . strNewInstanceSide
 						}
-						else if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup")
+						else if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
 							if (this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows) or !(g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 								strTabParameter := "/N" ; /N new window
 							else
@@ -32971,7 +33027,8 @@ class Container
 			}
 			
 			if (this.aaTemp.strHotkeyTypeDetected = "Launch")
-				if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" and this.AA.strGroupRestoreWithExplorerOrOther = "Windows Explorer")
+				if ((this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
+					and this.AA.strGroupRestoreWithExplorerOrOther = "Windows Explorer")
 					this.aaTemp.strTargetAppName := "Explorer"
 				else if InStr("Desktop|Dialog|Console|Unknown", this.aaTemp.strTargetAppName) ; these targets cannot launch in a new window
 					or (o_FileManagers.P_intActiveFileManager > 1) ; use file managers DirectoryOpus, TotalCommander or QAPconnect
