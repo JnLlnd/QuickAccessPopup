@@ -22123,7 +22123,7 @@ Gui, 2:Add, Button, y+20 vf_btnAboutClose g2GuiClose, % aaL["GuiClose"]
 
 ; contributors (right)
 Gui, 2:Add, Link, x%intXCol2% ys w%intWidthHalf%, % L(o_L["AboutText6"], "Lexikos (AutoHotkey_L), Joe Glines (the-Automator.com), Avi Aryan Ryan, RaptorX, Blackholyman, just_me (Class_SQLiteDB)"
-	. ", Learning One, leo (GPSoftware), Maestrith (XML_Class), Pulover (LV_Rows class), Tank, jeeswg", "https://www.autohotkey.com/boards/")
+	. ", Learning One, leo (GPSoftware), Maestrith (XML_Class), Pulover (LV_Rows class), Tank, jeeswg, Flipeador", "https://www.autohotkey.com/boards/")
 Gui, 2:Add, Link, x%intXCol2% y+5 w%intWidthHalf%, % L(o_L["AboutText2b"], A_AhkVersion)
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAboutClose")
@@ -26651,6 +26651,34 @@ CheckLastSaveIncomplete(strIniFile)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+IsWindowOnCurrentVirtualDesktop(hWnd)
+; Indicates whether the provided window is on the currently active virtual desktop
+; from Flipeador (https://www.autohotkey.com/boards/viewtopic.php?p=64295#p64295)
+;------------------------------------------------------------
+{
+	; IVirtualDesktopManager interface
+	; Exposes methods that enable an application to interact with groups of windows that form virtual workspaces.
+	; https://msdn.microsoft.com/en-us/library/windows/desktop/mt186440(v=vs.85).aspx
+	CLSID := "{aa509086-5ca9-4c25-8f95-589d3c07b48a}" ;search VirtualDesktopManager clsid
+	IID := "{a5cd92ff-29be-454c-8d04-d82879fb3f1b}" ;search IID_IVirtualDesktopManager
+	IVirtualDesktopManager := ComObjCreate(CLSID, IID)
+	
+	; IVirtualDesktopManager::IsWindowOnCurrentVirtualDesktop method
+	; Indicates whether the provided window is on the currently active virtual desktop.
+	; https://msdn.microsoft.com/en-us/library/windows/desktop/mt186442(v=vs.85).aspx
+	Error := DllCall(NumGet(NumGet(IVirtualDesktopManager+0), 3*A_PtrSize), "Ptr", IVirtualDesktopManager, "Ptr", hWnd, "IntP", onCurrentDesktop)
+
+	; free IVirtualDesktopManager
+	ObjRelease(IVirtualDesktopManager)
+	
+	; return
+	if !(Error=0) ;S_OK
+		return false, ErrorLevel := true
+	return onCurrentDesktop, ErrorLevel := false
+}
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -27838,6 +27866,23 @@ TODO
 		}
 		;-----------------------------------------------------
 		
+		;-----------------------------------------------------
+		DirectoryOpusOnCurrentVirtualDesktop()
+		;-----------------------------------------------------
+		{
+			DetectHiddenWindows, Off
+			WinGet, strWinIDs, List	; Retrieve IDs of all the existing windows
+			DetectHiddenWindows, On ; revert to app default
+			
+			Loop, %strWinIDs%
+			{
+				WinGetClass, strWindowClass, % "ahk_id " strWinIDs%A_Index%
+				if (strWindowClass = "dopus.lister") and IsWindowOnCurrentVirtualDesktop(strWinIDs%A_Index%)
+					return true
+			}
+			return false
+		}
+		;-----------------------------------------------------
 	}
 	;---------------------------------------------------------
 	
@@ -32363,8 +32408,8 @@ class Container
 				}
 				else if (this.aaTemp.strTargetAppName = "DirectoryOpus")
 				{
-					; check if DOpus lister exist before opening a folder in order to open the last used folders before adding the selected one
-					if !WinExist("ahk_class dopus.lister")
+					; check if DOpus lister exists in the current Virtual Desktop before opening a folder in order to open the last used folders before adding the selected one
+					if !o_FileManagers.SA[2].DirectoryOpusOnCurrentVirtualDesktop()
 					{
 						Run, % g_aaFileManagerDirectoryOpus.strFileManagerPath
 						WinWait, ahk_class dopus.lister, , 2 ; max 2 seconds
