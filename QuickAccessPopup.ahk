@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.4.9.1 (2022-02-18)
+Version BETA: 11.5.4.9.1 (2022-02-19)
  
 Groups
 - in "Edit Favorite" dialog box, "Advanced Settings" tab, add a checkbox to "Also display this group in a submenu"
@@ -31963,7 +31963,8 @@ class Container
 			; GROUP
 			if (this.AA.strFavoriteType = "Group") and !(g_blnAlternativeMenu)
 			{
-				if IsObject(this.AA.oGroupSubmenu) ; this is a group with submenu with open group and open group items
+				Sleep, 50 ; without this delay, this.AA.oGroupSubmenu is sometimes empty when it should not (no idea why)
+				if IsObject(this.AA.oGroupSubmenu) ; this is a group with submenu with items to open the group or its items
 					Menu, % this.AA.oGroupSubmenu.AA.strMenuPath, Show
 				else
 				{
