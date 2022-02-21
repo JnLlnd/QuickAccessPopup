@@ -32,6 +32,9 @@ HISTORY
 =======
 
 Version BETA: 11.5.4.9.1 (2022-02-19)
+- updated version of AutoHotkey runtime (v1.1.33.10)
+
+Version BETA: 11.5.4.9.1 (2022-02-19)
  
 Groups
 - in "Edit Favorite" dialog box, "Advanced Settings" tab, add a checkbox to "Also display this group in a submenu"
@@ -6006,7 +6009,7 @@ InitGuiControls:
 
 InsertGuiControlPos("f_picGuiAddFavorite",				 -42,   54, true, true)
 InsertGuiControlPos("f_picGuiEditFavorite",				 -42,  127, true)
-InsertGuiControlPos("f_picGuiEditFavorited",			 -42,  127, true)
+InsertGuiControlPos("f_picGuiEditFavorites",			 -42,  127, true)
 InsertGuiControlPos("f_picGuiRemoveFavorite",			 -42,  202, true)
 InsertGuiControlPos("f_picGuiCopyFavorite",				 -42,  277, true)
 InsertGuiControlPos("f_picGuiMoveFavorite",				 -42,  352, true)
@@ -7361,23 +7364,21 @@ return
 BuildSortMenusFavoriteSection:
 ;------------------------------------------------------------
 
-aaSortMenusFavoriteL := o_L.InsertAmpersand(false, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "DialogCopy", "GuiMove", "MenuSelectAll")
+g_aaSortMenusFavoriteL := o_L.InsertAmpersand(false, "DialogAdd", "DialogEdit", "GuiRemoveFavorite", "DialogCopy", "GuiMove", "MenuSelectAll")
 
 Menu, %strMenuName%, Add, % "-- " . o_L["MenuFavorite"] . " --", DoNothing
 Menu, %strMenuName%, Disable, % "-- " . o_L["MenuFavorite"] . " --"
-Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["DialogAdd"] . g_strEllipse, GuiAddFavoriteSelectType
-Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["DialogEdit"] . g_strEllipse, SettingsCtrlE
+Menu, %strMenuName%, Add, % g_aaSortMenusFavoriteL["DialogAdd"] . g_strEllipse, GuiAddFavoriteSelectType
+Menu, %strMenuName%, Add, % g_aaSortMenusFavoriteL["DialogEdit"] . g_strEllipse, SettingsCtrlE
 Menu, %strMenuName%, Add ; separator
-Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["GuiRemoveFavorite"] . g_strEllipse, SettingsCtrlR
-Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["DialogCopy"] . g_strEllipse, SettingsCtrlY
-Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["GuiMove"] . g_strEllipse, SettingsCtrlM
+Menu, %strMenuName%, Add, % g_aaSortMenusFavoriteL["GuiRemoveFavorite"] . g_strEllipse, SettingsCtrlR
+Menu, %strMenuName%, Add, % g_aaSortMenusFavoriteL["DialogCopy"] . g_strEllipse, SettingsCtrlY
+Menu, %strMenuName%, Add, % g_aaSortMenusFavoriteL["GuiMove"] . g_strEllipse, SettingsCtrlM
 Menu, %strMenuName%, Add ; separator
-Menu, %strMenuName%, Add, % aaSortMenusFavoriteL["MenuSelectAll"] . g_strEllipse, SettingsCtrlA
+Menu, %strMenuName%, Add, % g_aaSortMenusFavoriteL["MenuSelectAll"] . g_strEllipse, SettingsCtrlA
 Menu, %strMenuName%, Add ; separator
 
 g_intNbItemsInContextMenuFavoritesSection := 10
-
-aaSortMenusFavoriteL := ""
 
 return
 ;------------------------------------------------------------
@@ -11426,7 +11427,7 @@ aaSettingsL := o_L.InsertAmpersand(false, "*" . aaMenuBarL.strUsed, "GuiSaveAndC
 
 Gui, 1:Add, Picture, vf_picGuiAddFavorite gGuiAddFavoriteSelectType, %g_strTempDir%\add_property-48_c.png ; Static1
 Gui, 1:Add, Picture, vf_picGuiEditFavorite gGuiEditFavorite x+1 yp, %g_strTempDir%\edit_property-48_c.png ; Static2
-Gui, 1:Add, Picture, vf_picGuiEditFavorited xp yp, %g_strTempDir%\edit_property-48d_c.png ; Static3
+Gui, 1:Add, Picture, vf_picGuiEditFavorites xp yp, %g_strTempDir%\edit_property-48d_c.png ; Static3
 Gui, 1:Add, Picture, vf_picGuiRemoveFavorite gGuiRemoveFavorite x+1 yp, %g_strTempDir%\delete_property-48_c.png ; Static4
 Gui, 1:Add, Picture, vf_picGuiCopyFavorite gGuiCopyFavorite x+1 yp, %g_strTempDir%\copy-48_c.png ; Static5
 Gui, 1:Add, Picture, vf_picGuiMoveFavorite gGuiMoveFavoriteToMenu x+1 yp, %g_strTempDir%\play_property-48_c.png ; Static6
@@ -11888,7 +11889,7 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 	if (g_intFavoriteSelected > 1)
 	{
 		GuiControl, Disable, f_lblGuiEditFavorite
-		GuiControl, Show, f_picGuiEditFavorited
+		GuiControl, Show, f_picGuiEditFavorites
 		GuiControl, Hide, f_picGuiEditFavorite
 		g_blnEditButtonDisabled := true
 		
@@ -11911,7 +11912,7 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 	{
 		GuiControl, Enable, f_lblGuiEditFavorite
 		GuiControl, Show, f_picGuiEditFavorite
-		GuiControl, Hide, f_picGuiEditFavorited
+		GuiControl, Hide, f_picGuiEditFavorites
 		g_blnEditButtonDisabled := false
 		
 		GuiControl, , f_lblGuiRemoveFavorite, % o_L["GuiRemoveFavorite"]
@@ -11931,6 +11932,8 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 	}
 
 	Menu, menuBarFavorite, % (g_intFavoriteSelected = 1 ? "Enable" : "Disable"), % aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E" ; edit menu only if one item is selected
+	Loop, Parse, % "menuSortMainMenu|menuSortSearchResult|menuSortManual|menuSortAutomatic", |
+		Menu, % A_LoopField . "ContextMenu", % (g_intFavoriteSelected > 1 ? "Disable" : "Enable"), % g_aaSortMenusFavoriteL["DialogEdit"] . g_strEllipse
 	if !SearchIsVisible()
 		Menu, menuBarFavorite, Enable, % aaFavoriteL["ControlToolTipSortFavorites"] ; re-enable if disabled by GuiCancel for Favorite Tray menu
 	
