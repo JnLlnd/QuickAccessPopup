@@ -159,6 +159,10 @@ lDialogExternalTypesLabel	Type de menu partagé
 lDialogExternalTypesTitle	Type de menu partagé
 lDialogExternalWriteAccessMessage	Message sur l'accès en écriture du menu partagé
 lDialogExternalWriteAccessUsers	Utilisateurs avec les droits d'écriture pour ce menu
+lDialogFavoriteAutoExec	Lancer ce favori lors du démarrrage
+lDialogFavoriteDebug	DÃ©boguer ce favori
+lDialogFavoriteDebugAfter	Pour exÃ©cuter cette commande, dÃ©sactivez l'option "DÃ©boguer ce favori" dans les "RÃ©glages de base" du favori
+lDialogFavoriteDebugBefore	Commande avec l'insertion des codes de remplacement et des variables de l'utilisateur
 lDialogFavoriteDisabled	Désactiver ce favori
 lDialogFavoriteDisabledGroupMember	Désactiver cet item dans le groupe
 lDialogFavoriteDoesNotExistEdit	Voulez-vous modifier ce favori?
@@ -208,9 +212,10 @@ lDialogFavoriteSnippetHelpNoProcess	Insérez `` n pour une fin de ligne et ``t po
 lDialogFavoriteSnippetHelpProcess	Pressez Ctrl+Tab pour insérer une tabulation et Entrée pour insérer une fin de ligne.
 lDialogFavoriteSnippetHelpWeb	Voir l'aide (en anglais) sur <a href="~1~">les fragments</a> (snippets) and <a href="~2~">les codes de remplacements</a> (placeholders).
 lDialogFavoriteSnippetProcessEOLTab	Encoder automatiquement les fins de ligne et les tabulations
-lDialogFavoriteSnippetPromptLabel	Faire une pause avant ~1~ le fragment
+lDialogFavoriteSnippetPromptLabel	Faire une pause avec ces instructions avant ~1~ le fragment
 lDialogFavoriteSnippetPromptLabelLaunching	de lancer
 lDialogFavoriteSnippetPromptLabelPasting	de coller
+lDialogFavoriteSnippetPromptNever	Ne jamais faire de pause pour ce fragment de texte
 lDialogFavoriteSnippetPromptNoPipe	Le caractère barre vertical (|) n'est pas permis dans le message de pause
 lDialogFavoriteSnippetSendMode	Envoyer le fragment à l'application active en:
 lDialogFavoriteSnippetSendModeMacro	Mode macro
@@ -383,6 +388,7 @@ lDialogSameLocartionExistsPrompt	Ce favori a le même contenu:
 lDialogSameLocartionExistsQuestion	Voulez-vous toujours enregistrer ce favori?
 lDialogSearch	Rechercher
 lDialogSearchAllFavorites	Rechercher tous les favoris
+lDialogSearchAutoExec	Rechercher les favoris lancés lors du démarrage
 lDialogSearchBrokenLinks	Rechercher les favoris "Liens (URL)" brisés (404)
 lDialogSearchBrokenLocations	Rechercher les Dossiers, Documents ou Applications introuvables
 lDialogSearchNotInDatabaseFavorites	Rechercher les favoris inutilisés depuis ~1~ jours
@@ -506,6 +512,7 @@ lGuiDropFilesIncentive2	Pour "glisser-déposer" un ou plusieurs fichier plus faci
 lGuiEditFavorite	Modifier
 lGuiFileManagerNewTabSide	Ouvrir les nouveaux onglets de quel côté?
 lGuiFileManagerNewTabSideActive	Côté actif
+lGuiFileManagerNewTabSideDest	Côté de destination
 lGuiGroupClosing	Fermeture des fenêtres de l'Explorateur
 lGuiGroupRestoreDelay	Délai entre la restauration des favoris:
 lGuiGroupRestoreDelayMilliseconds	millisecondes
@@ -515,6 +522,7 @@ lGuiGroupRestoreSide	Afficher de quel côté de ~1~?
 lGuiGroupRestoreStopIfError	Arrêter en cas d'erreur
 lGuiGroupRestoreWaitFinish	Attendre la fin de l'exécution
 lGuiGroupSaveAddWindowsLabel	Ajouter les dossiers aux fenêtres existantes
+lGuiGroupSaveGroupInMenu	Aussi afficher de groupe dans un sous-menu
 lGuiGroupSaveReplaceWindowsLabel	Remplacer les dossiers dans les fenêtres existantes
 lGuiGroupSaveRestoreOption	Lors de la restauration des dossiers du groupe:
 lGuiGroupSaveRestoreWith	Restaurer les dossier avec:
@@ -690,6 +698,7 @@ lMenuLastAction	Répéter la dernière action
 lMenuLastActionDescription	Ajouter au menu un item nommé "Répéter la dernière action". Lorsque vous sélectionnez cet item, le dernier favori sélectionné est rouvert.`n`nLe nom de ce menu est toujours "Répéter la dernière action" (une limitation de QAP). Vous devez vous souvenir quelle était la dernière action sélectionnée.
 lMenuLastActions	Répéter les dernières actions
 lMenuLastActionsDescription	Afficher un menu dynamique présentant les dix plus récents favoris sélectionnés dans le menu.`n`nVous pouvez configurer le nombre d'items de ce menu dans les "Options", onglet "Menu".`n`nLes items dans ce menu sont triés en ordre chronologique inverse. Lorsque vous rouvrez un favori, cet item est monté au début du menu.
+lMenuLaunchAllItems	Lancer tous les items
 lMenuListApplications	Lister les applications
 lMenuListApplicationsDescription	Affiche les titres, processus et autres propriétés des applications actives. Daites un double-clic sur une fenêtre pour afficher une boîte de dialogue où vous pourrez basculer vers cette fenêtre ou la fermer.
 lMenuMenu	Menu
@@ -809,6 +818,7 @@ lOopsInvalidWinCmdIni	Le fichier des paramêtres "wincmd.ini" de Total Commander 
 lOopsInvalidWindowPosition	Valeur(s) de position de la fenêtre invalide
 lOopsJLiconsError	Icône de la zone de notification introuvable. Assurez-vous d'avoir mis à jour le fichier JLicons.dll à la version ~1~.
 lOopsJLiconsOutdated	Ce fichier doit être mis à jour:`n`n~1~`n`nRemplacez-le avec le fichier JLicons.dll version ~2~ contenu dans le plus récent fichier d'installation portable (ZIP) et relancez ~3~.
+lOopsLastSaveIncomplete	La derniÃ¨re sauvegarde des favoris de ~1~ dans ce fichier de configuration a Ã©tÃ© interrompue:`n`n~2~`n`nLa version prÃ©cÃ©dente de vos favoris dans ce fichier ont Ã©tÃ© restaurÃ©e.
 lOopsLaunchWithNotFound	Le fichier de l'application "Lancer avec cette application" est introuvable:`n`n~1~`n`nVérifiez les réglages avancés ce ce favori.
 lOopsMaxLiveFolder	Le maximum d'items permis dans les Dossiers actifs (~1~) est dépassé. Veuillez réduire le nombre de niveaux des Dossiers actifs.`n`nVous pourriez augmenter le nombre d'items permis mais soyez prudents: un nombre trop élevé pourrait produire des résultats inattendus. Modifiez la valeur dans les "Options", section "Options de menu avancées".
 lOopsMenuExternalCentralized	menu partagé centralisé
@@ -861,16 +871,19 @@ lOptionsClipboardMaxSizeDefault	(10 000 octets par défaut)
 lOptionsControlDoublePressed	Ouvrir le menu principal avec Ctrl + Ctrl (Contrôle pressé à deux reprises)
 lOptionsControlDoublePressedLeft	Avec la touche Contrôle de gauche
 lOptionsControlDoublePressedRight	Avec la touche Contrôle de droite
+lOptionsDarkModeCustomize	Affichage foncÃ© dans la fenÃªtre Personnaliser
+lOptionsDarkModeMenus	CompatibilitÃ© avec l'affichage foncÃ© Windows pour les menus
 lOptionsDatabase	Base de données
 lOptionsDisplayIcons	Afficher les icônes des menus
 lOptionsDisplayMenuShortcuts	Afficher les raccourcis numériques
 lOptionsDisplayMenuShortcutsFromOne	Commencer les raccourcis numériques à 1 (au lieu de 0)
 lOptionsEnableExternalMenusCatalogue	Activer le Catalogue des menus partagés
-lOptionsExclusionMouseList	Liste noire
-lOptionsExclusionMouseListDescription	Liste noire pour le bouton de souris [~1~]
-lOptionsExclusionMouseListDetail1	Sélectionnez si le bouton de la souris sera utilisable dans toutes les fenêtres d'applications sauf exceptions (liste noire) ou seulement dans certaines applications (liste blanche). Pour ajouter une application, tapez n'importe quelle partie du titre de sa fenêtre. Vous pouvez entrer plusieurs applications, une par ligne. Par exemple, pour exclure Chrome et Word, choisissez Liste noire et entrez ces deux lignes dans la liste:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	Lorsque le déclencheur du menu n'est pas permis dans une application, le clic sur [~1~] sera traité par l'application visée comme si QAP ne roulait pas. Vous pouvez aussi ajouter des fenêtres d'applications par leur nom de classe ou leur nom de processus. Ajoutez un astérisque (*) au début du titre ou de la classe pour aussi exclure (liste noire seulement) les boîtes de dialogue de l'application. Plus d'<a href="~2~">aide</a>.
-lOptionsExclusionMouseListWhitelist	Liste blanche
+lOptionsEnableFavoriteDebugOption	Activer l'option de dÃ©boguage des codes de remplacement et des variables de l'utilisateur
+lOptionsExclusionMouseList	Fenêtres exclues
+lOptionsExclusionMouseListDescription	Liste des fenêtres bloquées ou approuvées pour le bouton de souris [~1~]
+lOptionsExclusionMouseListDetail1	Sélectionnez si le bouton de la souris sera utilisable dans toutes les fenêtres d'applications sauf exceptions (fenêtres bloquées) ou seulement dans certaines applications (fenêtres approuvées). Pour ajouter une application, tapez n'importe quelle partie du titre de sa fenêtre. Vous pouvez entrer plusieurs applications, une par ligne. Par exemple, pour exclure Chrome et Word, choisissez Fenêtres exclues  et entrez ces deux lignes dans la liste:`n`nGoogle Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail2	Lorsque le déclencheur du menu n'est pas permis dans une application, le clic sur [~1~] sera traité par l'application visée comme si QAP ne roulait pas. Vous pouvez aussi ajouter des fenêtres d'applications par leur nom de classe ou leur nom de processus. Ajoutez un astérisque (*) au début du titre ou de la classe pour aussi exclure les boîtes de dialogue de l'application (exclusions seulement). Plus d'<a href="~2~">aide</a>.
+lOptionsExclusionMouseListWhitelist	Fenêtres approuvées
 lOptionsExplorerContextMenus	Activer les menus contextuels de Windows Explorer
 lOptionsFileManagerNavigateCurrent	la fenêtre actuelle de ~1~
 lOptionsFileManagerNavigateCurrentTab	l'onglet actuel de ~1~
@@ -894,6 +907,7 @@ lOptionsIconReplacementList	Remplacements des icônes de QAP
 lOptionsIconReplacementListInstructions	Entrez une instruction de remplacement par ligne. Chaque ligne doit commencer par le nom de l'icône QAP (i.e "iconFolderLive"), suivi du signe égal "=" et du "fichier,index" de l'icône de remplacement. Le "fichier,index" est le chemin et nom du fichier (.ico, .dll or .exe) contenant l'icône et l'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1".
 lOptionsIconSize	Taille par défaut des icônes de menu
 lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 pour le maximum possible)
+lOptionsKeepExtensionInShortName	Conserver l'extension des noms de fichiers dans les Noms courts pour les menus
 lOptionsLanguage	Langue
 lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe
 lOptionsMenuActiveWindow	Dans la fenêtre active
@@ -948,6 +962,7 @@ lOptionsSelectCatalogueRoot	Choisissez le dossier racine du Catalogue des menus 
 lOptionsSelectQAPTempFolder	Créer le dossier temporaire dans:
 lOptionsSelectWorkingFolder	Enregistrer les paramètres dans quel dossier?
 lOptionsSendToConsoleWithAlt	Utiliser les codes ASCII (ALT+0nnn) lors des changements de dossier dans la fenêtre Commandes de Windows (CMD)
+lOptionsSettingsCheckIfSameLocation	Lors de la sauvegarde des favoris, vÃ©rifier si un favori existe dÃ©jÃ  pour le mÃªme emplacement ou contenu
 lOptionsSettingsSearchResults	Résultats de recherche
 lOptionsSettingsStartup	Ouvrir la fenêtre "Personnaliser" lors du démarrage
 lOptionsSettingsWindow	Fenêtre Personnaliser
@@ -1022,6 +1037,8 @@ lTipMenuTriggersTitle	Différentes façons d'afficher votre menu popup
 lTipSearchFavoritesDetails	Alors que votre menu devient mieux garni, voyez comment <a>retrouver rapidement des favoris dans vos sous-menus</a>.`n`nEn plus de faciliter la modification de vos favoris, cet outil vous donne une vue globale sur votre menu permettant ainsi d'éliminer des doublons indésirés ou de mieux organiser vos favoris.
 lTipSearchFavoritesTitle	Rechercher des favoris dans votre menu
 lToolTipAlwaysOnTop	Propriété "Fenêtre toujours visible" désactivée pour la fenêtre:`n~1~
+lToolTipAlwaysOnTopFailed	ÉCHEC de la commande "Fenêtre toujours visible" pour la fenêtre:`n~1~
+lToolTipAlwaysOnTopOn	Propriété "Fenêtre toujours visible" activée pour la fenêtre:`n~1~
 lToolTipBrokenLinksChecking	Vérification de
 lToolTipBrokenLinksIntro	Vérification des favoris Liens (URL)
 lToolTipBrokenLinksList	Liens brisés ou privés
