@@ -159,6 +159,10 @@ lDialogExternalTypesLabel	Tipo de Menu Compartilhado
 lDialogExternalTypesTitle	Tipo de menu compartilhado
 lDialogExternalWriteAccessMessage	Mensagem de acesso de escrita do menu compartilhado
 lDialogExternalWriteAccessUsers	Usuários com acesso de escrita neste menu compartilhado
+lDialogFavoriteAutoExec	Abrir este favorito ao iniciar
+lDialogFavoriteDebug	Depurar este favorito
+lDialogFavoriteDebugAfter	Para executar este comando, desative a opção "Depurar favorito" na aba "Configurações básicas" dos favoritos
+lDialogFavoriteDebugBefore	Comando com espaços reservados e variáveis do usuário inseridas
 lDialogFavoriteDisabled	Desativar este favorito
 lDialogFavoriteDisabledGroupMember	Desativar este item no grupo
 lDialogFavoriteDoesNotExistEdit	Você deseja editar este favorito?
@@ -211,6 +215,7 @@ lDialogFavoriteSnippetProcessEOLTab	Automaticamente codificar finais de linhas e
 lDialogFavoriteSnippetPromptLabel	Perguntar antes de ~1~ o recorte
 lDialogFavoriteSnippetPromptLabelLaunching	iniciar
 lDialogFavoriteSnippetPromptLabelPasting	colar
+lDialogFavoriteSnippetPromptNever	Nunca perguntar por este recorte
 lDialogFavoriteSnippetPromptNoPipe	O caractere de barra vertical (|) não é permitido no aviso de recorte.
 lDialogFavoriteSnippetSendMode	Enviar recorte para aplicativo atual em:
 lDialogFavoriteSnippetSendModeMacro	Modo macro
@@ -389,6 +394,7 @@ lDialogSameLocartionExistsPrompt	O seguinte favoritoi possui o mesmo conteúdo:
 lDialogSameLocartionExistsQuestion	Você ainda quer salvar este favorito?
 lDialogSearch	Pesquisar
 lDialogSearchAllFavorites	Pesquisar Todos os Favoritos
+lDialogSearchAutoExec	Pesquisar favoritos abertos ao iniciar
 lDialogSearchBrokenLinks	Pesquisar Links Quebrados de Favoritos (404)
 lDialogSearchBrokenLocations	Pesquisar Pastas, Documentos ou Aplicativos não encontrados
 lDialogSearchNotInDatabaseFavorites	Pesquisar Favoritos não usados nos últimos ~1~ dias
@@ -513,6 +519,7 @@ lGuiDropFilesIncentive2	Para lhe ajudar a arrastar um ou mais arquivos, você pod
 lGuiEditFavorite	Editar
 lGuiFileManagerNewTabSide	Abrir novas abas em qual lado do gerenciador de arquivos?
 lGuiFileManagerNewTabSideActive	Lado ativo
+lGuiFileManagerNewTabSideDest	Lado de destino
 lGuiGroupClosing	Fechando janelas do Explorer
 lGuiGroupRestoreDelay	Atraso entre a restauração de favoritos
 lGuiGroupRestoreDelayMilliseconds	millisegundos
@@ -522,6 +529,7 @@ lGuiGroupRestoreSide	Exibir em qual lado de ~1~?
 lGuiGroupRestoreStopIfError	Parar em caso de erro
 lGuiGroupRestoreWaitFinish	Aguardar até o programa finalizar
 lGuiGroupSaveAddWindowsLabel	Adicionar pastas a janelas existentes
+lGuiGroupSaveGroupInMenu	Também exibir este grupo em um submenu
 lGuiGroupSaveReplaceWindowsLabel	Substituir pastas nas janelas existentes
 lGuiGroupSaveRestoreOption	Ao restaurar pastas neste grupo:
 lGuiGroupSaveRestoreWith	Restaurar pastas com:
@@ -700,6 +708,7 @@ lMenuLastAction	Repetir Última Ação
 lMenuLastActionDescription	Adiciona um item rotulado "Repetir Última Ação" ao seu menu. Quando você selecionar este item do menu, ele reabre o último favorito que você abriu.`n`nO rótulo deste recurso sempre será "Repetir Última Ação" (limitação do QAP). Você precisa lembrar qual foi a última ação selecionada.
 lMenuLastActions	Repetir Últimas Ações
 lMenuLastActionsDescription	Exibe um menu dinâmico contendo os 10 favoritos mais recentes que você iniciou.`n`nVocê pode configurar o número de itens neste menu em "Opções", aba "Menu".`n`nItens neste menu são classificados pelo mais recente usado primeiro. Quando você reabrir um item, sua entrada é movido para o início do menu.
+lMenuLaunchAllItems	Abrir todos os itens
 lMenuListApplications	Listar Aplicativos do Windows
 lMenuListApplicationsDescription	Lista o título, caminho do processo e outras propriedades da janela em execução. Dê um duplo clique em uma janela para exibir uma caixa de diálogo onde você pode alternar para a janela ou fechá-la.
 lMenuMenu	Menu
@@ -822,6 +831,7 @@ lOopsInvalidWinCmdIni	Arquivo de configuração "wincmd.ini" do Total Commander nã
 lOopsInvalidWindowPosition	Valor(es) inválido(s) da posição da janela
 lOopsJLiconsError	Ícone da área de notificação do QAP não encontrado. Veja se você atualizou o arquivo JLicons.dll para ~1~.
 lOopsJLiconsOutdated	O seguinte arquivo precisa ser atualizado:`n`n~1~`n`nSubstitua-o pelo arquivo JLicons.dll versão ~2~ do arquivo ZIP de instalação portátil mais recente e reinicie o ~3~.
+lOopsLastSaveIncomplete	Algo interrompeu o ~1~ da última vez que ele salvou os seus favoritos no arquivo de configurações:`n`n~2~`n`nOs favoritos anteriores neste arquivo foram restaurados.
 lOopsLaunchWithNotFound	Arquivo "Iniciar com este aplicativo" não encontrado:`n`n~1~`n`nVerifique as configurações avançadas do favorito.
 lOopsMaxLiveFolder	O número máximo de itens em pastas Ativas (~1~) foi excedido. Por favor, diminua o número de níveis de pastas Ativas.`n`nVocê também pode atingir este limite, mas seja cuidadoso: um número muito grande pode ocasionar resultados imprevistos. Edite o valor em "Opções", seção "Opções Avançadas do Menu".
 lOopsMenuExternalCentralized	menu compartilhado centralizado
@@ -874,16 +884,19 @@ lOptionsClipboardMaxSizeDefault	(padrão: 10000 bytes)
 lOptionsControlDoublePressed	Abrir menu principal ao pressionar Ctrl + Ctrl (tecla Control pressionada duas vezes)
 lOptionsControlDoublePressedLeft	Usando tecla Control esquerda
 lOptionsControlDoublePressedRight	Usando tecla Control direita
+lOptionsDarkModeCustomize	Suporte para modo escuro na janela Personalizar
+lOptionsDarkModeMenus	Suporte para modo escuro nos menus
 lOptionsDatabase	Banco de dados
 lOptionsDisplayIcons	Exibir Ícones do Menu
 lOptionsDisplayMenuShortcuts	Exibir Atalhos Numéricos de Menu
 lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos de Menu Numérico em 1 (ao invés de 0)
 lOptionsEnableExternalMenusCatalogue	Habilitar o Catálogo de Menus Compartilhados
-lOptionsExclusionMouseList	Lista Negra
-lOptionsExclusionMouseListDescription	Lista Negra ou Branca do disparador do Mouse [~1~]
-lOptionsExclusionMouseListDetail1	Selecione se o botão do mouse pode ser usado em qualquer janela de aplicativo com exceções (lista negra) ou somente em alguns aplicativos (lista branca). Para adicionar um aplicativo à lista, entre qualquer parte do título de sua janela. Você pode entrar múltiplos aplicativos, um por linha. Por exemplo, para entrar o Chrome ou Word, entre as seguintes duas linhas:`n`Google Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	Quando o disparador do menu não é permitido em um aplicativo, o clique {~1~} é enviado para a janela de destino, como se o QAP não estivesse em execução. Você também pode adicionar aplicativos pelo nome da sua classe ou nome do processo (nome do arquivo EXE). Prefixe o título ou classe com * (asterisco) para excluir também caixas de diálogo de aplicativos (somente lista negra). Mais <a href="~2~">ajuda</a>.
-lOptionsExclusionMouseListWhitelist	Lista Branca
+lOptionsEnableFavoriteDebugOption	Ativar depuração de favorito para espaços reservados e variáveis do usuário
+lOptionsExclusionMouseList	Bloqueado
+lOptionsExclusionMouseListDescription	Bloqueado ou Aprovado do disparador do Mouse [~1~]
+lOptionsExclusionMouseListDetail1	Selecione se o botão do mouse pode ser usado em qualquer janela de aplicativo com exceções (bloqueado) ou somente em alguns aplicativos (aprovado). Para adicionar um aplicativo à lista, entre qualquer parte do título de sua janela. Você pode entrar múltiplos aplicativos, um por linha. Por exemplo, para entrar o Chrome ou Word, entre as seguintes duas linhas:`n`Google Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail2	Quando o disparador do menu não é permitido em um aplicativo, o clique {~1~} é enviado para a janela de destino, como se o QAP não estivesse em execução. Você também pode adicionar aplicativos pelo nome da sua classe ou nome do processo (nome do arquivo EXE). Prefixe o título ou classe com * (asterisco) para excluir (bloquear) também caixas de diálogo de aplicativos. Mais <a href="~2~">ajuda</a>.
+lOptionsExclusionMouseListWhitelist	Aprovado
 lOptionsExplorerContextMenus	Habilitar menus de contexto do Windows Explorer
 lOptionsFileManagerNavigateCurrent	a janela ~1~ atual
 lOptionsFileManagerNavigateCurrentTab	a aba ~1~ atual
@@ -911,6 +924,7 @@ lOptionsIconReplacementList	Substituições de Ícones do QAP
 lOptionsIconReplacementListInstructions	Entre as substituições de ícones do QAP, um por linha. Cada linha deve iniciar com o nome do ícone do QAP (ex.: "iconFolderLive"), seguido pelo sinal de igual "=" e o "arquivo,índice" do ícone de substituição. O "arquivo,índice" é o caminho para o arquivo (.ico, .dll ou .exe) contendo o ícone e o índice é a posição do ícone neste arquivo, ex.: "C:\Ícones\Arquivo.dll,1".
 lOptionsIconSize	Tamanho padrão dos ícones no menu
 lOptionsIconsManageRows	Linhas da janela 'Gerenciar Ícones' (0 para espaço máximo disponível)
+lOptionsKeepExtensionInShortName	Manter extensão do arquivo nos nomes curtos dos favoritos
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela ativa
@@ -1045,6 +1059,8 @@ lTipMenuTriggersTitle	Maneiras de mostrar a janela popup do menu de favoritos
 lTipSearchFavoritesDetails	Conforme o menu aumenta, veja como você pode rapidamente <a>colocar favoritos em submenus</a>.`n`nAlém de facilitar a edição de favoritos, esta ferramenta também fornece uma visão global dos seus favoritos, permitindo eliminar duplicados indesejados ou melhor organizar o seu menu.
 lTipSearchFavoritesTitle	Pesquise favoritos dentro do seu menu
 lToolTipAlwaysOnTop	"Sempre no Topo" DESATIVADO para a janela:`n~1~
+lToolTipAlwaysOnTopFailed	"Sempre no topo" FALHOU para a janela:`n~1~
+lToolTipAlwaysOnTopOn	"Sempre no topo" ATIVADO para a janela:`n~1~
 lToolTipBrokenLinksChecking	Verificando
 lToolTipBrokenLinksIntro	Examinando Links dos Favoritos
 lToolTipBrokenLinksList	Links quebrados ou privados
