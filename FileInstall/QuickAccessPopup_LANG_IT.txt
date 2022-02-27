@@ -159,6 +159,7 @@ lDialogExternalTypesLabel	Tipo di Menù Condiviso
 lDialogExternalTypesTitle	Tipo di menù condiviso
 lDialogExternalWriteAccessMessage	Messaggio di accesso in scrittura sul menù condiviso
 lDialogExternalWriteAccessUsers	Utenti con accesso in scrittura a questo menù
+lDialogFavoriteAutoExec	Apri questo Preferito all'avvio
 lDialogFavoriteDebug	Debug questo preferito
 lDialogFavoriteDebugAfter	Per eseguire questo comando, disattiva l'opzione "Debug Preferito" nel tab del preferito "Impostazioni base"
 lDialogFavoriteDebugBefore	Comando con segnaposto e variabili utente inserito
@@ -214,6 +215,7 @@ lDialogFavoriteSnippetProcessEOLTab	Codifica automaticamente fine-linea (EOL) e 
 lDialogFavoriteSnippetPromptLabel	Mostra il Prompt prima di ~1~ lo snippet
 lDialogFavoriteSnippetPromptLabelLaunching	eseguire
 lDialogFavoriteSnippetPromptLabelPasting	incollare
+lDialogFavoriteSnippetPromptNever	Non richiedere mai questo Preferito
 lDialogFavoriteSnippetPromptNoPipe	Il carattere Pipe (|) non è permesso nel prompt dello snippet.
 lDialogFavoriteSnippetSendMode	Invia lo snippet all'applicazione corrente in:
 lDialogFavoriteSnippetSendModeMacro	Modalità Macro
@@ -392,6 +394,7 @@ lDialogSameLocartionExistsPrompt	Il seguente preferito ha lo stesso contenuto:
 lDialogSameLocartionExistsQuestion	Vuoi salvare comunque questo preferito?
 lDialogSearch	Cerca
 lDialogSearchAllFavorites	Ricerca in Tutti i Preferiti
+lDialogSearchAutoExec	Ricerca Preferiti eseguita all'avvio
 lDialogSearchBrokenLinks	Ricerca Link Preferiti inesistenti (404)
 lDialogSearchBrokenLocations	Ricerca Cartelle, Documenti o Applicazioni non trovate
 lDialogSearchNotInDatabaseFavorites	Ricerca Preferiti non usati negli ultimi ~1~ giorni
@@ -516,6 +519,7 @@ lGuiDropFilesIncentive2	Per aiutarti a trascinare uno o piú file in una sola vol
 lGuiEditFavorite	Modifica
 lGuiFileManagerNewTabSide	Apri nuovi tab su quale lato del file manager?
 lGuiFileManagerNewTabSideActive	Lato attivo
+lGuiFileManagerNewTabSideDest	Lato Destinazione
 lGuiGroupClosing	Chiusura delle finestre di Explorer
 lGuiGroupRestoreDelay	Ritardo tra ogni Preferito da ripristinare:
 lGuiGroupRestoreDelayMilliseconds	millisecondi
@@ -525,6 +529,7 @@ lGuiGroupRestoreSide	Lato di visualizzazione di ~1~
 lGuiGroupRestoreStopIfError	Stop in caso di errore 
 lGuiGroupRestoreWaitFinish	Attendi la fine dell'esecuzione del programma 
 lGuiGroupSaveAddWindowsLabel	Aggiungi cartelle a finestre esistenti
+lGuiGroupSaveGroupInMenu	Mostra questo gruppo anche in un sottomenù
 lGuiGroupSaveReplaceWindowsLabel	Sostituisci delle cartelle nelle finestre esistenti
 lGuiGroupSaveRestoreOption	Nel ripristinare delle cartelle in questo gruppo:
 lGuiGroupSaveRestoreWith	Ripristina le cartelle con:
@@ -703,6 +708,7 @@ lMenuLastAction	Ripeti l'ultima azione
 lMenuLastActionDescription	Aggiungi un elemento con etichetta "Ripeti Ultima Azione" al tuo menù. Quando selezioni questo elemento dal menù, ti riapre l'ultimo preferito aperto.`n`nL'etichetta di questa funzionalità è sempre "Ripeti Ultima Azione" (dovuto a un limite di QAP). Devi ricordarti qual era l'ultima azione che avevi selezionato.
 lMenuLastActions	Ripeti le ultime azioni
 lMenuLastActionsDescription	Visualizza un menù dinamico contenente i dieci più recenti preferiti che hai richiamato.`n`nPuoi configurare il numero di oggetti in questo menù nelle "Opzioni", tab "Menù".`n`nGli elementi di questo menù vengono ordinati mettendo per primi quelli usati più di recente. Quando riapri un elemento, la sua riga viene spostata in alto nel menù.
+lMenuLaunchAllItems	Esegui tutti elementi 
 lMenuListApplications	Elenco Applicazioni Windows
 lMenuListApplicationsDescription	Titolo Lista, percorso del processo ed altre proprietà di finestre in esecuzione. Fai doppio-clic su una finestra per visualizzare una casella di dialogo dove puoi cambiare finestra o chiuderla.
 lMenuMenu	Menù
@@ -886,11 +892,11 @@ lOptionsDisplayMenuShortcuts	Mostra scorciatoie numeriche nei Menù
 lOptionsDisplayMenuShortcutsFromOne	Comincia le Scorciatoie Numeriche del Menù da 1 (invece di 0)
 lOptionsEnableExternalMenusCatalogue	Abilita il Catalogo del Menù Condiviso
 lOptionsEnableFavoriteDebugOption	Abilita debugging del preferito per segnaposto e variabili utente
-lOptionsExclusionMouseList	Lista Esclusioni
-lOptionsExclusionMouseListDescription	Attivatore [~1~] per l'apertura tramite mouse della Lista delle esclusioni o dei valori permessi
-lOptionsExclusionMouseListDetail1	Seleziona la scelta per usare il mouse su qualunque finestra di applicazione con eccezioni (in blacklist) oppure per consentirlo soltanto su alcune applicazioni specificate (in whitelist). Per aggiungere un'applicazione alla lista, inserisci una parte qualsiasi del suo titolo di finestra. Puoi inserire applicazioni multiple, una per linea. Per esempio, per escludere Chrome e MS Word, inserisci le seguenti due linee nella lista delle esclusioni:`n`nGoogle Chrome`nMicrosoft Word
-lOptionsExclusionMouseListDetail2	Quando la combinazione per aprire la lista tramite mouse è disabilitata per una data (finestra di)applicazione, il click [~1~] sarà inviato alla finestra destinazione come se QAP non fosse in esecuzione. Puoi anche aggiungere finestre usando il nome della loro classe o del loro processo (nome del file EXE). Usa * (asterisco) come prefisso per il titolo o la classe per escludere anche le caselle di dialogo dell'applicazione (solo per blacklist). Altro <a href="~2~">aiuto</a>.
-lOptionsExclusionMouseListWhitelist	Lista appl. consentite (Whitelist)
+lOptionsExclusionMouseList	Bloccati
+lOptionsExclusionMouseListDescription	Attivatore del Mouse [~1~] Bloccato o Approvato
+lOptionsExclusionMouseListDetail1	Seleziona la scelta per usare il mouse su qualunque finestra di applicazione con eccezioni (bloccate) oppure per consentirlo soltanto su alcune applicazioni (approvate). Per aggiungere un'applicazione alla lista, inserisci una parte qualsiasi del suo titolo di finestra. Puoi inserire applicazioni multiple, una per linea. Per esempio, per escludere Chrome e MS Word, inserisci le seguenti due linee nella lista delle esclusioni:`n`nGoogle Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail2	Quando l'attivazione per aprire la lista tramite mouse è disabilitata per una data (finestra di) applicazione, il click [~1~] sarà inviato alla finestra destinazione come se QAP non fosse in esecuzione. Puoi anche aggiungere applicazioni usando il nome della loro classe o del loro processo (nome del file EXE). Usa * (asterisco) come prefisso per il titolo o la classe per escludere (bloccare) anche le caselle di dialogo dell'applicazione. Altro <a href="~2~">aiuto</a>.
+lOptionsExclusionMouseListWhitelist	Approvato
 lOptionsExplorerContextMenus	Abilita i menù contestuali di WIndows Explorer
 lOptionsFileManagerNavigateCurrent	la finestra attuale ~1~
 lOptionsFileManagerNavigateCurrentTab	il tab ~1~ corrente
@@ -1053,6 +1059,8 @@ lTipMenuTriggersTitle	Vari modi di azionare il menù preferiti
 lTipSearchFavoritesDetails	Con l'aumentare delle dimensioni del menù, vedi come puoi facilmente <a>trovare preferiti nei tuoi sottomenù</a>.`n`nOltre a facilitare la modifica dei preferiti, questo strumento ti permette anche di avere una visione globale dei tuoi preferiti, e consente di eliminare duplicati indesiderati o organizzare meglio il menù.
 lTipSearchFavoritesTitle	Cerca preferiti all'interno del menù
 lToolTipAlwaysOnTop	"Sempre in Primo Piano"  SPENTO per la finestra:`n~1~
+lToolTipAlwaysOnTopFailed	"Sempre in Alto" NON RIUSCITO per la finestra:`n~1~
+lToolTipAlwaysOnTopOn	"Sempre in Alto" ATTIVO per la finestra:`n~1~
 lToolTipBrokenLinksChecking	Controllo in corso
 lToolTipBrokenLinksIntro	Scansione Link Preferiti
 lToolTipBrokenLinksList	Link inesistenti o privati

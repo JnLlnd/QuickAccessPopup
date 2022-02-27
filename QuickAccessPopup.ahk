@@ -30438,11 +30438,12 @@ class Container
 				Hotstring(PrepareHotstringForFunction(aaThisFavorite.strFavoriteHotstring, this.SA[A_Index]), "OpenFavoriteFromHotstring", "On")
 			}
 			
-			if (aaThisFavorite.strFavoriteType = "Group" and aaThisFavorite.oSubMenu.AA.blnGroupInMenu and !aaThisFavorite.blnIsCopyOfGroup)
+			if (aaThisFavorite.strFavoriteType = "Group" and aaThisFavorite.oSubMenu.AA.blnGroupInMenu and !aaThisFavorite.blnIsGroupInMenu)
 			{
-				aaThisFavorite.oGroupSubmenu := this.BuildGroupInMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
+				; add .oGroupSubmenu to this.SA[A_Index], to popup instead of launching the group, containing group items and a copy of the group itself to launch it from the submenu
+				this.PrepareGroupInMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index) ; this.SA[A_Index] is the object containing aaThisFavorite and sibling object SA
 				aaThisFavorite.oGroupSubmenu.BuildMenu(blnMenuShortcutAlreadyInserted, blnInitOrManualRefresh, blnDoNotCountItemsNow) ; RECURSIVE - one level only
-				o_Containers.AA[this.SA[A_Index].AA.oGroupSubmenu.AA.strMenuPath] := this.SA[A_Index].AA.oGroupSubmenu
+				o_Containers.AA[aaThisFavorite.oGroupSubmenu.AA.strMenuPath] := aaThisFavorite.oGroupSubmenu ; referred when opening content of the group submenu
 			}
 			if InStr("Menu|External", aaThisFavorite.strFavoriteType, true)
 				or (aaThisFavorite.intFavoriteFolderLiveLevels and LiveFolderHasContent(this.SA[A_Index]))
@@ -30579,23 +30580,25 @@ class Container
 	;------------------------------------------------------------
 
 	;------------------------------------------------------------
-	BuildGroupInMenu(o_FavoriteGroup, strMenuParentPath, intMenuParentPosition)
-	; this.BuildGroupInMenu(this.SA[A_Index], this.AA.strMenuPath, A_Index)
+	PrepareGroupInMenu(o_FavoriteGroup, strMenuParentPath, intMenuParentPosition)
 	;------------------------------------------------------------
 	{
-		oNewSubMenu := new Container("Menu", o_FavoriteGroup.AA.strFavoriteName . "-Group Submenu", , this, "init", true) ; last parameter true for blnDoubleAmpersands
-		
+		; copy of the original group to be inserted at 1st position of group menu, allowing to launch the group
 		oFavoriteGroupCopy := o_FavoriteGroup.BackupItem(true)
 		oFavoriteGroupCopy.AA.strFavoriteName := o_L["MenuLaunchAllItems"]
-		oFavoriteGroupCopy.AA.blnIsCopyOfGroup :=  true
-		oNewSubMenu.SA.Push(oFavoriteGroupCopy)
+		oFavoriteGroupCopy.AA.blnIsGroupInMenu :=  true
 		
-		oNewSubMenu.SA.Push(new Container.Item(["X"]))
+		; new menu that will popup instead of launching the group
+		o_FavoriteGroup.AA.oGroupSubMenu := o_FavoriteGroup.AA.oSubMenu.BackupContainer()
+		o_FavoriteGroup.AA.oGroupSubMenu.AA.strMenuPath .= "-GroupInMenu"
+		o_FavoriteGroup.AA.oGroupSubMenu.AA.strMenuType := "Menu"
+		o_FavoriteGroup.AA.oGroupSubMenu.AA.strFavoriteGroupSettings := "" ; this is not a group anymore
+		o_FavoriteGroup.AA.oGroupSubMenu.AA.oParent := ""
 		
-		loop, % o_FavoriteGroup.AA.oSubMenu.SA.MaxIndex()
-			oNewSubMenu.SA.Push(o_FavoriteGroup.AA.oSubMenu.SA[A_Index])
-		
-		return oNewSubMenu
+		; insert group in submenu launching all group items
+		o_FavoriteGroup.AA.oGroupSubMenu.SA.InsertAt(1, oFavoriteGroupCopy)
+		oFavoriteGroupCopy.AA.oParentMenu := o_FavoriteGroup.AA.oGroupSubMenu ; attach to parent menu (if required?)
+		o_FavoriteGroup.AA.oGroupSubMenu.SA.InsertAt(2, new Container.Item(["X"]))
 	}
 	;------------------------------------------------------------
 
@@ -31966,7 +31969,6 @@ class Container
 			; GROUP
 			if (this.AA.strFavoriteType = "Group") and !(g_blnAlternativeMenu)
 			{
-				Sleep, 50 ; without this delay, this.AA.oGroupSubmenu is sometimes empty when it should not (no idea why)
 				if IsObject(this.AA.oGroupSubmenu) ; this is a group with submenu with items to open the group or its items
 					Menu, % this.AA.oGroupSubmenu.AA.strMenuPath, Show
 				else
