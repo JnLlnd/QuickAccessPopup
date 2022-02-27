@@ -32460,7 +32460,10 @@ class Container
 							: (this.aaTemp.saFavoriteWindowPosition[8] = "D" ? "/S /R" 
 							: "/" . this.aaTemp.saFavoriteWindowPosition[8])) ; else keep "/" with values "L" or "R"
 					else if (this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist")
-						strSideParameter := "/S /L" ; to open TC Hotlist items in active pane
+						if StrLen(this.AA.strFavoriteAppWorkingDir) ; there is a target path
+							strSideParameter := "/S /L" ; to open TC Hotlist items in active pane
+						else
+							strSideParameter := "/" . o_Settings.FileManagers.strFileManagerNewTabSide.IniValue ; will be processed later
 					else if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs)
 						strSideParameter := "/" . o_Settings.FileManagers.strFileManagerNewTabSide.IniValue ; will be processed later
 					
@@ -32524,7 +32527,8 @@ class Container
 						{
 							; g_aaFileManagerTotalCommander.strNewTabOrWindow should contain "/O /T" to open in an new tab of the existing file list (default), or "/N" to open in a new file list
 							strTabParameter := g_aaFileManagerTotalCommander.strNewTabOrWindow
-							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and this.aaTemp.strOpenFavoriteLabel <> "OpenFavoriteHotlist") ; keep strSideParameter as-is for TC Hotlist items
+							if (g_aaFileManagerTotalCommander.blnFileManagerUseTabs and 
+								!(this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteHotlist" and StrLen(this.AA.strFavoriteAppWorkingDir))) ; keep strSideParameter TC Hotlist item has target path
 								if (!StrLen(o_Settings.FileManagers.strFileManagerNewTabSide.IniValue) or o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "A") ; active, check if empty for legacy
 									strSideParameter := "/S /L" ; /S for source-target and then /L stands for source
 								else if (o_Settings.FileManagers.strFileManagerNewTabSide.IniValue = "D")
