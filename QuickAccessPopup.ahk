@@ -31,7 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.4.9.1 (2022-02-19)
+Version BETA: 11.5.4.9.2 (2022-02-27)
+- review showing group in a menu to fix an issue with launch all items
+- fix bug in Total Commander when using an item from the TC Hotlist
+  - if there is no target path, the folder is open on the configured side (Active, Left, Right or Destination)
+  - if there is target path in the TC Hotlist, open the folder on the active pane and the target path on the destination pane
+- disable the "Edit" entry in "Customize" window context menus when there are more than one item selected
+- language file translation for v11.5.4 and 11.5.4.9.1
 - updated version of AutoHotkey runtime (v1.1.33.10)
 
 Version BETA: 11.5.4.9.1 (2022-02-19)
@@ -5035,7 +5041,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.4.9.1
+;@Ahk2Exe-SetVersion 11.5.4.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5102,7 +5108,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.4.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.4.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -8771,7 +8777,6 @@ if (g_blnIniFileCreation)
 	strLimitsMessage .= L(o_L["DialogFreeEditionLive"], g_intNbLiveFolderItemsMax) . "`n"
 else
 	strLimitsMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLiveExceeded"], g_intNbLiveFolderItemsMax) . "`n" : "")
-
 
 strLimitsMessage := ""
 
