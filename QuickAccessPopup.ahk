@@ -31,6 +31,24 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.5 (2022-02-28)
+ 
+Groups
+- in "Edit Favorite" dialog box, "Basic Settings" tab, add a checkbox to "Also display this group in a submenu"
+- when a favorite of type "Group" has this new option enabled, clicking the group item shows a popup menu including the group members, allowing to launch them individually, and an additional entry to "Launch all items" to open all group members
+- at this time, this group menu is "detached" from the main menu
+ 
+Various improvements
+- fix bug in Total Commander when using an item from the TC Hotlist
+  - if there is no target path, the folder is open on the configured side (Active, Left, Right or Destination)
+  - if there is target path in the TC Hotlist, open the folder on the active pane and the target path on the destination pane
+- for Directory Opus users, when opening a folder on a Windows virtual desktop, QAP now detects if DOpus is already running in this virtual desktop before launching a new DOpus instance
+- in "Edit Favorite" dialog box for Snippets, in "Advanced Settings" tab, add a checkbox "Never prompt for this snippet", to be used when a snippet does not require an application window to be active when it is launched
+- disable the "Edit" entry in "Customize" window context menus when there are more than one item selected
+- in "Options, Popup Menu", replace the application inclusion/exclusion language with more appropriate vocabulary
+- language files translation for v11.5.4 and 11.5.5
+- updated version of AutoHotkey runtime v1.1.33.10
+
 Version BETA: 11.5.4.9.3 (2022-02-28)
 - fix bug in menu refresh (manual or scheduled) breaking group "launch all items" when group in menu option is enabled
 
@@ -5044,7 +5062,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.4.9.3
+;@Ahk2Exe-SetVersion 11.5.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5111,8 +5129,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.4.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
