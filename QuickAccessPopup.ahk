@@ -24560,26 +24560,48 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 ;   strSelectedLocation: same with prefix "SEL_" like {SEL_LOC} (full location of selected item in file manager), {SEL_NAME} (selected file name), etc.
 ;   Do not process strCurrentLocation or strSelectedLocation if = -1
 ;
-; This function also process {Clipboard}, {Input:prompt} and user variables.
+; This function also process {Clipboard}, {Input:prompt}, {Now:format} and user variables.
 ;------------------------------------------------------------
 {
 	; protect escaped open curly brackets `{
 	strOriginal := StrReplace(strOriginal, "````{", "!r4nd0mt3xt!") ; original tick was doubled by EncodeSnippet
 
+	; process location
 	strExpanded := ExpandPlaceholdersForThis(strOriginal, strLocation, "")
 	if (strCurrentLocation <> -1)
 		strExpanded := ExpandPlaceholdersForThis(strExpanded, strCurrentLocation, "CUR_")
 	if (strSelectedLocation <> -1)
 		strExpanded := ExpandPlaceholdersForThis(strExpanded, strSelectedLocation, "SEL_")
 	
-	while InStr(strExpanded, "{Now:") ; not case sensitive, expand {Now:format} and {Now:format UTC}
-	; see https://www.autohotkey.com/docs/commands/FormatTime.htm
-	; examples: {Now:yyyy-MM-dd} -> 2019-10-16 / {Now:dddd hh:mm} -> Wednesday 14:06 / {Now:MMMM d, yyyy h:mm tt} -> October 16, 2019 2:06 PM
+	; process Now date-time
+	while RegExMatch(strExpanded, "(\{Now)([+-].*:|:).*}") ; match simple Now {Now:aaa} or Now with calculation {Now+2d:aaa}")
+	; format examples: {Now:yyyy-MM-dd} -> 2019-10-16 / {Now:dddd hh:mm} -> Wednesday 14:06 / {Now:MMMM d, yyyy h:mm tt} -> October 16, 2019 2:06 PM
+	; calculation examples: {Now+1M:yyyy-MM-dd} -> 2019-11-16 / {Now-4h:dddd hh:mm} -> Wednesday 10:06
+	; QAP added format "ld" (last day): {Now:MMMM} {Now:ld}, {Now:yyyy} -> October 31, 2019
 	{
-		strFormat := RegExReplace(StrSplit(strExpanded, "{Now:")[2], "(}.*)") ; display the part after "{Now:" and remove "}" and after
+		arrNow := StrSplit(strExpanded, "{Now") ; before "{Now" in [1], after the first "{Now" in [2] 
+		arrColon := StrSplit(arrNow[2], ":") ; before ":" in [1] is the calculation, after ":" in [2], [3], etc. is the remaining of strExpanded
+		strCalculation := arrColon[1]
+		
+		intFormatStart := InStr(arrNow[2], ":") + 1
+		intFormatEnd := InStr(arrNow[2], "}")
+		strFormat := SubStr(arrNow[2], intFormatStart, intFormatEnd - intFormatStart)
+		
 		blnUTC := InStr(strFormat, " UTC")
-		FormatTime, strNow, % (blnUTC ? A_NowUTC : A_Now), % StrReplace(strFormat, " UTC") ; remove UTC if it is used
-		strExpanded := RegExReplace(strExpanded, "i)\{Now:(.*?)}", strNow, , 1) ; replace only first occurence
+		strNow := (blnUTC ? A_NowUTC : A_Now)
+		if StrLen(strCalculation)
+			strNow := GetCalculatedDate(strNow, strCalculation)
+		
+		if (strFormat = "ld") ; last day of month
+			strDateResult := GetLastDayOfMonth(strNow)
+		else
+			FormatTime, strDateResult, %strNow%, % StrReplace(strFormat, " UTC") ; remove UTC if it is used
+			; see https://www.autohotkey.com/docs/commands/FormatTime.htm
+		
+		if InStr(strExpanded, "{Now" . strCalculation . ":" . strFormat . "}")
+			strExpanded := StrReplace(strExpanded, "{Now" . strCalculation . ":" . strFormat . "}", strDateResult)
+		else ; invalid format
+			strExpanded := ""
 	}
 
 	if (strCurrentLocation = o_L["DialogArgumentsPlaceholdersCurrentExample"]) ; this is for an example only
@@ -24589,8 +24611,10 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	}
 	else
 	{
+		; process Clipboard
 		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
+		; process Input
 		if !(g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"]) ; avoid {Input:prompt} when editing a favorite
 			while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
 			{
@@ -24606,6 +24630,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			}
 	}
 
+	; process Environment variables and User variables
 	if (blnIsParameters and o_Settings.LaunchAdvanced.blnExpandEnvVarsInParameters.IniValue)
 		strExpanded := EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
 	else
@@ -24618,6 +24643,109 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	strExpanded := StrReplace(strExpanded, "!r4nd0mt3xt!", "{") ; restore ticked open curly brackets
 
 	return strExpanded
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetCalculatedDate(dte, strCalculation)
+; strCalculation is 1 char for sign and 1 or more pairs of nb + unit
+; unit can be s (seconds), m (minutes, case sensitive), h (hours), d (days), M (months, case sensitive) or y (year)
+;------------------------------------------------------------
+{
+	dteCalc := dte
+	strSign := SubStr(strCalculation, 1, 1)
+	if !InStr("+-", strSign)
+		return
+	strCalculation := SubStr(strCalculation, 2)
+	
+	while RegExMatch(strCalculation, "[0-9]")
+	; process each pair of number + unit
+	{
+		intUnitStart := RegExMatch(strCalculation, "[^0-9]")
+		strThisUnit := SubStr(strCalculation, intUnitStart, 1)
+		intThisNb := SubStr(strCalculation, 1, intUnitStart - 1) * (strSign = "+" ? 1 : -1)
+		
+		if InStr("smhd", strThisUnit, true) ; case sensitive
+			; use standard EnvAdd command
+			dteCalc += %intThisNb%, %strThisUnit% ; Seconds, Minutes, Hours, or Days
+		else
+			; years and months not supported by EnvAdd, use DateCalcMonthYear
+			dteCalc := DateCalcMonthYear(dteCalc, (strThisUnit = "y" ? intThisNb : 0), (strThisUnit == "M" ? intThisNb : 0)) ; case sensitive
+		
+		; process next pair
+		strCalculation := SubStr(strCalculation, intUnitStart + 1)
+	}
+	
+	return dteCalc
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+DateCalcMonthYear(dte := "", intYears := 0, intMonths := 0, intDays := 0)
+; based on DateCalc (https://jacks-autohotkey-blog.com/2021/04/01/calculating-dates-in-autohotkey-by-adding-intYears-intMonths-and-or-intDays/)
+; with fix in comments about invalid dates
+;------------------------------------------------------------
+{
+	If (dte = "")
+		dte := A_Now
+	intMonths := SubStr(dte, 5, 2) + intMonths ; YYYYMMDDHH24MISS
+	
+	While (intMonths > 12)
+	{
+		intYears++
+		intMonths := intMonths - 12
+	}
+	
+	While (intMonths <= 0)
+	{
+		intYears--
+		intMonths := intMonths + 12
+	}
+
+	dteCalc := Substr(dte, 1, 4) + intYears . Format("{:02}", intMonths) . Substr(dte,7, 2)
+	
+	; test if new dte is valid in case 29, 30 or 31 do not exist in month
+	FormatTime, blnTestDate, %dteCalc%, ShortDate
+	While !blnTestDate
+	{
+		dteCalc := Substr(dte, 1, 4) + intYears . Format("{:02}", intMonths) . Substr(dte, 7, 2) - A_Index
+		FormatTime, blnTestDate, %dteCalc%, ShortDate
+	}
+	
+	; append time to date YYYYMMDDHH24MISS
+	dteCalc .= SubStr(dte, 9)
+	dteCalc += intDays , Days
+	return dteCalc
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetLastDayOfMonth(strDate)
+; adapted from Chris (https://www.autohotkey.com/board/topic/2885-how-to-retrieve-the-last-day-of-the-current-month/#entry18547)
+;------------------------------------------------------------
+{
+	; YYYYMMDDHH24MISS
+	intYear := SubStr(strDate, 1, 4)
+	intMonth := SubStr(strDate, 5, 2)
+	
+	if (intMonth = 12)
+	{
+		intNextMonth := 1
+		intYear := intYear + 1
+	}
+	else
+	{
+		intNextMonth := intMonth + 1
+		if (intNextMonth < 10)
+			intNextMonth := "0" . intNextMonth ; int -> string
+	}
+	strFirstDayOfNextMonth := intYear . intNextMonth . "01"
+	strFirstDayOfNextMonth += -1, day ; subtract one day to get last day of strDate month
+	
+	return SubStr(strFirstDayOfNextMonth, 7, 2)
 }
 ;------------------------------------------------------------
 
@@ -26688,6 +26816,7 @@ IsWindowOnCurrentVirtualDesktop(hWnd)
 		return false, ErrorLevel := true
 	return onCurrentDesktop, ErrorLevel := false
 }
+;------------------------------------------------------------
 
 
 ;========================================================================================================================
