@@ -31,6 +31,20 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.6 (2022-03-14)
+ 
+Date-time placeholders
+- in placeholders support new format {Now:ld} for last day of the month
+- support date calculation with syntax {Now[sign][value pairs]:[format]}, where:
+  - [sign] is "+" or "-"
+  - [valu pairs] is one or more pairs of a number and a unit identified by one of the letters "smhdMy" (case sensitive) for seconds, minutes, hours, days, months or years
+  - for example "{Now+1d:yyyy-MM-dd}" for tomorrow,  "{Now-1y6M:yyyy-MM-dd}" for a date 1.5 year ago or "{Now+3h30m:HH:mm}" for in 1.5 hour from now
+  - see: https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/#datetimecalc
+ 
+Bug fix
+- fix bug in open group with group in menu option if launch width property is "0" instead of empty (very, very rare situation)
+- fix bug in url having arguments
+
 Version: 11.5.5 (2022-02-28)
  
 Groups
@@ -5062,7 +5076,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.5
+;@Ahk2Exe-SetVersion 11.5.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5129,7 +5143,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -24608,7 +24622,15 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		blnUTC := InStr(strFormat, " UTC")
 		strNow := (blnUTC ? A_NowUTC : A_Now)
 		if StrLen(strCalculation)
+		{
 			strNow := GetCalculatedDate(strNow, strCalculation)
+			if !StrLen(strNow)
+			{
+				Oops(0, o_L["OopsNowCalculationInvalid"])
+				strExpanded := ""
+				return
+			}
+		}
 		
 		if (strFormat = "ld") ; last day of month
 			strDateResult := GetLastDayOfMonth(strNow)
@@ -24619,7 +24641,11 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		if InStr(strExpanded, "{Now" . strCalculation . ":" . strFormat . "}")
 			strExpanded := StrReplace(strExpanded, "{Now" . strCalculation . ":" . strFormat . "}", strDateResult)
 		else ; invalid format
+		{
+			Oops(0, o_L["OopsNowPlaceholderInvalid"])
 			strExpanded := ""
+			return
+		}
 	}
 
 	if (strCurrentLocation = o_L["DialogArgumentsPlaceholdersCurrentExample"]) ; this is for an example only
@@ -24677,6 +24703,9 @@ GetCalculatedDate(dte, strCalculation)
 		return
 	strCalculation := SubStr(strCalculation, 2)
 	
+	if !RegExMatch(strCalculation, "[0-9]")
+		return ; invalid calculation, return empty value
+	
 	while RegExMatch(strCalculation, "[0-9]")
 	; process each pair of number + unit
 	{
@@ -24684,12 +24713,17 @@ GetCalculatedDate(dte, strCalculation)
 		strThisUnit := SubStr(strCalculation, intUnitStart, 1)
 		intThisNb := SubStr(strCalculation, 1, intUnitStart - 1) * (strSign = "+" ? 1 : -1)
 		
+		if !StrLen(strThisUnit) or !StrLen(intThisNb)
+			return ; invalid calculation, return empty value
+		
 		if InStr("smhd", strThisUnit, true) ; case sensitive
 			; use standard EnvAdd command
 			dteCalc += %intThisNb%, %strThisUnit% ; Seconds, Minutes, Hours, or Days
-		else
+		else if InStr("My", strThisUnit, true) ; case sensitive
 			; years and months not supported by EnvAdd, use DateCalcMonthYear
 			dteCalc := DateCalcMonthYear(dteCalc, (strThisUnit = "y" ? intThisNb : 0), (strThisUnit == "M" ? intThisNb : 0)) ; case sensitive
+		else
+			return ; invalid calculation, return empty value
 		
 		; process next pair
 		strCalculation := SubStr(strCalculation, intUnitStart + 1)
