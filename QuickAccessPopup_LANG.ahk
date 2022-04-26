@@ -82,7 +82,7 @@ this["DialogChangeHotkeyModifierAndNone"] := "Modifiers like ""Alt"" or ""Contro
 this["DialogChangeHotkeyMouseCheckLButton"] := "You can't assign the ""Left Mouse Button"" without a modifier`n(like ~1~, ~2~, ~3~ or ~4~ keys)."
 this["DialogChangeHotkeyPopup"] := "This is a popup menu hotkey.`n`nDo you want to manage ""~1~"" in ""~2~""?"
 this["DialogChangeHotkeyTitle"] := "Change shortcut - ~1~ ~2~"
-this["DialogChangeHotkeyTitleManual"] := "Enter the hotkey code or keyboard scan code (SCnnn) here. See https://www.autohotkey.com/docs/KeyList.htm for more info.`n`nEnter hotkey code:"
+this["DialogChangeHotkeyTitleManual"] := "Enter the hotkey code or keyboard scan code (SCnnn) here. See ~1~ for more info.`n`nEnter hotkey code:"
 this["DialogChangeHotstringDefaultOptionsPrompt"] := "Select default options for newly created hotstrings (<a href=""~1~"">Help</a>)"
 this["DialogChangeHotstringReload"] := "Changes in the options of this hotstring will automatically restart ~1~ after saving favorites."
 this["DialogChangeHotstringTitle"] := "Change hotstring - ~1~"
