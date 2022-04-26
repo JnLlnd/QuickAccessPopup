@@ -18586,7 +18586,7 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 		GuiControl, , f_strShortcutKey, % o_HotkeyActual.strKey
 	}
 	if (P_intShortcutType <> 1)
-		Gui, Add, Link, y+5 xs w200 gShortcutInvisibleKeysClicked, % L(o_L["DialogHotkeyInvisibleKeys"], "Space", "Tab", "Enter", "Esc", "Menu")
+		Gui, Add, Link, y+5 xs w200 gShortcutInvisibleKeysClicked, % L(o_L["DialogHotkeyInvisibleKeys"], "Space", "Tab", "Enter", "Esc", "Menu", "Manual")
 
 	Gui, Add, Button, % "x10 y" . SS_arrTopY + 100 . " vf_btnNoneShortcut gSelectNoneShortcutClicked", % SS_aaL["DialogNone"]
 	if StrLen(P_strDefaultShortcut) and (P_strFavoriteType <> "Alternative")
@@ -18627,6 +18627,10 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	Gui, 2:+Disabled
 	WinWaitClose, %SS_strGuiTitle% ; waiting for Gui to close
 	
+	if (SS_blnManualInput)
+		InputBox, SS_strNewShortcut, % L(o_L["DialogChangeHotkeyTitle"], g_strAppNameFile, g_strAppVersion)
+			, % L(o_L["DialogChangeHotkeyTitleManual"], "https://www.autohotkey.com/docs/KeyList.htm"), , 400, 160, , , , , %P_strActualShortcut%
+			
 	if (SS_strNewShortcut <> P_strActualShortcut)
 		SS_strNewShortcut := ShortcutIfAvailable(SS_strNewShortcut, P_strFavoriteName)
 
@@ -18658,6 +18662,7 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	SS_intY := ""
 	SS_strGuiTitle := ""
 	SS_aaL := ""
+	SS_blnManualInput := ""
 
 	return SS_strNewShortcut ; returning value
 	
@@ -18727,8 +18732,15 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 		GuiControl, , f_strShortcutKey, Enter
 	else if (ErrorLevel = "Esc")
 		GuiControl, , f_strShortcutKey, Escape
-	else ; Menu
+	else if (ErrorLevel = "Menu")
 		GuiControl, , f_strShortcutKey, AppsKey
+	else ; Manual
+	{
+		SS_blnManualInput := true
+		g_blnChangeShortcutInProgress := false
+		Gosub, 3GuiClose ; manual input dialog box will be shown after the window is closed
+		; return not needed
+	}
 	GuiControl, Choose, f_drpShortcutMouse, 0
 
 	return
