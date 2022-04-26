@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.9.1.1 (2022-04-26)
+ 
 Version: 11.5.6 (2022-03-14)
  
 Date-time placeholders
@@ -5076,7 +5078,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.6
+;@Ahk2Exe-SetVersion 11.5.9.1.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5143,8 +5145,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.9.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
@@ -24652,6 +24654,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	{
 		strExpanded := StrReplace(strExpanded, "{Clipboard}", o_L["MenuClipboard"])
 		strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", o_L["DialogInputExample"]) ; replace all occurences
+		strExpanded := StrReplace(strExpanded, "{ActiveWindow}", "C:\PATH\ACTIVE_WINDOW_APP.EXE")
 	}
 	else
 	{
@@ -24672,6 +24675,14 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 				strUserVariablesBackup := o_Settings.UserVariables.strUserVariablesList.IniValue
 				o_Settings.UserVariables.strUserVariablesList.IniValue .= "|{" . strInputPrompt . "}=" . strInputContent ; add temporary content to user variables list
 			}
+		
+		; process ActiveWindow
+		if InStr(strOriginal, "{ActiveWindow}")
+		{
+			WinGet, strActiveWindowPath, ProcessPath , A
+			if !InStr(strActiveWindowPath, "quickaccesspopup") ; avoid launching with QAP
+				strExpanded := StrReplace(strExpanded, "{ActiveWindow}", strActiveWindowPath)
+		}
 	}
 
 	; process Environment variables and User variables
@@ -32086,10 +32097,14 @@ class Container
 			
 			; LAUNCH WITH
 			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|WindowsApp|", this.AA.strFavoriteType . "|")
-			; ignore for Application or Snippet favorites because strFavoriteLaunchWith contains data for other options
+			; this.AA.strFavoriteLaunchWith <> "0" for legacy of old ini file
+			; ignore for Application, Snippet, QAP and WindowsApp favorites because strFavoriteLaunchWith contains data for other options
 			{
-				strTemp := this.AA.strFavoriteLaunchWith ; use strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
-				blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strExpandedLaunchWith expanded and searched in PATH
+				strTemp := ExpandPlaceholders(this.AA.strFavoriteLaunchWith, this.AA.strFavoriteLocation
+					, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
+					, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
+				; use strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
+				blnFileExist := FileExistInPath(strTemp) ; return strFavoriteLaunchWith expanded and searched in PATH
 				this.aaTemp.strExpandedLaunchWith := strTemp
 				
 				if !(blnFileExist) and (g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"])
