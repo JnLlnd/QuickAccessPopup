@@ -28,8 +28,8 @@ lContextShowMenu	Afficher le menu de Quick Access Popup
 lControlToolTipAlwaysOnTopOff	Garder cette fenêtre toujours visible
 lControlToolTipAlwaysOnTopOn	Arrêter de garder cette fenêtre toujours visible
 lControlToolTipColumnBreak	Insérer un saut de colonne
-lControlToolTipMoveDown	Déplacer le(s) favori(s) vers le haut
-lControlToolTipMoveUp	Déplacer le(s) favori(s) vers le bas
+lControlToolTipMoveDown	Déplacer le(s) favori(s) vers le bas
+lControlToolTipMoveUp	Déplacer le(s) favori(s) vers le haut
 lControlToolTipNextMenu	Retourner au menu suivant
 lControlToolTipOpenMenuContainingSearchItem	Ouvrir le sous-menu ou le groupe contenant le favori sélectionné
 lControlToolTipParentMenu	Aller au menu parent
