@@ -30648,6 +30648,10 @@ class Container
 				else if (aaThisFavorite.strFavoriteType = "External")
 					g_intNbExternalMenusCount++
 				
+				; keep track if shortcut or hotstring is assigned to this menu allowing to add a close menu item later
+				aaThisFavorite.oSubMenu.AA.strMenuShortcut := aaThisFavorite.strFavoriteShortcut
+				aaThisFavorite.oSubMenu.AA.strMenuHotstring := aaThisFavorite.strFavoriteHotstring
+				
 				if !(aaThisFavorite.strFavoriteArguments) ; empty or 0
 					aaThisFavorite.oSubMenu.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue
 				else if (aaThisFavorite.strFavoriteArguments = -1) ; parent menu
@@ -30762,7 +30766,8 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
-		if (!IsObject(this.AA.oParentMenu) and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
+		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring))
+			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
 	}
