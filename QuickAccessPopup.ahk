@@ -20180,13 +20180,58 @@ WindowIsConsole(strClass)
 WindowIsDialog(strClass, strWinId)
 ;------------------------------------------------------------
 {
-	return (strClass = "#32770") and !WindowIsTreeview(strWinId) and DialogHasRequiredControle(strWinId)
+	; return (strClass = "#32770") and !WindowIsTreeview(strWinId) and DialogHasRequiredControls(strWinId)
+	
+	; ToolTip, % A_ThisFunc . " - " . strClass . " - " . !WindowIsTreeview(strWinId) . " - " . DialogHasRequiredControls(strWinId)
+	; bln := (strClass = "#32770") and !WindowIsTreeview(strWinId) and DialogHasRequiredControls(strWinId)
+	
+	; ToolTip, % A_ThisFunc . " - " . strClass . " - " . !WindowIsTreeview(strWinId) . " - " . SmellsLikeAFileDialog(strWinId)
+	bln := (strClass = "#32770") and !WindowIsTreeview(strWinId) and SmellsLikeAFileDialog(strWinId)
+	
+	return bln
 }
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-DialogHasRequiredControle(strWinId)
+SmellsLikeAFileDialog(strWinId )
+;------------------------------------------------------------
+; Adapted from NotNull on QAP forum https://forum.quickaccesspopup.com/showthread.php?tid=1990
+; Only consider this dialog a possible file-dialog when:
+; (SysListView321 AND ToolbarWindow321) OR (DirectUIHWND1 AND ToolbarWindow321) controls detected
+; First is for Notepad++; second for all other filedialogs
+; Returns dialogtype (General/SyslistView) or 0/FALSE
+;------------------------------------------------------------
+;
+{
+	WinGet, strControlsList, ControlList, ahk_id %strWinId%
+	; Sort, strControlsList
+	; ###_V(A_ThisFunc, strControlsList)
+
+	Loop, Parse, strControlsList, `n
+	{
+		If (A_LoopField = "SysListView321")
+			blnSysListView321 := true
+		If (A_LoopField = "ToolbarWindow321")
+			blnToolbarWindow321 := true
+		If (A_LoopField = "DirectUIHWND1")
+			blnDirectUIHWND1 := true
+		If (A_LoopField = "Edit1")
+			blnEdit1 := true
+	}
+
+	if (blnDirectUIHWND1 and blnToolbarWindow321 and blnEdit1)
+		return "GENERAL" ; true
+	else if (blnSysListView321 and blnToolbarWindow321 and blnEdit1)
+		return "SYSLISTVIEW" ; true
+	else
+		return false
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+DialogHasRequiredControls(strWinId) ; UNUSED, replaced by SmellsLikeAFileDialog by NotNull
 ; Disable popup menu in dialog boxes when its controls list does not fullfil these conditions:
 ; include ("Edit1" or "Edit2") and ("ToolBarWindow32" or "SysListView32" or "SysTreeView32" or "DirectUIHWND") and ("Button")
 ; Thanks to research by Helge Kraak
