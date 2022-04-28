@@ -6295,8 +6295,8 @@ if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "intIconSize", "IconSize", 32, "MenuIcons", "f_lblIconSize|f_drpIconSize") ; g_intIconSize
-o_Settings.ReadIniOption("MenuIcons", "intIconsManageRowsSettings", "IconsManageRows", 0, "MenuIcons", "f_intIconsManageRowsSettingsEdit|f_intIconsManageRowsSettings|f_lblIconsManageRows") ; g_intIconsManageRowsSettings
 o_Settings.ReadIniOption("MenuIcons", "strIconReplacementList", "IconReplacementList", " ", "MenuIcons", "f_lnkIconReplacementList1|f_lnkIconReplacementList2|f_strIconReplacementList") ; g_strIconReplacementList
+o_Settings.ReadIniOption("MenuIcons", "strIconsCustomFolder", "IconsCustomFolder", A_WorkingDir, "MenuIcons", "f_strIconsCustomFolder|f_lblIconsCustomFolder|f_btnIconsCustomFolder")
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
 ; Group MenuAppearance
@@ -6402,6 +6402,7 @@ o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippe
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
 if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
 	o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] := 150 ; new default added 2020-11-05 (was 100 ms)
+o_Settings.ReadIniOption("MenuIcons", "intIconsManageRowsSettings", "IconsManageRows", 0, "AdvancedOther", "f_intIconsManageRowsSettingsEdit|f_intIconsManageRowsSettings|f_lblIconsManageRows") ; g_intIconsManageRowsSettings
 
 ; not in Options Gui
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
@@ -9186,21 +9187,15 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 ; === MenuIcons ===
 
 ; DisplayIcons
-Gui, 2:Add, CheckBox, y%intGroupItemsY% x%g_intGroupItemsX% w500 vf_blnDisplayIcons gDisplayIconsClicked hidden, % o_L["OptionsDisplayIcons"]
+Gui, 2:Add, CheckBox, y%intGroupItemsY% x%g_intGroupItemsX% w230 vf_blnDisplayIcons gDisplayIconsClicked hidden, % o_L["OptionsDisplayIcons"]
 GuiControl, , f_blnDisplayIcons, % (o_Settings.MenuIcons.blnDisplayIcons.IniValue = true)
 
 ; IconSize
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblIconSize Disabled hidden, % o_L["OptionsIconSize"]
+Gui, 2:Add, Text, yp x%g_intGroupItemsTab4X% vf_lblIconSize Disabled hidden, % o_L["OptionsIconSize"]
+; Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblIconSize Disabled hidden, % o_L["OptionsIconSize"]
 Gui, 2:Add, DropDownList, yp x+10 w75 vf_drpIconSize Disabled hidden, 16|24|32|48|64 ; gLabel after Gosub that changes the value below
 GuiControl, ChooseString, f_drpIconSize, % o_Settings.MenuIcons.intIconSize.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_drpIconSize
-
-; IconsManageRows
-Gui, 2:Add, Edit, % "y+10 x" . g_intGroupItemsX . " w51 h22 vf_intIconsManageRowsSettingsEdit number center hidden"
-Gui, 2:Add, UpDown, vf_intIconsManageRowsSettings Range0-9999 gGuiOptionsGroupChanged hidden, % o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue
-Gui, 2:Add, Text, % "yp x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsIconsManageRows"]
-GuiControl, 2:+gGuiOptionsGroupChanged, f_intIconsManageRowsSettingsEdit
-gosub, DisplayIconsClickedInit
 
 ; strIconReplacementList
 Gui, 2:Font, s8 w700
@@ -9211,7 +9206,14 @@ Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w500 r5 vf_strIconReplacementList gGu
 	? StrReplace(Trim(o_Settings.MenuIcons.strIconReplacementList.IniValue), "|", "`n") : "iconUnknown=" . o_JLicons.AA["iconUnknown"])
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w500 hidden vf_lnkIconReplacementList2, % o_L["OptionsIconReplacementListInstructions"]
 
-GuiControlGet, arrPos, Pos, f_lnkIconReplacementList2
+; IconsCustomFolder
+Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% vf_lblIconsCustomFolder hidden, % o_L["OptionsIconsCustomFolder"] . ":"
+Gui, 2:Add, Edit, yp x+5 w300 h20 vf_strIconsCustomFolder hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Add, Button, x+5 yp w100 gButtonIconsCustomFolder vf_btnIconsCustomFolder hidden, % o_L["DialogBrowseButton"]
+GuiControl, 2:, f_strIconsCustomFolder, % o_Settings.MenuIcons.strIconsCustomFolder.IniValue
+GuiControl, 2:+gGuiOptionsGroupChanged, f_strIconsCustomFolder
+
+GuiControlGet, arrPos, Pos, f_strIconsCustomFolder
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -9764,6 +9766,13 @@ Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 hidden vf_lblWaitDelayInSnippet, % o_
 loop, 4
 	Gui, 2:Add, Edit, % "x+5 yp h20 w50 hidden number center gGuiOptionsGroupChanged vf_intWaitDelayInSnippet" . A_Index, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[A_Index]
 
+; IconsManageRows
+Gui, 2:Add, Edit, % "y+10 x" . g_intGroupItemsX . " w51 h22 vf_intIconsManageRowsSettingsEdit number center hidden"
+Gui, 2:Add, UpDown, vf_intIconsManageRowsSettings Range0-9999 gGuiOptionsGroupChanged hidden, % o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue
+Gui, 2:Add, Text, % "yp x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsIconsManageRows"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intIconsManageRowsSettingsEdit
+gosub, DisplayIconsClickedInit
+
 GuiControlGet, arrPos, Pos, f_intWaitDelayInSnippet4
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
@@ -9972,6 +9981,7 @@ intIconSizePrev := o_Settings.MenuIcons.intIconSize.IniValue
 o_Settings.MenuIcons.intIconSize.WriteIni(f_drpIconSize)
 o_Settings.MenuIcons.intIconsManageRowsSettings.WriteIni(f_intIconsManageRowsSettings)
 o_Settings.MenuIcons.strIconReplacementList.WriteIni(OptionsListCleanup(f_strIconReplacementList))
+o_Settings.MenuIcons.strIconsCustomFolder.WriteIni(f_strIconsCustomFolder)
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 
 ; === MenuAppearance ===
@@ -11032,33 +11042,39 @@ return
 
 
 ;------------------------------------------------------------
-ButtonQAPTempFolderParentPath:
-ButtonExternalMenuSelectCataloguePath:
 ButtonBackupFolder:
+ButtonExternalMenuSelectCataloguePath:
+ButtonIconsCustomFolder:
+ButtonQAPTempFolderParentPath:
 ButtonWorkingFolder:
 ;------------------------------------------------------------
 Gui, 2:+OwnDialogs
 Gui, 2:Submit, NoHide
 
-if (A_ThisLabel = "ButtonWorkingFolder")
+if (A_ThisLabel = "ButtonBackupFolder")
 {
-	strControlName := "f_strWorkingFolder"
-	strPrompt := o_L["OptionsSelectWorkingFolder"]
-}
-else if (A_ThisLabel = "ButtonQAPTempFolderParentPath")
-{
-	strControlName := "f_strQAPTempFolderParentPath"
-	strPrompt := o_L["OptionsSelectQAPTempFolder"]
+	strControlName := "f_strBackupFolder"
+	strPrompt := o_L["OptionsSelectBackupFolder"]
 }
 else if (A_ThisLabel = "ButtonExternalMenuSelectCataloguePath")
 {
 	strControlName := "f_strExternalMenusCataloguePath"
 	strPrompt := o_L["OptionsSelectCatalogueRoot"]
 }
-else
+else if (A_ThisLabel = "ButtonIconsCustomFolder")
 {
-	strControlName := "f_strBackupFolder"
-	strPrompt := o_L["OptionsSelectBackupFolder"]
+	strControlName := "f_strIconsCustomFolder"
+	strPrompt := o_L["OptionsSelectIconsCustomFolder"]
+}
+else if (A_ThisLabel = "ButtonQAPTempFolderParentPath")
+{
+	strControlName := "f_strQAPTempFolderParentPath"
+	strPrompt := o_L["OptionsSelectQAPTempFolder"]
+}
+else ; ButtonWorkingFolder
+{
+	strControlName := "f_strWorkingFolder"
+	strPrompt := o_L["OptionsSelectWorkingFolder"]
 }
 
 strPreviousFolderExpand := PathCombine(A_WorkingDir, EnvVars(%strControlName%))
@@ -19195,6 +19211,7 @@ SelectIcon(P_strActualIcon)
 
 	g_blnChangeIconInProgress := false
 	SI_strNewIcon := ""
+	SI_strIconFileFilter := "Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)"
 	
 	ParseIconResource(P_strActualIcon, SI_strCurrentIconFile, SI_intCurrentIconIndex)
 	if (SI_intCurrentIconIndex < 1)
@@ -19218,6 +19235,7 @@ SelectIcon(P_strActualIcon)
 	Gui, Add, Link, x+10 yp gSI_GuiPickIconDialogJL vf_lblSelectIconJL, % "<a>JLicons.dll</a>"
 	Gui, Add, Link, x+10 yp gSI_GuiPickIconDialogShell vf_lblSelectIconShell, % "<a>Shell32.dll</a>"
 	Gui, Add, Link, x+10 yp gSI_GuiPickIconDialogImageRes vf_lblSelectIconImageRes, % "<a>ImageRes.dll</a>"
+	Gui, Add, Link, x+10 yp gSI_GuiPickIconDialogCustomFolder vf_lblSelectIconCustomFolder, % "<a>" . o_L["DialogIconsCustomFolder"] . "</a>"
 	
 	Gui, Add, Text, x10 y+15, % o_L["DialogIconsSelectPrompt"]
 	
@@ -19272,6 +19290,7 @@ SelectIcon(P_strActualIcon)
 	SI_intCurrentRow := ""
 	SI_intCurrentCol := ""
 	SI_aaL := ""
+	SI_strIconFileFilter := ""
 
 	return SI_strNewIcon ; returning value
 	
@@ -19282,7 +19301,7 @@ SelectIcon(P_strActualIcon)
 	;------------------------------------------------------------
 	Gui, 3:+OwnDialogs
 
-	FileSelectFile, SI_strNewLocation, 3, % (StrLen(SI_strPrevLocation) ? SI_strPrevLocation : SI_strCurrentIconFile), % o_L["DialogAddFileSelect"], Icon File (*.dll; *.exe; *.ico; *.ocx; *.cpl; *.png; *.bmp; *.gif; *.jpg)
+	FileSelectFile, SI_strNewLocation, 3, % (StrLen(SI_strPrevLocation) ? SI_strPrevLocation : SI_strCurrentIconFile), % o_L["DialogAddFileSelect"], %SI_strIconFileFilter%
 	SI_strPrevLocation := SI_strNewLocation
 	
 	if StrLen(SI_strNewLocation) ; FileSelectFile returns empty string if escaped
@@ -19336,8 +19355,11 @@ SelectIcon(P_strActualIcon)
 	SI_GuiPickIconDialogJL:
 	SI_GuiPickIconDialogShell:
 	SI_GuiPickIconDialogImageRes:
+	SI_GuiPickIconDialogCustomFolder:
 	;------------------------------------------------------------
-	if (A_ThisLabel = "SI_GuiPickIconDialogJL")
+	if (A_ThisLabel = "SI_GuiPickIconDialogCustomFolder")
+		FileSelectFile, SI_strCurrentIconFile, 3, % o_Settings.MenuIcons.strIconsCustomFolder.IniValue, %SI_strGuiTitle%, %SI_strIconFileFilter%
+	else if (A_ThisLabel = "SI_GuiPickIconDialogJL")
 		SI_strCurrentIconFile := o_JLicons.strFileLocation
 	else if (A_ThisLabel = "SI_GuiPickIconDialogShell")
 		SI_strCurrentIconFile := A_WinDir . "\System32\shell32.dll"
@@ -24745,8 +24767,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		if InStr(strOriginal, "{ActiveWindow}")
 		{
 			WinGet, strActiveWindowPath, ProcessPath , A
-			if !InStr(strActiveWindowPath, "quickaccesspopup") ; avoid launching with QAP
-				strExpanded := StrReplace(strExpanded, "{ActiveWindow}", strActiveWindowPath)
+			strExpanded := StrReplace(strExpanded, "{ActiveWindow}", strActiveWindowPath)
 		}
 	}
 
@@ -32175,7 +32196,6 @@ class Container
 					, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
 				; use strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 				blnFileExist := FileExistInPath(strTemp) ; return strFavoriteLaunchWith expanded and searched in PATH
-				this.aaTemp.strExpandedLaunchWith := strTemp
 				
 				if !(blnFileExist) and (g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"])
 				{
