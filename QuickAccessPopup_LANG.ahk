@@ -315,6 +315,7 @@ this["DialogInvalidHotkey"] := "With your current system keyboard layout, the ho
 this["DialogInvalidHotkeyFavorite"] := "With your current system keyboard layout, the hotkey ""~1~"" could not be used as a trigger for this favorite.`n`nPlease choose another shortcut for favorite ""~2~"" and location ""~3~""."
 this["DialogKeyboard"] := "Keyboard"
 this["DialogLaunchWith"] := "Launch with this application"
+this["DialogLaunchWithActiveWindow"] := "Launch this favorite with the active window?`n`n~1~"
 this["DialogListApplicationLabel"] := "List applications for:"
 this["DialogListApplicationsDropdown"] := "List All||Current Windows Menu|Running Applications|Close Applications"
 this["DialogListApplicationYesNo"] := "[Yes] to Activate or [No] to Close this window?"

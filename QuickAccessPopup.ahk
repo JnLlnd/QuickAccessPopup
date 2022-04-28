@@ -31,8 +31,16 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.5.9.1.1 (2022-04-26)
- 
+Version BETA: 11.5.6.9.1 (2022-04-27)
+- in "Change shortcut" dialog box, add link to enter a hotkey code or a scan code (SCnnn) manually
+https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/
+- process placeholders in the "Launch with" property of Documents, URLs and FTP favorites
+- support "{ActiveWindow}" placeholder, allowing for example, to open a text file in the active editor when the "Launch with" field of a document contains "{ActiveWindow}"; ask for confirmation before launching the active app
+https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/#activewindow
+- test new function to detect file dialog boxes (BETA testers: please, try to change folder in "File, Open" dialog box of various applications)
+- if the "Add Close to menu" option is enabled (in "Options, Menus Appearance"), add the "Close menu" item to menus that can be open with a shortcut or a hotstring
+https://www.quickaccesspopup.com/what-is-the-close-menu-issue/
+
 Version: 11.5.6 (2022-03-14)
  
 Date-time placeholders
@@ -5078,7 +5086,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.9.1.1
+;@Ahk2Exe-SetVersion 11.5.6.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5145,7 +5153,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.9.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.6.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -32176,6 +32184,17 @@ class Container
 						. " " . o_L["DialogFavoriteDoesNotExistEdit"])
 					return 1 ; error code
 				}
+				
+				if (blnFileExist and Trim(this.AA.strFavoriteLaunchWith) = "{ActiveWindow}" and (g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"]))
+				{
+					MsgBox, 4, %g_strAppNameText%, % L(o_L["DialogLaunchWithActiveWindow"], strTemp)
+					IfMsgBox, Yes
+						this.aaTemp.strExpandedLaunchWith := strTemp
+					IfMsgBox, No
+						return 1 ; error code
+				}
+				else
+					this.aaTemp.strExpandedLaunchWith := strTemp
 			}
 			
 			; ALTERNATIVE
