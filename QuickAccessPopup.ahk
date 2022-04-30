@@ -27454,8 +27454,7 @@ class JLicons
 				saIconReplacement := StrSplit(A_LoopField, "=")
 				if This.AA.HasKey(saIconReplacement[2]) ; support replacement with another JLicons item
 					saIconReplacement[2] := This.AA[saIconReplacement[2]]
-				if this.AA.HasKey(saIconReplacement[1]) and InStr(saIconReplacement[2], ",")
-				; this icon exists and replacement is "file,index" (includes a coma)
+				if this.AA.HasKey(saIconReplacement[1]) ; this icon exists
 				{
 					this.aaReplacementPrevious[saIconReplacement[1]] := this.AA[saIconReplacement[1]]
 					this.AA[saIconReplacement[1]] := saIconReplacement[2]
