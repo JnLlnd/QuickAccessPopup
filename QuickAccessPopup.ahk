@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.6.9.2 (2022-04-30)
+- new option under "Options, Menu Icons" to set "Document Default Icons Replacements"; default document icons are used in QAP dynamic menus (like "Recent Files"), in the "Manage Icons" window and as default icons for new Document favorites; they are normally configured in Windows but you can now override them with your list custom icons; each custom icon is associated to document type by the document's file extension
+  see: https://www.quickaccesspopup.com/can-i-use-my-own-documents-icons-instead-of-those-configured-in-windows/
+- new option under "Options, Menu Icons" to set an "Icons custom folder"; this folder is open using a link in the "Select Icon" dialog box
+- move the "Manage Icons window rows" option from "Menu Icons" to "Various Advanced Options"
+- in "Options, Menu Icons" the "QAP Icon Replacements" list now support image file (.png, .bmp, .gif, .jpg)
+
 Version BETA: 11.5.6.9.1 (2022-04-27)
 - in "Change shortcut" dialog box, add link to enter a hotkey code or a scan code (SCnnn) manually
 https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/
@@ -5086,7 +5093,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.6.9.1
+;@Ahk2Exe-SetVersion 11.5.6.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5153,7 +5160,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.6.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.6.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -9210,7 +9217,7 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_strIconsCustomFolder
 ; strIconDocumentsList
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w500 hidden vf_lnkIconDocumentsList1
-	, % o_L["OptionsIconDocumentsList"] . " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/#####/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>):"
+	, % o_L["OptionsIconDocumentsList"] . " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-use-my-own-documents-icons-instead-of-those-configured-in-windows/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>):"
 Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+5 w500 hidden vf_lnkIconDocumentsList2, % o_L["OptionsIconDocumentsListInstructions"]
 Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w500 r4 vf_strIconDocumentsList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconDocumentsList.IniValue)
