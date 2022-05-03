@@ -23843,7 +23843,8 @@ Loop, Parse, % o_Settings.MenuIcons.strIconDocumentsList.IniValue, |
 				return
 			}
 			else
-				g_aaIconDocumentsList[saIconDocument[1]] := saIconDocument[2]
+				Loop, Parse, % saIconDocument[1], + ; multiple extensions separated by +, e.g. xlsx+xlsm
+					g_aaIconDocumentsList[A_LoopField] := saIconDocument[2]
 		}
 		else
 			Oops(0, o_L["OopsIconDocumentsNotFound"], strIconFile)
