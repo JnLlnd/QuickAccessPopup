@@ -16998,7 +16998,13 @@ if InStr("|GuiAddFavoriteSaveXpress|GuiAddFavoriteSaveXpressFromMsg|GuiAddExtern
 }
 else
 {
-	strNewFavoriteShortName := f_strFavoriteShortName
+	if InStr("{Last Action}{Last Actions}", f_strFavoriteLocation) and (f_strFavoriteShortName <> o_QAPfeatures.AA[f_strFavoriteLocation].strLocalizedName)
+	{
+		Oops(2, o_L["OopsMenuNameCannotBeChanged"], o_QAPfeatures.AA[f_strFavoriteLocation].strLocalizedName)
+		strNewFavoriteShortName := o_QAPfeatures.AA[strNewFavoriteLocation].strLocalizedName
+	}
+	else
+		strNewFavoriteShortName := f_strFavoriteShortName
 	strNewFavoriteLocation := f_strFavoriteLocation
 	strFavoriteAppWorkingDir := f_strFavoriteAppWorkingDir
 	strNewFavoriteSoundLocation := f_strFavoriteSoundLocation
