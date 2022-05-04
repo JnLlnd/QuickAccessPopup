@@ -5658,6 +5658,8 @@ if !GetKeyState("Shift")
 ; Gosub, GuiEditFavorite
 ; ###_D(SelectIcon(A_AppDataCommon . "\JeanLalonde\JLicons.dll,2"))
 ; ExitApp
+; g_strOpenFavoriteFromMsg := "> C!"
+; gosub, OpenFavoriteFromMsg
 
 return
 
@@ -20754,7 +20756,8 @@ else if (g_strOpenFavoriteLabel = "OpenFavoriteFromMsg")
 	o_ThisFavorite := GetFavoriteObjectFromNameInMenu(g_strOpenFavoriteFromMsg)
 	Diag(A_ThisLabel, "o_ThisFavorite Name", o_ThisFavorite.AA.strFavoriteName)
 
-	g_strTargetWinId := "" ; never use target window when launched from Msg
+	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
+	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass) ; returns current or latest file manager window ID and Window class
 	g_strHotkeyTypeDetected := "Launch"
 }
 else
@@ -32226,7 +32229,8 @@ class Container
 			this.aaTemp.strHotkeyTypeDetected := strHotkeyTypeDetected
 			
 			; disable features for Explorer that do not work when the folder is launched from a menu open with QAPmessenger
-			if (strMenuTriggerLabel = "LaunchFromMsg")
+			; fix in v11.5.6.9.3: this was if (strMenuTriggerLabel = "LaunchFromMsg") by error since v10.2.0.9.1, "not" fixing something (no bug report from this) -> would it be better to just remove this if and keep the else?
+			if (strOpenFavoriteLabel = "LaunchFromMsg")
 			{
 				this.aaTemp.saFavoriteWindowPosition := StrSplit("0", ",") ; make this.aaTemp.saFavoriteWindowPosition[1] false
 				this.aaTemp.blnOpenFavoritesOnActiveMonitor := false
