@@ -32229,7 +32229,7 @@ class Container
 			this.aaTemp.strHotkeyTypeDetected := strHotkeyTypeDetected
 			
 			; disable features for Explorer that do not work when the folder is launched from a menu open with QAPmessenger
-			; fix in v11.5.6.9.3: this was if (strMenuTriggerLabel = "LaunchFromMsg") by error since v10.2.0.9.1, "not" fixing something (no bug report from this) -> would it be better to just remove this if and keep the else?
+			; fix in v11.5.6.9.3: this was if (strMenuTriggerLabel = "LaunchFromMsg") by error since v10.2.0.9.1, "not" fixing something (no bug report for this) -> would it be better to just remove this if and keep the else?
 			if (strOpenFavoriteLabel = "LaunchFromMsg")
 			{
 				this.aaTemp.saFavoriteWindowPosition := StrSplit("0", ",") ; make this.aaTemp.saFavoriteWindowPosition[1] false
