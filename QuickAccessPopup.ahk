@@ -18211,8 +18211,8 @@ Gui, 1:Submit, NoHide
 intIconsManageRowsHeight := 44
 if !(o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue)
 {
-	ActiveMonitorInfo(intTop, intLeft, intWidth, intMonitorHeight)
-	g_intIconsManageRows := ((intMonitorHeight - 250) // intIconsManageRowsHeight)
+	ActiveMonitorInfo(intTop, intLeft, intWidth, intMonitorHeight) ; use HDPI scaling for intMonitorHeight
+	g_intIconsManageRows := (ScreenScaling(intMonitorHeight - 250) // intIconsManageRowsHeight)
 }
 else
 	g_intIconsManageRows:= o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue
@@ -18253,14 +18253,15 @@ Loop, %g_intIconsManageRows%
 }
 
 aaL := o_L.InsertAmpersand(false, "GuiClose") 
-Gui, 2:Font, s12, Arial
-Gui, 2:Add, Button, y+20 x15 vf_btnIconsManagePrev gLoadIconsManageListPrev, % chr(0x25C4)
+Gui, 2:Font, s10, Arial
+Gui, 2:Add, Button, y+20 vf_btnIconsManagePrev gLoadIconsManageListPrev, % chr(0x25C4)
 Gui, 2:Font
-Gui, 2:Add, Button, yp+5 x1 vf_btnIconsManageClose g2GuiClose, % aaL["GuiClose"]
-Gui, 2:Font, s12, Arial
-Gui, 2:Add, Button, yp-5 x1080 vf_btnIconsManageNext gLoadIconsManageListNext, % chr(0x25BA)
+Gui, 2:Font, s10
+Gui, 2:Add, Button, yp x1 vf_btnIconsManageClose g2GuiClose, % aaL["GuiClose"]
+Gui, 2:Font, s10, Arial
+Gui, 2:Add, Button, yp vf_btnIconsManageNext gLoadIconsManageListNext, % chr(0x25BA)
 Gui, 2:Font
-GuiCenterButtons(g_strGui2Hwnd, 50, 12, , "f_btnIconsManageClose")
+GuiCenterButtons(g_strGui2Hwnd, , , , "f_btnIconsManagePrev", "f_btnIconsManageClose", "f_btnIconsManageNext")
 
 Gosub, LoadIconsManageList
 
@@ -24190,7 +24191,7 @@ GuiCenterButtons(strWindowHandle, intInsideHorizontalMargin := 10, intInsideVert
 	; A_DetectHiddenWindows must be on (app's default); Gui, Show acts on current default gui (1: or 2: , etc)
 	Gui, Show, Hide ; hides the window and activates the one beneath it, allows a hidden window to be moved, resized, or given a new title without showing it
 	WinGetPos, , , intWidth, , ahk_id %strWindowHandle%
-	intWidth := intWidth // (A_ScreenDPI / 96) ; compensate for scaling
+	intWidth := ScreenScaling(intWidth) ; compensate for scaling
 	
 	; find largest control height and width
 	intMaxControlWidth := 0
@@ -27019,6 +27020,16 @@ IsWindowOnCurrentVirtualDesktop(hWnd)
 	if !(Error=0) ;S_OK
 		return false, ErrorLevel := true
 	return onCurrentDesktop, ErrorLevel := false
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ScreenScaling(intSize)
+; compensate for scaling
+;------------------------------------------------------------
+{
+	return Round(intSize / (A_ScreenDPI / 96))
 }
 ;------------------------------------------------------------
 
