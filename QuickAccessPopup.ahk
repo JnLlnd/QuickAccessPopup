@@ -5442,8 +5442,7 @@ if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; add [admin] tag only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
 
-; not sure it is required to have a physical file with .html extension - but keep it as is by safety
-g_strURLIconFileIndex := GetIcon4Location(g_strTempDir . "\default_browser_icon.html")
+global g_strURLIconFileIndex := GetDefaultBrowserIcon()
 
 ; Init diag mode
 if (o_Settings.Launch.blnDiagMode.IniValue)
@@ -6001,7 +6000,7 @@ FileInstall, FileInstall\QuickAccessPopup_LANG_NL.txt, %g_strTempDir%\QuickAcces
 FileInstall, FileInstall\QuickAccessPopup_LANG_KO.txt, %g_strTempDir%\QuickAccessPopup_LANG_KO.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_RU.txt, %g_strTempDir%\QuickAccessPopup_LANG_RU.txt, 1
 
-FileInstall, FileInstall\default_browser_icon.html, %g_strTempDir%\default_browser_icon.html, 1
+FileInstall, FileInstall\default_browser_icon.html, %g_strTempDir%\default_browser_icon.html, 1 ; fall back if default browser is not found in registry
 
 FileInstall, FileInstall\add_property-48_c.png, %g_strTempDir%\add_property-48_c.png
 FileInstall, FileInstall\delete_property-48_c.png, %g_strTempDir%\delete_property-48_c.png
@@ -12308,7 +12307,7 @@ ParseIconResource("iconApplication", strThisIconFile, intThisIconIndex)
 Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
 ParseIconResource("iconDesktop", strThisIconFile, intThisIconIndex)
 Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource(GetIcon4Location(g_strTempDir . "\default_browser_icon.html"), strThisIconFile, intThisIconIndex)
+ParseIconResource(g_strURLIconFileIndex, strThisIconFile, intThisIconIndex)
 Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
 ParseIconResource("iconFTP", strThisIconFile, intThisIconIndex)
 Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
@@ -24146,6 +24145,19 @@ ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDef
 
 
 ;------------------------------------------------------------
+GetDefaultBrowserIcon()
+; source: https://stackoverflow.com/a/32355457/2327946
+;------------------------------------------------------------
+{
+	RegRead, strProgId, HKEY_CURRENT_USER, SOFTWARE\Microsoft\Windows\Shell\Associations\URLAssociations\http\UserChoice, ProgId
+	RegRead, strIconResource, HKEY_CLASSES_ROOT, %strProgId%\Application, ApplicationIcon
+	
+	return (StrLen(strIconResource) ? strIconResource : GetIcon4Location(g_strTempDir . "\default_browser_icon.html"))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GetIcon4Location(strLocation)
 ; returns an icon resource in icongroup format (file,index) or an index of o_JLicons.AA
 ; icongroup will be splitted by ParseIconResource before being used by Menu command
@@ -30888,7 +30900,7 @@ class Container
 						if StrLen(aaThisFavorite.strFavoriteIconResource)
 							strMenuItemIcon := aaThisFavorite.strFavoriteIconResource
 						else
-							strMenuItemIcon := GetIcon4Location(g_strTempDir . "\default_browser_icon.html")
+							strMenuItemIcon := g_strURLIconFileIndex
 							; not sure it is required to have a physical file with .html extension - but keep it as is by safety
 					else ; this is a document, application, Special, FTP or QAP
 						if StrLen(aaThisFavorite.strFavoriteIconResource)
@@ -31056,7 +31068,7 @@ class Container
 					if (o_FavoriteLiveFolder.AA.blnFavoriteFolderLiveHideIcons)
 						strFiles .= "iconNoIcon"
 					else if (A_LoopFileExt = "url")
-						strFiles .= GetIcon4Location(g_strTempDir . "\default_browser_icon.html")
+						strFiles .= g_strURLIconFileIndex
 					else if (A_LoopFileExt = "lnk")
 						strFiles .= (StrLen(strShortcutIconFile) ? EnvVars(strShortcutIconFile) . "," . strShortcutIconIndex : GetIcon4Location(strFileLocation))
 							. "`t" . strArguments . "`t" . strAppWorkingDir
@@ -33762,7 +33774,7 @@ class Container
 					return "iconFolder"
 			else if (this.AA.strFavoriteType = "URL")
 				; default browser icon
-				return GetIcon4Location(g_strTempDir . "\default_browser_icon.html")
+				return g_strURLIconFileIndex
 			else if (this.AA.strFavoriteType = "FTP")
 				; default FTP icon
 				return "iconFTP"
