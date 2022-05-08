@@ -24839,8 +24839,9 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			{
 				strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
 				InputBox, strInputContent, % L(o_L["DialogInputParameter"], g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
-				if (ErrorLevel) ; user clicked Cancel, delete typed text if any (execution cannot be cancelled however)
-					strInputContent := ""
+				if (ErrorLevel) ; user clicked Cancel
+					return ; returning an empty string will abort the snippet
+				
 				strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
 				
 				; add user input as a temporary user variable
@@ -32282,6 +32283,8 @@ class Container
 			this.aaTemp.strLocationWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteLocation, ""
 				, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
 				, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
+			if !StrLen(this.aaTemp.strLocationWithPlaceholders)
+				return 1 ; error code
 			
 			; LAUNCH WITH
 			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|WindowsApp|", this.AA.strFavoriteType . "|")
