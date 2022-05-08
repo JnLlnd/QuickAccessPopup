@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.6.9.3 (2022-05-05)
+- in the new "Document icons replacement" list (in "Options, Menu Icons"), support multiple extensions separated with + (e.g. xlsx+xlsm=c:\my_icon\excel_icon.png)
+- in "Tools, Manage Icons" dialog box, calculate the number of rows considering the screen scaling (making obsolete the "Number of rows" of "Manage Icons" dialog box)
+- in the "Manage Icons" dialog box, make the "Previous" and "Next" buttons faster to access by moving them to the center on each side of the "Close" button
+- get Link (URL) favorites default icon from the entry in Registry for the default browser configured in Windows (instead of using the icon associated to the html file extension)
+- prevent changing the name of the QAP Features "Repeat Last Action" and "Repeat Last Actions" menu to avoid issues caused by some lines of code relying on their unchanged name
+- when launching a favorite from QAPmessenger, detect the last active file manager window and use its location to expand the "current location" placeholders (e.g. {CUR_LOC})
+
 Version BETA: 11.5.6.9.2 (2022-04-30)
 - new option under "Options, Menu Icons" to set "Document Default Icons Replacements"; default document icons are used in QAP dynamic menus (like "Recent Files"), in the "Manage Icons" window and as default icons for new Document favorites; they are normally configured in Windows but you can now override them with your list custom icons; each custom icon is associated to document type by the document's file extension
   see: https://www.quickaccesspopup.com/can-i-use-my-own-documents-icons-instead-of-those-configured-in-windows/
@@ -5093,7 +5101,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.6.9.2
+;@Ahk2Exe-SetVersion 11.5.6.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5160,7 +5168,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.6.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.6.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
