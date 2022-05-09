@@ -7010,7 +7010,7 @@ for strCode, objThisQAPFeature in o_QAPfeatures.AA
 for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 {
 	strHotkey := o_Settings.ReadIniOption("MenuPopup", "strHotkey" . strCode, strCode, "", "PopupHotkeysAlternative"
-		, "f_lblAlternativeHotkeyName" . intOrder . "|f_lblAlternativeHotkeyText" . intOrder, "AlternativeMenuHotkeys")
+		, "f_lblAlternativeHotkeyName" . intOrder . "|f_lblAlternativeHotkeyText" . intOrder . "|f_lblAlternativeHotkeyLabel" . intOrder, "AlternativeMenuHotkeys")
 
 	if (strHotkey <> "ERROR")
 	{
@@ -9469,8 +9469,15 @@ for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeBy
 	Gui, 2:Font, s8 w700
 	Gui, 2:Add, Text, % "section x" . intHotkeysAlternativeX . " y" . (A_Index = 1 ? "+10" : (Mod(A_Index, 2) ? "+20" : "s")) . " w240 hidden vf_lblAlternativeHotkeyName" . intOrder
 		, % o_QAPfeatures.AA[strAlternativeCode].strLocalizedName ; .strLocalizedName OK because Alternative
-	Gui, 2:Font, s9 w500, Courier New
-	Gui, 2:Add, Text, xs y+5 w280 h20 center 0x1000 vf_lblAlternativeHotkeyText%intOrder% gButtonOptionsChangeAlternativeHotkey hidden
+	Gui, 2:Font
+	Gui, 2:Add, Text, xs y+5 vf_lblAlternativeHotkeyLabel%intOrder% hidden, % o_L["DialogHotkey"] . ":"
+	if (A_Index = 1)
+	{
+		GuiControlGet, arrPos, Pos, f_lblAlternativeHotkeyLabel1
+		intTextWidth := 280 - arrPosW
+	}
+	Gui, 2:Font, s8 w500, Courier New
+	Gui, 2:Add, Text, x+5 yp w%intTextWidth% h20 center 0x1000 vf_lblAlternativeHotkeyText%intOrder% gButtonOptionsChangeAlternativeHotkey hidden
 		, % new Triggers.HotkeyParts(o_QAPfeatures.AA[strAlternativeCode].strCurrentHotkey).Hotkey2Text(true)
 	Gui, 2:Font
 	Gui, 2:Add, Text, y+5 xs vf_lblAlternativeModifiers%intOrder% hidden, % o_L["OptionsAlternativeModifiers"] . ":"
@@ -9489,7 +9496,7 @@ Gui, 2:Add, Link, yp+5 x+10 vf_btnAlternativeMenuModifiersHelp hidden
 	, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/", A_ThisLabel, "Support")
 	. """>" . o_L["GuiHelp"] . "</a>"
 
-GuiControlGet, arrPos, Pos, f_blnAlternativeMenuShowNotification
+GuiControlGet, arrPos, Pos, f_btnAlternativeMenuResetModifiersDefault
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -29158,10 +29165,14 @@ class QAPfeatures
 			, "", 9, "iconSpecialFolders", ">+", "")
 		this.AddQAPFeatureObject("Open Containing New",		o_L["MenuAlternativeOpenContainingNew"],		"", "", ""
 			, "", 10, "iconSpecialFolders", ">^", "")
-
+		this.AddQAPFeatureObject("Move Selected File",		o_L["MenuAlternativeMoveSelectedFile"],			"", "", ""
+			, "", 12, "iconSpecialFolders", "None", "") ; None is an internal code, not localized
+		this.AddQAPFeatureObject("Copy Selected File",		o_L["MenuAlternativeCopySelectedFile"],			"", "", ""
+			, "", 14, "iconSpecialFolders", "None", "") ; None is an internal code, not localized
+		
 		;-----------------------
 		; QAP Features categories
-
+		
 		saQAPFeaturesCategoriesSystemName := StrSplit("1-Featured|2-DynamicMenus|3-QAPMenuEditing|3.1-AddFavoriteOfType|4-WindowManagement|5-WindowsFeature|5.1-CloseComputer|6-Utility|7-QAPManagement", "|")
 		saQAPFeaturesCategoriesDisplayNames := StrSplit(o_L["DialogQAPFeatureCategoriesNames"], "|")
 		Loop, % saQAPFeaturesCategoriesSystemName.Length()
@@ -29202,6 +29213,8 @@ class QAPfeatures
 	GetAlternativeMenuModifiersDropdownList(strCurrentModifier)
 	;---------------------------------------------------------
 	{
+		if !StrLen(strCurrentModifier)
+			strCurrentModifier := "None" ; required for key of aaQAPFeaturesAlternativeMenuModifiersTextByCode
 		; in this.strMenuModifiersNames replace the | after the current modifier with ||
 		strList := StrReplace("|" . this.strMenuModifiersNames . "|", "|" . this.aaQAPFeaturesAlternativeMenuModifiersTextByCode[strCurrentModifier] . "|"
 			, "|" . this.aaQAPFeaturesAlternativeMenuModifiersTextByCode[strCurrentModifier] . "||")
@@ -32345,6 +32358,13 @@ class Container
 					if (this.AA.strFavoriteType <> "Application")
 						blnAlternativeMenuTypeNotSupported := true
 				}
+				else if (g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"] or g_strAlternativeMenu = o_L["MenuAlternativeCopySelectedFile"])
+				{
+					if (this.AA.strFavoriteType <> "Folder")
+						blnAlternativeMenuTypeNotSupported := true
+					else
+						this.CopyOrMoveFolderOrFile((g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"] ? "Move" : "Copy"))
+				}
 				
 				if (blnAlternativeMenuTypeNotSupported)
 				{
@@ -34250,6 +34270,37 @@ class Container
 			strResult := RegExReplace(this.AA["strFavorite" . strValue], "i)\Q" . strSearch . "\E", strReplace)
 			blnChanged := (strResult <> this.AA["strFavorite" . strValue]) ; return false if no replacement
 			return strResult
+		}
+		;---------------------------------------------------------
+		
+		;---------------------------------------------------------
+		CopyOrMoveFolderOrFile(strAction)
+		;---------------------------------------------------------
+		{
+			strSelectedItem := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId)
+			strAttributes := FileExist(strSelectedItem)
+			if StrLen(strAttributes)
+			{
+				strDestPath := this.AA.strFavoriteLocation
+				if InStr(strAttributes, "D") ; D for directory
+				{
+					SplitPath, strSelectedItem, strOutFileName
+					strDestPath .= "\" . strOutFileName
+					if (strAction = "Move")
+						FileMoveDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+					else ; Copy
+						FileCopyDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+				}
+				else
+					if (strAction = "Move")
+						FileMove, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+					else ; Copy
+						FileCopy, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+				
+				if (ErrorLevel)
+					Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFile"] . (A_LastError ? "`nError: " . A_LastError : ""), strSelectedItem, strDestPath) ; 5 access denied, 80 or 183 file already exists
+			}
+			; else do nothing (should not happen)
 		}
 		;---------------------------------------------------------
 /*
