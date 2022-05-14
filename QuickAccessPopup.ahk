@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.6.9.4 (2022-05-14)
+- add QAP Features for Alternative menu "Move Selected File" and "Copy Selected File"
+  see: https://www.quickaccesspopup.com/what-are-the-power-menu-features/
+- add Alternative menu features "Move Selected File" and "Copy Selected File" to "Options, Alternative Menu Hotkeys"
+  see: https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/
+- abort "Move Selected File" and "Copy Selected File" with error message if no file or folder is selected, if destination is access denied, if destination file already exists or other error
+- insert separators in Alternative menu
+- when a Snippet or other favorites contains an {Input:...} placeholder, abord the execution if the input is cancelled or empty
+
 Version BETA: 11.5.6.9.3 (2022-05-05)
 - in the new "Document icons replacement" list (in "Options, Menu Icons"), support multiple extensions separated with + (e.g. xlsx+xlsm=c:\my_icon\excel_icon.png)
 - in "Tools, Manage Icons" dialog box, calculate the number of rows considering the screen scaling (making obsolete the "Number of rows" of "Manage Icons" dialog box)
@@ -5101,7 +5110,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.6.9.3
+;@Ahk2Exe-SetVersion 11.5.6.9.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5168,7 +5177,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.6.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.6.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
