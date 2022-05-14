@@ -8787,7 +8787,7 @@ Loop
 	}
 	else
 		if o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder.Haskey(A_Index + 1) ; there is another menu item, add a menu separator
-			Menu, menuAlternative, Add
+			saMenuItemsTable.Push(["X"])
 		else
 			break ; menu finished
 
@@ -9489,12 +9489,13 @@ intHotkeysAlternativeX := ""
 ; AlternativeMenuShowNotification
 Gui, 2:Add, CheckBox, y+30 x%g_intGroupItemsX% vf_blnAlternativeMenuShowNotification gGuiOptionsGroupChanged w240 hidden, % o_L["OptionsAlternativeMenuShowNotification"]
 GuiControl, , f_blnAlternativeMenuShowNotification, % (o_Settings.MenuPopup.blnAlternativeMenuShowNotification.IniValue = true)
-
 Gui, 2:Add, Button, yp x%g_intGroupItemsTab6X% vf_btnAlternativeMenuResetModifiersSaved gGuiOptionsAlternativeMenuResetModifiersSavedClicked hidden, % o_L["OptionsAlternativeMenuResetModifiersSaved"]
-Gui, 2:Add, Button, y+5 x%g_intGroupItemsTab6X% vf_btnAlternativeMenuResetModifiersDefault gGuiOptionsAlternativeMenuResetModifiersDefaultClicked hidden, % o_L["OptionsAlternativeMenuResetModifiers"]
-Gui, 2:Add, Link, yp+5 x+10 vf_btnAlternativeMenuModifiersHelp hidden
+
+Gui, 2:Add, Link, y+5 x%g_intGroupItemsX% vf_btnAlternativeMenuModifiersHelp hidden
 	, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/", A_ThisLabel, "Support")
-	. """>" . o_L["GuiHelp"] . "</a>"
+	. """>" . o_L["GuiHelp"] . " - " . o_L["OptionsPopupHotkeysAlternative"] . "</a>"
+
+Gui, 2:Add, Button, yp x%g_intGroupItemsTab6X% vf_btnAlternativeMenuResetModifiersDefault gGuiOptionsAlternativeMenuResetModifiersDefaultClicked hidden, % o_L["OptionsAlternativeMenuResetModifiers"]
 
 GuiControlGet, arrPos, Pos, f_btnAlternativeMenuResetModifiersDefault
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -20494,6 +20495,8 @@ else if (g_strAlternativeMenu = o_L["MenuAlternativeRunAs"])
 	strMessage := o_L["AlternativeMenuTrayTipRunAs"]
 else if (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"]) or (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingNew"])
 	strMessage := o_L["AlternativeMenuTrayTipOpenContaining"]
+else if (g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"]) or (g_strAlternativeMenu = o_L["MenuAlternativeCopySelectedFile"])
+	strMessage := o_L["AlternativeMenuTrayTipSelectedFile"]
 else
 	strMessage := ""
 
@@ -29152,6 +29155,7 @@ class QAPfeatures
 					, "what-should-i-know-about-quick-access-popup-before-starting")
 		
 		; Alternative Menu features
+		; for intQAPFeatureAlternativeOrder (parameter  #7): consecutive numbers in menu without separator; leave skip (only) number to insert a separator
 		
 		this.AddQAPFeatureObject("Open in New Window",		o_L["MenuAlternativeNewWindow"],				"", "", ""
 			, "", 1, "iconFolder", "<+", "")
@@ -29166,9 +29170,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Open Containing New",		o_L["MenuAlternativeOpenContainingNew"],		"", "", ""
 			, "", 10, "iconSpecialFolders", ">^", "")
 		this.AddQAPFeatureObject("Move Selected File",		o_L["MenuAlternativeMoveSelectedFile"],			"", "", ""
-			, "", 12, "iconSpecialFolders", "None", "") ; None is an internal code, not localized
+			, "", 12, "iconFolder", "None", "") ; None is an internal code, not localized
 		this.AddQAPFeatureObject("Copy Selected File",		o_L["MenuAlternativeCopySelectedFile"],			"", "", ""
-			, "", 14, "iconSpecialFolders", "None", "") ; None is an internal code, not localized
+			, "", 13, "iconFolder", "None", "") ; None is an internal code, not localized
 		
 		;-----------------------
 		; QAP Features categories
@@ -32363,7 +32367,7 @@ class Container
 					if (this.AA.strFavoriteType <> "Folder")
 						blnAlternativeMenuTypeNotSupported := true
 					else
-						this.CopyOrMoveFolderOrFile((g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"] ? "Move" : "Copy"))
+						intOpenError := this.CopyOrMoveFolderOrFile((g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"] ? "Move" : "Copy"))
 				}
 				
 				if (blnAlternativeMenuTypeNotSupported)
@@ -34278,29 +34282,38 @@ class Container
 		;---------------------------------------------------------
 		{
 			strSelectedItem := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId)
-			strAttributes := FileExist(strSelectedItem)
-			if StrLen(strAttributes)
+			if !StrLen(strSelectedItem)
 			{
-				strDestPath := this.AA.strFavoriteLocation
-				if InStr(strAttributes, "D") ; D for directory
-				{
-					SplitPath, strSelectedItem, strOutFileName
-					strDestPath .= "\" . strOutFileName
-					if (strAction = "Move")
-						FileMoveDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-					else ; Copy
-						FileCopyDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-				}
-				else
-					if (strAction = "Move")
-						FileMove, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-					else ; Copy
-						FileCopy, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-				
-				if (ErrorLevel)
-					Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFile"] . (A_LastError ? "`nError: " . A_LastError : ""), strSelectedItem, strDestPath) ; 5 access denied, 80 or 183 file already exists
+				Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFileSelect"])
+				return 1 ; error
 			}
-			; else do nothing (should not happen)
+			strAttributes := FileExist(strSelectedItem)
+			
+			strDestPath := this.AA.strFavoriteLocation
+			if InStr(strAttributes, "D") ; D for directory
+			{
+				SplitPath, strSelectedItem, strOutFileName
+				strDestPath .= "\" . strOutFileName
+				if (strAction = "Move")
+					FileMoveDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+				else ; Copy
+					FileCopyDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+			}
+			else ; file
+				if (strAction = "Move")
+					FileMove, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+				else ; Copy
+					FileCopy, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
+			
+			if (ErrorLevel)
+			{
+				strLastError := (A_LastError = 5 ? o_L["OopsAccessDenied"] : (A_LastError = 80 or A_LastError = 183 ? o_L["OopsFileAlreadyExists"] : ""))
+				if StrLen(strLastError)
+					strLastError := "`nError: " . A_LastError . " (" . strLastError . ")"
+				Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFile"] . strLastError, strSelectedItem, strDestPath)
+				return 1 ; error
+			}
+			; return 0 no error
 		}
 		;---------------------------------------------------------
 /*
