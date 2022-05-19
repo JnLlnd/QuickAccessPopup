@@ -12988,7 +12988,6 @@ else ; add favorite
 		}
 		
 		if (strGuiFavoriteLabel = "GuiAddShortcutFromMsg" or strOriginalExtension = "lnk")
-			; as of v9.3.1, the "AddShortcut" context menu (calling this code) has not been fully deployed in setup and portable install scripts
 		{
 			o_EditedFavorite.AA.strFavoriteLocation := g_strNewLocation
 			o_EditedFavorite.AA.strFavoriteAppWorkingDir := (o_EditedFavorite.AA.strFavoriteType = "Application" ? strShortcutWorkingDir : "")
@@ -12998,7 +12997,7 @@ else ; add favorite
 			if InStr(g_strTypesForTabWindowOptions, "|" . o_EditedFavorite.AA.strFavoriteType)
 			{
 				; before: intShortcutRunState = Shortcut RunState -> 1 Normal / 3 Maximized / 7 Minimized
-				intShortcutRunStateWindowsOptions := (intShortcutRunState = 3 ? 1 : (intShortcutRunState = 7 ? -1 : 0))
+				intShortcutRunStateWindowsOptions := ConvertShortcutRunState(intShortcutRunState)
 				; after: intShortcutRunStateWindowsOptions = QAP RunState -> -1 Minimized / 0 Normal / 1 Maximized
 				g_strNewFavoriteWindowPosition :=  (intShortcutRunStateWindowsOptions <> 0 ? "1" : "0") . "," . intShortcutRunStateWindowsOptions ; if state is not normal enable Windows options for Min or Max
 			}
@@ -15995,12 +15994,37 @@ DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
 Loop, Files, %f_strMultipleAddSourcePath%, DF
 {
-	strInternalType := GetFavoriteType4Extension(A_LoopFileLongPath)
-	oMultipleAddFavorite := new Container.Item([GetFavoriteType4Extension(A_LoopFileLongPath), GetLocationPathName(A_LoopFileLongPath), A_LoopFileLongPath]) ; type, name, path
+	strThisFilePath := A_LoopFileLongPath
+	strThisFileName := A_LoopFileName
+	
+	strInternalType := GetFavoriteType4Extension(strThisFilePath)
+	if (A_LoopFileExt = "lnk")
+	{
+		; FileGetShortcut, %file%, OutTarget, OutDir, OutArgs, OutDesc, OutIcon, OutIconNum, OutRunState
+        strShortcutFilePath := strThisFilePath
+		FileGetShortcut, %strShortcutFilePath%, strThisFilePath, strShortcutWorkingDir, strShortcutArgs, , strShortcutIconFile, strShortcutIconIndex, intShortcutRunState
+        if StrLen(strShortcutIconFile) and StrLen(strShortcutIconIndex)
+            strShortcutIconFileIndex := strShortcutIconFile . "," . strShortcutIconIndex
+        else
+            strShortcutIconFileIndex := ""
+        intShortcutRunState := ConvertShortcutRunState(intShortcutRunState) ; convert state to QAP numbering
+		strFavoriteWindowPosition :=  (intShortcutRunState <> 0 ? "1" : "0") . "," . intShortcutRunState ; if state is not normal enable Windows options for Min or Max
+		saFavorite := [GetFavoriteType4Extension(strThisFilePath), GetLocationPathName(strThisFilePath)
+            , strThisFilePath, strShortcutIconFileIndex, strShortcutArgs, strShortcutWorkingDir, strFavoriteWindowPosition]
+		; as of v11.5.6.9.4 strShortcutIconFileIndex, strShortcutArgs, strShortcutWorkingDir, strFavoriteWindowPosition are not added to the favorite when selected
+        ; this will require an aa object to carry these properties to the add favorite save
+        strLvLocationOrContent := strThisFilePath
+	}
+	else
+    {
+		saFavorite := [GetFavoriteType4Extension(strThisFilePath), GetLocationPathName(strThisFilePath), strThisFilePath]
+        strLvLocationOrContent := strThisFileName
+    }
+	oMultipleAddFavorite := new Container.Item(saFavorite) ; type, name, path
 	if (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
 	{
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-			, A_LoopFileName, oMultipleAddFavorite.AA.strFavoriteType)
+			, strLvLocationOrContent, oMultipleAddFavorite.AA.strFavoriteType)
 		; Favorite Name, Type, Favorite Location or Content (only file name here), Internal type (hidden)
 	}
 }
@@ -16013,6 +16037,16 @@ LV_ModifyCol(6, 0) ; hide help column
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 
 strInternalType := ""
+strThisFilePath := ""
+strThisFileName := ""
+strShortcutFilePath := ""
+strShortcutWorkingDir := ""
+strShortcutArgs := ""
+strShortcutIconFile := ""
+strShortcutIconIndex := ""
+strShortcutIconFileIndex := ""
+intShortcutRunState := ""
+strFavoriteWindowPosition := ""
 
 return
 ;------------------------------------------------------------
@@ -16312,8 +16346,11 @@ Loop
 
 	if (g_strMultipleAddSourceKey = "Folder")
 	{
-		SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
-		strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
+        if !InStr(strFavoriteLocation, "\") ; if a full path extracted from a file shortcut, keep it as is
+        {
+            SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
+            strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
+        }
 	}
 	else if (g_strMultipleAddSourceKey = "QAP" or strFavoriteType = "QAP" or g_strMultipleAddSourceKey = "Special" or strFavoriteType = "Special")
 		strFavoriteLocation := strFavoriteCode
@@ -27081,6 +27118,18 @@ ScreenScaling(intSize)
 ;------------------------------------------------------------
 {
 	return Round(intSize / (A_ScreenDPI / 96))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ConvertShortcutRunState(intShortcutRunState)
+; convert from Windows Shortcut numbering to QAP numbering
+;------------------------------------------------------------
+{
+    ; Shortcut RunState -> 1 Normal / 3 Maximized / 7 Minimized
+    ; Return QAP RunState -> -1 Minimized / 0 Normal / 1 Maximized
+    return (intShortcutRunState = 3 ? 1 : (intShortcutRunState = 7 ? -1 : 0))
 }
 ;------------------------------------------------------------
 
