@@ -12374,12 +12374,12 @@ Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeText gFavoriteSelectTypeRad
 
 Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavoriteSelectTypeContinue default, % o_L["DialogContinue"]
 Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, % o_L["GuiCancel"]
-Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteMultiple gGuiMultipleAddSelectSource, % o_L["DialogMultipleAdd"]
+Gui, 2:Add, Link, x20 y+20 vf_lnkAddFavoriteMultiple gGuiMultipleAddSelectSource, % "<a>" . o_L["DialogMultipleAdd"] . "</a>"
 Gui, Add, Text
 Gui, 2:Add, Text, xs+140 ys vf_lblAddFavoriteTypeHelp w260 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSelectTypeContinue", "f_btnAddFavoriteSelectTypeCancel")
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteMultiple")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_lnkAddFavoriteMultiple")
 Gosub, ShowGui2AndDisableGui1
 
 o_ExternalMenu := ""
@@ -15552,11 +15552,11 @@ for intSourceKey, strSourceKey in oMultipleAddSourcesIndex
 
 Gui, 2:Add, Button, x20 y+20 vf_btnAddMultipleFavoriteSelectTypeContinue gGuiMultipleAddSelectSourceContinue default, % o_L["DialogContinue"]
 Gui, 2:Add, Button, yp vf_btnAddMultipleFavoriteSelectTypeCancel gGuiAddMultipleFavoriteCancel, % o_L["GuiCancel"]
-Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSingle gGuiAddFavoriteSelectType, % o_L["DialogAddSingle"]
+Gui, 2:Add, Link, x20 y+20 vf_lnkAddFavoriteSingle gGuiAddFavoriteSelectType, % "<a>" . o_L["DialogAddSingle"] . "</a>"
 Gui, Add, Text
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddMultipleFavoriteSelectTypeContinue", "f_btnAddMultipleFavoriteSelectTypeCancel")
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSingle")
+GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_lnkAddFavoriteSingle")
 Gosub, ShowGui2AndDisableGui1
 
 o_ExternalMenu := ""
