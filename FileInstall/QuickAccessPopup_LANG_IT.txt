@@ -268,7 +268,7 @@ lDialogGroupMemberOptions	Opzioni Elemento di Gruppo
 lDialogGroupParentMenu	Menù Gruppo superiore
 lDialogGroupRestoreStopIfError	C'è stato un errore nell'aprire un elemento del Gruppo #~1~:`n`n~2~`n~3~`n`nApertura del Gruppo interrotta.
 lDialogHotkey	Tasto di scelta rapida
-lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>,`n<a id="~5~">tasto del menú (applicazioni)</a> o <a id="~6~">input manuale</a>
+lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>, <a id="~5~">tasto`ndel menú (applicazioni)</a> o <a id="~6~">input manuale</a>
 lDialogHotkeys	Scorciatoie
 lDialogHotkeysHelpHeader	Scorciatoia|Azione
 lDialogHotkeysManage	Gestione Scorciatoie

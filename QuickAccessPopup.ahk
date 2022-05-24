@@ -32,6 +32,7 @@ HISTORY
 =======
 
 Version BETA: 11.5.6.9.5 (2022-05-23)
+- fix bug when calling move or copy selected file from an alternative menu keyboard shortcut
 - in "Add Multiple Favorites", when adding file shortcuts (.lnk files) from a folder, add the extracted location instead of location of the shortcut (processing file shortcut properties, like its icon, is not supported at this time)
 - in "Add Favorite - Select type" dialog box and "Add Multiple Favorites" dialog boxes, replace buttons to naviagte between these two dialog boxes with more discrete links
 - language files update for French, German, Italian, Portuguese, Brazilian Portuguese and Korean 

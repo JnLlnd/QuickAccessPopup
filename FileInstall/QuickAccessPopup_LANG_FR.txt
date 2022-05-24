@@ -268,7 +268,7 @@ lDialogGroupMemberOptions	Options de groupe
 lDialogGroupParentMenu	Menu parent du groupe
 lDialogGroupRestoreStopIfError	Une erreur est survenue pendant l'ouverture du membre #~1~ du groupe:`n`n~2~`n~3~`n`nOuverture du groupe interrompue.
 lDialogHotkey	Raccourci
-lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>,`n<a id="~5~">touche menu (application)</a> ou <a id="~6~">saisie manuelle</a>
+lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>,`n<a id="~5~">touche menu (apps)</a> ou <a id="~6~">saisie manuelle</a>
 lDialogHotkeys	Raccourcis
 lDialogHotkeysHelpHeader	Raccourci|Action
 lDialogHotkeysManage	Gérer les raccourcis
