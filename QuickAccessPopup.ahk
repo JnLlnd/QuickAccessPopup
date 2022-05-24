@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.6.9.5 (2022-05-23)
+- in "Add Multiple Favorites", when adding file shortcuts (.lnk files) from a folder, add the extracted location instead of location of the shortcut (processing file shortcut properties, like its icon, is not supported at this time)
+- in "Add Favorite - Select type" dialog box and "Add Multiple Favorites" dialog boxes, replace buttons to naviagte between these two dialog boxes with more discrete links
+- language files update for French, German, Italian, Portuguese, Brazilian Portuguese and Korean 
+
 Version BETA: 11.5.6.9.4 (2022-05-14)
 - add QAP Features for Alternative menu "Move Selected File" and "Copy Selected File"
   see: https://www.quickaccesspopup.com/what-are-the-power-menu-features/
@@ -5110,7 +5115,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.6.9.4
+;@Ahk2Exe-SetVersion 11.5.6.9.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5177,7 +5182,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.6.9.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.6.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -20472,7 +20477,7 @@ WindowIsQuickAccessPopup(strClass)
 OpenAlternativeMenu:
 ; remember the Alternative menu item to execute and open the popup menu to choose on what favorite execute this action
 ;------------------------------------------------------------
- 
+
 g_strAlternativeMenu := A_ThisMenuItem
 
 if (o_Settings.Menu.blnDisplayNumericShortcuts.IniValue)
@@ -20510,6 +20515,9 @@ for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 
 if StrLen(g_strAlternativeMenu)
 {
+    if InStr(o_L["MenuAlternativeMoveSelectedFile"] . o_L["MenuAlternativeCopySelectedFile"], g_strAlternativeMenu)
+        GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass) ; get file manager info
+
 	gosub, OpenAlternativeMenuTrayTip
 	gosub, LaunchFromAlternativeMenu
 }
