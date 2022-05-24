@@ -18,6 +18,7 @@ lAlternativeMenuTrayTipEditFavorite	Seleccionar o favorito a editar
 lAlternativeMenuTrayTipNewWindow	Seleccionar a pasta a abrir numa nova janela
 lAlternativeMenuTrayTipOpenContaining	Seleccione o documento, programa ou pasta favorita cuja pasta principal pretende abrir
 lAlternativeMenuTrayTipRunAs	Seleccione o programa para executar em modo elevado
+lAlternativeMenuTrayTipSelectedFile	Seleccione a PASTA de destino para onde pretende mover ou copiar o ficheiro ou pasta seleccionados
 lContextAddFile	Adicionar Ficheiro ao menu do Quick Access Popup
 lContextAddFileXpress	Adicionar Ficheiro ao menu do Quick Access Popup (Expresso)
 lContextAddFolder	Adicionar Pasta ao menu do Quick Access Popup
@@ -82,6 +83,7 @@ lDialogChangeHotkeyModifierAndNone	Modificadores como "Alt" ou "Control" não pod
 lDialogChangeHotkeyMouseCheckLButton	Não pode atribuir o "Botão Esquerdo do Rato" sem um modificador`n(como as teclas ~1~, ~2~, ~3~ ou ~4~).
 lDialogChangeHotkeyPopup	Trata-se de uma tecla de atalho do menu emergente.`n`nDeseja manusear "~1~" em "~2~"?
 lDialogChangeHotkeyTitle	Alterar tecla de atalho - ~1~ ~2~
+lDialogChangeHotkeyTitleManual	Insira o código da tecla de atalho ou o código de digitalização do teclado (SCnnn) aqui. Veja ~1~ para amais informação.`n`nInserir código da tecla de atalho:
 lDialogChangeHotstringDefaultOptionsPrompt	Seleccionar opções padrão para novas cadeias de substituição criadas (<a href="~1~">Ajuda</a>)
 lDialogChangeHotstringReload	Alterações nas opções desta cadeia irá exigir reinício automático do ~1~ após guardar os favoritos.
 lDialogChangeHotstringTitle	Alterar cadeia de substituição - ~1~
@@ -265,7 +267,8 @@ lDialogGetWInInfo2Clippoard	Título da janela:`n"~1~"`n`nClasse:`n"~2~"`n`nProces
 lDialogGroupMemberOptions	Opções de Membros do Grupo
 lDialogGroupParentMenu	Menu principal do grupo
 lDialogGroupRestoreStopIfError	Ocorreu um erro ao abrir o membro do grupo #~1~:`n`n~2~`n~3~`n`nInterrompida abertura do grupo.
-lDialogHotkeyInvisibleKeys	(OLD version *UPDATE next line and DELETE this line*) <a id="~1~">barra de espaços</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a> ou <a id="~4~">escape</a>
+lDialogHotkey	Tecla de atalho
+lDialogHotkeyInvisibleKeys	<a id="~1~">barra de espaços</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>,`n<a id="~5~">tecla do menu (apps)</a> ou <a id="~6~">entrada manual</a>
 lDialogHotkeys	Teclas de Atalho
 lDialogHotkeysHelpHeader	Atalho|Acção
 lDialogHotkeysManage	Gerir Teclas de atalho
@@ -314,6 +317,7 @@ lDialogInvalidHotkey	Com a sua actual configuração do teclado, a tecla de atalho
 lDialogInvalidHotkeyFavorite	Com a sua actual configuração do teclado, a tecla de atalho "~1~" não pode usada como desencadeadora para este favorito (erro de nome de tecla inválido).`n`nPor favor, escolha outro atalho para o favorito "~2~" e localização "~3~".
 lDialogKeyboard	Teclado
 lDialogLaunchWith	Abrir com esta aplicação
+lDialogLaunchWithActiveWindow	Carregar este favorito com a janela activa?`n`n~1~
 lDialogListApplicationLabel	Listar aplicações para:
 lDialogListApplicationsDropdown	Listar Todas||Menu Janelas Actuais|Em execução|Encerradas
 lDialogListApplicationYesNo	[Sim] para Activar ou [Não] para Fechar esta janela?
@@ -655,7 +659,9 @@ lMenuAddThisFolder	Adicionar Pasta activa ou página Web
 lMenuAddThisFolderDescription	Adicione rapidamente ao seu menu a pasta actual ou página web.`n`nPode adicionar pastas deste modo nas janelas do Explorer ou em janelas de caixa de diálogo de ficheiro. Pode adicionar ligações para páginas web a partir da maioria dos navegadores.`n`nNa caixa de diálogo "Adicionar favorito", confirme o nome para o seu favorito e introduza várias definições como ícone, tecla de atalho, cadeia de substituição, parâmetros, etc.`n`nPor defeito esta funcionalidae está incluída no menu principal.
 lMenuAddThisFolderXpress	Adicionar Pasta Activa ou página Web Expresso
 lMenuAddThisFolderXpressDescription	Semelhante À funcionalidade "Adicionar Pasta Activa ou página Web" excepto que o novo favorito será automaticamente adicionado no início do menu Principal sem qualquer interrupção.`n`nSe necessitar alterar definições padrão, pode clicar no botão "Editar" para alterar o nome, posição ou várias definições dos favoritos.`n`nNas "Opções", pode definir o novo favorito ser adicionado por defeito no fim do menu Principal.
+lMenuAlternativeCopySelectedFile	Copiar o ficheiro seleccionado para uma pasta favorita
 lMenuAlternativeEditFavorite	Editar um Favorito
+lMenuAlternativeMoveSelectedFile	Mover o ficheiro seleccionado para uma pasta favorita
 lMenuAlternativeNewWindow	Abrir em nova janela
 lMenuAlternativeOpenContainingCurrent	Abrir a Pasta respectiva na Janela Actual
 lMenuAlternativeOpenContainingNew	Abrir a Pasta respectiva numa Nova Janela
@@ -789,6 +795,7 @@ lMessengerError	Ocorreu um erro.`n`nCertifique-se de que o ~1~ está em execução 
 lMessengerHelp	Procure o "Messenger" em www.QuickAccessPopup.com para ajuda.
 lNavigateFileError	Ocorreu um erro ao abrir a pasta:`n~1~.
 lNavigateSpecialError	Ocorreu um erro ao abrir a pasta especial #~1~.
+lOopsAccessDenied	acesso negado
 lOopsAddThisFolderTip	Para melhores resultados com o comando "Adicionar Pasta Activa ou página Web":`n`n1) Active a janela ~1~ contendo a pasta ou ligação a adicionar ao seu menu.`n2) Abra o menu emergente usando ~2~.`n3) Seleccione "Adicionar Pasta Activa ou página Web" e guarde o seu novo favorito.
 lOopsAlternativeMenuModifiersDuplicates	O Modificador "~1~" do Menu Alternativo é usado duas vezes.`n`nPor favor, certifique-se que cada modificador é usado apenas uma vez.
 lOopsAlternativeNotSupported	O comando do Menu Alternativo "~1~" não é suportado para favoritos do tipo "~2~".
@@ -799,6 +806,8 @@ lOopsChangeFolderInDialogAlert	Deseja alterar a pasta nesta caixa de diálogo? Pa
 lOopsContainerInGui	O menu dinâmico "~1~" só pode ser inserido no menu: ~2~
 lOopsCouldNotOpenSpecialFolder	O ~1~ não conseguiu abrir a pasta especial: "~2~".
 lOopsEmpty	vazia
+lOopsErrorCopyOrMoveFolderOrFile	Ocorreu um erro ao mover ou copiar o ficheiro ou pasta de origem para a pasta de destino.`n`nOrigem: ~1~`nDestino: ~2~
+lOopsErrorCopyOrMoveFolderOrFileSelect	Nenhum ficheiro ou pasta seleccionados.`n`nSeleccione um ficheiro ou uma pasta no Explorador do Windows antes de abrir o menu Alternativo.
 lOopsErrorIniFileDisplayErrorMessage	Exibir de novo esta mensagem de erro para este Menu Partilhado?
 lOopsErrorIniFileDuplicateNames	O favorito "~1~" no menu "~2~" não é exclusivo e foi temporariamente renomeado para "~3~".`n`nPor favor, edite este favorito para lhe dar um nome exclusivo.
 lOopsErrorIniFileModified	Este menu partilhado foi modificado desde o seu carregamento. O menu será actualizado mas a sua última alteração não poderá ser guardada.
@@ -815,6 +824,7 @@ lOopsExternalSelectType	Por favor seleccione o tipo de menu partilhado no separa
 lOopsExternalUnderExternalError	O segunte menu partilhado inclui um menu partilhado:`n~1~`n`nOs menus partilhados não podem conter submenus partilhados. Por favor edite este menu partilhado para retirar o menu partilhado dependente.
 lOopsFavoritesCopied	~1~ favoritos copiados.
 lOopsFavoritesUsageUpdated	Os dados de utilização dos Favoritos estão a ser actualizados por uma tarefa em segundo plano.`n`nPor favor, tente de novo dentro de 15-30 segundos...
+lOopsFileAlreadyExists	o ficheiro já existe
 lOopsFileExpandedFrom	Expandido a partir de
 lOopsFileNotFound	Esta localização não existe
 lOopsFileNotFoundSaveAnyway	Guardar este favorito mesmo assim?
@@ -825,7 +835,9 @@ lOopsHotkeyAlreadyUsed	A tecla de atalho "~1~" já está em uso para "~2~".`n`nPor
 lOopsHotkeyObjectNotFound	~1~ não conseguiu localizar o favorito associado ao ~2~ "~3~".`n`nIsto pode ser uma situação temporária. Tente reiniciar o ~1~.
 lOopsHotstringTriggerTooLong	Activador da cadeia de substituição demasiado longo. Os activadores das cadeias de substituição não podem ter mais de 40 caracteres.
 lOopsHttpLocationTransformed	A localização http (formato URL) foi transformada num atalho de rede (formato UNC) para compatibilidade com o Windows:`n`n~1~`n~2~
-lOopsInvalidIcon	As imagens dos ícones devem ser quadradas e inferiores a 64 x 64 píxeis.`n`nFicheiro: ~1~`nTamanho da imagem: ~2~ x ~3~ píxeis
+lOopsIconDocumentsNotFound	Ícone padrão do documento não encontrado ou inválido:`n`n~1~
+lOopsInvalidDocumentIcon	Substituição do ícone padrão de documento inválido em "Opções, Ícones de Menu".
+lOopsInvalidIcon	As imagens dos ícones devem ser quadradas e entre 16x16 e 64x64 píxeis.`n`nFicheiro: ~1~`nTamanho da imagem: ~2~ x ~3~ píxeis
 lOopsInvalidIconDownload	O ícone para este site não está disponível ou é inválido:`n`n~1~
 lOopsInvalidWinCmdIni	Não foi encontrado o ficheiro de definições do Total Commander "wincmd.ini".`n`nSeleccione o ficheiro em "Opções", separador "Gestores de ficheiros".
 lOopsInvalidWindowPosition	Valor(es) de posição da janela inválido(s)
@@ -838,11 +850,14 @@ lOopsMenuExternalCentralized	menu partilhado centralizado
 lOopsMenuExternalCollaborative	menu partilhado colaborativo
 lOopsMenuExternalPersonalChangedBy	Este menu partilhado pessoal está a ser EDITADO ou tem alterações NÃO GUARDADAS no computador: ~1~.`n`nSe guardar as alterações para este menu aqui, as alterações não guardadas no outro computador serão perdidas e deve cancelar essas alterações quando regressar a esse computador.
 lOopsMenuExternalReservedBy	Este ~1~ está RESERVADO pelo utilizador: ~2~.`n`nAguarde que este utilizador liberte o menu partilhado ou contacte o administrador do sistema.
+lOopsMenuNameCannotBeChanged	Lamento, o nome do menu para a funcionalidade QAP "~1~" não pode ser alterado.
 lOopsMenuNotFound	O menu "~1~" não existe.
 lOopsMenuSorted	Este comando não pode ser executado porque este menu é ordenado automaticamente.
 lOopsMultipleContainersError	Menus, grupos e menus partilhados só podem ser copiados ou movidos individualmente. Estes itens serão ignorados.
 lOopsNoIconInFile	Não existem ícones no ficheiro:`n`n~1~
 lOopsNotAdmin	Não foi possível carregar ~1~ como Administrador.`n`nEstá agora a ser executado como Normal.
+lOopsNowCalculationInvalid	Cálculo da data "Agora" inválido
+lOopsNowPlaceholderInvalid	Formato do espaço reservado "Agora" inválido
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, seleccione um atalho válido.
 lOopsOptionsPathTrayIcon	Ficheiro do ícone da área de notificação
 lOopsOSVerrsionError	O ~1~ requer o Window 7 ou mais recente. Os utilizadores do Windows Vista e XP users devem usar o Folders Popup que é compatível com essas versões.`n`nDeseja visitar o site do Folders Popup?
@@ -920,8 +935,12 @@ lOptionsHotkeyRemindersPromptShortcuts	Lembretes de atalhos no menu:
 lOptionsHotkeyRemindersShort	Exibir nomes abreviados
 lOptionsHotstringsDefault	Opções padrão de cadeias de substituição
 lOptionsHotstringsDefaultSelect	Seleccionar
+lOptionsIconDocumentsList	Substituições dos ícones padrão de documentos
+lOptionsIconDocumentsListInstructions	Os ícones padrão de documentos são normalmente configurados no Windows. Para substituir esta configuração, insira os novos ícones padrão de documento abaixo. Cada linha deve começar com uma extensão de tipo de ficheiro ou várias extensões separadas por "+" (p.e. "xlsx+xlsm" para o Excel), seguido pelo sinal igual "=" e o "ficheiro,índice" ou ficheiro de imagem do ícone padrão.
+lOptionsIconListsInstructions	O "ficheiro,índice" é o caminho para o ficheiro (.ico, .dll ou .exe) que contém o ícone, e o índice é a posição do ícone neste ficheiro, p.e. "C:\Icons\MyFile.dll,1". Pode também usar ficheiros de imagem quadrada (.png, .bmp, .gif, .jpg) desde que o seu tamanho seja entre 16x16 e 64x64 píxeis.
 lOptionsIconReplacementList	Substituição de ícones do QAP
-lOptionsIconReplacementListInstructions	Introduza as substituições de ícones do QAP, um por linha. Todas as linhas devem começar com o nome do ícone QAP (p.e. "iconFolderLive"), seguido pelo sinal igual "=" e o "ficheiro,índice" do ícone de substituição. O "ficheiro,índice" é o atalho para o ficheiro (.ico, .dll ou .exe) contendo o ícone e o índice é a posição do ícone neste ficheiro, p.e. "C:\Icons\MyFile.dll,1".
+lOptionsIconReplacementListInstructions	Introduza as substituições de ícones do QAP, uma por linha. Todas as linhas devem começar com o nome do ícone QAP (p.e. "iconFolderLive"), seguido pelo sinal igual "=" e o "ficheiro,índice" ou ficheiro de imagem do ícone de substituição (ver acima).
+lOptionsIconsCustomFolder	Pasta personalizada de ícones
 lOptionsIconSize	Tamanho padrão dos ícones do menu
 lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponível)
 lOptionsKeepExtensionInShortName	Manter extensão do ficheiro nas abreviaturas dos favoritos
@@ -979,6 +998,7 @@ lOptionsSearchWithLocale	Procurar usando definições do idioma local (p.e. "é" co
 lOptionsSearchWithStats	Exibir datas e colunas estatísticas na lista de Favoritos e resultados da procura
 lOptionsSelectBackupFolder	Selecciona o ficheiro de definições da pasta cópia de segurança
 lOptionsSelectCatalogueRoot	Seleccionar a pasta raiz do Catálogo de Menus Partilhados
+lOptionsSelectIconsCustomFolder	Seleccionar pasta personalizada de ícones
 lOptionsSelectQAPTempFolder	Criar a Pasta Temporária em:
 lOptionsSelectWorkingFolder	Guardar definições em que pasta?
 lOptionsSendToConsoleWithAlt	Usar códigos ASCII (ALT+0nnn) quando alterar pasta na Linha de Comandos do Windows (CMD)

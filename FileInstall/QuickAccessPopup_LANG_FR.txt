@@ -18,6 +18,7 @@ lAlternativeMenuTrayTipEditFavorite	Choisissez le favori à modifier
 lAlternativeMenuTrayTipNewWindow	Choisissez le dossier à ouvrir dans une nouvelle fenêtre
 lAlternativeMenuTrayTipOpenContaining	Choisissez le document, l'application ou le dossier favori dont vous voulez ouvrir le dossier parent
 lAlternativeMenuTrayTipRunAs	Sélectionnez l'application à exécuter en tant qu'administrateur
+lAlternativeMenuTrayTipSelectedFile	Choisissez le DOSSIER où déplacer ou copier le fichier ou le dossier que vous avez sélectionné
 lContextAddFile	Ajouter ce fichier au menu Quick Access Popup
 lContextAddFileXpress	Ajouter ce fichier au menu Quick Access Popup (Express)
 lContextAddFolder	Ajouter ce dossier au menu Quick Access Popup
@@ -82,6 +83,7 @@ lDialogChangeHotkeyModifierAndNone	Les touches spéciales comme "Alt" ou "Control
 lDialogChangeHotkeyMouseCheckLButton	Vous ne pouvez pas affecter le "Bouton gauche de la souris" sans touche spéciale `n(comme les touches ~1~, ~2~, ~3~ or ~4~).
 lDialogChangeHotkeyPopup	Ceci est un raccourci de menu popup.`n`nVoulez-vous gérer "~1~" dans "~2~"?
 lDialogChangeHotkeyTitle	Modifier le raccourci - ~1~ ~2~
+lDialogChangeHotkeyTitleManual	Entrez ici le code du raccourci AutoHotkey ou le code de balayage (scan code) du clavier (SCnnn). Voyez ~1~ pour plus de détails.`n`nEntrez le code:
 lDialogChangeHotstringDefaultOptionsPrompt	Choisissez les options par défaut pour les nouvelles chaînes de substitution (<a href="~1~">Aide</a>)
 lDialogChangeHotstringReload	Les changements dans les options de cette chaîne de substitution nécessiteront un redémarrage automatique de ~1~ lorsque vous enregistrerez les favoris.
 lDialogChangeHotstringTitle	Changer la chaîne de substitution - ~1~
@@ -265,7 +267,8 @@ lDialogGetWInInfo2Clippoard	Titre de la fenêtre:`n"~1~"`n`nClasse:`n"~2~"`n`nNom
 lDialogGroupMemberOptions	Options de groupe
 lDialogGroupParentMenu	Menu parent du groupe
 lDialogGroupRestoreStopIfError	Une erreur est survenue pendant l'ouverture du membre #~1~ du groupe:`n`n~2~`n~3~`n`nOuverture du groupe interrompue.
-lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>`nou <a id="~5~">touche menu (application)</a>
+lDialogHotkey	Raccourci
+lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>,`n<a id="~5~">touche menu (application)</a> ou <a id="~6~">saisie manuelle</a>
 lDialogHotkeys	Raccourcis
 lDialogHotkeysHelpHeader	Raccourci|Action
 lDialogHotkeysManage	Gérer les raccourcis
@@ -313,6 +316,7 @@ lDialogInvalidHotkey	Avec votre configuration actuelle de clavier, la touche de 
 lDialogInvalidHotkeyFavorite	Avec votre configuration actuelle de clavier, la touche de raccourci "~1~" ne peut être utilisée pour ce favori.`n`nVeuillez choisir une autre touche de raccourci pour le favori "~2~" et l'emplacement "~3~".
 lDialogKeyboard	Clavier
 lDialogLaunchWith	Lancer avec cette application
+lDialogLaunchWithActiveWindow	Lancez ce favori avec le fenêtre active?`n`n~1~
 lDialogListApplicationLabel	Liste des applications pour:
 lDialogListApplicationsDropdown	Tout||Menu Fenêtres ouvertes|Applications actives|Fermer des fenêtres
 lDialogListApplicationYesNo	[Oui] pour Activer ou [Non] pour fermer cette fenêtre?
@@ -645,7 +649,9 @@ lMenuAddThisFolder	Ajouter le dossier actif ou la page web active
 lMenuAddThisFolderDescription	Ajouter instantanément au menu le dossier actif ou la page web à l'écran.`n`nVous pouvez ajouter des dossiers ainsi en activant le menu de QAP dans les fenêtres de Windows Explorer ou dans les boîtes de dialogue de fichiers. Vous pouvez ajouter des liens web dans la plupart des navigateurs.`n`nDans la boîte de dialogue "Ajouter un favori", confirmez le nom du favori et entrez les diverses options tel que l'icône, le raccourci, la chaîne de substitution, les paramètres, etc.`n`nPar défaut, cette fonction est présente dans le menu principal.
 lMenuAddThisFolderXpress	Ajouter le dossier actif ou la page web active Express
 lMenuAddThisFolderXpressDescription	Semblable à la commande "Ajouter le dossier actif ou la page web active" sauf que le nouveau favori est automatiquement ajouté au début du menu principal sans interruption.`n`nSi vous souhaitez changer les valeurs par défaut, vous pouvez cliquer le bouton "Modifier" pour changer le nom, la position ou les divers paramètres du favori.`n`nDans les "Options", onglet "Menu", vous pouvez choisir d'ajouter automatiquement les nouveaux favoris au début ou à la fin du menu principal.
+lMenuAlternativeCopySelectedFile	Copier le fichier sélectionné dans un dossier favori
 lMenuAlternativeEditFavorite	Modifier un favori
+lMenuAlternativeMoveSelectedFile	Déplacer le fichier sélectionné dans un dossier favori
 lMenuAlternativeNewWindow	Ouvrir dans une nouvelle fenêtre
 lMenuAlternativeOpenContainingCurrent	Ouvrir le dossier parent dans la fenêtre actuelle
 lMenuAlternativeOpenContainingNew	Ouvrir le dossier parent dans une nouvelle fenêtre
@@ -777,6 +783,7 @@ lMessengerError	Une erreur s'est produite.`n`nAssurez-vous que ~1~ est lancé ava
 lMessengerHelp	Recherchez "Messenger" sur www.QuickAccessPopup.com pour de l'aide.
 lNavigateFileError	Une erreur s'est produite lors de l'ouverture du dossier:`n~1~.
 lNavigateSpecialError	Une erreur s'est produite lors de l'ouverture du dossier spécial #~1~.
+lOopsAccessDenied	accès refusé
 lOopsAddThisFolderTip	Pour de meilleurs résultats avec la commande "Ajouter le dossier actif ou la page web active":`n`n1) Activez la fenêtre ~1~ contenant le dossier ou la page à ajouter au menu.`n2) Ouvrez le menu popup avec ~2~.`n3) Choisissez "Ajouter le dossier actif ou la page web active" et enregistrez votre nouveau favori.
 lOopsAlternativeMenuModifiersDuplicates	La touche ou la combinaison de touches "~1~" est utilisée deux fois.`n`nVeuillez vous assurer que chaque combinaison n'est utilisée qu'une seule fois.
 lOopsAlternativeNotSupported	La commande du menu Alternatif "~1~" n'est pas disponible pour le type de favori "~2~".
@@ -787,6 +794,8 @@ lOopsChangeFolderInDialogAlert	Vouliez-vous changer de dossier dans cette boîte 
 lOopsContainerInGui	Le menu dynamique "~1~" ne peut être inséré que dans le menu: ~2~
 lOopsCouldNotOpenSpecialFolder	~1~ ne peut ouvrir le dossier spécial: "~2~".
 lOopsEmpty	vide
+lOopsErrorCopyOrMoveFolderOrFile	Une erreur s'est produite pendant le déplacement ou la copie du fichier ou du dossier source vers le dossier de destination.`n`nSource: ~1~`nDestination: ~2~
+lOopsErrorCopyOrMoveFolderOrFileSelect	Aucun fichier ou dossier n'a été sélectionné.`n`nSélectionnez un fichier ou un dossier dans Windows Explorer avant d'ouvrir le menu Alternatif.
 lOopsErrorIniFileDisplayErrorMessage	Afficher ce message d'erreur à nouveau pour ce menu partagé?
 lOopsErrorIniFileDuplicateNames	Le favori "~1~" dans le menu "~2~" n'est pas unique et a été temporairement renommé "~3~".`n`nVeuillez modifier ce favori pour lui donner un nom unique.
 lOopsErrorIniFileModified	Ce menu partagé a été modifié depuis qu'il a été chargé. Ce menu sera raffraîchi mais vos derniers changements ne pourront pas être enregistrés.
@@ -803,6 +812,7 @@ lOopsExternalSelectType	Veuillez sélectionner le type de menu partagé dans l'ong
 lOopsExternalUnderExternalError	Ce menu partagé inclut un autre menu partagé:`n~1~`n`nLes menus partagés ne peuvent inclure d'autres menus partagés. Veuillez retirer le menu partagé enfant qui s'y trouve.
 lOopsFavoritesCopied	~1~ favoris copiés.
 lOopsFavoritesUsageUpdated	Les données d'utilisation sur les favoris sont actuellement mises à jour par une tâche de fond lancée au démarrage.`n`nVeuillez essayer à nouveau dans 15-30 secondes...
+lOopsFileAlreadyExists	le fichier existe déjà
 lOopsFileExpandedFrom	Étendu à partir de
 lOopsFileNotFound	Cet emplacement n'existe pas
 lOopsFirstEnterUrl	Veuillez d'abord saisir une addresse dans le champ "~1~".
@@ -812,7 +822,9 @@ lOopsHotkeyAlreadyUsed	Le raccourci "~1~" est déjà utilisé pour l'emplacement "~
 lOopsHotkeyObjectNotFound	~1~ ne peut trouver le favori associé à: ~2~ "~3~".`n`nCela pourrait être une situation temporaire. Essayez de redémarrer ~1~.
 lOopsHotstringTriggerTooLong	Le déclencheur (abréviation) pour cette chaîne de substitution est trop long. Les déclencheurs ne peuvent avoir plus de 40 caractères.
 lOopsHttpLocationTransformed	L'emplacement HTTP (format URL) a été converti en chemin réseau (format UNC) afin d'être compatible avec Windows:`n`n~1~`n~2~
-lOopsInvalidIcon	Les images des icônes doivent être carrées et ne pas être plus grandes que 64 x 64 pixels.`n`nFichier: ~1~`nTaille de l'image: ~2~ x ~3~ pixels
+lOopsIconDocumentsNotFound	Icône par défaut de documents introuvable ou invalide:`n`n~1~
+lOopsInvalidDocumentIcon	Remplacement d'une icône par défaut de documents invalide dans "Options, Icônes du menu".
+lOopsInvalidIcon	Les images des icônes doivent être carrées et avoir entre 16x16 et 64x64 pixels.`n`nFichier: ~1~`nTaille de l'image: ~2~ x ~3~ pixels
 lOopsInvalidIconDownload	L'icône pour ce site web n'est pas disponible ou est invalide:`n`n~1~
 lOopsInvalidWinCmdIni	Le fichier des paramêtres "wincmd.ini" de Total Commander est introuvable.`n`nSélectionnez "Options" et l'onglet "Gestionnaires de fichiers".
 lOopsInvalidWindowPosition	Valeur(s) de position de la fenêtre invalide
@@ -825,11 +837,14 @@ lOopsMenuExternalCentralized	menu partagé centralisé
 lOopsMenuExternalCollaborative	menu partagé collaboratif
 lOopsMenuExternalPersonalChangedBy	Ce menu partagé personnel est actuellement MODIFIÉ ou comporte des modifications NON ENREGISTRÉES sur l'ordinateur: ~1~.`n`nSi vous enregistrez ici les modifications à ce menu, les changements non enregistrés sur l'autre ordinateur seront perdus et vous devriez annuler ces changements quand vous serez de retour sur l'autre ordinateur.
 lOopsMenuExternalReservedBy	Ce ~1~ est RÉSERVÉ par l'utilisateur: ~2~.`n`nAttendez que cet utilisateur libère le menu ou contactez votre administrateur de système.
+lOopsMenuNameCannotBeChanged	Désolé, le nom de la Fonctionnalités QAP "~1~" ne peut être modifié.
 lOopsMenuNotFound	Le menu "~1~" n'existe pas.
 lOopsMenuSorted	Cette commande ne peut pas être exécutée dans un menu trié automatiquement.
 lOopsMultipleContainersError	Les menus, groupes and menus partagés doivent être copiés ou déplacés individuellement. Ces items de la sélection seront ignorés.
 lOopsNoIconInFile	Il n'y a pas d'icône dans ce fichier:`n`n~1~
 lOopsNotAdmin	~1~ ne peut être exécuté en tant qu'administrateur.`n`nL'application est maintenant exécutée avec les privilèges normaux.
+lOopsNowCalculationInvalid	Calcul de date invalide dans le code de remplacement "Now"
+lOopsNowPlaceholderInvalid	Format de calcul de date invalide dans le code de remplacement "Now"
 lOopsOptionsPathNotExist	~1~ n'existe pas:`n~2~`n`nVeuillez choisir un emplacement valide.
 lOopsOptionsPathTrayIcon	Icône dans la zone de notification
 lOopsOSVerrsionError	~1~ nécessite Window 7 ou une version plus récente du système d'exploitation. Les utilisateurs de Windows Vista et XP sont invités à utiliser Folders Popup qui est compatible avec ces versions.`n`nVoulez-vous visiter le site web de Folders Popup?
@@ -903,8 +918,12 @@ lOptionsHotkeyRemindersPromptShortcuts	Rappels des raccourcis dans les menus:
 lOptionsHotkeyRemindersShort	Afficher les rappels abrégés
 lOptionsHotstringsDefault	Options par défaut des chaînes de substitution
 lOptionsHotstringsDefaultSelect	Sélectionner
+lOptionsIconDocumentsList	Remplacement des icônes par défaut de documents
+lOptionsIconDocumentsListInstructions	Les icônes par défaut des documents sont normalement configurés dans Windows. Pour passer outre cette configuration, entrez un nouvel icône par defaut ci-dessous. Chaque ligne doit commencer par une extension de fichier ou de multiples extensions séparées par y "+" (par exemple "xlsx+xlsm" pour Excel), suivie du symbole "=" et du "fichier,index" ou du fichier de l'image de l'icône par défaut.
+lOptionsIconListsInstructions	Le "fichier,index" est le chemin et nom du fichier (.ico, .dll or .exe) contenant l'icône. L'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1". Vous pouvez aussi utiliser une image carrée (.png, .bmp, .gif, .jpg) si sa taille est entre 16x16 et 64x64 pixels.
 lOptionsIconReplacementList	Remplacements des icônes de QAP
-lOptionsIconReplacementListInstructions	Entrez une instruction de remplacement par ligne. Chaque ligne doit commencer par le nom de l'icône QAP (i.e "iconFolderLive"), suivi du signe égal "=" et du "fichier,index" de l'icône de remplacement. Le "fichier,index" est le chemin et nom du fichier (.ico, .dll or .exe) contenant l'icône et l'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1".
+lOptionsIconReplacementListInstructions	Entrez une instruction de remplacement par ligne. Chaque ligne doit commencer par le nom de l'icône QAP (i.e "iconFolderLive"), suivi du symbole "=" et du "fichier,index" de l'icône de remplacement (voir ci-dessous).
+lOptionsIconsCustomFolder	Dossier d'icônes personnalisé
 lOptionsIconSize	Taille par défaut des icônes de menu
 lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 pour le maximum possible)
 lOptionsKeepExtensionInShortName	Conserver l'extension des noms de fichiers dans les Noms courts pour les menus
@@ -959,6 +978,7 @@ lOptionsSearchWithLocale	Recherche en utilisant la configuration linguistique de
 lOptionsSearchWithStats	Liste des favoris et résultats de recherche avec dates et statistiques
 lOptionsSelectBackupFolder	Selectionnez le dossier de copie du fichier de configuration principal
 lOptionsSelectCatalogueRoot	Choisissez le dossier racine du Catalogue des menus partagés
+lOptionsSelectIconsCustomFolder	Choisissez le dossier d'icônes personnalisé
 lOptionsSelectQAPTempFolder	Créer le dossier temporaire dans:
 lOptionsSelectWorkingFolder	Enregistrer les paramètres dans quel dossier?
 lOptionsSendToConsoleWithAlt	Utiliser les codes ASCII (ALT+0nnn) lors des changements de dossier dans la fenêtre Commandes de Windows (CMD)

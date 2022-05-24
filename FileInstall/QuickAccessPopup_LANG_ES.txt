@@ -230,7 +230,6 @@ lDialogGetWebPageTitleIcon	Obtener título e icono
 lDialogGetWebSiteIcon	Obtener el icono del sitio web
 lDialogGetWinInfo	Para identificar la ventana de la que desea obtener el título, clase o nombre del proceso, haga clic en la ventana de destino con la tecla de acceso directo del menú QAP [~1~].
 lDialogGetWInInfo2Clippoard	Título de la ventana:`n"~1~"`n`nClass:`n"~2~"`n`nNombre del proceso:`n"~3~"`n`n¿Copiar esta información al portapapeles?
-lDialogHotkeyInvisibleKeys	<a id="~1~">barra espaciadora</a>, <a id="~2~">tabulador</a>, <a id="~3~">intro</a>, <a id="~4~">escape</a>`tampoco <a id="~5~">tecla de menú (aplicación)</a>
 lDialogHotkeys	Atajos de teclado
 lDialogHotkeysManage	Gestionar atajos de teclado
 lDialogHotkeysManageAboutHotstrings	Cadenas activas actualmente en ~1~

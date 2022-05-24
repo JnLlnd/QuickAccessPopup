@@ -18,6 +18,7 @@ lAlternativeMenuTrayTipEditFavorite	Seleziona il Preferito da modificare
 lAlternativeMenuTrayTipNewWindow	Seleziona la cartella da aprire in una nuova finestra
 lAlternativeMenuTrayTipOpenContaining	Seleziona il Preferito (documento, applicazione o cartella) di cui vuoi aprire la cartella superiore
 lAlternativeMenuTrayTipRunAs	Seleziona l'applicazione da eseguire con privilegi elevati (amministratore)
+lAlternativeMenuTrayTipSelectedFile	Seleziona la CARTELLA di destinazione dove vuoi spostare o copiare il file o la cartella selezionata
 lContextAddFile	Aggiungi un File al menù Quick Access Popup
 lContextAddFileXpress	Aggiungi un File al menù Express
 lContextAddFolder	Aggiungi una Cartella al menù Quick Access Popup
@@ -82,6 +83,7 @@ lDialogChangeHotkeyModifierAndNone	Modificatori come "Alt" o "Control" non posso
 lDialogChangeHotkeyMouseCheckLButton	Non puoi assegnare il "Tasto Sinistro del Mouse" senza un modificatore`n(come i tasti ~1~, ~2~, ~3~ o ~4~).
 lDialogChangeHotkeyPopup	Questa è una scorciatoia per il menù.`n`nVuoi controllare "~1~" con "~2~"?
 lDialogChangeHotkeyTitle	Cambia scorciatoia - ~1~ ~2~
+lDialogChangeHotkeyTitleManual	Inserisci il codice del tasto di scelta rapida o di scansione della tastiera (SCnnn) qui. Vedi ~1~ per maggiori informazioni.`n`nInserisci il codice del tasto di scelta rapida:
 lDialogChangeHotstringDefaultOptionsPrompt	Seleziona le opzioni predefinite per sequenze di sostituzione appena create (<a href="~1~">Aiuto</a>)
 lDialogChangeHotstringReload	Fare dei cambiamenti nelle opzioni di questa sequenza di sostituzione richiederà di riavviare automaticamente ~1~ dopo aver salvato i Preferiti.
 lDialogChangeHotstringTitle	Cambia sequenza di sostituzione - ~1~
@@ -265,7 +267,8 @@ lDialogGetWInInfo2Clippoard	Titolo della Finestra:`n"~1~"`n`nClasse:`n"~2~"`n`nN
 lDialogGroupMemberOptions	Opzioni Elemento di Gruppo
 lDialogGroupParentMenu	Menù Gruppo superiore
 lDialogGroupRestoreStopIfError	C'è stato un errore nell'aprire un elemento del Gruppo #~1~:`n`n~2~`n~3~`n`nApertura del Gruppo interrotta.
-lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>`nor <a id="~5~">tasto del menú (applicazione)</a>
+lDialogHotkey	Tasto di scelta rapida
+lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>,`n<a id="~5~">tasto del menú (applicazioni)</a> o <a id="~6~">input manuale</a>
 lDialogHotkeys	Scorciatoie
 lDialogHotkeysHelpHeader	Scorciatoia|Azione
 lDialogHotkeysManage	Gestione Scorciatoie
@@ -314,6 +317,7 @@ lDialogInvalidHotkey	Con il tuo attuale layout di tastiera di sistema, non è sta
 lDialogInvalidHotkeyFavorite	Con il tuo attuale layout di tastiera di sistema, non è stato possibile usare la combinazione "~1~" per aprire questo preferito (errore: nome del tasto scelto non valido).`n`nPer favore, scegli un altra scorciatoia per il Preferito"~2~" e la destinazione "~3~".
 lDialogKeyboard	Tastiera
 lDialogLaunchWith	Esegui con questa applicazione
+lDialogLaunchWithActiveWindow	Apro questo preferito con la finestra attiva?`n`n~1~
 lDialogListApplicationLabel	Elenca applicazioni per:
 lDialogListApplicationsDropdown	Elenca tutto||Menù Finestre Correnti|Applicazioni in esecuzione|Chiudi Applicazioni
 lDialogListApplicationYesNo	[Si] per Attivare o [No] per Chiudere questa finestra?
@@ -799,6 +803,7 @@ lOopsChangeFolderInDialogAlert	Hai intenzione di cambiare cartella da questa cas
 lOopsContainerInGui	Il menù dinamico "~1~" può essere inserito soltanto nel menù: ~2~
 lOopsCouldNotOpenSpecialFolder	~1~ non è riuscito ad aprire la Cartella Speciale: "~2~".
 lOopsEmpty	vuoto
+lOopsErrorCopyOrMoveFolderOrFileSelect	Nessun file o cartella selezionati.`n`nSeleziona un file o cartella in Windows Explorer prima di aprire il menù Alternativo.
 lOopsErrorIniFileDisplayErrorMessage	Vuoi visualizzare di nuovo questo messaggio di errore per questo Menù Condiviso?
 lOopsErrorIniFileDuplicateNames	Il preferito "~1~" nel menù "~2~" non è unico ed è stato temporaneamente rinominato in "~3~".`n`nSi prega di modificare questo preferito per dargli un nome unico.
 lOopsErrorIniFileModified	Questo menù condiviso è stato modificato dopo essere stato aperto. Il menù verrà aggiornato con le modifiche apportate, che però NON saranno salvate e verranno perse.
@@ -815,6 +820,7 @@ lOopsExternalSelectType	Per favore scegli il tipo di menù condiviso nel tab "Men
 lOopsExternalUnderExternalError	Il menù condiviso seguente include un menù condiviso:`n~1~`n`nI menù condivisi non possono includere sottomenù condivisi. Pertanto è necessario modificare tale menù condiviso per portare fuori il sottomenù in esso incluso.
 lOopsFavoritesCopied	~1~ preferiti copiati.
 lOopsFavoritesUsageUpdated	I dati sull'uso dei Preferiti Ã¨ in corso di aggiornamento da un processo in background.`n`nSI prega di riprovare fra 15-30 secondi...
+lOopsFileAlreadyExists	file già esistente
 lOopsFileExpandedFrom	Espanso da
 lOopsFileNotFound	Questa destinazione non esiste
 lOopsFileNotFoundSaveAnyway	Salvo comunque questo Preferito?
@@ -825,7 +831,9 @@ lOopsHotkeyAlreadyUsed	La combinazione di tasti "~1~" è già usata per ~2~.`n`nE'
 lOopsHotkeyObjectNotFound	~1~ potrebbe non trovare il preferito associato al ~2~ "~3~".`n`nQuesta può essere una situazione temporanea. Prova a riavviare ~1~.
 lOopsHotstringTriggerTooLong	Hotstring trigger too long. Hotstring triggers can be no more than 40 characters long.<<<<
 lOopsHttpLocationTransformed	La destinazione http (in formato URL) è stato convertita in un percorso di rete (formato UNC) per compatibilità con Windows :`n`n~1~`n~2~
-lOopsInvalidIcon	Le immagini delle icone devono essere quadrate e non più grandi di 64 x 64 pixels.`n`nFile: ~1~`nDimensione immagine: ~2~ x ~3~ pixels
+lOopsIconDocumentsNotFound	Icona predefinita del documento non trovata o non valida:`n`n~1~
+lOopsInvalidDocumentIcon	Sostituzione dell'icona predefinita del documento non valida in "Opzioni, Icone Menù".
+lOopsInvalidIcon	Le immagini delle icone devono essere quadrate e comprese tra 16x16 e 64 x 64 pixels.nnFile: ~1~nDimensione immagine: ~2~ x ~3~ pixels
 lOopsInvalidIconDownload	L'icona per questo sito web non è disponibile o non è valida:`n`n~1~
 lOopsInvalidWinCmdIni	File delle impostazioni di Total Commander ("wincmd.ini") non trovato.`n`nSelezionalo in "Opzioni" > "File manager".
 lOopsInvalidWindowPosition	Valori non validi per la posizione della finestra
@@ -838,11 +846,14 @@ lOopsMenuExternalCentralized	menù condiviso centralizzato
 lOopsMenuExternalCollaborative	menù condiviso collaborativo
 lOopsMenuExternalPersonalChangedBy	Questo menù personale condiviso è attualmente in corso di MODIFICHE o ci sono modifiche ancora NON SALVATE sul computer: ~1~.`n`nSe salvi delle modifiche a questo menù qui, le modifiche non ancora salvate sull'altro computer saranno perse e dovresti annullare tali modifiche quando ritorni su quel computer.
 lOopsMenuExternalReservedBy	Questo ~1~ è RISERVATO dall'utente: ~2~.`n`nAspetta che tale utente rilasci il menù condiviso o contatta l'amministratore di sistema.
+lOopsMenuNameCannotBeChanged	Spiacente, ma il nome nel menù per la Funzione QAP "~1~" non può essere modificata.
 lOopsMenuNotFound	Il menù "~1~" non esiste.
 lOopsMenuSorted	Questo comando non può essere eseguito perchè questo menù è ordinato automaticamente.
 lOopsMultipleContainersError	Menù, gruppi e menù condivisi possono essere copiati o spostati solo individualmente. Questi elementi saranno saltati.
 lOopsNoIconInFile	Non c'è nessuna icona nel file:`n`n~1~
 lOopsNotAdmin	Non é stato possibile ~1~ come Amministratore.`n`nE' pertanto in esecuzione in modalitá Normale.
+lOopsNowCalculationInvalid	Calcolo della data "Adesso" non valida
+lOopsNowPlaceholderInvalid	Formato del segnaposto "Adesso" non valido
 lOopsOptionsPathNotExist	~1~ non esiste:`n~2~`n`nPer favore, seleziona un percorso valido.
 lOopsOptionsPathTrayIcon	File dell'icona nell'area notifiche
 lOopsOSVerrsionError	~1~ richiede Window 7 o un sistema operativo più recente. Windows Vista e utenti XP sono invitati ad usare il Folders Popup che è compatibile con queste versioni.`n`nVuoi visitare il sito web di Folders Popup?
@@ -920,8 +931,12 @@ lOptionsHotkeyRemindersPromptShortcuts	Promemoria delle scorciatoie nel menù:
 lOptionsHotkeyRemindersShort	Visualizza abbreviati
 lOptionsHotstringsDefault	Opzioni predefinite delle Sequenze di sostituzione
 lOptionsHotstringsDefaultSelect	Seleziona
+lOptionsIconDocumentsList	Sostituzioni Icone Predefinite per Documenti
+lOptionsIconDocumentsListInstructions	Le icone predefinite per i documenti sono normalmente configurate in Windows. Per sovrascrivere questa configurazione, inserisci le nuove icone predefinite per i documenti in basso. Ciascuna riga deve iniziare con una estensione di tipo di file, o molteplici separate da "+" (e.g. "xlsx+xlsm" per Excel), seguita dal segno di uguale "=" e il "file,indice" o file immagine dell'icona predefinita.
+lOptionsIconListsInstructions	Il "file,indice" è il percorso del file (.ico, .dll o .exe) contenente l'icona, e l'indice è la posizione dell'icona all'interno di tale file, e.g. "C:\Icons\MyFile.dll,1". Puoi anche usare dei file immagine quadrati (.png, .bmp, .gif, .jpg) purché la loro dimensione sia compresa tra 16x16 e 64x64 pixels.
 lOptionsIconReplacementList	Icone di riserva per QAP
-lOptionsIconReplacementListInstructions	Inserisci le icone di riserva per QAP, una per riga. Ciascuna linea deve iniziare col nome dell'icona per QAP (e.g. "iconaCartellaLive"), seguito dal segno di uguale "=" e il "file,indice" dell'icona di sostituzione. Il "file,indice" contiene il percorso del file (.ico, .dll o .exe) contenente l'icona, e l'indice che è la posizione dell'icona in tale file, e.g. "C:\Icone\MioFile.dll,1".
+lOptionsIconReplacementListInstructions	Inserisci le icone di riserva per QAP, una per riga. Ciascuna linea deve iniziare col nome dell'icona per QAP (e.g. "iconaCartellaLive"), seguito dal segno di uguale "=" e il "file,indice" o file immagine dell'icona di sostituzione (vedi sopra).
+lOptionsIconsCustomFolder	Cartella personalizzata delle icone
 lOptionsIconSize	Dimensione predefinita delle icone del menù
 lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto lo spazio disponibile)
 lOptionsKeepExtensionInShortName	Mantieni l'estensione del file nelle abbreviazioni dei preferiti
@@ -979,6 +994,7 @@ lOptionsSearchWithLocale	Ricerca usando le impostazioni del linguaggio locale (p
 lOptionsSearchWithStats	Risultati di ricerca con data di modifica e statistiche in colonna
 lOptionsSelectBackupFolder	Seleziona la cartella di backup del file delle Impostazioni principali
 lOptionsSelectCatalogueRoot	Seleziona la cartella radice del Catalogo dei Menù Condivisi
+lOptionsSelectIconsCustomFolder	Seleziona la cartella personalizzata delle icone
 lOptionsSelectQAPTempFolder	Crea la Cartella Temporanea in:
 lOptionsSelectWorkingFolder	Salva Impostazioni in quale cartella?
 lOptionsSendToConsoleWithAlt	Usa codici ASCII (ALT+0nnn) per cambiare cartella dalla Linea di Comando (CMD)
