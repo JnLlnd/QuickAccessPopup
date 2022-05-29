@@ -31,6 +31,41 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.7 (2022-05-25)
+ 
+Move or Copy Selected file/folder
+- add QAP Features "Move Selected File" and "Copy Selected File" available in the Alternative menu
+  About Alternative menu, see: https://www.quickaccesspopup.com/what-are-the-power-menu-features/
+- add Alternative menu features "Move Selected File" and "Copy Selected File" to "Options, Alternative Menu Hotkeys"
+  About Alternative menus hotkeys, see: https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/
+ 
+Menu Icons
+- add a new option under "Options, Menu Icons" to set "Document Default Icons Replacements"; default document icons are used in QAP dynamic menus (like "Recent Files"), in the "Manage Icons" window and as default icons for new Document favorites; they are normally configured in Windows but you can now override them with your list of custom icons; each custom icon is associated to documents type(s) by their file extension(s), for example "txt=c:\my_icons\text_icon.png"; you can specify multiple extensions separated with "+", for example "xlsx+xlsm=c:\my_icon\excel_icon.png"
+  About Document default icons, see: https://www.quickaccesspopup.com/can-i-use-my-own-documents-icons-instead-of-those-configured-in-windows/
+- get Link (URL) favorites default icon from the entry in the Windows Registry for the default browser configured in Windows (instead of using the icon associated to the html file extension)
+- in "Options, Menu Icons" the "QAP Icon Replacements" list now support image file (.png, .bmp, .gif, .jpg)
+- new option under "Options, Menu Icons" to set an "Icons custom folder"; this folder is open using a link in the "Select Icon" dialog box
+- in "Tools, Manage Icons" dialog box, calculate the number of rows considering the screen scaling (making obsolete the "Manage Icons number of rows", now moved to "Various Advanced Options")
+- in the "Manage Icons" dialog box, make the "Previous" and "Next" buttons easier to access by moving them to the center on each side of the "Close" button
+ 
+Placeholders
+- process placeholders in the "Launch with" property of Documents, URLs and FTP favorites
+- new placeholder "{ActiveWindow}" allowing, for example, to open a text file in the active editor when the "Launch with" field of a document contains "{ActiveWindow}"; QAP asks for confirmation before launching the active app
+  About ActiveWindow placeholder, see: https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/#activewindow
+- when a Snippet or other favorites contains an {Input:...} placeholder, abort the execution if the input is cancelled or returned empty
+ 
+Various
+- Custom Hotkeys: in "Change shortcut" dialog box, add link to enter a hotkey code or a scan code (SCnnn) manually
+  About keyboard shortcuts, see: https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/
+- Close Menu: if the "Add Close to menu" option is enabled (in "Options, Menus Appearance"), add the "Close menu" item to menus that can be open with a shortcut or a hotstring
+  About the Close menu, see: https://www.quickaccesspopup.com/what-is-the-close-menu-issue/
+- QAP Messenger "LaunchFavorite": when launching a favorite from QAPmessenger, detect the last active file manager window and use its location to expand the "current location" placeholders (e.g. {CUR_LOC})
+- QAP Features: prevent changing the name of the QAP Features "Repeat Last Action" and "Repeat Last Actions" menu to avoid issues caused by some code relying on their unchanged name
+- Adding File Shortcuts: in "Add Multiple Favorites", when adding file shortcuts (.lnk files) from a folder, add the extracted location instead of location of the shortcut (processing file shortcut properties, like its icon, is not supported at this time)
+- in "Add Favorite - Select type" dialog box and "Add Multiple Favorites" dialog boxes, replace buttons to navigate between these two dialog boxes with more discrete links
+- File Dialog Boxes: new code to detect file dialog boxes (please report issues if QAP can't change folder in some file dialog boxes)
+- language files updated for French, German, Italian, Portuguese, Brazilian Portuguese and Korean
+
 Version BETA: 11.5.6.9.5 (2022-05-23)
 - fix bug when calling move or copy selected file from an alternative menu keyboard shortcut
 - in "Add Multiple Favorites", when adding file shortcuts (.lnk files) from a folder, add the extracted location instead of location of the shortcut (processing file shortcut properties, like its icon, is not supported at this time)
@@ -5116,7 +5151,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.6.9.5
+;@Ahk2Exe-SetVersion 11.5.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5183,8 +5218,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.6.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
@@ -21685,7 +21720,7 @@ strLatestVersionBeta := objLatestVersions[2]
 strLatestVersionAlpha := objLatestVersions[3]
 
 ; DEGUG VALUES
-; g_strCurrentVersion := "10.4.9.3"
+; g_strCurrentVersion := "10"
 ; strLatestVersionAlpha := "9.3.1"
 ; strLatestUsedAlpha := "1.1"
 ; strLatestSkippedAlpha := "9.3.2"
@@ -21882,7 +21917,7 @@ strUrlDownloadSetup := AddUtm2Url("https://www.quickaccesspopup.com/latest/check
 strUrlDownloadPortable:= AddUtm2Url("https://www.quickaccesspopup.com/latest/check4update-download-portable-redirect.html", A_ThisLabel, "Check4Update") ; prod only
 strUrlAppLandingPageBeta := AddUtm2Url("https://forum.quickaccesspopup.com/forumdisplay.php?fid=11", A_ThisLabel, "Check4Update")
 
-if InStr(A_ThisLabel, "ButtonCheck4UpdateDialogChangeLog")
+if (A_ThisLabel = "ButtonCheck4UpdateDialogChangeLog")
 	Run, %strUrlChangeLog%
 else if (A_ThisLabel = "ButtonCheck4UpdateDialogVisit")
 	Run, % (g_strUpdateProdOrBeta = "prod" ? g_strUrlAppLandingPage : strUrlAppLandingPageBeta) ; beta page also for alpha
@@ -21907,7 +21942,8 @@ else ; ButtonCheck4UpdateDialogRemind, UpdateGuiClose or UpdateGuiEscape
 	IniWrite, 0.0, % o_Settings.strIniFile, Global
 		, % "LatestVersionSkipped" . (g_strUpdateProdOrBeta = "alpha" ? "Alpha" : (g_strUpdateProdOrBeta = "beta" ? "Beta" : "")) ; do not add "Prod" to ini variable for backward compatibility
 
-Gui, Destroy
+if (A_ThisLabel <> "ButtonCheck4UpdateDialogChangeLog") and (A_ThisLabel <> "ButtonCheck4UpdateDialogVisit")
+    Gui, Destroy
 
 Check4UpdateDialogCleanup:
 strChangelog := ""
