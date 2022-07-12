@@ -5151,7 +5151,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.7.0.1
+;@Ahk2Exe-SetVersion 11.5.7.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5218,7 +5218,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.7.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.7.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -20357,41 +20357,11 @@ WindowIsConsole(strClass)
 WindowIsDialog(strClass, strWinId)
 ;------------------------------------------------------------
 {
-    ; DEGUG CODE
-	###_strParentTargetWinId := DllCall("GetParent", UInt,strWinId)
-	###_strParentTargetWinId := (!###_strParentTargetWinId ? strWinId : ###_strParentTargetWinId)
-	WinGetClass, ###_strParentClass, ahk_id %###_strParentTargetWinId%
-	WinGetTitle, ###_strParentTitle, ahk_id %###_strParentTargetWinId%
-	WinGet, ###_strProcessName, ProcessName, ahk_id %###_strParentTargetWinId%
-    WinGet, ###_strControlsList, ControlList, ahk_id %strWinId%
-    WinGetTitle, ###_WinTitle, ahk_id %strWinId%
-    ###_strDebug := "Window: " . ###_WinTitle
-        . "`nClass: " . strClass
-        . "`nID: " . strWinId
-        . "`nParent Window: " . ###_strParentTitle
-        . "`nParent Class: " . ###_strParentClass
-        . "`nParent Process: " . ###_strProcessName
-        . "`n`nWindowIsDialog: " . (strClass = "#32770" and !WindowIsTreeview(strWinId) and DialogHasRequiredControls(strWinId))
-        . "`nWindowIsTreeview(strWinId): " . WindowIsTreeview(strWinId)
-        . "`nDialogHasRequiredControls(strWinId): " . DialogHasRequiredControls(strWinId)
-        . "`nSmellsLikeAFileDialog(strWinId): " . SmellsLikeAFileDialog(strWinId)
-        . "`n`nstrControlsList:`n" . ###_strControlsList
-    MsgBox, % "This window will appear multiple times (this is normal).`n`nThis information will be copied to your Clipboard. Please send paste it in your reply." . "`n`n" . ###_strDebug
-    Clipboard := ###_strDebug
-    ; / DEGUG CODE
-    
-    ; reactivate this response (in v11.5.7.1)
+    ; code introduced in beta release v11.5.9.1.1 and removed in v11.5.7.1 (see: https://forum.quickaccesspopup.com/showthread.php?tid=1990)
+ 	; return (strClass = "#32770") and !WindowIsTreeview(strWinId) and SmellsLikeAFileDialog(strWinId)
+	
+    ; reactivate code used before beta release v11.5.9.1.1
 	return (strClass = "#32770") and !WindowIsTreeview(strWinId) and DialogHasRequiredControls(strWinId)
-	
-	; ToolTip, % A_ThisFunc . " - " . strClass . " - " . !WindowIsTreeview(strWinId) . " - " . DialogHasRequiredControls(strWinId)
-	; bln := (strClass = "#32770") and !WindowIsTreeview(strWinId) and DialogHasRequiredControls(strWinId)
-	
-	; ToolTip, % A_ThisFunc . " - " . strClass . " - " . !WindowIsTreeview(strWinId) . " - " . SmellsLikeAFileDialog(strWinId)
-    
-    ; disable this response (used in v11.5.7)
- 	; bln := (strClass = "#32770") and !WindowIsTreeview(strWinId) and SmellsLikeAFileDialog(strWinId)
-	
-	return bln
 }
 ;------------------------------------------------------------
 
@@ -20407,8 +20377,6 @@ SmellsLikeAFileDialog(strWinId)
 ;------------------------------------------------------------
 {
 	WinGet, strControlsList, ControlList, ahk_id %strWinId%
-	; Sort, strControlsList
-	; ###_V(A_ThisFunc, strControlsList)
 
 	Loop, Parse, strControlsList, `n
 	{
@@ -20433,7 +20401,7 @@ SmellsLikeAFileDialog(strWinId)
 
 
 ;------------------------------------------------------------
-DialogHasRequiredControls(strWinId) ; UNUSED, replaced by SmellsLikeAFileDialog by NotNull
+DialogHasRequiredControls(strWinId)
 ; Disable popup menu in dialog boxes when its controls list does not fullfil these conditions:
 ; include ("Edit1" or "Edit2") and ("ToolBarWindow32" or "SysListView32" or "SysTreeView32" or "DirectUIHWND") and ("Button")
 ; Thanks to research by Helge Kraak
