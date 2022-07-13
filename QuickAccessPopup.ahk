@@ -20116,7 +20116,12 @@ if InStr(g_strMenuTriggerLabel, "Mouse")
 {
 	; to make sure the item and Explorer window, DOpus lister or under the mouse become active,
 	; and for TC only if navigate (to avoid disrupting GetSelectedLocation)
-	Click
+    
+    ; until v11.5.7 was:
+	; Click
+    ; replaced with:
+    MouseGetPos, , , strWinID
+    WinActivate, ahk_id %strWinID%
 	Sleep, 20
 }
 
@@ -20155,6 +20160,7 @@ if InStr(g_strMenuTriggerLabel, "Keyboard") and (o_Settings.MenuAdvanced.intMove
 Menu, %g_strShowMenu%, Show, %g_intMenuPosX%, %g_intMenuPosY% ; at mouse pointer if option 1, 20x20 offset of active window if option 2 and fix location if option 3
 
 g_strShowMenu := ""
+strWinID := ""
 
 return
 ;------------------------------------------------------------
@@ -23978,7 +23984,7 @@ return
 ;========================================================================================================================
 
 ;------------------------------------------------------------
-GetSelectedLocation(strClass, strWinId)
+GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 ; LearningOne and jethrow on https://autohotkey.com/board/topic/60723-can-autohotkey-retrieve-file-path-of-the-selected-file/page-2
 ;------------------------------------------------------------
 {
@@ -23989,47 +23995,65 @@ GetSelectedLocation(strClass, strWinId)
 		for objWindow in ComObjCreate("Shell.Application").Windows
 			if (objWindow.hwnd = strWinId)
 			{
+				; retrieve list of selected items in strWinId Explorer window
 				objSelectedItems := objWindow.Document.SelectedItems
 				break
 			}
 		for objItem in objSelectedItems
 		{
-			strFirstItem := objItem.path
-			if StrLen(strFirstItem)
+			; parse items
+			strSelection .= objItem.path . "|"
+			; stop after first non-empty item if not blnMultipleSelection, else continue
+			if StrLen(strSelection) and !(blnMultipleSelection)
 				break
 		}
+		strSelection := SubStr(strSelection, 1, -1) ; remove last |
 	}
 	else if WindowIsDesktop(strClass)
 	{
 		; simplified version from https://www.autohotkey.com/boards/viewtopic.php?p=154836#p154836
 		objWindows := ComObjCreate("Shell.Application").Windows
 		VarSetCapacity(hWnd, 4, 0)
+		; retrieve object for Desktop including list of selected items
 		; SWC_DESKTOP := 0x8 VT_BYREF := 0x4000 VT_I4 := 0x3 SWFO_NEEDDISPATCH := 0x1
 		objDesktop := objWindows.FindWindowSW(0, "", 8, ComObject(0x4003, &hWnd), 1)
-		strFirstItem := ""
-		VarSetCapacity(strFirstItem, 260*2)
+		strSelection := ""
 		for oItem in objDesktop.Document.SelectedItems
+		{
 			if !(SubStr(oItem.path, 1, 3) = "::{")
-			{
-				strFirstItem .= oItem.path
+				strSelection .= oItem.path . "|"
+			; stop after first non-empty item if not blnMultipleSelection, else continue
+			if StrLen(strSelection) and !(blnMultipleSelection)
 				break
-			}
+		}
+		strSelection := SubStr(strSelection, 1, -1) ; remove last |
 	}
 	else if WindowIsDirectoryOpus(strClass)
 	{
 		gosub, RefreshDOpusSelectedListText
-		strFirstItem := SubStr(g_strDOpusSelectedListText, InStr(g_strDOpusSelectedListText, "<item id="))
-		strFirstItem := SubStr(strFirstItem, InStr(strFirstItem, "path=""") + 6)
-		strFirstItem := SubStr(strFirstItem, 1, InStr(strFirstItem, """ type=") - 1)
-		strFirstItem := ComUnHTML(strFirstItem) ; convert html entities like "&apos;" converted to "'"
+
+		strDOpusSelection := SubStr(g_strDOpusSelectedListText, InStr(g_strDOpusSelectedListText, "<item id="))
+		Loop
+		{
+			; get next selected file
+			strDOpusSelection := SubStr(strDOpusSelection, InStr(strDOpusSelection, "<item id="))
+			strDOpusSelected := SubStr(strDOpusSelection, InStr(strDOpusSelection, "path=") + 6)
+			strDOpusSelected := SubStr(strDOpusSelected, 1, InStr(strDOpusSelected, """ type=") - 1)
+			; add to selected files
+			strDOpusSelectedFiles .= strDOpusSelected . "|"
+			; remove processed line
+			strDOpusSelection := SubStr(strDOpusSelection, InStr(strDOpusSelection, "/>") + 1)
+		; stop when all items processed or stop after first item if not blnMultipleSelection
+		} until !InStr(strDOpusSelection, "<item id=") or (!blnMultipleSelection)
+		strSelection := SubStr(strDOpusSelectedFiles, 1, -1) ; remove last |
 	}
-	; no reliable technique to retrieve the active item in dialog boxes and Total Commander
+	; no reliable technique to retrieve the selected item(s) in Total Commander and dialog boxes
 	else if WindowIsTotalCommander(strClass)
 		Oops(0, o_L["OopsSelectedItemTotalCommander"])
 	else if WindowIsDialog(strClass, strWinId)
 		Oops(0, o_L["OopsSelectedItemDialogBoxes"])
 
-    return strFirstItem
+    return strSelection
 }
 ;------------------------------------------------------------
 
@@ -32426,7 +32450,7 @@ class Container
 					return 1 ; error code
 				}
 				
-				if (blnFileExist and Trim(this.AA.strFavoriteLaunchWith) = "{ActiveWindow}" and (g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"]))
+				if (blnFileExist and Trim(this.AA.strFavoriteLaunchWith) = "{ActiveWindow}" and (this.aaTemp.strHotkeyTypeDetected <> "Alternative"))
 				{
 					MsgBox, 4, %g_strAppNameText%, % L(o_L["DialogLaunchWithActiveWindow"], strTemp)
 					IfMsgBox, Yes
@@ -32474,7 +32498,7 @@ class Container
 					if (this.AA.strFavoriteType <> "Folder")
 						blnAlternativeMenuTypeNotSupported := true
 					else
-						intOpenError := this.CopyOrMoveFolderOrFile((g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"] ? "Move" : "Copy"))
+						intOpenError := this.CopyOrMoveFoldersOrFiles((g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"] ? "Move" : "Copy"))
 				}
 				
 				if (blnAlternativeMenuTypeNotSupported)
@@ -34390,41 +34414,48 @@ class Container
 		;---------------------------------------------------------
 		
 		;---------------------------------------------------------
-		CopyOrMoveFolderOrFile(strAction)
+		CopyOrMoveFoldersOrFiles(strAction)
 		;---------------------------------------------------------
 		{
-			strSelectedItem := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId)
-			if !StrLen(strSelectedItem)
+			strDestPath := this.AA.strFavoriteLocation
+
+			strSelectedItems := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId, true) ; true for multiple selection
+			if !StrLen(strSelectedItems)
 			{
 				Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFileSelect"])
 				return 1 ; error
 			}
-			strAttributes := FileExist(strSelectedItem)
-			
-			strDestPath := this.AA.strFavoriteLocation
-			if InStr(strAttributes, "D") ; D for directory
-			{
-				SplitPath, strSelectedItem, strOutFileName
-				strDestPath .= "\" . strOutFileName
-				if (strAction = "Move")
-					FileMoveDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-				else ; Copy
-					FileCopyDir, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-			}
-			else ; file
-				if (strAction = "Move")
-					FileMove, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-				else ; Copy
-					FileCopy, %strSelectedItem%, %strDestPath%, 0 ; do not overwrite
-			
-			if (ErrorLevel)
-			{
-				strLastError := (A_LastError = 5 ? o_L["OopsAccessDenied"] : (A_LastError = 80 or A_LastError = 183 ? o_L["OopsFileAlreadyExists"] : ""))
-				if StrLen(strLastError)
-					strLastError := "`nError: " . A_LastError . " (" . strLastError . ")"
-				Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFile"] . strLastError, strSelectedItem, strDestPath)
-				return 1 ; error
-			}
+
+            Loop, Parse, strSelectedItems, |
+            {
+                if !StrLen(A_LoopField)
+                    continue
+
+                strAttributes := FileExist(A_LoopField)
+                if InStr(strAttributes, "D") ; D for directory
+                {
+                    SplitPath, A_LoopField, strOutFileName
+                    strThisDestPath := strDestPath . "\" . strOutFileName
+                    if (strAction = "Move")
+                        FileMoveDir, %A_LoopField%, %strThisDestPath%, 0 ; do not overwrite
+                    else ; Copy
+                        FileCopyDir, %A_LoopField%, %strThisDestPath%, 0 ; do not overwrite
+                }
+                else ; file
+                    if (strAction = "Move")
+                        FileMove, %A_LoopField%, %strDestPath%, 0 ; do not overwrite
+                    else ; Copy
+                        FileCopy, %A_LoopField%, %strDestPath%, 0 ; do not overwrite
+
+                if (ErrorLevel)
+                {
+                    strLastError := (A_LastError = 5 ? o_L["OopsAccessDenied"] : (A_LastError = 80 or A_LastError = 183 ? o_L["OopsFileAlreadyExists"] : ""))
+                    if StrLen(strLastError)
+                        strLastError := "`nError: " . A_LastError . " (" . strLastError . ")"
+                    Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFile"] . strLastError, A_LoopField, strDestPath)
+                    return 1 ; error, exit the loop and return
+                }
+            }
 			; return 0 no error
 		}
 		;---------------------------------------------------------
