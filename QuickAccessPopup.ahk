@@ -21721,7 +21721,7 @@ strLatestVersionBeta := objLatestVersions[2]
 strLatestVersionAlpha := objLatestVersions[3]
 
 ; DEGUG VALUES
-; g_strCurrentVersion := "10.4.9.3"
+; g_strCurrentVersion := "10"
 ; strLatestVersionAlpha := "9.3.1"
 ; strLatestUsedAlpha := "1.1"
 ; strLatestSkippedAlpha := "9.3.2"
@@ -21918,7 +21918,7 @@ strUrlDownloadSetup := AddUtm2Url("https://www.quickaccesspopup.com/latest/check
 strUrlDownloadPortable:= AddUtm2Url("https://www.quickaccesspopup.com/latest/check4update-download-portable-redirect.html", A_ThisLabel, "Check4Update") ; prod only
 strUrlAppLandingPageBeta := AddUtm2Url("https://forum.quickaccesspopup.com/forumdisplay.php?fid=11", A_ThisLabel, "Check4Update")
 
-if InStr(A_ThisLabel, "ButtonCheck4UpdateDialogChangeLog")
+if (A_ThisLabel = "ButtonCheck4UpdateDialogChangeLog")
 	Run, %strUrlChangeLog%
 else if (A_ThisLabel = "ButtonCheck4UpdateDialogVisit")
 	Run, % (g_strUpdateProdOrBeta = "prod" ? g_strUrlAppLandingPage : strUrlAppLandingPageBeta) ; beta page also for alpha
@@ -21943,7 +21943,8 @@ else ; ButtonCheck4UpdateDialogRemind, UpdateGuiClose or UpdateGuiEscape
 	IniWrite, 0.0, % o_Settings.strIniFile, Global
 		, % "LatestVersionSkipped" . (g_strUpdateProdOrBeta = "alpha" ? "Alpha" : (g_strUpdateProdOrBeta = "beta" ? "Beta" : "")) ; do not add "Prod" to ini variable for backward compatibility
 
-Gui, Destroy
+if (A_ThisLabel <> "ButtonCheck4UpdateDialogChangeLog") and (A_ThisLabel <> "ButtonCheck4UpdateDialogVisit")
+    Gui, Destroy
 
 Check4UpdateDialogCleanup:
 strChangelog := ""
