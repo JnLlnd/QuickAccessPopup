@@ -33,10 +33,11 @@ HISTORY
 
 Version: 11.5.7.1 (2022-07-13)
 - support multiple files or folders selection using the Alternative menu features "Copy/Move the selected file to a favorite folder" (available with Windows Explorer, Windows Desktop and Directory Opus)
+  see: https://www.quickaccesspopup.com/what-are-the-power-menu-features/
 - when opening the main menu, stop selecting the file or folder under the cursor and deselecting other items
 - reverse to previous method of detecting dialog boxes (as in release v11.5.6) fixing issue with AutoCAD's (and possibly other software) dialog boxes
-- keep the "Update Quick Access Popup" dialog box open if user clicks "See change log" or "Visit web site" buttons
-- fix bug when the folder or file location includes ".com " or ".exe " (as in c:\something.com etc\file.txt)
+- keep the "Update Quick Access Popup?" dialog box open if user clicks "See change log" or "Visit web site" buttons
+- fix bug when the folder or file location includes ".com " (.com followed by a space) or ".exe " (as in c:\something.com etc\file.txt)
 - when using an Alternative menu features, stop showing confirmation dialog box for document having the "Launch with" option "{ActiveWindow}"
 
 Version: 11.5.7 (2022-05-25)
