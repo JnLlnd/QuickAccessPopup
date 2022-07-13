@@ -32448,7 +32448,7 @@ class Container
 					return 1 ; error code
 				}
 				
-				if (blnFileExist and Trim(this.AA.strFavoriteLaunchWith) = "{ActiveWindow}" and (g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"]))
+				if (blnFileExist and Trim(this.AA.strFavoriteLaunchWith) = "{ActiveWindow}" and (this.aaTemp.strHotkeyTypeDetected <> "Alternative"))
 				{
 					MsgBox, 4, %g_strAppNameText%, % L(o_L["DialogLaunchWithActiveWindow"], strTemp)
 					IfMsgBox, Yes
