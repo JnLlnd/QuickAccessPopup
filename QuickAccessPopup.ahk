@@ -33691,9 +33691,12 @@ class Container
 						strTemp := this.aaTemp.strFullLocation ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 						blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strFullLocation with expanded relative path, envvars and user variables, and absolute location if in PATH
 						if (blnFileExist)
-							; double-quotes added to 11.5.7.1 for exceptional case, for example when the path includes .com or .exe followed by space (as in c:\something.com more\text.txt)
-							; .com or .exe being considered as an executable path and the remaining as parameters
-							this.aaTemp.strFullLocation := """" . strTemp . """"
+							if (SubStr(strTemp, 1, 1) <> """") ;  in case user enclosed path between double-quotes (should not happen because removed by gui, but to be safe)
+								; double-quotes added to 11.5.7.1 for exceptional case, for example when the path includes .com or .exe followed by space (as in c:\something.com more\text.txt)
+								; .com or .exe being considered as an executable path and the remaining as parameters
+								this.aaTemp.strFullLocation := """" . strTemp . """"
+							else
+								this.aaTemp.strFullLocation := strTemp
 						; else leave bad location in strFullLocation
 						
 						if StrLen(this.AA.intFavoriteOpenSubFolder) and (this.AA.intFavoriteOpenSubFolder)
