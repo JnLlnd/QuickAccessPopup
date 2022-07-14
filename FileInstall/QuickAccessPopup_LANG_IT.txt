@@ -185,7 +185,7 @@ lDialogFavoriteFolderLiveHideIcons	Icone
 lDialogFavoriteFolderLiveHideInMenu	Nascondi nei menù
 lDialogFavoriteFolderLiveInclude	Includi
 lDialogFavoriteFolderLiveLevels	Numero di livelli di sottocartelle da includere nel menù della Cartella Live
-lDialogFavoriteFolderLiveRefreshManual	Aggiorna il menÃ¹ di questa Cartella Live solo col comando`n"~1~"
+lDialogFavoriteFolderLiveRefreshManual	Aggiorna il menu di questa Cartella Live solo col comando`n"~1~"
 lDialogFavoriteFolderLiveShowHidden	Nascosto
 lDialogFavoriteFolderLiveShowItems	Mostra elementi
 lDialogFavoriteFolderLiveShowSystem	Sistema
@@ -250,7 +250,7 @@ lDialogFileLabel	Documento
 lDialogFileName	Nome del File
 lDialogFileSize	Dimensione del File
 lDialogFolderLabel	Cartella
-lDialogFreeEditionItems	Oggetti nel menÃ¹: attuale ~1~ / permesso ~2~
+lDialogFreeEditionItems	Usa Ctrl+Tab per inserire tab ed Enter per inserire fine-linea..
 lDialogFreeEditionLabel	Gratuita
 lDialogFreeEditionLive	Cartelle Lives con al massimo ~1~ oggetti
 lDialogFreeEditionLiveExceeded	Il numero di oggetti nelle Cartelle Live supera il massimo consentito di ~1~
@@ -258,7 +258,7 @@ lDialogFreeEditionMessage0	Stai usando la versione gratuita di Quick Access Popu
 lDialogFreeEditionMessage1	Purtroppo, i limiti di Quick Access Popup Edizione Gratuita sono stati superati. Gli elementi che superano i limiti sono stati disabilitati.
 lDialogFreeEditionMessage2	Si prega di aprire la casella di dialogo "~1~, ~2~" per richiedere o salvare la tua licenza di QAP...
 lDialogFreeEditionMessage3	Richiedi la licenza ora per sfruttare senza limitazioni tutte le funzioni di QAP
-lDialogFreeEditionShared	MenÃ¹ condiviso: attuale ~1~ / permesso ~2~
+lDialogFreeEditionShared	Menu condiviso: attuale ~1~ / permesso ~2~
 lDialogGetWebPageTitle	Estrai il titolo
 lDialogGetWebPageTitleIcon	Estrai titolo e icona
 lDialogGetWebSiteIcon	Estrai l'icona del sito web
@@ -349,20 +349,20 @@ lDialogMoveSettingsNotDefault	Non è possibile spostare la Cartella Impostazioni 
 lDialogMoveSettingsReload	~1~ deve essere riavviato...
 lDialogMoveSettingsSuccess	File Impostazioni copiati con successo.`n`nVecchia cartella:`n~1~`n`nNuova cartella: `n~2~`n`nI file nella vecchia cartella non sono stati cancellati. Eliminali se/quando vuoi dopo aver chiuso ~3~.
 lDialogMoveSettingsUnder	Non puoi spostare la cartella Impostazioni in se stessa. Scegli un'altra destinazione.
-lDialogMultipleAdd	Aggiungi piÃ¹ di un preferiti
-lDialogMultipleAddDescription	Aggiungi con un solo click molteplici preferiti al sottomenÃ¹ prescelto dalla lista delle finestre attualmente aperte, da Cartelle Frequenti o File e Cartelle Recenti, da Funzioni Caratt. di QAP o liste di Cartelle Speciali, da una cartella o da un file di impostazioni di QAP.
+lDialogMultipleAdd	Aggiungi più di un preferiti
+lDialogMultipleAddDescription	Aggiungi con un solo click molteplici preferiti al sottomenu prescelto dalla lista delle finestre attualmente aperte, da Cartelle Frequenti o File e Cartelle Recenti, da Funzioni Caratt. di QAP o liste di Cartelle Speciali, da una cartella o da un file di impostazioni di QAP.
 lDialogMultipleAddExcludeExisting	Escludi preferiti preesistenti
 lDialogMultipleAddFilter	Filtro
 lDialogMultipleAddFrom	Aggiungi da
 lDialogMultipleAddHelp	Fai doppio click per aiuto sulle varie Caratteristiche di QAP indicate
-lDialogMultipleAddIntro1	1) Seleziona un menÃ¹ di destinazione e filtra (se vuoi) i preferiti.
+lDialogMultipleAddIntro1	1) Seleziona un menu di destinazione e filtra (se vuoi) i preferiti.
 lDialogMultipleAddIntro1a	Per ordinare la lista, clicca l'intestazione di colonna
 lDialogMultipleAddIntro1f	1) Seleziona un menù destinazione, una cartella sorgente e filtra (se vuoi) i preferiti.
 lDialogMultipleAddIntro1s	1) Seleziona un menù destinazione ed un file di impostzioni di QAP (.ini).
 lDialogMultipleAddIntro1t	I menù principali e dei preferiti verranno caricati in vista ad albero
 lDialogMultipleAddIntro2	2) Spunta la casella dei preferiti da aggiungere.
 lDialogMultipleAddIntro2a	Per editare il nome di un preferito seleziona la sua riga e premi F2.
-lDialogMultipleAddIntro3	3) Clicca "Aggiungi" per inserire i preferiti nel menÃ¹ destinazione e clicca "Salva" nella finestra "Personalizza".
+lDialogMultipleAddIntro3	3) Clicca "Aggiungi" per inserire i preferiti nel menu destinazione e clicca "Salva" nella finestra "Personalizza".
 lDialogMultipleAddSelectSource	Seleziona la sorgente dei preferiti che vuoi aggiungere e clicca "Continua".
 lDialogMultipleAddSelectSourceNext	Nella finestra seguente, potrai:
 lDialogMultipleAddSettingsFileItems	File di Impostazioni di QAP (vista piatta)
@@ -518,7 +518,7 @@ lGuiDonateCodeInputDonorLabel	Copia e incolla il codice di 32 caratteri ("Licens
 lGuiDonateCodeInputSponsorLabel	Inserisci il tuo nome (facoltativo)
 lGuiDropFilesHelp	Drag and Drop (promemoria)
 lGuiDropFilesIncentive	Puoi trascinare i seguenti tipi di preferiti sulla finestra ~1~:`n`n`t- ~2~`n`t- ~3~`n`t- ~4~
-lGuiDropFilesIncentive1	Puoi spostare dei Preferiti con Drag && Drop su o giÃ¹ all'interno del menÃ¹ correntemente visualizzato nella finestra "Personalizza". Per scorrere la lista, fai scroll col mouse su o giÃ¹.
+lGuiDropFilesIncentive1	Puoi spostare dei Preferiti con Drag && Drop su o giu all'interno del menu correntemente visualizzato nella finestra "Personalizza". Per scorrere la lista, fai scroll col mouse su o giu.
 lGuiDropFilesIncentive2	Per aiutarti a trascinare uno o piú file in una sola volta, puoi far restare la finestra "Personalizzare" sempre "in primo piano" cliccando l'icona a puntina sul lato sinistro della finestra.
 lGuiEditFavorite	Modifica
 lGuiFileManagerNewTabSide	Apri nuovi tab su quale lato del file manager?
@@ -819,7 +819,7 @@ lOopsExternalReadOnlyAlertUsernameAdded	Il tuo nome utente è stato automaticamen
 lOopsExternalSelectType	Per favore scegli il tipo di menù condiviso nel tab "Menù condiviso".
 lOopsExternalUnderExternalError	Il menù condiviso seguente include un menù condiviso:`n~1~`n`nI menù condivisi non possono includere sottomenù condivisi. Pertanto è necessario modificare tale menù condiviso per portare fuori il sottomenù in esso incluso.
 lOopsFavoritesCopied	~1~ preferiti copiati.
-lOopsFavoritesUsageUpdated	I dati sull'uso dei Preferiti Ã¨ in corso di aggiornamento da un processo in background.`n`nSI prega di riprovare fra 15-30 secondi...
+lOopsFavoritesUsageUpdated	Una finestra delle Impostazioni è aperta in ~1~, eventualmente con modifiche non salvate.`n`nSi consiglia di chiudere le finestre di impostazioni prima di usare questo menù contestuale.
 lOopsFileAlreadyExists	file già esistente
 lOopsFileExpandedFrom	Espanso da
 lOopsFileNotFound	Questa destinazione non esiste
@@ -838,7 +838,7 @@ lOopsInvalidIconDownload	L'icona per questo sito web non è disponibile o non è v
 lOopsInvalidWinCmdIni	File delle impostazioni di Total Commander ("wincmd.ini") non trovato.`n`nSelezionalo in "Opzioni" > "File manager".
 lOopsInvalidWindowPosition	Valori non validi per la posizione della finestra
 lOopsJLiconsError	Icona di QAP per l'area notifiche non trovata. Assicurati di aver aggiornato il file JLicons.dll in ~1~.
-lOopsJLiconsOutdated	Il seguente file deve essere aggiornato:`n`n~1~`n`nSostituiscilo con JLicons.dll versione ~2~ dal piÃ¹ recente file ZIP di installazione (portabile) e riavvia ~3~.
+lOopsJLiconsOutdated	Il seguente file deve essere aggiornato:`n`n~1~`n`nSostituiscilo con JLicons.dll versione ~2~ dal piu recente file ZIP di installazione (portabile) e riavvia ~3~.
 lOopsLastSaveIncomplete	Qualcosa ha interrotto ~1~ l'ultima volta che ha salvato il tuo preferito nel file impostazioni:`n`n~2~`n`nIl tuo preferito precedente in questo file è stato ripristinato.
 lOopsLaunchWithNotFound	File dell'applicazione non trovato per "Esegui con questa applicazione":`n`n~1~`n`nControlla le impostazioni avanzate del Preferito.
 lOopsMaxLiveFolder	Il massimo numero di elementi nelle Cartelle Live (~1~) è stato superato. Per favore, riduci il numero di livelli di cartelle live.`n`nPotresti anche aumentare tale limite ma fai attenzione: un numero troppo alto può comportare effetti non prevedibili. Edita il valore in "Impostazioni", sezione "Opzioni Avanzate del Menu".
@@ -859,7 +859,7 @@ lOopsOptionsPathTrayIcon	File dell'icona nell'area notifiche
 lOopsOSVerrsionError	~1~ richiede Window 7 o un sistema operativo più recente. Windows Vista e utenti XP sono invitati ad usare il Folders Popup che è compatibile con queste versioni.`n`nVuoi visitare il sito web di Folders Popup?
 lOopsSelectedItemDialogBoxes	L'oggetto selezionato non può essere individuato in caselle di dialogo.
 lOopsSelectedItemTotalCommander	L'oggetto selezionato non può essere individuato in finestre di Total Commander.
-lOopsSortOnHiddenColumns	Hai selezionato un criterio di ordinamento per una colonna che non Ã¨ attualmente visualizzata nella finestra "Personalizza".`n`nDovresti abilitare l'opzione "~1~" in "Opzioni, Personalizza Finestra" ed il database QAP in "Opzioni, Database".
+lOopsSortOnHiddenColumns	Hai selezionato un criterio di ordinamento per una colonna che non è attualmente visualizzata nella finestra "Personalizza".`n`nDovresti abilitare l'opzione "~1~" in "Opzioni, Personalizza Finestra" ed il database QAP in "Opzioni, Database".
 lOopsSortUpToSeparator	Ordinamento eseguito fino al primo separatore.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	C'è stato un errore cercando di aprire questo preferito. Per favore, prova di nuovo...
