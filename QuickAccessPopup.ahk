@@ -31,8 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.7.9.1 (2022-??-??)
-- navigate URLs
+Version BETA: 11.5.7.9.1 (2022-07-30)
+- in Add/Edit favorite "Basic" tab for menu, add an option to reopen this menu after launching items; add a "Close this menu" item to menus with the reopen option enabled
+- when the QAP menu is open over a browser window and when launching a Link item (URL), navigate to this URL in the current browser tab instead of opening the link in a new tab (supported browsers are Chrome, Firefox and Microsoft Edge)
+- add an option in "Options, Various Advanced Options" to "Always open Links in new tab or window" to disable this new behavior
+- fix some encoding errors in italian language file
 
 Version: 11.5.7.1 (2022-07-13)
 - support multiple files or folders selection using the Alternative menu features "Copy/Move the selected file to a favorite folder" (available with Windows Explorer, Windows Desktop and Directory Opus)
@@ -5365,7 +5368,7 @@ global g_saDialogListApplicationsDropdown := StrSplit(o_L["DialogListApplication
 g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) List All 2) Current Windows menu 3) Running Applications 4) Close All Windows menu"
 
 global g_strNewLocation ; used in various places when adding a favorite
-global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
+global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg or LaunchFromReopenMenu when reopening menu after launching items
 global g_strOpenFavoriteFromMsg ; used when QAPmessenger triggers OpenFavoriteFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
@@ -13328,6 +13331,8 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	Gui, 2:Add, Button, x+10 yp vf_lblMenuAutoSortButton gGuiFavoriteTabBasicSort, % o_L["OptionsChangeHotkey"]
 	Gui, 2:Add, Text, x+20 yp vf_lblMenuAutoSortBy, % o_L["DialogSortBy"] . ":"
 	Gui, 2:Add, Text, x+1 yp w300 h18 vf_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
+	Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnReopenAfterLaunchingItem " . (o_EditedFavorite.AA.blnReopenAfterLaunchingItem ? "checked" : "")
+		, % o_L["DialogMenuReopenAfterLaunchingItem"]
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -16734,6 +16739,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := g_intNewSortCriteria ; for when refreshing this menu
 		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := g_intNewSortCriteria ; for future load of this menu before relaunching QAP
 		
+		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem
+		
 		; store menu icons size in strFavoriteArguments
 		o_EditedFavorite.AA.strFavoriteArguments := ProcessMenuIconsSize(f_drpMenuIconsSize)
 	}
@@ -20073,6 +20080,7 @@ NavigateHotkeyMouse:		; g_strTargetWinId set by CanNavigate
 NavigateHotkeyKeyboard:		; g_strTargetWinId set by CanNavigate
 NavigateFromMsg:			; g_strTargetWinId set by RECEIVE_QAPMESSENGER
 LaunchFromMsg:				; g_strTargetWinId set by RECEIVE_QAPMESSENGER
+LaunchFromReopenMenu:		; g_strTargetWinId set by CanNavigate
 LaunchHotkeyMouse:			; g_strTargetWinId set by CanNavigate
 LaunchHotkeyKeyboard:		; g_strTargetWinId set by CanNavigate
 LaunchFromTrayIcon:			; g_strTargetWinId set empty (not required)
@@ -20122,7 +20130,6 @@ else
 if InStr(g_strMenuTriggerLabel, "Mouse")
 	and (WindowIsExplorer(g_strTargetClass) or WindowIsDirectoryOpus(g_strTargetClass) or WindowIsQAPconnect(g_strTargetWinId)
 		or (WindowIsTotalCommander(g_strTargetClass) and g_strHotkeyTypeDetected = "Navigate"))
-	
 {
 	; to make sure the item and Explorer window, DOpus lister or under the mouse become active,
 	; and for TC only if navigate (to avoid disrupting GetSelectedLocation)
@@ -20764,6 +20771,12 @@ if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected))
 ; beginning of OpenFavorite execution
 
 o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
+
+if (o_ThisFavorite.AA.oParentMenu.AA.blnReopenAfterLaunchingItem)
+{
+	g_strShowMenu := o_ThisFavorite.AA.oParentMenu.AA.strMenuPath
+	Gosub, LaunchFromReopenMenu
+}
 
 OpenFavoriteCleanup:
 
@@ -30435,7 +30448,7 @@ class Container
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
 			; 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
-			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug, 36 blnFavoriteAutoExec
+			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug, 36 blnFavoriteAutoExec, 37 blnReopenAfterLaunchingItem
 
 	;---------------------------------------------------------
 	{
@@ -30578,7 +30591,10 @@ class Container
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
 				else if InStr("Menu|External", oNewSubMenu.AA.strMenuType)
+				{
 					oNewSubMenu.AA.intMenuAutoSort := saThisFavorite[11] ; intMenuAutoSort
+					oNewSubMenu.AA.blnReopenAfterLaunchingItem := saThisFavorite[37] ; intMenuAutoSort
+				}
 				
 				strResult := oNewSubMenu.LoadFavoritesFromIniFile(false, false, blnDoNotLoadExternal) ; RECURSIVE, 2nd param false not external root, 3rd param false non entry menu
 				
@@ -31147,7 +31163,7 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
-		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring))
+		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring) or this.AA.blnReopenAfterLaunchingItem)
 			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
@@ -31795,6 +31811,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveExcludeFolders . "|" ; 34
 			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
 			strIniLine .= oItem.AA.blnFavoriteAutoExec . "|" ; 36
+			strIniLine .= oItem.AA.blnReopenAfterLaunchingItem . "|" ; 37
 			
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -32293,7 +32310,7 @@ class Container
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
 			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
 			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
-			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec
+			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec, 37 blnReopenAfterLaunchingItem
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -32385,6 +32402,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveExcludeFolders", saFavorite[34]) ; boolean, exclude folders in Live Folders
 			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, enable favorite debugging
 			this.InsertItemValue("blnFavoriteAutoExec", saFavorite[36]) ; boolean, launch favorite or group at startup
+			this.InsertItemValue("blnReopenAfterLaunchingItem", saFavorite[37]) ; boolean, reopen this menu after launching items
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
