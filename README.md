@@ -1,6 +1,8 @@
 # Quick Access Popup - Read me
 
-Freeware launcher for Windows.
+<A HREF="https://bitbucket.org/JLalonde33/quickaccesspopup">## Repository moved to BitBucket</A>
+
+## Freeware launcher for Windows.
 
 Written using AHKScript (http://www.ahkscript.org)  
 By JnLlnd on [AHKScript forum](http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=66)
