@@ -325,6 +325,7 @@ this["DialogListApplicationYesNo"] := "[Yes] to Activate or [No] to Close this w
 this["DialogMaximized"] := "Maximized"
 this["DialogMenuKey"] := "Menu key"
 this["DialogMenuNotMoveUnderItself"] := "Menu ""~1~"" cannot be moved under itself. Choose a valid Menu."
+this["DialogMenuReopenAfterLaunchingItem"] := "Reopen this menu after launching items"
 this["DialogMenuSortCreated"] := "Created Date"
 this["DialogMenuSortEditMenu"] := "Edit this menu (or group)"
 this["DialogMenuSortEnable"] := "Sort menu automatically"
