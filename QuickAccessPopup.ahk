@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.7.9.1 (2022-??-??)
+- navigate URLs
+
 Version: 11.5.7.1 (2022-07-13)
 - support multiple files or folders selection using the Alternative menu features "Copy/Move the selected file to a favorite folder" (available with Windows Explorer, Windows Desktop and Directory Opus)
   see: https://www.quickaccesspopup.com/what-are-the-power-menu-features/
@@ -5160,7 +5163,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.7.1
+;@Ahk2Exe-SetVersion 11.5.7.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5227,8 +5230,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.7.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.7.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
@@ -6470,6 +6473,7 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup",
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
+o_Settings.ReadIniOption("Execution", "blnAlwaysLaunchURLs", "AlwaysLaunchURLs", false, "AdvancedOther", "f_blnAlwaysLaunchURLs") ; default false
 o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFavoriteDebugOption", 0, "AdvancedOther", "f_blnEnableFavoriteDebugOption") ; enable debug checkbox in favorites basic settings tab
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "f_blnKeepExtensionInShortName") ; keep file extension when gettig short name from a document or application location
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
@@ -9829,6 +9833,10 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% vf_lblWaitDelayInDialogBox hidden, % o_L["OptionsWaitDelayInDialogBox"]
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intWaitDelayInDialogBox gGuiOptionsGroupChanged hidden, % o_Settings.DialogBoxes.intWaitDelayInDialogBox.IniValue
 
+; AlwaysLaunchURLs
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnAlwaysLaunchURLs gGuiOptionsGroupChanged hidden, % o_L["OptionsAlwaysLaunchURLs"]
+GuiControl, , f_blnAlwaysLaunchURLs, % (o_Settings.Execution.blnAlwaysLaunchURLs.IniValue = true)
+
 ; EnableFavoriteDebugOption
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnEnableFavoriteDebugOption gGuiOptionsGroupChanged hidden, % o_L["OptionsEnableFavoriteDebugOption"]
 GuiControl, , f_blnEnableFavoriteDebugOption, % (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue = true)
@@ -10314,6 +10322,7 @@ blnRunAsAdminPrev := ""
 ; === AdvancedOther ===
 
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
+o_Settings.Execution.blnAlwaysLaunchURLs.WriteIni(f_blnAlwaysLaunchURLs)
 o_Settings.Execution.blnEnableFavoriteDebugOption.WriteIni(f_blnEnableFavoriteDebugOption)
 o_Settings.Execution.blnKeepExtensionInShortName.WriteIni(f_blnKeepExtensionInShortName)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
@@ -20240,6 +20249,7 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		or (o_FileManagers.P_intActiveFileManager = 2 and WindowIsDirectoryOpus(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 3 and WindowIsTotalCommander(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 4 and WindowIsQAPconnect(g_strTargetWinId))
+		or (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId))
 		or WindowIsQuickAccessPopup(g_strTargetClass)
 
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
@@ -20479,7 +20489,39 @@ WindowIsQAPconnect(strWinId)
 
 	if (strWinId = 0)
 		return false
+	
+	strExecutable := GetRunningExecutableFilename(strWinId)
+	return (strExecutable = g_aaFileManagerQAPconnect.strQAPconnectAppFilename) or (strExecutable = g_aaFileManagerQAPconnect.strQAPconnectCompanionFilename)
+}
+;------------------------------------------------------------
 
+
+;------------------------------------------------------------
+WindowIsQuickAccessPopup(strClass)
+; enabled only when compiled
+;------------------------------------------------------------
+{
+	return (strClass = "JeanLalonde.ca")
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+WindowIsBrowser(strWinId)
+;------------------------------------------------------------
+{
+	if (strWinId = 0)
+		return false
+
+	return NavigateInBrowserSupported(GetRunningExecutableFilename(strWinId))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetRunningExecutableFilename(strWinId)
+;------------------------------------------------------------
+{
 	; get path and filename of the app controling window strWinId
 	; first get process ID
     intPID := 0
@@ -20493,17 +20535,16 @@ WindowIsQAPconnect(strWinId)
 	
 	; get filename only and compare with QAPconnect filename or QAPconnect target filename (see QAPconnect doc)
 	SplitPath, strFCAppFile, strFCAppFile
-	return (strFCAppFile = g_aaFileManagerQAPconnect.strQAPconnectAppFilename) or (strFCAppFile = g_aaFileManagerQAPconnect.strQAPconnectCompanionFilename)
+	return strFCAppFile
 }
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-WindowIsQuickAccessPopup(strClass)
-; enabled only when compiled
+NavigateInBrowserSupported(strExecutable)
 ;------------------------------------------------------------
 {
-	return (strClass = "JeanLalonde.ca")
+	return InStr("|chrome.exe|firefox.exe|msedge.exe|", "|" . strExecutable . "|")
 }
 ;------------------------------------------------------------
 
@@ -32582,7 +32623,9 @@ class Container
 			; LINK
 			else if (this.AA.strFavoriteType = "URL" and !this.aaTemp.blnProcessAsApp) ; blnProcessAsApp if URL has arguments, consider as Application
 			{
-				intOpenError := this.LaunchFullLocation()
+				; if browser is active window and the option "always in a new tab" is off, navigate in the current tab, else open in a new tab
+				intOpenError := (!WinActive("ahk_exe " . GetRunningExecutableFilename(this.aaTemp.strTargetWinId)) or this.aaTemp.strHotkeyTypeDetected = "Launch"
+					? this.LaunchFullLocation() : this.NavigateFullLocation())
 			}
 			; SNIPPETS
 			else if (this.AA.strFavoriteType = "Snippet")
@@ -33574,6 +33617,24 @@ class Container
 			if (intMinMax = -1) ; restore if window is minimized
 				WinRestore, % "ahk_id " . this.aaTemp.strAppID
 			WinActivate, % "ahk_id " . this.aaTemp.strAppID ; strAppID from AppIsRunning
+		}
+		;---------------------------------------------------------
+		
+		;---------------------------------------------------------
+		NavigateFullLocation()
+		; called for links only, return 0 if success or error code
+		;---------------------------------------------------------
+		{
+			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
+				return -1
+			
+			; open the URL in the current tab
+			SetKeyDelay, 200
+			Send, ^l^a
+			SendInput, % this.aaTemp.strFullLocation
+			Send, {Return}
+
+			return 0
 		}
 		;---------------------------------------------------------
 		
