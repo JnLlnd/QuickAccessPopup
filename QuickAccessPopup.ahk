@@ -13293,7 +13293,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Group")
 			, % o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName ; will be selected by default if empty (when Add)
 	}
 	
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnGroupInMenu " . (g_saGroupInGuiSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnGroupInMenu gGroupInMenuChanged " . (g_saGroupInGuiSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
 }
 
 if (blnFolderInAGroupWithSide) ; folder in a group with side
@@ -13331,8 +13331,13 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	Gui, 2:Add, Button, x+10 yp vf_lblMenuAutoSortButton gGuiFavoriteTabBasicSort, % o_L["OptionsChangeHotkey"]
 	Gui, 2:Add, Text, x+20 yp vf_lblMenuAutoSortBy, % o_L["DialogSortBy"] . ":"
 	Gui, 2:Add, Text, x+1 yp w300 h18 vf_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
+}
+
+if InStr("Menu|External|Group", o_EditedFavorite.AA.strFavoriteType)
+{
 	Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnReopenAfterLaunchingItem " . (o_EditedFavorite.AA.blnReopenAfterLaunchingItem ? "checked" : "")
 		, % o_L["DialogMenuReopenAfterLaunchingItem"]
+	Gosub, GroupInMenuChanged
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -14042,6 +14047,17 @@ else
 	Gui, 2:Font, % "s" . g_blnContentEditFontSize
 GuiControl, Font, f_strFavoriteLocation
 Gui, 2:Font
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GroupInMenuChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+GuiControl, % "2:" . (f_blnGroupInMenu ? "Enable" : "Disable"), f_blnReopenAfterLaunchingItem
 
 return
 ;------------------------------------------------------------
