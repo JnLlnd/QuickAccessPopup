@@ -20276,6 +20276,17 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		or (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId))
 		or WindowIsQuickAccessPopup(g_strTargetClass)
 
+	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
+		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
+		Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, | ; check if the browser popup menu is blocked
+			if StrLen(A_Loopfield)
+				and (InStr(g_strTargetClass, A_LoopField)
+				or InStr(g_strTargetWinTitle, A_LoopField)
+				or InStr(g_strTargetProcessName, A_LoopField))
+				{
+					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
+				}
+				
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
 	if (!o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId))
 	{
@@ -20318,7 +20329,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 	if WindowIsDialog(g_strTargetClass, g_strTargetWinId) and DialogBoxParentExcluded(g_strTargetWinId)
 		return false
 	
-	; else we can launch
+	; else we can launch (or not launch if blnExclusionMouseListWhitelist)
 
 	return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? false : true)
 }
