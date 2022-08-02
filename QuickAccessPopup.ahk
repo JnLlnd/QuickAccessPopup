@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.7.9.2 (2022-08-01)
+- apply the new option "Reopen this menu after launching items" to Group items having the option "Also display this group in a submenu"
+- in Edit favorite dialog box for Group items, disable the option "Reopen this menu after launching items" if the option "Also display this group in a submenu" is not checked
+- fix bug in v11.5.7.9.1 when, in "Options, Popup Menu", the mouse button is blobked in "Mouse trigger Blocked or Approved" is used
+
 Version BETA: 11.5.7.9.1 (2022-07-30)
 - in Add/Edit favorite "Basic" tab for menu, add an option to reopen this menu after launching items; add a "Close this menu" item to menus with the reopen option enabled
 - when the QAP menu is open over a browser window and when launching a Link item (URL), navigate to this URL in the current browser tab instead of opening the link in a new tab (supported browsers are Chrome, Firefox and Microsoft Edge)
@@ -5166,7 +5171,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.7.9.1
+;@Ahk2Exe-SetVersion 11.5.7.9.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5233,7 +5238,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.7.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.7.9.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
