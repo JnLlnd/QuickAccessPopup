@@ -14057,6 +14057,8 @@ GroupInMenuChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
+if (o_EditedFavorite.AA.strFavoriteType = "Group" and !f_blnGroupInMenu) ;  if group without group in menu, disable reopen
+	GuiControl, 2:, f_blnReopenAfterLaunchingItem, % 0
 GuiControl, % "2:" . (f_blnGroupInMenu ? "Enable" : "Disable"), f_blnReopenAfterLaunchingItem
 
 return
@@ -16747,6 +16749,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer")
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupInMenu
+		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem ; see also for other containers below
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	{
@@ -16755,13 +16758,11 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := g_intNewSortCriteria ; for when refreshing this menu
 		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := g_intNewSortCriteria ; for future load of this menu before relaunching QAP
 		
-		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem
-		
-		; store menu icons size in strFavoriteArguments
-		o_EditedFavorite.AA.strFavoriteArguments := ProcessMenuIconsSize(f_drpMenuIconsSize)
+		o_EditedFavorite.AA.strFavoriteArguments := ProcessMenuIconsSize(f_drpMenuIconsSize) ; store menu icons size in strFavoriteArguments
+		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem ; see also for groups above
 	}
-	else
-		o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments
+	else ; not a container
+		o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments ; only non-containers have arguments
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
 	o_EditedFavorite.AA.strFavoritePassword := f_strFavoritePassword
@@ -30607,10 +30608,10 @@ class Container
 				if (oNewSubMenu.AA.strMenuType = "Group")
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
 				else if InStr("Menu|External", oNewSubMenu.AA.strMenuType)
-				{
 					oNewSubMenu.AA.intMenuAutoSort := saThisFavorite[11] ; intMenuAutoSort
+				
+				if InStr("Menu|External|Group", oNewSubMenu.AA.strMenuType)
 					oNewSubMenu.AA.blnReopenAfterLaunchingItem := saThisFavorite[37] ; intMenuAutoSort
-				}
 				
 				strResult := oNewSubMenu.LoadFavoritesFromIniFile(false, false, blnDoNotLoadExternal) ; RECURSIVE, 2nd param false not external root, 3rd param false non entry menu
 				
