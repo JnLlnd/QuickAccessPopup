@@ -6420,7 +6420,7 @@ o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; Group MenuExclusions
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
-	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning|f_lblSwitchExclusionRunning") ; g_strSwitchExclusionList
+	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning") ; g_strSwitchExclusionList
 o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
 	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
 o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
@@ -9432,14 +9432,14 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnExclusionMouseListBlac
 	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnExclusionMouseListWhitelist gGuiOptionsGroupChanged hidden "
 	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
-Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w600 r5 vf_strExclusionMouseList gGuiOptionsGroupChanged hidden
+Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strExclusionMouseList gGuiOptionsGroupChanged hidden
 	, % StrReplace(Trim(o_Settings.MenuPopup.strExclusionMouseList.IniValue), "|", "`n")
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList2, % L(o_L["OptionsExclusionMouseListDetail1"]
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText)
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList3, % L(o_L["OptionsExclusionMouseListDetail2"]
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText, strUrl)
-Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% vf_btnGetWinInfoMouseExclusions gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoMouseExclusions")
+intXGetInfo := g_intGroupItemsX + (590 / 2) - (100 / 2) ; used for f_btnGetWinInfoMouseExclusions for and f_btnGetWinInfoSwitchExclusion
+Gui, 2:Add, Button, y+10 x%intXGetInfo% vf_btnGetWinInfoMouseExclusions gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoMouseExclusions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -9462,23 +9462,21 @@ intGroupItemsXFiles := g_intGroupItemsX + 350
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, ys x%intGroupItemsXFiles% w240 hidden vf_lnkFilesExclusionList, % o_L["OptionsFilesExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w240 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w235 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
+Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w245 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w240 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
 
 ; SwitchExclusionList
 strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#applications", A_ThisLabel, "Help")
 GuiControlGet, arrPos, Pos, f_lblFoldersExclusionListBottom
 arrPosY := arrPosY + 10
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w340 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w595 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"]
-	. " " . o_L["OptionsSwitchExclusionListInstructions2"], strUrl)
-Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w340 vf_lblSwitchExclusionRunning, % o_L["OptionsSwitchExclusionListInstructionsList"]
-Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w340 vf_drpSwitchExclusionRunning gDropdownSwitchExclusionRunningChanged
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w595 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w590 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"]
+	. " " . o_L["OptionsSwitchExclusionListInstructions2"] . " " . o_L["OptionsSwitchExclusionListInstructionsList"], strUrl)
+Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w595 vf_drpSwitchExclusionRunning gDropdownSwitchExclusionRunningChanged hidden
 	, % CollectRunningApplications(o_EditedFavorite.AA.strFavoriteLocation)
-intXGetInfo := g_intGroupItemsX + (340 / 2) - (100 / 2)
 Gui, 2:Add, Button, x%intXGetInfo% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
