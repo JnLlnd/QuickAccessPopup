@@ -6420,7 +6420,7 @@ o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; Group MenuExclusions
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
-	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
+	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning|f_lblSwitchExclusionRunning") ; g_strSwitchExclusionList
 o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
 	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
 o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
@@ -9473,9 +9473,13 @@ Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w340 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
-Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"]
+	. " " . o_L["OptionsSwitchExclusionListInstructions2"], strUrl)
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w340 vf_lblSwitchExclusionRunning, % o_L["OptionsSwitchExclusionListInstructionsList"]
+Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w340 vf_drpSwitchExclusionRunning gDropdownSwitchExclusionRunningChanged
+	, % CollectRunningApplications(o_EditedFavorite.AA.strFavoriteLocation)
+intXGetInfo := g_intGroupItemsX + (340 / 2) - (100 / 2)
+Gui, 2:Add, Button, x%intXGetInfo% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -9896,6 +9900,7 @@ intThisIndex := ""
 objThisPopupHotkey := ""
 ResetArray("arrPos")
 intGroupItemsXFiles := ""
+intXGetInfo := ""
 
 return
 ;------------------------------------------------------------
@@ -14283,6 +14288,21 @@ Gui, 2:Submit, NoHide
 
 GuiControl, 2:, f_strFavoriteLocation, %f_drpRunningApplication%
 GuiControl, 2:, f_strFavoriteShortName, % GetLocationPathName(f_drpRunningApplication)
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+DropdownSwitchExclusionRunningChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+SplitPath, f_drpSwitchExclusionRunning, strFileName
+GuiControl, 2:, f_strSwitchExclusionList, % f_strSwitchExclusionList . strFileName . "`n"
+Gosub, GuiOptionsGroupChanged
+
+strFileName := ""
 
 return
 ;------------------------------------------------------------
