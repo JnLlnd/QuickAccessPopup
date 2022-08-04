@@ -5737,6 +5737,7 @@ if !GetKeyState("Shift")
 ; ExitApp
 ; g_strOpenFavoriteFromMsg := "> C!"
 ; gosub, OpenFavoriteFromMsg
+gosub, GuiOptionsGroupMenuExclusions
 
 return
 
@@ -6419,12 +6420,18 @@ o_Settings.ReadIniOption("MenuPopup", "strExclusionMouseList", "ExclusionMouseLi
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; Group MenuExclusions
-o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
-	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning") ; g_strSwitchExclusionList
+; when bln false, items are excluded (default) / when true, items are included
+o_Settings.ReadIniOption("Execution", "blnFoldersExclusionListInclude", "FoldersExclusionListInclude", 0, "MenuExclusions", "f_blnFoldersExclusionListInclude|f_blnFoldersExclusionListExclude")
+o_Settings.ReadIniOption("Execution", "blnFilesExclusionListInclude", "FilesExclusionListInclude", 0, "MenuExclusions", "f_blnFilesExclusionListInclude|f_blnFilesExclusionListExclude")
+o_Settings.ReadIniOption("Execution", "blnSwitchExclusionListInclude", "SwitchExclusionListInclude", 0, "MenuExclusions", "f_blnSwitchExclusionListInclude|f_blnSwitchExclusionListExclude")
+; ###_V("Load", o_Settings.Execution.blnFoldersExclusionListInclude.IniValue, o_Settings.Execution.blnFilesExclusionListInclude.IniValue, o_Settings.Execution.blnSwitchExclusionListInclude.IniValue)
+
 o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
 	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
 o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
 	, "f_lnkFilesExclusionList|f_strFilesExclusionList|f_lblFilesExclusionList")
+o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
+	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning") ; g_strSwitchExclusionList
 
 ; Group PopupHotkeys
 o_Settings.ReadIniOption("MenuPopup", "blnLeftControlDoublePressed", "LeftControlDoublePressed", 0, "PopupHotkeys", "f_lblChangeShortcutTitle|f_lblControlDoublePressedTitle|f_blnLeftControlDoublePressed") ; g_blnLeftControlDoublePressed
@@ -9446,12 +9453,18 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
 ; === MenuExclusions ===
-
 ; FoldersExclusionList
 strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#folders", A_ThisLabel, "Help")
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w340 section hidden vf_lnkFoldersExclusionList, % o_L["OptionsFoldersExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
+
+; FoldersExclusionList
+; ###_V("Gui", o_Settings.Execution.blnFoldersExclusionListInclude.IniValue, o_Settings.Execution.blnFilesExclusionListInclude.IniValue, o_Settings.Execution.blnSwitchExclusionListInclude.IniValue)
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnFoldersExclusionListInclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnFoldersExclusionListExclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFoldersExclusionList.IniValue), "|", "`n")
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList, % L(o_L["OptionsFoldersExclusionListInstructions"], strUrl)
 Gui, 2:Add, Text, y+5 hidden vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
@@ -9462,6 +9475,10 @@ intGroupItemsXFiles := g_intGroupItemsX + 350
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, ys x%intGroupItemsXFiles% w240 hidden vf_lnkFilesExclusionList, % o_L["OptionsFilesExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
+Gui, 2:Add, Radio, % "y+5 x" . intGroupItemsXFiles . " vf_blnFilesExclusionListInclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnFilesExclusionListExclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
 Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w245 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
 Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w240 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
 
@@ -9472,6 +9489,10 @@ arrPosY := arrPosY + 10
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w595 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnSwitchExclusionListInclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnSwitchExclusionListExclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w595 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w590 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"]
 	. " " . o_L["OptionsSwitchExclusionListInstructions2"] . " " . o_L["OptionsSwitchExclusionListInstructionsList"], strUrl)
@@ -10169,9 +10190,15 @@ o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; === MenuExclusions ===
 
-o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
+; ###_V("Save", f_blnFoldersExclusionListExclude, f_blnFilesExclusionListExclude, f_blnSwitchExclusionListExclude)
+; when bln false, items are excluded (default) / when true, items are included
+o_Settings.Execution.blnFoldersExclusionListInclude.WriteIni(f_blnFoldersExclusionListExclude)
+o_Settings.Execution.blnFilesExclusionListInclude.WriteIni(f_blnFilesExclusionListExclude)
+o_Settings.Execution.blnSwitchExclusionListInclude.WriteIni(f_blnSwitchExclusionListExclude)
+
 o_Settings.Execution.strFoldersExclusionList.WriteIni(OptionsListCleanup(f_strFoldersExclusionList))
 o_Settings.Execution.strFilesExclusionList.WriteIni(OptionsListCleanup(f_strFilesExclusionList))
+o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
 
 ; === PopupHotkeys ===
 
@@ -20307,7 +20334,7 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 				or InStr(g_strTargetWinTitle, A_LoopField)
 				or InStr(g_strTargetProcessName, A_LoopField))
 				{
-					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
+					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; true show menu, false cannot navigate
 				}
 				
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
@@ -20341,7 +20368,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 				and (InStr(g_strTargetClass, A_LoopField)
 				or InStr(g_strTargetWinTitle, A_LoopField)
 				or InStr(g_strTargetProcessName, A_LoopField))
-				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? true : false)
+				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; true show menu, false do not show
 
 	if WindowIsTray(g_strTargetClass)
 		return o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue
@@ -20354,7 +20381,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 	
 	; else we can launch (or not launch if blnExclusionMouseListWhitelist)
 
-	return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? false : true)
+	return (!o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; blnExclusionMouseListWhitelist false cannot launch, true show menu
 }
 ;------------------------------------------------------------
 
