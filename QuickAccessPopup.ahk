@@ -20806,6 +20806,9 @@ if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 	return
 }
 
+if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId)) ; avoid trying to navigate links in other apps than browsers
+	g_strHotkeyTypeDetected := "Launch"
+
 ; if a menu open from an hotkey, refresh dynamic menus
 if o_ThisFavorite.IsContainer() and InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
 	o_ThisFavorite.AA.oSubMenu.RefreshDynamicMenus()
