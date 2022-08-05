@@ -26097,9 +26097,10 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 			and (InStr(strWindowClass, A_LoopField)
 			or InStr(strWindowTitle, A_LoopField)
 			or InStr(strProcessName, A_LoopField))
-			return true
+			return !o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ; if found, return true or false according to blnSwitchExclusionListInclude
 		
-	return false
+	; return false or true according to blnSwitchExclusionListInclude
+	return o_Settings.Execution.blnSwitchExclusionListInclude.IniValue
 }
 ;------------------------------------------------------------
 
@@ -26112,23 +26113,33 @@ FolderOrFileIsExcluded(strFolderOrFile, strPath)
 	if (strFolderOrFile = "Folder" and SubStr(strPath, 0, 1) <> "\") ; if path is folder and does not end with "\", add it (to remove "C:\test" if exclusion is "C:\test\")
 		strPath .= "\"
 	Loop, parse, % o_Settings.Execution.strFoldersExclusionList.IniValue, |
-		; if StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField))) ; folder path starts with an exclusion
-	{
 		if (StrLen(A_LoopField) and RegExMatch(strPath, Wildcards2RegEx(A_LoopField . "*")))
-			return true ; folder or file under this folder is excluded
-	}
-	
-	; check file exclusions
-	if (strFolderOrFile = "File")
+			if (strFolderOrFile = "File" and o_Settings.Execution.blnFoldersExclusionListInclude.IniValue) ; the folder of the file is included
+				blnFolderOfFileFound := true
+			else
+				return !o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ; if bln false (excluded) return true, if bln true (included) return false (not excluded)
+			
+	; folder was not found
+	if (strFolderOrFile = "Folder") ; if checking folder
+		return o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ; return false or true according to blnFoldersExclusionListInclude
+
+	if (strFolderOrFile = "File") ; if checking file, folder of the file was found, continue to check file criteria
 		Loop, parse, % o_Settings.Execution.strFilesExclusionList.IniValue, |
 		{
 			strCriteria := (InStr(A_LoopField, ".") ? A_LoopField : "*." . A_LoopField) ; convert extension like "mp3" to "*.mp3"
 			SplitPath, strPath, strFileName
 			if (StrLen(strCriteria) and RegExMatch(strFileName, Wildcards2RegEx(strCriteria)))
-				return true ; file is excluded
+				return !o_Settings.Execution.blnFilesExclusionListInclude.IniValue ; if bln false (excluded) return true, if bln true (included) return false (not excluded)
 		}
 	
-	return false ; file or folder is not excluded
+	; file was not found
+	if (strFolderOrFile = "File")
+		; if folder of file was not found return false or true according to blnFoldersExclusionListInclude
+		; else return false or true according to blnFilesExclusionListInclude
+		return (!blnFolderOfFileFound and o_Settings.Execution.blnFoldersExclusionListInclude.IniValue)
+			or o_Settings.Execution.blnFilesExclusionListInclude.IniValue
+	; else (do we get here?)
+	; for safety, if we were checking for a folder return false (do not exclude)
 }
 ;------------------------------------------------------------
 
