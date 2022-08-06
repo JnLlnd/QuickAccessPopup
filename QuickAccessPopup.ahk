@@ -10195,15 +10195,15 @@ o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; === MenuExclusions ===
 
-; ###_V("Save", f_blnFoldersExclusionListExclude, f_blnFilesExclusionListExclude, f_blnSwitchExclusionListExclude)
-; when bln false, items are excluded (default) / when true, items are included
-o_Settings.Execution.blnFoldersExclusionListInclude.WriteIni(f_blnFoldersExclusionListExclude)
-o_Settings.Execution.blnFilesExclusionListInclude.WriteIni(f_blnFilesExclusionListExclude)
-o_Settings.Execution.blnSwitchExclusionListInclude.WriteIni(f_blnSwitchExclusionListExclude)
-
 o_Settings.Execution.strFoldersExclusionList.WriteIni(OptionsListCleanup(f_strFoldersExclusionList))
 o_Settings.Execution.strFilesExclusionList.WriteIni(OptionsListCleanup(f_strFilesExclusionList))
 o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
+
+; when bln false, items are excluded (default) / when true, items are included
+; ternary conditions to avoid having include with no criteria ("include nothing")
+o_Settings.Execution.blnFoldersExclusionListInclude.WriteIni(StrLen(o_Settings.Execution.strFoldersExclusionList.IniValue) ? f_blnFoldersExclusionListExclude : 0)
+o_Settings.Execution.blnFilesExclusionListInclude.WriteIni(StrLen(o_Settings.Execution.strFilesExclusionList.IniValue) ? f_blnFilesExclusionListExclude : 0)
+o_Settings.Execution.blnSwitchExclusionListInclude.WriteIni(StrLen(o_Settings.Execution.strSwitchExclusionList.IniValue) ? f_blnSwitchExclusionListExclude : 0)
 
 ; === PopupHotkeys ===
 
