@@ -20332,12 +20332,13 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		or (o_FileManagers.P_intActiveFileManager = 2 and WindowIsDirectoryOpus(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 3 and WindowIsTotalCommander(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 4 and WindowIsQAPconnect(g_strTargetWinId))
-		or (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId))
+		or (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; will check again if window is a browser when opening the favorite link
 		or WindowIsQuickAccessPopup(g_strTargetClass)
 
+	; check if the browser is an blocked app
 	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
 		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
-		Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, | ; check if the browser popup menu is blocked
+		Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, |
 			if StrLen(A_Loopfield)
 				and (InStr(g_strTargetClass, A_LoopField)
 				or InStr(g_strTargetWinTitle, A_LoopField)
@@ -20810,7 +20811,8 @@ if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 	return
 }
 
-if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId)) ; avoid trying to navigate links in other apps than browsers
+; avoid trying to navigate links in other apps than browsers
+if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId))
 	g_strHotkeyTypeDetected := "Launch"
 
 ; if a menu open from an hotkey, refresh dynamic menus
