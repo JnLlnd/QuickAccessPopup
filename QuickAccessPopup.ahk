@@ -6497,7 +6497,7 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup",
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
-o_Settings.ReadIniOption("Execution", "blnAlwaysLaunchURLs", "AlwaysLaunchURLs", false, "AdvancedOther", "f_blnAlwaysLaunchURLs") ; default false
+o_Settings.ReadIniOption("Execution", "blnAlwaysLaunchURLs", "AlwaysLaunchURLs", true, "AdvancedOther", "f_blnAlwaysLaunchURLs") ; default true
 o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFavoriteDebugOption", 0, "AdvancedOther", "f_blnEnableFavoriteDebugOption") ; enable debug checkbox in favorites basic settings tab
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "f_blnKeepExtensionInShortName") ; keep file extension when gettig short name from a document or application location
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
@@ -20812,7 +20812,8 @@ if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 }
 
 ; avoid trying to navigate links in other apps than browsers
-if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId))
+if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId)
+	and g_strHotkeyTypeDetected = "Navigate") ; avoid changing if "Alternative"
 	g_strHotkeyTypeDetected := "Launch"
 
 ; if a menu open from an hotkey, refresh dynamic menus
