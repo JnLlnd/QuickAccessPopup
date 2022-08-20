@@ -12657,7 +12657,7 @@ return
 GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 ; return ByRef parameters for g_strTargetWinId and g_strTargetClass (or current file manager ID and class if called to reopen current location)
 ; called when g_strTargetWinId and g_strTargetClass are not updated when invoking the popup menu
-; with blnActivate true when add folder from QAP tray icon
+; with blnActivate true when add folder from QAP tray icon or (starting with 11.5.7.9.5) when called from RECEIVE_QAPMESSENGER
 ; with blnExcludeDialogBox true when reopen file manager current location in dialog box
 ;------------------------------------------------------------
 {
@@ -27511,7 +27511,8 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	global g_strTargetClass
 	global g_strTargetWinId
 	
-	SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
+	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, false, true)
+	; before 11.5.7.9.5 was SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
 
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
