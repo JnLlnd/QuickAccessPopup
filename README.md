@@ -1,21 +1,20 @@
 # Quick Access Popup - Read me
 
-Launcher for Windows.
+## Freeware launcher for Windows.
 
-Written using AHKScript (http://www.ahkscript.org)  
-By JnLlnd on [AHKScript forum](http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=66)
+Written using AHKScript (http://www.autohotkey.com)  
+By JnLlnd on [AHKScript forum](https://www.autohotkey.com/boards/memberlist.php?mode=viewprofile&u=66&sid=ed78d30aadb2c0bd647d91dfa0002f14)
 
 Quick Access Popup requires AHK runtime AutoHotkey v1.1.28+.
 
 ## Links
 
 * [Application home](http://www.quickaccesspopup.com)
-* [Documentation Wiki](https://github.com/JnLlnd/QuickAccessPopup/wiki)
 
 
 ## History
 
-See [QuickAccessPopup.ahk header](https://github.com/JnLlnd/QuickAccessPopup/blob/beta/QuickAccessPopup.ahk)
+See [QuickAccessPopup.ahk header](https://github.com/JnLlnd/QuickAccessPopup/blob/QuickAccessPopup.ahk)
 
 
 ## <a name="copyright"></a>Copyright
