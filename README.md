@@ -3,7 +3,7 @@
 ## Freeware launcher for Windows.
 
 Written using AHKScript (http://www.autohotkey.com)  
-By JnLlnd on [AHKScript forum](https://www.autohotkey.com/boards/memberlist.php?mode=viewprofile&u=66&sid=ed78d30aadb2c0bd647d91dfa0002f14)
+By JnLlnd on [AHKScript forum](https://www.autohotkey.com/boards/memberlist.php?mode=viewprofile&u=66)
 
 Quick Access Popup requires AHK runtime AutoHotkey v1.1.28+.
 
