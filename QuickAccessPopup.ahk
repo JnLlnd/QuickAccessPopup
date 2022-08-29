@@ -3,7 +3,7 @@
 
 Quick Access Popup
 Written using AutoHotkey v1.1.28.00+ (http://autohotkey.com)
-By Jean Lalonde (JnLlnd on AHKScript.org forum)
+By Jean Lalonde (JnLlnd on AutoHotkey.com forum)
 
 Based on FoldersPopup from the same author
 https://github.com/JnLlnd/FoldersPopup
@@ -30,6 +30,31 @@ limitations under the License.
 
 HISTORY
 =======
+
+Version: 11.5.8 (2022-08-29)
+ 
+Dynamic menu exclusions/inclusions
+- in "Options", rename the section "Menu Exclusions" to "Menu Exclusions/Inclusions" to control the content of "Recent Folders", "Recent Files", "Frequent Folders", "Frequent Files" and "Current Windows" dynamic menus
+- in this section, add radio buttons "Exclude" (default) and "Include only" to determine if the "Folders", "Files" and "Current Windows" criterias are used to remove ("Exclude") items or to select the only items to add to the menu ("Include only")
+- for "Current Windows" add a dropdown list of running applications to help adding one of the running apps to the criteria
+- see: https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/
+ 
+Navigate in browsers
+- when launching a Link favorite when the QAP menu is open over a browser window, navigate the current browser tab to this URL instead of opening the link in a new tab
+- supported browsers are Chrome, Firefox and Microsoft Edge
+- you need to enable this option in "Options, Various Advanced Options" by disabling the new checkbox "Always open Links in new tab or window"
+- see: https://www.quickaccesspopup.com/how-do-i-add-favorite-link-url-to-my-menu/
+ 
+Reopen menu after launching items
+- in Add/Edit favorite "Basic" tab for Menu items, add the option "Reopen this menu after launching items"
+- select "Close this menu" if you don't need to open another favorite from this menu
+- this option also applies to Group items having the option "Also display this group in a submenu"
+- see: https://www.quickaccesspopup.com/how-can-i-gather-numerous-favorites-in-a-clutter-free-popup-menu/
+ 
+Various
+- fix bug with the QAP Messenger "NavigateFromMsg" not navigating folders in Explorer or links in browsers
+- fix some encoding errors in italian language file
+- update to French, German, Italian, Korean and Portuguese Brazilian language files for v11.5.8
 
 Version BETA: 11.5.7.9.5 (2022-08-20)
 - revert default for the now option "Always open Links in new tab or window" to false (keeping previous behaviour unless user disable this checkbox)
@@ -5185,7 +5210,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.7.9.5
+;@Ahk2Exe-SetVersion 11.5.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5252,8 +5277,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.7.9.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
@@ -14108,7 +14133,8 @@ Gui, 2:Submit, NoHide
 
 if (o_EditedFavorite.AA.strFavoriteType = "Group" and !f_blnGroupInMenu) ;  if group without group in menu, disable reopen
 	GuiControl, 2:, f_blnReopenAfterLaunchingItem, % 0
-GuiControl, % "2:" . (f_blnGroupInMenu ? "Enable" : "Disable"), f_blnReopenAfterLaunchingItem
+if (o_EditedFavorite.AA.strFavoriteType = "Group")
+	GuiControl, % "2:" . (f_blnGroupInMenu ? "Enable" : "Disable"), f_blnReopenAfterLaunchingItem
 
 return
 ;------------------------------------------------------------
