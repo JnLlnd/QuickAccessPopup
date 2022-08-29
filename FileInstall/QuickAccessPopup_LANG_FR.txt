@@ -18,7 +18,7 @@ lAlternativeMenuTrayTipEditFavorite	Choisissez le favori à modifier
 lAlternativeMenuTrayTipNewWindow	Choisissez le dossier à ouvrir dans une nouvelle fenêtre
 lAlternativeMenuTrayTipOpenContaining	Choisissez le document, l'application ou le dossier favori dont vous voulez ouvrir le dossier parent
 lAlternativeMenuTrayTipRunAs	Sélectionnez l'application à exécuter en tant qu'administrateur
-lAlternativeMenuTrayTipSelectedFile	Choisissez le DOSSIER où déplacer ou copier le fichier ou le dossier que vous avez sélectionné
+lAlternativeMenuTrayTipSelectedFile	Choisissez le DOSSIER où déplacer ou copier le(s) fichier(s) ou dossier(s) que vous avez sélectionné(s)
 lContextAddFile	Ajouter ce fichier au menu Quick Access Popup
 lContextAddFileXpress	Ajouter ce fichier au menu Quick Access Popup (Express)
 lContextAddFolder	Ajouter ce dossier au menu Quick Access Popup
@@ -90,7 +90,7 @@ lDialogChangeHotstringTitle	Changer la chaîne de substitution - ~1~
 lDialogChangeHotstringTitleDefaultOptions	Options par défaut des chaînes de substitution - ~1~
 lDialogCloseAllWindows	Fermer toutes les fenêtres
 lDialogCloseAllWindowsClose	Fermer les fenêtres sélectionnées
-lDialogCloseAllWindowsDetail	Titre de la fenêtre:`n~1~`n`nChemin du processus Windows:`n~2~`n`nVoulez-vous FERMER cette fenêtre?
+lDialogCloseAllWindowsDetail	Titre de la fenêtre:`n~1~`n`nEmplacement du processus Windows:`n~2~`n`nVoulez-vous FERMER cette fenêtre?
 lDialogCloseAllWindowsHeader	Titre de la fenêtre
 lDialogCloseAllWindowsIntro	Cochez les fenêtrez à fermer et cliquez sur "Fermer les fenêtres sélectionnées". Faites un double-clic ou appuyez sur Entrée pour fermer une fenêtre ou voir ses informations.
 lDialogCloseAllWindowsSelectAll	Sélectionner/Dé-sélectionner tout
@@ -268,7 +268,7 @@ lDialogGroupMemberOptions	Options de groupe
 lDialogGroupParentMenu	Menu parent du groupe
 lDialogGroupRestoreStopIfError	Une erreur est survenue pendant l'ouverture du membre #~1~ du groupe:`n`n~2~`n~3~`n`nOuverture du groupe interrompue.
 lDialogHotkey	Raccourci
-lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>,`n<a id="~5~">touche menu (apps)</a> ou <a id="~6~">saisie manuelle</a>
+lDialogHotkeyInvisibleKeys	<a id="~1~">espace</a>, <a id="~2~">tab</a>, <a id="~3~">entrée</a>, <a id="~4~">échappement</a>,`n<a id="~5~">touchemenu
 lDialogHotkeys	Raccourcis
 lDialogHotkeysHelpHeader	Raccourci|Action
 lDialogHotkeysManage	Gérer les raccourcis
@@ -296,6 +296,7 @@ lDialogHotstringsManage	Gérer les chaînes de substitution
 lDialogHotstringTriggerAbbreviation	Déclencheur (abréviation):
 lDialogHotstringTriggerOptions	Chaîne de substitution (déclencheur et options)
 lDialogIcon	Icône
+lDialogIconsCustomFolder	Dossier personnel
 lDialogIconsDefaultSize	Taille par défaut
 lDialogIconsInheritedSize	Taille héritée
 lDialogIconsManage	Gérer les icônes
@@ -323,6 +324,7 @@ lDialogListApplicationYesNo	[Oui] pour Activer ou [Non] pour fermer cette fenêtr
 lDialogMaximized	Maximisée
 lDialogMenuKey	Touche Menu
 lDialogMenuNotMoveUnderItself	Le menu "~1~" ne peut être déplacé sous lui-même.
+lDialogMenuReopenAfterLaunchingItem	Rouvrir ce menu après avoir lancé un item
 lDialogMenuSortCreated	Date de création
 lDialogMenuSortEditMenu	Modifier ce menu (ou ce groupe)
 lDialogMenuSortEnable	Trier le menu automatiquement
@@ -538,7 +540,7 @@ lGuiHotkeysOpenSubmenuOrEditFavorite	Ouvrir le sous-menu ou modifier le favori
 lGuiHotkeysSelectContiguousItems	Sélectionner des items contigus
 lGuiHotkeysSelectNextItem	Sélectionner l'item suivant/précédent
 lGuiHotkeysSelectNonContiguousItems	Sélectionner des items non contigus
-lGuiListApplicationsHeader	Index|ID|Titre de la fenêtre|Nom du processus|Chemin du processus|H & L|MinMax|Style|ExStyle|UWP Hwnd|Nom Universal Application
+lGuiListApplicationsHeader	Index|ID|Titre de la fenêtre|Nom du processus|Emplacement du processus|H & L|MinMax|Style|ExStyle|UWP Hwnd|Nom Universal Application
 lGuiLoginName	Code d'utilisateur
 lGuiLvFavoritesHeader	Nom|Type|Raccourci|Emplacement ou contenu
 lGuiLvFavoritesHeaderFiltered	Nom|Menu|Type|Raccourci|Emplacement ou contenu
@@ -649,9 +651,9 @@ lMenuAddThisFolder	Ajouter le dossier actif ou la page web active
 lMenuAddThisFolderDescription	Ajouter instantanément au menu le dossier actif ou la page web à l'écran.`n`nVous pouvez ajouter des dossiers ainsi en activant le menu de QAP dans les fenêtres de Windows Explorer ou dans les boîtes de dialogue de fichiers. Vous pouvez ajouter des liens web dans la plupart des navigateurs.`n`nDans la boîte de dialogue "Ajouter un favori", confirmez le nom du favori et entrez les diverses options tel que l'icône, le raccourci, la chaîne de substitution, les paramètres, etc.`n`nPar défaut, cette fonction est présente dans le menu principal.
 lMenuAddThisFolderXpress	Ajouter le dossier actif ou la page web active Express
 lMenuAddThisFolderXpressDescription	Semblable à la commande "Ajouter le dossier actif ou la page web active" sauf que le nouveau favori est automatiquement ajouté au début du menu principal sans interruption.`n`nSi vous souhaitez changer les valeurs par défaut, vous pouvez cliquer le bouton "Modifier" pour changer le nom, la position ou les divers paramètres du favori.`n`nDans les "Options", onglet "Menu", vous pouvez choisir d'ajouter automatiquement les nouveaux favoris au début ou à la fin du menu principal.
-lMenuAlternativeCopySelectedFile	Copier le fichier sélectionné dans un dossier favori
+lMenuAlternativeCopySelectedFile	Copier le ou les fichiers sélectionnés dans un dossier favori
 lMenuAlternativeEditFavorite	Modifier un favori
-lMenuAlternativeMoveSelectedFile	Déplacer le fichier sélectionné dans un dossier favori
+lMenuAlternativeMoveSelectedFile	Déplacer le ou les fichiers sélectionnés dans un dossier favori
 lMenuAlternativeNewWindow	Ouvrir dans une nouvelle fenêtre
 lMenuAlternativeOpenContainingCurrent	Ouvrir le dossier parent dans la fenêtre actuelle
 lMenuAlternativeOpenContainingNew	Ouvrir le dossier parent dans une nouvelle fenêtre
@@ -795,7 +797,7 @@ lOopsContainerInGui	Le menu dynamique "~1~" ne peut être inséré que dans le menu
 lOopsCouldNotOpenSpecialFolder	~1~ ne peut ouvrir le dossier spécial: "~2~".
 lOopsEmpty	vide
 lOopsErrorCopyOrMoveFolderOrFile	Une erreur s'est produite pendant le déplacement ou la copie du fichier ou du dossier source vers le dossier de destination.`n`nSource: ~1~`nDestination: ~2~
-lOopsErrorCopyOrMoveFolderOrFileSelect	Aucun fichier ou dossier n'a été sélectionné.`n`nSélectionnez un fichier ou un dossier dans Windows Explorer avant d'ouvrir le menu Alternatif.
+lOopsErrorCopyOrMoveFolderOrFileSelect	Aucun fichier ou dossier n'a été sélectionné.`n`nSélectionnez un ou plusieurs fichiers ou dossiers dans Windows Explorer avant d'ouvrir le menu Alternatif.
 lOopsErrorIniFileDisplayErrorMessage	Afficher ce message d'erreur à nouveau pour ce menu partagé?
 lOopsErrorIniFileDuplicateNames	Le favori "~1~" dans le menu "~2~" n'est pas unique et a été temporairement renommé "~3~".`n`nVeuillez modifier ce favori pour lui donner un nom unique.
 lOopsErrorIniFileModified	Ce menu partagé a été modifié depuis qu'il a été chargé. Ce menu sera raffraîchi mais vos derniers changements ne pourront pas être enregistrés.
@@ -857,7 +859,7 @@ lOopsUnknownTargetAppName	Une erreur s'est produite pendant l'ouverture de ce fa
 lOopsUsageDbSQLiteMissing	Fichier ressource SQLite absent:`n`n~1~`nImpossible de construire les menus des items fréquemment utilisés.
 lOopsWorkingFolderDisabled	Vous ne pouvez pas changer le dossier des paramètres pendant que le paramètre de ligne de commande "/Working:" est utilisé.
 lOopsWriteProtectedError	Il semble que ~1~ a été lancé depuis un dossier en ÉCRITURE SEULEMENT où il est impossible de créer le fichier de configuration "~1~.ini".`n`nDéplacez le fichier .EXE de ~1~ dans un dossier RÉGULIER de votre choix, puis exécutez l'application à nouveau depuis ce dossier.`n`n~1~ va être fermé.
-lOopsWrongThirdPartyPath	Chemin ou nom de fichier incorrect pour ~1~:`n~2~.`n`nVérifiez le fichier .exe sélectionné pour ~1~ dans les "Options", onglet "~3~".
+lOopsWrongThirdPartyPath	Emplacement ou nom de fichier incorrect pour ~1~:`n~2~.`n`nVérifiez le fichier .exe sélectionné pour ~1~ dans les "Options", onglet "~3~".
 lOopsWrongThirdPartyPathQAPconnect	Fichier de l'application invalide dans QAPconnect`n~1~:`n~2~.`n`nVérifiez les valeurs pour [~1~] dans ~3~. Utilisez le bouton "~4~" dans "Options", onglet "~5~".
 lOopsZipFileError	Il semble que ~1~ a été lancé directement depuis un fichier compressé (ZIP).`n`nVous devez extraire le fichier .EXE de ~1~ du fichier ZIP dans un dossier de votre choix, puis exécuter l'application à nouveau depuis ce dossier.`n`n~1~ va être fermé.
 lOptionsAddAutoAtTop	Lorsqu'un favori est ajouté automatiquement, l'ajouter à:
@@ -873,6 +875,7 @@ lOptionsAlternativeMenuResetModifiersSaved	Réinitialiser les touches spéciales e
 lOptionsAlternativeMenuShowNotification	Afficher la notification lorsque le Menu Alternatif est utilisé
 lOptionsAlternativeModifiers	Touches spéciales
 lOptionsAlternativeTrayIcon	Icône de remplacement (fichier,index)
+lOptionsAlwaysLaunchURLs	Toujours ouvrir les Liens dans un nouvel onglet ou une nouvelle fenêtre
 lOptionsBackupFolder	Dossier pour les copies de sécurité
 lOptionsCataloguePath	Dossier racine du catalogue
 lOptionsChangeFolderInDialog	Changer de dossier dans les boîtes de dialogue avec le bouton de souris ou le raccourcis clavier du menu principal de QAP
@@ -906,6 +909,10 @@ lOptionsFileManagerNavigateIntro	Lorsque vous ouvrez le menu QAP hors de ~1~, ou
 lOptionsFileManagerNavigateNew	une nouvelle fenêtre de ~1~
 lOptionsFileManagerNavigateNewTab	un nouvel onglet de ~1~
 lOptionsFileManagers	Gestionnaires de fichiers
+lOptionsFilesExclusionList	Exclusions/Inclusions de fichiers
+lOptionsFilesExclusionListInstructions	Pour exclure (ou inclure seulement) certains fichiers dans les menus "Fichiers récents" et "Fichiers fréquents", entrez leur extensions (ex.: "mp3") ou utilisez caractères génériques * et ? (ex.: "xyz*.mp?"), un par ligne.
+lOptionsFoldersExclusionList	Exclusions/Inclusions de dossiers
+lOptionsFoldersExclusionListInstructions	Pour exclure (ou inclure seulement) certains dossiers dans les menus "Dossiers récents", "Dossiers fréquents", "Fichiers récents" et "Fichiers fréquents", entrez leur emplacements, un par ligne. Vous pouvez aussi utiliser les caractères génériques * et ? avant la barre oblique finale (ex.: "c:\exclu*\"). Les sous-dossiers sont couverts.
 lOptionsFtpEncoding	Encoder le code d'utilisateur et le mot de passe FTP (recommandé)
 lOptionsFtpEncodingTC	Encoder le code d'utilisateur et le mot de passe FTP (déconseillé aux utilisateurs de Total Commander)
 lOptionsGeneral	Général
@@ -920,7 +927,7 @@ lOptionsHotstringsDefault	Options par défaut des chaînes de substitution
 lOptionsHotstringsDefaultSelect	Sélectionner
 lOptionsIconDocumentsList	Remplacement des icônes par défaut de documents
 lOptionsIconDocumentsListInstructions	Les icônes par défaut des documents sont normalement configurés dans Windows. Pour passer outre cette configuration, entrez un nouvel icône par defaut ci-dessous. Chaque ligne doit commencer par une extension de fichier ou de multiples extensions séparées par y "+" (par exemple "xlsx+xlsm" pour Excel), suivie du symbole "=" et du "fichier,index" ou du fichier de l'image de l'icône par défaut.
-lOptionsIconListsInstructions	Le "fichier,index" est le chemin et nom du fichier (.ico, .dll or .exe) contenant l'icône. L'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1". Vous pouvez aussi utiliser une image carrée (.png, .bmp, .gif, .jpg) si sa taille est entre 16x16 et 64x64 pixels.
+lOptionsIconListsInstructions	Le "fichier,index" est l'emplacement et le nom du fichier (.ico, .dll or .exe) contenant l'icône. L'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1". Vous pouvez aussi utiliser une image carrée (.png, .bmp, .gif, .jpg) si sa taille est entre 16x16 et 64x64 pixels.
 lOptionsIconReplacementList	Remplacements des icônes de QAP
 lOptionsIconReplacementListInstructions	Entrez une instruction de remplacement par ligne. Chaque ligne doit commencer par le nom de l'icône QAP (i.e "iconFolderLive"), suivi du symbole "=" et du "fichier,index" de l'icône de remplacement (voir ci-dessous).
 lOptionsIconsCustomFolder	Dossier d'icônes personnalisé
@@ -932,6 +939,9 @@ lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|It
 lOptionsMenuActiveWindow	Dans la fenêtre active
 lOptionsMenuAdvanced	Options de menu avancées
 lOptionsMenuAppearance	Apparence du menu
+lOptionsMenuExclusions	Exclusions/Inclusions des menus
+lOptionsMenuExclusionsExclude	Exclure
+lOptionsMenuExclusionsInclude	Inclure seulement
 lOptionsMenuFixPosition	À une position fixe
 lOptionsMenuIcons	Icônes du menu
 lOptionsMenuNearMouse	Près du pointeur de la souris
@@ -992,7 +1002,10 @@ lOptionsShowQAPmenuCustomize	au dessus de la fenêtre Personnaliser
 lOptionsShowQAPmenuSystem	dans le menu Système (zone de notification)
 lOptionsSnippets	Fragments et Chaînes de substitution
 lOptionsSnippetsHelp	Valeurs par défaut pour les fragments de texte (<a href="~1~">~2~</a>)
-lOptionsSwitchExclusionList	Exclusions pour le menu Fenêtres ouvertes
+lOptionsSwitchExclusionList	Exclusions/Inclusions pour le menu Fenêtres ouvertes
+lOptionsSwitchExclusionListInstructions	Pour exclure (ou inclure seulement) certaines applications dans le menu "Fenêtres ouvertes", entrez une partie du titre de la fenêtre des applications, une par ligne.
+lOptionsSwitchExclusionListInstructions2	Vous pouvez identifier des applications par leur nom de classe ou nom de processus (nom du fichier EXE). Utilisez le bouton "Lire les renseignements sur une fenêtre" pour vous aider.
+lOptionsSwitchExclusionListInstructionsList	Ou choisissez une application active parmi cette liste pour l'ajouter.
 lOptionsTabFileManagersIntro	Sélectionnez le gestionnaire de fichiers à utiliser pour ouvrir des dossiers dans une nouvelle fenêtre.
 lOptionsTabFileManagersPreferences	Préférences du gestionnaire de fichiers
 lOptionsTabFileManagersPreferred	Gestionnaire de fichier préféré
@@ -1021,7 +1034,7 @@ lOptionsUsageDbStatement	Les données de la base de données de ~1~ sont collectée
 lOptionsUsageDbStatementTitle	Déclaration sur la confidentialité
 lOptionsUserVariables	Variables de l'utilisateur
 lOptionsUserVariablesList	Variables de l'utilisateur
-lOptionsUserVariablesListInstructions	Saisissez les variables de l'utilisateur, une variable par ligne. Chaque ligne doit commencer par le nom de la variable entre accolades (par exemple "{MaVariable}"), suivi du signe d'égalité "=" et du contenu de la variable (par exemple "{MaVariable}=Mon Contenu").`n`nPar exemple, si une ligne contient "{NotreDossierPartage}=S:\NotreDossier", le code de remplacement {NotreDossierPartage} sera remplacé par "S:\NotreDossier" dans les chemins d'accès des favoris et dans les fragments de texte.
+lOptionsUserVariablesListInstructions	Saisissez les variables de l'utilisateur, une variable par ligne. Chaque ligne doit commencer par le nom de la variable entre accolades (par exemple "{MaVariable}"), suivi du signe d'égalité "=" et du contenu de la variable (par exemple "{MaVariable}=Mon Contenu").`n`nPar exemple, si une ligne contient "{NotreDossierPartage}=S:\NotreDossier", le code de remplacement {NotreDossierPartage} sera remplacé par "S:\NotreDossier" dans les emplacements des favoris et dans les fragments de texte.
 lOptionsWaitDelayInDialogBox	Delai (en ms) lors des changements d'emplacement dans les boîtes de dialogue:
 lOptionsWaitDelayInSnippet	Delai (en ms) lors de l'exécution des Fragments de texte
 lOptionsWorkingFolder	Dossier des paramètres

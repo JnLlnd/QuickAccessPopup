@@ -3,7 +3,7 @@
 
 Quick Access Popup
 Written using AutoHotkey v1.1.28.00+ (http://autohotkey.com)
-By Jean Lalonde (JnLlnd on AHKScript.org forum)
+By Jean Lalonde (JnLlnd on AutoHotkey.com forum)
 
 Based on FoldersPopup from the same author
 https://github.com/JnLlnd/FoldersPopup
@@ -30,6 +30,56 @@ limitations under the License.
 
 HISTORY
 =======
+
+Version: 11.5.8 (2022-08-29)
+ 
+Dynamic menu exclusions/inclusions
+- in "Options", rename the section "Menu Exclusions" to "Menu Exclusions/Inclusions" to control the content of "Recent Folders", "Recent Files", "Frequent Folders", "Frequent Files" and "Current Windows" dynamic menus
+- in this section, add radio buttons "Exclude" (default) and "Include only" to determine if the "Folders", "Files" and "Current Windows" criterias are used to remove ("Exclude") items or to select the only items to add to the menu ("Include only")
+- for "Current Windows" add a dropdown list of running applications to help adding one of the running apps to the criteria
+- see: https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/
+ 
+Navigate in browsers
+- when launching a Link favorite when the QAP menu is open over a browser window, navigate the current browser tab to this URL instead of opening the link in a new tab
+- supported browsers are Chrome, Firefox and Microsoft Edge
+- you need to enable this option in "Options, Various Advanced Options" by disabling the new checkbox "Always open Links in new tab or window"
+- see: https://www.quickaccesspopup.com/how-do-i-add-favorite-link-url-to-my-menu/
+ 
+Reopen menu after launching items
+- in Add/Edit favorite "Basic" tab for Menu items, add the option "Reopen this menu after launching items"
+- select "Close this menu" if you don't need to open another favorite from this menu
+- this option also applies to Group items having the option "Also display this group in a submenu"
+- see: https://www.quickaccesspopup.com/how-can-i-gather-numerous-favorites-in-a-clutter-free-popup-menu/
+ 
+Various
+- fix bug with the QAP Messenger "NavigateFromMsg" not navigating folders in Explorer or links in browsers
+- fix some encoding errors in italian language file
+- update to French, German, Italian, Korean and Portuguese Brazilian language files for v11.5.8
+
+Version BETA: 11.5.7.9.5 (2022-08-20)
+- revert default for the now option "Always open Links in new tab or window" to false (keeping previous behaviour unless user disable this checkbox)
+- fix bug "Navigate in browser" option conflicting with Alternative menu features
+- fix bug with the QAP Messenger "NavigateFromMsg" not navigating folders in Explorer or links i browsers
+
+Version BETA: 11.5.7.9.4 (2022-08-06)
+- fix bug when trying to open a link in windows that is not a supported browser
+- when saving "Options, Menu Exclusions/Inclusions", avoid saving an "Include only" value if the criteria list for this value is empty (avoid the "include nothing" situation) and select "Exclude" instead
+
+Version BETA: 11.5.7.9.3 (2022-08-04)
+- in "Options", rename section "Menu Exclusions" to "Menu Exclusions/Inclusions"
+- in this section of "Options", add radio buttons "Excluded" (default) or "Included" to determine if the "Folders", "Files" and "Current Windows" criterias are used to remove ("Excluded") or add ("Included") items to the "Recent Folders", "Recent Files", "Frequent Folders", "Frequent Files" and "Current Windows" dynamic menus
+- for "Current Windows" add a dropdown list of running applications to add to the criteria one of the running apps
+
+Version BETA: 11.5.7.9.2 (2022-08-01)
+- apply the new option "Reopen this menu after launching items" to Group items having the option "Also display this group in a submenu"
+- in Edit favorite dialog box for Group items, disable the option "Reopen this menu after launching items" if the option "Also display this group in a submenu" is not checked
+- fix bug in v11.5.7.9.1 when, in "Options, Popup Menu", the mouse button is blobked in "Mouse trigger Blocked or Approved" is used
+
+Version BETA: 11.5.7.9.1 (2022-07-30)
+- in Add/Edit favorite "Basic" tab for menu, add an option to reopen this menu after launching items; add a "Close this menu" item to menus with the reopen option enabled
+- when the QAP menu is open over a browser window and when launching a Link item (URL), navigate to this URL in the current browser tab instead of opening the link in a new tab (supported browsers are Chrome, Firefox and Microsoft Edge)
+- add an option in "Options, Various Advanced Options" to "Always open Links in new tab or window" to disable this new behavior
+- fix some encoding errors in italian language file
 
 Version: 11.5.7.1 (2022-07-13)
 - support multiple files or folders selection using the Alternative menu features "Copy/Move the selected file to a favorite folder" (available with Windows Explorer, Windows Desktop and Directory Opus)
@@ -5160,7 +5210,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.7.1
+;@Ahk2Exe-SetVersion 11.5.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5227,7 +5277,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.7.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -5362,7 +5412,7 @@ global g_saDialogListApplicationsDropdown := StrSplit(o_L["DialogListApplication
 g_saDialogListApplicationsDropdown.RemoveAt(2) ; remove empty item, result:  1) List All 2) Current Windows menu 3) Running Applications 4) Close All Windows menu"
 
 global g_strNewLocation ; used in various places when adding a favorite
-global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg
+global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg or LaunchFromReopenMenu when reopening menu after launching items
 global g_strOpenFavoriteFromMsg ; used when QAPmessenger triggers OpenFavoriteFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
 global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
@@ -5726,6 +5776,7 @@ if !GetKeyState("Shift")
 ; ExitApp
 ; g_strOpenFavoriteFromMsg := "> C!"
 ; gosub, OpenFavoriteFromMsg
+; gosub, GuiOptionsGroupMenuExclusions
 
 return
 
@@ -6408,12 +6459,18 @@ o_Settings.ReadIniOption("MenuPopup", "strExclusionMouseList", "ExclusionMouseLi
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; Group MenuExclusions
-o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
-	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion") ; g_strSwitchExclusionList
+; when bln false, items are excluded (default) / when true, items are included
+o_Settings.ReadIniOption("Execution", "blnFoldersExclusionListInclude", "FoldersExclusionListInclude", 0, "MenuExclusions", "f_blnFoldersExclusionListInclude|f_blnFoldersExclusionListExclude")
+o_Settings.ReadIniOption("Execution", "blnFilesExclusionListInclude", "FilesExclusionListInclude", 0, "MenuExclusions", "f_blnFilesExclusionListInclude|f_blnFilesExclusionListExclude")
+o_Settings.ReadIniOption("Execution", "blnSwitchExclusionListInclude", "SwitchExclusionListInclude", 0, "MenuExclusions", "f_blnSwitchExclusionListInclude|f_blnSwitchExclusionListExclude")
+; ###_V("Load", o_Settings.Execution.blnFoldersExclusionListInclude.IniValue, o_Settings.Execution.blnFilesExclusionListInclude.IniValue, o_Settings.Execution.blnSwitchExclusionListInclude.IniValue)
+
 o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
 	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
 o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
 	, "f_lnkFilesExclusionList|f_strFilesExclusionList|f_lblFilesExclusionList")
+o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
+	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning") ; g_strSwitchExclusionList
 
 ; Group PopupHotkeys
 o_Settings.ReadIniOption("MenuPopup", "blnLeftControlDoublePressed", "LeftControlDoublePressed", 0, "PopupHotkeys", "f_lblChangeShortcutTitle|f_lblControlDoublePressedTitle|f_blnLeftControlDoublePressed") ; g_blnLeftControlDoublePressed
@@ -6470,6 +6527,7 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup",
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
+o_Settings.ReadIniOption("Execution", "blnAlwaysLaunchURLs", "AlwaysLaunchURLs", true, "AdvancedOther", "f_blnAlwaysLaunchURLs") ; default true
 o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFavoriteDebugOption", 0, "AdvancedOther", "f_blnEnableFavoriteDebugOption") ; enable debug checkbox in favorites basic settings tab
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "f_blnKeepExtensionInShortName") ; keep file extension when gettig short name from a document or application location
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
@@ -9420,26 +9478,32 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnExclusionMouseListBlac
 	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnExclusionMouseListWhitelist gGuiOptionsGroupChanged hidden "
 	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
-Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w600 r5 vf_strExclusionMouseList gGuiOptionsGroupChanged hidden
+Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strExclusionMouseList gGuiOptionsGroupChanged hidden
 	, % StrReplace(Trim(o_Settings.MenuPopup.strExclusionMouseList.IniValue), "|", "`n")
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList2, % L(o_L["OptionsExclusionMouseListDetail1"]
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText)
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList3, % L(o_L["OptionsExclusionMouseListDetail2"]
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText, strUrl)
-Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% vf_btnGetWinInfoMouseExclusions gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoMouseExclusions")
+intXGetInfo := g_intGroupItemsX + (590 / 2) - (100 / 2) ; used for f_btnGetWinInfoMouseExclusions for and f_btnGetWinInfoSwitchExclusion
+Gui, 2:Add, Button, y+10 x%intXGetInfo% vf_btnGetWinInfoMouseExclusions gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoMouseExclusions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
 ; === MenuExclusions ===
-
 ; FoldersExclusionList
 strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#folders", A_ThisLabel, "Help")
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w340 section hidden vf_lnkFoldersExclusionList, % o_L["OptionsFoldersExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
+
+; FoldersExclusionList
+; ###_V("Gui", o_Settings.Execution.blnFoldersExclusionListInclude.IniValue, o_Settings.Execution.blnFilesExclusionListInclude.IniValue, o_Settings.Execution.blnSwitchExclusionListInclude.IniValue)
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnFoldersExclusionListInclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnFoldersExclusionListExclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFoldersExclusionList.IniValue), "|", "`n")
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList, % L(o_L["OptionsFoldersExclusionListInstructions"], strUrl)
 Gui, 2:Add, Text, y+5 hidden vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
@@ -9450,20 +9514,30 @@ intGroupItemsXFiles := g_intGroupItemsX + 350
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, ys x%intGroupItemsXFiles% w240 hidden vf_lnkFilesExclusionList, % o_L["OptionsFilesExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w240 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w235 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
+Gui, 2:Add, Radio, % "y+5 x" . intGroupItemsXFiles . " vf_blnFilesExclusionListInclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnFilesExclusionListExclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
+Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w245 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w240 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
 
 ; SwitchExclusionList
 strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-filter-out-items-in-current-windows-recent-or-frequent-menus/#applications", A_ThisLabel, "Help")
 GuiControlGet, arrPos, Pos, f_lblFoldersExclusionListBottom
 arrPosY := arrPosY + 10
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w340 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Add, Link, y%arrPosY% x%g_intGroupItemsX% w595 hidden vf_lnkSwitchExclusionList, % o_L["OptionsSwitchExclusionList"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
-Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"], strUrl)
-Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGetWinInfoSwitchExclusion")
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnSwitchExclusionListInclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnSwitchExclusionListExclude gGuiOptionsGroupChanged hidden "
+	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w595 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w590 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"]
+	. " " . o_L["OptionsSwitchExclusionListInstructions2"] . " " . o_L["OptionsSwitchExclusionListInstructionsList"], strUrl)
+Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w595 vf_drpSwitchExclusionRunning gDropdownSwitchExclusionRunningChanged hidden
+	, % CollectRunningApplications(o_EditedFavorite.AA.strFavoriteLocation)
+Gui, 2:Add, Button, x%intXGetInfo% y+10 vf_btnGetWinInfoSwitchExclusion gGetWinInfo hidden, % o_L["MenuGetWinInfo"]
 
 GuiControlGet, arrPos, Pos, f_btnGetWinInfoSwitchExclusion
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -9829,6 +9903,10 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% vf_lblWaitDelayInDialogBox hidden, % o_L["OptionsWaitDelayInDialogBox"]
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intWaitDelayInDialogBox gGuiOptionsGroupChanged hidden, % o_Settings.DialogBoxes.intWaitDelayInDialogBox.IniValue
 
+; AlwaysLaunchURLs
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnAlwaysLaunchURLs gGuiOptionsGroupChanged hidden, % o_L["OptionsAlwaysLaunchURLs"]
+GuiControl, , f_blnAlwaysLaunchURLs, % (o_Settings.Execution.blnAlwaysLaunchURLs.IniValue = true)
+
 ; EnableFavoriteDebugOption
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnEnableFavoriteDebugOption gGuiOptionsGroupChanged hidden, % o_L["OptionsEnableFavoriteDebugOption"]
 GuiControl, , f_blnEnableFavoriteDebugOption, % (o_Settings.Execution.blnEnableFavoriteDebugOption.IniValue = true)
@@ -9880,6 +9958,7 @@ intThisIndex := ""
 objThisPopupHotkey := ""
 ResetArray("arrPos")
 intGroupItemsXFiles := ""
+intXGetInfo := ""
 
 return
 ;------------------------------------------------------------
@@ -10150,9 +10229,15 @@ o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; === MenuExclusions ===
 
-o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
 o_Settings.Execution.strFoldersExclusionList.WriteIni(OptionsListCleanup(f_strFoldersExclusionList))
 o_Settings.Execution.strFilesExclusionList.WriteIni(OptionsListCleanup(f_strFilesExclusionList))
+o_Settings.Execution.strSwitchExclusionList.WriteIni(OptionsListCleanup(f_strSwitchExclusionList))
+
+; when bln false, items are excluded (default) / when true, items are included
+; ternary conditions to avoid having include with no criteria ("include nothing")
+o_Settings.Execution.blnFoldersExclusionListInclude.WriteIni(StrLen(o_Settings.Execution.strFoldersExclusionList.IniValue) ? f_blnFoldersExclusionListExclude : 0)
+o_Settings.Execution.blnFilesExclusionListInclude.WriteIni(StrLen(o_Settings.Execution.strFilesExclusionList.IniValue) ? f_blnFilesExclusionListExclude : 0)
+o_Settings.Execution.blnSwitchExclusionListInclude.WriteIni(StrLen(o_Settings.Execution.strSwitchExclusionList.IniValue) ? f_blnSwitchExclusionListExclude : 0)
 
 ; === PopupHotkeys ===
 
@@ -10314,6 +10399,7 @@ blnRunAsAdminPrev := ""
 ; === AdvancedOther ===
 
 o_Settings.DialogBoxes.intWaitDelayInDialogBox.WriteIni(f_intWaitDelayInDialogBox)
+o_Settings.Execution.blnAlwaysLaunchURLs.WriteIni(f_blnAlwaysLaunchURLs)
 o_Settings.Execution.blnEnableFavoriteDebugOption.WriteIni(f_blnEnableFavoriteDebugOption)
 o_Settings.Execution.blnKeepExtensionInShortName.WriteIni(f_blnKeepExtensionInShortName)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
@@ -12601,7 +12687,7 @@ return
 GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 ; return ByRef parameters for g_strTargetWinId and g_strTargetClass (or current file manager ID and class if called to reopen current location)
 ; called when g_strTargetWinId and g_strTargetClass are not updated when invoking the popup menu
-; with blnActivate true when add folder from QAP tray icon
+; with blnActivate true when add folder from QAP tray icon or (starting with 11.5.7.9.5) when called from RECEIVE_QAPMESSENGER
 ; with blnExcludeDialogBox true when reopen file manager current location in dialog box
 ;------------------------------------------------------------
 {
@@ -13281,7 +13367,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Group")
 			, % o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName ; will be selected by default if empty (when Add)
 	}
 	
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnGroupInMenu " . (g_saGroupInGuiSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnGroupInMenu gGroupInMenuChanged " . (g_saGroupInGuiSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
 }
 
 if (blnFolderInAGroupWithSide) ; folder in a group with side
@@ -13319,6 +13405,13 @@ if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	Gui, 2:Add, Button, x+10 yp vf_lblMenuAutoSortButton gGuiFavoriteTabBasicSort, % o_L["OptionsChangeHotkey"]
 	Gui, 2:Add, Text, x+20 yp vf_lblMenuAutoSortBy, % o_L["DialogSortBy"] . ":"
 	Gui, 2:Add, Text, x+1 yp w300 h18 vf_lblMenuAutoSortCriteria, % GetSortCriteria(g_intNewSortCriteria)
+}
+
+if InStr("Menu|External|Group", o_EditedFavorite.AA.strFavoriteType)
+{
+	Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnReopenAfterLaunchingItem " . (o_EditedFavorite.AA.blnReopenAfterLaunchingItem ? "checked" : "")
+		, % o_L["DialogMenuReopenAfterLaunchingItem"]
+	Gosub, GroupInMenuChanged
 }
 
 ; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1), can be a submenu then all subitems are disabled or hidden (14)
@@ -14034,6 +14127,20 @@ return
 
 
 ;------------------------------------------------------------
+GroupInMenuChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+if (o_EditedFavorite.AA.strFavoriteType = "Group" and !f_blnGroupInMenu) ;  if group without group in menu, disable reopen
+	GuiControl, 2:, f_blnReopenAfterLaunchingItem, % 0
+if (o_EditedFavorite.AA.strFavoriteType = "Group")
+	GuiControl, % "2:" . (f_blnGroupInMenu ? "Enable" : "Disable"), f_blnReopenAfterLaunchingItem
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GuiMoveFavoriteToMenu:
 GuiMoveMultipleFavoritesToMenu:
 GuiCopyMultipleFavoritesToMenu:
@@ -14246,6 +14353,21 @@ Gui, 2:Submit, NoHide
 
 GuiControl, 2:, f_strFavoriteLocation, %f_drpRunningApplication%
 GuiControl, 2:, f_strFavoriteShortName, % GetLocationPathName(f_drpRunningApplication)
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+DropdownSwitchExclusionRunningChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+SplitPath, f_drpSwitchExclusionRunning, strFileName
+GuiControl, 2:, f_strSwitchExclusionList, % f_strSwitchExclusionList . strFileName . "`n"
+Gosub, GuiOptionsGroupChanged
+
+strFileName := ""
 
 return
 ;------------------------------------------------------------
@@ -16717,6 +16839,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer")
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay
 		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupInMenu
+		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem ; see also for other containers below
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 	{
@@ -16725,11 +16848,11 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.oSubMenu.AA.intCurrentSortCriteria := g_intNewSortCriteria ; for when refreshing this menu
 		o_EditedFavorite.AA.oSubMenu.AA.intMenuAutoSort := g_intNewSortCriteria ; for future load of this menu before relaunching QAP
 		
-		; store menu icons size in strFavoriteArguments
-		o_EditedFavorite.AA.strFavoriteArguments := ProcessMenuIconsSize(f_drpMenuIconsSize)
+		o_EditedFavorite.AA.strFavoriteArguments := ProcessMenuIconsSize(f_drpMenuIconsSize) ; store menu icons size in strFavoriteArguments
+		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem ; see also for groups above
 	}
-	else
-		o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments
+	else ; not a container
+		o_EditedFavorite.AA.strFavoriteArguments := f_strFavoriteArguments ; only non-containers have arguments
 
 	o_EditedFavorite.AA.strFavoriteLoginName := f_strFavoriteLoginName
 	o_EditedFavorite.AA.strFavoritePassword := f_strFavoritePassword
@@ -20064,6 +20187,7 @@ NavigateHotkeyMouse:		; g_strTargetWinId set by CanNavigate
 NavigateHotkeyKeyboard:		; g_strTargetWinId set by CanNavigate
 NavigateFromMsg:			; g_strTargetWinId set by RECEIVE_QAPMESSENGER
 LaunchFromMsg:				; g_strTargetWinId set by RECEIVE_QAPMESSENGER
+LaunchFromReopenMenu:		; g_strTargetWinId set by CanNavigate
 LaunchHotkeyMouse:			; g_strTargetWinId set by CanNavigate
 LaunchHotkeyKeyboard:		; g_strTargetWinId set by CanNavigate
 LaunchFromTrayIcon:			; g_strTargetWinId set empty (not required)
@@ -20113,7 +20237,6 @@ else
 if InStr(g_strMenuTriggerLabel, "Mouse")
 	and (WindowIsExplorer(g_strTargetClass) or WindowIsDirectoryOpus(g_strTargetClass) or WindowIsQAPconnect(g_strTargetWinId)
 		or (WindowIsTotalCommander(g_strTargetClass) and g_strHotkeyTypeDetected = "Navigate"))
-	
 {
 	; to make sure the item and Explorer window, DOpus lister or under the mouse become active,
 	; and for TC only if navigate (to avoid disrupting GetSelectedLocation)
@@ -20240,8 +20363,21 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		or (o_FileManagers.P_intActiveFileManager = 2 and WindowIsDirectoryOpus(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 3 and WindowIsTotalCommander(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 4 and WindowIsQAPconnect(g_strTargetWinId))
+		or (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; will check again if window is a browser when opening the favorite link
 		or WindowIsQuickAccessPopup(g_strTargetClass)
 
+	; check if the browser is an blocked app
+	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
+		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
+		Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, |
+			if StrLen(A_Loopfield)
+				and (InStr(g_strTargetClass, A_LoopField)
+				or InStr(g_strTargetWinTitle, A_LoopField)
+				or InStr(g_strTargetProcessName, A_LoopField))
+				{
+					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; true show menu, false cannot navigate
+				}
+				
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
 	if (!o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId))
 	{
@@ -20273,7 +20409,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 				and (InStr(g_strTargetClass, A_LoopField)
 				or InStr(g_strTargetWinTitle, A_LoopField)
 				or InStr(g_strTargetProcessName, A_LoopField))
-				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? true : false)
+				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; true show menu, false do not show
 
 	if WindowIsTray(g_strTargetClass)
 		return o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue
@@ -20284,9 +20420,9 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 	if WindowIsDialog(g_strTargetClass, g_strTargetWinId) and DialogBoxParentExcluded(g_strTargetWinId)
 		return false
 	
-	; else we can launch
+	; else we can launch (or not launch if blnExclusionMouseListWhitelist)
 
-	return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? false : true)
+	return (!o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; blnExclusionMouseListWhitelist false cannot launch, true show menu
 }
 ;------------------------------------------------------------
 
@@ -20479,7 +20615,39 @@ WindowIsQAPconnect(strWinId)
 
 	if (strWinId = 0)
 		return false
+	
+	strExecutable := GetRunningExecutableFilename(strWinId)
+	return (strExecutable = g_aaFileManagerQAPconnect.strQAPconnectAppFilename) or (strExecutable = g_aaFileManagerQAPconnect.strQAPconnectCompanionFilename)
+}
+;------------------------------------------------------------
 
+
+;------------------------------------------------------------
+WindowIsQuickAccessPopup(strClass)
+; enabled only when compiled
+;------------------------------------------------------------
+{
+	return (strClass = "JeanLalonde.ca")
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+WindowIsBrowser(strWinId)
+;------------------------------------------------------------
+{
+	if (strWinId = 0)
+		return false
+
+	return NavigateInBrowserSupported(GetRunningExecutableFilename(strWinId))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetRunningExecutableFilename(strWinId)
+;------------------------------------------------------------
+{
 	; get path and filename of the app controling window strWinId
 	; first get process ID
     intPID := 0
@@ -20493,17 +20661,16 @@ WindowIsQAPconnect(strWinId)
 	
 	; get filename only and compare with QAPconnect filename or QAPconnect target filename (see QAPconnect doc)
 	SplitPath, strFCAppFile, strFCAppFile
-	return (strFCAppFile = g_aaFileManagerQAPconnect.strQAPconnectAppFilename) or (strFCAppFile = g_aaFileManagerQAPconnect.strQAPconnectCompanionFilename)
+	return strFCAppFile
 }
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-WindowIsQuickAccessPopup(strClass)
-; enabled only when compiled
+NavigateInBrowserSupported(strExecutable)
 ;------------------------------------------------------------
 {
-	return (strClass = "JeanLalonde.ca")
+	return InStr("|chrome.exe|firefox.exe|msedge.exe|", "|" . strExecutable . "|")
 }
 ;------------------------------------------------------------
 
@@ -20675,6 +20842,11 @@ if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 	return
 }
 
+; avoid trying to navigate links in other apps than browsers
+if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId)
+	and g_strHotkeyTypeDetected = "Navigate") ; avoid changing if "Alternative"
+	g_strHotkeyTypeDetected := "Launch"
+
 ; if a menu open from an hotkey, refresh dynamic menus
 if o_ThisFavorite.IsContainer() and InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
 	o_ThisFavorite.AA.oSubMenu.RefreshDynamicMenus()
@@ -20723,6 +20895,12 @@ if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected))
 ; beginning of OpenFavorite execution
 
 o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
+
+if (o_ThisFavorite.AA.oParentMenu.AA.blnReopenAfterLaunchingItem)
+{
+	g_strShowMenu := o_ThisFavorite.AA.oParentMenu.AA.strMenuPath
+	Gosub, LaunchFromReopenMenu
+}
 
 OpenFavoriteCleanup:
 
@@ -25965,9 +26143,10 @@ ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 			and (InStr(strWindowClass, A_LoopField)
 			or InStr(strWindowTitle, A_LoopField)
 			or InStr(strProcessName, A_LoopField))
-			return true
+			return !o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ; if found, return true or false according to blnSwitchExclusionListInclude
 		
-	return false
+	; return false or true according to blnSwitchExclusionListInclude
+	return o_Settings.Execution.blnSwitchExclusionListInclude.IniValue
 }
 ;------------------------------------------------------------
 
@@ -25980,23 +26159,33 @@ FolderOrFileIsExcluded(strFolderOrFile, strPath)
 	if (strFolderOrFile = "Folder" and SubStr(strPath, 0, 1) <> "\") ; if path is folder and does not end with "\", add it (to remove "C:\test" if exclusion is "C:\test\")
 		strPath .= "\"
 	Loop, parse, % o_Settings.Execution.strFoldersExclusionList.IniValue, |
-		; if StrLen(A_LoopField) and (A_LoopField = SubStr(strPath, 1, StrLen(A_LoopField))) ; folder path starts with an exclusion
-	{
 		if (StrLen(A_LoopField) and RegExMatch(strPath, Wildcards2RegEx(A_LoopField . "*")))
-			return true ; folder or file under this folder is excluded
-	}
-	
-	; check file exclusions
-	if (strFolderOrFile = "File")
+			if (strFolderOrFile = "File" and o_Settings.Execution.blnFoldersExclusionListInclude.IniValue) ; the folder of the file is included
+				blnFolderOfFileFound := true
+			else
+				return !o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ; if bln false (excluded) return true, if bln true (included) return false (not excluded)
+			
+	; folder was not found
+	if (strFolderOrFile = "Folder") ; if checking folder
+		return o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ; return false or true according to blnFoldersExclusionListInclude
+
+	if (strFolderOrFile = "File") ; if checking file, folder of the file was found, continue to check file criteria
 		Loop, parse, % o_Settings.Execution.strFilesExclusionList.IniValue, |
 		{
 			strCriteria := (InStr(A_LoopField, ".") ? A_LoopField : "*." . A_LoopField) ; convert extension like "mp3" to "*.mp3"
 			SplitPath, strPath, strFileName
 			if (StrLen(strCriteria) and RegExMatch(strFileName, Wildcards2RegEx(strCriteria)))
-				return true ; file is excluded
+				return !o_Settings.Execution.blnFilesExclusionListInclude.IniValue ; if bln false (excluded) return true, if bln true (included) return false (not excluded)
 		}
 	
-	return false ; file or folder is not excluded
+	; file was not found
+	if (strFolderOrFile = "File")
+		; if folder of file was not found return false or true according to blnFoldersExclusionListInclude
+		; else return false or true according to blnFilesExclusionListInclude
+		return (!blnFolderOfFileFound and o_Settings.Execution.blnFoldersExclusionListInclude.IniValue)
+			or o_Settings.Execution.blnFilesExclusionListInclude.IniValue
+	; else (do we get here?)
+	; for safety, if we were checking for a folder return false (do not exclude)
 }
 ;------------------------------------------------------------
 
@@ -27353,7 +27542,8 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	global g_strTargetClass
 	global g_strTargetWinId
 	
-	SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
+	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, false, true)
+	; before 11.5.7.9.5 was SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
 
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
@@ -30394,7 +30584,7 @@ class Container
 			; 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation, 24 strFavoriteDateCreated,
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
 			; 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
-			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug, 36 blnFavoriteAutoExec
+			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug, 36 blnFavoriteAutoExec, 37 blnReopenAfterLaunchingItem
 
 	;---------------------------------------------------------
 	{
@@ -30538,6 +30728,9 @@ class Container
 					oNewSubMenu.AA.strFavoriteGroupSettings := saThisFavorite[11]
 				else if InStr("Menu|External", oNewSubMenu.AA.strMenuType)
 					oNewSubMenu.AA.intMenuAutoSort := saThisFavorite[11] ; intMenuAutoSort
+				
+				if InStr("Menu|External|Group", oNewSubMenu.AA.strMenuType)
+					oNewSubMenu.AA.blnReopenAfterLaunchingItem := saThisFavorite[37] ; intMenuAutoSort
 				
 				strResult := oNewSubMenu.LoadFavoritesFromIniFile(false, false, blnDoNotLoadExternal) ; RECURSIVE, 2nd param false not external root, 3rd param false non entry menu
 				
@@ -31106,7 +31299,7 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
-		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring))
+		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring) or this.AA.blnReopenAfterLaunchingItem)
 			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
@@ -31754,6 +31947,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveExcludeFolders . "|" ; 34
 			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
 			strIniLine .= oItem.AA.blnFavoriteAutoExec . "|" ; 36
+			strIniLine .= oItem.AA.blnReopenAfterLaunchingItem . "|" ; 37
 			
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
@@ -32252,7 +32446,7 @@ class Container
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
 			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
 			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
-			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec
+			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec, 37 blnReopenAfterLaunchingItem
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -32344,6 +32538,7 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveExcludeFolders", saFavorite[34]) ; boolean, exclude folders in Live Folders
 			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, enable favorite debugging
 			this.InsertItemValue("blnFavoriteAutoExec", saFavorite[36]) ; boolean, launch favorite or group at startup
+			this.InsertItemValue("blnReopenAfterLaunchingItem", saFavorite[37]) ; boolean, reopen this menu after launching items
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
@@ -32582,7 +32777,9 @@ class Container
 			; LINK
 			else if (this.AA.strFavoriteType = "URL" and !this.aaTemp.blnProcessAsApp) ; blnProcessAsApp if URL has arguments, consider as Application
 			{
-				intOpenError := this.LaunchFullLocation()
+				; if browser is active window and the option "always in a new tab" is off, navigate in the current tab, else open in a new tab
+				intOpenError := (!WinActive("ahk_exe " . GetRunningExecutableFilename(this.aaTemp.strTargetWinId)) or this.aaTemp.strHotkeyTypeDetected = "Launch"
+					? this.LaunchFullLocation() : this.NavigateFullLocation())
 			}
 			; SNIPPETS
 			else if (this.AA.strFavoriteType = "Snippet")
@@ -33574,6 +33771,24 @@ class Container
 			if (intMinMax = -1) ; restore if window is minimized
 				WinRestore, % "ahk_id " . this.aaTemp.strAppID
 			WinActivate, % "ahk_id " . this.aaTemp.strAppID ; strAppID from AppIsRunning
+		}
+		;---------------------------------------------------------
+		
+		;---------------------------------------------------------
+		NavigateFullLocation()
+		; called for links only, return 0 if success or error code
+		;---------------------------------------------------------
+		{
+			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
+				return -1
+			
+			; open the URL in the current tab
+			SetKeyDelay, 200
+			Send, ^l^a
+			SendInput, % this.aaTemp.strFullLocation
+			Send, {Return}
+
+			return 0
 		}
 		;---------------------------------------------------------
 		
