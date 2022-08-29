@@ -18,7 +18,7 @@ lAlternativeMenuTrayTipEditFavorite	Seleziona il Preferito da modificare
 lAlternativeMenuTrayTipNewWindow	Seleziona la cartella da aprire in una nuova finestra
 lAlternativeMenuTrayTipOpenContaining	Seleziona il Preferito (documento, applicazione o cartella) di cui vuoi aprire la cartella superiore
 lAlternativeMenuTrayTipRunAs	Seleziona l'applicazione da eseguire con privilegi elevati (amministratore)
-lAlternativeMenuTrayTipSelectedFile	Seleziona la CARTELLA di destinazione dove vuoi spostare o copiare il file o la cartella selezionata
+lAlternativeMenuTrayTipSelectedFile	Seleziona la CARTELLA di destinazione dove vuoi spostare o copiare i file o le cartella selezionate
 lContextAddFile	Aggiungi un File al menù Quick Access Popup
 lContextAddFileXpress	Aggiungi un File al menù Express
 lContextAddFolder	Aggiungi una Cartella al menù Quick Access Popup
@@ -268,7 +268,7 @@ lDialogGroupMemberOptions	Opzioni Elemento di Gruppo
 lDialogGroupParentMenu	Menù Gruppo superiore
 lDialogGroupRestoreStopIfError	C'è stato un errore nell'aprire un elemento del Gruppo #~1~:`n`n~2~`n~3~`n`nApertura del Gruppo interrotta.
 lDialogHotkey	Tasto di scelta rapida
-lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>, <a id="~5~">tasto`ndel menú (applicazioni)</a> o <a id="~6~">input manuale</a>
+lDialogHotkeyInvisibleKeys	<a id="~1~">Barra spaziatrice</a>, <a id="~2~">Tab</a>, <a id="~3~">Enter</a>, <a id="~4~">Esc</a>, <a id="~5~">tasto del menú`n(applicazioni)</a> o <a id="~6~">input manuale</a>
 lDialogHotkeys	Scorciatoie
 lDialogHotkeysHelpHeader	Scorciatoia|Azione
 lDialogHotkeysManage	Gestione Scorciatoie
@@ -297,6 +297,7 @@ lDialogHotstringsManage	Gestisci le sequenze di sostituzione
 lDialogHotstringTriggerAbbreviation	Attivatore (abbreviazione):
 lDialogHotstringTriggerOptions	Sequenza di sostituzione (attivatore e opzioni)
 lDialogIcon	Icona del Preferito
+lDialogIconsCustomFolder	Cartella personalizzata
 lDialogIconsDefaultSize	Dimensione predefinita
 lDialogIconsInheritedSize	Dimensione ereditata
 lDialogIconsManage	Gestione Icone
@@ -324,6 +325,7 @@ lDialogListApplicationYesNo	[Si] per Attivare o [No] per Chiudere questa finestr
 lDialogMaximized	Massimizzata
 lDialogMenuKey	Tasto del Menú
 lDialogMenuNotMoveUnderItself	Il menù "~1~" non può essere posizionato sotto se stesso.
+lDialogMenuReopenAfterLaunchingItem	Riapri questo menù dopo l'esecuzione degli elementi
 lDialogMenuSortCreated	Data di Creazione
 lDialogMenuSortEditMenu	Modifica questo menù (o gruppo)
 lDialogMenuSortEnable	Ordina il menù automaticamente
@@ -659,7 +661,9 @@ lMenuAddThisFolder	Aggiungi una Cartella attiva o una pagina web
 lMenuAddThisFolderDescription	Aggiungi rapidamente al tuo menù la cartella o la pagina web attiva.`n`nPuoi aggiungere delle cartelle in questo modo in Windows Explorer o nelle finestre delle caselle di dialogo per file. Puoi aggiungere collegamenti a pagine web con la maggior parte dei web browsers.`n`nNella casella di dialogo "Aggiungi preferito", conferma il nome per il tuo preferito e inserisci settaggi vari come icona, scorciatoia, sequenza di sostituzione, parametri, ecc.`n`nCome impostazione predefinita, questa funzionalità è inclusa nel menù Principale.
 lMenuAddThisFolderXpress	Aggiungi una Cartella Attiva o una Pagina web Express
 lMenuAddThisFolderXpressDescription	Simile alla funzione "Aggiungi Cartella attiva o pagina web" eccetto che il nuovo preferito sarà automaticamente aggiunto in cima al menù Principale senza nessuna interruzione.`n`nSe hai bisogno di cambiare le impostazioni predefinite, puoi cliccare il pulsante "Modifica" per cambiare il nome, la posizione o vari settaggi dei preferiti.`n`nIn "Opzioni", puoi scegliere che il nuovo preferito venga inserito, come impostazione predefinita, in fondo al menù Principale.
+lMenuAlternativeCopySelectedFile	Copia i file o le cartella selezionate nella cartella preferita
 lMenuAlternativeEditFavorite	Modifica un Preferito
+lMenuAlternativeMoveSelectedFile	Sposta i file o le cartella selezionate nella cartella preferita
 lMenuAlternativeNewWindow	Apri in una nuova finestra
 lMenuAlternativeOpenContainingCurrent	Apri la Cartella che lo contiene nella Finestra Corrente
 lMenuAlternativeOpenContainingNew	Apri la Cartella che lo contiene in una Nuova Finestra
@@ -803,7 +807,7 @@ lOopsChangeFolderInDialogAlert	Hai intenzione di cambiare cartella da questa cas
 lOopsContainerInGui	Il menù dinamico "~1~" può essere inserito soltanto nel menù: ~2~
 lOopsCouldNotOpenSpecialFolder	~1~ non è riuscito ad aprire la Cartella Speciale: "~2~".
 lOopsEmpty	vuoto
-lOopsErrorCopyOrMoveFolderOrFileSelect	Nessun file o cartella selezionati.`n`nSeleziona un file o cartella in Windows Explorer prima di aprire il menù Alternativo.
+lOopsErrorCopyOrMoveFolderOrFileSelect	Nessun file o cartella selezionati.`n`nSeleziona uno o più file o cartelle in Windows Explorer prima di aprire il menù Alternativo.
 lOopsErrorIniFileDisplayErrorMessage	Vuoi visualizzare di nuovo questo messaggio di errore per questo Menù Condiviso?
 lOopsErrorIniFileDuplicateNames	Il preferito "~1~" nel menù "~2~" non è unico ed è stato temporaneamente rinominato in "~3~".`n`nSi prega di modificare questo preferito per dargli un nome unico.
 lOopsErrorIniFileModified	Questo menù condiviso è stato modificato dopo essere stato aperto. Il menù verrà aggiornato con le modifiche apportate, che però NON saranno salvate e verranno perse.
@@ -882,6 +886,7 @@ lOptionsAlternativeMenuResetModifiersSaved	Resetta modificatori salvati
 lOptionsAlternativeMenuShowNotification	Mostra una notifica quando si sta usando il Menù Alternativo
 lOptionsAlternativeModifiers	Modificatori
 lOptionsAlternativeTrayIcon	Sostituzione icona in area notifiche di QAP (file, indice)
+lOptionsAlwaysLaunchURLs	Apri sempre i Link in un nuovo tab o finestra
 lOptionsBackupFolder	Cartella di backup del file delle Impostazioni principali
 lOptionsCataloguePath	Cartella radice del catalogo
 lOptionsChangeFolderInDialog	Cambia cartella da casella di dialogo con gli hotkeys principali di QAP (mouse e tastiera)
@@ -915,10 +920,10 @@ lOptionsFileManagerNavigateIntro	Aprendo il menù QAP al di fuori di ~1~, apri le
 lOptionsFileManagerNavigateNew	una nuova finestra ~1~
 lOptionsFileManagerNavigateNewTab	un nuovo tab ~1~
 lOptionsFileManagers	File Manager
-lOptionsFilesExclusionList	File da Escludere
-lOptionsFilesExclusionListInstructions	Per escludere file dai "File Recenti" e "File Frequenti", immetti le loro estensioni (es.: "mp3") o usa caratteri jolly * e ? (es.: *.mp?), uno per linea.
-lOptionsFoldersExclusionList	Esclusioni di Cartelle
-lOptionsFoldersExclusionListInstructions	Per escludere cartelle (inclusi file e sottocartelle) dai menù "Cartelle Recenti", "File Recenti", "Cartelle Frequenti" e "File Frequenti", immetti i loro percorsi, uno per linea. Opzionalmente, puoi usare caratteri jolly * e ? seguiti da sbarra all'indietro (es.: c:\hide*\).
+lOptionsFilesExclusionList	File da Escludere/Includere
+lOptionsFilesExclusionListInstructions	Per escludere (o solo includere) dei file dai/nei "File Recenti" e "File Frequenti", immetti le loro estensioni (es.: "mp3") o usa caratteri jolly * e ? (es.: "xyz*.mp?"), uno per linea.
+lOptionsFoldersExclusionList	Esclusioni/Inclusioni di Cartelle
+lOptionsFoldersExclusionListInstructions	Per escludere (o solo includere) alcune cartelle dai/nei menù "Cartelle Recenti", "File Recenti", "Cartelle Frequenti" e "File Frequenti", immetti i loro percorsi, uno per linea. Opzionalmente, puoi usare caratteri jolly * e ? seguiti da sbarra all'indietro (es.: "c:\hide*\"). Altrettanto per le sottocartelle.
 lOptionsFtpEncoding	Codifica nome utente e password FTP (consigliato)
 lOptionsFtpEncodingTC	Codifica nome utente e password FTP (non consigliato per Total Commander)
 lOptionsGeneral	Generale
@@ -945,7 +950,9 @@ lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italian
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
 lOptionsMenuAppearance	Aspetto dei Menù
-lOptionsMenuExclusions	Menu Esclusioni
+lOptionsMenuExclusions	Menu Esclusioni/Inclusioni
+lOptionsMenuExclusionsExclude	Escludi
+lOptionsMenuExclusionsInclude	Includi soltanto
 lOptionsMenuFixPosition	In posizione prefissata
 lOptionsMenuIcons	Icone dei Menù
 lOptionsMenuNearMouse	Vicino al puntatore del mouse
@@ -1009,8 +1016,10 @@ lOptionsShowQAPmenuCustomize	Nella parte superiore della finestra Personalizza
 lOptionsShowQAPmenuSystem	nel menù Sistema (area notifiche)
 lOptionsSnippets	Frammenti di testo e stringhe di sostituzione
 lOptionsSnippetsHelp	Impostazioni predefinite per gli Snippet (<a href="~1~">~2~</a>)
-lOptionsSwitchExclusionList	Lista corrente delle Finestre escluse
-lOptionsSwitchExclusionListInstructions	Per escludere applicazioni dal menù "Finestre correnti", inserisci qualunque parte dei titoli della finestra dell'applicazione, una per linea.
+lOptionsSwitchExclusionList	Attuali Esclusioni/Inclusioni di finestre
+lOptionsSwitchExclusionListInstructions	Per escludere (o includere soltanto) delle applicazioni dal/nel menù "Finestre correnti", inserisci qualunque parte dei titoli della finestra dell'applicazione, una per linea.
+lOptionsSwitchExclusionListInstructions2	E' possibile anche designare applicazioni col loro nome di classe o processo (nome del file EXE). Usa il "vedi info finestra" per aiuto.
+lOptionsSwitchExclusionListInstructionsList	O seleziona una aplicazione in esecuzione da questa lista per aggiungerla.
 lOptionsTabFileManagersIntro	Seleziona il file manager da usare per aprire le cartelle in una nuova finestra.
 lOptionsTabFileManagersPreferences	Impostazioni del file manager
 lOptionsTabFileManagersPreferred	File manager prescelto

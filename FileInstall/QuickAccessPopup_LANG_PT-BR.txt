@@ -18,7 +18,7 @@ lAlternativeMenuTrayTipEditFavorite	Selecione o favorito para editar
 lAlternativeMenuTrayTipNewWindow	Selecione a pasta para abrir em uma nova janela
 lAlternativeMenuTrayTipOpenContaining	Selecione o documento, aplicativo ou pasta favorita cuja pasta pai você deseja abrir
 lAlternativeMenuTrayTipRunAs	Selecione o aplicativo para executar em modo elevado
-lAlternativeMenuTrayTipSelectedFile	Selecione a PASTA de destino para a qual você deseja mover ou copiar o arquivo ou pasta selecionado
+lAlternativeMenuTrayTipSelectedFile	Selecione a PASTA de destino para a qual você deseja mover ou copiar o(s) arquivo(s)/pasta(s) selecionado(s)
 lContextAddFile	Adicionar Arquivo ao menu do Quick Access Popup
 lContextAddFileXpress	Adicionar Arquivo ao menu Expresso do Quick Access Popup
 lContextAddFolder	Adicionar Pasta ao menu do Quick Access Popup
@@ -268,7 +268,7 @@ lDialogGroupMemberOptions	Opções de Membro do Grupo
 lDialogGroupParentMenu	Menu pai do grupo
 lDialogGroupRestoreStopIfError	Ocorreu um erro ao abrir o membro do grupo #~1~:`n`n~2~`n~3~`n`nAbertura do grupo interrompida.
 lDialogHotkey	Tecla de atalho
-lDialogHotkeyInvisibleKeys	<a id="~1~">barra de espaço</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>,`n<a id="~5~">tecla menu (apps)</a> ou <a id="~6~">entrada manual</a>
+lDialogHotkeyInvisibleKeys	<a id="~1~">barra de espaço</a>, <a id="~2~">tab</a>, <a id="~3~">enter</a>, <a id="~4~">escape</a>,`n<a id="~5~">tecla menu`n(aplicativos)</a> ou <a id="~6~">entrada manual</a>
 lDialogHotkeys	Teclas de Atalho
 lDialogHotkeysHelpHeader	Atalho|Ação
 lDialogHotkeysManage	Gerenciar Teclas de Atalho
@@ -297,6 +297,7 @@ lDialogHotstringsManage	 Gerenciar strings de substituição
 lDialogHotstringTriggerAbbreviation	Disparador (abreviação):
 lDialogHotstringTriggerOptions	String de substituição (disparador e opções)
 lDialogIcon	Ícone do Favorito
+lDialogIconsCustomFolder	Pasta personalizada
 lDialogIconsDefaultSize	Tamanho padrão
 lDialogIconsInheritedSize	Tamanho herdado
 lDialogIconsManage	Gerenciar Ícones
@@ -324,6 +325,7 @@ lDialogListApplicationYesNo	[Sim] para Ativar ou [Não] para Fechar esta Janela?
 lDialogMaximized	Maximizado
 lDialogMenuKey	Tecla Menu
 lDialogMenuNotMoveUnderItself	O menu "~1~" não pode ser movido abaixo de si mesmo
+lDialogMenuReopenAfterLaunchingItem	Reabrir este menu após abrir itens
 lDialogMenuSortCreated	Data de criação
 lDialogMenuSortEditMenu	Editar este menu (ou grupo)
 lDialogMenuSortEnable	Classificar menu automaticamente
@@ -659,9 +661,9 @@ lMenuAddThisFolder	Adicionar Pasta Ativa ou Página da Web
 lMenuAddThisFolderDescription	Adiciona rapidamente ao seu menu a pasta ou página da web ativa.`n`nVocê pode adicionar pastas desta maneira nas janelas do Explorer ou nas caixas de diálogo de arquivo. Você pode adicionar links para páginas da web a partir da maioria dos navegadores.`n`nNa caixa de diálogo "Adicionar favorito", confirme o nome do seu favorito e entre várias configurações, como ícone, atalho, string de substituição, parâmetros, etc.`n`nPor padrão, este recurso é incluído no menu Principal.
 lMenuAddThisFolderXpress	Adicionar Pasta Ativa ou Página da Web Expressa
 lMenuAddThisFolderXpressDescription	Similar ao recurso "Adicionar Pasta Ativa ou Página da Web", exceto que o novo favorito será automaticamente adicionado ao início do menu Principal sem nenhuma interrupção.`n`nSe você precisar alterar as configurações padrão, você pode clicar no botão "Editar" para mudar o nome, posição ou várias configurações dos favoritos.`n`nEm "Opções", você pode definir o novo favorito para ser adicionado por padrão no final do menu Principal.
-lMenuAlternativeCopySelectedFile	Copiar arquivo selecionado para uma pasta favorita
+lMenuAlternativeCopySelectedFile	Copiar arquivo(s)/pasta(s) selecionado(s) para uma pasta favorita
 lMenuAlternativeEditFavorite	Editar um Favorito
-lMenuAlternativeMoveSelectedFile	Mover arquivo selecionado para uma pasta favorita
+lMenuAlternativeMoveSelectedFile	Mover arquivo(s)/pasta(s) selecionado(s) para uma pasta favorita
 lMenuAlternativeNewWindow	Abrir em uma nova janela
 lMenuAlternativeOpenContainingCurrent	Abrir Pasta na Janela Atual
 lMenuAlternativeOpenContainingNew	Abrir Pasta em uma Nova Janela
@@ -807,7 +809,7 @@ lOopsContainerInGui	O menu dinâmico "~1~" somente pode ser inserido no menu: ~2~
 lOopsCouldNotOpenSpecialFolder	O ~1~ não pôde abrir a pasta especial: "~2~".
 lOopsEmpty	vazio
 lOopsErrorCopyOrMoveFolderOrFile	Ocorreu um erro ao mover ou copiar o arquivo ou pasta de origem para a pasta de destino.`n`nOrigem: ~1~`nDestino: ~2~
-lOopsErrorCopyOrMoveFolderOrFileSelect	Nenhum arquivo ou pasta selecionado.`n`nSelecione um arquivo ou pasta no Windows Explorer antes de abrir o menu Alternativo.
+lOopsErrorCopyOrMoveFolderOrFileSelect	Nenhum arquivo ou pasta selecionado.`n`nSelecione um ou mais arquivos ou pastas no Windows Explorer antes de abrir o menu Alternativo.
 lOopsErrorIniFileDisplayErrorMessage	Exibir esta mensagem de erro novamente para este Menu Compartilhado?
 lOopsErrorIniFileDuplicateNames	O favorito "~1~" no menu "~2~" não é único e foi temporariamente renomeado para "~3~".`n`nPor favor, edite este favorito para dar a ele um nome único.
 lOopsErrorIniFileModified	Este menu compartilhado foi modificado desde que foi carregado. O menu será atualizado mas a sua última alteração não pode ser salva.
@@ -886,6 +888,7 @@ lOptionsAlternativeMenuResetModifiersSaved	Redefinir modificadores salvos
 lOptionsAlternativeMenuShowNotification	Exibir Notificações ao usar o Menu ALternativo
 lOptionsAlternativeModifiers	Modificadores
 lOptionsAlternativeTrayIcon	Substituição do ícone do QAP da Área de Notificação (arquivo,índice)
+lOptionsAlwaysLaunchURLs	Sempre abrir links em uma nova aba ou janela
 lOptionsBackupFolder	Pasta de backup do arquivo principal de configurações
 lOptionsCataloguePath	Pasta raiz do catálogo
 lOptionsChangeFolderInDialog	Altere as pastas na caixa de diálogo com as teclas de atalho principais do mouse e teclado do QAP
@@ -919,10 +922,10 @@ lOptionsFileManagerNavigateIntro	Ao abrir o menu do QAP fora do ~1~, abrir pasta
 lOptionsFileManagerNavigateNew	uma nova janela ~1~
 lOptionsFileManagerNavigateNewTab	uma nova aba ~1~
 lOptionsFileManagers	Gerenciadores de Arquivos
-lOptionsFilesExclusionList	Exclusões de Arquivos
-lOptionsFilesExclusionListInstructions	Para excluir arquivos de "Arquivos recentes" e "Arquivos frequentes", entre a extensão do arquivo (ex.: "mp3") ou use os coringas * e ? (ex.: *.mp?), um por linha.
-lOptionsFoldersExclusionList	Exclusões de Pastas
-lOptionsFoldersExclusionListInstructions	Para excluir pastas (incluindo suas subpastas e arquivos) dos menus "Pastas recentes", "Arquivos recentes", "Pastas frequentes" e "Arquivos frequentes", entre seus caminhos, um por linha. Como opção, você pode usar os coringas * e ? antes de uma barra final (ex.: c:\pasta*\).
+lOptionsFilesExclusionList	Exclusões/inclusões de arquivos
+lOptionsFilesExclusionListInstructions	Para excluir (ou somente incluir) alguns arquivos de "Arquivos recentes" e "Arquivos frequentes", entre a extensão do arquivo (ex.: "mp3") ou use os coringas de nome * e ? (ex.: "xyz*.mp?"), um por linha.
+lOptionsFoldersExclusionList	Exclusões/inclusões de pastas
+lOptionsFoldersExclusionListInstructions	Para excluir pastas (ou somente incluir) algumas pastas dos menus "Pastas recentes", "Arquivos recentes", "Pastas frequentes" e "Arquivos frequentes", entre seus caminhos, um por linha. Como opção, você pode usar os coringas * e ? antes de uma barra final (ex.: c:\pasta*\). As subpastas são abrangidas.
 lOptionsFtpEncoding	Criptografar usuário e senha FTP (recomendado)
 lOptionsFtpEncodingTC	Criptografar usuário e senha FTP (não recomendado para o Total Commander)
 lOptionsGeneral	Geral
@@ -949,7 +952,9 @@ lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italian
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela ativa
 lOptionsMenuAdvanced	Opções Avançadas de Menus
 lOptionsMenuAppearance	Aparência dos Menus
-lOptionsMenuExclusions	Exclusões de Menus
+lOptionsMenuExclusions	Exclusões/inclusões de menus
+lOptionsMenuExclusionsExclude	Excluir
+lOptionsMenuExclusionsInclude	Somente incluir
 lOptionsMenuFixPosition	Em uma posição fixa
 lOptionsMenuIcons	Ícones do Menu
 lOptionsMenuNearMouse	Próximo do ponteiro do mouse
@@ -1013,8 +1018,10 @@ lOptionsShowQAPmenuCustomize	no topo da janela Personalizar
 lOptionsShowQAPmenuSystem	no menu do Sistema (Área de Notificação)
 lOptionsSnippets	Recortes e Substituições
 lOptionsSnippetsHelp	Padrões de recortes (<a href="~1~">~2~</a>)
-lOptionsSwitchExclusionList	Exclusões Atuais de Janelas
-lOptionsSwitchExclusionListInstructions	Para excluir aplicativos do menu "Janelas Atuais", entre qualquer parte do título da janela do aplicativo, um por linha.
+lOptionsSwitchExclusionList	Exclusões/inclusões atuais de janelas
+lOptionsSwitchExclusionListInstructions	Para excluir (ou somente incluir) alguns aplicativos do menu "Janelas Atuais", entre qualquer parte do título da janela do aplicativo, um por linha.
+lOptionsSwitchExclusionListInstructions2	Você também pode indicar aplicativos pelo nome de sua classe ou nome do processo (nome do arquivo EXE). Use "Obter informações da janela" para lhe ajudar.
+lOptionsSwitchExclusionListInstructionsList	Ou selecione uma aplicativo em execução a partir desta lista para adicioná-lo.
 lOptionsTabFileManagersIntro	Selecione o gerenciador de arquivos para abrir pastas em uma nova janela.
 lOptionsTabFileManagersPreferences	Preferências do gerenciador de arquivos
 lOptionsTabFileManagersPreferred	Gerenciador de arquivos preferido
