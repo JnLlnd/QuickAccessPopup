@@ -18346,7 +18346,7 @@ if (A_GuiEvent = "DoubleClick")
 			, o_EditedFavorite.AA.strFavoriteLocation
 			, blnEscaped)
 		; SelectHotstring returns the new hotstring (AHK format ":options:trigger"), empty string if no trigger
-		if !(blnEscaped)
+		if (blnEscaped)
 			g_strNewFavoriteHotstring := strTempFavoriteHotstring
 		
 		Gosub, UpdateFavoriteObjectSaveHotstringList ; updates o_EditedFavorite.AA.strFavoriteHotstring with g_strNewFavoriteHotstring and enable Settings save/Cancel buttons
