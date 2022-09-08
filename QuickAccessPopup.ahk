@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.8.1/2 (2022-09-08)
+- fix bug introduced in v11.5.8 activating by error the last focused window when using QAPmessenger
+- fix bug when cancelling a change in the "Change hotstring" dialog box from the "Manage hotstrings" list
+- Dutch language file update
+
 Version: 11.5.8 (2022-08-29)
  
 Dynamic menu exclusions/inclusions
@@ -5210,7 +5215,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.8
+;@Ahk2Exe-SetVersion 11.5.8.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5277,7 +5282,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.8.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -27551,7 +27556,7 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	; before v11.5.7.9.5 was SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
 	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass
-		, (InStr(saData[1], "AddFolder") or InStr(saData[1], "AddFile") ; activate only if adding a fiole or folder (caused a bug in v11.5.8)
+		, InStr(saData[1], "AddFolder") or InStr(saData[1], "AddFile") ; activate only if adding a fiole or folder (caused a bug in v11.5.8)
 		, false, true)
 
 	if SubStr(saData[1], 1, 4) <> "Show" and SettingsUnsaved()
