@@ -27536,20 +27536,24 @@ REPLY_QAPISRUNNING(wParam, lParam)
 ;------------------------------------------------------------
 RECEIVE_QAPMESSENGER(wParam, lParam) 
 ; Adapted from AHK documentation (https://autohotkey.com/docs/commands/OnMessage.htm)
+; Commands: ShowMenuLaunch, ShowMenuNavigate, ShowMenuAlternative, LaunchFavorite, AddFolder, AddFolderXpress, AddFile and AddFileXpress
 ;------------------------------------------------------------
 {
 	global g_strNewLocation
 	global g_strTargetClass
 	global g_strTargetWinId
 	
-	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, false, true)
-	; before 11.5.7.9.5 was SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
-
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
 	
 	saData := StrSplit(strCopyOfData, "|")
 	
+	; before v11.5.7.9.5 was SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
+	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
+	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass
+		, (InStr(saData[1], "AddFolder") or InStr(saData[1], "AddFile") ; activate only if adding a fiole or folder (caused a bug in v11.5.8)
+		, false, true)
+
 	if SubStr(saData[1], 1, 4) <> "Show" and SettingsUnsaved()
 		return 0xFFFF
 	
