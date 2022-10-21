@@ -20252,6 +20252,9 @@ if InStr(g_strMenuTriggerLabel, "Mouse")
     MouseGetPos, , , strWinID
     WinActivate, ahk_id %strWinID%
 	Sleep, 20
+	
+	if (WindowIsDirectoryOpus(g_strTargetClass) or WindowIsTotalCommander(g_strTargetClass)) ; Directory Opus or Total Commander
+		Click ; to activate the lister/pane under the cursor (at the risk of disrupting GetSelectedLocation?)
 }
 
 ; refresh the dynamic menus before showing the main menu
