@@ -12,15 +12,14 @@ _*.*
 .git - Copy/
 BK/
 Build-v8/
+Build-v8-alpha/
 Build-v8-beta/
 Divers/
 FileInstall/BK_old_classic/
 Language/
 Promo/
 ScreenCaptures/
-Setup Script files/OLD/
-Distribution-files/Old/
-Build-v8-alpha/
+Setup Script files/
 Compile-QAP-v8-*.iss
 *.xlsx
 EDD/
@@ -37,5 +36,4 @@ b3dc47ffcca0efd76e41caa43b626954
 acd7fb058701bebc698386ee7f5c9623
 icons/
 *.pui
-Setup Script files/Certificat-Sectigo/Old-2019/
-Setup Script files/Certificat-Sectigo/New-2022/
+Distribution-files/Old/
