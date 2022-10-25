@@ -12593,7 +12593,7 @@ AddThisShortcutFromMsg:
 ;------------------------------------------------------------
 Gui, 1:+OwnDialogs 
 
-if (A_ThisLabel = "AddThisFolder" and g_blnLaunchFromTrayIcon)
+if ((A_ThisLabel = "AddThisFolder" or A_ThisLabel = "AddThisFolderXpress") and g_blnLaunchFromTrayIcon)
 	; returns current or latest file manager window ID and Window class (including dialog boxes), and re-activate the last active file manager window
 	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, false, true)
