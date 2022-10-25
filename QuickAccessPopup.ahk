@@ -6551,6 +6551,7 @@ o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "42")
 o_Settings.ReadIniOption("LaunchAdvanced", "blnExpandEnvVarsInParameters", "ExpandEnvVarsInParameters", 1)
+o_Settings.ReadIniOption("LaunchAdvanced", "blnClickDopusFolderPane", "ClickDopusFolderPane", 0) ; side effect: deselect selected files
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
@@ -20243,15 +20244,16 @@ if InStr(g_strMenuTriggerLabel, "Mouse")
 	and (WindowIsExplorer(g_strTargetClass) or WindowIsDirectoryOpus(g_strTargetClass) or WindowIsQAPconnect(g_strTargetWinId)
 		or (WindowIsTotalCommander(g_strTargetClass) and g_strHotkeyTypeDetected = "Navigate"))
 {
-	; to make sure the item and Explorer window, DOpus lister or under the mouse become active,
-	; and for TC only if navigate (to avoid disrupting GetSelectedLocation)
-    
+	; to make sure the file manager under the mouse become active
     ; until v11.5.7 was:
 	; Click
     ; replaced with:
     MouseGetPos, , , strWinID
     WinActivate, ahk_id %strWinID%
 	Sleep, 20
+	
+	if (WindowIsDirectoryOpus(g_strTargetClass) and o_Settings.LaunchAdvanced.blnClickDopusFolderPane.IniValue)
+		Click ; to activate the folder under the mouse cursor in dual folder display (side effect: deselect selected files)
 }
 
 ; refresh the dynamic menus before showing the main menu
