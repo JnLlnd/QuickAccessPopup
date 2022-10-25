@@ -5438,6 +5438,8 @@ global g_aaPopularFilesShortNames := Object() ; search for g_aaPopular%strFolder
 global g_aaRecentFoldersShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 global g_aaRecentFilesShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 
+global g_strSelectedItems ; used to collect selected files before clicking to enable DOpus or TC active folder in dual view
+
 ;---------------------------------
 ; Used in SelectIcon()
 global SI_intPickIconCols := 10 ; 20
@@ -6551,7 +6553,6 @@ o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "42")
 o_Settings.ReadIniOption("LaunchAdvanced", "blnExpandEnvVarsInParameters", "ExpandEnvVarsInParameters", 1)
-o_Settings.ReadIniOption("LaunchAdvanced", "blnClickDopusFolderPane", "ClickDopusFolderPane", 0) ; side effect: deselect selected files
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
@@ -20240,6 +20241,8 @@ else if InStr(g_strMenuTriggerLabel, "FromMsg")
 else
 	g_strHotkeyTypeDetected := SubStr(g_strMenuTriggerLabel, 1, InStr(g_strMenuTriggerLabel, "Hotkey") - 1) ; "Navigate" or "Launch"
 
+soundbeep, 220
+; ###_V("", g_strMenuTriggerLabel, g_strTargetClass, WindowIsDirectoryOpus(g_strTargetClass), g_strHotkeyTypeDetected)
 if InStr(g_strMenuTriggerLabel, "Mouse")
 	and (WindowIsExplorer(g_strTargetClass) or WindowIsDirectoryOpus(g_strTargetClass) or WindowIsQAPconnect(g_strTargetWinId)
 		or (WindowIsTotalCommander(g_strTargetClass) and g_strHotkeyTypeDetected = "Navigate"))
@@ -20252,8 +20255,15 @@ if InStr(g_strMenuTriggerLabel, "Mouse")
     WinActivate, ahk_id %strWinID%
 	Sleep, 20
 	
-	if (WindowIsDirectoryOpus(g_strTargetClass) and o_Settings.LaunchAdvanced.blnClickDopusFolderPane.IniValue)
+	soundbeep, 660
+	if (WindowIsDirectoryOpus(g_strTargetClass) or WindowIsTotalCommander(g_strTargetClass))
+	{
+		soundbeep, 440
+		g_strSelectedItems := GetSelectedLocation(g_strTargetClass, g_strTargetWinId, true)
 		Click ; to activate the folder under the mouse cursor in dual folder display (side effect: deselect selected files)
+	}
+	else
+		g_strSelectedItems := "!"
 }
 
 ; refresh the dynamic menus before showing the main menu
@@ -24175,7 +24185,8 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 ;------------------------------------------------------------
 {
 	global g_strDOpusSelectedListText
-	
+	###_V(A_ThisFunc, strClass, strWinId, blnMultipleSelection, g_strMenuTriggerLabel, g_strDOpusSelectedListText)
+
 	if WindowIsExplorer(strClass)
 	{
 		for objWindow in ComObjCreate("Shell.Application").Windows
@@ -34654,15 +34665,17 @@ class Container
 		;---------------------------------------------------------
 		{
 			strDestPath := this.AA.strFavoriteLocation
+			###_V("g_strSelectedItems", g_strSelectedItems, strDestPath)
 
-			strSelectedItems := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId, true) ; true for multiple selection
-			if !StrLen(strSelectedItems)
+			if !StrLen(g_strSelectedItems)
+				g_strSelectedItems := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId, true) ; true for multiple selection
+			if !StrLen(g_strSelectedItems)
 			{
 				Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFileSelect"])
 				return 1 ; error
 			}
 
-            Loop, Parse, strSelectedItems, |
+            Loop, Parse, g_strSelectedItems, |
             {
                 if !StrLen(A_LoopField)
                     continue
