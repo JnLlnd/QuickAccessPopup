@@ -5438,8 +5438,6 @@ global g_aaPopularFilesShortNames := Object() ; search for g_aaPopular%strFolder
 global g_aaRecentFoldersShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 global g_aaRecentFilesShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 
-global g_strSelectedItems ; used to collect selected files before clicking to enable DOpus or TC active folder in dual view
-
 ;---------------------------------
 ; Used in SelectIcon()
 global SI_intPickIconCols := 10 ; 20
@@ -20241,8 +20239,6 @@ else if InStr(g_strMenuTriggerLabel, "FromMsg")
 else
 	g_strHotkeyTypeDetected := SubStr(g_strMenuTriggerLabel, 1, InStr(g_strMenuTriggerLabel, "Hotkey") - 1) ; "Navigate" or "Launch"
 
-soundbeep, 220
-; ###_V("", g_strMenuTriggerLabel, g_strTargetClass, WindowIsDirectoryOpus(g_strTargetClass), g_strHotkeyTypeDetected)
 if InStr(g_strMenuTriggerLabel, "Mouse")
 	and (WindowIsExplorer(g_strTargetClass) or WindowIsDirectoryOpus(g_strTargetClass) or WindowIsQAPconnect(g_strTargetWinId)
 		or (WindowIsTotalCommander(g_strTargetClass) and g_strHotkeyTypeDetected = "Navigate"))
@@ -20254,16 +20250,6 @@ if InStr(g_strMenuTriggerLabel, "Mouse")
     MouseGetPos, , , strWinID
     WinActivate, ahk_id %strWinID%
 	Sleep, 20
-	
-	soundbeep, 660
-	if (WindowIsDirectoryOpus(g_strTargetClass) or WindowIsTotalCommander(g_strTargetClass))
-	{
-		soundbeep, 440
-		g_strSelectedItems := GetSelectedLocation(g_strTargetClass, g_strTargetWinId, true)
-		Click ; to activate the folder under the mouse cursor in dual folder display (side effect: deselect selected files)
-	}
-	else
-		g_strSelectedItems := "!"
 }
 
 ; refresh the dynamic menus before showing the main menu
@@ -20284,9 +20270,6 @@ ToolTip ; clear tooltip after refresh
 
 if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see NavigateFromMsg and LaunchFromMsg)
 	g_strShowMenu := o_L["MainMenuName"]
-
-; Diag(g_strMenuTriggerLabel, "menu name", g_strShowMenu)
-; Diag(g_strMenuTriggerLabel, "", "STOP-SHOW") ; must be before Menu Show
 
 SetCursor(false) 
 
@@ -24181,13 +24164,12 @@ return
 
 ;------------------------------------------------------------
 GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
-; LearningOne and jethrow on https://autohotkey.com/board/topic/60723-can-autohotkey-retrieve-file-path-of-the-selected-file/page-2
 ;------------------------------------------------------------
 {
 	global g_strDOpusSelectedListText
-	###_V(A_ThisFunc, strClass, strWinId, blnMultipleSelection, g_strMenuTriggerLabel, g_strDOpusSelectedListText)
 
 	if WindowIsExplorer(strClass)
+	; LearningOne and jethrow on https://autohotkey.com/board/topic/60723-can-autohotkey-retrieve-file-path-of-the-selected-file/page-2
 	{
 		for objWindow in ComObjCreate("Shell.Application").Windows
 			if (objWindow.hwnd = strWinId)
@@ -34665,17 +34647,15 @@ class Container
 		;---------------------------------------------------------
 		{
 			strDestPath := this.AA.strFavoriteLocation
-			###_V("g_strSelectedItems", g_strSelectedItems, strDestPath)
 
-			if !StrLen(g_strSelectedItems)
-				g_strSelectedItems := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId, true) ; true for multiple selection
-			if !StrLen(g_strSelectedItems)
+			strSelectedItems := GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId, true) ; true for multiple selection
+			if !StrLen(strSelectedItems)
 			{
 				Oops(0, o_L["OopsErrorCopyOrMoveFolderOrFileSelect"])
 				return 1 ; error
 			}
 
-            Loop, Parse, g_strSelectedItems, |
+            Loop, Parse, strSelectedItems, |
             {
                 if !StrLen(A_LoopField)
                     continue
