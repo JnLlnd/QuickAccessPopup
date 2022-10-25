@@ -32787,6 +32787,7 @@ class Container
 			else if (this.AA.strFavoriteType = "URL" and !this.aaTemp.blnProcessAsApp) ; blnProcessAsApp if URL has arguments, consider as Application
 			{
 				; if browser is active window and the option "always in a new tab" is off, navigate in the current tab, else open in a new tab
+				; strHotkeyTypeDetected is set to Launch or Navigate according to blnAlwaysLaunchURLs in CanNavigate
 				intOpenError := (!WinActive("ahk_exe " . GetRunningExecutableFilename(this.aaTemp.strTargetWinId)) or this.aaTemp.strHotkeyTypeDetected = "Launch"
 					? this.LaunchFullLocation() : this.NavigateFullLocation())
 			}
@@ -33792,10 +33793,16 @@ class Container
 				return -1
 			
 			; open the URL in the current tab
-			SetKeyDelay, 200
-			Send, ^l^a
-			SendInput, % this.aaTemp.strFullLocation
-			Send, {Return}
+			intPreviousDelay := A_KeyDelay
+			Sleep, 200
+			SetKeyDelay, 100
+			; do not use Send because by default it uses SendInput in this app and SendInput is not affected by SetKeyDelay
+			SendEvent, ^l^a
+			Sleep, 200
+			SetKeyDelay, 10
+			SendEvent, % this.aaTemp.strFullLocation
+			SendEvent, {Return}
+			SetKeyDelay, %intPreviousDelay%
 
 			return 0
 		}
