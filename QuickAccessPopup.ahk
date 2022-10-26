@@ -16175,28 +16175,8 @@ Loop, Files, %f_strMultipleAddSourcePath%, DF
 	strThisFileName := A_LoopFileName
 	
 	strInternalType := GetFavoriteType4Extension(strThisFilePath)
-	if (A_LoopFileExt = "lnk")
-	{
-		; FileGetShortcut, %file%, OutTarget, OutDir, OutArgs, OutDesc, OutIcon, OutIconNum, OutRunState
-        strShortcutFilePath := strThisFilePath
-		FileGetShortcut, %strShortcutFilePath%, strThisFilePath, strShortcutWorkingDir, strShortcutArgs, , strShortcutIconFile, strShortcutIconIndex, intShortcutRunState
-        if StrLen(strShortcutIconFile) and StrLen(strShortcutIconIndex)
-            strShortcutIconFileIndex := strShortcutIconFile . "," . strShortcutIconIndex
-        else
-            strShortcutIconFileIndex := ""
-        intShortcutRunState := ConvertShortcutRunState(intShortcutRunState) ; convert state to QAP numbering
-		strFavoriteWindowPosition :=  (intShortcutRunState <> 0 ? "1" : "0") . "," . intShortcutRunState ; if state is not normal enable Windows options for Min or Max
-		saFavorite := [GetFavoriteType4Extension(strThisFilePath), GetLocationPathName(strThisFilePath)
-            , strThisFilePath, strShortcutIconFileIndex, strShortcutArgs, strShortcutWorkingDir, strFavoriteWindowPosition]
-		; as of v11.5.6.9.4 strShortcutIconFileIndex, strShortcutArgs, strShortcutWorkingDir, strFavoriteWindowPosition are not added to the favorite when selected
-        ; this will require an aa object to carry these properties to the add favorite save
-        strLvLocationOrContent := strThisFilePath
-	}
-	else
-    {
-		saFavorite := [GetFavoriteType4Extension(strThisFilePath), GetLocationPathName(strThisFilePath), strThisFilePath]
-        strLvLocationOrContent := strThisFileName
-    }
+	saFavorite := [GetFavoriteType4Extension(strThisFilePath), GetLocationPathName(strThisFilePath), strThisFilePath]
+	strLvLocationOrContent := strThisFileName
 	oMultipleAddFavorite := new Container.Item(saFavorite) ; type, name, path
 	if (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
 	{
@@ -16528,6 +16508,21 @@ Loop
             SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
             strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
         }
+		
+		; check if location is a shortcut
+		SplitPath, strFavoriteLocation, , , strFavoriteExtension
+		if (strFavoriteExtension = "lnk")
+		{
+			strFavoriteName := GetLocationPathName(strFavoriteLocation) ; use the name of the lnk file as favorite name
+			; FileGetShortcut, %file%, OutTarget, OutDir, OutArgs, OutDesc, OutIcon, OutIconNum, OutRunState
+			FileGetShortcut, %strFavoriteLocation%, strFavoriteLocation, strShortcutWorkingDir, strShortcutArgs, , strShortcutIconFile, strShortcutIconIndex, intShortcutRunState
+			; strFavoriteLocation now contains the shortcut's target location
+			strFavoriteType := GetFavoriteType4Extension(strFavoriteLocation)
+			; before: intShortcutRunState = Shortcut RunState -> 1 Normal / 3 Maximized / 7 Minimized
+			intShortcutRunStateWindowsOptions := ConvertShortcutRunState(intShortcutRunState)
+			; after: intShortcutRunStateWindowsOptions = QAP RunState -> -1 Minimized / 0 Normal / 1 Maximized
+			strFavoriteWindowPosition :=  (intShortcutRunStateWindowsOptions <> 0 ? "1" : "0") . "," . intShortcutRunStateWindowsOptions ; if state is not normal enable Windows options for Min or Max
+		}
 	}
 	else if (g_strMultipleAddSourceKey = "QAP" or strFavoriteType = "QAP" or g_strMultipleAddSourceKey = "Special" or strFavoriteType = "Special")
 		strFavoriteLocation := strFavoriteCode
@@ -16538,7 +16533,9 @@ Loop
 		o_EditedFavorite.AA.strFavoriteName := strFavoriteName ; in case the name was edited in ListView
 	}
 	else
-		o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation]) ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
+		o_EditedFavorite := new Container.Item([strFavoriteType, strFavoriteName, strFavoriteLocation ; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation
+			, strShortcutIconFile . "," . strShortcutIconIndex, strShortcutArgs, strShortcutWorkingDir ; 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir
+			, strFavoriteWindowPosition]) ; 7 strFavoriteWindowPosition
 
 	if (g_strMultipleAddSourceKey = "SettingsFileItems")
 	{
@@ -16562,6 +16559,14 @@ strFavoriteType := ""
 strFavoriteCode := ""
 strFavoriteMenuPath := ""
 strFavoriteItemPosition := ""
+strFavoriteExtension := ""
+strShortcutWorkingDir := ""
+strShortcutArgs := ""
+strShortcutIconFile := ""
+strShortcutIconIndex := ""
+intShortcutRunState := ""
+intShortcutRunStateWindowsOptions := ""
+strFavoriteWindowPosition := ""
 
 return
 ;------------------------------------------------------------
