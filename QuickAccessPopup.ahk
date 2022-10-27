@@ -6562,7 +6562,7 @@ o_Settings.ReadIniOption("Launch", "blnSnippetsDefaultMenuBuilt", "SnippetsDefau
 if !(o_Settings.Launch.blnSnippetsDefaultMenuBuilt.IniValue)
  	Gosub, AddToIniSnippetsDefaultMenu ; modify the ini file Favorites section before reading it
 o_Settings.ReadIniOption("Launch", "blnDefaultWindowsAppsMenuBuilt", "DefaultWindowsAppsMenuBuilt", 0) ; blnDefaultWindowsAppsMenuBuilt
-if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersion() = "WIN_10")
+if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersionInfo().MajorVersion >= "10")
  	Gosub, AddToIniWindowsAppsDefaultMenu ; modify the ini file Favorites section before reading it
 o_Settings.ReadIniOption("SettingsFile", "strBackupFolder", "BackupFolder", A_WorkingDir, "General"
 	, "f_lblBackupFolder|f_strBackupFolder|f_btnBackupFolder|f_lblWorkingFolder|f_strWorkingFolder|f_btnWorkingFolder|f_lblWorkingFolderDisabled")
@@ -24294,7 +24294,10 @@ GetOSVersion()
 ;------------------------------------------------------------
 {
 	if (GetOSVersionInfo().MajorVersion = 10)
-		return "WIN_10"
+		if (GetOSVersionInfo().BuildNumber >= 22000)
+			return "WIN_11"
+		else
+			return "WIN_10"
 	else
 		return A_OSVersion
 }
@@ -28929,7 +28932,7 @@ class SpecialFolders
 			, "Favorites", "" ; Favoris (<> Favorites (Internet))
 			, "CLS", "CLS", "CLS", "NEW", "DOA", "NEW", "NEW"
 			, "4-Contents")
-		if (GetOsVersion() <> "WIN_10")
+		if (GetOSVersionInfo().MajorVersion < 10)
 			this.AddSpecialFolderObject("{3080F90E-D7AD-11D9-BD98-0000947B0257}", "", -1, "", "", ""
 				, "Flip 3D", "" ; Pas de traduction
 				, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
@@ -29067,7 +29070,7 @@ class SpecialFolders
 			, o_L["MenuAppData"], "iconFolder"
 			, "CLS", "CLS", "SCT", "CLS", "DOA", "CLS", "CLS"
 			, "3-Sysadmin")
-		if (GetOsVersion() = "WIN_10")
+		if (GetOSVersionInfo().MajorVersion >= 10)
 			; shell:cookies is said deprecated, this path for Win 10 is not good anymore (as of 2021-07-17) - keep it as there is no "universal" cookies anymore
 			this.AddSpecialFolderObject("%LocalAppData%\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cookies", "", 33, "", "cookies", ""
 				, o_L["MenuCookies"], "iconFolder"
@@ -32943,14 +32946,25 @@ class Container
 					; http://msdn.microsoft.com/en-us/library/aa752094
 					;------------------------------------------------------------
 					
-					if !RegexMatch(this.aaTemp.strFullLocation, "#.*\\") ; prevent the hash bug in Shell.Application - when a hash in path is followed by a backslash like in "c:\abc#xyz\abc")
+					if RegexMatch(this.aaTemp.strFullLocation, "#.*\\") ; prevent the hash bug in Shell.Application
+						or (GetOSVersionInfo().BuildNumber >= 22621) ; patch Win 11 Explorer with tabs
+					
+						; Workaround for the hash (aka Sharp / "#") bug in Shell.Application - occurs only when navigating in the current Explorer window
+						; when a hash in path is followed by a backslash like in "c:\abc#xyz\abc"
+						; see http://stackoverflow.com/questions/22868546/navigate-shell-command-not-working-when-the-path-includes-an-hash
+						; and http://ahkscript.org/boards/viewtopic.php?f=5&t=526&p=25287#p25274
+						
+						; Also a workaround to change folder in other than 1st tab in Win 11 22H2 (build 22621.675 but we can't get the ".675" info from GetOSVersionInfo)
+						
+						SendInput, % "{F4}{Esc}{Raw}" . this.aaTemp.strFullLocation . "`n"
+						
+					else
 					{
-						intCountMatch := 0
 						For pExplorer in ComObjCreate("Shell.Application").Windows
 						{
 							if (pExplorer.hwnd = g_strTargetWinId)
 							{
-								intCountMatch++
+								blnMatch := true
 								if IsInteger(this.aaTemp.strFullLocation) ; ShellSpecialFolderConstant
 								{
 									try pExplorer.Navigate2(this.aaTemp.strFullLocation)
@@ -32965,9 +32979,10 @@ class Container
 										; receive an error notification. From my experience, the following line would never be executed.
 										Oops(0, o_L["NavigateFileError"], this.aaTemp.strFullLocation)
 								}
+								break ; prevent changing folder in all tabs in Win 11 22H2+
 							}
 						}
-						if !(intCountMatch) ; open a new window
+						if !(blnMatch)
 						; for Explorer add-ons like Clover (verified - it now opens the folder in a new tab), others?
 						; also when g_strTargetWinId is DOpus window and DOpus is not used
 							if IsInteger(this.aaTemp.strFullLocation) ; ShellSpecialFolderConstant
@@ -32976,11 +32991,6 @@ class Container
 								SendInput, % "{F4}{Esc}{Raw}" . this.aaTemp.strFullLocation . "`n"
 								; if I receive bug reports from Clover users, insert delays or fall back to; Run, Explorer "%this.aaTemp.strFullLocation%"
 					}
-					else
-						; Workaround for the hash (aka Sharp / "#") bug in Shell.Application - occurs only when navigating in the current Explorer window
-						; see http://stackoverflow.com/questions/22868546/navigate-shell-command-not-working-when-the-path-includes-an-hash
-						; and http://ahkscript.org/boards/viewtopic.php?f=5&t=526&p=25287#p25274
-						SendInput, % "{F4}{Esc}{Raw}" . this.aaTemp.strFullLocation . "`n"
 				}
 				else if (this.aaTemp.strTargetAppName = "DirectoryOpus")
 				{
