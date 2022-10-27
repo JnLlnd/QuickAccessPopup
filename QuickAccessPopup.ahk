@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.9 (2022-10-27)
+- support for Windows Explorer with tabs new in Win 11 22H2 (build 22621.675 released October 18) to change folder in the active tab
+- when adding multiple favorites (under "Favorite" menu) from a folder, get all properties from shortcut (.lnk) files: icon, working dir, arguments and window state
+- increase the reliability of Link favorites when navigating a browser a new page with option "Always open Links in new tab or window" disabled (in "Options, Various Advanced Options")
+- fix bug to support "Add Active Folder or Web page Express" when called from Tray menu (QAP icon in notification zone)
+- fix the "Rigth Shift" typo (unnoticed since Oct. 2019!)
+- use new code signing certificate (thanks to donors for their help sharing the expense!)
+
 Version: 11.5.8.1/2 (2022-09-08)
 - fix bug introduced in v11.5.8 activating by error the last focused window when using QAPmessenger
 - fix bug when cancelling a change in the "Change hotstring" dialog box from the "Manage hotstrings" list
@@ -5215,7 +5223,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.8.2
+;@Ahk2Exe-SetVersion 11.5.9
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5282,7 +5290,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.8.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
