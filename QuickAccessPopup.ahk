@@ -24320,7 +24320,7 @@ GetOSVersionInfo()
 {
 	static s_oVer
 
-	If !s_oVer
+	if !s_oVer ; executed only once to populate static variable
 	{
 		VarSetCapacity(OSVer, 284, 0)
 		NumPut(284, OSVer, 0, "UInt")
@@ -24337,6 +24337,10 @@ GetOSVersionInfo()
 		s_oVer.SuiteMask         := NumGet(OSVer, 280, "UShort")
 		s_oVer.ProductType       := NumGet(OSVer, 282, "UChar") ; 1 = VER_NT_WORKSTATION, 2 = VER_NT_DOMAIN_CONTROLLER, 3 = VER_NT_SERVER
 		s_oVer.EasyVersion       := s_oVer.MajorVersion . "." . s_oVer.MinorVersion . "." . s_oVer.BuildNumber
+		
+		; to get last section of build number 10.0.22621.755 (from lexikos https://www.autohotkey.com/boards/viewtopic.php?p=488604#p488604)
+		FileGetVersion strDetailedBuild, %A_WinDir%\explorer.exe
+		s_oVer.DetailedBuild     := strDetailedBuild
 	}
 	return s_oVer
 }
