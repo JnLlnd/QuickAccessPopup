@@ -5789,7 +5789,7 @@ if !GetKeyState("Shift")
 ; ExitApp
 ; g_strOpenFavoriteFromMsg := "> C!"
 ; gosub, OpenFavoriteFromMsg
-; gosub, GuiOptionsGroupMenuExclusions
+gosub, GuiOptionsGroupFileManagers ; #####
 
 return
 
@@ -9680,12 +9680,21 @@ Gui, 2:Add, Link, y+25 x%g_intGroupItemsTab2X% w500 vf_lnkFileManagerHelp hidden
 Gui, 2:Font
 
 ; line 2
+; Explorer
+; DirectoryOpusUseTabs
+; DirectoryOpusNewTabOrWindow (not in Gui)
+; TotalCommanderUseTabs
+; TotalCommanderNewTabOrWindow (not in Gui)
+Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab2X% w590 vf_blnFileManagerUseTabs gFileManagerUseTabsClicked hidden, % o_L["OptionsThirdPartyUseTabs"] ; not only third party, include Windows
+Gui, 2:Add, Text, yp x%g_intGroupItemsTab2X% w590 vf_lblQAPconnectIntro hidden, % o_L["OptionsQAPconnectIntro"]
+
+; line 3
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w500 vf_lblFileManagerDetail hidden
 ; Windows Explorer OpenFavoritesOnActiveMonitor
 Gui, 2:Add, CheckBox, yp x%g_intGroupItemsTab2X% w500 vf_blnOpenFavoritesOnActiveMonitor gGuiOptionsGroupChanged hidden, % o_L["OptionsOpenFavoritesOnActiveMonitor"]
 GuiControl, , f_blnOpenFavoritesOnActiveMonitor, % (g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor = true)
 
-; line 3
+; line 4
 ; QAPconnectFileManager
 Gui, 2:Add, DropDownList, y+10 x%g_intGroupItemsTab3X% w300 vf_drpQAPconnectFileManager hidden Sort gGuiOptionsGroupChanged
 if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
@@ -9697,7 +9706,7 @@ Gui, 2:Add, Text, yp x%g_intGroupItemsTab2X% w100 vf_lblFileManagerPrompt hidden
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidden ; gLabel after Gosub that changes the value below
 Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath hidden, % o_L["DialogBrowseButton"]
 
-; line 4
+; line 5
 ; TotalCommanderWinCmd
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd hidden ; gLabel after Gosub that changes the value below
@@ -9710,13 +9719,6 @@ GuiControl, , f_blnFileManagerDirectoryOpusShowLayouts, % (g_aaFileManagerDirect
 ; QAPconnectFileManager buttons (must be after UseTabs checkbox)
 Gui, 2:Add, Button, yp x%g_intGroupItemsTab3X% vf_btnQAPconnectEdit gShowQAPconnectIniFile hidden, % L(o_L["MenuEditIniFile"], "QAPconnect.ini")
 Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedInit hidden, % o_L["OptionsRefreshQAPconnectList"] ; ActiveFileManagerClickedInit will refresh the dropdown list
-
-; line 5
-; DirectoryOpusUseTabs
-; DirectoryOpusNewTabOrWindow (not in Gui)
-; TotalCommanderUseTabs
-; TotalCommanderNewTabOrWindow (not in Gui)
-Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerUseTabs gFileManagerUseTabsClicked hidden, % o_L["OptionsThirdPartyUseTabs"]
 
 ; line 6
 ; FileManagerNewTabSide
@@ -10291,13 +10293,16 @@ o_Settings.FileManagers.blnAlwaysNavigate.WriteIni(f_radFileManagerNavigateCurre
 strClickedFileManagerSystemName := o_FileManagers.SA[g_intClickedFileManager].AA.strFileManagerSystemName
 
 if (g_intClickedFileManager = 1)
+{
 	o_Settings.FileManagers.blnExplorerOpenFavoritesOnActiveMonitor.WriteIni(f_blnOpenFavoritesOnActiveMonitor)
+	o_Settings.FileManagers["bln" . strClickedFileManagerSystemName . "UseTabs"].WriteIni(f_blnFileManagerUseTabs)
+}
 else if (g_intClickedFileManager = 4) ; QAPconnect
 {
 	o_Settings.FileManagers.strQAPconnectFileManager.WriteIni(f_drpQAPconnectFileManager)
 	o_FileManagers.SA[4].InitQAPConnectValues() ;
 }
-else if (g_intClickedFileManager > 1) ; 2 DirectoryOpus or 3 TotalCommander
+else ; 2 DirectoryOpus or 3 TotalCommander
 {
 	o_Settings.FileManagers["str" . strClickedFileManagerSystemName . "Path"].WriteIni(f_strFileManagerPath)
 	o_Settings.FileManagers["bln" . strClickedFileManagerSystemName . "UseTabs"].WriteIni(f_blnFileManagerUseTabs)
@@ -10787,15 +10792,19 @@ Gui, 2:Submit, NoHide
 if (A_ThisLabel = "ActiveFileManagerClicked")
 	Gosub, GuiOptionsGroupChanged
 
-strShowHideCommand := (f_radActiveFileManager1 and g_strSettingsGroup = "FileManagers" ? "Show" : "Hide")
+strShowHideCommand := (f_radActiveFileManager1 and g_strSettingsGroup = "FileManagers" ? "Show" : "Hide") ; Explorer only
 GuiControl, %strShowHideCommand%, f_blnOpenFavoritesOnActiveMonitor
 
-strShowHideCommand := (f_radActiveFileManager1 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show")
+strShowHideCommand := (f_radActiveFileManager1 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; All but Explorer
 GuiControl, %strShowHideCommand%, f_lblFileManagerDetail
 GuiControl, %strShowHideCommand%, f_lblFileManagerPrompt
 
-strShowHideCommand := (f_radActiveFileManager1 or f_radActiveFileManager4 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show")
+strShowHideCommand := (f_radActiveFileManager4 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; All but QAPconnect
 GuiControl, %strShowHideCommand%, f_blnFileManagerUseTabs
+strShowHideCommand := (f_radActiveFileManager4 and g_strSettingsGroup = "FileManagers" ? "Show" : "Hide") ; Only QAPconnect
+GuiControl, %strShowHideCommand%, f_lblQAPconnectIntro
+
+strShowHideCommand := (f_radActiveFileManager1 or f_radActiveFileManager4 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; DOpus and TC only
 GuiControl, %strShowHideCommand%, f_btnFileManagerPath
 GuiControl, %strShowHideCommand%, f_strFileManagerPath
 GuiControl, %strShowHideCommand%, f_lblFileManagerNewTabSide
@@ -10804,15 +10813,15 @@ GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideLeft
 GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideRight
 GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideDest
 
-strShowHideCommand := (!f_radActiveFileManager2 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show")
+strShowHideCommand := (!f_radActiveFileManager2 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; DOpus only
 GuiControl, %strShowHideCommand%, f_blnFileManagerDirectoryOpusShowLayouts
 
-strShowHideCommand := (!f_radActiveFileManager3 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show")
+strShowHideCommand := (!f_radActiveFileManager3 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; TC only
 GuiControl, %strShowHideCommand%, f_btnTotalCommanderWinCmd
 GuiControl, %strShowHideCommand%, f_lblTotalCommanderWinCmdPrompt
 GuiControl, %strShowHideCommand%, f_strTotalCommanderWinCmd
 
-strShowHideCommand := (!f_radActiveFileManager4 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show")
+strShowHideCommand := (!f_radActiveFileManager4 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; QAPconnect only
 GuiControl, %strShowHideCommand%, f_btnQAPconnectEdit
 GuiControl, %strShowHideCommand%, f_btnQAPconnectRefresh
 GuiControl, %strShowHideCommand%, f_drpQAPconnectFileManager
@@ -10841,7 +10850,7 @@ else ; f_radActiveFileManager1
 	strHelpUrl := AddUtm2Url("https://www.quickaccesspopup.com/how-does-qap-work-on-multi-monitor-systems/", A_ThisLabel, "Help")
 }
 
-if (f_radActiveFileManager1 or f_radActiveFileManager4) ; these file managers does not support tabs
+if (f_radActiveFileManager4) ; QAPconnect does not support tabs
 	GuiControl, , f_blnFileManagerUseTabs, 0
 
 GuiControl, , f_lnkFileManagerHelp, % L(o_L["OptionsThirdPartySelectedHelp"], o_FileManagers.SA[g_intClickedFileManager].AA.strDisplayName, strHelpUrl, o_L["GuiHelp"])
@@ -10850,27 +10859,27 @@ if !(f_radActiveFileManager1) ; DirectoryOpus, TotalCommander or QAPconnect
 	GuiControl, , f_lblFileManagerDetail, % (f_radActiveFileManager4 ? L(o_L["OptionsThirdPartyDetailQAPconnect"], "QAPconnect.ini")
 		: L(o_L["OptionsThirdPartyDetail"], o_FileManagers.SA[g_intClickedFileManager].AA.strDisplayName))
 	GuiControl, , f_strFileManagerPath, % o_FileManagers.SA[g_intClickedFileManager].AA.strFileManagerPath ; was the cause of the group changed flag bug
-
-	if (f_radActiveFileManager4) ; QAPconnect
-	{
-		IniRead, strQAPconnectFileManagersList, % g_aaFileManagerQAPconnect.strQAPconnectIniPath, , , %A_Space% ; list of QAPconnect.ini applications, empty by default
-		if StrLen(strQAPconnectFileManagersList)
-		{
-			strQAPconnectFileManagersList .= "|"
-			strQAPconnectFileManagersList := StrReplace(strQAPconnectFileManagersList, "`n", "|")
-			if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
-				strQAPconnectFileManagersList := StrReplace(strQAPconnectFileManagersList, g_aaFileManagerQAPconnect.strQAPconnectFileManager . "|"
-					, g_aaFileManagerQAPconnect.strQAPconnectFileManager . "||")
-		}
-		GuiControl, , f_drpQAPconnectFileManager, |%strQAPconnectFileManagersList%
-	}
-	else ; DirectoryOpus or TotalCommander
-
-		GuiControl, , f_blnFileManagerUseTabs, % (o_FileManagers.SA[g_intClickedFileManager].AA.blnFileManagerUseTabs ? 1 : 0)
-
-	if (f_radActiveFileManager3) ; TotalCommander
-		GuiControl, , f_strTotalCommanderWinCmd, % g_aaFileManagerTotalCommander.strTCIniFile
 }
+
+if (f_radActiveFileManager4) ; QAPconnect
+{
+	IniRead, strQAPconnectFileManagersList, % g_aaFileManagerQAPconnect.strQAPconnectIniPath, , , %A_Space% ; list of QAPconnect.ini applications, empty by default
+	if StrLen(strQAPconnectFileManagersList)
+	{
+		strQAPconnectFileManagersList .= "|"
+		strQAPconnectFileManagersList := StrReplace(strQAPconnectFileManagersList, "`n", "|")
+		if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
+			strQAPconnectFileManagersList := StrReplace(strQAPconnectFileManagersList, g_aaFileManagerQAPconnect.strQAPconnectFileManager . "|"
+				, g_aaFileManagerQAPconnect.strQAPconnectFileManager . "||")
+	}
+	GuiControl, , f_drpQAPconnectFileManager, |%strQAPconnectFileManagersList%
+}
+else ; Explorer, DirectoryOpus or TotalCommander
+
+	GuiControl, , f_blnFileManagerUseTabs, % (o_FileManagers.SA[g_intClickedFileManager].AA.blnFileManagerUseTabs ? 1 : 0)
+
+if (f_radActiveFileManager3) ; TotalCommander
+	GuiControl, , f_strTotalCommanderWinCmd, % g_aaFileManagerTotalCommander.strTCIniFile
 
 if (A_ThisLabel <> "ActiveFileManagerClickedGroupButton")
 {
@@ -28492,6 +28501,7 @@ TODO
 			this.AA.blnOpenFavoritesOnActiveMonitor := o_Settings.ReadIniOption("FileManagers", "blnExplorerOpenFavoritesOnActiveMonitor"
 				, "OpenFavoritesOnActiveMonitor", 0, "FileManagers", "f_lnkFileManagerHelp|f_lblFileManagerDetail|f_blnOpenFavoritesOnActiveMonitor")
 			this.AA.blnFileManagerValid := true
+			this.AA.blnFileManagerUseTabs := o_Settings.ReadIniOption("FileManagers", "blnWindowsExplorerUseTabs", "WindowsExplorerUseTabs", 0, "FileManagers") ; default 0
 		}
 		;-----------------------------------------------------
 	}
@@ -33146,6 +33156,7 @@ class Container
 			{
 				; updates g_strNewWindowId with new Explorer window ID
 				if (this.aaTemp.strTargetAppName = "Explorer")
+				; ##### implement this.AA.blnFileManagerUseTabs
 				{
 					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
