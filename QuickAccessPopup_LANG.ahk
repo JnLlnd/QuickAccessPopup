@@ -1032,6 +1032,7 @@ this["OptionsThirdPartyFileNotFound"] := "~1~ application file ""~2~"" not found
 this["OptionsThirdPartySelectedHelp"] := "Selected File Manager: ~1~ (<a href=""~2~"">~3~</a>)"
 this["OptionsThirdPartySelectFile"] := "Please select the ~1~ application file using the ""Browse"" button"
 this["OptionsThirdPartyUseTabs"] := "Use tabs instead of opening in a new window"
+this["OptionsQAPconnectIntro"] := "QAPconnect is an interface offering partial support for a list of about 15 file managers."
 this["OptionsTrayTip"] := "Display Startup Tray Tip"
 this["OptionsUsageDbDaysInPopular"] := "Number of days to take into account in Frequent Items menus:"
 this["OptionsUsageDbDisabling"] := "Changes to database settings will be completed after you reload ~1~."
