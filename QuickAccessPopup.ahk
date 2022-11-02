@@ -33833,13 +33833,6 @@ class Container
 		{
 			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
 				return -1
-			
-			if (this.AA.strFavoriteType = "Document") ; for documents only
-				and (SubStr(this.aaTemp.strFullLocation, 1, 1) <> """") ;  only if location is not already enclosed in double-quotes
-				; add double-quotes (in v11.5.7.1) for exceptional case, for example when the path includes .com or .exe followed by space (as in c:\something.com more\text.txt)
-				; .com or .exe being considered as an executable path and the remaining as parameters
-				this.aaTemp.strFullLocation := """" . this.aaTemp.strFullLocation . """"
-				
 			Run, % this.aaTemp.strFullLocation, , UseErrorLevel, intPid
 			if (ErrorLevel = "ERROR")
 				Oops(0, o_L["OopsUnknownTargetAppName"])
@@ -33974,7 +33967,14 @@ class Container
 						strTemp := this.aaTemp.strFullLocation ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 						blnFileExist := FileExistInPath(strTemp) ; return this.aaTemp.strFullLocation with expanded relative path, envvars and user variables, and absolute location if in PATH
 						if (blnFileExist)
-							this.aaTemp.strFullLocation := strTemp
+							if (this.AA.strFavoriteType = "Document" ; special case for document favorite only
+								; only if the path includes .com or .exe followed by space as in "c:\something.com more\text.txt" (.com or .exe being considered as an executable path and the remaining as parameters)
+								and (InStr(strTemp, ".com ") or InStr(strTemp, ".exe "))
+								and !StrLen(this.aaTemp.strExpandedLaunchWith) ; not if launched with because double-quotes will be added later anyway
+								and SubStr(strTemp, 1, 1) <> """") ; not if user enclosed path between double-quotes (should not happen because removed by gui, but to be safe)
+								this.aaTemp.strFullLocation := """" . strTemp . """"
+							else
+								this.aaTemp.strFullLocation := strTemp
 						; else leave bad location in strFullLocation
 						
 						if StrLen(this.AA.intFavoriteOpenSubFolder) and (this.AA.intFavoriteOpenSubFolder)
