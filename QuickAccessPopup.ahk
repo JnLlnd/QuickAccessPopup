@@ -5789,7 +5789,7 @@ if !GetKeyState("Shift")
 ; ExitApp
 ; g_strOpenFavoriteFromMsg := "> C!"
 ; gosub, OpenFavoriteFromMsg
-gosub, GuiOptionsGroupFileManagers ; #####
+; gosub, GuiOptionsGroupFileManagers
 
 return
 
@@ -10886,6 +10886,9 @@ if (A_ThisLabel <> "ActiveFileManagerClickedGroupButton")
 	Gosub, % StrReplace(A_ThisLabel, "ActiveFileManager", "FileManagerNavigate") ; ActiveFileManagerClickedInit -> FileManagerNavigateClickedInit
 	Gosub, FileManagerUseTabsClickedInit
 }
+
+; disable f_blnFileManagerUseTabs if active file manager is Explorer (until open in Explorer tab ready ####)
+GuiControl, % (f_radActiveFileManager1 ? "Disable" : "Enable"), f_blnFileManagerUseTabs
 
 strHelpUrl := ""
 strQAPconnectFileManagersList := ""
@@ -28501,7 +28504,7 @@ TODO
 			this.AA.blnOpenFavoritesOnActiveMonitor := o_Settings.ReadIniOption("FileManagers", "blnExplorerOpenFavoritesOnActiveMonitor"
 				, "OpenFavoritesOnActiveMonitor", 0, "FileManagers", "f_lnkFileManagerHelp|f_lblFileManagerDetail|f_blnOpenFavoritesOnActiveMonitor")
 			this.AA.blnFileManagerValid := true
-			this.AA.blnFileManagerUseTabs := o_Settings.ReadIniOption("FileManagers", "blnWindowsExplorerUseTabs", "WindowsExplorerUseTabs", 0, "FileManagers") ; default 0
+			this.AA.blnFileManagerUseTabs := o_Settings.ReadIniOption("FileManagers", "blnWindowsExplorerUseTabs", "WindowsExplorerUseTabs", 0, "FileManagers", "f_blnFileManagerUseTabs") ; default 0
 		}
 		;-----------------------------------------------------
 	}
@@ -28545,7 +28548,7 @@ TODO
 			{
 				this.AA.strDirectoryOpusRtPath := StrReplace(this.AA.strFileManagerPath, "\dopus.exe", "\dopusrt.exe")
 				
-				this.AA.blnFileManagerUseTabs := o_Settings.ReadIniOption("FileManagers", "blnDirectoryOpusUseTabs", "DirectoryOpusUseTabs", 1, "FileManagers", "f_blnFileManagerUseTabs")
+				this.AA.blnFileManagerUseTabs := o_Settings.ReadIniOption("FileManagers", "blnDirectoryOpusUseTabs", "DirectoryOpusUseTabs", 1, "FileManagers")
 				this.AA.strDirectoryOpusCustomNewTabOrWindow := o_Settings.ReadIniOption("FileManagers", "strDirectoryOpusCustomNewTabOrWindow", "DirectoryOpusNewTabOrWindow", "", "FileManagers", "")
 				
 				if (this.AA.strDirectoryOpusCustomNewTabOrWindow <> "ERROR")
@@ -32969,15 +32972,11 @@ class Container
 					;------------------------------------------------------------
 					
 					if RegexMatch(this.aaTemp.strFullLocation, "#.*\\") ; prevent the hash bug in Shell.Application
-						or (GetOSVersionInfo().BuildNumber >= 22621) ; patch Win 11 Explorer with tabs
 					
 						; Workaround for the hash (aka Sharp / "#") bug in Shell.Application - occurs only when navigating in the current Explorer window
 						; when a hash in path is followed by a backslash like in "c:\abc#xyz\abc"
 						; see http://stackoverflow.com/questions/22868546/navigate-shell-command-not-working-when-the-path-includes-an-hash
 						; and http://ahkscript.org/boards/viewtopic.php?f=5&t=526&p=25287#p25274
-						
-						; Also a workaround to change folder in other than 1st tab in Win 11 22H2 (build 22621.675 but we can't get the ".675" info from GetOSVersionInfo)
-						
 						SendInput, % "{F4}{Esc}{Raw}" . this.aaTemp.strFullLocation . "`n"
 						
 					else
@@ -32986,6 +32985,23 @@ class Container
 						{
 							if (pExplorer.hwnd = g_strTargetWinId)
 							{
+								if (GetOSVersionInfo().DetailedBuild >= "10.0.22621.675") ; Win 11 Explorer with tabs
+								{
+									intActiveTab := 0
+									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %g_strTargetWinId%
+									if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
+									{
+										static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+										oShellBrowser := ComObjQuery(pExplorer, IID_IShellBrowser, IID_IShellBrowser)
+										DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
+										if (intThisTab != intActiveTab)
+											continue
+										ObjRelease(oShellBrowser)
+									}
+									else
+										return 1 ; error code
+								}
+								
 								blnMatch := true
 								if IsInteger(this.aaTemp.strFullLocation) ; ShellSpecialFolderConstant
 								{
