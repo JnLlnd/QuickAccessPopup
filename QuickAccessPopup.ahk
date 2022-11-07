@@ -9680,12 +9680,12 @@ Gui, 2:Add, Link, y+25 x%g_intGroupItemsTab2X% w500 vf_lnkFileManagerHelp hidden
 Gui, 2:Font
 
 ; line 2
-; Explorer
+; Explorer (if Win11 DetailedBuild is 10.0.22621.675 only)
 ; DirectoryOpusUseTabs
 ; DirectoryOpusNewTabOrWindow (not in Gui)
 ; TotalCommanderUseTabs
 ; TotalCommanderNewTabOrWindow (not in Gui)
-Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab2X% w590 vf_blnFileManagerUseTabs gFileManagerUseTabsClicked hidden, % o_L["OptionsThirdPartyUseTabs"] ; not only third party, include Windows
+Gui, 2:Add, Checkbox, y+10 x%g_intGroupItemsTab2X% w590 vf_blnFileManagerUseTabs gFileManagerUseTabsClicked hidden, % o_L["OptionsThirdPartyUseTabs"] ; not only third party, now includes Windows 11
 Gui, 2:Add, Text, yp x%g_intGroupItemsTab2X% w590 vf_lblQAPconnectIntro hidden, % o_L["OptionsQAPconnectIntro"]
 
 ; line 3
@@ -10887,8 +10887,8 @@ if (A_ThisLabel <> "ActiveFileManagerClickedGroupButton")
 	Gosub, FileManagerUseTabsClickedInit
 }
 
-; disable f_blnFileManagerUseTabs if active file manager is Explorer (until open in Explorer tab ready ####)
-GuiControl, % (f_radActiveFileManager1 ? "Disable" : "Enable"), f_blnFileManagerUseTabs
+; disable f_blnFileManagerUseTabs if active file manager is Explorer and is not Win 11 with tabs
+GuiControl, % (f_radActiveFileManager1 and GetOSVersionInfo().DetailedBuild < "10.0.22621.675" ? "Disable" : "Enable"), f_blnFileManagerUseTabs
 
 strHelpUrl := ""
 strQAPconnectFileManagersList := ""
@@ -33167,12 +33167,13 @@ class Container
 					return 1 ; error code
 				}
 			}
-			else ; New window
+			
+			else ; -------------------------- New window --------------------------
+				
 			; this.aaTemp.strHotkeyTypeDetected = "Launch" (new window) or !StrLen(g_strTargetClass) or (g_strTargetWinId = 0) ; for situations where the target window could not be detected
 			{
 				; updates g_strNewWindowId with new Explorer window ID
 				if (this.aaTemp.strTargetAppName = "Explorer")
-				; ##### implement this.AA.blnFileManagerUseTabs
 				{
 					if (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					{
@@ -33182,11 +33183,27 @@ class Container
 						strExplorerIDsBefore := this.aaTemp.strExplorerIDs ;  save the list before launching this new Explorer
 					}
 					
+					if (GetOSVersionInfo().DetailedBuild >= "10.0.22621.675") ; open a new tab if Win 11 Explorer with tabs
+						and (g_aaFileManagerExplorer.blnFileManagerUseTabs) ; use tabs option enabled
+						and (WinExist("ahk_class ExploreWClass") or WinExist("ahk_class CabinetWClass")) ; if an Explorer window already exists
+						and !(this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ; except if we set a window position, necessarily in a new window
+					{
+						; activate top Windows Explorer window
+						GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true) ; true to activate
+						WinWaitActive, ahk_id %g_strTargetWinId% ; for safety
+						; if the window was not active, we could use: ControlSend, Windows.UI.Input.InputSite.WindowClass1, ^t, ahk_id %hwnd% ; add a new tab
+						; but as we know it is active, it is simpler to just send ^t
+						Send, ^t ; ###  This ^t hotkey works in English and French Windows, don't know for other localizations
+						this.aaTemp.strHotkeyTypeDetected := "Navigate"
+						this.OpenFolder() ; recurse to navigate
+						return ; will be wrongly logged as a navigate folder
+					}
+					
 					if ((g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
 						or this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 						; This technique creates a new Explorer instance at every call unless the current location is already an active Explorer window (as of Win 10).
 						; It is preferred to "Run, %this.aaTemp.strFullLocation%" because it gives better result getting the new Explorer window ID required to move the window.
-						; Avoid when menu was open from QAPmessenger because collecting Explorer IDs instances because does not work (reason unknown)
+						; Avoid when menu was open from QAPmessenger because collecting Explorer IDs instances does not work (reason unknown)
 						Run, % "Explorer """ . this.aaTemp.strFullLocation . """", , % (this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor ? "Hide" : "")
 					else
 						; When moving the window is not required and there is no parameter, this technique is preferred because, if call multiple times, it uses the
@@ -33203,7 +33220,8 @@ class Container
 							if (A_Index > 20)
 								; stop showing tray message from v9.3.1.9.1
 								; TrayTip, % L(o_L["TrayTipInstalledTitle"], g_strAppNameText), % L(o_L["DialogErrorMoving"], this.aaTemp.strFullLocation), , 2 ; warning icon with sound
-								; Sleep, 20 ; tip from Lexikos for Windows 10 "Just sleep for any amount of time after each call to TrayTip" (http://ahkscript.org/boards/viewtopic.php?p=50389&sid=29b33964c05f6a937794f88b6ac924c0#p50389)
+								; Sleep, 20 ; tip from Lexikos for Windows 10 "Just sleep for any amount of time after each call to TrayTip"
+								; (http://ahkscript.org/boards/viewtopic.php?p=50389&sid=29b33964c05f6a937794f88b6ac924c0#p50389)
 								Break
 								
 							Sleep, % (this.aaTemp.saFavoriteWindowPosition[1] ? this.aaTemp.saFavoriteWindowPosition[7] : 400) ; 400 ms if opening window on the active monitor
