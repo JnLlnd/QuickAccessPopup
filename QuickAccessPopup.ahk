@@ -33202,6 +33202,7 @@ class Container
 						; if the window was not active, we could use: ControlSend, Windows.UI.Input.InputSite.WindowClass1, ^t, ahk_id %hwnd% ; add a new tab
 						; but as we know it is active, it is simpler to just send ^t
 						Send, ^t ; ###  This ^t hotkey works in English and French Windows, don't know for other localizations
+						Sleep, 200 ; for safety
 						this.aaTemp.strHotkeyTypeDetected := "Navigate"
 						this.OpenFolder() ; recurse to navigate
 						return ; will be wrongly logged as a navigate folder
