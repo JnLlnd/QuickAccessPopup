@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.5.10 (2022-11-07)
+- when running on Windows 11 22H2 (build 22621.675 released October 18 or more recent) and preferred file manager is Windows Explorer:
+  - add in "Options, File Managers" a checkbox to open folders in a new tab of active (or last used) Windows Explorer instead of in a new Explorer window
+  - change method to navigate folder in the active tab using internal Windows object (change not visible to user)
+- fix bug enclosing document path in double-quotes if path includes .com or .exe followed by space, also fixing bug when using the "Launch with" option in some situations
+- speed up pasting of URL in browser when opening a Link favorite to change page (navigating) in current browser
+- fix some French language encoding errors and a typo in Russian language file
+
 Version: 11.5.9 (2022-10-27)
 - support for Windows Explorer with tabs new in Win 11 22H2 (build 22621.675 released October 18) to change folder in the active tab
 - when adding multiple favorites (under "Favorite" menu) from a folder, get all properties from shortcut (.lnk) files: icon, working dir, arguments and window state
@@ -5223,7 +5231,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.9
+;@Ahk2Exe-SetVersion 11.5.10
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5290,7 +5298,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -33866,7 +33874,7 @@ class Container
 			; do not use Send because by default it uses SendInput in this app and SendInput is not affected by SetKeyDelay
 			SendEvent, ^l^a
 			Sleep, 200
-			SetKeyDelay, 10
+			SetKeyDelay, -1 ; no delay
 			SendEvent, % this.aaTemp.strFullLocation
 			SendEvent, {Return}
 			SetKeyDelay, %intPreviousDelay%
