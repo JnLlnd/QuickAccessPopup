@@ -5231,7 +5231,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.10
+;@Ahk2Exe-SetVersion 11.5.99.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5298,8 +5298,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.10" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.99.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
 
@@ -5798,6 +5798,7 @@ if !GetKeyState("Shift")
 ; g_strOpenFavoriteFromMsg := "> C!"
 ; gosub, OpenFavoriteFromMsg
 ; gosub, GuiOptionsGroupFileManagers
+; RECEIVE_QAPMESSENGER(wParam, lParam)
 
 return
 
@@ -27576,7 +27577,7 @@ REPLY_QAPISRUNNING(wParam, lParam)
 ;------------------------------------------------------------
 RECEIVE_QAPMESSENGER(wParam, lParam) 
 ; Adapted from AHK documentation (https://autohotkey.com/docs/commands/OnMessage.htm)
-; Commands: ShowMenuLaunch, ShowMenuNavigate, ShowMenuAlternative, LaunchFavorite, AddFolder, AddFolderXpress, AddFile and AddFileXpress
+; Commands: ShowMenuLaunch, ShowMenuNavigate, ShowMenuAlternative, ShowMenuDynamic, LaunchFavorite, AddFolder, AddFolderXpress, AddFile and AddFileXpress
 ;------------------------------------------------------------
 {
 	global g_strNewLocation
@@ -27633,14 +27634,17 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		
 		Gosub, AlternativeHotkeyKeyboard
 		
-	else if InStr(saData[1], "ShowMenu")
+	else if InStr(saData[1], "ShowMenu") ; ShowMenuNavigate, ShowMenuLaunch or ShowMenuDynamic
 	{
-		g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
+		if (saData[1] = "ShowMenuDynamic") ; keep menu name as-is
+			g_strShowMenu := Trim(saData[2])
+		else ; ShowMenuNavigate and ShowMenuLaunch
+			g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
 		
 		if IsObject(o_Containers.AA[g_strShowMenu])
 			if (saData[1] = "ShowMenuNavigate")
 				Gosub, NavigateFromMsg
-			else ; (saData[1] = "ShowMenuLaunch")
+			else ; ShowMenuLaunch or ShowMenuDynamic
 				Gosub, LaunchFromMsg
 		else
 		{
