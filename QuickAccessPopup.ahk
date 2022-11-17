@@ -5454,6 +5454,8 @@ global g_aaPopularFilesShortNames := Object() ; search for g_aaPopular%strFolder
 global g_aaRecentFoldersShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 global g_aaRecentFilesShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 
+global g_strAddFavIconsTypes ; in Add favorite, pipe-separated list of "icon type, favorite type" (e.g. "iconFolder;Folder|iconSpecialFolders;Special|...")
+
 ;---------------------------------
 ; Used in SelectIcon()
 global SI_intPickIconCols := 10 ; 20
@@ -12488,59 +12490,28 @@ if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
 Gui, 2:Add, Text, x10 y+20, % o_L["DialogAdd"] . ":"
-Gui, 2:Add, Text, x+10 yp section
 
 ; Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|Text
-ParseIconResource("iconFolder", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs yp w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource("iconSpecialFolders", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-
-ParseIconResource("iconDocuments", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource("iconApplication", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource("iconDesktop", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource(g_strURLIconFileIndex, strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource("iconFTP", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-
-ParseIconResource("iconPaste", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-
-ParseIconResource("iconQAP", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-
-ParseIconResource("iconSubmenu", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource("iconNetwork", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-ParseIconResource("iconGroup", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-
-ParseIconResource("iconTextDocument", strThisIconFile, intThisIconIndex)
-Gui, 2:Add, Picture, xs y+15 w16 h16 Icon%intThisIconIndex%, %strThisIconFile%
-
-Gui, 2:Add, Radio, xs+22 ys vf_intRadioFavoriteTypeFolder gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeSpecial gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabel
-
-Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeDocument gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Document").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeApplication gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Application").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeWindowsApp gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("WindowsApp").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeURL gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("URL").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeFTP gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("FTP").strFavoriteTypeLabel
-
-Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeSnippet gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Snippet").strFavoriteTypeLabel
-
-Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeQAP gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabel
-
-Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeMenu gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Menu").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeExternal gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("External").strFavoriteTypeLabel
-Gui, 2:Add, Radio, xs+22 y+10 vf_intRadioFavoriteTypeGroup gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Group").strFavoriteTypeLabel
-
-Gui, 2:Add, Radio, xs+22 y+17 vf_intRadioFavoriteTypeText gFavoriteSelectTypeRadioButtonsChanged, % o_Favorites.GetFavoriteTypeObject("Text").strFavoriteTypeLabel
+; g_strAddFavIconsTypes: "icon type, favorite type", empty items are used for icons spacing
+g_strAddFavIconsTypes := "iconFolder;Folder|iconSpecialFolders;Special||iconDocuments;Document|iconApplication;Application|iconDesktop;WindowsApp|"
+	. g_strURLIconFileIndex . ";URL|iconFTP;FTP||iconPaste;Snippet||iconQAP;QAP||iconSubmenu;Menu|iconNetwork;External|iconGroup;Group||iconTextDocument;Text"
+	
+loop, Parse, g_strAddFavIconsTypes, |
+{
+	if !StrLen(A_LoopField)
+	{
+		Gui, Font, s1 ; small font for small spacing
+		Gui, 2:Add, Text
+		Gui, Font
+	}
+	else
+	{
+		ParseIconResource(StrSplit(A_LoopField, ";")[1], strThisIconFile, intThisIconIndex)
+		Gui, 2:Add, Picture, % "x25 y+8 w16 h16 Icon" . intThisIconIndex . " vf_icoRadioFavoriteType" . StrSplit(A_LoopField, ";")[2] . " gFavoriteSelectTypeRadioButtonsChanged", %strThisIconFile%
+		Gui, 2:Add, Radio, % "x52 yp vf_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2]
+			. " gFavoriteSelectTypeRadioButtonsChanged", % o_Favorites.GetFavoriteTypeObject(StrSplit(A_LoopField, ";")[2]).strFavoriteTypeLabel
+	}
+}
 
 Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavoriteSelectTypeContinue default, % o_L["DialogContinue"]
 Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, % o_L["GuiCancel"]
@@ -12564,7 +12535,12 @@ FavoriteSelectTypeRadioButtonsChanged:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-g_strAddFavoriteType := StrReplace(A_GuiControl, "f_intRadioFavoriteType")
+; A_GuiControl: f_intRadioFavoriteType or f_icoRadioFavoriteType plus type name, replace to keep only type name
+g_strAddFavoriteType := StrReplace(A_GuiControl, (InStr(A_GuiControl, "f_intRadioFavoriteType") ? "f_intRadioFavoriteType" : "f_icoRadioFavoriteType"))
+
+loop, Parse, g_strAddFavIconsTypes, |
+	GuiControl, , % "f_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2], % (g_strAddFavoriteType = StrSplit(A_LoopField, ";")[2])
+
 GuiControl, , f_lblAddFavoriteTypeHelp, % o_Favorites.s_saFavoriteTypesByName[g_strAddFavoriteType].strFavoriteTypeHelp
 
 if (A_GuiEvent = "DoubleClick")
