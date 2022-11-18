@@ -6145,7 +6145,7 @@ FileInstall, FileInstall\QuickAccessPopup_LANG_RU.txt, %g_strTempDir%\QuickAcces
 FileInstall, FileInstall\default_browser_icon.html, %g_strTempDir%\default_browser_icon.html, 1 ; fall back if default browser is not found in registry
 
 ; Note: 1st parameter of FileInstall cannot include expressions or variables
-if IsHDPI()
+if IsHighDPI()
 {
 	FileInstall, FileInstall\add_property-72_c.png, %g_strTempDir%\add_property_c.png
 	FileInstall, FileInstall\delete_property-72_c.png, %g_strTempDir%\delete_property_c.png
@@ -27435,11 +27435,13 @@ ScreenScaling(intSize)
 
 
 ;------------------------------------------------------------
-IsHDPI()
-
+IsHighDPI()
+; test if we load large images (when scaling is 150% or more) or regular images
+; use regular images when scaling of 100% (96 DPI) or 125% (120 DPI)
+; use large images on High DPI screen with recommended screen scaling of 150% (144 DPI) or more
 ;------------------------------------------------------------
 {
-	return (A_ScreenDPI = 144)
+	return (A_ScreenDPI >= 144)
 }
 ;------------------------------------------------------------
 
