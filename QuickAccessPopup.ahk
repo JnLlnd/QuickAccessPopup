@@ -6144,38 +6144,73 @@ FileInstall, FileInstall\QuickAccessPopup_LANG_RU.txt, %g_strTempDir%\QuickAcces
 
 FileInstall, FileInstall\default_browser_icon.html, %g_strTempDir%\default_browser_icon.html, 1 ; fall back if default browser is not found in registry
 
-FileInstall, FileInstall\add_property-48_c.png, %g_strTempDir%\add_property-48_c.png
-FileInstall, FileInstall\delete_property-48_c.png, %g_strTempDir%\delete_property-48_c.png
-FileInstall, FileInstall\play_property-48_c.png, %g_strTempDir%\play_property-48_c.png
-FileInstall, FileInstall\copy-48_c.png, %g_strTempDir%\copy-48_c.png
-FileInstall, FileInstall\separator-26_c.png, %g_strTempDir%\separator-26_c.png
-FileInstall, FileInstall\generic_sorting-26_c.png, %g_strTempDir%\generic_sorting-26_c.png
-FileInstall, FileInstall\column-26_c.png, %g_strTempDir%\column-26_c.png
-FileInstall, FileInstall\down_circular-26_c.png, %g_strTempDir%\down_circular-26_c.png
-FileInstall, FileInstall\edit_property-48_c.png, %g_strTempDir%\edit_property-48_c.png
-FileInstall, FileInstall\edit_property-48d_c.png, %g_strTempDir%\edit_property-48d_c.png
-FileInstall, FileInstall\left-12_c.png, %g_strTempDir%\left-12_c.png
-FileInstall, FileInstall\right-12_c.png, %g_strTempDir%\right-12_c.png
-FileInstall, FileInstall\left2-24_c.png, %g_strTempDir%\left2-24_c.png
-FileInstall, FileInstall\up_circular-26_c.png, %g_strTempDir%\up_circular-26_c.png
-FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off-26_c.png
-FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on-26_c.png
-FileInstall, FileInstall\text-26_c.png, %g_strTempDir%\text-26_c.png
-FileInstall, FileInstall\search-24_c.png, %g_strTempDir%\search-24_c.png
-FileInstall, FileInstall\preview_pane-26_c.png, %g_strTempDir%\preview_pane-26_c.png
-FileInstall, FileInstall\submenu-26_c.png, %g_strTempDir%\submenu-26_c.png
-
-FileInstall, FileInstall\thumb_up-48_c.png, %g_strTempDir%\thumb_up-48_c.png ; default image for Startup Tips
-FileInstall, FileInstall\uac_logo-16.png, %g_strTempDir%\uac_logo-16.png
-
-FileInstall, FileInstall\QAP-logo-100x100.png, %g_strTempDir%\QAP-logo-100x100.png
-FileInstall, FileInstall\QAP_First_Steps_Video-300x167.jpg, %g_strTempDir%\QAP_First_Steps_Video-300x167.jpg
+; Note: 1st parameter of FileInstall cannot include expressions or variables
+if IsHDPI()
+{
+	FileInstall, FileInstall\add_property-72_c.png, %g_strTempDir%\add_property_c.png
+	FileInstall, FileInstall\delete_property-72_c.png, %g_strTempDir%\delete_property_c.png
+	FileInstall, FileInstall\play_property-72_c.png, %g_strTempDir%\play_property_c.png
+	FileInstall, FileInstall\copy-72_c.png, %g_strTempDir%\copy_c.png
+	FileInstall, FileInstall\edit_property-72_c.png, %g_strTempDir%\edit_property_c.png
+	FileInstall, FileInstall\edit_property-72d_c.png, %g_strTempDir%\edit_propertyd_c.png
+	
+	FileInstall, FileInstall\up_circular-39_c.png, %g_strTempDir%\up_circular_c.png
+	FileInstall, FileInstall\down_circular-39_c.png, %g_strTempDir%\down_circular_c.png
+	FileInstall, FileInstall\separator-39_c.png, %g_strTempDir%\separator_c.png
+	FileInstall, FileInstall\column-39_c.png, %g_strTempDir%\column_c.png
+	FileInstall, FileInstall\text-39_c.png, %g_strTempDir%\text_c.png
+	FileInstall, FileInstall\preview_pane-39_c.png, %g_strTempDir%\preview_pane_c.png
+	FileInstall, FileInstall\generic_sorting-39_c.png, %g_strTempDir%\generic_sorting_c.png
+	FileInstall, FileInstall\QAP-pin-off-39_c.png, %g_strTempDir%\QAP-pin-off_c.png
+	FileInstall, FileInstall\QAP-pin-on-39_c.png, %g_strTempDir%\QAP-pin-on_c.png
+	
+	FileInstall, FileInstall\left-half-18_c.png, %g_strTempDir%\left-half_c.png
+	FileInstall, FileInstall\right-half-18_c.png, %g_strTempDir%\right-half_c.png
+	FileInstall, FileInstall\left_up2-36_c.png, %g_strTempDir%\left_up2_c.png
+	
+	FileInstall, FileInstall\QAP-logo-150x150.png, %g_strTempDir%\QAP-logo.png
+	FileInstall, FileInstall\search-36_c.png, %g_strTempDir%\search_c.png
+	FileInstall, FileInstall\submenu-39_c.png, %g_strTempDir%\submenu_c.png
+	FileInstall, FileInstall\thumb_up-72_c.png, %g_strTempDir%\thumb_up_c.png ; default image for Startup Tips
+	FileInstall, FileInstall\uac_logo-24.png, %g_strTempDir%\uac_logo.png
+	FileInstall, FileInstall\QAP_First_Steps_Video-480x270.jpg, %g_strTempDir%\QAP_First_Steps_Video.jpg
+}
+else
+{
+	FileInstall, FileInstall\add_property-48_c.png, %g_strTempDir%\add_property_c.png
+	FileInstall, FileInstall\delete_property-48_c.png, %g_strTempDir%\delete_property_c.png
+	FileInstall, FileInstall\play_property-48_c.png, %g_strTempDir%\play_property_c.png
+	FileInstall, FileInstall\copy-48_c.png, %g_strTempDir%\copy_c.png
+	FileInstall, FileInstall\edit_property-48_c.png, %g_strTempDir%\edit_property_c.png
+	FileInstall, FileInstall\edit_property-48d_c.png, %g_strTempDir%\edit_propertyd_c.png
+	
+	FileInstall, FileInstall\up_circular-26_c.png, %g_strTempDir%\up_circular_c.png
+	FileInstall, FileInstall\down_circular-26_c.png, %g_strTempDir%\down_circular_c.png
+	FileInstall, FileInstall\separator-26_c.png, %g_strTempDir%\separator_c.png
+	FileInstall, FileInstall\column-26_c.png, %g_strTempDir%\column_c.png
+	FileInstall, FileInstall\text-26_c.png, %g_strTempDir%\text_c.png
+	FileInstall, FileInstall\preview_pane-26_c.png, %g_strTempDir%\preview_pane_c.png
+	FileInstall, FileInstall\generic_sorting-26_c.png, %g_strTempDir%\generic_sorting_c.png
+	FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off_c.png
+	FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on_c.png
+	
+	FileInstall, FileInstall\left-half-12_c.png, %g_strTempDir%\left-half_c.png
+	FileInstall, FileInstall\right-half-12_c.png, %g_strTempDir%\right-half_c.png
+	FileInstall, FileInstall\left_up2-24_c.png, %g_strTempDir%\left_up2_c.png
+	
+	FileInstall, FileInstall\QAP-logo-100x100.png, %g_strTempDir%\QAP-logo.png
+	FileInstall, FileInstall\search-24_c.png, %g_strTempDir%\search_c.png
+	FileInstall, FileInstall\submenu-26_c.png, %g_strTempDir%\submenu_c.png
+	FileInstall, FileInstall\thumb_up-48_c.png, %g_strTempDir%\thumb_up_c.png ; default image for Startup Tips
+	FileInstall, FileInstall\uac_logo-16.png, %g_strTempDir%\uac_logo.png
+	FileInstall, FileInstall\QAP_First_Steps_Video-300x167.jpg, %g_strTempDir%\QAP_First_Steps_Video.jpg
+}
 
 if FileExist(A_WorkingDir . "\QAPconnect.ini")
 	FileInstall, FileInstall\QAPconnect-default.ini, %A_WorkingDir%\QAPconnect-default.ini, 1 ; overwrite
 else
 	FileInstall, FileInstall\QAPconnect-default.ini, %A_WorkingDir%\QAPconnect.ini ; no overwrite required
-	
+
 return
 ;-----------------------------------------------------------
 
@@ -6238,7 +6273,7 @@ InsertGuiControlPos("f_btnGuiSaveAndStayFavorites",		  0,  -70, , true)
 InsertGuiControlPos("f_btnGuiCancel",					  0,  -70, , true)
 
 InsertGuiControlPos("f_drpMenusList",					  40, 23)
-	
+
 InsertGuiControlPos("f_lblGuiAddFavorite",				 -44,  100, true)
 InsertGuiControlPos("f_lblGuiEditFavorite",				 -44,  175, true)
 InsertGuiControlPos("f_lblGuiRemoveFavorite",			 -44,  250, true)
@@ -6688,7 +6723,7 @@ o_StartupTips.AddTip("AddDragAndDrop", "1", o_L["TipAddDragAndDropTitle"], o_L["
 o_StartupTips.AddTip("FavoriteFolderTemp", "1", o_L["TipFavoriteFolderTempTitle"], o_L["TipFavoriteFolderTempDetails"]
 	, "/tips-create-a-favorite-for-your-much-used-temporary-folder/", "iconFavorites")
 o_StartupTips.AddTip("SearchFavorites", "1", o_L["TipSearchFavoritesTitle"], o_L["TipSearchFavoritesDetails"]
-	, "/can-i-search-inside-my-favorites/", "search-24_c.png")
+	, "/can-i-search-inside-my-favorites/", "search_c.png")
 o_StartupTips.AddTip("InTheWorks", "1", o_L["TipInTheWorksTitle"], o_L["TipInTheWorksDetails"]
 	, "/what-is-in-the-works-and-its-frequent-recent-and-current-menus/", "")
 
@@ -6741,7 +6776,7 @@ strGuiTitle := o_L["StartupTipsTitle"]
 Gui, StartupTips:New, +Hwndg_strGuiStartupTipsHwnd, %strGuiTitle%
 
 if GetFileExtension(g_aaTip2Show.strImage) = "png"
-	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % g_strTempDir . "\" . g_aaTip2Show.strImage ; %g_strTempDir%\add_property-48_c.png
+	Gui, StartupTips:Add, Picture, x10 y10 w48 h48, % g_strTempDir . "\" . g_aaTip2Show.strImage
 else
 {
 	ParseIconResource(g_aaTip2Show.strImage, strIconFile, intIconIndex)
@@ -9905,7 +9940,7 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
 
 ; RunAsAdmin
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y%intGroupItemsY% vf_blnRunAsAdmin gRunAsAdminClicked hidden, % o_L["OptionsRunAsAdmin"]
-Gui, 2:Add, Picture, x+1 yp hidden vf_picRunAsAdmin, %g_strTempDir%\uac_logo-16.png
+Gui, 2:Add, Picture, x+1 yp hidden vf_picRunAsAdmin, %g_strTempDir%\uac_logo.png
 GuiControl, , f_blnRunAsAdmin, % (o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue = true)
 
 ; RefreshWindowsAppsListAtStartup
@@ -11711,39 +11746,39 @@ aaSettingsL := o_L.InsertAmpersand(false, "*" . aaMenuBarL.strUsed, "GuiSaveAndC
 
 ; Order of controls important to avoid drawgins gliches when resizing
 
-Gui, 1:Add, Picture, vf_picGuiAddFavorite gGuiAddFavoriteSelectType, %g_strTempDir%\add_property-48_c.png ; Static1
-Gui, 1:Add, Picture, vf_picGuiEditFavorite gGuiEditFavorite x+1 yp, %g_strTempDir%\edit_property-48_c.png ; Static2
-Gui, 1:Add, Picture, vf_picGuiEditFavorites xp yp, %g_strTempDir%\edit_property-48d_c.png ; Static3
-Gui, 1:Add, Picture, vf_picGuiRemoveFavorite gGuiRemoveFavorite x+1 yp, %g_strTempDir%\delete_property-48_c.png ; Static4
-Gui, 1:Add, Picture, vf_picGuiCopyFavorite gGuiCopyFavorite x+1 yp, %g_strTempDir%\copy-48_c.png ; Static5
-Gui, 1:Add, Picture, vf_picGuiMoveFavorite gGuiMoveFavoriteToMenu x+1 yp, %g_strTempDir%\play_property-48_c.png ; Static6
-Gui, 1:Add, Picture, vf_picMenuUp gGuiGotoMenuUp hidden x+1 yp, %g_strTempDir%\left2-24_c.png ; Static7
+Gui, 1:Add, Picture, vf_picGuiAddFavorite gGuiAddFavoriteSelectType, %g_strTempDir%\add_property_c.png ; Static1
+Gui, 1:Add, Picture, vf_picGuiEditFavorite gGuiEditFavorite x+1 yp, %g_strTempDir%\edit_property_c.png ; Static2
+Gui, 1:Add, Picture, vf_picGuiEditFavorites xp yp, %g_strTempDir%\edit_propertyd_c.png ; Static3
+Gui, 1:Add, Picture, vf_picGuiRemoveFavorite gGuiRemoveFavorite x+1 yp, %g_strTempDir%\delete_property_c.png ; Static4
+Gui, 1:Add, Picture, vf_picGuiCopyFavorite gGuiCopyFavorite x+1 yp, %g_strTempDir%\copy_c.png ; Static5
+Gui, 1:Add, Picture, vf_picGuiMoveFavorite gGuiMoveFavoriteToMenu x+1 yp, %g_strTempDir%\play_property_c.png ; Static6
+Gui, 1:Add, Picture, vf_picMenuUp gGuiGotoMenuUp hidden x+1 yp, %g_strTempDir%\left_up2_c.png ; Static7
 g_aaToolTipsMessages["Static7"] := o_L["ControlToolTipParentMenu"]
-Gui, 1:Add, Picture, vf_picMenuPrev gGuiGotoMenuPrev hidden x+1 yp, %g_strTempDir%\left-12_c.png ; Static8
+Gui, 1:Add, Picture, vf_picMenuPrev gGuiGotoMenuPrev hidden x+1 yp, %g_strTempDir%\left-half_c.png ; Static8
 g_aaToolTipsMessages["Static8"] := o_L["ControlToolTipPreviousMenu"]
-Gui, 1:Add, Picture, vf_picMenuNext gGuiGotoMenuNext hidden x+12 yp, %g_strTempDir%\right-12_c.png ; Static9
+Gui, 1:Add, Picture, vf_picMenuNext gGuiGotoMenuNext hidden x+12 yp, %g_strTempDir%\right-half_c.png ; Static9
 g_aaToolTipsMessages["Static9"] := o_L["ControlToolTipNextMenu"]
-Gui, 1:Add, Picture, vf_picMoveFavoriteUp gGuiMoveFavoriteUp x+1 yp, %g_strTempDir%\up_circular-26_c.png ; Static10
+Gui, 1:Add, Picture, vf_picMoveFavoriteUp gGuiMoveFavoriteUp x+1 yp, %g_strTempDir%\up_circular_c.png ; Static10
 g_aaToolTipsMessages["Static10"] := o_L["ControlToolTipMoveUp"]
-Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular-26_c.png ; Static11
+Gui, 1:Add, Picture, vf_picMoveFavoriteDown gGuiMoveFavoriteDown x+1 yp, %g_strTempDir%\down_circular_c.png ; Static11
 g_aaToolTipsMessages["Static11"] := o_L["ControlToolTipMoveDown"]
-Gui, 1:Add, Picture, vf_picSubmenu gOpenMenuContainingSearchItem x+1 yp hidden, %g_strTempDir%\submenu-26_c.png ; Static12
+Gui, 1:Add, Picture, vf_picSubmenu gOpenMenuContainingSearchItem x+1 yp hidden, %g_strTempDir%\submenu_c.png ; Static12
 g_aaToolTipsMessages["Static12"] := o_L["ControlToolTipOpenMenuContainingSearchItem"]
-Gui, 1:Add, Picture, vf_picAddSeparator gGuiAddSeparator x+1 yp, %g_strTempDir%\separator-26_c.png ; Static13
+Gui, 1:Add, Picture, vf_picAddSeparator gGuiAddSeparator x+1 yp, %g_strTempDir%\separator_c.png ; Static13
 g_aaToolTipsMessages["Static13"] := o_L["ControlToolTipSeparator"]
-Gui, 1:Add, Picture, vf_picAddColumnBreak gGuiAddColumnBreak x+1 yp, %g_strTempDir%\column-26_c.png ; Static14
+Gui, 1:Add, Picture, vf_picAddColumnBreak gGuiAddColumnBreak x+1 yp, %g_strTempDir%\column_c.png ; Static14
 g_aaToolTipsMessages["Static14"] := o_L["ControlToolTipColumnBreak"]
-Gui, 1:Add, Picture, vf_picAddTextSeparator gGuiAddTextSeparator x+1 yp, %g_strTempDir%\text-26_c.png ; Static15
+Gui, 1:Add, Picture, vf_picAddTextSeparator gGuiAddTextSeparator x+1 yp, %g_strTempDir%\text_c.png ; Static15
 g_aaToolTipsMessages["Static15"] := o_L["ControlToolTipTextSeparator"]
-Gui, 1:Add, Picture, vf_picSortFavoritesBottom gGuiSortFavoritesMenu x+1 yp, %g_strTempDir%\generic_sorting-26_c.png ; Static16
+Gui, 1:Add, Picture, vf_picSortFavoritesBottom gGuiSortFavoritesMenu x+1 yp, %g_strTempDir%\generic_sorting_c.png ; Static16
 g_aaToolTipsMessages["Static16"] := o_L["ControlToolTipSortFavorites"]
-Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_strTempDir%\QAP-pin-on-26_c.png ; Static17
+Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOn gGuiAlwaysOnTop hidden x+1 yp, %g_strTempDir%\QAP-pin-on_c.png ; Static17
 g_aaToolTipsMessages["Static17"] := o_L["ControlToolTipAlwaysOnTopOn"]
-Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempDir%\QAP-pin-off-26_c.png ; Static19
+Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempDir%\QAP-pin-off_c.png ; Static19
 g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOff"]
-Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane-26_c.png ; Static19
+Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane_c.png ; Static19
 g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipShowContainerInGui"]
-Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search-24_c.png ; Static20
+Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search_c.png ; Static20
 g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
 
 Gui, 1:Font, s8 w400, Arial ; button legend
@@ -22728,12 +22763,12 @@ GuiWelcomeCreation:
 Gui, WelcomeCreation:New, +Hwndg_strGuiWelcomeCreationHwnd, %strGuiTitle%
 Gui, Color, White
 
-Gui, Add, Picture, x10 y1, %g_strTempDir%\QAP-logo-100x100.png
+Gui, Add, Picture, x10 y1, %g_strTempDir%\QAP-logo.png
 Gui, Font, w700 s14
 Gui, Add, Text, x120 yp+10 w500, % o_L["DialogWelcomeThankYou"]
-Gui, Add, Picture, x160 yp+50 gGuiWelcomeCreationVideoClicked, %g_strTempDir%\QAP_First_Steps_Video-300x167.jpg
+Gui, Add, Picture, x160 yp+50 gGuiWelcomeCreationVideoClicked, %g_strTempDir%\QAP_First_Steps_Video.jpg
 Gui, Font, w400 s8 italic
-Gui, Add, Text, x160 w300 yp+170 gGuiWelcomeCreationVideoClicked w300 center, % o_L["DialogWelcomeVideo"]
+Gui, Add, Text, x160 w300 yp+190 gGuiWelcomeCreationVideoClicked w300 center, % o_L["DialogWelcomeVideo"]
 Gui, Font, w400 s10 normal
 Gui, Add, Text, x120 yp+30 w500, % o_L["DialogWelcomeDetail"]
 Gui, Font, w400 s12 normal
@@ -27395,6 +27430,16 @@ ScreenScaling(intSize)
 ;------------------------------------------------------------
 {
 	return Round(intSize / (A_ScreenDPI / 96))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+IsHDPI()
+
+;------------------------------------------------------------
+{
+	return (A_ScreenDPI = 144)
 }
 ;------------------------------------------------------------
 
@@ -34825,7 +34870,7 @@ class StartupTips
 		objThisTip.strTitle := strTitle
 		objThisTip.strDetails := strDetails
 		objThisTip.saCommands := StrSplit(strCommands, "`n")
-		objThisTip.strImage := (StrLen(strImage) ? strImage : "thumb_up-48_c.png") ; not using default parameter value because code generated from XL
+		objThisTip.strImage := (StrLen(strImage) ? strImage : "thumb_up_c.png") ; not using default parameter value because code generated from XL
 		
 		this.saPriorityGroupsOrder[intPriority].Push(strCode)
 		this.aaTips[strCode] := objThisTip
