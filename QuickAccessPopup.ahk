@@ -29202,6 +29202,13 @@ class SpecialFolders
 			, "CLS", "CLS", "SCT", "CLS", "CLS", "CLS", "CLS"
 			, "2-Power User")
 		
+		;---------------------
+		; Added in v11.6: new special folders not included before
+		this.AddSpecialFolderObject("rundll32 sysdm.cpl,EditEnvironmentVariables", "", "", "", "", ""
+			, o_L["MenuEvironmentVariables"], "iconControlPanel"
+			, "CLS", "CLS", "CLS", "CLS", "DOA", "CLS", "CLS"
+			, "2-Power User", "")
+			
 		;-----------------------
 		; Special Folders categories
 		
