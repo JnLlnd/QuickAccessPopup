@@ -5483,6 +5483,8 @@ global g_blnLaunchFromTrayIcon
 global g_strTargetWinId
 global g_strTargetControlId
 global g_strTargetClass
+global g_strTargetWinTitle
+global g_strTargetProcessName
 global g_strHotkeyTypeDetected
 global g_strNewWindowId
 global g_intOriginalMenuPosition
@@ -5806,45 +5808,24 @@ return
 
 ;========================================================================================================================
 ; Handles for the "Hotkey, If" condition
+; Empty #If directives acting as a handles for the "Hotkey, If, Expression" conditions
+; ("Expression must be an expression which has been used with the #If directive elsewhere in the script.")
 ;========================================================================================================================
 
-;------------------------------------------------------------
-;------------------------------------------------------------
-#If, CanNavigate(A_ThisHotkey)
-; empty - act as a handle for the "Hotkey, If, Expression" condition in PopupHotkey.__New() (and elsewhere)
-; ("Expression must be an expression which has been used with the #If directive elsewhere in the script.")
+#If, CanNavigate(A_ThisHotkey) ; condition in PopupHotkey.__New() (and elsewhere)
 #If
-;------------------------------------------------------------
-;------------------------------------------------------------
 
-
-;------------------------------------------------------------
-;------------------------------------------------------------
-#If, CanLaunch(A_ThisHotkey)
-; empty - act as a handle for the "Hotkey, If, Expression" condition in PopupHotkey.__New() (and elsewhere)
-; ("Expression must be an expression which has been used with the #If directive elsewhere in the script.")
+#If, CanLaunch(A_ThisHotkey) ; condition in PopupHotkey.__New() (and elsewhere)
 #If
-;------------------------------------------------------------
-;------------------------------------------------------------
 
-
-;------------------------------------------------------------
-;------------------------------------------------------------
 #If, WinActive(QAPSettingsString()) ; main Gui title
-; empty - act as a handle for the "Hotkey, If, Expression" condition in PopupHotkey.__New() (and elsewhere)
-; ("Expression must be an expression which has been used with the #If directive elsewhere in the script.")
 #If
-;------------------------------------------------------------
-;------------------------------------------------------------
 
-
-;------------------------------------------------------------
-;------------------------------------------------------------
 #If, WinActive(SI_strGuiTitle) ; Select Icon Gui
-; empty - act as a handle for the "Hotkey, If, Expression" condition
-; ("Expression must be an expression which has been used with the #If directive elsewhere in the script.")
 #If
-;------------------------------------------------------------
+
+#If, CanOpenFromHotkey() ; Open favorite from Shortcut
+#If
 ;------------------------------------------------------------
 
 
@@ -6583,6 +6564,8 @@ o_Settings.ReadIniOption("MenuAdvanced", "intMovePointerAfterHotkeyKeyboard", "M
 ; Group AdvancedLaunch
 o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
 o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup", "RefreshWindowsAppsListAtStartup", 0, "AdvancedLaunch", "f_blnRefreshWindowsAppsListAtStartup") ; g_blnRefreshWindowsAppsListAtStartup
+o_Settings.ReadIniOption("LaunchAdvanced", "strOpenFromHotkeyExclusionsList", "OpenFromHotkeyExclusionsList", 0, "AdvancedLaunch", "f_strOpenFromHotkeyExclusionsList")
+o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionsList := "Chrome|Sonos" ; ##### for tests until option in gui
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
@@ -20499,6 +20482,24 @@ DialogBoxParentExcluded(strTargetWinId)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+CanOpenFromHotkey()
+;------------------------------------------------------------
+{
+	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
+	Loop, Parse, % o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionsList, |
+	{
+		if StrLen(A_Loopfield)
+			and (InStr(g_strTargetClass, A_LoopField)
+			or InStr(g_strTargetWinTitle, A_LoopField)
+			or InStr(g_strTargetProcessName, A_LoopField))
+			return false ; cannot open
+	}
+	return true ; can open
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF POPUP MENU
 ;========================================================================================================================
@@ -25380,7 +25381,6 @@ SetTargetWinInfo(blnMouseElseKeyboard)
 	}
 
 	WinGetTitle, g_strTargetWinTitle, % "ahk_id " . g_strTargetWinId
-	WinGet, g_strTargetProcessName, ProcessName, % "ahk_id " . g_strTargetWinId
 	WinGet, g_strTargetProcessName, ProcessName, % "ahk_id " . g_strTargetWinId
 }
 ;------------------------------------------------------------
@@ -31221,7 +31221,9 @@ class Container
 				g_aaItemsByShortcut[aaThisFavorite.strFavoriteShortcut] := this.SA[A_Index]
 				
 				; enable shortcut
+				Hotkey, If, CanOpenFromHotkey()
 				Hotkey, % aaThisFavorite.strFavoriteShortcut, OpenFavoriteFromShortcut, On UseErrorLevel
+				Hotkey, If
 				if (ErrorLevel)
 					Oops(0, o_L["DialogInvalidHotkeyFavorite"], aaThisFavorite.strFavoriteShortcut
 						, (StrLen(aaThisFavorite.strFavoriteName) ? aaThisFavorite.strFavoriteName
