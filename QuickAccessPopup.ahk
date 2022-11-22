@@ -5824,7 +5824,7 @@ return
 #If, WinActive(SI_strGuiTitle) ; Select Icon Gui
 #If
 
-#If, CanOpenFromHotkey() ; Open favorite from Shortcut
+#If, CanHotkeyTrigger() ; Open favorite from Shortcut
 #If
 ;------------------------------------------------------------
 
@@ -6562,12 +6562,12 @@ o_Settings.ReadIniOption("MenuAdvanced", "blnShowAdvancedSettingsMenusItems", "S
 o_Settings.ReadIniOption("MenuAdvanced", "intMovePointerAfterHotkeyKeyboard", "MovePointerAfterHotkeyKeyboard", 1, "MenuAdvanced") ; move pointer if value > 0, also duration in ms of pause before showing the menu; #### add visible field if required
 
 ; Group AdvancedLaunch
-o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_lblOptionLaunchAdvancedQAPTitle|f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
+o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_lblOptionsLaunchAdvancedQAPTitle|f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
 o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup", "RefreshWindowsAppsListAtStartup", 0, "AdvancedLaunch", "f_blnRefreshWindowsAppsListAtStartup") ; g_blnRefreshWindowsAppsListAtStartup
-o_Settings.ReadIniOption("LaunchAdvanced", "blnOpenFromHotkeyExclusionListWhitelist", "OpenFromHotkeyExclusionListWhitelist", 0, "AdvancedLaunch"
-	, "f_lblOptionOpenFromHotkeyExclusionListTitle|f_lnkOptionOpenFromHotkeyExclusionList|f_blnOpenFromHotkeyExclusionListBlacklist|f_blnOpenFromHotkeyExclusionListWhitelist")
-o_Settings.ReadIniOption("LaunchAdvanced", "strOpenFromHotkeyExclusionList", "OpenFromHotkeyExclusionList", 0, "AdvancedLaunch"
-	, "f_strOpenFromHotkeyExclusionList|f_lblOptionOpenFromHotkeyExclusionListHelp")
+o_Settings.ReadIniOption("LaunchAdvanced", "blnHotkeyTriggerExclusionListWhitelist", "HotkeyTriggerExclusionListWhitelist", 0, "AdvancedLaunch"
+	, "f_lblHotkeyTriggerExclusionListTitle|f_lnkHotkeyTriggerExclusionList|f_blnHotkeyTriggerExclusionListBlacklist|f_blnHotkeyTriggerExclusionListWhitelist")
+o_Settings.ReadIniOption("LaunchAdvanced", "strHotkeyTriggerExclusionList", "HotkeyTriggerExclusionList", 0, "AdvancedLaunch"
+	, "f_strHotkeyTriggerExclusionList|f_lblHotkeyTriggerExclusionListHelp")
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
@@ -7175,7 +7175,9 @@ for intOrder, strCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 
 	if (strHotkey <> "ERROR")
 	{
-		Hotkey, %strHotkey%, OpenAlternativeMenuHotkey, On UseErrorLevel
+		Hotkey, If, CanHotkeyTrigger()
+			Hotkey, %strHotkey%, OpenAlternativeMenuHotkey, On UseErrorLevel
+		Hotkey, If
 		o_QAPfeatures.AA[strCode].strCurrentHotkey := strHotkey
 	}
 	else
@@ -9924,7 +9926,7 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
 ; === AdvancedLaunch ===
 
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% w600 hidden vf_lblOptionLaunchAdvancedQAPTitle, % o_L["OptionLaunchAdvancedQAPTitle"]
+Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% w600 hidden vf_lblOptionsLaunchAdvancedQAPTitle, % o_L["OptionsLaunchAdvancedQAPTitle"]
 Gui, 2:Font
 
 ; RunAsAdmin
@@ -9943,21 +9945,21 @@ Gui, 2:Add, Button, x+5 yp w75 vf_btnAlternativeTrayIcon gButtonAlternativeTrayI
 GuiControl, 2:, f_strAlternativeTrayIcon, % o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strAlternativeTrayIcon
 
-; OpenFromHotkeyExclusionList
+; HotkeyTriggerExclusionList
 strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/", A_ThisLabel, "Help")
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w600 hidden vf_lnkOptionOpenFromHotkeyExclusionList, % o_L["OptionOpenFromHotkeyExclusionListTitle"]
+Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w600 hidden vf_lnkHotkeyTriggerExclusionList, % o_L["OptionsHotkeyTriggerExclusionListTitle"]
 	. " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
-Gui, 2:Add, Radio, % "y+10 x" . g_intGroupItemsX . " vf_blnOpenFromHotkeyExclusionListBlacklist gGuiOptionsGroupChanged hidden "
-	. (o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
-Gui, 2:Add, Radio, % "yp x+10 vf_blnOpenFromHotkeyExclusionListWhitelist gGuiOptionsGroupChanged hidden "
-	. (o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
-Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strOpenFromHotkeyExclusionList gGuiOptionsGroupChanged hidden
-	, % OptionsListSplit(o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionList.IniValue)
-Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w600 hidden vf_lblOptionOpenFromHotkeyExclusionListHelp, % L(o_L["OptionOpenFromHotkeyExclusionListHelp"], strUrl)
+Gui, 2:Add, Radio, % "y+10 x" . g_intGroupItemsX . " vf_blnHotkeyTriggerExclusionListBlacklist gGuiOptionsGroupChanged hidden "
+	. (o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnHotkeyTriggerExclusionListWhitelist gGuiOptionsGroupChanged hidden "
+	. (o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
+Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strHotkeyTriggerExclusionList gGuiOptionsGroupChanged hidden
+	, % OptionsListSplit(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
+Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w600 hidden vf_lblHotkeyTriggerExclusionListHelp, % L(o_L["OptionsHotkeyTriggerExclusionListHelp"], strUrl)
 
-GuiControlGet, arrPos, Pos, f_lblOptionOpenFromHotkeyExclusionListHelp
+GuiControlGet, arrPos, Pos, f_lblHotkeyTriggerExclusionListHelp
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -10462,8 +10464,8 @@ if (blnRunAsAdminPrev <> o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 o_Settings.LaunchAdvanced.blnRefreshWindowsAppsListAtStartup.WriteIni(f_blnRefreshWindowsAppsListAtStartup)
 o_Settings.LaunchAdvanced.strAlternativeTrayIcon.WriteIni(f_strAlternativeTrayIcon)
 
-o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.WriteIni(f_blnOpenFromHotkeyExclusionListWhitelist)
-o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionList.WriteIni(OptionsListCleanup(f_strOpenFromHotkeyExclusionList))
+o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.WriteIni(f_blnHotkeyTriggerExclusionListWhitelist)
+o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.WriteIni(OptionsListCleanup(f_strHotkeyTriggerExclusionList))
 blnRunAsAdminPrev := ""
 	
 ; === AdvancedOther ===
@@ -20506,20 +20508,20 @@ DialogBoxParentExcluded(strTargetWinId)
 
 
 ;------------------------------------------------------------
-CanOpenFromHotkey()
+CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
-	Loop, Parse, % o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionList.IniValue, |
+	Loop, Parse, % o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue, |
 	{
 		if StrLen(A_Loopfield)
 			and (InStr(g_strTargetClass, A_LoopField)
 			or InStr(g_strTargetWinTitle, A_LoopField)
 			or InStr(g_strTargetProcessName, A_LoopField))
-			return o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ; return true or false according to blnOpenFromHotkeyExclusionListWhitelist
+			return o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return true or false according to blnHotkeyTriggerExclusionListWhitelist
 
 	}
-	return !o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ; return false or true according to blnOpenFromHotkeyExclusionListWhitelist
+	return !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return false or true according to blnHotkeyTriggerExclusionListWhitelist
 }
 ;------------------------------------------------------------
 
@@ -27486,7 +27488,9 @@ ConvertShortcutRunState(intShortcutRunState)
 OptionsListSplit(str)
 ;------------------------------------------------------------
 {
-	return StrReplace(Trim(str), "|", "`n")
+	if (str) ; in case str contains "0"
+		return StrReplace(Trim(str), "|", "`n")
+	; else return empty
 }
 ;------------------------------------------------------------
 
@@ -28164,7 +28168,9 @@ class Triggers.MouseButtons
 				if HasShortcut(this.AA.strPopupHotkeyPrevious)
 					Hotkey, % this.AA.strPopupHotkeyPrevious, , Off UseErrorLevel ; do nothing if error (probably because default mouse trigger not supported by system)
 				if HasShortcut(this.P_strAhkHotkey)
-					Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
+					Hotkey, If, CanHotkeyTrigger()
+						Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
+					Hotkey, If
 				if (ErrorLevel)
 					Oops(0, o_L["DialogInvalidHotkey"], this.AA.strPopupHotkeyText, this.AA.strPopupHotkeyLocalizedName)
 			}
@@ -31254,8 +31260,8 @@ class Container
 				g_aaItemsByShortcut[aaThisFavorite.strFavoriteShortcut] := this.SA[A_Index]
 				
 				; enable shortcut
-				Hotkey, If, CanOpenFromHotkey()
-				Hotkey, % aaThisFavorite.strFavoriteShortcut, OpenFavoriteFromShortcut, On UseErrorLevel
+				Hotkey, If, CanHotkeyTrigger()
+					Hotkey, % aaThisFavorite.strFavoriteShortcut, OpenFavoriteFromShortcut, On UseErrorLevel
 				Hotkey, If
 				if (ErrorLevel)
 					Oops(0, o_L["DialogInvalidHotkeyFavorite"], aaThisFavorite.strFavoriteShortcut
