@@ -6562,10 +6562,12 @@ o_Settings.ReadIniOption("MenuAdvanced", "blnShowAdvancedSettingsMenusItems", "S
 o_Settings.ReadIniOption("MenuAdvanced", "intMovePointerAfterHotkeyKeyboard", "MovePointerAfterHotkeyKeyboard", 1, "MenuAdvanced") ; move pointer if value > 0, also duration in ms of pause before showing the menu; #### add visible field if required
 
 ; Group AdvancedLaunch
-o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
+o_Settings.ReadIniOption("LaunchAdvanced", "blnRunAsAdmin", "RunAsAdmin", 0, "AdvancedLaunch", "f_lblOptionLaunchAdvancedQAPTitle|f_blnRunAsAdmin|f_picRunAsAdmin") ; default false, if true reload QAP as admin ; g_blnRunAsAdmin
 o_Settings.ReadIniOption("LaunchAdvanced", "blnRefreshWindowsAppsListAtStartup", "RefreshWindowsAppsListAtStartup", 0, "AdvancedLaunch", "f_blnRefreshWindowsAppsListAtStartup") ; g_blnRefreshWindowsAppsListAtStartup
-o_Settings.ReadIniOption("LaunchAdvanced", "strOpenFromHotkeyExclusionsList", "OpenFromHotkeyExclusionsList", 0, "AdvancedLaunch", "f_strOpenFromHotkeyExclusionsList")
-o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionsList := "Chrome|Sonos" ; ##### for tests until option in gui
+o_Settings.ReadIniOption("LaunchAdvanced", "blnOpenFromHotkeyExclusionListWhitelist", "OpenFromHotkeyExclusionListWhitelist", 0, "AdvancedLaunch"
+	, "f_lblOptionOpenFromHotkeyExclusionListTitle|f_lnkOptionOpenFromHotkeyExclusionList|f_blnOpenFromHotkeyExclusionListBlacklist|f_blnOpenFromHotkeyExclusionListWhitelist")
+o_Settings.ReadIniOption("LaunchAdvanced", "strOpenFromHotkeyExclusionList", "OpenFromHotkeyExclusionList", 0, "AdvancedLaunch"
+	, "f_strOpenFromHotkeyExclusionList|f_lblOptionOpenFromHotkeyExclusionListHelp")
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
@@ -9546,7 +9548,7 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnFoldersExclusionListIn
 	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnFoldersExclusionListExclude gGuiOptionsGroupChanged hidden "
 	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFoldersExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % OptionsListSplit(o_Settings.Execution.strFoldersExclusionList.IniValue)
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList, % L(o_L["OptionsFoldersExclusionListInstructions"], strUrl)
 Gui, 2:Add, Text, y+5 hidden vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
 
@@ -9560,7 +9562,7 @@ Gui, 2:Add, Radio, % "y+5 x" . intGroupItemsXFiles . " vf_blnFilesExclusionListI
 	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnFilesExclusionListExclude gGuiOptionsGroupChanged hidden "
 	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
-Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w245 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strFilesExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w245 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % OptionsListSplit(o_Settings.Execution.strFilesExclusionList.IniValue)
 Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w240 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
 
 ; SwitchExclusionList
@@ -9574,7 +9576,7 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnSwitchExclusionListInc
 	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnSwitchExclusionListExclude gGuiOptionsGroupChanged hidden "
 	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
-Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w595 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % StrReplace(Trim(o_Settings.Execution.strSwitchExclusionList.IniValue), "|", "`n")
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w595 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % OptionsListSplit(o_Settings.Execution.strSwitchExclusionList.IniValue)
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w590 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"]
 	. " " . o_L["OptionsSwitchExclusionListInstructions2"] . " " . o_L["OptionsSwitchExclusionListInstructionsList"], strUrl)
 Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w595 vf_drpSwitchExclusionRunning gDropdownSwitchExclusionRunningChanged hidden
@@ -9921,8 +9923,12 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
 
 ; === AdvancedLaunch ===
 
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% w600 hidden vf_lblOptionLaunchAdvancedQAPTitle, % o_L["OptionLaunchAdvancedQAPTitle"]
+Gui, 2:Font
+
 ; RunAsAdmin
-Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y%intGroupItemsY% vf_blnRunAsAdmin gRunAsAdminClicked hidden, % o_L["OptionsRunAsAdmin"]
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 vf_blnRunAsAdmin gRunAsAdminClicked hidden, % o_L["OptionsRunAsAdmin"]
 Gui, 2:Add, Picture, x+1 yp hidden vf_picRunAsAdmin, %g_strTempDir%\uac_logo.png
 GuiControl, , f_blnRunAsAdmin, % (o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue = true)
 
@@ -9937,7 +9943,21 @@ Gui, 2:Add, Button, x+5 yp w75 vf_btnAlternativeTrayIcon gButtonAlternativeTrayI
 GuiControl, 2:, f_strAlternativeTrayIcon, % o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strAlternativeTrayIcon
 
-GuiControlGet, arrPos, Pos, f_btnAlternativeTrayIcon
+; OpenFromHotkeyExclusionList
+strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/", A_ThisLabel, "Help")
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w600 hidden vf_lnkOptionOpenFromHotkeyExclusionList, % o_L["OptionOpenFromHotkeyExclusionListTitle"]
+	. " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
+Gui, 2:Font
+Gui, 2:Add, Radio, % "y+10 x" . g_intGroupItemsX . " vf_blnOpenFromHotkeyExclusionListBlacklist gGuiOptionsGroupChanged hidden "
+	. (o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
+Gui, 2:Add, Radio, % "yp x+10 vf_blnOpenFromHotkeyExclusionListWhitelist gGuiOptionsGroupChanged hidden "
+	. (o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
+Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strOpenFromHotkeyExclusionList gGuiOptionsGroupChanged hidden
+	, % OptionsListSplit(o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionList.IniValue)
+Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w600 hidden vf_lblOptionOpenFromHotkeyExclusionListHelp, % L(o_L["OptionOpenFromHotkeyExclusionListHelp"], strUrl)
+
+GuiControlGet, arrPos, Pos, f_lblOptionOpenFromHotkeyExclusionListHelp
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -10441,6 +10461,9 @@ if (blnRunAsAdminPrev <> o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	Oops(2, o_L["OptionsRunAsAdminChanged"], g_strAppNameText)
 o_Settings.LaunchAdvanced.blnRefreshWindowsAppsListAtStartup.WriteIni(f_blnRefreshWindowsAppsListAtStartup)
 o_Settings.LaunchAdvanced.strAlternativeTrayIcon.WriteIni(f_strAlternativeTrayIcon)
+
+o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.WriteIni(f_blnOpenFromHotkeyExclusionListWhitelist)
+o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionList.WriteIni(OptionsListCleanup(f_strOpenFromHotkeyExclusionList))
 blnRunAsAdminPrev := ""
 	
 ; === AdvancedOther ===
@@ -20487,15 +20510,16 @@ CanOpenFromHotkey()
 ;------------------------------------------------------------
 {
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
-	Loop, Parse, % o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionsList, |
+	Loop, Parse, % o_Settings.LaunchAdvanced.strOpenFromHotkeyExclusionList.IniValue, |
 	{
 		if StrLen(A_Loopfield)
 			and (InStr(g_strTargetClass, A_LoopField)
 			or InStr(g_strTargetWinTitle, A_LoopField)
 			or InStr(g_strTargetProcessName, A_LoopField))
-			return false ; cannot open
+			return o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ; return true or false according to blnOpenFromHotkeyExclusionListWhitelist
+
 	}
-	return true ; can open
+	return !o_Settings.LaunchAdvanced.blnOpenFromHotkeyExclusionListWhitelist.IniValue ; return false or true according to blnOpenFromHotkeyExclusionListWhitelist
 }
 ;------------------------------------------------------------
 
@@ -27454,6 +27478,15 @@ ConvertShortcutRunState(intShortcutRunState)
     ; Shortcut RunState -> 1 Normal / 3 Maximized / 7 Minimized
     ; Return QAP RunState -> -1 Minimized / 0 Normal / 1 Maximized
     return (intShortcutRunState = 3 ? 1 : (intShortcutRunState = 7 ? -1 : 0))
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+OptionsListSplit(str)
+;------------------------------------------------------------
+{
+	return StrReplace(Trim(str), "|", "`n")
 }
 ;------------------------------------------------------------
 
