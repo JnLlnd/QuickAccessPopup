@@ -31,6 +31,18 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.99.1 (2022-11-23)
+ 
+High DPI screens 
+- new hires images for QAP dialog boxes ("Customize", "Welcome" and "Startup Tips") for better display on high DPI screens (hires images are used when resolution is 144 DPI or higher)
+- in "Add Favorite - Select Type" dialog box, fix icons alignement on both regular and high DPI screens; make icons clickable
+ 
+Various
+- add an option to disable/enable ("exclude" or "include only") all QAP keyboard shortcuts (favorites shortcuts, Main and Alternative menus shortcuts and Alternative menus features shortcuts)
+- in "Special Folders", add "Environment Variables" under the "Power User" section
+- add the QAPmessenger command "ShowMenuDynamic" to display QAP Feature dynamic menus ("Recent/Frequent Folders", "Current Windows", "TC Directory Hotlist", "DOpus Favorites", etc.); menus must be present in the QAP menu
+- increase reliability when opening a folder in a new tab of Win11 Windows Explorer (after adding a new tab, wait 1 second before changing the folder)
+
 Version: 11.5.10 (2022-11-07)
 - when running on Windows 11 22H2 (build 22621.675 released October 18 or more recent) and preferred file manager is Windows Explorer:
   - add in "Options, File Managers" a checkbox to open folders in a new tab of active (or last used) Windows Explorer instead of in a new Explorer window
