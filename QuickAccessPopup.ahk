@@ -20443,19 +20443,17 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
 		; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is true (approved) and exclusion list is empty
 		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
-		{
-			Diag(A_ThisFunc, "strExclusionMouseList EMPTY", true)
+			
 			blnCanNavigate := true ; regardless of o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
-		}
+			
 		else
 			Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, |
 				if StrLen(A_Loopfield)
 					and (InStr(g_strTargetClass, A_LoopField)
 					or InStr(g_strTargetWinTitle, A_LoopField)
 					or InStr(g_strTargetProcessName, A_LoopField))
-					{
-						blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; true show menu, false cannot navigate
-					}
+					
+					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; true show menu, false cannot navigate
 				
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
 	if (!o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId))
@@ -20471,7 +20469,6 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	else
 		g_strTargetControlId := ""
 	
-	Diag(A_ThisFunc, "blnCanNavigate", blnCanNavigate)
 	return blnCanNavigate
 }
 ;------------------------------------------------------------
@@ -20485,10 +20482,9 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 
 	; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is true (approved) and exclusion list is empty
 	if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
-	{
-		Diag(A_ThisFunc, "strExclusionMouseList EMPTY", true)
+		
 		return true ; regardless of o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
-	}
+		
 	; else continue
 
 	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
@@ -20497,33 +20493,20 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 				and (InStr(g_strTargetClass, A_LoopField)
 				or InStr(g_strTargetWinTitle, A_LoopField)
 				or InStr(g_strTargetProcessName, A_LoopField))
-			{
-				Diag(A_ThisFunc, "A_LoopField", A_LoopField)
-				Diag(A_ThisFunc, "blnExclusionMouseListWhitelist", o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
+				
 				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; true show menu, false do not show
-			}
 
 	if WindowIsTray(g_strTargetClass)
-	{
-		Diag(A_ThisFunc, "blnOpenMenuOnTaskbar", o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue)
 		return o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue
-	}
 
 	if WindowIsTreeview(g_strTargetWinId)
-	{
-		Diag(A_ThisFunc, "WindowIsTreeview", false)
 		return false
-	}
 	
 	if WindowIsDialog(g_strTargetClass, g_strTargetWinId) and DialogBoxParentExcluded(g_strTargetWinId)
-	{
-		Diag(A_ThisFunc, "WindowIsDialog", false)
 		return false
-	}
 	
 	; else we can launch (or not launch if blnExclusionMouseListWhitelist)
 
-	Diag(A_ThisFunc, "NOT blnExclusionMouseListWhitelist", !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
 	return (!o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; blnExclusionMouseListWhitelist false cannot launch, true show menu
 }
 ;------------------------------------------------------------
@@ -20564,10 +20547,9 @@ CanHotkeyTrigger()
 	
 	; avoid blocking all hotkeys in case strHotkeyTriggerExclusionList is true (approved) and exclusion list is empty
 	if !StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
-	{
-		Diag(A_ThisFunc, "strHotkeyTriggerExclusionList EMPTY", true)
+		
 		return true ; regardless of o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
-	}
+
 	; else continue
 	
 	Loop, Parse, % o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue, |
@@ -20576,13 +20558,11 @@ CanHotkeyTrigger()
 			and (InStr(g_strTargetClass, A_LoopField)
 			or InStr(g_strTargetWinTitle, A_LoopField)
 			or InStr(g_strTargetProcessName, A_LoopField))
-		{
-			Diag(A_ThisFunc, "blnHotkeyTriggerExclusionListWhitelist", o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
+
 			return o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return true or false according to blnHotkeyTriggerExclusionListWhitelist
-		}
 
 	}
-	Diag(A_ThisFunc, "NOT blnHotkeyTriggerExclusionListWhitelist", !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
+
 	return !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return false or true according to blnHotkeyTriggerExclusionListWhitelist
 }
 ;------------------------------------------------------------
@@ -21028,10 +21008,6 @@ if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected))
 
 ; beginning of OpenFavorite execution
 
-Diag(A_ThisLabel, "g_strMenuTriggerLabel", g_strMenuTriggerLabel)
-Diag(A_ThisLabel, "g_strOpenFavoriteLabel", g_strOpenFavoriteLabel)
-Diag(A_ThisLabel, "g_strTargetWinId", g_strTargetWinId)
-Diag(A_ThisLabel, "g_strHotkeyTypeDetected", g_strHotkeyTypeDetected)
 o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
 
 if (o_ThisFavorite.AA.oParentMenu.AA.blnReopenAfterLaunchingItem)
@@ -32818,7 +32794,6 @@ class Container
 			if !StrLen(this.aaTemp.strLocationWithPlaceholders)
 				return 1 ; error code
 			
-			Diag(A_ThisFunc, "this.aaTemp.strLocationWithPlaceholders", this.aaTemp.strLocationWithPlaceholders)
 			; LAUNCH WITH
 			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|WindowsApp|", this.AA.strFavoriteType . "|")
 			; this.AA.strFavoriteLaunchWith <> "0" for legacy of old ini file
@@ -32907,12 +32882,10 @@ class Container
 			if InStr("|Folder|Special|FTP", "|" . this.AA.strFavoriteType) ; must be before SetFullLocation()
 				if !this.SetTargetName() ; sets old g_strTargetAppName, can change this.aaTemp.strHotkeyTypeDetected to "Launch", can empty this.aaTemp.strTargetWinId if Desktop
 					return 1 ; error code if target is unknown
-			Diag(A_ThisFunc, "this.aaTemp.strTargetAppName", this.aaTemp.strTargetAppName)
 			
 			if (this.AA.strFavoriteType <> "Text") ; text separators don't have location
 				if !this.SetFullLocation()
 					return 1 ; error code if location is empty
-			Diag(A_ThisFunc, "this.aaTemp.strFullLocation", this.aaTemp.strFullLocation)
 				
 			if (this.AA.strFavoriteType = "Text")
 				return intOpenError ; do nothing, do not flag error
@@ -33024,7 +32997,6 @@ class Container
 			else
 				intOpenError := 1 ; error
 			
-			Diag(A_ThisFunc, "intOpenError", intOpenError)
 			if (intOpenError) ; error
 				return intOpenError ;  return error
 			else
@@ -33141,7 +33113,6 @@ class Container
 					{
 						For pExplorer in ComObjCreate("Shell.Application").Windows
 						{
-							Diag(A_ThisFunc, "pExplorer.hwnd", pExplorer.hwnd)
 							if (pExplorer.hwnd = g_strTargetWinId)
 							{
 								if (GetOSVersionInfo().DetailedBuild >= "10.0.22621.675") ; Win 11 Explorer with tabs
@@ -33356,7 +33327,6 @@ class Container
 						return ; will be wrongly logged as a navigate folder
 					}
 					
-					Diag(A_ThisFunc, "this.aaTemp.blnOpenFavoritesOnActiveMonitor", this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 					if ((g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeNewWindow"])
 						or this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor)
 						; This technique creates a new Explorer instance at every call unless the current location is already an active Explorer window (as of Win 10).
