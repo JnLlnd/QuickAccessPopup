@@ -34,6 +34,7 @@ HISTORY
 Version BETA: 11.5.99.2 (2022-11-24)
 - fix bug introduced in beta v11.5.99.1 when opening the main menu with the mouse button
 - fix bug when in a favorite folder "Window Options" tab, "Use default position" is checked but the "Minimized" option was selected previously
+- in the "Add Favorite Type" dialog box, increase spacing between groups and better center icons with radio buttons
 - in "Options", move down the "Menu Exclusions/Inclusions" section
 
 Version BETA: 11.5.99.1 (2022-11-23)
@@ -12566,7 +12567,7 @@ loop, Parse, g_strAddFavIconsTypes, |
 {
 	if !StrLen(A_LoopField)
 	{
-		Gui, Font, s1 ; small font for small spacing
+		Gui, Font, s2 ; small font for small spacing
 		Gui, 2:Add, Text
 		Gui, Font
 	}
@@ -12574,7 +12575,7 @@ loop, Parse, g_strAddFavIconsTypes, |
 	{
 		ParseIconResource(StrSplit(A_LoopField, ";")[1], strThisIconFile, intThisIconIndex)
 		Gui, 2:Add, Picture, % "x25 y+8 w16 h16 Icon" . intThisIconIndex . " vf_icoRadioFavoriteType" . StrSplit(A_LoopField, ";")[2] . " gFavoriteSelectTypeRadioButtonsChanged", %strThisIconFile%
-		Gui, 2:Add, Radio, % "x52 yp vf_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2]
+		Gui, 2:Add, Radio, % "x52 yp+1 vf_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2]
 			. " gFavoriteSelectTypeRadioButtonsChanged", % o_Favorites.GetFavoriteTypeObject(StrSplit(A_LoopField, ";")[2]).strFavoriteTypeLabel
 	}
 }
