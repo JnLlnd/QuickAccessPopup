@@ -31,7 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.99.2 (2022-11-##)
+Version BETA: 11.5.99.2 (2022-11-24)
+- fix bug introduced in beta v11.5.99.1 when opening the main menu with the mouse button
+- fix bug when in a favorite folder "Window Options" tab, "Use default position" is checked but the "Minimized" option was selected previously
+- in "Options", move down the "Menu Exclusions/Inclusions" section
 
 Version BETA: 11.5.99.1 (2022-11-23)
  
@@ -7747,11 +7750,12 @@ saMenuItemsTable.Push(["GuiOptionsGroupSettingsWindow", aaL["OptionsSettingsWind
 saMenuItemsTable.Push(["X", "", "", ""])
 saMenuItemsTable.Push(["GuiOptionsGroupMenuIcons", aaL["OptionsMenuIcons"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupMenuAppearance", aaL["OptionsMenuAppearance"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiOptionsGroupPopupMenu", aaL["OptionsPopupMenu"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiOptionsGroupMenuExclusions", aaL["OptionsMenuExclusions"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
+saMenuItemsTable.Push(["GuiOptionsGroupPopupMenu", aaL["OptionsPopupMenu"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeys", aaL["OptionsPopupHotkeys"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeysAlternative", aaL["OptionsPopupHotkeysAlternative"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X", "", "", ""])
+saMenuItemsTable.Push(["GuiOptionsGroupMenuExclusions", aaL["OptionsMenuExclusions"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
 saMenuItemsTable.Push(["GuiOptionsGroupFileManagers", aaL["OptionsFileManagers"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
@@ -30198,10 +30202,9 @@ TODO
 	; called after o_L is initialized
 	;---------------------------------------------------------
 	{
-		this.saOptionsGroupsLabelNames := ["OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance"
-			, "OptionsPopupMenu", "OptionsMenuExclusions", "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsFileManagers"
-			, "OptionsSnippets", "OptionsUserVariables", "OptionsDatabase"
-			, "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther"]
+		this.saOptionsGroupsLabelNames := ["OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu"
+			, "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsMenuExclusions", "OptionsFileManagers", "OptionsSnippets"
+			, "OptionsUserVariables", "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther"]
 	}
 	;---------------------------------------------------------
 
