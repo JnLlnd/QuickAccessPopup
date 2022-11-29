@@ -5821,6 +5821,12 @@ if !GetKeyState("Shift")
 ; gosub, OpenFavoriteFromMsg
 ; gosub, GuiOptionsGroupFileManagers
 ; RECEIVE_QAPMESSENGER(wParam, lParam)
+; x := ExpandPlaceholderRandom("before{Random:GUID}after1:after2}after3Random:after4")
+; x := ExpandPlaceholderRandom("before{Random:a|b|c|d|e|f|g|h|i|j}after1:after2}after3Random:after4|after5")
+; x := ExpandPlaceholderRandom("before{Random:5~10}after1:after2}after3Random:after4|after5")
+; x := ExpandPlaceholderRandom("before{Random:5.0~10.0~10}after1:after2}after3Random:after4|after5")
+; x := ExpandPlaceholderRandom("before{Random:5~10~10}after1:after2}after3Random:after4|after5")
+; x := ExpandPlaceholderRandom("before{Random:-5~-10~10}after1:after2}after3Random:after4|after5")
 
 return
 
@@ -25216,7 +25222,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	; calculation examples: {Now+1M:yyyy-MM-dd} -> 2019-11-16 / {Now-4h:dddd hh:mm} -> Wednesday 10:06
 	; QAP added format "ld" (last day): {Now:MMMM} {Now:ld}, {Now:yyyy} -> October 31, 2019
 	{
-		arrNow := StrSplit(strExpanded, "{Now") ; before "{Now" in [1], after the first "{Now" in [2] 
+		arrNow := StrSplit(strExpanded, "{Now") ; before "{Now" in [1], after the first "{Now" in [2]
 		arrColon := StrSplit(arrNow[2], ":") ; before ":" in [1] is the calculation, after ":" in [2], [3], etc. is the remaining of strExpanded
 		strCalculation := arrColon[1]
 		
@@ -25261,6 +25267,10 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	}
 	else
 	{
+		; process Random
+		while InStr(strExpanded, "{Random:") ; not case sensitive, expand {Random:...}
+			strExpanded := ExpandPlaceholderRandom(strExpanded)
+	
 		; process Clipboard
 		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
@@ -25301,6 +25311,77 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	strExpanded := StrReplace(strExpanded, "!r4nd0mt3xt!", "{") ; restore ticked open curly brackets
 
 	return strExpanded
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ExpandPlaceholderRandom(str)
+; {Random:text1|text2|text3} return one of the pieces of text
+; {Random:x~y} return an integer number between integers x and y
+; {Random:x~y~n} return a floating point number between x and y with n decimals
+; {Random:GUID} return a Globally Unique Identifier
+;------------------------------------------------------------
+{
+	saRandom := StrSplit(str, "{Random:") ; before "{Random:" in [1], after the first "{Random:" in [2]
+	saColon := StrSplit(saRandom[2], "}") ; before "}" in [1] is the command, after "}" in [2], [3], etc. is the remaining of str (not processed)
+	strCommand := Trim(saColon[1])
+	
+	if (strCommand = "GUID") ; {Random:GUID}
+		strRandomResult := CreateGUID()
+	else if InStr(strCommand, "|") ; {Random:text1|text2|text3}
+		strRandomResult := PickRandomText(strCommand)
+	else if InStr(strCommand, "~") ; {Random:x~y} or {Random:x~y~n}
+		strRandomResult := PickRandomNumber(strCommand)
+
+	return StrReplace(str, "{Random:" . saColon[1] . "}", strRandomResult)
+}
+;------------------------------------------------------------
+
+
+;-----------------------------------------------------------
+CreateGUID() 
+; 32 hex digits = 128-bit Globally Unique ID
+; Source: Laszlo in http://www.autohotkey.com/board/topic/5362-more-secure-random-numbers/
+;-----------------------------------------------------------
+{
+	format = %A_FormatInteger%       ; save original integer format
+	SetFormat Integer, Hex           ; for converting bytes to hex
+	VarSetCapacity(A,16)
+	DllCall("rpcrt4\UuidCreate","Str",A)
+	Address := &A
+	Loop 16
+	{
+		x := 256 + *Address           ; get byte in hex, set 17th bit
+		StringTrimLeft x, x, 3        ; remove 0x1
+		h = %x%%h%                    ; in memory: LS byte first
+		Address++
+	}
+	SetFormat Integer, %format%      ; restore original format
+	Return h
+}
+;-----------------------------------------------------------
+
+
+;------------------------------------------------------------
+PickRandomText(str)
+;------------------------------------------------------------
+{
+	saChoices := StrSplit(str, "|")
+	
+	return saChoices[RandomBetween(1, saChoices.MaxIndex())]
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+PickRandomNumber(str)
+;------------------------------------------------------------
+{
+	saBetween := StrSplit(str, "~")
+	strRandomResult := RandomBetween(saBetween[1], saBetween[2], (StrLen(saBetween[3]) ? saBetween[3] : 0))
+	
+	return strRandomResult
 }
 ;------------------------------------------------------------
 
@@ -26124,12 +26205,24 @@ QAPSettingsString()
 
 
 ;------------------------------------------------------------
-RandomBetween(intMin := 0, intMax := 2147483647)
+RandomBetween(varMin := 0, varMax := 2147483647, intFloatingPrecision := 0)
+; varMin and varMax must be of the same type and can be integer or floating point numbers
+; if intFloatingPrecision is 0, return an integer number, else return a floating point number
 ;------------------------------------------------------------
 {
-	Random, intValue, %intMin%, %intMax%
+	if (intFloatingPrecision) ; return a floating point rumber
+	{
+		; make sure min and max are floating to make the Random command return a floating number
+		if varMin is integer
+			varMin .= ".0"
+		if varMax is integer
+			varMax .= ".0"
+		; set precision of float result
+		SetFormat, Float, % "0." . intFloatingPrecision
+	}
+	Random, varValue, %varMin%, %varMax%
 	
-	return intValue
+	return varValue
 }
 ;------------------------------------------------------------
 
