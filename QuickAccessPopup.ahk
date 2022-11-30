@@ -1,4 +1,3 @@
-global g_###
 ;===============================================
 /*
 
@@ -25348,8 +25347,8 @@ ExpandPlaceholderRandom(str)
 		strRandomResult := PickRandomText(strCommand)
 	else if InStr(strCommand, "~") ; {Random:x~y} or {Random:x~y~n}
 		strRandomResult := PickRandomNumber(strCommand)
-
-	return StrReplace(str, "{Random:" . saColon[1] . "}", strRandomResult)
+	
+	return StrReplace(str, "{Random:" . saColon[1] . "}", strRandomResult, , 1) ; replace only first occurence
 }
 ;------------------------------------------------------------
 
@@ -25384,7 +25383,6 @@ PickRandomText(str)
 {
 	saChoices := StrSplit(str, "|")
 	
-	; Random, , % RandomBetween(0, 0xFFFFFFFF)
 	return saChoices[RandomBetween(1, saChoices.MaxIndex())]
 }
 ;------------------------------------------------------------
@@ -25395,7 +25393,6 @@ PickRandomNumber(str)
 ;------------------------------------------------------------
 {
 	saBetween := StrSplit(str, "~")
-	Random, , % RandomBetween(0, 0xFFFFFFFF)
 	strRandomResult := RandomBetween(saBetween[1], saBetween[2], (StrLen(saBetween[3]) ? saBetween[3] : 0))
 	
 	return strRandomResult
