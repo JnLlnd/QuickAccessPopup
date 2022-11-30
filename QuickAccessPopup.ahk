@@ -1,3 +1,4 @@
+global g_###
 ;===============================================
 /*
 
@@ -30,6 +31,9 @@ limitations under the License.
 
 HISTORY
 =======
+
+Version BETA: 11.5.99.3 (2022-11-??)
+- 
 
 Version BETA: 11.5.99.2 (2022-11-24)
 - fix bug introduced in beta v11.5.99.1 when opening the main menu with the mouse button
@@ -5249,7 +5253,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.2
+;@Ahk2Exe-SetVersion 11.5.99.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5316,7 +5320,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.99.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -5473,6 +5477,9 @@ global g_aaRecentFoldersShortNames := Object() ; search for g_aaRecent%strFolder
 global g_aaRecentFilesShortNames := Object() ; search for g_aaRecent%strFoldersOrFiles%ShortNames
 
 global g_strAddFavIconsTypes ; in Add favorite, pipe-separated list of "icon type, favorite type" (e.g. "iconFolder;Folder|iconSpecialFolders;Special|...")
+
+global g_saPlaceholderMenuItems := Object() ; single array of menu items in ExpandPlaceholderMenu
+global g_strPlaceholderMenuResult ; result of menu selection in ExpandPlaceholderMenu
 
 ;---------------------------------
 ; Used in SelectIcon()
@@ -5827,6 +5834,11 @@ if !GetKeyState("Shift")
 ; x := ExpandPlaceholderRandom("before{Random:5.0~10.0~10}after1:after2}after3Random:after4|after5")
 ; x := ExpandPlaceholderRandom("before{Random:5~10~10}after1:after2}after3Random:after4|after5")
 ; x := ExpandPlaceholderRandom("before{Random:-5~-10~10}after1:after2}after3Random:after4|after5")
+; x := ExpandPlaceholderMenu("before{Menu:Menu1|Menu2~Extended menu 2|Menu3}after1:after2}after3Random:after4|after5")
+; loop, 10
+	; str .= RandomBetween(1,3) . "`n"
+; ###_V("", str)
+
 
 return
 
@@ -25271,6 +25283,9 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		while InStr(strExpanded, "{Random:") ; not case sensitive, expand {Random:...}
 			strExpanded := ExpandPlaceholderRandom(strExpanded)
 	
+		while InStr(strExpanded, "{Menu:") ; not case sensitive, expand {Menu:...}
+			strExpanded := ExpandPlaceholderMenu(strExpanded)
+	
 		; process Clipboard
 		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
@@ -25369,6 +25384,7 @@ PickRandomText(str)
 {
 	saChoices := StrSplit(str, "|")
 	
+	; Random, , % RandomBetween(0, 0xFFFFFFFF)
 	return saChoices[RandomBetween(1, saChoices.MaxIndex())]
 }
 ;------------------------------------------------------------
@@ -25379,10 +25395,46 @@ PickRandomNumber(str)
 ;------------------------------------------------------------
 {
 	saBetween := StrSplit(str, "~")
+	Random, , % RandomBetween(0, 0xFFFFFFFF)
 	strRandomResult := RandomBetween(saBetween[1], saBetween[2], (StrLen(saBetween[3]) ? saBetween[3] : 0))
 	
 	return strRandomResult
 }
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ExpandPlaceholderMenu(str)
+; {Menu:text1|text2|text3} show a menu with these items and paste the selected item
+; {Menu:label1~text1|label2~text2|label3~text3} show a menu with these labels and items and paste the selected item
+;------------------------------------------------------------
+{
+	saMenu := StrSplit(str, "{Menu:") ; before "{Menu:" in [1], after the first "{Menu:" in [2]
+	saItems := StrSplit(saMenu[2], "}") ; before "}" in [1] are the menu items, after "}" in [2], [3], etc. is the remaining of str (not processed)
+	strMenuItems := Trim(saItems[1])
+	
+	saMenuItems := StrSplit(strMenuItems, "|")
+	for intItem, strItem in saMenuItems
+	{
+		if InStr(strItem, "~")
+			strLabel := StrSplit(strItem, "~")[1]
+		g_saPlaceholderMenuItems[intItem] := (InStr(strItem, "~") ? StrSplit(strItem, "~")[2] : strItem)
+		Menu, menuPlaceholder, Add, % (InStr(strItem, "~") ? strLabel : strItem), PlaceholderMenuResult
+	}
+	Menu, menuPlaceholder, Show
+
+	return StrReplace(str, "{Menu:" . saItems[1] . "}", g_strPlaceholderMenuResult)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+PlaceholderMenuResult:
+;------------------------------------------------------------
+
+g_strPlaceholderMenuResult := g_saPlaceholderMenuItems[A_ThisMenuItemPos]
+
+return
 ;------------------------------------------------------------
 
 
