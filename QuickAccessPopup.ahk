@@ -5827,13 +5827,13 @@ if !GetKeyState("Shift")
 ; gosub, OpenFavoriteFromMsg
 ; gosub, GuiOptionsGroupFileManagers
 ; RECEIVE_QAPMESSENGER(wParam, lParam)
-; x := ExpandPlaceholderRandom("before{Random:GUID}after1:after2}after3Random:after4")
-; x := ExpandPlaceholderRandom("before{Random:a|b|c|d|e|f|g|h|i|j}after1:after2}after3Random:after4|after5")
-; x := ExpandPlaceholderRandom("before{Random:5~10}after1:after2}after3Random:after4|after5")
-; x := ExpandPlaceholderRandom("before{Random:5.0~10.0~10}after1:after2}after3Random:after4|after5")
-; x := ExpandPlaceholderRandom("before{Random:5~10~10}after1:after2}after3Random:after4|after5")
-; x := ExpandPlaceholderRandom("before{Random:-5~-10~10}after1:after2}after3Random:after4|after5")
-; x := ExpandPlaceholderMenu("before{Menu:Menu1|Menu2~Extended menu 2|Menu3}after1:after2}after3Random:after4|after5")
+; x := ExpandPlaceholders("before{GUID} / {GUID}after1:after2}after3after4", "strLocation", "strCurrentLocation", "strSelectedLocation", false)
+; ###_D(ExpandPlaceholdersRandom("before{RandomText:a|b|c|d|e|f|g|h|i|j}after1:after2}after3after4|after5"))
+; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:5|10}after1:after2}after3after4|after5"))
+; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:5.0|10.0|10}after1:after2}after3after4|after5"))
+; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:5|10|10}after1:after2}after3after4|after5"))
+; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:-5|-10|10}after1:after2}after3after4|after5"))
+; ###_D(ExpandPlaceholderMenu("before{Menu:Menu1|Menu2~Extended menu 2|Menu3}after1:after2}after3after4|after5"))
 ; loop, 10
 	; str .= RandomBetween(1,3) . "`n"
 ; ###_V("", str)
@@ -25223,7 +25223,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 ;   Do not process strCurrentLocation or strSelectedLocation if = -1
 ;   Note: {SETTINGS}, {SETTINGS_DIR}, etc. are processed using the settings file location
 ;
-; This function also process {Clipboard}, {Input:prompt}, {Now:format}, {ActiveWindow}, {Menu:...}, {Random:...} and user variables.
+; This function also process {Clipboard}, {Input:prompt}, {Now:format}, {ActiveWindow}, {Menu:...}, {RandomText:...}, {RandomNumber:...}, {GUID} and user variables.
 ;------------------------------------------------------------
 {
 	; protect escaped open curly brackets `{
@@ -25290,9 +25290,13 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	}
 	else
 	{
-		; process Random
-		while InStr(strExpanded, "{Random:") ; not case sensitive, expand {Random:...}
-			strExpanded := ExpandPlaceholderRandom(strExpanded)
+		; process RandomNumber and RandomText
+		while InStr(strExpanded, "{Random") ; not case sensitive, expand {RandomText:...} and {RandomNumber:...}
+			strExpanded := ExpandPlaceholdersRandom(strExpanded)
+	
+		; process GUID
+		while InStr(strExpanded, "{GUID}") ; not case sensitive, expand {GUID}
+			strExpanded := StrReplace(strExpanded, "{GUID}", CreateGUID(), , 1) ; replace only first occurence of {GUID}
 	
 		while InStr(strExpanded, "{Menu:") ; not case sensitive, expand {Menu:...}
 			strExpanded := ExpandPlaceholderMenu(strExpanded)
@@ -25342,25 +25346,23 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 
 
 ;------------------------------------------------------------
-ExpandPlaceholderRandom(str)
-; {Random:text1|label2~multiline text2|text3} return one of the pieces of text
-; {Random:x~y} return an integer number between integers x and y
-; {Random:x~y~n} return a floating point number between x and y with n decimals
-; {Random:GUID} return a Globally Unique Identifier
+ExpandPlaceholdersRandom(str)
+; RandomText: {RandomText:text1|label2~multiline text2|text3} return one of the pieces of text
+; RandomNumber: {RandomNumber:x|y} return an integer number between integers x and y, {RandomNumber:x|y|n} return a floating point number between x and y with n decimals
 ;------------------------------------------------------------
 {
-	saRandom := StrSplit(str, "{Random:") ; before "{Random:" in [1], after the first "{Random:" in [2]
-	saColon := StrSplit(saRandom[2], "}") ; before "}" in [1] is the command, after "}" in [2], [3], etc. is the remaining of str (not processed)
-	strCommand := Trim(saColon[1])
+	saRandom := StrSplit(str, "{Random") ; before "{Random" in [1], after the first "{Random" in [2]
+	saColon := StrSplit(saRandom[2], ":") ; before ":" in [1] is the random type (Number or Text), after ":" in [2], [3], etc. is the remaining of str (not processed)
+	strRandomType := saColon[1] ; "Number" or "Text"
+	saCommand := StrSplit(saColon[2], "}") ; before "}" in [1] is the command, after "}" in [2], [3], etc. is the remaining of str (not processed)
+	strCommand := Trim(saCommand[1])
 	
-	if (strCommand = "GUID") ; {Random:GUID}
-		strRandomResult := CreateGUID()
-	else if InStr(strCommand, "|") ; {Random:text1|text2|text3}
+	if (strRandomType = "Text") ; {RandomText:text1|text2|text3}
 		strRandomResult := PickRandomText(strCommand)
-	else if InStr(strCommand, "~") ; {Random:x~y} for integer or {Random:x~y~n} for floating
+	else if (strRandomType = "Number") ; {RandomNumber:x|y} for integer or {RandomNumber:x|y|n} for floating
 		strRandomResult := PickRandomNumber(strCommand)
 	
-	return StrReplace(str, "{Random:" . saColon[1] . "}", strRandomResult, , 1) ; replace only first occurence
+	return StrReplace(str, "{Random" . strRandomType . ":" . saCommand[1] . "}", strRandomResult, , 1) ; replace only first occurence
 }
 ;------------------------------------------------------------
 
@@ -25404,7 +25406,7 @@ PickRandomText(str)
 PickRandomNumber(str)
 ;------------------------------------------------------------
 {
-	saBetween := StrSplit(str, "~")
+	saBetween := StrSplit(str, "|")
 	strRandomResult := RandomBetween(saBetween[1], saBetween[2], (StrLen(saBetween[3]) ? saBetween[3] : 0))
 	
 	return strRandomResult
