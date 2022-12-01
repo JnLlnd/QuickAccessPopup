@@ -31,8 +31,17 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.99.3 (2022-11-??)
-- 
+Version BETA: 11.5.99.3 (2022-12-01)
+- new {Menu:...} placeholder to be replaced with the selected item in a popup menu
+  - {Menu:text1|text2|text3} show a menu with the specified items 
+  - {Menu:...|label~long or multiline text|...} if text is long or includes line breaks, a label can be specified before a tilde
+- new {RandomText:...} and {RandomNumber:...} placeholders to be replaced with random text, random integer or random floating point numbers
+  - {RandomText:text1|text2|text3} is replaced with one of the pieces of text
+  - {RandomNumber:x|y} is replaced with an integer number between integers x and y
+  - {RandomNumber:x|y|n} is replaced with a floating point number between x and y with n decimals
+- new {GUID} to be replaced with a Globally Unique ID of 32 hex digits (128-bit)
+- new {SETTINGS}, {SETTINGS_DIR}, etc. placeholders to be replaced with path (or part of the path) of the QAP Settings folder
+- new option to expand environment variables in a snippet, in "Add favorite", type "Snippet", "Advanced Settings" tab
 
 Version BETA: 11.5.99.2 (2022-11-24)
 - fix bug introduced in beta v11.5.99.1 when opening the main menu with the mouse button
@@ -25347,7 +25356,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 
 ;------------------------------------------------------------
 ExpandPlaceholdersRandom(str)
-; RandomText: {RandomText:text1|label2~multiline text2|text3} return one of the pieces of text
+; RandomText: {RandomText:text1|text2|text3} return one of the pieces of text
 ; RandomNumber: {RandomNumber:x|y} return an integer number between integers x and y, {RandomNumber:x|y|n} return a floating point number between x and y with n decimals
 ;------------------------------------------------------------
 {
