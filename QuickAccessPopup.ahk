@@ -13330,6 +13330,7 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 			; 4 fixed width (boolean) true: fixed width / false: proportional width
 			; 5 font size (integer)
 			; 6 never prompt (boolean)
+			; 7 expand user and environment variables (boolean, default false)
 			if !StrLen(o_EditedFavorite.AA.strFavoriteLaunchWith) ; default values
 				o_EditedFavorite.AA.strFavoriteLaunchWith := o_Settings.Snippets.blnSnippetDefaultMacro.IniValue . ";;"
 					. o_Settings.Snippets.blnSnippetDefaultProcessEOLTab.IniValue . ";" 
@@ -13343,9 +13344,6 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 			Gui, Font
 			GuiControlGet, arrPosEnlarge, Pos, f_btnEnlarge
 			g_intContentLabelY := arrPosEnlargeY
-			
-			; intMoveRight := 500 - (arrPosFixedFontX + arrPosFixedFontW + arrPosFontSizeW + arrPosUpDownW + arrPosFontSizeLabelW + 10 + arrPosEnlargeW)
-			; GuiControl, Move, f_btnEnlarge, % "x" . arrPosEnlargeX + intMoveRight
 		}
 		
 		Gui, 2:Add, Edit, % "x20 y+5 vf_strFavoriteLocation "
@@ -13383,16 +13381,14 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 	if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 	{
 		g_strSnippetFormat := "raw" ; control initialy loaded with unprocessed content as in ini file
-		Gui, 2:Add, Checkbox, % "x20 y+10 w320 vf_blnProcessEOLTab gProcessEOLTabChanged " . (saFavoriteSnippetOptions[3] <> 0 ? "checked" : ""), % o_L["DialogFavoriteSnippetProcessEOLTab"]
-		Gui, 2:Add, Checkbox, % "x360 yp w160 vf_blnFixedFont gContentEditFontChanged " . (saFavoriteSnippetOptions[4] = 1 ? "checked" : ""), % o_L["DialogFavoriteSnippetFixedFont"]
-		
-		Gui, 2:Add, Link, x20 y+5 vf_lblSnippetHelp w320, `n`n ; keep `n to make sure a second line is available for the control
-		Gui, 2:Add, Text, x360 yp vf_lblFontSize, % o_L["DialogFavoriteSnippetFontSize"]
-		GuiControlGet, arrPosFontSizeLabel, Pos, f_lblFontSize
+		Gui, 2:Add, Text, x20 y+10 vf_lblFontSize, % o_L["DialogFavoriteSnippetFontSize"]
 		Gui, 2:Add, Edit, x+5 yp w40 vf_intFontSize gContentEditFontChanged
-		GuiControlGet, arrPosFontSize, Pos, f_intFontSize
 		Gui, 2:Add, UpDown, Range6-18 vf_intFontUpDown, % (StrLen(saFavoriteSnippetOptions[5]) ? saFavoriteSnippetOptions[5] : o_Settings.Snippets.intSnippetDefaultFontSize.IniValue)
 		GuiControlGet, arrPosUpDown, Pos, f_intFontUpDown
+		Gui, 2:Add, Checkbox, % "x+10 yp vf_blnFixedFont gContentEditFontChanged " . (saFavoriteSnippetOptions[4] = 1 ? "checked" : ""), % o_L["DialogFavoriteSnippetFixedFont"]
+		
+		Gui, 2:Add, Checkbox, % "x20 y+12 w500 vf_blnProcessEOLTab gProcessEOLTabChanged " . (saFavoriteSnippetOptions[3] <> 0 ? "checked" : ""), % o_L["DialogFavoriteSnippetProcessEOLTab"]
+		Gui, 2:Add, Link, x20 y+5 vf_lblSnippetHelp w500, `n`n ; keep `n to make sure a second line is available for the control
 		
 		Gosub, ProcessEOLTabChanged ; encode/decode snippet and update f_lblSnippetHelp text
 	}
@@ -13979,6 +13975,7 @@ else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 	Gui, 2:Add, Text, x20 y+15 vf_lblSnippetPrompt w400, % L(o_L["DialogFavoriteSnippetPromptLabel"], (saFavoriteSnippetOptions[1] = 1 ? o_L["DialogFavoriteSnippetPromptLabelLaunching"] : o_L["DialogFavoriteSnippetPromptLabelPasting"]))
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteSnippetPrompt, % saFavoriteSnippetOptions[2]
 	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteSnippetNoPrompt" . (saFavoriteSnippetOptions[6] ? " checked" : ""), % o_L["DialogFavoriteSnippetPromptNever"]
+	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteSnippetExpandEnvVars " . (saFavoriteSnippetOptions[7] = 1 ? "checked" : ""), % o_L["DialogFavoriteSnippetExpandEnvVars"]
 }
 else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Folder, Document, Special, URL and FTP
 {
@@ -16996,12 +16993,22 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.intFavoriteFolderLiveLevels := 0
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
-		; 1 macro (boolean) true: send snippet to current application using macro mode / else paste as raw text
-		; 2 prompt (text) pause prompt before pasting/launching the snippet
-		; 3 encode (boolean) true: automatically encode / false: do not encode
-		; 4 fixed width (boolean) true: fixed width / false: proportional width
-		; 5 font size (integer)
-		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnRadioSendModeMacro . ";" . f_strFavoriteSnippetPrompt . ";" . f_blnProcessEOLTab . ";" . f_blnFixedFont . ";" . f_intFontSize . ";" . f_blnFavoriteSnippetNoPrompt
+	; 1 macro (boolean) true: send snippet to current application using macro mode / else paste as raw text
+	; 2 prompt (text) pause prompt before pasting/launching the snippet
+	; 3 encode (boolean) true: automatically encode / false: do not encode
+	; 4 fixed width (boolean) true: fixed width / false: proportional width
+	; 5 font size (integer)
+	; 6 never prompt (boolean)
+	; 7 expand user and environment variables (boolean, default false)
+	{
+		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnRadioSendModeMacro . ";" . f_strFavoriteSnippetPrompt . ";" . f_blnProcessEOLTab
+			. ";" . f_blnFixedFont . ";" . f_intFontSize . ";" . f_blnFavoriteSnippetNoPrompt . ";" . f_blnFavoriteSnippetExpandEnvVars
+		saSnippetOptionsTemp := StrSplit(o_EditedFavorite.AA.strFavoriteLaunchWith, ";")
+		o_EditedFavorite.AA.blnSnippetMacroMode := saSnippetOptionsTemp[1]
+		o_EditedFavorite.AA.strSnippetPrompt := saSnippetOptionsTemp[2]
+		o_EditedFavorite.AA.blnSnippetNeverPrompt := saSnippetOptionsTemp[6]
+		o_EditedFavorite.AA.blnSnippetExpandEnvVars := saSnippetOptionsTemp[7]
+	}
 	else
 	{
 		if (o_EditedFavorite.AA.strFavoriteType = "Application" and o_EditedFavorite.AA.strFavoriteLaunchWith = "1" and StrLen(o_EditedFavorite.AA.strFavoriteArguments))
@@ -17159,6 +17166,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	blnRadioButtonValue := ""
 	oNewFavoriteMenu := ""
 	g_intNewSortCriteria := ""
+	saSnippetOptionsTemp := ""
 	
 	; make sure all gui variables are flushed before next fav add or edit
 	Gosub, GuiAddFavoriteFlush
@@ -32829,6 +32837,7 @@ class Container
 				this.AA.blnSnippetMacroMode := saTemp[1]
 				this.AA.strSnippetPrompt := saTemp[2]
 				this.AA.blnSnippetNeverPrompt := saTemp[6]
+				this.AA.blnSnippetExpandEnvVars := saTemp[7]
 			}
 			this.InsertItemValue("strFavoriteLoginName", StrReplace(saFavorite[9], g_strEscapePipe, "|")) ; login name for FTP favorite
 			this.InsertItemValue("strFavoritePassword", StrReplace(saFavorite[10], g_strEscapePipe, "|")) ; password for FTP favorite
@@ -33903,6 +33912,11 @@ class Container
 		; return 0 if success or 1 if timeout error
 		;---------------------------------------------------------
 		{
+			if (this.AA.blnSnippetExpandEnvVars)
+				; expand environment variables like %APPDATA% or %USERPROFILE%
+				; user variables like {DropBox} are always expanded in ExpandPlaceholders()
+				this.aaTemp.strLocationWithPlaceholders := EnvVars(this.aaTemp.strLocationWithPlaceholders)
+
 			if PlaceholderDebug(DecodeSnippet(this.aaTemp.strLocationWithPlaceholders), this.AA.blnFavoriteDebug)
 				return -1
 			

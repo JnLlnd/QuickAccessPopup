@@ -208,6 +208,7 @@ this["DialogFavoriteSelectType"] := "Select the type of favorite to add.`n`nIn t
 this["DialogFavoriteShortNameLabel"] := "Short name for menu"
 this["DialogFavoritesMenuPosition"] := "Insert the favorites before this item"
 this["DialogFavoriteSnippetEmpty"] := "The content is empty. Please enter the snippet's content."
+this["DialogFavoriteSnippetExpandEnvVars"] := "Expand Environment Variables"
 this["DialogFavoriteSnippetFixedFont"] := "Fixed width font"
 this["DialogFavoriteSnippetFontSize"] := "Font size"
 this["DialogFavoriteSnippetHelpNoProcess"] := "Insert ``n for end-of-line and ``t for tab. Insert ```` (double backtick) for backtick."
