@@ -25213,8 +25213,9 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 ;   strCurrentLocation: same with prefix "CUR_" like {CUR_LOC} (full current location in file manager), {CUR_NAME} (current file name), etc.
 ;   strSelectedLocation: same with prefix "SEL_" like {SEL_LOC} (full location of selected item in file manager), {SEL_NAME} (selected file name), etc.
 ;   Do not process strCurrentLocation or strSelectedLocation if = -1
+;   Note: {SETTINGS}, {SETTINGS_DIR}, etc. are processed using the settings file location
 ;
-; This function also process {Clipboard}, {Input:prompt}, {Now:format} and user variables.
+; This function also process {Clipboard}, {Input:prompt}, {Now:format}, {ActiveWindow}, {Menu:...}, {Random:...} and user variables.
 ;------------------------------------------------------------
 {
 	; protect escaped open curly brackets `{
@@ -25226,6 +25227,9 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		strExpanded := ExpandPlaceholdersForThis(strExpanded, strCurrentLocation, "CUR_")
 	if (strSelectedLocation <> -1)
 		strExpanded := ExpandPlaceholdersForThis(strExpanded, strSelectedLocation, "SEL_")
+	
+	; process {SETTINGS_...}
+	strExpanded := ExpandPlaceholdersForThis(strExpanded, o_Settings.strIniFile, "SETTINGS_")
 	
 	; process Now date-time
 	while RegExMatch(strExpanded, "(\{Now)([+-].*:|:).*}") ; match simple Now {Now:aaa} or Now with calculation {Now+2d:aaa}")
@@ -25331,7 +25335,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 
 ;------------------------------------------------------------
 ExpandPlaceholderRandom(str)
-; {Random:text1|text2|text3} return one of the pieces of text
+; {Random:text1|label2~multiline text2|text3} return one of the pieces of text
 ; {Random:x~y} return an integer number between integers x and y
 ; {Random:x~y~n} return a floating point number between x and y with n decimals
 ; {Random:GUID} return a Globally Unique Identifier
@@ -25345,7 +25349,7 @@ ExpandPlaceholderRandom(str)
 		strRandomResult := CreateGUID()
 	else if InStr(strCommand, "|") ; {Random:text1|text2|text3}
 		strRandomResult := PickRandomText(strCommand)
-	else if InStr(strCommand, "~") ; {Random:x~y} or {Random:x~y~n}
+	else if InStr(strCommand, "~") ; {Random:x~y} for integer or {Random:x~y~n} for floating
 		strRandomResult := PickRandomNumber(strCommand)
 	
 	return StrReplace(str, "{Random:" . saColon[1] . "}", strRandomResult, , 1) ; replace only first occurence
@@ -25403,12 +25407,16 @@ PickRandomNumber(str)
 ;------------------------------------------------------------
 ExpandPlaceholderMenu(str)
 ; {Menu:text1|text2|text3} show a menu with these items and paste the selected item
-; {Menu:label1~text1|label2~text2|label3~text3} show a menu with these labels and items and paste the selected item
+; if text is long or includes line breaks, a label can be specified before a tilde like this {Menu:...|label~long or multiline text|...}
 ;------------------------------------------------------------
 {
 	saMenu := StrSplit(str, "{Menu:") ; before "{Menu:" in [1], after the first "{Menu:" in [2]
 	saItems := StrSplit(saMenu[2], "}") ; before "}" in [1] are the menu items, after "}" in [2], [3], etc. is the remaining of str (not processed)
 	strMenuItems := Trim(saItems[1])
+
+	; delete previous menu, if any
+	Menu, menuPlaceholder, Add
+	Menu, menuPlaceholder, DeleteAll
 	
 	saMenuItems := StrSplit(strMenuItems, "|")
 	for intItem, strItem in saMenuItems
