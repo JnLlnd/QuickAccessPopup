@@ -25440,10 +25440,13 @@ ExpandPlaceholderMenu(str)
 	saMenuItems := StrSplit(strMenuItems, "|")
 	for intItem, strItem in saMenuItems
 	{
+		saItem := StrSplit(strItem, "~")
 		if InStr(strItem, "~")
-			strLabel := StrSplit(strItem, "~")[1]
-		g_saPlaceholderMenuItems[intItem] := (InStr(strItem, "~") ? StrSplit(strItem, "~")[2] : strItem)
+			strLabel := saItem[1]
+		g_saPlaceholderMenuItems[intItem] := (InStr(strItem, "~") ? saItem[2] : strItem)
 		Menu, menuPlaceholder, Add, % (InStr(strItem, "~") ? strLabel : strItem), PlaceholderMenuResult
+		if (intItem = 1) and InStr(strItem, "~") and !StrLen(saItem[2]) ; first item with label and empty content is processed as title and made bold
+			Menu, menuPlaceholder, Default, %strLabel%
 	}
 	Menu, menuPlaceholder, Show
 
