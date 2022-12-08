@@ -20972,6 +20972,7 @@ OpenSwitchFolderOrApp:
 OpenFavoriteFromMsg:
 ;------------------------------------------------------------
 
+###_V(A_ThisLabel, 33)
 if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
  	return
 
@@ -20988,6 +20989,9 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 if (A_ThisLabel <> "OpenFavoriteFromLastAction") ; we already have o_ThisFavorite from RepeatLastAction
 	gosub, OpenFavoriteGetFavoriteObject ; define o_ThisFavorite
 
+###_V(A_ThisLabel, o_ThisFavorite.AA.strFavoriteLocation)
+if InStr(o_ThisFavorite.AA.strFavoriteLocation, "Called")
+	a := a
 if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 	or (o_ThisFavorite.AA.strFavoriteType = "Folder") and !StrLen(o_ThisFavorite.AA.strFavoriteLocation) ; no current location found
 {
@@ -32936,6 +32940,9 @@ class Container
 		; return 0 if success or error code (error code only used by OpenGroup (as of 2021-09-23)
 		;---------------------------------------------------------
 		{
+			###_V(A_ThisFunc, this.AA.strFavoriteLocation)
+			if InStr(this.AA.strFavoriteLocation, "Called")
+				a := a
 			intOpenError := 0 ; no error by default
 			
 			this.aaTemp := Object() ; reset item temporary values
@@ -33928,6 +33935,9 @@ class Container
 		; return 0 if success or 1 if timeout error
 		;---------------------------------------------------------
 		{
+			; ###_V(A_ThisFunc, this.aaTemp.strLocationWithPlaceholders)
+			if InStr(this.aaTemp.strLocationWithPlaceholders, "Called")
+				a := a
 			if (this.AA.blnSnippetExpandEnvVars)
 				; expand environment variables like %APPDATA% or %USERPROFILE%
 				; user variables like {DropBox} are always expanded in ExpandPlaceholders()
@@ -34048,6 +34058,7 @@ class Container
 					}
 					else ; this is the last section of the snippet
 					{
+						###_V(A_ThisFunc . " strTemp", strTemp)
 						if StrLen(strTemp)
 							Send, %strTemp%
 						break
