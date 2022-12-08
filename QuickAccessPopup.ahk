@@ -25314,20 +25314,19 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
 		; process Input
-		if !(g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"]) ; avoid {Input:prompt} when editing a favorite
-			while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
-			{
-				strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
-				InputBox, strInputContent, % L(o_L["DialogInputParameter"], g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
-				if (ErrorLevel) ; user clicked Cancel
-					return ; returning an empty string will abort the snippet
-				
-				strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
-				
-				; add user input as a temporary user variable
-				strUserVariablesBackup := o_Settings.UserVariables.strUserVariablesList.IniValue
-				o_Settings.UserVariables.strUserVariablesList.IniValue .= "|{" . strInputPrompt . "}=" . strInputContent ; add temporary content to user variables list
-			}
+		while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
+		{
+			strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
+			InputBox, strInputContent, % L(o_L["DialogInputParameter"], g_strAppNameText), %strInputPrompt% , , , 140 ; get replacement
+			if (ErrorLevel) ; user clicked Cancel
+				return ; returning an empty string will abort the snippet
+			
+			strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
+			
+			; add user input as a temporary user variable
+			strUserVariablesBackup := o_Settings.UserVariables.strUserVariablesList.IniValue
+			o_Settings.UserVariables.strUserVariablesList.IniValue .= "|{" . strInputPrompt . "}=" . strInputContent ; add temporary content to user variables list
+		}
 		
 		; process ActiveWindow
 		if InStr(strOriginal, "{ActiveWindow}")
@@ -32965,9 +32964,12 @@ class Container
 			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc, current content of clipboard {Clipboard},
 			; user {Input:prompt} and current time {Now:format} for favorite's location, favorite's parameter,
 			; application favorite's start in directory, snippet's content
-			this.aaTemp.strLocationWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteLocation, ""
-				, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
-				, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
+			if  (g_blnAlternativeMenu and g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"]) ; do not expand if editing the favorite
+				this.aaTemp.strLocationWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteLocation, ""
+					, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
+					, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
+			else
+				this.aaTemp.strLocationWithPlaceholders := this.AA.strFavoriteLocation
 			if !StrLen(this.aaTemp.strLocationWithPlaceholders)
 				return 1 ; error code
 			
