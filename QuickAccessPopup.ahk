@@ -33997,6 +33997,8 @@ class Container
 			}
 			else ; snippet of type Macro
 			{
+				SendLevel, 1 ; required after using "Hotkey, If" for hotkeys (see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=111364)
+
 				; DecodeSnippet: convert from raw content (as from ini file) to display format (when f_blnProcessEOLTab is true) or to paste format
 				strTemp := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders) ; g_objThisFavorite.FavoriteLocation with expanded placeholders
 				
