@@ -5787,8 +5787,12 @@ HotKey, If, WinActive(SI_strGuiTitle) ; Select icon in gui in function SelectIco
 	Hotkey, Right, SI_SelectorRight
 	Hotkey, Up, SI_SelectorUp
 	Hotkey, Down, SI_SelectorDown
-	
 	; other Hotkeys are now created by menu assignement in BuildGuiMenuBar
+	
+HotKey, If, WinActive("SearchAndGo") ; Search and go box
+	Hotkey, Down, SearchAndGoDown
+	Hotkey, Up, SearchAndGoUp
+
 
 Hotkey, If
 
@@ -5828,25 +5832,7 @@ if !GetKeyState("Shift")
 	o_MainMenu.LaunchAutoExec()
 
 ; ####
-; Gosub, GuiShow
-; Gosub, GuiEditFavorite
-; ###_D(SelectIcon(A_AppDataCommon . "\JeanLalonde\JLicons.dll,2"))
-; ExitApp
-; g_strOpenFavoriteFromMsg := "> C!"
-; gosub, OpenFavoriteFromMsg
-; gosub, GuiOptionsGroupFileManagers
-; RECEIVE_QAPMESSENGER(wParam, lParam)
-; x := ExpandPlaceholders("before{GUID} / {GUID}after1:after2}after3after4", "strLocation", "strCurrentLocation", "strSelectedLocation", false)
-; ###_D(ExpandPlaceholdersRandom("before{RandomText:a|b|c|d|e|f|g|h|i|j}after1:after2}after3after4|after5"))
-; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:5|10}after1:after2}after3after4|after5"))
-; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:5.0|10.0|10}after1:after2}after3after4|after5"))
-; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:5|10|10}after1:after2}after3after4|after5"))
-; ###_D(ExpandPlaceholdersRandom("before{RandomNumber:-5|-10|10}after1:after2}after3after4|after5"))
-; ###_D(ExpandPlaceholderMenu("before{Menu:Menu1|Menu2~Extended menu 2|Menu3}after1:after2}after3after4|after5"))
-; loop, 10
-	; str .= RandomBetween(1,3) . "`n"
-; ###_V("", str)
-
+; Gosub, GuiSearchAndGo
 
 return
 
@@ -5866,6 +5852,9 @@ return
 #If
 
 #If, WinActive(SI_strGuiTitle) ; Select Icon Gui
+#If
+
+#If, WinActive("SearchAndGo") ; Search and go box
 #If
 
 #If, CanHotkeyTrigger() ; Open favorite from Shortcut
@@ -7745,13 +7734,15 @@ saMenuItemsTable.Push(["SpecialSearchAutoExec", aaL["DialogSearchAutoExec"], "",
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiSearchAndReplaceTitle"
+aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiSearchAndGoTitle", "GuiSearchAndReplaceTitle"
 	, "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
 	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
 saMenuItemsTable.Push([":menuBarSpecialSearch", aaMenuToolsL["DialogSearchSpecial"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["GuiSearchAndGo", aaMenuToolsL["GuiSearchAndGoTitle"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiSearchAndReplace", aaMenuToolsL["GuiSearchAndReplaceTitle"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -11995,9 +11986,9 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 			Critical, On ; prevents the current thread from being interrupted by other threads (thread can interrup itself if user type fast in search box)
 			Container.s_intOriginalPositionInResult := 0 ; used to sort search result items in their original sort order
 			if (o_Settings.SettingsWindow.blnSearchFromMain.IniValue)
-				o_MainMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
+				o_MainMenu.LoadSearchResult(o_MenuInGui.AA.strMenuPath) ; populate search result object starting at Main menu
 			else
-				o_MenuInGui.AA.oStartingMenu.LoadSearchResult() ; populate search result object starting at menu currently in gui
+				o_MenuInGui.AA.oStartingMenu.LoadSearchResult(o_MenuInGui.AA.strMenuPath) ; populate search result object starting at menu currently in gui
 		}
 	}
 }
@@ -20972,7 +20963,6 @@ OpenSwitchFolderOrApp:
 OpenFavoriteFromMsg:
 ;------------------------------------------------------------
 
-###_V(A_ThisLabel, 33)
 if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
  	return
 
@@ -20989,9 +20979,6 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 if (A_ThisLabel <> "OpenFavoriteFromLastAction") ; we already have o_ThisFavorite from RepeatLastAction
 	gosub, OpenFavoriteGetFavoriteObject ; define o_ThisFavorite
 
-###_V(A_ThisLabel, o_ThisFavorite.AA.strFavoriteLocation)
-if InStr(o_ThisFavorite.AA.strFavoriteLocation, "Called")
-	a := a
 if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 	or (o_ThisFavorite.AA.strFavoriteType = "Folder") and !StrLen(o_ThisFavorite.AA.strFavoriteLocation) ; no current location found
 {
@@ -24055,6 +24042,99 @@ Loop, Files, %g_strTempDirParent%\_QAP_temp_*,  D
 		Sleep, 10000 ; wait 10 second
 	}
 }
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSearchAndGo:
+;------------------------------------------------------------
+
+Gui, SearchGo:New, -SysMenu -Border -Caption ToolWindow, SearchAndGo
+Gui, SearchGo:Default
+Gui, Color, EEAA99    
+Gui +LastFound
+WinSet, TransColor, EEAA99
+WinSet, AlwaysOnTop, On
+
+Gui, Add, Edit, x0 y0 vf_strSearchGo gGuiSearchAndGoChanged
+Gui, Add, Button, gGuiSearchAndGoEscape x+0 yp h20 w20 vf_btnSearchGo, X
+Gui, Add, ListView, x0 r11 yp+20 Count10 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchGo AltSubmit gGuiSearchGoEvents, Col1
+Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
+Gosub, GuiSearchAndGoChanged
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSearchAndGoChanged:
+;------------------------------------------------------------
+
+intListViewWidth := 200 ; minimal width
+
+; o_MainMenu.LoadSearchResult(strSearch###) ; populate search result object starting at Main menu
+Loop, 10 ; #### nb of items to be added in options
+{
+	LV_Add("", str) ; ##### replace str with search result string
+	; populate search result object
+	intRowWidth := GetPixelSizeOfText(str)
+	intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
+}
+LV_ModifyCol()
+
+GuiControl, Move, f_lvSearchGo, % "w" . intListViewWidth + 15
+GuiControl, Move, f_strSearchGo, % "w" . intListViewWidth - 5
+GuiControl, Move, f_btnSearchGo, % "x" . intListViewWidth - 5
+GetPositionFromMouseOrKeyboard("Mouse", A_ThisHotkey, intPositionX, intPositionY)
+Gui, SearchGo:Show, % "AutoSize x" . intPositionX . " y" . intPositionY - 20
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSearchAndGoEscape:
+;------------------------------------------------------------
+
+Gui, SearchGo:Destroy
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiSearchGoEvents:
+SearchAndGoEnter:
+SearchAndGoDown:
+SearchAndGoUp:
+;------------------------------------------------------------
+
+Gui, SearchGo:Default
+GuiControlGet, strActiveControlV, FocusV
+
+if (A_GuiEvent = "DoubleClick" or A_ThisLabel = "SearchAndGoEnter") ; retrieve favorite object and launch it
+{
+	if (A_ThisLabel = "SearchAndGoEnter")
+		intRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
+	else
+		intRow := A_EventInfo
+	Gosub, GuiSearchAndGoEscape
+}
+else if (A_ThisLabel = "SearchAndGoDown") ; if on edit control, select first row of listview
+	if (strActiveControlV = "f_strSearchGo")
+	{
+		GuiControl, Focus, f_lvSearchGo
+		LV_Modify(1, "Focus Select")
+	}
+	else
+		Send, {Down}
+else if (A_ThisLabel = "SearchAndGoUp") ; if on first row of listview, focus edit control
+	if (strActiveControlV = "f_lvSearchGo" and LV_GetNext() = 1)
+		GuiControl, Focus, f_strSearchGo
+	else
+		Send, {Up}
 
 return
 ;------------------------------------------------------------
@@ -27717,6 +27797,71 @@ OptionsListSplit(str)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+GetPixelSizeOfText(str)
+; from https://www.autohotkey.com/boards/viewtopic.php?p=374665#p374665
+;------------------------------------------------------------
+{
+	; Use to retrieve font and size if necessary
+	; GuiFont     := Control_GetFont( hwnd ) ; provide control's HWND
+	; GuiFontSize := A_LastError
+	strFont := "MS Shell Dlg"
+	strFontSize := 8
+	oTextExtentPoint := GetTextExtentPoint(str, strFont, strFontSize, 0)
+	a1 := oTextExtentPoint.W
+	
+	return oTextExtentPoint.W
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetTextExtentPoint(sString, sFaceName, nHeight = 9, bBold = False, bItalic = False, bUnderline = False, bStrikeOut = False, nCharSet = 0)
+; from Sean (https://autohotkey.com/board/topic/16414-hexview-31-for-stdlib/#entry107363)
+;------------------------------------------------------------
+{
+	hDC := DllCall("GetDC", "Uint", 0)
+	nHeight := -DllCall("MulDiv", "int", nHeight, "int", DllCall("GetDeviceCaps", "Uint", hDC, "int", 90), "int", 72)
+
+	hFont := DllCall("CreateFont", "int", nHeight, "int", 0, "int", 0, "int", 0, "int", 400 + 300 * bBold, "Uint", bItalic, "Uint", bUnderline, "Uint", bStrikeOut, "Uint", nCharSet, "Uint", 0, "Uint", 0, "Uint", 0, "Uint", 0, "str", sFaceName)
+	hFold := DllCall("SelectObject", "Uint", hDC, "Uint", hFont)
+
+	DllCall("GetTextExtentPoint32", "Uint", hDC, "str", sString, "int", StrLen(sString), "int64P", nSize)
+
+	DllCall("SelectObject", "Uint", hDC, "Uint", hFold)
+	DllCall("DeleteObject", "Uint", hFont)
+	DllCall("ReleaseDC", "Uint", 0, "Uint", hDC)
+
+	nWidth  := nSize & 0xFFFFFFFF
+	nHeight := nSize >> 32 & 0xFFFFFFFF
+	;Return "Width: " . nWidth . "`n" . "Height: " . nHeight
+	Size := {}
+	Size.W := nWidth
+	Size.H := nHeight
+	
+	return Size
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+Control_GetFont( hwnd )
+; from SKAN (www.autohotkey.com/forum/viewtopic.php?p=465438#465438 obsolete link
+; also here with some differences https://www.autohotkey.com/board/topic/7984-ahk-functions-incache-cache-list-of-recent-items/page-11#entry510636)
+;------------------------------------------------------------
+{
+	SendMessage 0x31, 0, 0, , ahk_id %hwnd%       ; WM_GETFONT
+	IfEqual,ErrorLevel,FAIL, Return
+	hFont := Errorlevel, VarSetCapacity( LF, szLF := 60*( A_IsUnicode ? 2:1 ) )
+	DllCall("GetObject", UInt,hFont, Int,szLF, UInt,&LF )
+	hDC := DllCall( "GetDC", UInt,hwnd ), DPI := DllCall( "GetDeviceCaps", UInt,hDC, Int,90 )
+	DllCall( "ReleaseDC", Int,0, UInt,hDC ), S := Round( ( -NumGet( LF,0,"Int" )*72 ) / DPI )
+	
+	Return DllCall( "MulDiv",Int,&LF+28, Int,1,Int,1, Str ), DllCall( "SetLastError", UInt,S )
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -29758,9 +29903,12 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Add Snippet and Hotstring", o_L["GuiQuickAddSnippet"] . g_strEllipse, "", "GuiQuickAddSnippet",					"1-Featured~3-QAPMenuEditing"
 			, o_L["GuiQuickAddSnippetDescription"], 0, "iconPaste", ""
 			, "can-i-create-a-snippet-using-the-clipboard-and-define-its-hotstring-in-one-step")
-		this.AddQAPFeatureObject("Add Multiple Favorite",	o_L["DialogMultipleAdd"] . g_strEllipse,		"", "GuiMultipleAddSelectSourceFromQAPFeature", "3-QAPMenuEditing"
+		this.AddQAPFeatureObject("Add Multiple Favorite",	o_L["DialogMultipleAdd"] . g_strEllipse,	"", "GuiMultipleAddSelectSourceFromQAPFeature", "3-QAPMenuEditing"
 			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
 			, "can-i-add-multiple-favorites-in-one-click")
+		this.AddQAPFeatureObject("Search and Go",			o_L["GuiSearchAndGoTitle"], 				"", "GuiSearchAndGo",						"1-Featured~6-Utility~7-QAPManagement"
+			, o_L["GuiSearchAndGoDescription"], 0, "iconExit", ""
+			, "can-i-quickly-search-qap-to-launch-one-of-my-favorites")
 		this.AddQAPFeatureObject("Search and Replace",		o_L["GuiSearchAndReplaceTitle"] . g_strEllipse, "", "GuiSearchAndReplace",				"3-QAPMenuEditing"
 			, o_L["GuiSearchAndReplaceDescription"], 0, "iconSwitch", ""
 			, "can-i-search-and-replace-values-globally-in-my-favorites")
@@ -31122,7 +31270,7 @@ class Container
 	;---------------------------------------------------------
 	
 	;------------------------------------------------------------
-	LoadSearchResult()
+	LoadSearchResult(strSearchString)
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
@@ -31147,11 +31295,11 @@ class Container
 			}
 				
 			if !oItem.IsSeparator()
-				and (InStrEx(strSearchIn, o_MenuInGui.AA.strMenuPath) or (o_MenuInGui.AA.strMenuPath = "{All}") ; case insensitive
-				or (o_MenuInGui.AA.strMenuPath = "{NotInDatabase}" and oItem.ItemNotInDatabase())
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenLocations}" and oItem.LocationBroken("Folder|Document|Application"))
-				or (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}" and oItem.LinkBroken())
-				or (o_MenuInGui.AA.strMenuPath = "{AutoExec}" and oItem.AA.blnFavoriteAutoExec))
+				and (InStrEx(strSearchIn, strSearchString) or (strSearchString = "{All}") ; case insensitive
+				or (strSearchString = "{NotInDatabase}" and oItem.ItemNotInDatabase())
+				or (strSearchString = "{BrokenLocations}" and oItem.LocationBroken("Folder|Document|Application"))
+				or (strSearchString = "{BrokenLinks}" and oItem.LinkBroken())
+				or (strSearchString = "{AutoExec}" and oItem.AA.blnFavoriteAutoExec))
 			{
 				strThisType := oItem.GetItemTypeLabelForList()
 				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
@@ -31182,7 +31330,7 @@ class Container
 			}
 			
 			if (oItem.IsContainer())
-				oItem.AA.oSubMenu.LoadSearchResult() ; RECURSIVE
+				oItem.AA.oSubMenu.LoadSearchResult(strSearchString) ; RECURSIVE
 		}
 	}
 	;------------------------------------------------------------
@@ -32940,9 +33088,6 @@ class Container
 		; return 0 if success or error code (error code only used by OpenGroup (as of 2021-09-23)
 		;---------------------------------------------------------
 		{
-			###_V(A_ThisFunc, this.AA.strFavoriteLocation)
-			if InStr(this.AA.strFavoriteLocation, "Called")
-				a := a
 			intOpenError := 0 ; no error by default
 			
 			this.aaTemp := Object() ; reset item temporary values
@@ -33935,9 +34080,6 @@ class Container
 		; return 0 if success or 1 if timeout error
 		;---------------------------------------------------------
 		{
-			; ###_V(A_ThisFunc, this.aaTemp.strLocationWithPlaceholders)
-			if InStr(this.aaTemp.strLocationWithPlaceholders, "Called")
-				a := a
 			if (this.AA.blnSnippetExpandEnvVars)
 				; expand environment variables like %APPDATA% or %USERPROFILE%
 				; user variables like {DropBox} are always expanded in ExpandPlaceholders()
@@ -34060,7 +34202,6 @@ class Container
 					}
 					else ; this is the last section of the snippet
 					{
-						###_V(A_ThisFunc . " strTemp", strTemp)
 						if StrLen(strTemp)
 							Send, %strTemp%
 						break
