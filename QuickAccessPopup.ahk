@@ -5261,7 +5261,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.3
+;@Ahk2Exe-SetVersion 11.5.99.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5328,7 +5328,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.99.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -5789,7 +5789,7 @@ HotKey, If, WinActive(SI_strGuiTitle) ; Select icon in gui in function SelectIco
 	Hotkey, Down, SI_SelectorDown
 	; other Hotkeys are now created by menu assignement in BuildGuiMenuBar
 	
-HotKey, If, WinActive("SearchAndGo") ; Search and go box
+HotKey, If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and go
 	Hotkey, Down, SearchAndGoDown
 	Hotkey, Up, SearchAndGoUp
 
@@ -5854,7 +5854,7 @@ return
 #If, WinActive(SI_strGuiTitle) ; Select Icon Gui
 #If
 
-#If, WinActive("SearchAndGo") ; Search and go box
+#If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and go
 #If
 
 #If, CanHotkeyTrigger() ; Open favorite from Shortcut
@@ -7734,8 +7734,8 @@ saMenuItemsTable.Push(["SpecialSearchAutoExec", aaL["DialogSearchAutoExec"], "",
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiSearchAndGoTitle", "GuiSearchAndReplaceTitle"
-	, "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
+aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiSearchAndGoTitle", "MenuRestoreSearchAndGoWindowPosition"
+	, "GuiSearchAndReplaceTitle", "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
 	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
@@ -7753,8 +7753,10 @@ saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["RefreshQAPMenu", aaMenuToolsL["MenuRefreshMenu"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["ResetQAPSpecialDefaultNames", aaMenuToolsL["MenuResetQAPSpecialDefaultNames"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["ToggleSuspendHotkeys", aaMenuToolsL["MenuSuspendHotkeys"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiShowRestoreDefaultPosition", aaMenuToolsL["MenuRestoreSettingsWindowPosition"], "", "iconNoIcon"])
- saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["GuiSearchAndGoRestorePosition", aaMenuToolsL["MenuRestoreSearchAndGoWindowPosition"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAlwaysOnTop", aaMenuToolsL["ControlToolTipAlwaysOnTopOff"], "", "iconNoIcon"])
 o_Containers.AA["menuBarTools"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarTools"].BuildMenu(true) ; true for numeric shortcut already inserted
@@ -11986,9 +11988,9 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 			Critical, On ; prevents the current thread from being interrupted by other threads (thread can interrup itself if user type fast in search box)
 			Container.s_intOriginalPositionInResult := 0 ; used to sort search result items in their original sort order
 			if (o_Settings.SettingsWindow.blnSearchFromMain.IniValue)
-				o_MainMenu.LoadSearchResult(o_MenuInGui.AA.strMenuPath) ; populate search result object starting at Main menu
+				o_MainMenu.LoadSearchResult(o_MenuInGui.AA.strMenuPath, o_MenuInGui) ; populate search result object starting at Main menu
 			else
-				o_MenuInGui.AA.oStartingMenu.LoadSearchResult(o_MenuInGui.AA.strMenuPath) ; populate search result object starting at menu currently in gui
+				o_MenuInGui.AA.oStartingMenu.LoadSearchResult(o_MenuInGui.AA.strMenuPath, o_MenuInGui) ; populate search result object starting at menu currently in gui
 		}
 	}
 }
@@ -24048,19 +24050,30 @@ return
 
 
 ;------------------------------------------------------------
+GuiSearchAndGoRestorePosition:
+;------------------------------------------------------------
+
+IniDelete, % o_Settings.strIniFile, Global, SearchAndGoPosition
+Gosub, GuiSearchAndGo
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GuiSearchAndGo:
 ;------------------------------------------------------------
 
-Gui, SearchGo:New, -SysMenu -Border -Caption ToolWindow, SearchAndGo
-Gui, SearchGo:Default
-Gui, Color, EEAA99    
+intListViewWidth := 150 ; minimal width
+intNbRows := 10 ; #### nb of items to be added in options
+
+Gui, SearchAndGo:New, +HwndstrSearchAndGoHwnd ToolWindow, % o_L["GuiSearchAndGoTitle"]
+Gui, SearchAndGo:Default
 Gui +LastFound
-WinSet, TransColor, EEAA99
 WinSet, AlwaysOnTop, On
 
-Gui, Add, Edit, x0 y0 vf_strSearchGo gGuiSearchAndGoChanged
-Gui, Add, Button, gGuiSearchAndGoEscape x+0 yp h20 w20 vf_btnSearchGo, X
-Gui, Add, ListView, x0 r11 yp+20 Count10 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchGo AltSubmit gGuiSearchGoEvents, Col1
+Gui, Add, Edit, x3 y0 vf_strSearchAndGo gGuiSearchAndGoChanged
+Gui, Add, ListView, % "x3 r" . intNbRows . " yp+20 Count" . intNbRows . " NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1
 Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
 Gosub, GuiSearchAndGoChanged
 
@@ -24071,47 +24084,51 @@ return
 ;------------------------------------------------------------
 GuiSearchAndGoChanged:
 ;------------------------------------------------------------
+Gui, SearchAndGo:Submit, NoHide
 
-intListViewWidth := 200 ; minimal width
+LV_Delete()
 
-; o_MainMenu.LoadSearchResult(strSearch###) ; populate search result object starting at Main menu
-Loop, 10 ; #### nb of items to be added in options
+if StrLen(f_strSearchAndGo)
 {
-	LV_Add("", str) ; ##### replace str with search result string
-	; populate search result object
-	intRowWidth := GetPixelSizeOfText(str)
-	intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
+	oSearchAndGoResult := new Container("Menu", "Search and go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
+	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
+
+	Loop, % (oSearchAndGoResult.SA.MaxIndex() < intNbRows ? oSearchAndGoResult.SA.MaxIndex() : intNbRows)
+	{
+		strRow := oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oSearchAndGoResult.SA[A_Index].AA.strFavoriteName
+		strRow := StrReplace(strRow, "&&", g_strEscapeReplacement) ; preserve existing double ampersand
+		strRow := StrReplace(strRow, "&", "") ; remove single ampersands that would be shortcuts if numeric shortcuts were disabled
+		strRow := StrReplace(strRow, g_strEscapeReplacement, "&") ; restore preserved  existing double ampersand
+		LV_Add("", strRow)
+		intRowWidth := GetPixelSizeOfText(strRow)
+		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
+	}
 }
 LV_ModifyCol()
 
-GuiControl, Move, f_lvSearchGo, % "w" . intListViewWidth + 15
-GuiControl, Move, f_strSearchGo, % "w" . intListViewWidth - 5
-GuiControl, Move, f_btnSearchGo, % "x" . intListViewWidth - 5
-GetPositionFromMouseOrKeyboard("Mouse", A_ThisHotkey, intPositionX, intPositionY)
-Gui, SearchGo:Show, % "AutoSize x" . intPositionX . " y" . intPositionY - 20
+GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth + 15
+GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth + 15
+
+strSearchAndGoPosition := o_Settings.ReadIniValue("SearchAndGoPosition", -1) ; by default -1 to center at minimal size
+saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
+
+Gui, SearchAndGo:Show, % (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
+	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) . " w" . intListViewWidth + 22 . "h" . 28 + (intNbRows * 17)
+
+SaveWindowPosition("SearchAndGoPosition", "ahk_id " . strSearchAndGoHwnd)
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-GuiSearchAndGoEscape:
-;------------------------------------------------------------
-
-Gui, SearchGo:Destroy
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiSearchGoEvents:
+GuiSearchAndGoEvents:
 SearchAndGoEnter:
 SearchAndGoDown:
 SearchAndGoUp:
 ;------------------------------------------------------------
 
-Gui, SearchGo:Default
+Gui, SearchAndGo:Default
 GuiControlGet, strActiveControlV, FocusV
 
 if (A_GuiEvent = "DoubleClick" or A_ThisLabel = "SearchAndGoEnter") ; retrieve favorite object and launch it
@@ -24120,21 +24137,34 @@ if (A_GuiEvent = "DoubleClick" or A_ThisLabel = "SearchAndGoEnter") ; retrieve f
 		intRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
 	else
 		intRow := A_EventInfo
-	Gosub, GuiSearchAndGoEscape
+	Gosub, SearchAndGoGuiEscape
+	oSearchAndGoResult.SA[intRow].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
 }
 else if (A_ThisLabel = "SearchAndGoDown") ; if on edit control, select first row of listview
-	if (strActiveControlV = "f_strSearchGo")
+	if (strActiveControlV = "f_strSearchAndGo")
 	{
-		GuiControl, Focus, f_lvSearchGo
+		GuiControl, Focus, f_lvSearchAndGo
 		LV_Modify(1, "Focus Select")
 	}
 	else
 		Send, {Down}
 else if (A_ThisLabel = "SearchAndGoUp") ; if on first row of listview, focus edit control
-	if (strActiveControlV = "f_lvSearchGo" and LV_GetNext() = 1)
-		GuiControl, Focus, f_strSearchGo
+	if (strActiveControlV = "f_lvSearchAndGo" and LV_GetNext() = 1)
+		GuiControl, Focus, f_strSearchAndGo
 	else
 		Send, {Up}
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SearchAndGoGuiClose:
+SearchAndGoGuiEscape:
+;------------------------------------------------------------
+
+SaveWindowPosition("SearchAndGoPosition", "ahk_id " . strSearchAndGoHwnd)
+Gui, SearchAndGo:Destroy
 
 return
 ;------------------------------------------------------------
@@ -31270,13 +31300,14 @@ class Container
 	;---------------------------------------------------------
 	
 	;------------------------------------------------------------
-	LoadSearchResult(strSearchString)
+	LoadSearchResult(strSearchString, ByRef oSearchResultContainer)
+	; return ByRef a container object with items in the search result for Customize search and Search and Go
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
 		{
 			strSearchIn := oItem.AA.strFavoriteName . " " . StrReplace(oItem.AA.strFavoriteName, "&", , , 1) ; search with or without the 1st ampersand
-			if (o_MenuInGui.AA.blnFavoritesListFilterExtended)
+			if (oSearchResultContainer.AA.blnFavoritesListFilterExtended)
 			{
 				strHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
 				strHotkey := (strHotkey = o_L["DialogNone"] ? "" : strHotkey)
@@ -31326,12 +31357,14 @@ class Container
 				oItem.AA.intSearchItemPositionInOriginalMenu := intKey ; used in search result to locate the original favorite object in the container
 				Container.s_intOriginalPositionInResult++
 				oItem.AA.intSearchItemOriginalPositionInResult := Container.s_intOriginalPositionInResult ; used to reorder items in the original search result order
-				o_MenuInGui.SA.Push(oItem)
+				oSearchResultContainer.SA.Push(oItem)
 			}
 			
 			if (oItem.IsContainer())
-				oItem.AA.oSubMenu.LoadSearchResult(strSearchString) ; RECURSIVE
+				oItem.AA.oSubMenu.LoadSearchResult(strSearchString, oSearchResultContainer) ; RECURSIVE
 		}
+		
+		return oSearchResult
 	}
 	;------------------------------------------------------------
 	
@@ -33096,20 +33129,10 @@ class Container
 			this.aaTemp.strTargetWinId := strTargetWinId
 			this.aaTemp.strHotkeyTypeDetected := strHotkeyTypeDetected
 			
-			; disable features for Explorer that do not work when the folder is launched from a menu open with QAPmessenger
-			; fix in v11.5.6.9.3: this was if (strMenuTriggerLabel = "LaunchFromMsg") by error since v10.2.0.9.1, "not" fixing something (no bug report for this) -> would it be better to just remove this if and keep the else?
-			if (strOpenFavoriteLabel = "LaunchFromMsg")
-			{
-				this.aaTemp.saFavoriteWindowPosition := StrSplit("0", ",") ; make this.aaTemp.saFavoriteWindowPosition[1] false
-				this.aaTemp.blnOpenFavoritesOnActiveMonitor := false
-			}
-			else
-			{
-				; Boolean,MinMax,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (7)
-				; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay (default 200 ms),
-				this.aaTemp.saFavoriteWindowPosition := StrSplit(this.AA.strFavoriteWindowPosition, ",")
-				this.aaTemp.blnOpenFavoritesOnActiveMonitor := g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor
-			}
+			; Boolean,MinMax,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (7)
+			; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay (default 200 ms),
+			this.aaTemp.saFavoriteWindowPosition := StrSplit(this.AA.strFavoriteWindowPosition, ",")
+			this.aaTemp.blnOpenFavoritesOnActiveMonitor := g_aaFileManagerExplorer.blnOpenFavoritesOnActiveMonitor
 			
 			; EXPAND PLACEHOLDERS in location
 			; for favorite's location {LOC}, {DIR}, {NAME}, etc, current location {CUR_LOC}, {CUR_NAME}, {CUR_...}, etc,
@@ -33249,8 +33272,8 @@ class Container
 				intOpenError := this.LaunchWindowsApp() ; returns 0 if no error
 			}
 			; QAP COMMAND
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction", this.aaTemp.strOpenFavoriteLabel)
-				and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|LaunchFromSearchAndGo"
+				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
 			}

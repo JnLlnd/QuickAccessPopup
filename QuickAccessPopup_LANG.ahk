@@ -760,6 +760,7 @@ this["MenuReopenCurrentFolderDescription"] := "Change the folder in a file dialo
 this["MenuReopenInNewWindow"] := "Reopen Current Folder from Dialog Box"
 this["MenuReopenInNewWindowDescription"] := "Reopen the current folder in a new Explorer window (also in Directory Opus or Total Commander). Useful when you want to open the folder you are browsing in a file dialog box in an Explorer window."
 this["MenuResetQAPSpecialDefaultNames"] := "Reset QAP Features and Special Folders Default Names"
+this["MenuRestoreSearchAndGoWindowPosition"] := "Restore ""Search QAP and Go"" window position"
 this["MenuRestoreSettingsWindowPosition"] := "Restore ""Customize"" window position"
 this["MenuRestoreSettingsWindowPositionDescription"] := "Restore ""Customize"" window size and position at the center of main screen."
 this["MenuRunAtStartup"] := "Run at Startup"
