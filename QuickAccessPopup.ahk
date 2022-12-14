@@ -31,6 +31,23 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.99.4 (2022-12-??)
+ 
+Search QAP and Go
+- a new quick way to launch your favorites: show the "Search QAP and Go" box, type a few characters and double-click your item in the search result (or select items with up/down arrows and hit Enter)
+- to show the "Search QAP and Go" box:
+  - for existing installations (QAP installed before v11.5.99.4): add a favorite of type "QAP Feature" and select the feature "Search QAP and Go"
+  - for new installations: the feature is automatically added under the "My QAP Essentials" menu
+  - in both cases, the hotkey Shift+Ctrl+Z is assigned by default to this feature (you can change it in the "Menu Options" tab of the favorite or in "Tools, Manage hotkeys")
+- the "Search QAP and Go" box is initially displayed at the center of the main monitor and is afterward displayed at is last location; if the box ever becomes invisible (for example, after a change of monitors configuration), it can be centered again on the main monitor using the menu "Tools, Restore 'Search QAP and Go' window position"
+- the "Search QAP and Go" box is displayed "always on top" and is closed automatically when you select an item in the search result, click the Close button or hit Escape
+- the search result is currently limited to the 10 first occurences of the search string (an option will allow to change this number in the next release)
+ 
+Various
+- fix bug when a macro Snippet is calling another QAP favorite using its hotkey
+- in {Menu:...} placeholder, make bold the first item with a label but no content (to make it look like a title)
+- do not expand process {Menu:...] placeholder when using the Alternative menu feature "Edit a Favorite"
+
 Version BETA: 11.5.99.3 (2022-12-01)
 - new {Menu:...} placeholder to be replaced with the selected item in a popup menu
   - {Menu:text1|text2|text3} show a menu with the specified items 
@@ -5789,7 +5806,7 @@ HotKey, If, WinActive(SI_strGuiTitle) ; Select icon in gui in function SelectIco
 	Hotkey, Down, SI_SelectorDown
 	; other Hotkeys are now created by menu assignement in BuildGuiMenuBar
 	
-HotKey, If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and go
+HotKey, If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and Go
 	Hotkey, Down, SearchAndGoDown
 	Hotkey, Up, SearchAndGoUp
 
@@ -5854,7 +5871,7 @@ return
 #If, WinActive(SI_strGuiTitle) ; Select Icon Gui
 #If
 
-#If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and go
+#If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and Go
 #If
 
 #If, CanHotkeyTrigger() ; Open favorite from Shortcut
@@ -7010,6 +7027,8 @@ g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main m
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 AddToIniOneDefaultMenu("{Add Favorite - QAP}", "", "QAP")
+AddToIniOneDefaultMenu("", "", "X")
+AddToIniOneDefaultMenu("{Search and Go}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{ReopenCurrentFolder}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
@@ -24090,7 +24109,7 @@ LV_Delete()
 
 if StrLen(f_strSearchAndGo)
 {
-	oSearchAndGoResult := new Container("Menu", "Search and go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
+	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
 
 	Loop, % (oSearchAndGoResult.SA.MaxIndex() < intNbRows ? oSearchAndGoResult.SA.MaxIndex() : intNbRows)
@@ -29937,7 +29956,7 @@ class QAPfeatures
 			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
 			, "can-i-add-multiple-favorites-in-one-click")
 		this.AddQAPFeatureObject("Search and Go",			o_L["GuiSearchAndGoTitle"], 				"", "GuiSearchAndGo",						"1-Featured~6-Utility~7-QAPManagement"
-			, o_L["GuiSearchAndGoDescription"], 0, "iconExit", ""
+			, o_L["GuiSearchAndGoDescription"], 0, "iconExit", "+^z"
 			, "can-i-quickly-search-qap-to-launch-one-of-my-favorites")
 		this.AddQAPFeatureObject("Search and Replace",		o_L["GuiSearchAndReplaceTitle"] . g_strEllipse, "", "GuiSearchAndReplace",				"3-QAPMenuEditing"
 			, o_L["GuiSearchAndReplaceDescription"], 0, "iconSwitch", ""
