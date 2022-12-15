@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.99.4 (2022-12-??)
+Version BETA: 11.5.99.4 (2022-12-14)
  
 Search QAP and Go
 - a new quick way to launch your favorites: show the "Search QAP and Go" box, type a few characters and double-click your item in the search result (or select items with up/down arrows and hit Enter)
@@ -24112,7 +24112,7 @@ if StrLen(f_strSearchAndGo)
 	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
 
-	Loop, % (oSearchAndGoResult.SA.MaxIndex() < intNbRows ? oSearchAndGoResult.SA.MaxIndex() : intNbRows)
+	Loop, % oSearchAndGoResult.SA.MaxIndex()
 	{
 		strRow := oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oSearchAndGoResult.SA[A_Index].AA.strFavoriteName
 		strRow := StrReplace(strRow, "&&", g_strEscapeReplacement) ; preserve existing double ampersand
@@ -24125,14 +24125,14 @@ if StrLen(f_strSearchAndGo)
 }
 LV_ModifyCol()
 
-GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth + 15
-GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth + 15
+GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth + 30
+GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth + 30
 
 strSearchAndGoPosition := o_Settings.ReadIniValue("SearchAndGoPosition", -1) ; by default -1 to center at minimal size
 saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
 
 Gui, SearchAndGo:Show, % (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
-	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) . " w" . intListViewWidth + 22 . "h" . 28 + (intNbRows * 17)
+	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) . " w" . intListViewWidth + 37 . "h" . 28 + (intNbRows * 17)
 
 SaveWindowPosition("SearchAndGoPosition", "ahk_id " . strSearchAndGoHwnd)
 
