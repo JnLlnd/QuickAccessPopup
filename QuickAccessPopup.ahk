@@ -24083,18 +24083,42 @@ return
 GuiSearchAndGo:
 ;------------------------------------------------------------
 
-intListViewWidth := 150 ; minimal width
-intNbRows := 10 ; #### nb of items to be added in options
+intListViewWidth := 180 ; minimal width
+intSearchAndGoGuiMinWidth := intListViewWidth + 6 ; (2 x 3 pixels margins)
 
-Gui, SearchAndGo:New, +HwndstrSearchAndGoHwnd ToolWindow, % o_L["GuiSearchAndGoTitle"]
+intNbRows := 10 ; #### nb of items to be added in options
+intSearchAndGoGuiMinHeight := (intNbRows * 17) + 28
+
+Gui, SearchAndGo:New, ToolWindow +HwndstrSearchAndGoHwnd +Resize +MinSize%intSearchAndGoGuiMinWidth%x%intSearchAndGoGuiMinHeight%, % o_L["GuiSearchAndGoTitle"]
 Gui, SearchAndGo:Default
 Gui +LastFound
 WinSet, AlwaysOnTop, On
 
-Gui, Add, Edit, x3 y0 vf_strSearchAndGo gGuiSearchAndGoChanged
-Gui, Add, ListView, % "x3 r" . intNbRows . " yp+20 Count" . intNbRows . " NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1
+Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strSearchAndGo gGuiSearchAndGoChanged
+Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . intNbRows . " yp+20 Count" . intNbRows . " NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1
 Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
-Gosub, GuiSearchAndGoChanged
+
+strSearchAndGoPosition := o_Settings.ReadIniValue("SearchAndGoPosition", -1) ; by default -1 to center at minimal size
+saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
+Gui, SearchAndGo:Show, % (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
+	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) ; . " w" . intListViewWidth + 6
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SearchAndGoGuiSize:
+;------------------------------------------------------------
+
+intListViewWidth := A_GuiWidth - 6 ; (left margins 2 x 3)
+intListViewHeight := A_GuiHeight - 25 ; 
+
+GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
+GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
+GuiControl, Move, f_lvSearchAndGo, % "h" . intListViewHeight
+
+; SaveWindowPosition("SearchAndGoPosition", "ahk_id " . strSearchAndGoHwnd)
 
 return
 ;------------------------------------------------------------
@@ -24119,22 +24143,16 @@ if StrLen(f_strSearchAndGo)
 		strRow := StrReplace(strRow, "&", "") ; remove single ampersands that would be shortcuts if numeric shortcuts were disabled
 		strRow := StrReplace(strRow, g_strEscapeReplacement, "&") ; restore preserved  existing double ampersand
 		LV_Add("", strRow)
-		intRowWidth := GetPixelSizeOfText(strRow)
+		intRowWidth := GetPixelSizeOfText(strRow) + 30
 		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
 	}
 }
 LV_ModifyCol()
 
-GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth + 30
-GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth + 30
+GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
+GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
 
-strSearchAndGoPosition := o_Settings.ReadIniValue("SearchAndGoPosition", -1) ; by default -1 to center at minimal size
-saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
-
-Gui, SearchAndGo:Show, % (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
-	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) . " w" . intListViewWidth + 37 . "h" . 28 + (intNbRows * 17)
-
-SaveWindowPosition("SearchAndGoPosition", "ahk_id " . strSearchAndGoHwnd)
+WinMove, ahk_id %strSearchAndGoHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
 
 return
 ;------------------------------------------------------------
