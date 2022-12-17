@@ -5849,6 +5849,7 @@ if !GetKeyState("Shift")
 	o_MainMenu.LaunchAutoExec()
 
 ; ####
+; Gosub, GuiOptionsGroupSettingsWindow ; #####
 ; Gosub, GuiSearchAndGo
 
 return
@@ -6508,6 +6509,8 @@ o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStat
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
 	o_Settings.ReadIniOption("SettingsWindow", "blnDarkModeCustomize", "DarkModeCustomize", 0, "SettingsWindow", "f_blnDarkModeCustomize")
+o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoExtended", "SearchAndGoExtended", 0, "SettingsWindow", "f_lblOptionsSearchAndGoTitle|f_blnSearchAndGoExtended")
+o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoRows", "SearchAndGoRows", 10, "SettingsWindow", "f_intSearchAndGoRowsEdit|f_intSearchAndGoRows|f_lblSearchAndGoRows")
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -9424,6 +9427,19 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsS
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithLocale gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithLocale"]
 GuiControl, , f_blnSearchWithLocale, % (o_Settings.SettingsWindow.blnSearchWithLocale.IniValue = true)
 
+; SearchAndGo
+Gui, 2:Font, s8 w700
+Gui, 2:Add, Text, y+30 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchAndGoTitle, % o_L["OptionsSearchAndGoTitle"]
+Gui, 2:Font
+
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoExtended gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoExtended"]
+GuiControl, , f_blnSearchAndGoExtended, % (o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue = true)
+
+Gui, 2:Add, Edit, y+15 x%g_intGroupItemsTab4X% w51 h22 vf_intSearchAndGoRowsEdit number center hidden
+Gui, 2:Add, UpDown, vf_intSearchAndGoRows Range5-9999 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
+Gui, 2:Add, Text, yp x+10 w200 hidden vf_lblSearchAndGoRows, % o_L["OptionsSearchAndGoRows"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intSearchAndGoRowsEdit
+
 GuiControlGet, arrPos, Pos, f_blnAddAutoAtTop1
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
@@ -10271,6 +10287,8 @@ o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_b
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
+o_Settings.SettingsWindow.blnSearchAndGoExtended.WriteIni(f_blnSearchAndGoExtended)
+o_Settings.SettingsWindow.intSearchAndGoRows.WriteIni(f_intSearchAndGoRows)
 
 blnDarkModeCustomizePrev := o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
@@ -24085,9 +24103,7 @@ GuiSearchAndGo:
 
 intListViewWidth := 180 ; minimal width
 intSearchAndGoGuiMinWidth := intListViewWidth + 6 ; (2 x 3 pixels margins)
-
-intNbRows := 10 ; #### nb of items to be added in options
-intSearchAndGoGuiMinHeight := (intNbRows * 17) + 28
+intSearchAndGoGuiMinHeight := (o_Settings.SettingsWindow.intSearchAndGoRows.IniValue * 17) + 28
 
 Gui, SearchAndGo:New, ToolWindow +HwndstrSearchAndGoHwnd +Resize +MinSize%intSearchAndGoGuiMinWidth%x%intSearchAndGoGuiMinHeight%, % o_L["GuiSearchAndGoTitle"]
 Gui, SearchAndGo:Default
@@ -24095,12 +24111,13 @@ Gui +LastFound
 WinSet, AlwaysOnTop, On
 
 Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strSearchAndGo gGuiSearchAndGoChanged
-Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . intNbRows . " yp+20 Count" . intNbRows . " NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1
+Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
+	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1
 Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
 
 strSearchAndGoPosition := o_Settings.ReadIniValue("SearchAndGoPosition", -1) ; by default -1 to center at minimal size
 saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
-Gui, SearchAndGo:Show, % (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
+Gui, SearchAndGo:Show, % "Autosize " . (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
 	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) ; . " w" . intListViewWidth + 6
 
 return
@@ -24118,8 +24135,6 @@ GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
 GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
 GuiControl, Move, f_lvSearchAndGo, % "h" . intListViewHeight
 
-; SaveWindowPosition("SearchAndGoPosition", "ahk_id " . strSearchAndGoHwnd)
-
 return
 ;------------------------------------------------------------
 
@@ -24134,6 +24149,7 @@ LV_Delete()
 if StrLen(f_strSearchAndGo)
 {
 	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
+	oSearchAndGoResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
 
 	Loop, % oSearchAndGoResult.SA.MaxIndex()
@@ -24175,7 +24191,18 @@ if (A_GuiEvent = "DoubleClick" or A_ThisLabel = "SearchAndGoEnter") ; retrieve f
 	else
 		intRow := A_EventInfo
 	Gosub, SearchAndGoGuiEscape
-	oSearchAndGoResult.SA[intRow].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
+
+
+	if GetKeyState("LControl") ; edit favorite
+	{
+		g_intOriginalMenuPosition := oSearchAndGoResult.SA[intRow].AA.intSearchItemPositionInOriginalMenu ;  A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
+		g_blnOriginalMenuPositionKeep := true ; avoid overwriting the position in GuiEditFavorite / GuiFavoriteInit
+		o_MenuInGui := oSearchAndGoResult.SA[intRow].AA.oParentMenu
+		gosub, GuiShowFromAlternative
+		gosub, GuiEditFavorite
+	}
+	else
+		oSearchAndGoResult.SA[intRow].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
 }
 else if (A_ThisLabel = "SearchAndGoDown") ; if on edit control, select first row of listview
 	if (strActiveControlV = "f_strSearchAndGo")
