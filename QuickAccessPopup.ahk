@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.99.5 (2022-12-19)
+- remove the limit of number of items in "Search QAP and go" search result
+- display the search result with a scroll bar if the number of items exceeds the window height and make the window resizable
+- add options under "Options, Customize window" for:
+  - the initial height of "Search QAP and go" window
+  - use "Extended search" in "Search QAP and go" box (search all properties instead of only the favorites name)
+- fix bug introduced in previous release not expanding placeholders
+
 Version BETA: 11.5.99.4 (2022-12-14)
  
 Search QAP and Go
@@ -5278,7 +5286,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.4
+;@Ahk2Exe-SetVersion 11.5.99.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5345,7 +5353,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.99.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -5849,7 +5857,7 @@ if !GetKeyState("Shift")
 	o_MainMenu.LaunchAutoExec()
 
 ; ####
-; Gosub, GuiOptionsGroupSettingsWindow ; #####
+; Gosub, GuiOptionsGroupSettingsWindow
 ; Gosub, GuiSearchAndGo
 
 return
@@ -33203,7 +33211,7 @@ class Container
 			; selected file location {SEL_LOC}, {SEL_NAME}, {SEL_...}, etc, current content of clipboard {Clipboard},
 			; user {Input:prompt} and current time {Now:format} for favorite's location, favorite's parameter,
 			; application favorite's start in directory, snippet's content
-			if  (g_blnAlternativeMenu and g_strAlternativeMenu <> o_L["MenuAlternativeEditFavorite"]) ; do not expand if editing the favorite
+			if  !(g_blnAlternativeMenu and g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"]) ; do not expand if editing the favorite
 				this.aaTemp.strLocationWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteLocation, ""
 					, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
 					, (InStr(this.AA.strFavoriteLocation, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
