@@ -208,6 +208,7 @@ lDialogFavoriteSelectType	Sélectionnez le type du nouveau favori.`n`nDans l'écra
 lDialogFavoriteShortNameLabel	Nom court pour le menu
 lDialogFavoritesMenuPosition	Insérer le favori avant cet item
 lDialogFavoriteSnippetEmpty	Le contenu est vide. Veuillez entrer le contenu du fragment.
+lDialogFavoriteSnippetExpandEnvVars	Substituer les variables d'environnement
 lDialogFavoriteSnippetFixedFont	Police à largeur fixe
 lDialogFavoriteSnippetFontSize	Taille de la police
 lDialogFavoriteSnippetHelpNoProcess	Insérez `` n pour une fin de ligne et ``t pour une tabulation. Insérez `` (double accent grave) pour un accent grave.
@@ -336,7 +337,7 @@ lDialogMenuSortHeaderManual	Trier ce menu manuellement par...
 lDialogMenuSortHeaderSearch	Trier le résultat de recherche par...
 lDialogMenuSortLastModified	Date de modification
 lDialogMenuSortLastUsed	Dernière utilisation
-lDialogMenuSortSettingsOptions	Modifier les options de la fenêtre Personnaliser
+lDialogMenuSortSettingsOptions	Modifier les options de la fenêtre "Personnaliser"
 lDialogMenuSortUsage	Utilisation
 lDialogMinimized	Minimisée
 lDialogModifiedDate	Date de modification
@@ -534,7 +535,7 @@ lGuiGroupSaveRestoreOption	Lors de la restauration des dossiers du groupe:
 lGuiGroupSaveRestoreWith	Restaurer les dossier avec:
 lGuiHelp	Aide
 lGuiHelpDescription	Afficher la fenêtre d'aide.
-lGuiHotkeysHelp	Aide sur les raccourcis de la fenêtre Personnaliser
+lGuiHotkeysHelp	Aide sur les raccourcis de la fenêtre "Personnaliser"
 lGuiHotkeysOpenParentMenu	Ouvrir le dossier parent
 lGuiHotkeysOpenSubmenuOrEditFavorite	Ouvrir le sous-menu ou modifier le favori
 lGuiHotkeysSelectContiguousItems	Sélectionner des items contigus
@@ -562,6 +563,8 @@ lGuiResetDefault	Restaurer le raccourci par défaut
 lGuiSave	Enregistrer
 lGuiSaveAndClose	Enregistrer et fermer
 lGuiSaving	Enregistre
+lGuiSearchAndGoDescription	Ouvrez la boîte de recherche, entrez une chaîne de caratctères à rechercher et sélectionnez un item dans le résultat de recherche avec la souris (double-clic) ou le clavier (Entrée) pour ouvrir l'item sélectionné
+lGuiSearchAndGoTitle	Chercher dans QAP et Go
 lGuiSearchAndReplaceConfirm	Confirmation
 lGuiSearchAndReplaceDescription	Rechercher et remplacer des valeurs dans l'emplacement ou le contenu, le nom des favoris, l'icône ou les paramètres.`n`nSélectionnez les types de favoris où exécuter le remplacement.`n`nConfirmez pour chaque favori si vous souhaitez effectuer le remplacement ou remplacer les valeurs dans tous les favoris immédiatement.
 lGuiSearchAndReplaceFindNext	Rechercher le prochain
@@ -691,6 +694,7 @@ lMenuDynamicMenus	En cours
 lMenuEditIniFile	Modifier ~1~
 lMenuEditIniFileDescription	Modifier le fichier de configuration (.ini) de Quick Access Popup actuellement en vigueur.
 lMenuEventViewer	Observateur d'événements
+lMenuEvironmentVariables	Variables d'environnement
 lMenuExitApp	Quitter ~1~
 lMenuExitAppDescription	Fermer l'application Quick Access Popup, libérant tous les raccourcis claviers ou souris du menu QAP et des favoris.
 lMenuExternalCatalogue	Ajouter un menu partagé du catalogue
@@ -745,6 +749,7 @@ lMenuReopenCurrentFolderDescription	Changer le dossier dans la boîte de dialogue
 lMenuReopenInNewWindow	Rouvrir le dossier actif à partir d'une boîte de dialogue
 lMenuReopenInNewWindowDescription	Rouvrir le dossier actuel dans une nouvelle fenêtre de Windows Explorer (ou Directory Opus, ou Total Commander). Cette commande est utile lorsque vous voulez ouvrir dans Windows Explorer le dossier que vous consultez actuellement dans une boîte de dialogue de fichier.
 lMenuResetQAPSpecialDefaultNames	Réinitialiser les nom des Fonctionnalités QAP et Dossiers spéciaux
+lMenuRestoreSearchAndGoWindowPosition	Restaurer la position de la fenêtre "Chercher dans QAP et Go"
 lMenuRestoreSettingsWindowPosition	Restaurer la position de la fenêtre "Personnaliser"
 lMenuRestoreSettingsWindowPositionDescription	Restaurer la taille et la position par défaut (au centre de l'écran principal) de la fenêtre "Personnaliser".
 lMenuRunAtStartup	Exécuter au démarrage
@@ -889,7 +894,7 @@ lOptionsClipboardMaxSizeDefault	(10 000 octets par défaut)
 lOptionsControlDoublePressed	Ouvrir le menu principal avec Ctrl + Ctrl (Contrôle pressé à deux reprises)
 lOptionsControlDoublePressedLeft	Avec la touche Contrôle de gauche
 lOptionsControlDoublePressedRight	Avec la touche Contrôle de droite
-lOptionsDarkModeCustomize	Affichage foncé dans la fenêtre Personnaliser
+lOptionsDarkModeCustomize	Affichage foncé dans la fenêtre "Personnaliser"
 lOptionsDarkModeMenus	Compatibilité avec l'affichage foncé Windows pour les menus
 lOptionsDatabase	Base de données
 lOptionsDisplayIcons	Afficher les icônes des menus
@@ -923,6 +928,8 @@ lOptionsHotkeyRemindersPrompt	Rappels des raccourcis et des chaînes de substitut
 lOptionsHotkeyRemindersPromptHotstrings	Rappels des chaînes de substitution dans les menus:
 lOptionsHotkeyRemindersPromptShortcuts	Rappels des raccourcis dans les menus:
 lOptionsHotkeyRemindersShort	Afficher les rappels abrégés
+lOptionsHotkeyTriggerExclusionListHelp	Sélectionnez si les raccourcis clavier sont actif dans n'importe quelle application avec des exceptions (applications bloquées) ou seulement dans certaines applications (applications approuvées). Pour ajouter une application, tapez n'importe quelle partie du titre de sa fenêtre. Vous pouvez entrer plusieurs applications, une par ligne. Par exemple, pour entrer Chrome et Word, entrez ces deux lignes dans la liste:`n`nGoogle Chrome`nMicrosoft Word`n`nQuand les raccourcis ne sont pas autorisés dans une application, ils sont traités par l'application cible comme si QAP ne roulait pas. Vous pouvez aussi identifier des applications par leur nom de classe ou nom de processus (nom du fichier EXE). Voir <a href="~1~">l'aide</a>.
+lOptionsHotkeyTriggerExclusionListTitle	Raccourcis clavier
 lOptionsHotstringsDefault	Options par défaut des chaînes de substitution
 lOptionsHotstringsDefaultSelect	Sélectionner
 lOptionsIconDocumentsList	Remplacement des icônes par défaut de documents
@@ -936,6 +943,7 @@ lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 po
 lOptionsKeepExtensionInShortName	Conserver l'extension des noms de fichiers dans les Noms courts pour les menus
 lOptionsLanguage	Langue
 lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe
+lOptionsLaunchAdvancedQAPTitle	Lancement de Quick Access Popup
 lOptionsMenuActiveWindow	Dans la fenêtre active
 lOptionsMenuAdvanced	Options de menu avancées
 lOptionsMenuAppearance	Apparence du menu
@@ -962,6 +970,7 @@ lOptionsPopupHotkeysAlternative	Déclencheurs du menu alternatif
 lOptionsPopupHotkeyTitles	Bouton de souris du menu Quick Access Popup|Raccourci clavier du menu Quick Access Popup|Bouton de souris du menu Alternatif|Raccourci clavier du menu Alternatif
 lOptionsPopupHotkeyTitlesSub	Ce bouton de la souris affiche le menu n'importe où  (sauf dans les  <a>applications exclues</a>) et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce raccourci clavier affiche le menu n'importe où  et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce bouton de la souris affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où (sans exception).|Ce raccourci clavier affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où.
 lOptionsPopupMenu	Menu Popup
+lOptionsQAPconnectIntro	QAPconnect est une interface qui permet à QAP de fonctionner (partiellement) avec une quinzaine de gestionnaires de fichiers.
 lOptionsQAPTempFolder	Dossier temporaire
 lOptionsQuickAddSnippetSubmenu	Sous-menu pour ~1~
 lOptionsRecentFolders	Nombre d'items récents dans le menu
@@ -980,10 +989,13 @@ lOptionsRunAsAdminAlert	Avertissement: Exécuter ~1~ en tant qu'administrateur pe
 lOptionsRunAsAdminChanged	Nouveau réglage "Exécuter en tant qu'administrateur" enregistré. Quittez et relancez ~1~ pour activer ce nouveau réglage (ne pas utiliser "Redémarrer ~1~").
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Exécuter au démarrage
+lOptionsSearchAndGoExtended	Recherche étendue (chercher dans toutes les propriétés)
+lOptionsSearchAndGoRows	Nombre de lignes du résultat de recherche
+lOptionsSearchAndGoTitle	Options de "Chercher dans QAP et Go"
 lOptionsSearchFrom	Étendue de la recherche
 lOptionsSearchFromCurrent	Chercher à partir du menu ou groupe actuel
 lOptionsSearchFromMain	Toujours chercher à partir du menu principal
-lOptionsSearchResults	Résultats de recherche
+lOptionsSearchResults	Résultats de recherche dans la fenêtre "Personnaliser"
 lOptionsSearchWithLocale	Recherche en utilisant la configuration linguistique de Windows (par exemple, "é" considéré comme "e")
 lOptionsSearchWithStats	Liste des favoris et résultats de recherche avec dates et statistiques
 lOptionsSelectBackupFolder	Selectionnez le dossier de copie du fichier de configuration principal
@@ -995,7 +1007,7 @@ lOptionsSendToConsoleWithAlt	Utiliser les codes ASCII (ALT+0nnn) lors des change
 lOptionsSettingsCheckIfSameLocation	Lors de la sauvegarde des favoris, vérifier si un favori existe déjà pour le même emplacement ou contenu
 lOptionsSettingsSearchResults	Résultats de recherche
 lOptionsSettingsStartup	Ouvrir la fenêtre "Personnaliser" lors du démarrage
-lOptionsSettingsWindow	Fenêtre Personnaliser
+lOptionsSettingsWindow	Fenêtre "Personnaliser"
 lOptionsShowQAPmenu	Afficher le menu QAP (Fichier, Favori, etc.):
 lOptionsShowQAPmenuBoth	aux deux endroits
 lOptionsShowQAPmenuCustomize	au dessus de la fenêtre Personnaliser
@@ -1056,7 +1068,7 @@ lTipCreateSubmenuTitle	Si votre menu QAP devient trop long, divisez pour conquér
 lTipCustomIconsDetails	Choisissez les icônes qui ornent votre menu Quick Access Popup en <a>remplaçant les icônes par défaut</a> utilisées par QAP avec vos images préférées.`n`nVoyez aussi comment <a>gérer toutes les icônes de votre menu</a> dans une seule fenêtre.
 lTipCustomIconsTitle	Embellissez votre menu avec vos icônes préférées
 lTipCustomizeStartupDetails	Par défaut, Quick Access Popup affiche la fenêtre "Personnaliser" (où vous pouvez modifier votre menu) lors de son démarrage.`n`nSi vous préférez l'afficher seulement sur demande, retirez la case à cocher de "Ouvrir la fenêtre Personnaliser au démarrage" dans la boîte de dialogue <a>Options, Fenêtre Personnaliser</a>.`n`nPlus d'info dans la <a>Base de connaissance</a>.
-lTipCustomizeStartupTitle	Voulez-vous toujours ouvrir la fenêtre Personnaliser de QAP au démarrage?
+lTipCustomizeStartupTitle	Voulez-vous toujours ouvrir la fenêtre "Personnaliser" de QAP au démarrage?
 lTipDefaultHotkeysDetails	Lorsque vous l'installez, Quick Access Popup prend le contrôle du bouton du milieu de votre souris et des touches de raccourcis suivantes: Windows+W, Maj+Windows+W, Contrôle+Maj+A, Contrôle+Maj+C, Contrôle-Maj+F and Contrôle+Maj+U.`n`nVous pouvez changer ceci! Ouvrez la boîte de dialogue <a>Outils, Raccourcis</a> pour retirer ou modifier ces affectations.`n`Plus d'infos dans la <a>Base de connaissance</a>.
 lTipDefaultHotkeysTitle	Décidez quelles touches raccourcis sont utilisées par Quick Access Popup
 lTipFavoriteFolderTempDetails	Cette <a>page sur le site web de QAP</a> vous guidera dans les étapes pour accéder facilement à un dossier de travail:`n- créer un favori pour un dossier;`n- choisir une icône distinctive pour ce favori;`n- attribuer un raccourci clavier pour accéder à ce dossier instantanément.`n`nAussi, voyez comment synchroniser l'icône de votre favori avec celle de votre dossier Windows.
