@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.99.6 (2022-12-??)
+
 Version BETA: 11.5.99.5 (2022-12-19)
 - remove the limit of number of items in "Search QAP and go" search result
 - display the search result with a scroll bar if the number of items exceeds the window height and make the window resizable
@@ -5286,7 +5288,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.5
+;@Ahk2Exe-SetVersion 11.5.99.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5353,7 +5355,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.99.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -24182,6 +24184,7 @@ LV_Delete()
 
 if StrLen(f_strSearchAndGo)
 {
+	Critical, On
 	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 	oSearchAndGoResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
@@ -24203,6 +24206,7 @@ GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
 GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
 
 WinMove, ahk_id %strSearchAndGoHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
+Critical, Off
 
 return
 ;------------------------------------------------------------
