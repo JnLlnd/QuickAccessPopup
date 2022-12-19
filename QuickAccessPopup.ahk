@@ -5547,12 +5547,14 @@ global g_strHotkeyTypeDetected
 global g_strNewWindowId
 global g_intOriginalMenuPosition
 global g_blnOriginalMenuPositionKeep
+global g_strAlternativeMenuModifier
 global o_EditedFavorite ; was g_objEditedFavorite
 global o_MenuInGui ; replace g_objMenuInGui, back item added at top when first loaded in gui
 global o_SearchResultContainerBK ; to swap search result container with menu of an item edited from the search result
 global g_intMenuPosX
 global g_intMenuPosY
 global g_strHotstringEndChar
+global g_blnAlternativeMenuFromSearchAndGo
 
 ;---------------------------------
 ; Initial validation
@@ -9010,8 +9012,10 @@ BuildAlternativeMenu:
 ;------------------------------------------------------------
 
 new Container("Menu", "menuAlternative")
+new Container("Menu", "menuAlternativeStartAndGo")
 
 saMenuItemsTable := Object()
+saMenuItemsTableStartAndGo := Object()
 Loop
 	if o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder.Haskey(A_Index)
 	{
@@ -9020,6 +9024,9 @@ Loop
 		; hotkey reminder "`t..." or " (...)" will be removed from A_ThisMenuItem in order to flag what alternative menu feature has been activated
 		saMenuItemsTable.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
 			, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
+		if (o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].blnIncludeInSearchAndGo)
+			saMenuItemsTableStartAndGo.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
+				, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
 	}
 	else
 		if o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder.Haskey(A_Index + 1) ; there is another menu item, add a menu separator
@@ -9029,6 +9036,8 @@ Loop
 
 o_Containers.AA["menuAlternative"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuAlternative"].BuildMenu()
+o_Containers.AA["menuAlternativeStartAndGo"].LoadFavoritesFromTable(saMenuItemsTableStartAndGo)
+o_Containers.AA["menuAlternativeStartAndGo"].BuildMenu()
 
 strMenuName := ""
 
@@ -20891,8 +20900,13 @@ if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) ; Alternative menu
 	else if InStr(g_strAlternativeMenu, " (")
 		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, " (") - 1) ; or remove shortcut reminder from " ("
 
-gosub, OpenAlternativeMenuTrayTip
-gosub, LaunchFromAlternativeMenu
+if (g_blnAlternativeMenuFromSearchAndGo)
+	gosub, SearchAndGoAlternativeMenu ; execute the alternative menu feature on target from Search and Go
+else
+{
+	gosub, OpenAlternativeMenuTrayTip
+	gosub, LaunchFromAlternativeMenu ; open the main menu to select the alternative menu target
+}
 
 return
 ;------------------------------------------------------------
@@ -21008,6 +21022,7 @@ OpenWorkingDirectory:
 OpenBackupDirectory:
 OpenSwitchFolderOrApp:
 OpenFavoriteFromMsg:
+OpenAlternativeFromSearchAndGo:
 ;------------------------------------------------------------
 
 if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
@@ -21016,14 +21031,15 @@ if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChan
 g_strOpenFavoriteLabel := A_ThisLabel
 g_strNewWindowId := "" ; start fresh for any new favorite to open, used to position Explorer and Total Commander windows only
 
-gosub, GetAlternativeMenuModifier
+if (g_strOpenFavoriteLabel <> "OpenAlternativeFromSearchAndGo") ; we already have the modifiers from SearchAndGo
+	gosub, GetAlternativeMenuModifier
 
 if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
 	if SettingsUnsaved()
 		if SettingsNotSavedReturn()
 			return
 
-if (A_ThisLabel <> "OpenFavoriteFromLastAction") ; we already have o_ThisFavorite from RepeatLastAction
+if !InStr("OpenFavoriteFromLastAction|OpenAlternativeFromSearchAndGo|", A_ThisLabel . "|") ; we already have o_ThisFavorite from RepeatLastAction or SearchAndGo
 	gosub, OpenFavoriteGetFavoriteObject ; define o_ThisFavorite
 
 if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
@@ -21037,6 +21053,9 @@ if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId)
 	and g_strHotkeyTypeDetected = "Navigate") ; avoid changing if "Alternative"
 	g_strHotkeyTypeDetected := "Launch"
+
+if (g_strOpenFavoriteLabel = "OpenAlternativeFromSearchAndGo")
+	g_strHotkeyTypeDetected := "Alternative"
 
 ; if a menu open from an hotkey, refresh dynamic menus
 if o_ThisFavorite.IsContainer() and InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
@@ -21108,16 +21127,18 @@ return
 
 ;------------------------------------------------------------
 GetAlternativeMenuModifier:
+GetAlternativeMenuModifierFromSearchAndGo:
 ;------------------------------------------------------------
 
 ; avoid conflict with hotkeys and avoid editing menu items not in favorites list
 if InStr("OpenFavorite|OpenFavoriteFromLastAction", g_strOpenFavoriteLabel)
-	strAlternativeMenuModifier := (GetKeyState("LShift") ? "<+" : "")
+	or (A_ThisLabel = "GetAlternativeMenuModifierFromSearchAndGo")
+	g_strAlternativeMenuModifier := (GetKeyState("LShift") ? "<+" : "")
 		. (GetKeyState("LControl") ? "<^" : "")
 		. (GetKeyState("RShift") ? ">+" : "")
 		. (GetKeyState("RControl") ? ">^" : "")
 else
-	strAlternativeMenuModifier := ""
+	g_strAlternativeMenuModifier := ""
 
 return
 ;------------------------------------------------------------
@@ -21127,12 +21148,12 @@ return
 ProcessAlternativeMenuModifier:
 ;------------------------------------------------------------
 
-if !StrLen(strAlternativeMenuModifier)
+if !StrLen(g_strAlternativeMenuModifier)
 	return
 
 g_blnAlternativeMenu := true
 g_strHotkeyTypeDetected := "Alternative"
-g_strAlternativeMenu := o_QAPfeatures.aaQAPfeaturesMenuNamesByModifierCodes[strAlternativeMenuModifier]
+g_strAlternativeMenu := o_QAPfeatures.aaQAPfeaturesMenuNamesByModifierCodes[g_strAlternativeMenuModifier]
 
 return
 ;------------------------------------------------------------
@@ -24128,6 +24149,11 @@ saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
 Gui, SearchAndGo:Show, % "Autosize " . (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
 	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) ; . " w" . intListViewWidth + 6
 
+intSearchAndGoGuiMinWidth := ""
+intSearchAndGoGuiMinHeight := ""
+strSearchAndGoPosition := ""
+saSearchAndGoPosition := ""
+
 return
 ;------------------------------------------------------------
 
@@ -24192,25 +24218,36 @@ SearchAndGoUp:
 Gui, SearchAndGo:Default
 GuiControlGet, strActiveControlV, FocusV
 
-if (A_GuiEvent = "DoubleClick" or A_ThisLabel = "SearchAndGoEnter") ; retrieve favorite object and launch it
+if (A_ThisLabel = "GuiSearchAndGoEvents" or A_ThisLabel = "SearchAndGoEnter")
 {
 	if (A_ThisLabel = "SearchAndGoEnter")
-		intRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
-	else
-		intRow := A_EventInfo
-	Gosub, SearchAndGoGuiEscape
-
-
-	if GetKeyState("LControl") ; edit favorite
+		intSearchAndGoRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
+	else if (A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick") ; retrieve favorite object and launch it (double-click) or open alternative menu (right-click)
+		intSearchAndGoRow := A_EventInfo
+	
+	if (A_ThisLabel = "SearchAndGoEnter" or A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick")
+	; retrieve favorite object and launch it (double-click or Enter) or open alternative menu (right-click)
 	{
-		g_intOriginalMenuPosition := oSearchAndGoResult.SA[intRow].AA.intSearchItemPositionInOriginalMenu ;  A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
-		g_blnOriginalMenuPositionKeep := true ; avoid overwriting the position in GuiEditFavorite / GuiFavoriteInit
-		o_MenuInGui := oSearchAndGoResult.SA[intRow].AA.oParentMenu
-		gosub, GuiShowFromAlternative
-		gosub, GuiEditFavorite
+		if (A_GuiEvent = "RightClick")
+		{
+			g_blnAlternativeMenuFromSearchAndGo := true
+			Menu, menuAlternativeStartAndGo, Show ; at mouse position
+		}
+		else
+		{
+			Gosub, SearchAndGoGuiEscape
+			gosub, GetAlternativeMenuModifierFromSearchAndGo
+			if StrLen(g_strAlternativeMenuModifier)
+			{
+				o_ThisFavorite := oSearchAndGoResult.SA[intSearchAndGoRow]
+				gosub, OpenAlternativeFromSearchAndGo
+				g_strAlternativeMenuModifier := ""
+			}
+			else
+				oSearchAndGoResult.SA[intSearchAndGoRow].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
+		}
 	}
-	else
-		oSearchAndGoResult.SA[intRow].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
+	; else skip other A_GuiEvent
 }
 else if (A_ThisLabel = "SearchAndGoDown") ; if on edit control, select first row of listview
 	if (strActiveControlV = "f_strSearchAndGo")
@@ -24225,6 +24262,24 @@ else if (A_ThisLabel = "SearchAndGoUp") ; if on first row of listview, focus edi
 		GuiControl, Focus, f_strSearchAndGo
 	else
 		Send, {Up}
+
+intSearchAndGoRow := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+SearchAndGoAlternativeMenu:
+;------------------------------------------------------------
+
+Gosub, SearchAndGoGuiEscape
+
+o_ThisFavorite := oSearchAndGoResult.SA[intSearchAndGoRow]
+g_blnAlternativeMenu := true
+gosub, OpenAlternativeFromSearchAndGo
+
+g_blnAlternativeMenuFromSearchAndGo := false
 
 return
 ;------------------------------------------------------------
@@ -30075,15 +30130,15 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Open in New Window",		o_L["MenuAlternativeNewWindow"],				"", "", ""
 			, "", 1, "iconFolder", "<+", "")
 		this.AddQAPFeatureObject("Edit Favorite",			o_L["MenuAlternativeEditFavorite"],			"", "", ""
-			, "", 3, "iconEditFavorite", "<+<^", "")
+			, "", 3, "iconEditFavorite", "<+<^", "", "", false, true)
 		this.AddQAPFeatureObject("Copy Favorite Location",	o_L["MenuCopyLocation"],						"", "", ""
-			, "", 5, "iconClipboard", "<^", "")
+			, "", 5, "iconClipboard", "<^", "", "", false, true)
 		this.AddQAPFeatureObject("Run As Administrator",	o_L["MenuAlternativeRunAs"],					"", "", ""
-			, "", 7, "iconUAClogo", ">+>^", "")
+			, "", 7, "iconUAClogo", ">+>^", "", "", false, true)
 		this.AddQAPFeatureObject("Open Containing Current",	o_L["MenuAlternativeOpenContainingCurrent"],	"", "", ""
 			, "", 9, "iconSpecialFolders", ">+", "")
 		this.AddQAPFeatureObject("Open Containing New",		o_L["MenuAlternativeOpenContainingNew"],		"", "", ""
-			, "", 10, "iconSpecialFolders", ">^", "")
+			, "", 10, "iconSpecialFolders", ">^", "", "", false, true)
 		this.AddQAPFeatureObject("Move Selected File",		o_L["MenuAlternativeMoveSelectedFile"],			"", "", ""
 			, "", 12, "iconFolder", "None", "") ; None is an internal code, not localized
 		this.AddQAPFeatureObject("Copy Selected File",		o_L["MenuAlternativeCopySelectedFile"],			"", "", ""
@@ -30182,8 +30237,9 @@ class QAPfeatures
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	AddQAPFeatureObject(strQAPFeatureCode, strThisLocalizedName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories, strQAPFeatureDescription
-		, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut, strHelpUrl, strRefreshCommand := "", blnDoubleAmpersands := false)
+	AddQAPFeatureObject(strQAPFeatureCode, strThisLocalizedName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories
+		, strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut, strHelpUrl
+		, strRefreshCommand := "", blnDoubleAmpersands := false, blnIncludeInSearchAndGo := false)
 	;
 	; QAP Feature Objects (o_QAPfeatures.AA) definition:
 	;		Key: strQAPFeatureInternalName
@@ -30213,6 +30269,7 @@ class QAPfeatures
 		aaOneQAPFeature.intQAPFeatureAlternativeOrder := intQAPFeatureAlternativeOrder
 		aaOneQAPFeature.strDefaultShortcut := strDefaultShortcut ; for Alternative Menu QAP features, the shortcut default contains the default strModifier
 		aaOneQAPFeature.blnDoubleAmpersands := blnDoubleAmpersands
+		aaOneQAPFeature.blnIncludeInSearchAndGo := blnIncludeInSearchAndGo
 		
 		this.AA["{" . strQAPFeatureCode . "}"] := aaOneQAPFeature
 		this.aaQAPFeaturesCodeByDefaultName[strThisLocalizedName] := "{" . strQAPFeatureCode . "}"
@@ -33495,7 +33552,10 @@ class Container
 			}
 			else
 			{
-				g_intOriginalMenuPosition := A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
+				if (this.aaTemp.strOpenFavoriteLabel = "OpenAlternativeFromSearchAndGo") ; we already have menu position for Search and Go
+					g_intOriginalMenuPosition := this.AA.intSearchItemPositionInOriginalMenu
+				else
+					g_intOriginalMenuPosition := A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
 				g_blnOriginalMenuPositionKeep := true ; avoid overwriting the position in GuiEditFavorite / GuiFavoriteInit
 				o_MenuInGui := this.AA.oParentMenu
 				; no need to set o_EditedFavorite here, it will be set in GuiEditFavorite / GuiFavoriteInit
