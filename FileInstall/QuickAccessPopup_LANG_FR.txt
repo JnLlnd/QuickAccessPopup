@@ -563,7 +563,7 @@ lGuiResetDefault	Restaurer le raccourci par défaut
 lGuiSave	Enregistrer
 lGuiSaveAndClose	Enregistrer et fermer
 lGuiSaving	Enregistre
-lGuiSearchAndGoDescription	Ouvrez la boîte de recherche, entrez une chaîne de caratctères à rechercher et sélectionnez un item dans le résultat de recherche avec la souris (double-clic) ou le clavier (Entrée) pour ouvrir l'item sélectionné
+lGuiSearchAndGoDescription	Ouvrez la boîte de recherche, entrez une chaîne de caractères à rechercher et sélectionnez un item dans le résultat de recherche avec la souris (double-clic) ou le clavier (Entrée) pour ouvrir l'item sélectionné, ou faites un clic-droite pour ouvrir le menu Alternatif afin de modifier le favori, copier son emplacement, etc.
 lGuiSearchAndGoTitle	Recherche rapide
 lGuiSearchAndReplaceConfirm	Confirmation
 lGuiSearchAndReplaceDescription	Rechercher et remplacer des valeurs dans l'emplacement ou le contenu, le nom des favoris, l'icône ou les paramètres.`n`nSélectionnez les types de favoris où exécuter le remplacement.`n`nConfirmez pour chaque favori si vous souhaitez effectuer le remplacement ou remplacer les valeurs dans tous les favoris immédiatement.
