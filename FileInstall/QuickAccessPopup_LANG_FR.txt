@@ -564,7 +564,7 @@ lGuiSave	Enregistrer
 lGuiSaveAndClose	Enregistrer et fermer
 lGuiSaving	Enregistre
 lGuiSearchAndGoDescription	Ouvrez la boîte de recherche, entrez une chaîne de caratctères à rechercher et sélectionnez un item dans le résultat de recherche avec la souris (double-clic) ou le clavier (Entrée) pour ouvrir l'item sélectionné
-lGuiSearchAndGoTitle	Chercher dans QAP et Go
+lGuiSearchAndGoTitle	Recherche rapide
 lGuiSearchAndReplaceConfirm	Confirmation
 lGuiSearchAndReplaceDescription	Rechercher et remplacer des valeurs dans l'emplacement ou le contenu, le nom des favoris, l'icône ou les paramètres.`n`nSélectionnez les types de favoris où exécuter le remplacement.`n`nConfirmez pour chaque favori si vous souhaitez effectuer le remplacement ou remplacer les valeurs dans tous les favoris immédiatement.
 lGuiSearchAndReplaceFindNext	Rechercher le prochain
@@ -749,7 +749,7 @@ lMenuReopenCurrentFolderDescription	Changer le dossier dans la boîte de dialogue
 lMenuReopenInNewWindow	Rouvrir le dossier actif à partir d'une boîte de dialogue
 lMenuReopenInNewWindowDescription	Rouvrir le dossier actuel dans une nouvelle fenêtre de Windows Explorer (ou Directory Opus, ou Total Commander). Cette commande est utile lorsque vous voulez ouvrir dans Windows Explorer le dossier que vous consultez actuellement dans une boîte de dialogue de fichier.
 lMenuResetQAPSpecialDefaultNames	Réinitialiser les nom des Fonctionnalités QAP et Dossiers spéciaux
-lMenuRestoreSearchAndGoWindowPosition	Restaurer la position de la fenêtre "Chercher dans QAP et Go"
+lMenuRestoreSearchAndGoWindowPosition	Restaurer la position de la fenêtre "Recherche rapide"
 lMenuRestoreSettingsWindowPosition	Restaurer la position de la fenêtre "Personnaliser"
 lMenuRestoreSettingsWindowPositionDescription	Restaurer la taille et la position par défaut (au centre de l'écran principal) de la fenêtre "Personnaliser".
 lMenuRunAtStartup	Exécuter au démarrage
@@ -991,7 +991,7 @@ lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Exécuter au démarrage
 lOptionsSearchAndGoExtended	Recherche étendue (chercher dans toutes les propriétés)
 lOptionsSearchAndGoRows	Nombre de lignes du résultat de recherche
-lOptionsSearchAndGoTitle	Options de "Chercher dans QAP et Go"
+lOptionsSearchAndGoTitle	Options de "Recherche rapide"
 lOptionsSearchFrom	Étendue de la recherche
 lOptionsSearchFromCurrent	Chercher à partir du menu ou groupe actuel
 lOptionsSearchFromMain	Toujours chercher à partir du menu principal
