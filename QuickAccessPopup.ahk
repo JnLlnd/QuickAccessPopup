@@ -5866,7 +5866,7 @@ if !GetKeyState("Shift")
 
 ; ####
 ; Gosub, GuiOptionsGroupSettingsWindow
-; Gosub, GuiSearchAndGo
+Gosub, GuiSearchAndGo
 
 return
 
@@ -6527,6 +6527,8 @@ if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
 	o_Settings.ReadIniOption("SettingsWindow", "blnDarkModeCustomize", "DarkModeCustomize", 0, "SettingsWindow", "f_blnDarkModeCustomize")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoExtended", "SearchAndGoExtended", 0, "SettingsWindow", "f_lblOptionsSearchAndGoTitle|f_blnSearchAndGoExtended")
 o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoRows", "SearchAndGoRows", 10, "SettingsWindow", "f_intSearchAndGoRowsEdit|f_intSearchAndGoRows|f_lblSearchAndGoRows")
+o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoSort", "SearchAndGoSort", 0, "SettingsWindow"
+	, "f_lblOptionsSearchAndGoSort|f_radOptionsSearchAndGoSort0|f_radOptionsSearchAndGoSort1|f_radOptionsSearchAndGoSort2")
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -9463,7 +9465,15 @@ Gui, 2:Add, UpDown, vf_intSearchAndGoRows Range5-9999 gGuiOptionsGroupChanged hi
 Gui, 2:Add, Text, yp x+10 w200 hidden vf_lblSearchAndGoRows, % o_L["OptionsSearchAndGoRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intSearchAndGoRowsEdit
 
-GuiControlGet, arrPos, Pos, f_blnAddAutoAtTop1
+Gui, 2:Add, Text, y+15 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchAndGoSort, % o_L["DialogSortBy"] . ":"
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsSearchAndGoSort0 Group gGuiOptionsGroupChanged hidden "
+	. (!o_Settings.SettingsWindow.intSearchAndGoSort.IniValue ? "Checked" : ""), % o_L["DialogSortNaturalOrder"] ; 0 or empty -> natural order
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsSearchAndGoSort1 gGuiOptionsGroupChanged hidden "
+	. (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 1 ? "Checked" : ""), % o_L["DialogMenuSortFavoriteName"] ; 1 -> favorite name
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsSearchAndGoSort2 gGuiOptionsGroupChanged hidden "
+	. (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 2 ? "Checked" : ""), % o_L["DialogMenuSortUsage"] ; 2 -> usage
+
+GuiControlGet, arrPos, Pos, f_lblOptionsSearchAndGoSort2 ; if col 2 is taller than col 1
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -10312,6 +10322,13 @@ o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 o_Settings.SettingsWindow.blnSearchAndGoExtended.WriteIni(f_blnSearchAndGoExtended)
 o_Settings.SettingsWindow.intSearchAndGoRows.WriteIni(f_intSearchAndGoRows)
+if (f_radOptionsSearchAndGoSort1)
+	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 1 ; 1 -> favorite name
+else if (f_radOptionsSearchAndGoSort2)
+	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 2 ; 2 -> usage
+else ; f_radOptionsSearchAndGoSort0
+	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 0 ; 0 or empty -> natural order
+o_Settings.SettingsWindow.intSearchAndGoSort.WriteIni("", true) ; value already updated
 
 blnDarkModeCustomizePrev := o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
@@ -24146,7 +24163,7 @@ WinSet, AlwaysOnTop, On
 
 Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strSearchAndGo gGuiSearchAndGoChanged
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
-	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1
+	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1|Sort
 Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
 
 if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !g_blnLightMode)
@@ -24202,25 +24219,35 @@ if StrLen(f_strSearchAndGo)
 	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 	oSearchAndGoResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
-
+	
 	Loop, % oSearchAndGoResult.SA.MaxIndex()
 	{
-		strRow := oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oSearchAndGoResult.SA[A_Index].AA.strFavoriteName
+		if (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 1) ; sort by favorite name
+			strRow := oSearchAndGoResult.SA[A_Index].AA.strFavoriteName . " (" . oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
+		else
+			strRow := oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oSearchAndGoResult.SA[A_Index].AA.strFavoriteName
 		strRow := StrReplace(strRow, "&&", g_strEscapeReplacement) ; preserve existing double ampersand
 		strRow := StrReplace(strRow, "&", "") ; remove single ampersands that would be shortcuts if numeric shortcuts were disabled
 		strRow := StrReplace(strRow, g_strEscapeReplacement, "&") ; restore preserved  existing double ampersand
-		LV_Add("", strRow)
+		oSort := [strRow, oSearchAndGoResult.SA[A_Index].AA.strFavoriteName, oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb] ;contains 3 possible sort criterias
+		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intSearchAndGoSort.IniValue + 1]) ; select active sort criteria
 		intRowWidth := GetPixelSizeOfText(strRow) + 30
 		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
 	}
 }
-LV_ModifyCol()
+LV_ModifyCol() ; adjuste cols width
+LV_ModifyCol(2, 0) ; make col 2 invisible
+LV_ModifyCol(2, (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 2 ? "Integer SortDesc" : "Text Sort")) ; for usage sort integer desc, else sort text asc
 
 GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
 GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
 
 WinMove, ahk_id %strSearchAndGoHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
 Critical, Off
+
+strRow := ""
+oSort := ""
+intRowWidth := ""
 
 return
 ;------------------------------------------------------------
@@ -24263,6 +24290,9 @@ if (A_ThisLabel = "GuiSearchAndGoEvents" or A_ThisLabel = "SearchAndGoEnter")
 			}
 			else
 				oSearchAndGoResult.SA[intSearchAndGoRow].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
+			
+			oSearchAndGoResult := ""
+			intRowWidth := ""
 		}
 	}
 	; else skip other A_GuiEvent
@@ -30082,7 +30112,7 @@ class QAPfeatures
 			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
 			, "can-i-add-multiple-favorites-in-one-click")
 		this.AddQAPFeatureObject("Search and Go",			o_L["GuiSearchAndGoTitle"], 				"", "GuiSearchAndGo",						"1-Featured~6-Utility~7-QAPManagement"
-			, o_L["GuiSearchAndGoDescription"], 0, "iconExit", "+^z"
+			, o_L["GuiSearchAndGoDescription"], 0, "iconExit", "+^q"
 			, "can-i-quickly-search-qap-to-launch-one-of-my-favorites")
 		this.AddQAPFeatureObject("Search and Replace",		o_L["GuiSearchAndReplaceTitle"] . g_strEllipse, "", "GuiSearchAndReplace",				"3-QAPMenuEditing"
 			, o_L["GuiSearchAndReplaceDescription"], 0, "iconSwitch", ""
