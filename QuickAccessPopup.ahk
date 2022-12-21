@@ -5516,6 +5516,10 @@ global g_strAddFavIconsTypes ; in Add favorite, pipe-separated list of "icon typ
 global g_saPlaceholderMenuItems := Object() ; single array of menu items in ExpandPlaceholderMenu
 global g_strPlaceholderMenuResult ; result of menu selection in ExpandPlaceholderMenu
 
+global g_blnLightMode
+global g_intWindowColor := 0x2B2B2B
+global g_intControlColor := 0xFFFFFF
+
 ;---------------------------------
 ; Used in SelectIcon()
 global SI_intPickIconCols := 10 ; 20
@@ -11952,28 +11956,27 @@ if (saSettingsPosition[1] <> -1)
 GuiControl, Focus, f_lvFavoritesList
 
 ; testing the dark mode display on Customize window (see https://www.autohotkey.com/boards/viewtopic.php?p=426678&sid=0f08bed4b46e1ed1f59601053df8c959#p426678)
-RegRead, blnLightMode, HKCU, SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize, AppsUseLightTheme ; check SystemUsesLightTheme for Windows system preference
-if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !blnLightMode)
-	; si dark mode forcer theme "Windows"
+RegRead, g_blnLightMode, HKCU, SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize, AppsUseLightTheme ; check SystemUsesLightTheme for Windows system preference
+if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !g_blnLightMode)
 {
-	intWindowColor := 0x2B2B2B
-	intControlColor := 0xFFFFFF
-		
+	; could be used to make title bar dark but don't because not nice with menu bar white that cannot be dark
+	; DllCall("dwmapi\DwmSetWindowAttribute", "ptr", g_strGui1Hwnd, "int", 20, "int*", true, "int", 4)
+	
 	WinGet, strControlList, ControlList, ahk_id %g_strGui1Hwnd%
-	Gui, Color, %intWindowColor%, %intControlColor%
+	Gui, Color, %g_intWindowColor%, %g_intControlColor%
 	for strKey, strControl in StrSplit(strControlList,"`n","`r`n")
 	{
-		ControlGet, strControlHwnd, HWND, , %strControl%, ahk_id %strHwnd%
+		ControlGet, strControlHwnd, HWND, , %strControl%, ahk_id %g_strGui1Hwnd%
 		
 		if InStr(strControl, "ListView") ; for ListView control
 		{
-			GuiControl, +Background%intWindowColor%,%strControl%
-			Gui,Font, c%intControlColor%
+			GuiControl, +Background%g_intWindowColor%, %strControl%
+			Gui,Font, c%g_intControlColor%
 			GuiControl, Font, %strControl%
 		}
 		if InStr(strControl, "Static")
 		{
-			Gui, Font, c%intControlColor%
+			Gui, Font, c%g_intControlColor%
 			GuiControl, Font, %strControl%
 		}
 	}
@@ -24145,6 +24148,17 @@ Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strSearchAndGo gGuiSearchAndGoChang
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
 	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1
 Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
+
+if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !g_blnLightMode)
+{
+	; could be used to make title bar dark but don't because not nice with edit control white that cannot be dark
+	; DllCall("dwmapi\DwmSetWindowAttribute", "ptr", strSearchAndGoHwnd, "int", 20, "int*", true, "int", 4)
+	
+	Gui, Color, %g_intWindowColor%, %g_intControlColor%
+	GuiControl, +Background%g_intWindowColor%, SysListView321
+	Gui, Font, c%g_intControlColor%
+	GuiControl, Font, SysListView321
+}
 
 strSearchAndGoPosition := o_Settings.ReadIniValue("SearchAndGoPosition", -1) ; by default -1 to center at minimal size
 saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
