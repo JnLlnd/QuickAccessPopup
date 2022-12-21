@@ -6526,6 +6526,7 @@ o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLoc
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
 	o_Settings.ReadIniOption("SettingsWindow", "blnDarkModeCustomize", "DarkModeCustomize", 0, "SettingsWindow", "f_blnDarkModeCustomize")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoExtended", "SearchAndGoExtended", 0, "SettingsWindow", "f_lblOptionsSearchAndGoTitle|f_blnSearchAndGoExtended")
+o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoRecentsFrequents", "SearchAndGoRecentsFrequents", 0, "SettingsWindow", "f_blnSearchAndGoRecentsFrequents")
 o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoRows", "SearchAndGoRows", 10, "SettingsWindow", "f_intSearchAndGoRowsEdit|f_intSearchAndGoRows|f_lblSearchAndGoRows")
 o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoSort", "SearchAndGoSort", 0, "SettingsWindow"
 	, "f_lblOptionsSearchAndGoSort|f_radOptionsSearchAndGoSort0|f_radOptionsSearchAndGoSort1|f_radOptionsSearchAndGoSort2")
@@ -9458,6 +9459,8 @@ Gui, 2:Add, Text, y+30 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchAn
 Gui, 2:Font
 
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoExtended gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoExtended"]
+GuiControl, , f_blnSearchAndGoExtended, % (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue = true)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoRecentsFrequents gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoRecentsFrequents"]
 GuiControl, , f_blnSearchAndGoExtended, % (o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue = true)
 
 Gui, 2:Add, Edit, y+15 x%g_intGroupItemsTab4X% w51 h22 vf_intSearchAndGoRowsEdit number center hidden
@@ -10321,6 +10324,7 @@ o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 o_Settings.SettingsWindow.blnSearchAndGoExtended.WriteIni(f_blnSearchAndGoExtended)
+o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.WriteIni(f_blnSearchAndGoRecentsFrequents)
 o_Settings.SettingsWindow.intSearchAndGoRows.WriteIni(f_intSearchAndGoRows)
 if (f_radOptionsSearchAndGoSort1)
 	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 1 ; 1 -> favorite name
@@ -24152,6 +24156,8 @@ return
 GuiSearchAndGo:
 ;------------------------------------------------------------
 
+Gosub, RefreshRecentItemsMenus
+
 intListViewWidth := 180 ; minimal width
 intSearchAndGoGuiMinWidth := intListViewWidth + 6 ; (2 x 3 pixels margins)
 intSearchAndGoGuiMinHeight := (o_Settings.SettingsWindow.intSearchAndGoRows.IniValue * 17) + 28
@@ -24219,6 +24225,12 @@ if StrLen(f_strSearchAndGo)
 	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 	oSearchAndGoResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
+	if (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue)
+		loop, parse, % "Folders|Files", |
+		{
+			o_Containers.AA[o_L["MenuRecent" . A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
+			o_Containers.AA[o_L["MenuFrequent" . A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
+		}
 	
 	Loop, % oSearchAndGoResult.SA.MaxIndex()
 	{
