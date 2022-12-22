@@ -419,6 +419,7 @@ lDialogShortcut	Raccourci
 lDialogShortcuts	Raccourcis
 lDialogShortcutsDescription	Afficher une boîte de dialogue offrant une vue globale de vos raccourcis clavier ou souris. Vous pouvez trier les favoris en cliquant sur l'entête des colonnes.`n`nFaites un double-clic sur un favori pour modifier son raccourci.`n`nCliquez sur la case à cocher "Voir tous les favoris" pour assigner des raccourcis à d'autres favoris.
 lDialogSortBy	Trier par
+lDialogSortNaturalOrder	Ordre du menu
 lDialogSortOrder	Ordre de tri
 lDialogSoundLabel	Jouer ce son lorsque le favori est lancé (<a href="~1~">~2~</a>)
 lDialogSpecialFoldersCategoriesNames	De base|Utilisateur expert|Administrateur de système|Contenus|Matériel
@@ -835,6 +836,7 @@ lOopsInvalidIcon	Les images des icônes doivent être carrées et avoir entre 16x16
 lOopsInvalidIconDownload	L'icône pour ce site web n'est pas disponible ou est invalide:`n`n~1~
 lOopsInvalidWinCmdIni	Le fichier des paramêtres "wincmd.ini" de Total Commander est introuvable.`n`nSélectionnez "Options" et l'onglet "Gestionnaires de fichiers".
 lOopsInvalidWindowPosition	Valeur(s) de position de la fenêtre invalide
+lOopsItemCannotBeEdited	Cet item ne peut pas Ãªtre Ã©ditÃ©.
 lOopsJLiconsError	Icône de la zone de notification introuvable. Assurez-vous d'avoir mis à jour le fichier JLicons.dll à la version ~1~.
 lOopsJLiconsOutdated	Ce fichier doit être mis à jour:`n`n~1~`n`nRemplacez-le avec le fichier JLicons.dll version ~2~ contenu dans le plus récent fichier d'installation portable (ZIP) et relancez ~3~.
 lOopsLastSaveIncomplete	La dernière sauvegarde des favoris de ~1~ dans ce fichier de configuration a été interrompue:`n`n~2~`n`nLa version précédente de vos favoris dans ce fichier ont été restaurée.
@@ -990,8 +992,9 @@ lOptionsRunAsAdminChanged	Nouveau réglage "Exécuter en tant qu'administrateur" e
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Exécuter au démarrage
 lOptionsSearchAndGoExtended	Recherche étendue (chercher dans toutes les propriétés)
+lOptionsSearchAndGoRecentsFrequents	Inclure les items des menus RÃ©cents et FrÃ©quents
 lOptionsSearchAndGoRows	Nombre de lignes du résultat de recherche
-lOptionsSearchAndGoTitle	Options de "Recherche rapide"
+lOptionsSearchAndGoTitle	Options de Recherche rapide
 lOptionsSearchFrom	Étendue de la recherche
 lOptionsSearchFromCurrent	Chercher à partir du menu ou groupe actuel
 lOptionsSearchFromMain	Toujours chercher à partir du menu principal

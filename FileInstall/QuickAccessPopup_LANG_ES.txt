@@ -763,7 +763,6 @@ lOptionsSettingsWindow	Personalizar la ventana
 lOptionsSnippets	Atajos y Cadenas de seguridad
 lOptionsSnippetsHelp	Atajos por defecto (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Exclusiones Actuales de Windows
-lOptionsSwitchExclusionListInstructions	Para excluir aplicaciones del menú "Ventanas actuales", ingrese cualquier parte de los títulos de las ventanas de la aplicación, uno por línea.
 lOptionsTabFileManagersIntro	Seleccione el administrador de archivos para utilizar para abrir carpetas en una ventana nueva.
 lOptionsTabFileManagersPreferences	Preferencias del gestor de archivos
 lOptionsTabFileManagersPreferred	Gestor de archivos preferido

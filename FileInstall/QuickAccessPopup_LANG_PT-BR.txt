@@ -208,6 +208,7 @@ lDialogFavoriteSelectType	Selecione o tipo de favorito para adicionar.`n`nNa pró
 lDialogFavoriteShortNameLabel	Nome curto para o menu
 lDialogFavoritesMenuPosition	Inserir os favoritos antes deste item
 lDialogFavoriteSnippetEmpty	O conteúdo está vazio. Por favor, entre o conteúdo recortado.
+lDialogFavoriteSnippetExpandEnvVars	Expandir variáveis de ambiente
 lDialogFavoriteSnippetFixedFont	Fonte com largura fixa
 lDialogFavoriteSnippetFontSize	Tamanho da fonte
 lDialogFavoriteSnippetHelpNoProcess	Insira ``n para final da linha e ``t para tabulação. Insira ```` (aspas invertidas duplas) para aspas invertidas.
@@ -569,6 +570,8 @@ lGuiResetDefault	Redefinir tecla de atalho padrão
 lGuiSave	Salvar
 lGuiSaveAndClose	Salvar && Fechar
 lGuiSaving	Salvando
+lGuiSearchAndGoDescription	Abra uma caixa de pesquisa, digite o termo a ser pesquisado e selecione um item nos resultados com o mouse (clique duplo) ou o teclado (Enter) para iniciar o item selecionado
+lGuiSearchAndGoTitle	Pesquisa rápida
 lGuiSearchAndReplaceConfirm	Confirmação
 lGuiSearchAndReplaceDescription	Pesquise e substitua valores na localização ou conteúdo, nome do favorito, recurso de ícone ou parâmetros.`n`nSelecione os tipos de favoritos onde executar a substituição.`n`nConfirme para cada favorito se você deseja executar a substituição ou substituir os valores em todos os favoritos de uma vez.
 lGuiSearchAndReplaceFindNext	Localizar próximo
@@ -701,6 +704,7 @@ lMenuDynamicMenus	No Trabalho
 lMenuEditIniFile	Editar ~1~
 lMenuEditIniFileDescription	Edite o arquivo atual (.ini) de configurações do Quick Access Popup.
 lMenuEventViewer	Visualizador de Eventos
+lMenuEvironmentVariables	Variáveis de ambiente
 lMenuExitApp	Sair do ~1~
 lMenuExitAppDescription	Fecha o Quick Access Popup, liberando todos os disparadores e atalhos de menu do mouse ou teclado atribuídos aos favoritos.
 lMenuExternalCatalogue	Adicionar menu de favoritos compartilhados do catálogo
@@ -757,6 +761,7 @@ lMenuReopenCurrentFolderDescription	Altera a pasta em caixas de diálogo de arqui
 lMenuReopenInNewWindow	Reabrir Pasta Atual a partir da Caixa de Diálogo
 lMenuReopenInNewWindowDescription	Reabre a pasta atual em uma nova janela do Explorer (também no Directory Opus ou Total Commander). Útil quando você quer abrir a pasta em que está navegando em uma caixa de diálogo de arquivo em uma janela do Explorer.
 lMenuResetQAPSpecialDefaultNames	Redefinir Nomes Padrão de Recursos do QAP e Pastas Especiais
+lMenuRestoreSearchAndGoWindowPosition	Restaurar posição da janela "Pesquisa rápida"
 lMenuRestoreSettingsWindowPosition	Restaurar posição da janela "Personalizar"
 lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e a posição da janela "Personalizar" para o centro da tela principal.
 lMenuRunAtStartup	Executar na Inicialização
@@ -936,6 +941,8 @@ lOptionsHotkeyRemindersPrompt	Lembretes de atalho e string de substituição no me
 lOptionsHotkeyRemindersPromptHotstrings	Lembretes de strings de substituição no menu:
 lOptionsHotkeyRemindersPromptShortcuts	Lembretes de atalho no menu:
 lOptionsHotkeyRemindersShort	Exibir abreviado
+lOptionsHotkeyTriggerExclusionListHelp	Selecione se os atalhos de teclado podem ser usados em qualquer janela de aplicativo com exceções (bloqueado) ou somente em alguns aplicativos (aprovado). Para adicionar aplicativos à lista, digite qualquer parte do título se sua janela. Você pode digitar múltiplos aplicativos, um por linha. Por exemplo, para adicionar o Chrome e Word, digite as seguintes linhas:`n`nGoogle Chrome`nMicrosoft Word`n`nQuando os atalhos não são permitidos no aplicativo, eles são enviados para a janela de destino como se o QAP não estivesse rodando. Você também pode adicionar aplicativos pelo nome de sua classe ou nome do processo (nome do arquivo EXE). Mais <a href="~1~">Ajuda</a>.
+lOptionsHotkeyTriggerExclusionListTitle	Atalhos do teclado
 lOptionsHotstringsDefault	Opções padrão de strings de substituição
 lOptionsHotstringsDefaultSelect	Selecionar
 lOptionsIconDocumentsList	Substituições de ícones padrão de documentos
@@ -949,6 +956,7 @@ lOptionsIconsManageRows	Linhas da janela 'Gerenciar Ícones' (0 para espaço máxim
 lOptionsKeepExtensionInShortName	Manter extensão do arquivo nos nomes curtos dos favoritos
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
+lOptionsLaunchAdvancedQAPTitle	Iniciar Quick Access Popup
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela ativa
 lOptionsMenuAdvanced	Opções Avançadas de Menus
 lOptionsMenuAppearance	Aparência dos Menus
@@ -977,6 +985,7 @@ lOptionsPopupHotkeysAlternative	Teclas de atalho do Menu Alternativo
 lOptionsPopupHotkeyTitles	Botão do Mouse do Quick Access Popup|Atalho de Teclado do Quick Access Popup|Botão do Mouse do Menu Alternativo|Atlaho de Teclado do Menu Alternativo
 lOptionsPopupHotkeyTitlesSub	Este botão do mouse exibe o menu em qualquer lugar (exceto sobre <a>aplicativos excluídos</a>) e inicia seu favorito ou navega para sua pasta.|Esta tecla de atalho exibe o menu em qualquer lugar e inicia seu favorito ou navega para sua pasta.|Este mouse exibe um menu alternativo oferecendo vários recursos. Este menu pode ser exibido em qualquer lugar (sem exceção).|Esta tecla de atalho exibe um menu alternativo oferecendo vários recursos. Este menu pode ser exibido em qualquer lugar.
 lOptionsPopupMenu	Menu Popup
+lOptionsQAPconnectIntro	O QAPconnect é uma interface que oferece suporte parcial para uma lista de cerca de 15 gerenciadores de arquivos.
 lOptionsQAPTempFolder	Pasta Temporária
 lOptionsQuickAddSnippetSubmenu	Submenu para ~1~
 lOptionsRecentFolders	Número de itens nos menus
@@ -995,10 +1004,13 @@ lOptionsRunAsAdminAlert	Aviso: Executar o ~1~ como Administrador pode resultar e
 lOptionsRunAsAdminChanged	Nova configuração "Executar como Administrador" salva. Feche o ~1~ e reinicie-o para habilitar a nova configuração (não reinicie somente).
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Executar na Inicialização
+lOptionsSearchAndGoExtended	Pesquisa estendida (pesquisar todas as propriedades)
+lOptionsSearchAndGoRows	Número de linhas do resultado da pesquisa
+lOptionsSearchAndGoTitle	Opções da pesquisa rápida
 lOptionsSearchFrom	Extensão da pesquisa
 lOptionsSearchFromCurrent	Pesquisar no menu ou grupo atual
 lOptionsSearchFromMain	Sempre pesquisar a partir do menu Principal
-lOptionsSearchResults	Resultados da Pesquisa
+lOptionsSearchResults	Personalizar janela de resultados da pesquisa
 lOptionsSearchWithLocale	Pesquisar usando configurações de idioma local (ex.: "é" considerado como "e")
 lOptionsSearchWithStats	Exibe as colunas de datas e estatísticas na lista de Favoritos e resultados da Busca
 lOptionsSelectBackupFolder	Selecione a backup do arquivo principal de configurações

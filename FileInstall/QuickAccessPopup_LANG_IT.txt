@@ -208,6 +208,7 @@ lDialogFavoriteSelectType	Seleziona il tipo di Preferito da aggiungere.`n`nNella
 lDialogFavoriteShortNameLabel	Nome abbreviato per il menù
 lDialogFavoritesMenuPosition	Inserisci i Preferiti prima di questo elemento
 lDialogFavoriteSnippetEmpty	Contenuto vuoto. Per favore, inserisci il contenuto dello snippet.
+lDialogFavoriteSnippetExpandEnvVars	Espandi le Variabili Ambiente 
 lDialogFavoriteSnippetFixedFont	Font a larghezza fissa
 lDialogFavoriteSnippetFontSize	Dimensione del font
 lDialogFavoriteSnippetHelpNoProcess	Inserisci `` n come fine-linea e ``t per tab. Inserisci `` (doppio doppio apice all'indietro) per il doppio apice.
@@ -569,6 +570,8 @@ lGuiResetDefault	Ripristina hotkey predefinito
 lGuiSave	Salva
 lGuiSaveAndClose	Salva && Chiudi
 lGuiSaving	Salvataggio
+lGuiSearchAndGoDescription	Apri una casella di ricerca, inserisci una stringa di ricerca e seleziona un elemento nei risultati con il mouse (doppio clic) o la tastiera (Invio) per lanciare l'elemento selezionato, o clic destro per aprire il menù Alternativo per editare il preferito, copiarne la posizione, ecc.
+lGuiSearchAndGoTitle	Ricerca Veloce
 lGuiSearchAndReplaceConfirm	Conferma
 lGuiSearchAndReplaceDescription	Valori da Cercare e da sostituire in contenuto o destinazione, nome di Preferiti, risorsa icona o parametro.`n`nSeleziona i tipi di preferiti di cui eseguire la sostituzione.`n`nConferma per ciascun preferito se vuoi eseguire la sostituzione, o se effettuarla per tutti insieme contemporaneamente.
 lGuiSearchAndReplaceFindNext	Trova successivo
@@ -701,6 +704,7 @@ lMenuDynamicMenus	Usati di recente (o spesso)
 lMenuEditIniFile	Modifica ~1~
 lMenuEditIniFileDescription	Modifica il file di impostazioni (.ini) attivo di Quick Access Popup (QAP).
 lMenuEventViewer	Gestione Eventi
+lMenuEvironmentVariables	Variabili Ambiente
 lMenuExitApp	Esci da ~1~
 lMenuExitAppDescription	Esci da Quick Access Popup, rilasciando tutti i tasti attivanti e le scorciatoie del menù, sia del mouse che della tastiera, assegnati ai preferiti.
 lMenuExternalCatalogue	Aggiungi un menù condiviso di Preferiti dal catalogo
@@ -757,6 +761,7 @@ lMenuReopenCurrentFolderDescription	Usa come cartella corrente nelle caselle di 
 lMenuReopenInNewWindow	Riapri la Cartella Corrente dalla casella di Dialogo
 lMenuReopenInNewWindowDescription	Riapri la cartella corrente in una nuova finestra di Explorer (vale anche per Directory Opus o Total Commander). Utile quando vuoi aprire la cartella che stai sfogliando in una casella di dialogo per file, in una finestra di Explorer.
 lMenuResetQAPSpecialDefaultNames	Resetta Nomi di Default delle Cartelle Speciali e Caratteristiche di QAP
+lMenuRestoreSearchAndGoWindowPosition	Ripristina la posizione della finestra "Ricerca Veloce"
 lMenuRestoreSettingsWindowPosition	Ripristina la posizione della finestra "Personalizzare"
 lMenuRestoreSettingsWindowPositionDescription	Ripristina dimensione finestra e posizione della finestra "Personalizzare" al centro dello schermo principale.
 lMenuRunAtStartup	Esegui all'Avvio
@@ -934,6 +939,8 @@ lOptionsHotkeyRemindersPrompt	Promemoria delle combinazioni di tasti e sequenze 
 lOptionsHotkeyRemindersPromptHotstrings	Promemoria di sequenze di sostituzione nel menù:
 lOptionsHotkeyRemindersPromptShortcuts	Promemoria delle scorciatoie nel menù:
 lOptionsHotkeyRemindersShort	Visualizza abbreviati
+lOptionsHotkeyTriggerExclusionListHelp	Seleziona se le scorciatoie da tastiera possono essere usate in qualsiasi finestra di applicazione con eccezioni (vietate) o soltanto con qualche applicazione (consentite). Per aggiungere un'applicazione alla lista, inserisci una qualsiasi parte del titolo della finestra. È possibile inserire applicazioni multiple, una per linea. Per esempio, per inserire Crome e Word, inserisci le due linee seguenti:`n`nGoogle Crome`nMicrosoft Word`n`nQuando le scorciatoie non sono permesse per una data applicazione, esse vengono inviate alla finestra voluta come se QAP non fosse in esecuzione. È anche possibile aggiungere applicazioni col nome della loro classe o processo (nome del file EXE). <a href="~1~">aiuto</a> per dettagli aggiuntivi.
+lOptionsHotkeyTriggerExclusionListTitle	Scorciatoie da tastiera
 lOptionsHotstringsDefault	Opzioni predefinite delle Sequenze di sostituzione
 lOptionsHotstringsDefaultSelect	Seleziona
 lOptionsIconDocumentsList	Sostituzioni Icone Predefinite per Documenti
@@ -947,6 +954,7 @@ lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto l
 lOptionsKeepExtensionInShortName	Mantieni l'estensione del file nelle abbreviazioni dei preferiti
 lOptionsLanguage	Lingua
 lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian
+lOptionsLaunchAdvancedQAPTitle	Esecuzione di Quick Access Popup
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
 lOptionsMenuAppearance	Aspetto dei Menù
@@ -975,6 +983,7 @@ lOptionsPopupHotkeysAlternative	Combinazioni per il Menù Alternativo
 lOptionsPopupHotkeyTitles	Tasto del Mouse di Quick Access Popup|Scorciatoia da tastiera di Quick Access Popup|Tasto del Mouse del Menù Alternativo|Scorciatoia da tastiera del Menù Alternativo
 lOptionsPopupHotkeyTitlesSub	Questo tasto del mouse visualizza il menù popup ovunque (tranne che su <a>excluded applications</a>) e apre direttamente il Preferito o la cartella scelta.|Questo tasto apre il menù popup ovunque e apre direttamente il Preferito o la cartella scelta.|Questo tasto del mouse apre un menù alternativo che contiene varie funzioni. Tale menù può essere aperto ovunque (senza eccezioni).|Questo tasto apre un menù alternativo con varie funzioni. Tale menù può essere aperto ovunque.
 lOptionsPopupMenu	Menù Popup
+lOptionsQAPconnectIntro	QAPconnect è un'interfaccia che offre un parziale supporto per un'elenco di circa 15 file manager.
 lOptionsQAPTempFolder	Cartella Temporanea
 lOptionsQuickAddSnippetSubmenu	Sottomenù per ~1~
 lOptionsRecentFolders	Numero di oggetti nei Menù
@@ -993,10 +1002,13 @@ lOptionsRunAsAdminAlert	Avviso: Eseguire ~1~ in modalitá Amministratore puó caus
 lOptionsRunAsAdminChanged	Nuova impostazione "Esegui come amministratore" salvata. Esci da ~1~ e riaprilo per abilitare la nuova impostazione (cioè, non riavviando semplicemente).
 lOptionsRunAsAdminShort	Ammin.
 lOptionsRunAtStartup	Esegui all'avvio
+lOptionsSearchAndGoExtended	Ricerca Estesa (cerca tutte le proprietà)
+lOptionsSearchAndGoRows	Numero di righe per i risultati di ricerca
+lOptionsSearchAndGoTitle	Opzioni di Ricerca Veloce
 lOptionsSearchFrom	Ambito di ricerca
 lOptionsSearchFromCurrent	Cerca dal menù o gruppo corrente
 lOptionsSearchFromMain	Ricerca sempre dal menù Principaleu
-lOptionsSearchResults	Risultati di Ricerca
+lOptionsSearchResults	Personalizza la Finestra dei Risultati di Ricerca
 lOptionsSearchWithLocale	Ricerca usando le impostazioni del linguaggio locale (per esempio, "é" considerata come "e")
 lOptionsSearchWithStats	Risultati di ricerca con data di modifica e statistiche in colonna
 lOptionsSelectBackupFolder	Seleziona la cartella di backup del file delle Impostazioni principali

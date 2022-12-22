@@ -920,9 +920,7 @@ lOptionsFileManagerNavigateNew	nova janela do ~1~
 lOptionsFileManagerNavigateNewTab	um novo separador ~1~
 lOptionsFileManagers	Gestores de ficheiros
 lOptionsFilesExclusionList	Exclusões de ficheiros
-lOptionsFilesExclusionListInstructions	Para excluir ficheiros de "Ficheiros Recentes" e "Ficheiros Frequentes", introduza as extensões dos ficheiros (ex.: "mp3") ou use jokers * e ? (ex.: *.mp?), um por linha.
 lOptionsFoldersExclusionList	Exclusões de pastas
-lOptionsFoldersExclusionListInstructions	Para excluir pastas (incluindo as sua sub-pastas e ficheiros) dos menus "Pastas Recentes", "Ficheiros Recentes", "Pastas Frequentes" e "Ficheiros Frequentes", introduza os seus caminhos, um por linha. Opcionalmente, pode usar jokers * e ? antes de uma barra invertida (ex.: c:\hide*\).
 lOptionsFtpEncoding	Codificar utilizador e palavra-passe FTP (recomendado)
 lOptionsFtpEncodingTC	Codificar utilizador e palavra-passe FTP (não recomendado para o Total Commander)
 lOptionsGeneral	Geral
@@ -1014,7 +1012,6 @@ lOptionsShowQAPmenuSystem	no menu do Sistema (zona de notificação)
 lOptionsSnippets	Snippets e Hotstrings
 lOptionsSnippetsHelp	Padrões de 'Snippets' (<a href="~1~">~2~</a>)
 lOptionsSwitchExclusionList	Exclusões das Janelas Actuais
-lOptionsSwitchExclusionListInstructions	Para excluir aplicações do menu "Janelas Actuais", introduza qualquer parte do título da janela da aplicação, um por linha.
 lOptionsTabFileManagersIntro	Seleccione o gestor de ficheiros a usar para abrir pastas numa nova janela.
 lOptionsTabFileManagersPreferences	Preferências do gestor de ficheiros
 lOptionsTabFileManagersPreferred	Gestor de ficheiros preferido
