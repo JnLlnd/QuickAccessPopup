@@ -32,6 +32,14 @@ HISTORY
 =======
 
 Version BETA: 11.5.99.6 (2022-12-??)
+rename Quick Search
+add option for sort order of search and go result but name, usage or natural order; change default hotkey for search and go (renamed quick search) to shift+ctrl+q
+ad option to include recent and frequent menus items in search and go results; refresh these menus before searching recent and frequent menus;
+fix bug with order of left menu in Options window; avoid editing dynamic menu items with the Edit favorite Alternative menu feature
+make dark mode colors variables global; apply dark mode to Search and go listview (not possible for title bar and edit field)
+show distinct alternative menu features menu when right clicking a Search and Go result item containing features Edit Favorite, Copy Location, Run as admin and Open containing folder; support alternative menu modifiers hotkeys
+make process critical when user tape search string in Search and Go
+Language file update for French, Italian, Korean and Brazilian Portuguese
 
 Version BETA: 11.5.99.5 (2022-12-19)
 - remove the limit of number of items in "Search QAP and go" search result
