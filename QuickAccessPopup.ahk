@@ -31,15 +31,24 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.99.6 (2022-12-??)
-rename Quick Search
-add option for sort order of search and go result but name, usage or natural order; change default hotkey for search and go (renamed quick search) to shift+ctrl+q
-ad option to include recent and frequent menus items in search and go results; refresh these menus before searching recent and frequent menus;
-fix bug with order of left menu in Options window; avoid editing dynamic menu items with the Edit favorite Alternative menu feature
-make dark mode colors variables global; apply dark mode to Search and go listview (not possible for title bar and edit field)
-show distinct alternative menu features menu when right clicking a Search and Go result item containing features Edit Favorite, Copy Location, Run as admin and Open containing folder; support alternative menu modifiers hotkeys
-make process critical when user tape search string in Search and Go
-Language file update for French, Italian, Korean and Brazilian Portuguese
+Version BETA: 11.5.99.6 (2022-12-22)
+ 
+Quick Search
+- rename "Search QAP and Go" command to simply "Quick Search"
+- change default hotkey for "Quick Search" to Shift+Ctrl+Q (users already having the command in their menu must change the shortcut manualy)
+- add two options under "Options, Customize Window"
+  - set the order of "Quick Search" result by name, by usage or by menu (QAP menu natural order), default is by menu order
+  - checkbox to include or not Recent and Frequent menus items in "Quick Search" results
+- make dark mode colors variables global; apply dark mode to Search and go listview (not possible for title bar and edit field)
+- support Alternative menu features in "Quick Search" results when right-clicking a search result item or using the Alternative menus modifiers hotkeys when hitting Enter (see "Options, Alternative Menu Hotkeys")
+- Alternative menu features supported in "Quick Search" results are "Edit Favorite", "Copy Location", "Run as admin" and "Open containing folder"
+- optimize "Quick Search" for users typing very fast
+ 
+Various
+- fix bug with order of left menu in Options window (bug introduced in v11.5.99.2)
+- prevent editing dynamic menu items with the Alternative menu feature "Edit favorite"
+- add diagnostic code for QAP Feature command "Always on top"
+- French, Italian, Korean and Brazilian Portuguese language files update
 
 Version BETA: 11.5.99.5 (2022-12-19)
 - remove the limit of number of items in "Search QAP and go" search result
@@ -21068,10 +21077,12 @@ g_strNewWindowId := "" ; start fresh for any new favorite to open, used to posit
 if (g_strOpenFavoriteLabel <> "OpenAlternativeFromSearchAndGo") ; we already have the modifiers from SearchAndGo
 	gosub, GetAlternativeMenuModifier
 
+Diag(A_ThisLabel, "Enter", 1)
 if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
 	if SettingsUnsaved()
 		if SettingsNotSavedReturn()
 			return
+Diag(A_ThisLabel, "Enter", 2)
 
 if !InStr("OpenFavoriteFromLastAction|OpenAlternativeFromSearchAndGo|", A_ThisLabel . "|") ; we already have o_ThisFavorite from RepeatLastAction or SearchAndGo
 	gosub, OpenFavoriteGetFavoriteObject ; define o_ThisFavorite
@@ -21082,6 +21093,7 @@ if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
 	gosub, OpenFavoriteCleanup
 	return
 }
+Diag(A_ThisLabel, "o_ThisFavorite.AA.strFavoriteName", o_ThisFavorite.AA.strFavoriteName)
 
 ; avoid trying to navigate links in other apps than browsers
 if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWinId)
@@ -21090,6 +21102,7 @@ if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWi
 
 if (g_strOpenFavoriteLabel = "OpenAlternativeFromSearchAndGo")
 	g_strHotkeyTypeDetected := "Alternative"
+Diag(A_ThisLabel, "g_strHotkeyTypeDetected-1", g_strHotkeyTypeDetected)
 
 ; if a menu open from an hotkey, refresh dynamic menus
 if o_ThisFavorite.IsContainer() and InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|") ; include end marker
@@ -21121,6 +21134,7 @@ if (o_Settings.FileManagers.blnAlwaysNavigate.IniValue and !(g_blnAlternativeMen
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, true) ; get and activate last used file manager
 	g_strHotkeyTypeDetected := "Navigate"
 }
+Diag(A_ThisLabel, "g_strHotkeyTypeDetected-2", g_strHotkeyTypeDetected)
 
 ; collect last actions
 if !(g_blnAlternativeMenu) ; do not collect Alternative menu features
@@ -21135,10 +21149,13 @@ if (g_blnAlternativeMenu) and (g_strAlternativeMenu = o_L["MenuAlternativeNewWin
 
 if (A_ThisMenu = o_L["MenuContainerInGui"] and !StrLen(g_strHotkeyTypeDetected)) ; if menu open from gui, open in new window
 	g_strHotkeyTypeDetected := "Launch"
+Diag(A_ThisLabel, "g_strHotkeyTypeDetected-3", g_strHotkeyTypeDetected)
 
 ; beginning of OpenFavorite execution
 
+Diag(A_ThisLabel, "o_ThisFavorite.OpenFavorite", "BEFORE")
 o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
+Diag(A_ThisLabel, "o_ThisFavorite.OpenFavorite", "AFTER")
 
 if (o_ThisFavorite.AA.oParentMenu.AA.blnReopenAfterLaunchingItem)
 {
@@ -21874,6 +21891,8 @@ else
 	intDelay := 2500
 }
 
+Diag(A_ThisLabel, "g_strTargetWinTitle", g_strTargetWinTitle)
+Diag(A_ThisLabel, "strToolTip", strToolTip)
 Sleep, 200
 ToolTip, % L(strToolTip, g_strTargetWinTitle)
 SetTimer, RemoveToolTip, %intDelay% ; will remove tooltip
@@ -24177,7 +24196,7 @@ WinSet, AlwaysOnTop, On
 
 Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strSearchAndGo gGuiSearchAndGoChanged
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
-	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1|Sort
+	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1|Sort|Index
 Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
 
 if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !g_blnLightMode)
@@ -24249,14 +24268,15 @@ if StrLen(f_strSearchAndGo)
 		strRow := StrReplace(strRow, "&&", g_strEscapeReplacement) ; preserve existing double ampersand
 		strRow := StrReplace(strRow, "&", "") ; remove single ampersands that would be shortcuts if numeric shortcuts were disabled
 		strRow := StrReplace(strRow, g_strEscapeReplacement, "&") ; restore preserved  existing double ampersand
-		oSort := [strRow, oSearchAndGoResult.SA[A_Index].AA.strFavoriteName, oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb] ;contains 3 possible sort criterias
-		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intSearchAndGoSort.IniValue + 1]) ; select active sort criteria
+		oSort := [strRow, oSearchAndGoResult.SA[A_Index].AA.strFavoriteName, oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb] ; contains 3 possible sort criterias
+		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intSearchAndGoSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oSearchAndGoResult.SA object
 		intRowWidth := GetPixelSizeOfText(strRow) + 30
 		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
 	}
 }
 LV_ModifyCol() ; adjuste cols width
-LV_ModifyCol(2, 0) ; make col 2 invisible
+LV_ModifyCol(2, 0) ; make col 2 Sort criteria invisible
+LV_ModifyCol(3, 0) ; make col 3 Index order invisible
 LV_ModifyCol(2, (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 2 ? "Integer SortDesc" : "Text Sort")) ; for usage sort integer desc, else sort text asc
 
 GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
@@ -24293,6 +24313,8 @@ if (A_ThisLabel = "GuiSearchAndGoEvents" or A_ThisLabel = "SearchAndGoEnter")
 	if (A_ThisLabel = "SearchAndGoEnter" or A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick")
 	; retrieve favorite object and launch it (double-click or Enter) or open alternative menu (right-click)
 	{
+		LV_GetText(intIndex, intSearchAndGoRow, 3) ;  get selected item order in oSearchAndGoResult.SA object
+		
 		if (A_GuiEvent = "RightClick")
 		{
 			g_blnAlternativeMenuFromSearchAndGo := true
@@ -24304,12 +24326,12 @@ if (A_ThisLabel = "GuiSearchAndGoEvents" or A_ThisLabel = "SearchAndGoEnter")
 			gosub, GetAlternativeMenuModifierFromSearchAndGo
 			if StrLen(g_strAlternativeMenuModifier)
 			{
-				o_ThisFavorite := oSearchAndGoResult.SA[intSearchAndGoRow]
+				o_ThisFavorite := oSearchAndGoResult.SA[intIndex]
 				gosub, OpenAlternativeFromSearchAndGo
 				g_strAlternativeMenuModifier := ""
 			}
 			else
-				oSearchAndGoResult.SA[intSearchAndGoRow].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
+				oSearchAndGoResult.SA[intIndex].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
 			
 			oSearchAndGoResult := ""
 			intRowWidth := ""
@@ -33325,6 +33347,10 @@ class Container
 			this.aaTemp.strOpenFavoriteLabel := strOpenFavoriteLabel
 			this.aaTemp.strTargetWinId := strTargetWinId
 			this.aaTemp.strHotkeyTypeDetected := strHotkeyTypeDetected
+			Diag(A_ThisFunc, "strMenuTriggerLabel", strMenuTriggerLabel)
+			Diag(A_ThisFunc, "strOpenFavoriteLabel", strOpenFavoriteLabel)
+			Diag(A_ThisFunc, "strTargetWinId", strTargetWinId)
+			Diag(A_ThisFunc, "strHotkeyTypeDetected", strHotkeyTypeDetected)
 			
 			; Boolean,MinMax,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (7)
 			; 0 for use default / 1 for remember, -1 Minimized / 0 Normal / 1 Maximized, Left (X), Top (Y), Width, Height, Delay (default 200 ms),
@@ -33344,6 +33370,7 @@ class Container
 				this.aaTemp.strLocationWithPlaceholders := this.AA.strFavoriteLocation
 			if !StrLen(this.aaTemp.strLocationWithPlaceholders)
 				return 1 ; error code
+			Diag(A_ThisFunc, "this.aaTemp.strLocationWithPlaceholders", this.aaTemp.strLocationWithPlaceholders)
 			
 			; LAUNCH WITH
 			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|WindowsApp|", this.AA.strFavoriteType . "|")
@@ -33436,6 +33463,8 @@ class Container
 			if InStr("|Folder|Special|FTP", "|" . this.AA.strFavoriteType) ; must be before SetFullLocation()
 				if !this.SetTargetName() ; sets old g_strTargetAppName, can change this.aaTemp.strHotkeyTypeDetected to "Launch", can empty this.aaTemp.strTargetWinId if Desktop
 					return 1 ; error code if target is unknown
+			Diag(A_ThisFunc, "this.aaTemp.strHotkeyTypeDetected", this.aaTemp.strHotkeyTypeDetected)
+			Diag(A_ThisFunc, "this.aaTemp.strTargetWinId", this.aaTemp.strTargetWinId)
 			
 			if (this.AA.strFavoriteType <> "Text") ; text separators don't have location
 				if !this.SetFullLocation()
@@ -33475,6 +33504,8 @@ class Container
 			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|LaunchFromSearchAndGo"
 				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
+				Diag(A_ThisFunc, "this.AA.strFavoriteLocation", this.AA.strFavoriteLocation)
+				Diag(A_ThisFunc, "o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand", o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
 			}
 			; SWITCH APP
@@ -34650,6 +34681,7 @@ class Container
 				this.aaTemp.strTargetAppName := "Explorer"
 			}
 			
+			Diag(A_ThisFunc, "this.aaTemp.strTargetAppName", this.aaTemp.strTargetAppName)
 			return (this.aaTemp.strTargetAppName <> "Unknown")
 		}
 		;---------------------------------------------------------
@@ -34762,6 +34794,7 @@ class Container
 				}
 			}
 			
+			Diag(A_ThisFunc, "this.aaTemp.strFullLocation", this.aaTemp.strFullLocation)
 			return StrLen(this.aaTemp.strFullLocation) ; if empty, SetFullLocation was aborted, return false, else return true
 		}
 		;---------------------------------------------------------
