@@ -5866,7 +5866,7 @@ if !GetKeyState("Shift")
 
 ; ####
 ; Gosub, GuiOptionsGroupSettingsWindow
-Gosub, GuiSearchAndGo
+; Gosub, GuiSearchAndGo
 
 return
 
@@ -30730,7 +30730,7 @@ TODO
 		this.strIniFileDefault := this.strIniFile
 		
 		this.saOptionsGroups := ["General", "SettingsWindow", "MenuIcons", "MenuAppearance"
-			, "PopupMenu", "MenuExclusions", "PopupHotkeys", "PopupHotkeysAlternative"
+			, "PopupMenu", "PopupHotkeys", "PopupHotkeysAlternative", "MenuExclusions"
 			, "FileManagers", "Snippets", "UserVariables", "Database"
 			, "MenuAdvanced", "AdvancedLaunch", "AdvancedOther"]
 			
@@ -33379,9 +33379,12 @@ class Container
 					else
 						blnAlternativeMenuTypeNotSupported := true
 				}	
-				else if (g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"] and A_ThisMenu <> o_L["MenuLastActions"])
+				else if (g_strAlternativeMenu = o_L["MenuAlternativeEditFavorite"])
 				{
-					this.AlternativeEditFavorite() ; no error code returned
+					if this.FavoriteIsNotEditable()
+						Oops(0, o_L["OopsItemCannotBeEdited"])
+					else
+						this.AlternativeEditFavorite() ; no error code returned
 				}	
 				else if (g_strAlternativeMenu = o_L["MenuCopyLocation"]) ; EnvVars expanded
 				{

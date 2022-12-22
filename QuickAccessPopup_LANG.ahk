@@ -848,6 +848,7 @@ this["OopsInvalidIcon"] := "Icon images must be square and between 16x16 and 64x
 this["OopsInvalidIconDownload"] := "The icon for this website is not available or is invalid:`n`n~1~ "
 this["OopsInvalidWinCmdIni"] := "Total Commander settings file ""wincmd.ini"" not found.`n`nSelect the file in ""Options"", ""File managers"" tab."
 this["OopsInvalidWindowPosition"] := "Invalid window position value(s)."
+this["OopsItemCannotBeEdited"] := "This item cannot be edited."
 this["OopsJLiconsError"] := "QAP tray icon not found. Make sure you updated the JLicons.dll file to ~1~."
 this["OopsJLiconsOutdated"] := "The following file needs to be updated:`n`n~1~`n`nReplace it with JLicons.dll version ~2~ from the latest portable installation ZIP file and restart ~3~."
 this["OopsLastSaveIncomplete"] := "Something interrupted ~1~ the last time it saved your favorites to the settings file:`n`n~2~`n`nYour previous favorites in this file has been restored."
