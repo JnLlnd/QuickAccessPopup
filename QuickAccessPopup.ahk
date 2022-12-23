@@ -20679,6 +20679,7 @@ CanHotkeyTrigger()
 	Diag(A_ThisFunc, "g_strTargetWinId", g_strTargetWinId)
 	Diag(A_ThisFunc, "g_strTargetControl", g_strTargetControl)
 	Diag(A_ThisFunc, "g_strTargetWinTitle", g_strTargetWinTitle)
+	Diag(A_ThisFunc, "strHotkeyTriggerExclusionList", o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
 	Diag(A_ThisFunc, "ExclusionListWhitelist", o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
 	Diag(A_ThisFunc, "ExclusionList?", (StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ? "Yes" : "No"))
 	
@@ -20695,9 +20696,11 @@ CanHotkeyTrigger()
 			and (InStr(g_strTargetClass, A_LoopField)
 			or InStr(g_strTargetWinTitle, A_LoopField)
 			or InStr(g_strTargetProcessName, A_LoopField))
+		{
 
 			Diag(A_ThisFunc, "Found", A_LoopField)
 			return o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return true or false according to blnHotkeyTriggerExclusionListWhitelist
+		}
 
 	}
 
@@ -33479,6 +33482,7 @@ class Container
 			if (this.AA.strFavoriteType <> "Text") ; text separators don't have location
 				if !this.SetFullLocation()
 					return 1 ; error code if location is empty
+			Diag(A_ThisFunc, "this.aaTemp.strFulLocation", this.aaTemp.strFulLocation)
 				
 			if (this.AA.strFavoriteType = "Text")
 				return intOpenError ; do nothing, do not flag error
@@ -34804,7 +34808,6 @@ class Container
 				}
 			}
 			
-			Diag(A_ThisFunc, "this.aaTemp.strFullLocation", this.aaTemp.strFullLocation)
 			return StrLen(this.aaTemp.strFullLocation) ; if empty, SetFullLocation was aborted, return false, else return true
 		}
 		;---------------------------------------------------------
