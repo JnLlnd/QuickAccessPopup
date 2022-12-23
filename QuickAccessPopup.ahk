@@ -20673,6 +20673,12 @@ CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
+	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
+	Diag(A_ThisFunc, "g_strTargetWinId", g_strTargetWinId)
+	Diag(A_ThisFunc, "g_strTargetControl", g_strTargetControl)
+	Diag(A_ThisFunc, "g_strTargetWinTitle", g_strTargetWinTitle)
+	Diag(A_ThisFunc, "ExclusionListWhitelist", o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
+	Diag(A_ThisFunc, "ExclusionList?", (StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ? "Yes" : "No"))
 	
 	; avoid blocking all hotkeys in case strHotkeyTriggerExclusionList is true (approved) and exclusion list is empty
 	if !StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
@@ -20688,10 +20694,12 @@ CanHotkeyTrigger()
 			or InStr(g_strTargetWinTitle, A_LoopField)
 			or InStr(g_strTargetProcessName, A_LoopField))
 
+			Diag(A_ThisFunc, "Found", A_LoopField)
 			return o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return true or false according to blnHotkeyTriggerExclusionListWhitelist
 
 	}
 
+	Diag(A_ThisFunc, "Not Found in", o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
 	return !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return false or true according to blnHotkeyTriggerExclusionListWhitelist
 }
 ;------------------------------------------------------------
