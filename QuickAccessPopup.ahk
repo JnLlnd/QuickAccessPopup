@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.99.7 (2022-12-??)
+
 Version BETA: 11.5.99.6 (2022-12-22)
  
 Quick Search
@@ -5305,7 +5307,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.6
+;@Ahk2Exe-SetVersion 11.5.99.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5372,7 +5374,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.99.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -35155,15 +35157,19 @@ class Container
 		GetUsageDbFavoriteUsage()
 		; 2018-08-20 Take 1: one point per occurence of the location in usage (RecentItems or Menu)
 		; 2019-05-19: converted to Item class mehod with logic as-is
+		; 2022-12-23: consider arguments when grouping usage statistic (before this change, same locations with different args were grouped together)
 		;---------------------------------------------------------
 		{
 			if InStr("Folder|Document|Application", this.AA.strFavoriteType) ; expand location; not for URL, Special Folder and others
 			{
 				oItemTemp := this.BackupItem()
 				oItemTemp.aaTemp := Object() ; item temporary values
+				
+				strParameters := oItemTemp.AA.strFavoriteArguments ;  capture arguments before making it empty for strFullLocation
+				
+				oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments as part of strFullLocation
 				oItemTemp.aaTemp.strLocationWithPlaceholders := oItemTemp.AA.strFavoriteLocation ; do not process placeholders
-				oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with for this test
-				oItemTemp.AA.strFavoriteArguments := "" ; do not consider arguments for this test
+				oItemTemp.AA.strFavoriteLaunchWith := "" ; do not consider launch with
 				oItemTemp.AA.intFavoriteOpenSubFolder := "" ; do not consider subfolder option
 				if !oItemTemp.SetFullLocation() ; returns false if this.aaTemp.strFullLocation is empty
 					return 0
@@ -35173,7 +35179,8 @@ class Container
 				strFileLocationExpanded := this.AA.strFavoriteLocation
 			
 			strGetUsageDbSQL := "SELECT COUNT(*) FROM Usage WHERE CollectDateTime >= date('now','-" . o_Settings.Database.intUsageDbDaysInPopular.IniValue . " day') "
-				. "GROUP BY TargetPath COLLATE NOCASE HAVING TargetPath='" . EscapeQuote(strFileLocationExpanded) . "' COLLATE NOCASE;"
+				. "GROUP BY TargetPath, MenuParameters COLLATE NOCASE HAVING (TargetPath='" . EscapeQuote(strFileLocationExpanded)
+				. "' AND MenuParameters='" . EscapeQuote(strParameters) . "') COLLATE NOCASE;"
 			if !o_UsageDb.Query(strGetUsageDbSQL, o_RecordSet)
 			{
 				Oops(0, "Database error (#1): " . o_UsageDb.ErrorMsg . "`nCode: " . o_UsageDb.ErrorCode . "`nQuery: " . strGetUsageDbSQL)
