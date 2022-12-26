@@ -6547,8 +6547,8 @@ if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoExtended", "SearchAndGoExtended", 0, "SettingsWindow", "f_lblOptionsSearchAndGoTitle|f_blnSearchAndGoExtended")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoRecentsFrequents", "SearchAndGoRecentsFrequents", 0, "SettingsWindow", "f_blnSearchAndGoRecentsFrequents")
 o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoRows", "SearchAndGoRows", 10, "SettingsWindow", "f_intSearchAndGoRowsEdit|f_intSearchAndGoRows|f_lblSearchAndGoRows")
-o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoSort", "SearchAndGoSort", 0, "SettingsWindow"
-	, "f_lblOptionsSearchAndGoSort|f_radOptionsSearchAndGoSort0|f_radOptionsSearchAndGoSort1|f_radOptionsSearchAndGoSort2")
+o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoSort", "SearchAndGoSort", 2, "SettingsWindow"
+	, "f_lblOptionsSearchAndGoSort|f_radOptionsSearchAndGoSort0|f_radOptionsSearchAndGoSort1|f_radOptionsSearchAndGoSort2") ; default 2 -> usage
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -9474,15 +9474,15 @@ GuiControl, , f_blnSearchWithLocale, % (o_Settings.SettingsWindow.blnSearchWithL
 
 ; SearchAndGo
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Text, y+30 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchAndGoTitle, % o_L["OptionsSearchAndGoTitle"]
+Gui, 2:Add, Text, y+20 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchAndGoTitle, % o_L["OptionsSearchAndGoTitle"]
 Gui, 2:Font
 
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoExtended gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoExtended"]
-GuiControl, , f_blnSearchAndGoExtended, % (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue = true)
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoRecentsFrequents gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoRecentsFrequents"]
 GuiControl, , f_blnSearchAndGoExtended, % (o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue = true)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoRecentsFrequents gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoRecentsFrequents"]
+GuiControl, , f_blnSearchAndGoRecentsFrequents, % (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue = true)
 
-Gui, 2:Add, Edit, y+15 x%g_intGroupItemsTab4X% w51 h22 vf_intSearchAndGoRowsEdit number center hidden
+Gui, 2:Add, Edit, y+10 x%g_intGroupItemsTab4X% w51 h22 vf_intSearchAndGoRowsEdit number center hidden
 Gui, 2:Add, UpDown, vf_intSearchAndGoRows Range5-9999 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
 Gui, 2:Add, Text, yp x+10 w200 hidden vf_lblSearchAndGoRows, % o_L["OptionsSearchAndGoRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intSearchAndGoRowsEdit
@@ -20697,7 +20697,6 @@ CanHotkeyTrigger()
 			or InStr(g_strTargetWinTitle, A_LoopField)
 			or InStr(g_strTargetProcessName, A_LoopField))
 		{
-
 			Diag(A_ThisFunc, "Found", A_LoopField)
 			return o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return true or false according to blnHotkeyTriggerExclusionListWhitelist
 		}
@@ -24266,21 +24265,18 @@ if StrLen(f_strSearchAndGo)
 	oSearchAndGoResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
 	if (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue)
-		loop, parse, % "Folders|Files", |
-		{
-			o_Containers.AA[o_L["MenuRecent" . A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
-			o_Containers.AA[o_L["MenuFrequent" . A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
-		}
+		loop, parse, % "Recent|Frequent", |
+			loop, parse, % "Menu" . A_LoopField . "Folders|" . A_LoopField . "Files", |
+				o_Containers.AA[o_L[A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
 	
 	Loop, % oSearchAndGoResult.SA.MaxIndex()
 	{
-		if (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 1) ; sort by favorite name
-			strRow := oSearchAndGoResult.SA[A_Index].AA.strFavoriteName . " (" . oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
-		else
-			strRow := oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . oSearchAndGoResult.SA[A_Index].AA.strFavoriteName
+		strRow := oSearchAndGoResult.SA[A_Index].AA.strFavoriteName . " (" . oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
 		strRow := StrReplace(strRow, "&&", g_strEscapeReplacement) ; preserve existing double ampersand
 		strRow := StrReplace(strRow, "&", "") ; remove single ampersands that would be shortcuts if numeric shortcuts were disabled
 		strRow := StrReplace(strRow, g_strEscapeReplacement, "&") ; restore preserved  existing double ampersand
+		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and StrLen(oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb))
+			strRow .= " [" . oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb . "]"
 		oSort := [strRow, oSearchAndGoResult.SA[A_Index].AA.strFavoriteName, oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb] ; contains 3 possible sort criterias
 		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intSearchAndGoSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oSearchAndGoResult.SA object
 		intRowWidth := GetPixelSizeOfText(strRow) + 30
@@ -25469,6 +25465,21 @@ NumDecode(str)
 	
 	return str
 } 
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+InStrMultiple(strHaystack, strNeedle)
+;------------------------------------------------------------
+{
+	saNeedle := StrSplit(strNeedle, " ")
+	loop, % saNeedle.MaxIndex()
+		if StrLen(saNeedle[A_Index])
+			if !InStrEx(strHaystack, saNeedle[A_Index])
+				return false
+	
+	return true
+}
 ;------------------------------------------------------------
 
 
@@ -31558,7 +31569,7 @@ class Container
 			}
 				
 			if !oItem.IsSeparator()
-				and (InStrEx(strSearchIn, strSearchString) or (strSearchString = "{All}") ; case insensitive
+				and (InStrMultiple(strSearchIn, strSearchString) or (strSearchString = "{All}") ; case insensitive
 				or (strSearchString = "{NotInDatabase}" and oItem.ItemNotInDatabase())
 				or (strSearchString = "{BrokenLocations}" and oItem.LocationBroken("Folder|Document|Application"))
 				or (strSearchString = "{BrokenLinks}" and oItem.LinkBroken())
@@ -33286,7 +33297,8 @@ class Container
 			this.InsertItemValue("strFavoriteSoundLocation", StrReplace(saFavorite[23], g_strEscapePipe, "|")) ; path and file of sound to play when launching the favorite
 			this.InsertItemValue("strFavoriteDateCreated", (StrLen(saFavorite[24]) ? saFavorite[24] : A_NowUTC)) ; UTC date of creation of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
 			this.InsertItemValue("strFavoriteDateModified", (StrLen(saFavorite[25]) ? saFavorite[25] : A_NowUTC)) ; UTC date of last modification of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
-			this.InsertItemValue("intFavoriteUsageDb", saFavorite[26]) ; level of usage of this favorite (TBD - combo of occurrences in Recent Items and launches from QAP menu) (to be added in v9.2)
+			if (g_blnUsageDbEnabled)
+				this.InsertItemValue("intFavoriteUsageDb", saFavorite[26]) ; level of usage of this favorite (added in v9.2, made conditional in v11.6)
 			this.InsertItemValue("blnFavoriteFolderLiveHideIcons", (StrLen(saFavorite[27]) ? saFavorite[27] : false)) ; hide icons in live folders, pre-existing and default false
 			this.InsertItemValue("blnFavoriteFolderLiveShowHidden", (StrLen(saFavorite[28]) ? Mod(saFavorite[28], 2) : false)) ; show hidden files, true if value is unpair, default false
 			this.InsertItemValue("blnFavoriteFolderLiveShowSystem", (StrLen(saFavorite[28]) ? saFavorite[28] >= 2 : false)) ; show system files, true if value is 2 or 3, default false
