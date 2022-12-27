@@ -6233,7 +6233,7 @@ if IsHighDPI()
 	FileInstall, FileInstall\separator-39_c.png, %g_strTempDir%\separator_c.png
 	FileInstall, FileInstall\column-39_c.png, %g_strTempDir%\column_c.png
 	FileInstall, FileInstall\text-39_c.png, %g_strTempDir%\text_c.png
-	FileInstall, FileInstall\preview_pane_trans-39_c.png, %g_strTempDir%\preview_pane_c.png
+	FileInstall, FileInstall\preview_pane-39_c.png, %g_strTempDir%\preview_pane_c.png
 	FileInstall, FileInstall\generic_sorting-39_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-39_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-39_c.png, %g_strTempDir%\QAP-pin-on_c.png
@@ -6263,7 +6263,7 @@ else
 	FileInstall, FileInstall\separator-26_c.png, %g_strTempDir%\separator_c.png
 	FileInstall, FileInstall\column-26_c.png, %g_strTempDir%\column_c.png
 	FileInstall, FileInstall\text-26_c.png, %g_strTempDir%\text_c.png
-	FileInstall, FileInstall\preview_pane_trans-26_c.png, %g_strTempDir%\preview_pane_c.png
+	FileInstall, FileInstall\preview_pane-26_c.png, %g_strTempDir%\preview_pane_c.png
 	FileInstall, FileInstall\generic_sorting-26_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on_c.png
@@ -20682,6 +20682,7 @@ CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
+	Diag(A_ThisFunc, "A_ThisHotkey", A_ThisHotkey)
 	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
 	Diag(A_ThisFunc, "g_strTargetWinId", g_strTargetWinId)
 	Diag(A_ThisFunc, "g_strTargetControl", g_strTargetControl)
@@ -24287,7 +24288,7 @@ if StrLen(f_strSearchAndGo)
 			strRow .= " [" . oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb . "]"
 		oSort := [strRow, oSearchAndGoResult.SA[A_Index].AA.strFavoriteName, oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb] ; contains 3 possible sort criterias
 		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intSearchAndGoSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oSearchAndGoResult.SA object
-		intRowWidth := GetPixelSizeOfText(strRow) + 30
+		intRowWidth := GetPixelSizeOfText(strRow) + 30 + (IsHighDPI() ? 30 : 0)
 		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
 	}
 }
