@@ -32,6 +32,13 @@ HISTORY
 =======
 
 Version BETA: 11.5.99.7 (2022-12-??)
+- in Search results in "Quick Search" and in the "Customize" window, support multiple search strings separated by space, every strings must be present (AND operator)
+- at QAP installation, default "Quick Search" sort by "Usage"
+- in "Quick Search" results, always display favorites name first
+- fix bug mixing "Quick Search" options "extended search" and "recent/frequent menus"
+- when gathering usage statistics, consider "Parameters" (in favorites "Advanced options") to distinguish favorites (before this change, favorites with the same location but with different parameters were counted together)
+- add more diagnostic code for QAP Feature command "Always on top"
+- Portuguese and German language files update for v11.5.99.6
 
 Version BETA: 11.5.99.6 (2022-12-22)
  
