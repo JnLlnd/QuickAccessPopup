@@ -5689,7 +5689,7 @@ if (o_Settings.Launch.blnDiagMode.IniValue)
 ; Set Dark Mode compatibility - menus will be dark if dark mode is selected in Windows display settings
 ; known issue: dark mode not applied to menu containing column breaks
 ; fromk Lexikos: https://www.autohotkey.com/boards/viewtopic.php?p=426437#p426437 (I think it requires Windows 1903+)
-if (o_Settings.Menu.blnDarkModeMenus.IniValue)
+if (o_Settings.SettingsWindow.blnDarkMode.IniValue)
 {
 	uxtheme := DllCall("GetModuleHandle", "str", "uxtheme", "ptr")
 	SetPreferredAppMode := DllCall("GetProcAddress", "ptr", uxtheme, "ptr", 135, "ptr")
@@ -6537,6 +6537,8 @@ o_Settings.ReadIniOption("Launch", "blnCheck4Update", "Check4Update", (g_blnPort
 o_Settings.ReadIniOption("Launch", "strTheme", "Theme", "Windows", "General", "f_drpTheme|f_lblTheme") ; g_strTheme
 if !StrLen(o_Settings.Launch.strTheme.IniValue) or (o_Settings.Launch.strTheme.IniValue = "ERROR") ; in case value is found but empty or has been saved as "ERROR"
 	o_Settings.Launch.strTheme.IniValue := "Windows"
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+	o_Settings.ReadIniOption("SettingsWindow", "blnDarkMode", "DarkMode", 1, "General", "f_blnDarkMode")
 global g_blnUseColors := (o_Settings.Launch.strTheme.IniValue <> "Windows")
 o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableThemes") ; g_strAvailableThemes
 
@@ -6549,8 +6551,6 @@ o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0,
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
-if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
-	o_Settings.ReadIniOption("SettingsWindow", "blnDarkModeCustomize", "DarkModeCustomize", 0, "SettingsWindow", "f_blnDarkModeCustomize")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoExtended", "SearchAndGoExtended", 0, "SettingsWindow", "f_lblOptionsSearchAndGoTitle|f_blnSearchAndGoExtended")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoRecentsFrequents", "SearchAndGoRecentsFrequents", 0, "SettingsWindow", "f_blnSearchAndGoRecentsFrequents")
 o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoRows", "SearchAndGoRows", 10, "SettingsWindow", "f_intSearchAndGoRowsEdit|f_intSearchAndGoRows|f_lblSearchAndGoRows")
@@ -6579,8 +6579,6 @@ o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMe
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
 o_Settings.ReadIniOption("Menu", "intRecentPopularLevelsMax", "RecentPopularLevelsMax", 0, "MenuAppearance", "f_lblRecentPopularLevelsMax|f_intRecentPopularLevelsMaxEdit|f_intRecentPopularLevelsMax|f_lblRecentPopularLevelsMaxTitle")
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
-if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
-	o_Settings.ReadIniOption("Menu", "blnDarkModeMenus", "DarkModeMenus", 0, "MenuAppearance", "f_blnDarkModeMenus")
 o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus
 
 ; Group PopupMenu
@@ -9359,8 +9357,15 @@ Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w105 vf_lblTheme hidden, % o_L["Optio
 Gui, 2:Add, DropDownList, yp x%g_intGroupItemsTab3X% w200 vf_drpTheme gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.strAvailableThemes.IniValue
 GuiControl, ChooseString, f_drpTheme, % o_Settings.Launch.strTheme.IniValue
 
+; DarkMode
+if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
+{
+	Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnDarkMode gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsDarkMode"]
+	GuiControl, , f_blnDarkMode, % (o_Settings.SettingsWindow.blnDarkMode.IniValue = true)
+}
+
 ; RunAtStartup
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w105 vf_lblOptionsRunAtStartup hidden, % o_L["MenuStartup"]
+Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w105 vf_lblOptionsRunAtStartup hidden, % o_L["MenuStartup"]
 Gui, 2:Add, CheckBox, yp x%g_intGroupItemsTab3X% vf_blnOptionsRunAtStartup gGuiOptionsGroupChanged hidden, % o_L["OptionsRunAtStartup"]
 if (g_blnPortableMode) ; get value from existence of startup file shortcut
 	GuiControl, , f_blnOptionsRunAtStartup, % (FileExist(A_Startup . "\" . g_strAppNameFile . ".lnk") ? 1 : 0)
@@ -9451,13 +9456,6 @@ GuiControl, , f_blnOpenSettingsOnActiveMonitor, % (o_Settings.SettingsWindow.bln
 ; CheckIfExistingFavoriteForSameLocation
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnCheckIfExistingFavoriteForSameLocation gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsCheckIfSameLocation"]
 GuiControl, , f_blnCheckIfExistingFavoriteForSameLocation, % (o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue = true)
-
-; DarkModeCustomize
-if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
-{
-	Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnDarkModeCustomize gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsDarkModeCustomize"] . " (beta)"
-	GuiControl, , f_blnDarkModeCustomize, % (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue = true)
-}
 
 ; AddAutoAtTop
 Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblAddAutoAtTop, % o_L["OptionsAddAutoAtTop"]
@@ -9612,14 +9610,7 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
 Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
 GuiControl, , f_blnAddCloseToDynamicMenus, % (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue = true)
 
-; DarkModeMenus
-if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
-{
-	Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnDarkModeMenus gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsDarkModeMenus"] . " (beta)"
-	GuiControl, , f_blnDarkModeMenus, % (o_Settings.Menu.blnDarkModeMenus.IniValue = true)
-}
-
-GuiControlGet, arrPos, Pos, % (GetOSVersionInfo().BuildNumber >= 18362 ? "f_blnDarkModeMenus" : "f_blnAddCloseToDynamicMenus")
+GuiControlGet, arrPos, Pos, f_blnAddCloseToDynamicMenus
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -10360,9 +10351,9 @@ else ; f_radOptionsSearchAndGoSort0
 	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 0 ; 0 or empty -> natural order
 o_Settings.SettingsWindow.intSearchAndGoSort.WriteIni("", true) ; value already updated
 
-blnDarkModeCustomizePrev := o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue
+blnDarkModePrev := o_Settings.SettingsWindow.blnDarkMode.IniValue
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
-	o_Settings.SettingsWindow.blnDarkModeCustomize.WriteIni(f_blnDarkModeCustomize)
+	o_Settings.SettingsWindow.blnDarkMode.WriteIni(f_blnDarkMode)
 
 ; === MenuIcons ===
 
@@ -10403,9 +10394,6 @@ o_Settings.Menu.intRecentFoldersMax.WriteIni(f_intRecentFoldersMax)
 o_Settings.Menu.intRecentPopularLevelsMax.WriteIni(f_intRecentPopularLevelsMax)
 o_Settings.Menu.intNbLastActions.WriteIni(f_intNbLastActions)
 o_Settings.Menu.blnAddCloseToDynamicMenus.WriteIni(f_blnAddCloseToDynamicMenus)
-blnDarkModeMenusPrev := o_Settings.Menu.blnDarkModeMenus.IniValue
-if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
-	o_Settings.Menu.blnDarkModeMenus.WriteIni(f_blnDarkModeMenus)
 
 ; === PopupMenu ===
 
@@ -10693,8 +10681,7 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
 	or (blnDisplayIconsPrev <> o_Settings.MenuIcons.blnDisplayIcons.IniValue)
 	or (intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue)
-	or (blnDarkModeCustomizePrev <> o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue)
-	or (blnDarkModeMenusPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
+	or (blnDarkModePrev <> o_Settings.SettingsWindow.blnDarkMode.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
@@ -10722,15 +10709,10 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 		strOption := o_L["OptionsDisplayIcons"]
 		strValue := (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
-	else if (blnDarkModeCustomizePrev <> o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue)
+	else if (blnDarkModePrev <> o_Settings.SettingsWindow.blnDarkMode.IniValue)
 	{
-		strOption := o_L["OptionsDarkModeCustomize"]
-		strValue := (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
-	}
-	else if (blnDarkModeMenusPrev <> o_Settings.Menu.blnDarkModeMenus.IniValue)
-	{
-		strOption := o_L["OptionsDarkModeMenus"]
-		strValue := (o_Settings.Menu.blnDarkModeMenus.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
+		strOption := o_L["OptionsDarkMode"]
+		strValue := (o_Settings.SettingsWindow.blnDarkMode.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
 	else ; intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue
 	{
@@ -12004,7 +11986,7 @@ GuiControl, Focus, f_lvFavoritesList
 
 ; testing the dark mode display on Customize window (see https://www.autohotkey.com/boards/viewtopic.php?p=426678&sid=0f08bed4b46e1ed1f59601053df8c959#p426678)
 RegRead, g_blnLightMode, HKCU, SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize, AppsUseLightTheme ; check SystemUsesLightTheme for Windows system preference
-if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !g_blnLightMode)
+if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 {
 	; could be used to make title bar dark but don't because not nice with menu bar white that cannot be dark
 	; DllCall("dwmapi\DwmSetWindowAttribute", "ptr", g_strGui1Hwnd, "int", 20, "int*", true, "int", 4)
@@ -24219,7 +24201,7 @@ Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWind
 	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1|Sort|Index
 Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
 
-if (o_Settings.SettingsWindow.blnDarkModeCustomize.IniValue and !g_blnLightMode)
+if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 {
 	; could be used to make title bar dark but don't because not nice with edit control white that cannot be dark
 	; DllCall("dwmapi\DwmSetWindowAttribute", "ptr", strSearchAndGoHwnd, "int", 20, "int*", true, "int", 4)
