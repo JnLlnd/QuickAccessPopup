@@ -6233,7 +6233,7 @@ if IsHighDPI()
 	FileInstall, FileInstall\separator-39_c.png, %g_strTempDir%\separator_c.png
 	FileInstall, FileInstall\column-39_c.png, %g_strTempDir%\column_c.png
 	FileInstall, FileInstall\text-39_c.png, %g_strTempDir%\text_c.png
-	FileInstall, FileInstall\preview_pane-39_c.png, %g_strTempDir%\preview_pane_c.png
+	FileInstall, FileInstall\preview_pane_trans-39_c.png, %g_strTempDir%\preview_pane_c.png
 	FileInstall, FileInstall\generic_sorting-39_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-39_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-39_c.png, %g_strTempDir%\QAP-pin-on_c.png
@@ -6263,7 +6263,7 @@ else
 	FileInstall, FileInstall\separator-26_c.png, %g_strTempDir%\separator_c.png
 	FileInstall, FileInstall\column-26_c.png, %g_strTempDir%\column_c.png
 	FileInstall, FileInstall\text-26_c.png, %g_strTempDir%\text_c.png
-	FileInstall, FileInstall\preview_pane-26_c.png, %g_strTempDir%\preview_pane_c.png
+	FileInstall, FileInstall\preview_pane_trans-26_c.png, %g_strTempDir%\preview_pane_c.png
 	FileInstall, FileInstall\generic_sorting-26_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on_c.png
@@ -24267,6 +24267,7 @@ LV_Delete()
 
 if StrLen(f_strSearchAndGo)
 {
+	GuiControl, -Redraw, f_lvSearchAndGo
 	Critical, On
 	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 	oSearchAndGoResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue
@@ -24300,6 +24301,7 @@ GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
 
 WinMove, ahk_id %strSearchAndGoHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
 Critical, Off
+GuiControl, +Redraw, f_lvSearchAndGo
 
 strRow := ""
 oSort := ""
