@@ -905,7 +905,7 @@ lOptionsClipboardMaxSizeDefault	(valore predefinito 10000 bytes)
 lOptionsControlDoublePressed	Apri il menù principale con Ctrl + Ctrl (tasto CTRL premuto due volte)
 lOptionsControlDoublePressedLeft	Tasto CTRL sinistro attivo
 lOptionsControlDoublePressedRight	Tasto CTRL destro attivo
-lOptionsDarkModeCustomize	Support Modalità scura per la finestra Personalizza
+lOptionsDarkMode	Supporto Modalità scura
 lOptionsDarkModeMenus	Supporto Modalità scura per i menù
 lOptionsDatabase	Database
 lOptionsDisplayIcons	Mostra Icone nel Menù

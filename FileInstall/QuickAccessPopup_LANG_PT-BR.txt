@@ -907,7 +907,7 @@ lOptionsClipboardMaxSizeDefault	(padrão: 10000 bytes)
 lOptionsControlDoublePressed	Abrir menu principal ao pressionar Ctrl + Ctrl (tecla Control pressionada duas vezes)
 lOptionsControlDoublePressedLeft	Usando tecla Control esquerda
 lOptionsControlDoublePressedRight	Usando tecla Control direita
-lOptionsDarkModeCustomize	Suporte para modo escuro na janela Personalizar
+lOptionsDarkMode	Suporte para modo escuro
 lOptionsDarkModeMenus	Suporte para modo escuro nos menus
 lOptionsDatabase	Banco de dados
 lOptionsDisplayIcons	Exibir Ícones do Menu

@@ -896,7 +896,7 @@ lOptionsClipboardMaxSizeDefault	(10 000 octets par défaut)
 lOptionsControlDoublePressed	Ouvrir le menu principal avec Ctrl + Ctrl (Contrôle pressé à deux reprises)
 lOptionsControlDoublePressedLeft	Avec la touche Contrôle de gauche
 lOptionsControlDoublePressedRight	Avec la touche Contrôle de droite
-lOptionsDarkModeCustomize	Affichage foncé dans la fenêtre "Personnaliser"
+lOptionsDarkMode	Compatibilité avec l'affichage foncé Windows
 lOptionsDarkModeMenus	Compatibilité avec l'affichage foncé Windows pour les menus
 lOptionsDatabase	Base de données
 lOptionsDisplayIcons	Afficher les icônes des menus
