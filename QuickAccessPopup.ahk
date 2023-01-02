@@ -25789,7 +25789,7 @@ ExpandPlaceholderMenu(str)
 	{
 		saItem := StrSplit(strItem, "~")
 		if InStr(strItem, "~")
-			strLabel := saItem[1]
+			strLabel := StrReplace(StrReplace(saItem[1], "``n"), "``t") ; remove line breaks and tabs in labels
 		g_saPlaceholderMenuItems[intItem] := (InStr(strItem, "~") ? saItem[2] : strItem)
 		Menu, menuPlaceholder, Add, % (InStr(strItem, "~") ? strLabel : strItem), PlaceholderMenuResult
 		if (intItem = 1) and InStr(strItem, "~") and !StrLen(saItem[2]) ; first item with label and empty content is processed as title and made bold
