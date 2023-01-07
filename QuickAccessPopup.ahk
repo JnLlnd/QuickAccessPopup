@@ -6535,11 +6535,13 @@ o_Settings.Launch.arrStartupTips.IniValue := StrSplit(o_Settings.Launch.arrStart
 o_Settings.ReadIniOption("Launch", "blnDisplayTrayTip", "DisplayTrayTip", 1, "General", "f_blnDisplayTrayTip") ; g_blnDisplayTrayTip
 o_Settings.ReadIniOption("Launch", "blnCheck4Update", "Check4Update", (g_blnPortableMode ? 0 : 1), "General", "f_blnCheck4Update|f_lnkCheck4Update") ; g_blnCheck4Update ; enable by default only in setup install mode
 
-o_Settings.ReadIniOption("Launch", "strTheme", "Theme", "Windows", "General", "f_drpTheme|f_lblTheme") ; g_strTheme
-if !StrLen(o_Settings.Launch.strTheme.IniValue) or (o_Settings.Launch.strTheme.IniValue = "ERROR") ; in case value is found but empty or has been saved as "ERROR"
-	o_Settings.Launch.strTheme.IniValue := "Windows"
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
 	o_Settings.ReadIniOption("SettingsWindow", "blnDarkMode", "DarkMode", 1, "General", "f_blnDarkMode")
+o_Settings.ReadIniOption("Launch", "strTheme", "Theme", "Windows", "General", "f_drpTheme|f_lblTheme") ; g_strTheme
+RegRead, g_blnLightMode, HKCU, SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize, AppsUseLightTheme ; check SystemUsesLightTheme for Windows system preference
+if !StrLen(o_Settings.Launch.strTheme.IniValue) or (o_Settings.Launch.strTheme.IniValue = "ERROR") ; in case value is found but empty or has been saved as "ERROR"
+	or (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode) ; force "Windows" theme with dark mode
+	o_Settings.Launch.strTheme.IniValue := "Windows"
 global g_blnUseColors := (o_Settings.Launch.strTheme.IniValue <> "Windows")
 o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableThemes") ; g_strAvailableThemes
 
@@ -9354,9 +9356,12 @@ Gui, 2:Add, DropDownList, yp x%g_intGroupItemsTab3X% w200 vf_drpLanguage Sort gG
 GuiControl, ChooseString, f_drpLanguage, %g_strLanguageLabel%
 
 ; Theme
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w105 vf_lblTheme hidden, % o_L["OptionsTheme"]
-Gui, 2:Add, DropDownList, yp x%g_intGroupItemsTab3X% w200 vf_drpTheme gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.strAvailableThemes.IniValue
-GuiControl, ChooseString, f_drpTheme, % o_Settings.Launch.strTheme.IniValue
+if !(o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode) ; force "Windows" theme with dark mode
+{
+	Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w105 vf_lblTheme hidden, % o_L["OptionsTheme"]
+	Gui, 2:Add, DropDownList, yp x%g_intGroupItemsTab3X% w200 vf_drpTheme gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.strAvailableThemes.IniValue
+	GuiControl, ChooseString, f_drpTheme, % o_Settings.Launch.strTheme.IniValue
+}
 
 ; DarkMode
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
@@ -10678,11 +10683,11 @@ if (strWorkingFolderPrev <> strWorkingFolderNew and blnSettingsMoveOK)
 
 if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (strLanguageCodePrev <> o_Settings.Launch.strLanguageCode.IniValue)
+	or (blnDarkModePrev <> o_Settings.SettingsWindow.blnDarkMode.IniValue) ; must be before strTheme
 	or (strThemePrev <> o_Settings.Launch.strTheme.IniValue)
 	or (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
 	or (blnDisplayIconsPrev <> o_Settings.MenuIcons.blnDisplayIcons.IniValue)
 	or (intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue)
-	or (blnDarkModePrev <> o_Settings.SettingsWindow.blnDarkMode.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
@@ -10694,6 +10699,11 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
 		strOption := o_L["OptionsLanguage"]
 		strValue := g_strLanguageLabel
+	}
+	else if (blnDarkModePrev <> o_Settings.SettingsWindow.blnDarkMode.IniValue) ; must be before strTheme
+	{
+		strOption := o_L["OptionsDarkMode"]
+		strValue := (o_Settings.SettingsWindow.blnDarkMode.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
 	else if (strThemePrev <> o_Settings.Launch.strTheme.IniValue)
 	{
@@ -10709,11 +10719,6 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
 		strOption := o_L["OptionsDisplayIcons"]
 		strValue := (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
-	}
-	else if (blnDarkModePrev <> o_Settings.SettingsWindow.blnDarkMode.IniValue)
-	{
-		strOption := o_L["OptionsDarkMode"]
-		strValue := (o_Settings.SettingsWindow.blnDarkMode.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
 	else ; intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue
 	{
@@ -11985,7 +11990,7 @@ if (saSettingsPosition[1] <> -1)
 
 GuiControl, Focus, f_lvFavoritesList
 
-; testing the dark mode display on Customize window (see https://www.autohotkey.com/boards/viewtopic.php?p=426678&sid=0f08bed4b46e1ed1f59601053df8c959#p426678)
+; dark mode display on Customize window (see https://www.autohotkey.com/boards/viewtopic.php?p=426678&sid=0f08bed4b46e1ed1f59601053df8c959#p426678)
 RegRead, g_blnLightMode, HKCU, SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize, AppsUseLightTheme ; check SystemUsesLightTheme for Windows system preference
 if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 {
