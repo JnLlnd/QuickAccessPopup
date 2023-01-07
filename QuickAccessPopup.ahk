@@ -24279,6 +24279,8 @@ LV_ModifyCol() ; adjuste cols width
 LV_ModifyCol(2, 0) ; make col 2 Sort criteria invisible
 LV_ModifyCol(3, 0) ; make col 3 Index order invisible
 LV_ModifyCol(2, (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 2 ? "Integer SortDesc" : "Text Sort")) ; for usage sort integer desc, else sort text asc
+if oSearchAndGoResult.SA.MaxIndex()
+	LV_Modify(1, "Select")
 
 GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
 GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
