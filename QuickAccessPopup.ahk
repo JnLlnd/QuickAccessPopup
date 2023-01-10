@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.99.8 (2023-01-??)
+- 
+
 Version BETA: 11.5.99.7 (2022-12-27)
 - in "Quick Search" and "Customize" window search results, support multiple search strings separated by space, every strings must be present (AND operator)
 - at QAP installation, default "Quick Search" sort by "Usage"
@@ -5315,7 +5318,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.7
+;@Ahk2Exe-SetVersion 11.5.99.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5382,7 +5385,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.99.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.3"
@@ -24266,6 +24269,7 @@ if StrLen(f_strSearchAndGo)
 			loop, parse, % "Menu" . A_LoopField . "Folders|" . A_LoopField . "Files", |
 				o_Containers.AA[o_L[A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
 	
+	intListViewWidth := 0
 	Loop, % oSearchAndGoResult.SA.MaxIndex()
 	{
 		strRow := oSearchAndGoResult.SA[A_Index].AA.strFavoriteName . " (" . oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
@@ -31547,6 +31551,10 @@ class Container
 	; return ByRef a container object with items in the search result for Customize search and Search and Go
 	;------------------------------------------------------------
 	{
+		;  when searching for Quick Search and when Recent items are included, exclude Customize search result container to avoid duplicates
+		if (this.AA.strMenuType = "Search")
+			return
+		
 		for intKey, oItem in this.SA
 		{
 			strSearchIn := oItem.AA.strFavoriteName . " " . StrReplace(oItem.AA.strFavoriteName, "&", , , 1) ; search with or without the 1st ampersand
@@ -31567,7 +31575,7 @@ class Container
 					. " " . oItem.AA.strFavoriteSoundLocation
 					. " " . oItem.AA.oParentMenu.AA.strMenuPath
 			}
-				
+			
 			if !oItem.IsSeparator()
 				and (InStrMultiple(strSearchIn, strSearchString) or (strSearchString = "{All}") ; case insensitive
 				or (strSearchString = "{NotInDatabase}" and oItem.ItemNotInDatabase())
