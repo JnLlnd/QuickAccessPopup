@@ -5388,7 +5388,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 global g_strCurrentVersion := "11.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
-global g_strJLiconsVersion := "1.6.3"
+global g_strJLiconsVersion := "1.6.4"
 
 ;---------------------------------
 ; Init class for JLicons
@@ -28527,7 +28527,7 @@ class JLicons
 			. "|iconQAPadminBeta|iconQAPadminDev|iconQAPbeta|iconQAPdev|iconQAPloading"
 			. "|iconFolderLiveOpened|iconSortAlphaAsc|iconSortAlphaDesc|iconSortNumAsc|iconSortNumDesc"
 			. "|iconQAC|iconQACadmin|iconQACadminBeta|iconQACadminDev|iconQACbeta"
-			. "|iconQACdev"
+			. "|iconQACdev|iconQuickSearch"
 
 		; EXAMPLE
 		; JLicons.AA["iconAbout"] -> "file,2"
@@ -30182,7 +30182,7 @@ class QAPfeatures
 			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
 			, "can-i-add-multiple-favorites-in-one-click")
 		this.AddQAPFeatureObject("Search and Go",			o_L["GuiSearchAndGoTitle"], 				"", "GuiSearchAndGo",						"1-Featured~6-Utility~7-QAPManagement"
-			, o_L["GuiSearchAndGoDescription"], 0, "iconExit", "+^q"
+			, o_L["GuiSearchAndGoDescription"], 0, "iconQuickSearch", "+^q"
 			, "can-i-quickly-search-qap-to-launch-one-of-my-favorites")
 		this.AddQAPFeatureObject("Search and Replace",		o_L["GuiSearchAndReplaceTitle"] . g_strEllipse, "", "GuiSearchAndReplace",				"3-QAPMenuEditing"
 			, o_L["GuiSearchAndReplaceDescription"], 0, "iconSwitch", ""
