@@ -24318,15 +24318,16 @@ GuiControlGet, strActiveControlV, FocusV
 
 if (A_ThisLabel = "GuiSearchAndGoEvents" or A_ThisLabel = "SearchAndGoEnter")
 {
+	g_intSearchAndGoIndex := ""
 	if (A_ThisLabel = "SearchAndGoEnter")
-		intSearchAndGoRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
+		intSearchAndGoClickedRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
 	else if (A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick") ; retrieve favorite object and launch it (double-click) or open alternative menu (right-click)
-		intSearchAndGoRow := A_EventInfo
+		intSearchAndGoClickedRow := A_EventInfo
 	
 	if (A_ThisLabel = "SearchAndGoEnter" or A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick")
 	; retrieve favorite object and launch it (double-click or Enter) or open alternative menu (right-click)
 	{
-		LV_GetText(intIndex, intSearchAndGoRow, 3) ;  get selected item order in oSearchAndGoResult.SA object
+		LV_GetText(g_intSearchAndGoIndex, intSearchAndGoClickedRow, 3) ;  get selected item order in oSearchAndGoResult.SA object
 		
 		if (A_GuiEvent = "RightClick")
 		{
@@ -24339,12 +24340,12 @@ if (A_ThisLabel = "GuiSearchAndGoEvents" or A_ThisLabel = "SearchAndGoEnter")
 			gosub, GetAlternativeMenuModifierFromSearchAndGo
 			if StrLen(g_strAlternativeMenuModifier)
 			{
-				o_ThisFavorite := oSearchAndGoResult.SA[intIndex]
+				o_ThisFavorite := oSearchAndGoResult.SA[g_intSearchAndGoIndex]
 				gosub, OpenAlternativeFromSearchAndGo
 				g_strAlternativeMenuModifier := ""
 			}
 			else
-				oSearchAndGoResult.SA[intIndex].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
+				oSearchAndGoResult.SA[g_intSearchAndGoIndex].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
 			
 			oSearchAndGoResult := ""
 			intRowWidth := ""
@@ -24366,7 +24367,7 @@ else if (A_ThisLabel = "SearchAndGoUp") ; if on first row of listview, focus edi
 	else
 		Send, {Up}
 
-intSearchAndGoRow := ""
+intSearchAndGoClickedRow := ""
 
 return
 ;------------------------------------------------------------
@@ -24378,7 +24379,7 @@ SearchAndGoAlternativeMenu:
 
 Gosub, SearchAndGoGuiEscape
 
-o_ThisFavorite := oSearchAndGoResult.SA[intSearchAndGoRow]
+o_ThisFavorite := oSearchAndGoResult.SA[g_intSearchAndGoIndex]
 g_blnAlternativeMenu := true
 gosub, OpenAlternativeFromSearchAndGo
 
