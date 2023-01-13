@@ -5590,7 +5590,7 @@ global o_SearchResultContainerBK ; to swap search result container with menu of 
 global g_intMenuPosX
 global g_intMenuPosY
 global g_strHotstringEndChar
-global g_blnAlternativeMenuFromSearchAndGo
+global g_blnAlternativeMenuFromQuickLaunch
 
 ;---------------------------------
 ; Initial validation
@@ -5852,9 +5852,9 @@ HotKey, If, WinActive(SI_strGuiTitle) ; Select icon in gui in function SelectIco
 	Hotkey, Down, SI_SelectorDown
 	; other Hotkeys are now created by menu assignement in BuildGuiMenuBar
 	
-HotKey, If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and Go
-	Hotkey, Down, SearchAndGoDown
-	Hotkey, Up, SearchAndGoUp
+HotKey, If, WinActive(o_L["GuiQuickLaunchTitle"]) ; Quick Launch
+	Hotkey, Down, QuickLaunchDown
+	Hotkey, Up, QuickLaunchUp
 
 
 Hotkey, If
@@ -5896,7 +5896,7 @@ if !GetKeyState("Shift")
 
 ; ####
 ; Gosub, GuiOptionsGroupSettingsWindow
-; Gosub, GuiSearchAndGo
+; Gosub, GuiQuickLaunch
 
 return
 
@@ -5918,7 +5918,7 @@ return
 #If, WinActive(SI_strGuiTitle) ; Select Icon Gui
 #If
 
-#If, WinActive(o_L["GuiSearchAndGoTitle"]) ; Search and Go
+#If, WinActive(o_L["GuiQuickLaunchTitle"]) ; Quick Launch
 #If
 
 #If, CanHotkeyTrigger() ; Open favorite from Shortcut
@@ -6557,11 +6557,11 @@ o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0,
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
-o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoExtended", "SearchAndGoExtended", 0, "SettingsWindow", "f_lblOptionsSearchAndGoTitle|f_blnSearchAndGoExtended")
-o_Settings.ReadIniOption("SettingsWindow", "blnSearchAndGoRecentsFrequents", "SearchAndGoRecentsFrequents", 0, "SettingsWindow", "f_blnSearchAndGoRecentsFrequents")
-o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoRows", "SearchAndGoRows", 10, "SettingsWindow", "f_intSearchAndGoRowsEdit|f_intSearchAndGoRows|f_lblSearchAndGoRows")
-o_Settings.ReadIniOption("SettingsWindow", "intSearchAndGoSort", "SearchAndGoSort", 2, "SettingsWindow"
-	, "f_lblOptionsSearchAndGoSort|f_radOptionsSearchAndGoSort0|f_radOptionsSearchAndGoSort1|f_radOptionsSearchAndGoSort2") ; default 2 -> usage
+o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchExtended", "QuickLaunchExtended", 0, "SettingsWindow", "f_lblOptionsQuickLaunchTitle|f_blnQuickLaunchExtended")
+o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchRecentsFrequents", "QuickLaunchRecentsFrequents", 0, "SettingsWindow", "f_blnQuickLaunchRecentsFrequents")
+o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchRows", "QuickLaunchRows", 10, "SettingsWindow", "f_intQuickLaunchRowsEdit|f_intQuickLaunchRows|f_lblQuickLaunchRows")
+o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchSort", "QuickLaunchSort", 2, "SettingsWindow"
+	, "f_lblOptionsQuickLaunchSort|f_radOptionsQuickLaunchSort0|f_radOptionsQuickLaunchSort1|f_radOptionsQuickLaunchSort2") ; default 2 -> usage
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -7080,7 +7080,7 @@ AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
 AddToIniOneDefaultMenu("{Add Favorite - QAP}", "", "QAP")
 AddToIniOneDefaultMenu("", "", "X")
-AddToIniOneDefaultMenu("{Search and Go}", "", "QAP", true)
+AddToIniOneDefaultMenu("{Quick Launch}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
 AddToIniOneDefaultMenu("{ReopenCurrentFolder}", "", "QAP", true)
 AddToIniOneDefaultMenu("", "", "X")
@@ -7805,7 +7805,7 @@ saMenuItemsTable.Push(["SpecialSearchAutoExec", aaL["DialogSearchAutoExec"], "",
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
 
-aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiSearchAndGoTitle", "MenuRestoreSearchAndGoWindowPosition"
+aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiQuickLaunchTitle", "MenuRestoreQuickLaunchWindowPosition"
 	, "GuiSearchAndReplaceTitle", "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
 	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
@@ -7813,7 +7813,7 @@ saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlTo
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
 saMenuItemsTable.Push([":menuBarSpecialSearch", aaMenuToolsL["DialogSearchSpecial"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiSearchAndGo", aaMenuToolsL["GuiSearchAndGoTitle"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiQuickLaunch", aaMenuToolsL["GuiQuickLaunchTitle"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiSearchAndReplace", aaMenuToolsL["GuiSearchAndReplaceTitle"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -7826,7 +7826,7 @@ saMenuItemsTable.Push(["ResetQAPSpecialDefaultNames", aaMenuToolsL["MenuResetQAP
 saMenuItemsTable.Push(["ToggleSuspendHotkeys", aaMenuToolsL["MenuSuspendHotkeys"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiShowRestoreDefaultPosition", aaMenuToolsL["MenuRestoreSettingsWindowPosition"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiSearchAndGoRestorePosition", aaMenuToolsL["MenuRestoreSearchAndGoWindowPosition"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiQuickLaunchRestorePosition", aaMenuToolsL["MenuRestoreQuickLaunchWindowPosition"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiAlwaysOnTop", aaMenuToolsL["ControlToolTipAlwaysOnTopOff"], "", "iconNoIcon"])
 o_Containers.AA["menuBarTools"].LoadFavoritesFromTable(saMenuItemsTable)
@@ -9063,7 +9063,7 @@ Loop
 		; hotkey reminder "`t..." or " (...)" will be removed from A_ThisMenuItem in order to flag what alternative menu feature has been activated
 		saMenuItemsTable.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
 			, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
-		if (o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].blnIncludeInSearchAndGo)
+		if (o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].blnIncludeInQuickLaunch)
 			saMenuItemsTableStartAndGo.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
 				, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
 	}
@@ -9486,30 +9486,30 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsS
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithLocale gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithLocale"]
 GuiControl, , f_blnSearchWithLocale, % (o_Settings.SettingsWindow.blnSearchWithLocale.IniValue = true)
 
-; SearchAndGo
+; QuickLaunch
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Text, y+20 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchAndGoTitle, % o_L["OptionsSearchAndGoTitle"]
+Gui, 2:Add, Text, y+20 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsQuickLaunchTitle, % o_L["OptionsQuickLaunchTitle"]
 Gui, 2:Font
 
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoExtended gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoExtended"]
-GuiControl, , f_blnSearchAndGoExtended, % (o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue = true)
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchAndGoRecentsFrequents gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchAndGoRecentsFrequents"]
-GuiControl, , f_blnSearchAndGoRecentsFrequents, % (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue = true)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchExtended gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsQuickLaunchExtended"]
+GuiControl, , f_blnQuickLaunchExtended, % (o_Settings.SettingsWindow.blnQuickLaunchExtended.IniValue = true)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchRecentsFrequents gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsQuickLaunchRecentsFrequents"]
+GuiControl, , f_blnQuickLaunchRecentsFrequents, % (o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.IniValue = true)
 
-Gui, 2:Add, Edit, y+10 x%g_intGroupItemsTab4X% w51 h22 vf_intSearchAndGoRowsEdit number center hidden
-Gui, 2:Add, UpDown, vf_intSearchAndGoRows Range5-9999 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
-Gui, 2:Add, Text, yp x+10 w200 hidden vf_lblSearchAndGoRows, % o_L["OptionsSearchAndGoRows"]
-GuiControl, 2:+gGuiOptionsGroupChanged, f_intSearchAndGoRowsEdit
+Gui, 2:Add, Edit, y+10 x%g_intGroupItemsTab4X% w51 h22 vf_intQuickLaunchRowsEdit number center hidden
+Gui, 2:Add, UpDown, vf_intQuickLaunchRows Range5-9999 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
+Gui, 2:Add, Text, yp x+10 w200 hidden vf_lblQuickLaunchRows, % o_L["OptionsQuickLaunchRows"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intQuickLaunchRowsEdit
 
-Gui, 2:Add, Text, y+15 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchAndGoSort, % o_L["DialogSortBy"] . ":"
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsSearchAndGoSort0 Group gGuiOptionsGroupChanged hidden "
-	. (!o_Settings.SettingsWindow.intSearchAndGoSort.IniValue ? "Checked" : ""), % o_L["DialogSortNaturalOrder"] ; 0 or empty -> natural order
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsSearchAndGoSort1 gGuiOptionsGroupChanged hidden "
-	. (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 1 ? "Checked" : ""), % o_L["DialogMenuSortFavoriteName"] ; 1 -> favorite name
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsSearchAndGoSort2 gGuiOptionsGroupChanged hidden "
-	. (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 2 ? "Checked" : ""), % o_L["DialogMenuSortUsage"] ; 2 -> usage
+Gui, 2:Add, Text, y+15 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsQuickLaunchSort, % o_L["DialogSortBy"] . ":"
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsQuickLaunchSort0 Group gGuiOptionsGroupChanged hidden "
+	. (!o_Settings.SettingsWindow.intQuickLaunchSort.IniValue ? "Checked" : ""), % o_L["DialogSortNaturalOrder"] ; 0 or empty -> natural order
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsQuickLaunchSort1 gGuiOptionsGroupChanged hidden "
+	. (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 1 ? "Checked" : ""), % o_L["DialogMenuSortFavoriteName"] ; 1 -> favorite name
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsQuickLaunchSort2 gGuiOptionsGroupChanged hidden "
+	. (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2 ? "Checked" : ""), % o_L["DialogMenuSortUsage"] ; 2 -> usage
 
-GuiControlGet, arrPos, Pos, f_lblOptionsSearchAndGoSort2 ; if col 2 is taller than col 1
+GuiControlGet, arrPos, Pos, f_lblOptionsQuickLaunchSort2 ; if col 2 is taller than col 1
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -10349,16 +10349,16 @@ o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_b
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
-o_Settings.SettingsWindow.blnSearchAndGoExtended.WriteIni(f_blnSearchAndGoExtended)
-o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.WriteIni(f_blnSearchAndGoRecentsFrequents)
-o_Settings.SettingsWindow.intSearchAndGoRows.WriteIni(f_intSearchAndGoRows)
-if (f_radOptionsSearchAndGoSort1)
-	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 1 ; 1 -> favorite name
-else if (f_radOptionsSearchAndGoSort2)
-	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 2 ; 2 -> usage
-else ; f_radOptionsSearchAndGoSort0
-	o_Settings.SettingsWindow.intSearchAndGoSort.IniValue := 0 ; 0 or empty -> natural order
-o_Settings.SettingsWindow.intSearchAndGoSort.WriteIni("", true) ; value already updated
+o_Settings.SettingsWindow.blnQuickLaunchExtended.WriteIni(f_blnQuickLaunchExtended)
+o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.WriteIni(f_blnQuickLaunchRecentsFrequents)
+o_Settings.SettingsWindow.intQuickLaunchRows.WriteIni(f_intQuickLaunchRows)
+if (f_radOptionsQuickLaunchSort1)
+	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 1 ; 1 -> favorite name
+else if (f_radOptionsQuickLaunchSort2)
+	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 2 ; 2 -> usage
+else ; f_radOptionsQuickLaunchSort0
+	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 0 ; 0 or empty -> natural order
+o_Settings.SettingsWindow.intQuickLaunchSort.WriteIni("", true) ; value already updated
 
 blnDarkModePrev := o_Settings.SettingsWindow.blnDarkMode.IniValue
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
@@ -20954,8 +20954,8 @@ if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) ; Alternative menu
 	else if InStr(g_strAlternativeMenu, " (")
 		g_strAlternativeMenu := SubStr(g_strAlternativeMenu, 1, InStr(g_strAlternativeMenu, " (") - 1) ; or remove shortcut reminder from " ("
 
-if (g_blnAlternativeMenuFromSearchAndGo)
-	gosub, SearchAndGoAlternativeMenu ; execute the alternative menu feature on target from Search and Go
+if (g_blnAlternativeMenuFromQuickLaunch)
+	gosub, QuickLaunchAlternativeMenu ; execute the alternative menu feature on target from Quick Launch
 else
 {
 	gosub, OpenAlternativeMenuTrayTip
@@ -21076,7 +21076,7 @@ OpenWorkingDirectory:
 OpenBackupDirectory:
 OpenSwitchFolderOrApp:
 OpenFavoriteFromMsg:
-OpenAlternativeFromSearchAndGo:
+OpenAlternativeFromQuickLaunch:
 ;------------------------------------------------------------
 
 if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
@@ -21085,7 +21085,7 @@ if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChan
 g_strOpenFavoriteLabel := A_ThisLabel
 g_strNewWindowId := "" ; start fresh for any new favorite to open, used to position Explorer and Total Commander windows only
 
-if (g_strOpenFavoriteLabel <> "OpenAlternativeFromSearchAndGo") ; we already have the modifiers from SearchAndGo
+if (g_strOpenFavoriteLabel <> "OpenAlternativeFromQuickLaunch") ; we already have the modifiers from QuickLaunch
 	gosub, GetAlternativeMenuModifier
 
 Diag(A_ThisLabel, "Enter", 1)
@@ -21095,7 +21095,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 			return
 Diag(A_ThisLabel, "Enter", 2)
 
-if !InStr("OpenFavoriteFromLastAction|OpenAlternativeFromSearchAndGo|", A_ThisLabel . "|") ; we already have o_ThisFavorite from RepeatLastAction or SearchAndGo
+if !InStr("OpenFavoriteFromLastAction|OpenAlternativeFromQuickLaunch|", A_ThisLabel . "|") ; we already have o_ThisFavorite from RepeatLastAction or QuickLaunch
 	gosub, OpenFavoriteGetFavoriteObject ; define o_ThisFavorite
 
 if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
@@ -21111,7 +21111,7 @@ if (o_ThisFavorite.AA.strFavoriteType = "URL" and !WindowIsBrowser(g_strTargetWi
 	and g_strHotkeyTypeDetected = "Navigate") ; avoid changing if "Alternative"
 	g_strHotkeyTypeDetected := "Launch"
 
-if (g_strOpenFavoriteLabel = "OpenAlternativeFromSearchAndGo")
+if (g_strOpenFavoriteLabel = "OpenAlternativeFromQuickLaunch")
 	g_strHotkeyTypeDetected := "Alternative"
 Diag(A_ThisLabel, "g_strHotkeyTypeDetected-1", g_strHotkeyTypeDetected)
 
@@ -21189,12 +21189,12 @@ return
 
 ;------------------------------------------------------------
 GetAlternativeMenuModifier:
-GetAlternativeMenuModifierFromSearchAndGo:
+GetAlternativeMenuModifierFromQuickLaunch:
 ;------------------------------------------------------------
 
 ; avoid conflict with hotkeys and avoid editing menu items not in favorites list
 if InStr("OpenFavorite|OpenFavoriteFromLastAction", g_strOpenFavoriteLabel)
-	or (A_ThisLabel = "GetAlternativeMenuModifierFromSearchAndGo")
+	or (A_ThisLabel = "GetAlternativeMenuModifierFromQuickLaunch")
 	g_strAlternativeMenuModifier := (GetKeyState("LShift") ? "<+" : "")
 		. (GetKeyState("LControl") ? "<^" : "")
 		. (GetKeyState("RShift") ? ">+" : "")
@@ -24180,40 +24180,40 @@ return
 
 
 ;------------------------------------------------------------
-GuiSearchAndGoRestorePosition:
+GuiQuickLaunchRestorePosition:
 ;------------------------------------------------------------
 
-IniDelete, % o_Settings.strIniFile, Global, SearchAndGoPosition
-Gosub, GuiSearchAndGo
+IniDelete, % o_Settings.strIniFile, Global, QuickLaunchPosition
+Gosub, GuiQuickLaunch
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-GuiSearchAndGo:
+GuiQuickLaunch:
 ;------------------------------------------------------------
 
 Gosub, RefreshRecentItemsMenus
 
 intListViewWidth := 180 ; minimal width
-intSearchAndGoGuiMinWidth := intListViewWidth + 6 ; (2 x 3 pixels margins)
-intSearchAndGoGuiMinHeight := (o_Settings.SettingsWindow.intSearchAndGoRows.IniValue * 17) + 28
+intQuickLaunchGuiMinWidth := intListViewWidth + 6 ; (2 x 3 pixels margins)
+intQuickLaunchGuiMinHeight := (o_Settings.SettingsWindow.intQuickLaunchRows.IniValue * 17) + 28
 
-Gui, SearchAndGo:New, ToolWindow +HwndstrSearchAndGoHwnd +Resize +MinSize%intSearchAndGoGuiMinWidth%x%intSearchAndGoGuiMinHeight%, % o_L["GuiSearchAndGoTitle"]
-Gui, SearchAndGo:Default
+Gui, QuickLaunch:New, ToolWindow +HwndstrQuickLaunchHwnd +Resize +MinSize%intQuickLaunchGuiMinWidth%x%intQuickLaunchGuiMinHeight%, % o_L["GuiQuickLaunchTitle"]
+Gui, QuickLaunch:Default
 Gui +LastFound
 WinSet, AlwaysOnTop, On
 
-Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strSearchAndGo gGuiSearchAndGoChanged
-Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intSearchAndGoRows.IniValue
-	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvSearchAndGo AltSubmit gGuiSearchAndGoEvents", Col1|Sort|Index
-Gui, Add, Button, Default Hidden gSearchAndGoEnter, Default
+Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged
+Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
+	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvQuickLaunch AltSubmit gGuiQuickLaunchEvents", Col1|Sort|Index
+Gui, Add, Button, Default Hidden gQuickLaunchEnter, Default
 
 if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 {
 	; could be used to make title bar dark but don't because not nice with edit control white that cannot be dark
-	; DllCall("dwmapi\DwmSetWindowAttribute", "ptr", strSearchAndGoHwnd, "int", 20, "int*", true, "int", 4)
+	; DllCall("dwmapi\DwmSetWindowAttribute", "ptr", strQuickLaunchHwnd, "int", 20, "int*", true, "int", 4)
 	
 	Gui, Color, %g_intWindowColor%, %g_intControlColor%
 	GuiControl, +Background%g_intWindowColor%, SysListView321
@@ -24221,65 +24221,65 @@ if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 	GuiControl, Font, SysListView321
 }
 
-strSearchAndGoPosition := o_Settings.ReadIniValue("SearchAndGoPosition", -1) ; by default -1 to center at minimal size
-saSearchAndGoPosition := StrSplit(strSearchAndGoPosition, "|")
-Gui, SearchAndGo:Show, % "Autosize " . (saSearchAndGoPosition[1] = -1 or saSearchAndGoPosition[1] = "" or saSearchAndGoPosition[2] = "" ? "center "
-	: "x" . saSearchAndGoPosition[1] . " y" . saSearchAndGoPosition[2]) ; . " w" . intListViewWidth + 6
+strQuickLaunchPosition := o_Settings.ReadIniValue("QuickLaunchPosition", -1) ; by default -1 to center at minimal size
+saQuickLaunchPosition := StrSplit(strQuickLaunchPosition, "|")
+Gui, QuickLaunch:Show, % "Autosize " . (saQuickLaunchPosition[1] = -1 or saQuickLaunchPosition[1] = "" or saQuickLaunchPosition[2] = "" ? "center "
+	: "x" . saQuickLaunchPosition[1] . " y" . saQuickLaunchPosition[2]) ; . " w" . intListViewWidth + 6
 
-intSearchAndGoGuiMinWidth := ""
-intSearchAndGoGuiMinHeight := ""
-strSearchAndGoPosition := ""
-saSearchAndGoPosition := ""
+intQuickLaunchGuiMinWidth := ""
+intQuickLaunchGuiMinHeight := ""
+strQuickLaunchPosition := ""
+saQuickLaunchPosition := ""
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-SearchAndGoGuiSize:
+QuickLaunchGuiSize:
 ;------------------------------------------------------------
 
 intListViewWidth := A_GuiWidth - 6 ; (left margins 2 x 3)
 intListViewHeight := A_GuiHeight - 25 ; 
 
-GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
-GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
-GuiControl, Move, f_lvSearchAndGo, % "h" . intListViewHeight
+GuiControl, Move, f_lvQuickLaunch, % "w" . intListViewWidth
+GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth
+GuiControl, Move, f_lvQuickLaunch, % "h" . intListViewHeight
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-GuiSearchAndGoChanged:
+GuiQuickLaunchChanged:
 ;------------------------------------------------------------
-Gui, SearchAndGo:Submit, NoHide
+Gui, QuickLaunch:Submit, NoHide
 
 LV_Delete()
-intListViewWidth := intSearchAndGoGuiMinWidth
+intListViewWidth := intQuickLaunchGuiMinWidth
 
-if StrLen(f_strSearchAndGo)
+if StrLen(f_strQuickLaunch)
 {
-	GuiControl, -Redraw, f_lvSearchAndGo
+	GuiControl, -Redraw, f_lvQuickLaunch
 	Critical, On
-	oSearchAndGoResult := new Container("Menu", "Search and Go", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
-	oSearchAndGoResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnSearchAndGoExtended.IniValue
-	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
-	if (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue)
+	oQuickLaunchResult := new Container("Menu", "Quick Launch", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
+	oQuickLaunchResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnQuickLaunchExtended.IniValue
+	o_MainMenu.LoadSearchResult(f_strQuickLaunch, oQuickLaunchResult) ; populate search result object starting at Main menu
+	if (o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.IniValue)
 		loop, parse, % "Recent|Frequent", |
 			loop, parse, % "Menu" . A_LoopField . "Folders|" . "Menu" . A_LoopField . "Files", |
-				o_Containers.AA[o_L[A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
+				o_Containers.AA[o_L[A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strQuickLaunch, oQuickLaunchResult)
 	
-	Loop, % oSearchAndGoResult.SA.MaxIndex()
+	Loop, % oQuickLaunchResult.SA.MaxIndex()
 	{
-		strRow := oSearchAndGoResult.SA[A_Index].AA.strFavoriteName . " (" . oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
+		strRow := oQuickLaunchResult.SA[A_Index].AA.strFavoriteName . " (" . oQuickLaunchResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
 		strRow := StrReplace(strRow, "&&", g_strEscapeReplacement) ; preserve existing double ampersand
 		strRow := StrReplace(strRow, "&", "") ; remove single ampersands that would be shortcuts if numeric shortcuts were disabled
 		strRow := StrReplace(strRow, g_strEscapeReplacement, "&") ; restore preserved  existing double ampersand
-		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and StrLen(oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb))
-			strRow .= " [" . oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb . "]"
-		oSort := [strRow, oSearchAndGoResult.SA[A_Index].AA.strFavoriteName, oSearchAndGoResult.SA[A_Index].AA.intFavoriteUsageDb] ; contains 3 possible sort criterias
-		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intSearchAndGoSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oSearchAndGoResult.SA object
+		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and StrLen(oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb))
+			strRow .= " [" . oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb . "]"
+		oSort := [strRow, oQuickLaunchResult.SA[A_Index].AA.strFavoriteName, oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb] ; contains 3 possible sort criterias
+		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intQuickLaunchSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oQuickLaunchResult.SA object
 		intRowWidth := GetPixelSizeOfText(strRow) + 30 + (IsHighDPI() ? 30 : 0)
 		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
 	}
@@ -24287,16 +24287,16 @@ if StrLen(f_strSearchAndGo)
 LV_ModifyCol() ; adjuste cols width
 LV_ModifyCol(2, 0) ; make col 2 Sort criteria invisible
 LV_ModifyCol(3, 0) ; make col 3 Index order invisible
-LV_ModifyCol(2, (o_Settings.SettingsWindow.intSearchAndGoSort.IniValue = 2 ? "Integer SortDesc" : "Text Sort")) ; for usage sort integer desc, else sort text asc
-if oSearchAndGoResult.SA.MaxIndex()
+LV_ModifyCol(2, (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2 ? "Integer SortDesc" : "Text Sort")) ; for usage sort integer desc, else sort text asc
+if oQuickLaunchResult.SA.MaxIndex()
 	LV_Modify(1, "Select")
 
-GuiControl, Move, f_lvSearchAndGo, % "w" . intListViewWidth
-GuiControl, Move, f_strSearchAndGo, % "w" . intListViewWidth
+GuiControl, Move, f_lvQuickLaunch, % "w" . intListViewWidth
+GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth
 
-WinMove, ahk_id %strSearchAndGoHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
+WinMove, ahk_id %strQuickLaunchHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
 Critical, Off
-GuiControl, +Redraw, f_lvSearchAndGo
+GuiControl, +Redraw, f_lvQuickLaunch
 
 strRow := ""
 oSort := ""
@@ -24307,95 +24307,95 @@ return
 
 
 ;------------------------------------------------------------
-GuiSearchAndGoEvents:
-SearchAndGoEnter:
-SearchAndGoDown:
-SearchAndGoUp:
+GuiQuickLaunchEvents:
+QuickLaunchEnter:
+QuickLaunchDown:
+QuickLaunchUp:
 ;------------------------------------------------------------
 
-Gui, SearchAndGo:Default
+Gui, QuickLaunch:Default
 GuiControlGet, strActiveControlV, FocusV
 
-if (A_ThisLabel = "GuiSearchAndGoEvents" or A_ThisLabel = "SearchAndGoEnter")
+if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 {
-	g_intSearchAndGoIndex := ""
-	if (A_ThisLabel = "SearchAndGoEnter")
-		intSearchAndGoClickedRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
+	g_intQuickLaunchIndex := ""
+	if (A_ThisLabel = "QuickLaunchEnter")
+		intQuickLaunchClickedRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
 	else if (A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick") ; retrieve favorite object and launch it (double-click) or open alternative menu (right-click)
-		intSearchAndGoClickedRow := A_EventInfo
+		intQuickLaunchClickedRow := A_EventInfo
 	
-	if (A_ThisLabel = "SearchAndGoEnter" or A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick")
+	if (A_ThisLabel = "QuickLaunchEnter" or A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick")
 	; retrieve favorite object and launch it (double-click or Enter) or open alternative menu (right-click)
 	{
-		LV_GetText(g_intSearchAndGoIndex, intSearchAndGoClickedRow, 3) ;  get selected item order in oSearchAndGoResult.SA object
+		LV_GetText(g_intQuickLaunchIndex, intQuickLaunchClickedRow, 3) ;  get selected item order in oQuickLaunchResult.SA object
 		
 		if (A_GuiEvent = "RightClick")
 		{
-			g_blnAlternativeMenuFromSearchAndGo := true
+			g_blnAlternativeMenuFromQuickLaunch := true
 			Menu, menuAlternativeStartAndGo, Show ; at mouse position
 		}
 		else
 		{
-			Gosub, SearchAndGoGuiEscape
-			gosub, GetAlternativeMenuModifierFromSearchAndGo
+			Gosub, QuickLaunchGuiEscape
+			gosub, GetAlternativeMenuModifierFromQuickLaunch
 			if StrLen(g_strAlternativeMenuModifier)
 			{
-				o_ThisFavorite := oSearchAndGoResult.SA[g_intSearchAndGoIndex]
-				gosub, OpenAlternativeFromSearchAndGo
+				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
+				gosub, OpenAlternativeFromQuickLaunch
 				g_strAlternativeMenuModifier := ""
 			}
 			else
-				oSearchAndGoResult.SA[g_intSearchAndGoIndex].OpenFavorite("", "LaunchFromSearchAndGo", "", "Launch")
+				oQuickLaunchResult.SA[g_intQuickLaunchIndex].OpenFavorite("", "LaunchFromQuickLaunch", "", "Launch")
 			
-			oSearchAndGoResult := ""
+			oQuickLaunchResult := ""
 			intRowWidth := ""
 		}
 	}
 	; else skip other A_GuiEvent
 }
-else if (A_ThisLabel = "SearchAndGoDown") ; if on edit control, select first row of listview
-	if (strActiveControlV = "f_strSearchAndGo")
+else if (A_ThisLabel = "QuickLaunchDown") ; if on edit control, select first row of listview
+	if (strActiveControlV = "f_strQuickLaunch")
 	{
-		GuiControl, Focus, f_lvSearchAndGo
+		GuiControl, Focus, f_lvQuickLaunch
 		LV_Modify(1, "Focus Select")
 	}
 	else
 		Send, {Down}
-else if (A_ThisLabel = "SearchAndGoUp") ; if on first row of listview, focus edit control
-	if (strActiveControlV = "f_lvSearchAndGo" and LV_GetNext() = 1)
-		GuiControl, Focus, f_strSearchAndGo
+else if (A_ThisLabel = "QuickLaunchUp") ; if on first row of listview, focus edit control
+	if (strActiveControlV = "f_lvQuickLaunch" and LV_GetNext() = 1)
+		GuiControl, Focus, f_strQuickLaunch
 	else
 		Send, {Up}
 
-intSearchAndGoClickedRow := ""
+intQuickLaunchClickedRow := ""
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-SearchAndGoAlternativeMenu:
+QuickLaunchAlternativeMenu:
 ;------------------------------------------------------------
 
-Gosub, SearchAndGoGuiEscape
+Gosub, QuickLaunchGuiEscape
 
-o_ThisFavorite := oSearchAndGoResult.SA[g_intSearchAndGoIndex]
+o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
 g_blnAlternativeMenu := true
-gosub, OpenAlternativeFromSearchAndGo
+gosub, OpenAlternativeFromQuickLaunch
 
-g_blnAlternativeMenuFromSearchAndGo := false
+g_blnAlternativeMenuFromQuickLaunch := false
 
 return
 ;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
-SearchAndGoGuiClose:
-SearchAndGoGuiEscape:
+QuickLaunchGuiClose:
+QuickLaunchGuiEscape:
 ;------------------------------------------------------------
 
-SaveWindowPosition("SearchAndGoPosition", "ahk_id " . strSearchAndGoHwnd)
-Gui, SearchAndGo:Destroy
+SaveWindowPosition("QuickLaunchPosition", "ahk_id " . strQuickLaunchHwnd)
+Gui, QuickLaunch:Destroy
 
 return
 ;------------------------------------------------------------
@@ -28528,7 +28528,7 @@ class JLicons
 			. "|iconQAPadminBeta|iconQAPadminDev|iconQAPbeta|iconQAPdev|iconQAPloading"
 			. "|iconFolderLiveOpened|iconSortAlphaAsc|iconSortAlphaDesc|iconSortNumAsc|iconSortNumDesc"
 			. "|iconQAC|iconQACadmin|iconQACadminBeta|iconQACadminDev|iconQACbeta"
-			. "|iconQACdev|iconQuickSearch"
+			. "|iconQACdev|iconQuickLaunch"
 
 		; EXAMPLE
 		; JLicons.AA["iconAbout"] -> "file,2"
@@ -30182,8 +30182,8 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Add Multiple Favorite",	o_L["DialogMultipleAdd"] . g_strEllipse,	"", "GuiMultipleAddSelectSourceFromQAPFeature", "3-QAPMenuEditing"
 			, o_L["DialogMultipleAddDescription"], 0, "iconAddThisFolder", ""
 			, "can-i-add-multiple-favorites-in-one-click")
-		this.AddQAPFeatureObject("Search and Go",			o_L["GuiSearchAndGoTitle"], 				"", "GuiSearchAndGo",						"1-Featured~6-Utility~7-QAPManagement"
-			, o_L["GuiSearchAndGoDescription"], 0, "iconQuickSearch", "+^q"
+		this.AddQAPFeatureObject("Quick Launch",			o_L["GuiQuickLaunchTitle"], 				"", "GuiQuickLaunch",						"1-Featured~6-Utility~7-QAPManagement"
+			, o_L["GuiQuickLaunchDescription"], 0, "iconQuickLaunch", "+^q"
 			, "can-i-quickly-search-qap-to-launch-one-of-my-favorites")
 		this.AddQAPFeatureObject("Search and Replace",		o_L["GuiSearchAndReplaceTitle"] . g_strEllipse, "", "GuiSearchAndReplace",				"3-QAPMenuEditing"
 			, o_L["GuiSearchAndReplaceDescription"], 0, "iconSwitch", ""
@@ -30358,7 +30358,7 @@ class QAPfeatures
 	;---------------------------------------------------------
 	AddQAPFeatureObject(strQAPFeatureCode, strThisLocalizedName, strQAPFeatureMenuName, strQAPFeatureCommand, strQAPFeatureCategories
 		, strQAPFeatureDescription, intQAPFeatureAlternativeOrder, strThisDefaultIcon, strDefaultShortcut, strHelpUrl
-		, strRefreshCommand := "", blnDoubleAmpersands := false, blnIncludeInSearchAndGo := false)
+		, strRefreshCommand := "", blnDoubleAmpersands := false, blnIncludeInQuickLaunch := false)
 	;
 	; QAP Feature Objects (o_QAPfeatures.AA) definition:
 	;		Key: strQAPFeatureInternalName
@@ -30388,7 +30388,7 @@ class QAPfeatures
 		aaOneQAPFeature.intQAPFeatureAlternativeOrder := intQAPFeatureAlternativeOrder
 		aaOneQAPFeature.strDefaultShortcut := strDefaultShortcut ; for Alternative Menu QAP features, the shortcut default contains the default strModifier
 		aaOneQAPFeature.blnDoubleAmpersands := blnDoubleAmpersands
-		aaOneQAPFeature.blnIncludeInSearchAndGo := blnIncludeInSearchAndGo
+		aaOneQAPFeature.blnIncludeInQuickLaunch := blnIncludeInQuickLaunch
 		
 		this.AA["{" . strQAPFeatureCode . "}"] := aaOneQAPFeature
 		this.aaQAPFeaturesCodeByDefaultName[strThisLocalizedName] := "{" . strQAPFeatureCode . "}"
@@ -31549,7 +31549,7 @@ class Container
 	
 	;------------------------------------------------------------
 	LoadSearchResult(strSearchString, ByRef oSearchResultContainer)
-	; return ByRef a container object with items in the search result for Customize search and Search and Go
+	; return ByRef a container object with items in the search result for Customize search and Quick Launch
 	;------------------------------------------------------------
 	{
 		;  when searching for Quick Search and when Recent items are included, exclude Customize search result container to avoid duplicates
@@ -33536,7 +33536,7 @@ class Container
 				intOpenError := this.LaunchWindowsApp() ; returns 0 if no error
 			}
 			; QAP COMMAND
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|LaunchFromSearchAndGo"
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|LaunchFromQuickLaunch"
 				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
 				Diag(A_ThisFunc, "this.AA.strFavoriteLocation", this.AA.strFavoriteLocation)
@@ -33689,7 +33689,7 @@ class Container
 			}
 			else
 			{
-				if (this.aaTemp.strOpenFavoriteLabel = "OpenAlternativeFromSearchAndGo") ; we already have menu position for Search and Go
+				if (this.aaTemp.strOpenFavoriteLabel = "OpenAlternativeFromQuickLaunch") ; we already have menu position for Quick Launch
 					g_intOriginalMenuPosition := this.AA.intSearchItemPositionInOriginalMenu
 				else
 					g_intOriginalMenuPosition := A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
