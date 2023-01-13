@@ -24256,6 +24256,7 @@ GuiSearchAndGoChanged:
 Gui, SearchAndGo:Submit, NoHide
 
 LV_Delete()
+intListViewWidth := intSearchAndGoGuiMinWidth
 
 if StrLen(f_strSearchAndGo)
 {
@@ -24266,10 +24267,9 @@ if StrLen(f_strSearchAndGo)
 	o_MainMenu.LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult) ; populate search result object starting at Main menu
 	if (o_Settings.SettingsWindow.blnSearchAndGoRecentsFrequents.IniValue)
 		loop, parse, % "Recent|Frequent", |
-			loop, parse, % "Menu" . A_LoopField . "Folders|" . A_LoopField . "Files", |
+			loop, parse, % "Menu" . A_LoopField . "Folders|" . "Menu" . A_LoopField . "Files", |
 				o_Containers.AA[o_L[A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strSearchAndGo, oSearchAndGoResult)
 	
-	intListViewWidth := 0
 	Loop, % oSearchAndGoResult.SA.MaxIndex()
 	{
 		strRow := oSearchAndGoResult.SA[A_Index].AA.strFavoriteName . " (" . oSearchAndGoResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
