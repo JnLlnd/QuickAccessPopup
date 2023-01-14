@@ -31,8 +31,21 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.5.99.8 (2023-01-??)
-- 
+Version BETA: 11.5.99.8 (2023-01-13)
+ 
+Quick Launch
+- rename the feature "Quick Search" to "Quick Launch" (users UPGRADING from a previous beta release mus DELETE and RE-ADD this QAP feature)
+- new menu icon for "Quick Launch"
+- in search result, highlight the first item
+- fix bugs when the search string is empty or when the search result is empty
+- fix bugs parsing Recent and Frequent documents
+- fix bug opening an item with the Alternative menu
+- in Customize window "Tools" menu, move the "Quick Launch" item to the top of the menu
+ 
+Various
+- new JLicons.dll file v1.6.4 (user with PORTABLE installation must overwrite JLicons.dll in the working directory with the file in the ZIP file)
+- remove line breaks and tabs inside {Menu:...} placeholders labels (before the ~), allowing to spread a {Menu:...} placeholder on multiple lines
+- force QAP theme to "Windows" when dark mode is enabled in QAP and active in Windows
 
 Version BETA: 11.5.99.7 (2022-12-27)
 - in "Quick Search" and "Customize" window search results, support multiple search strings separated by space, every strings must be present (AND operator)
@@ -5318,7 +5331,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6
+;@Ahk2Exe-SetVersion 11.5.99.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5385,8 +5398,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.5.99.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.4"
 
@@ -5591,6 +5604,7 @@ global g_intMenuPosX
 global g_intMenuPosY
 global g_strHotstringEndChar
 global g_blnAlternativeMenuFromQuickLaunch
+global g_intQuickLaunchGuiMinWidth
 
 ;---------------------------------
 ; Initial validation
@@ -7809,11 +7823,11 @@ aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogE
 	, "GuiSearchAndReplaceTitle", "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
 	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
+saMenuItemsTable.Push(["GuiQuickLaunch", aaMenuToolsL["GuiQuickLaunchTitle"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
 saMenuItemsTable.Push([":menuBarSpecialSearch", aaMenuToolsL["DialogSearchSpecial"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["X"])
-saMenuItemsTable.Push(["GuiQuickLaunch", aaMenuToolsL["GuiQuickLaunchTitle"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiSearchAndReplace", aaMenuToolsL["GuiSearchAndReplaceTitle"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -24197,10 +24211,10 @@ GuiQuickLaunch:
 Gosub, RefreshRecentItemsMenus
 
 intListViewWidth := 180 ; minimal width
-intQuickLaunchGuiMinWidth := intListViewWidth + 6 ; (2 x 3 pixels margins)
+g_intQuickLaunchGuiMinWidth := intListViewWidth + 6 ; (2 x 3 pixels margins)
 intQuickLaunchGuiMinHeight := (o_Settings.SettingsWindow.intQuickLaunchRows.IniValue * 17) + 28
 
-Gui, QuickLaunch:New, ToolWindow +HwndstrQuickLaunchHwnd +Resize +MinSize%intQuickLaunchGuiMinWidth%x%intQuickLaunchGuiMinHeight%, % o_L["GuiQuickLaunchTitle"]
+Gui, QuickLaunch:New, ToolWindow +HwndstrQuickLaunchHwnd +Resize +MinSize%g_intQuickLaunchGuiMinWidth%x%intQuickLaunchGuiMinHeight%, % o_L["GuiQuickLaunchTitle"]
 Gui, QuickLaunch:Default
 Gui +LastFound
 WinSet, AlwaysOnTop, On
@@ -24226,7 +24240,6 @@ saQuickLaunchPosition := StrSplit(strQuickLaunchPosition, "|")
 Gui, QuickLaunch:Show, % "Autosize " . (saQuickLaunchPosition[1] = -1 or saQuickLaunchPosition[1] = "" or saQuickLaunchPosition[2] = "" ? "center "
 	: "x" . saQuickLaunchPosition[1] . " y" . saQuickLaunchPosition[2]) ; . " w" . intListViewWidth + 6
 
-intQuickLaunchGuiMinWidth := ""
 intQuickLaunchGuiMinHeight := ""
 strQuickLaunchPosition := ""
 saQuickLaunchPosition := ""
@@ -24256,7 +24269,7 @@ GuiQuickLaunchChanged:
 Gui, QuickLaunch:Submit, NoHide
 
 LV_Delete()
-intListViewWidth := intQuickLaunchGuiMinWidth
+intListViewWidth := g_intQuickLaunchGuiMinWidth
 
 if StrLen(f_strQuickLaunch)
 {
