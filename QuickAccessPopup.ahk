@@ -5331,7 +5331,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.8
+;@Ahk2Exe-SetVersion 11.5.99.9
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5398,7 +5398,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.5.99.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.4"
@@ -24280,9 +24280,19 @@ if StrLen(f_strQuickLaunch)
 	o_MainMenu.LoadSearchResult(f_strQuickLaunch, oQuickLaunchResult) ; populate search result object starting at Main menu
 	if (o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.IniValue)
 		loop, parse, % "Recent|Frequent", |
-			loop, parse, % "Menu" . A_LoopField . "Folders|" . "Menu" . A_LoopField . "Files", |
+			loop, parse, % "Menu" . A_LoopField . "Files|" . "Menu" . A_LoopField . "Folders", |
 				o_Containers.AA[o_L[A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strQuickLaunch, oQuickLaunchResult)
 	
+	; build image list
+	oImageListID := IL_Create(oQuickLaunchResult.SA.MaxIndex())
+	LV_SetImageList(oImageListID) 
+	Loop, % oQuickLaunchResult.SA.MaxIndex()
+	{
+		ParseIconResource(oQuickLaunchResult.SA[A_Index].AA.strFavoriteIconResource, strIconFile, intIconIndex)
+		IL_Add(oImageListID, strIconFile, intIconIndex) 
+	}
+	
+	; populate listview
 	Loop, % oQuickLaunchResult.SA.MaxIndex()
 	{
 		strRow := oQuickLaunchResult.SA[A_Index].AA.strFavoriteName . " (" . oQuickLaunchResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath . ")"
@@ -24292,8 +24302,8 @@ if StrLen(f_strQuickLaunch)
 		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and StrLen(oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb))
 			strRow .= " [" . oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb . "]"
 		oSort := [strRow, oQuickLaunchResult.SA[A_Index].AA.strFavoriteName, oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb] ; contains 3 possible sort criterias
-		LV_Add("", strRow, oSort[o_Settings.SettingsWindow.intQuickLaunchSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oQuickLaunchResult.SA object
-		intRowWidth := GetPixelSizeOfText(strRow) + 30 + (IsHighDPI() ? 30 : 0)
+		LV_Add("Icon" . A_Index, strRow, oSort[o_Settings.SettingsWindow.intQuickLaunchSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oQuickLaunchResult.SA object
+		intRowWidth := GetPixelSizeOfText(strRow) + 30 + (IsHighDPI() ? 30 : 0) + 20 ; +20 for icon width
 		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
 	}
 }
@@ -24304,6 +24314,11 @@ LV_ModifyCol(2, (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2 ? "In
 if oQuickLaunchResult.SA.MaxIndex()
 	LV_Modify(1, "Select")
 
+ActiveMonitorInfo(intMonitorTop, intMonitorLeft, intMonitorWidth, intMonitorHeight) ; get current screen width
+WinGetPos, intQuickLaunchLeft, , , , ahk_id %strQuickLaunchHwnd%
+intMaxWidth := intMonitorWidth - intQuickLaunchLeft + intMonitorLeft - 20 ; taking into account negative intMonitorLeft if monitor positioned left
+
+intListViewWidth := (intListViewWidth > intMaxWidth ? intMaxWidth : intListViewWidth)
 GuiControl, Move, f_lvQuickLaunch, % "w" . intListViewWidth
 GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth
 
@@ -24314,6 +24329,15 @@ GuiControl, +Redraw, f_lvQuickLaunch
 strRow := ""
 oSort := ""
 intRowWidth := ""
+oImageListID := ""
+strIconFile := ""
+intIconIndex := ""
+intMonitorTop := ""
+intMonitorLeft := ""
+intMonitorWidth := ""
+intMonitorHeight := ""
+intQuickLaunchLeft := ""
+intMaxWidth := ""
 
 return
 ;------------------------------------------------------------
