@@ -22274,13 +22274,12 @@ ProposeUpdate(strVersionNew, strVersionRunning, strVersionSkipped)
 ;------------------------------------------------------------
 FirstVsSecondIs(strFirstVersion, strSecondVersion)
 ; returns -1 if first smaller, 0 if equal, 1 if first greater
-; supports from 1 to 5 version sub-numbers of up to 3 digits each
-; examples: "1", "1.2", 1.22.333.444.555"
+; supports from 1 to 7 version sub-numbers of up to 7 digits each
+; examples: "1", "1.2", "1.22.333.4444.55555.666666.7777777"
 ;------------------------------------------------------------
 {
 	strFirstVersion := PrepareVersionNumber(strFirstVersion)
 	strSecondVersion := PrepareVersionNumber(strSecondVersion)
-	; ###_V(A_ThisFunc, strFirstVersion, strSecondVersion)
 
 	if (strFirstVersion > strSecondVersion)
 		return 1 ; greater
@@ -22295,23 +22294,23 @@ FirstVsSecondIs(strFirstVersion, strSecondVersion)
 ;------------------------------------------------------------
 PrepareVersionNumber(strVersionNumber)
 ; Make version number strings comparable by < and > operators.
-; Returns a padded string of 5 sub-numbers of 3 digits each, NOT separated.
-; Example: "1.22.333" returns "001022333000000"
+; Returns a padded string of 7 sub-numbers of 7 digits each preceeded with |
+; Example: "1.22.333" returns "|0000001|0000022|0000333|0000000|0000000|0000000|0000000"
 ;------------------------------------------------------------
 {
 	; RegExReplace(..., "[^.]") removes all but dots
 	; StrLen() counts number of dots in version number
-	; the loop add ".0" until we have 4 dots and five sub-numbers (eg "0.0.0.0.0")
-	loop, % 4 - StrLen(RegExReplace(strVersionNumber, "[^.]"))
+	; the loop add ".0" until we have 6 dots and 7 sub-numbers (eg "1.22.333.0.0.0.0")
+	loop, % 6 - StrLen(RegExReplace(strVersionNumber, "[^.]"))
 		strVersionNumber .= ".0"
 
-	; make sure every version sub-number has an equal number of 3 digits, removing dots
+	; make sure every version sub-number has an equal number of 7 digits
 	loop, parse, strVersionNumber, .
 	{
 		strSubNumber := A_LoopField
-		while StrLen(strSubNumber) < 3
+		while StrLen(strSubNumber) < 7
 			strSubNumber := "0" . strSubNumber
-		strResult .= strSubNumber
+		strResult .= "|" . strSubNumber
 	}
 	
 	return strResult
@@ -33775,7 +33774,8 @@ class Container
 						{
 							if (pExplorer.hwnd = g_strTargetWinId)
 							{
-								if (GetOSVersionInfo().DetailedBuild >= "10.0.22621.675") ; Win 11 Explorer with tabs
+								; version "10.0.22621.675" is first Win 11 Explorer with tabs
+								if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
 								{
 									intActiveTab := 0
 									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %g_strTargetWinId%
