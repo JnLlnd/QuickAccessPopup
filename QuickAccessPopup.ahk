@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.5.99.9 (2023-01-15)
+- add icons to "Quick Launch" to items in search result
+- make sure the width of the "Quick Launch" box does not exceed the right end of the monitor
+- in "Quick Launch", show items found in "Recent/Frequent Documents" before "Recent/Frequent Folders"
+- fix bug when opening a folder in Windows 11 Explorer when active tab is not the first tab
+
 Version BETA: 11.5.99.8 (2023-01-13)
  
 Quick Launch
