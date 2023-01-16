@@ -116,7 +116,7 @@ Version BETA: 11.5.99.3 (2022-12-01)
   - {RandomNumber:x|y} is replaced with an integer number between integers x and y
   - {RandomNumber:x|y|n} is replaced with a floating point number between x and y with n decimals
 - new {GUID} to be replaced with a Globally Unique ID of 32 hex digits (128-bit)
-- new {SETTINGS}, {SETTINGS_DIR}, etc. placeholders to be replaced with path (or part of the path) of the QAP Settings folder
+- new {SETTINGS_LOC}, {SETTINGS_DIR}, etc. placeholders to be replaced with path (or part of the path) of the QAP Settings folder
 - new option to expand environment variables in a snippet, in "Add favorite", type "Snippet", "Advanced Settings" tab
 
 Version BETA: 11.5.99.2 (2022-11-24)
@@ -19268,9 +19268,9 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	ButtonResetShortcut:
 	;------------------------------------------------------------
 	o_HotkeyActual.SplitParts(P_strDefaultShortcut)
-	
 	GuiControl, , f_strShortcutKey, % o_HotkeyActual.strKey
-	GuiControl, Choose, f_drpShortcutMouse, % o_MouseButtons.GetMouseButtonLocalized4InternalName(o_HotkeyActual.strMouseButton, false) ; not short
+	intChoose := o_MouseButtons.GetMouseButtonLocalized4InternalName(o_HotkeyActual.strMouseButton, false) ; not short
+	GuiControl, Choose, f_drpShortcutMouse, % (!StrLen(intChoose) ? 0 : intChoose)
 	Gosub, SetModifiersCheckBoxAndRadio ; set checkboxes and radio buttons according to o_HotkeyActual.strModifiers
 	
 	return
@@ -25632,7 +25632,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 ;   strCurrentLocation: same with prefix "CUR_" like {CUR_LOC} (full current location in file manager), {CUR_NAME} (current file name), etc.
 ;   strSelectedLocation: same with prefix "SEL_" like {SEL_LOC} (full location of selected item in file manager), {SEL_NAME} (selected file name), etc.
 ;   Do not process strCurrentLocation or strSelectedLocation if = -1
-;   Note: {SETTINGS}, {SETTINGS_DIR}, etc. are processed using the settings file location
+;   Note: {SETTINGS_LOC}, {SETTINGS_DIR}, etc. are processed using the settings file location
 ;
 ; This function also process {Clipboard}, {Input:prompt}, {Now:format}, {ActiveWindow}, {Menu:...}, {RandomText:...}, {RandomNumber:...}, {GUID} and user variables.
 ;------------------------------------------------------------
