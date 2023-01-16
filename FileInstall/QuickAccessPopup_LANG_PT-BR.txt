@@ -565,13 +565,12 @@ lGuiQuickAddSnippetDescription	Cria rapidamente um Recorte favorito e seu dispar
 lGuiQuickAddSnippetExample	Digite ~1~ no editor de texto para expandi-lo.
 lGuiQuickAddSnippetExampleName	Exemplo de Recorte
 lGuiQuickAddSnippetTitle	Adicionar Recorte Rápido - ~1~ ~2~
+lGuiQuickLaunchDescription	Abra uma caixa de pesquisa, digite o termo a ser pesquisado e selecione um item nos resultados com o mouse (clique duplo) ou o teclado (Enter) para iniciar o item selecionado
 lGuiRemoveFavorite	Remover
 lGuiResetDefault	Redefinir tecla de atalho padrão
 lGuiSave	Salvar
 lGuiSaveAndClose	Salvar && Fechar
 lGuiSaving	Salvando
-lGuiSearchAndGoDescription	Abra uma caixa de pesquisa, digite o termo a ser pesquisado e selecione um item nos resultados com o mouse (clique duplo) ou o teclado (Enter) para iniciar o item selecionado
-lGuiSearchAndGoTitle	Pesquisa rápida
 lGuiSearchAndReplaceConfirm	Confirmação
 lGuiSearchAndReplaceDescription	Pesquise e substitua valores na localização ou conteúdo, nome do favorito, recurso de ícone ou parâmetros.`n`nSelecione os tipos de favoritos onde executar a substituição.`n`nConfirme para cada favorito se você deseja executar a substituição ou substituir os valores em todos os favoritos de uma vez.
 lGuiSearchAndReplaceFindNext	Localizar próximo
@@ -761,7 +760,6 @@ lMenuReopenCurrentFolderDescription	Altera a pasta em caixas de diálogo de arqui
 lMenuReopenInNewWindow	Reabrir Pasta Atual a partir da Caixa de Diálogo
 lMenuReopenInNewWindowDescription	Reabre a pasta atual em uma nova janela do Explorer (também no Directory Opus ou Total Commander). Útil quando você quer abrir a pasta em que está navegando em uma caixa de diálogo de arquivo em uma janela do Explorer.
 lMenuResetQAPSpecialDefaultNames	Redefinir Nomes Padrão de Recursos do QAP e Pastas Especiais
-lMenuRestoreSearchAndGoWindowPosition	Restaurar posição da janela "Pesquisa rápida"
 lMenuRestoreSettingsWindowPosition	Restaurar posição da janela "Personalizar"
 lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e a posição da janela "Personalizar" para o centro da tela principal.
 lMenuRunAtStartup	Executar na Inicialização
@@ -988,6 +986,8 @@ lOptionsPopupMenu	Menu Popup
 lOptionsQAPconnectIntro	O QAPconnect é uma interface que oferece suporte parcial para uma lista de cerca de 15 gerenciadores de arquivos.
 lOptionsQAPTempFolder	Pasta Temporária
 lOptionsQuickAddSnippetSubmenu	Submenu para ~1~
+lOptionsQuickLaunchExtended	Pesquisa estendida (pesquisar todas as propriedades)
+lOptionsQuickLaunchRows	Número de linhas do resultado da pesquisa
 lOptionsRecentFolders	Número de itens nos menus
 lOptionsRecentFoldersPrompt	Menus de Itens Recentes e Populares:
 lOptionsRecentPopularLevelsMax	Número máximo de níveis de caminhos nos menus Recente/Frequente`n(níveis excedentes serão truncados a partir do início, 0 para manter o caminho completo)
@@ -1004,9 +1004,6 @@ lOptionsRunAsAdminAlert	Aviso: Executar o ~1~ como Administrador pode resultar e
 lOptionsRunAsAdminChanged	Nova configuração "Executar como Administrador" salva. Feche o ~1~ e reinicie-o para habilitar a nova configuração (não reinicie somente).
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Executar na Inicialização
-lOptionsSearchAndGoExtended	Pesquisa estendida (pesquisar todas as propriedades)
-lOptionsSearchAndGoRows	Número de linhas do resultado da pesquisa
-lOptionsSearchAndGoTitle	Opções da pesquisa rápida
 lOptionsSearchFrom	Extensão da pesquisa
 lOptionsSearchFromCurrent	Pesquisar no menu ou grupo atual
 lOptionsSearchFromMain	Sempre pesquisar a partir do menu Principal

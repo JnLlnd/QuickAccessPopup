@@ -565,13 +565,12 @@ lGuiQuickAddSnippetDescription	Crea velocemente un Preferito di un frammento tes
 lGuiQuickAddSnippetExample	Digita ~1~ in un editor di testo per farlo espandere.
 lGuiQuickAddSnippetExampleName	Esempio di frammento testuale (Snippet)
 lGuiQuickAddSnippetTitle	Aggiunta veloce di frammenti di testo (Snippet) - ~1~ ~2~
+lGuiQuickLaunchDescription	Apri una casella di ricerca, inserisci una stringa di ricerca e seleziona un elemento nei risultati con il mouse (doppio clic) o la tastiera (Invio) per lanciare l'elemento selezionato, o clic destro per aprire il menù Alternativo per editare il preferito, copiarne la posizione, ecc.
 lGuiRemoveFavorite	Elimina
 lGuiResetDefault	Ripristina hotkey predefinito
 lGuiSave	Salva
 lGuiSaveAndClose	Salva && Chiudi
 lGuiSaving	Salvataggio
-lGuiSearchAndGoDescription	Apri una casella di ricerca, inserisci una stringa di ricerca e seleziona un elemento nei risultati con il mouse (doppio clic) o la tastiera (Invio) per lanciare l'elemento selezionato, o clic destro per aprire il menù Alternativo per editare il preferito, copiarne la posizione, ecc.
-lGuiSearchAndGoTitle	Ricerca Veloce
 lGuiSearchAndReplaceConfirm	Conferma
 lGuiSearchAndReplaceDescription	Valori da Cercare e da sostituire in contenuto o destinazione, nome di Preferiti, risorsa icona o parametro.`n`nSeleziona i tipi di preferiti di cui eseguire la sostituzione.`n`nConferma per ciascun preferito se vuoi eseguire la sostituzione, o se effettuarla per tutti insieme contemporaneamente.
 lGuiSearchAndReplaceFindNext	Trova successivo
@@ -761,7 +760,6 @@ lMenuReopenCurrentFolderDescription	Usa come cartella corrente nelle caselle di 
 lMenuReopenInNewWindow	Riapri la Cartella Corrente dalla casella di Dialogo
 lMenuReopenInNewWindowDescription	Riapri la cartella corrente in una nuova finestra di Explorer (vale anche per Directory Opus o Total Commander). Utile quando vuoi aprire la cartella che stai sfogliando in una casella di dialogo per file, in una finestra di Explorer.
 lMenuResetQAPSpecialDefaultNames	Resetta Nomi di Default delle Cartelle Speciali e Caratteristiche di QAP
-lMenuRestoreSearchAndGoWindowPosition	Ripristina la posizione della finestra "Ricerca Veloce"
 lMenuRestoreSettingsWindowPosition	Ripristina la posizione della finestra "Personalizzare"
 lMenuRestoreSettingsWindowPositionDescription	Ripristina dimensione finestra e posizione della finestra "Personalizzare" al centro dello schermo principale.
 lMenuRunAtStartup	Esegui all'Avvio
@@ -986,6 +984,8 @@ lOptionsPopupMenu	Menù Popup
 lOptionsQAPconnectIntro	QAPconnect è un'interfaccia che offre un parziale supporto per un'elenco di circa 15 file manager.
 lOptionsQAPTempFolder	Cartella Temporanea
 lOptionsQuickAddSnippetSubmenu	Sottomenù per ~1~
+lOptionsQuickLaunchExtended	Ricerca Estesa (cerca tutte le proprietà)
+lOptionsQuickLaunchRows	Numero di righe per i risultati di ricerca
 lOptionsRecentFolders	Numero di oggetti nei Menù
 lOptionsRecentFoldersPrompt	Menù di file/cartelle Recenti e Frequenti:
 lOptionsRecentPopularLevelsMax	Massimo numero di livelli in profondità in menù Recenti/Frequenti`n(livelli eccedenti saranno troncati dall'inizio, 0 per mantenere il percorso completo)
@@ -1002,9 +1002,6 @@ lOptionsRunAsAdminAlert	Avviso: Eseguire ~1~ in modalitá Amministratore puó caus
 lOptionsRunAsAdminChanged	Nuova impostazione "Esegui come amministratore" salvata. Esci da ~1~ e riaprilo per abilitare la nuova impostazione (cioè, non riavviando semplicemente).
 lOptionsRunAsAdminShort	Ammin.
 lOptionsRunAtStartup	Esegui all'avvio
-lOptionsSearchAndGoExtended	Ricerca Estesa (cerca tutte le proprietà)
-lOptionsSearchAndGoRows	Numero di righe per i risultati di ricerca
-lOptionsSearchAndGoTitle	Opzioni di Ricerca Veloce
 lOptionsSearchFrom	Ambito di ricerca
 lOptionsSearchFromCurrent	Cerca dal menù o gruppo corrente
 lOptionsSearchFromMain	Ricerca sempre dal menù Principaleu
