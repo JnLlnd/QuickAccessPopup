@@ -559,13 +559,13 @@ lGuiQuickAddSnippetDescription	Ajouter rapidement un favori de type Fragment de 
 lGuiQuickAddSnippetExample	Tapez ~1~ dans un éditeur de texte pour substituer le texte du fragment.
 lGuiQuickAddSnippetExampleName	Exemple de Fragment de texte
 lGuiQuickAddSnippetTitle	Fragment de texte Ajout rapide - ~1~ ~2~
+lGuiQuickLaunchDescription	Ouvrez la boîte de recherche, entrez une chaîne de caractères à rechercher et sélectionnez un item dans le résultat de recherche avec la souris (double-clic) ou le clavier (Entrée) pour ouvrir l'item sélectionné, ou faites un clic-droite pour ouvrir le menu Alternatif afin de modifier le favori, copier son emplacement, etc.
+lGuiQuickLaunchTitle	Lancement rapide
 lGuiRemoveFavorite	Supprimer
 lGuiResetDefault	Restaurer le raccourci par défaut
 lGuiSave	Enregistrer
 lGuiSaveAndClose	Enregistrer et fermer
 lGuiSaving	Enregistre
-lGuiSearchAndGoDescription	Ouvrez la boîte de recherche, entrez une chaîne de caractères à rechercher et sélectionnez un item dans le résultat de recherche avec la souris (double-clic) ou le clavier (Entrée) pour ouvrir l'item sélectionné, ou faites un clic-droite pour ouvrir le menu Alternatif afin de modifier le favori, copier son emplacement, etc.
-lGuiSearchAndGoTitle	Recherche rapide
 lGuiSearchAndReplaceConfirm	Confirmation
 lGuiSearchAndReplaceDescription	Rechercher et remplacer des valeurs dans l'emplacement ou le contenu, le nom des favoris, l'icône ou les paramètres.`n`nSélectionnez les types de favoris où exécuter le remplacement.`n`nConfirmez pour chaque favori si vous souhaitez effectuer le remplacement ou remplacer les valeurs dans tous les favoris immédiatement.
 lGuiSearchAndReplaceFindNext	Rechercher le prochain
@@ -750,7 +750,7 @@ lMenuReopenCurrentFolderDescription	Changer le dossier dans la boîte de dialogue
 lMenuReopenInNewWindow	Rouvrir le dossier actif à partir d'une boîte de dialogue
 lMenuReopenInNewWindowDescription	Rouvrir le dossier actuel dans une nouvelle fenêtre de Windows Explorer (ou Directory Opus, ou Total Commander). Cette commande est utile lorsque vous voulez ouvrir dans Windows Explorer le dossier que vous consultez actuellement dans une boîte de dialogue de fichier.
 lMenuResetQAPSpecialDefaultNames	Réinitialiser les nom des Fonctionnalités QAP et Dossiers spéciaux
-lMenuRestoreSearchAndGoWindowPosition	Restaurer la position de la fenêtre "Recherche rapide"
+lMenuRestoreQuickLaunchWindowPosition	Restore "Lancement rapide" window position
 lMenuRestoreSettingsWindowPosition	Restaurer la position de la fenêtre "Personnaliser"
 lMenuRestoreSettingsWindowPositionDescription	Restaurer la taille et la position par défaut (au centre de l'écran principal) de la fenêtre "Personnaliser".
 lMenuRunAtStartup	Exécuter au démarrage
@@ -975,6 +975,10 @@ lOptionsPopupMenu	Menu Popup
 lOptionsQAPconnectIntro	QAPconnect est une interface qui permet à QAP de fonctionner (partiellement) avec une quinzaine de gestionnaires de fichiers.
 lOptionsQAPTempFolder	Dossier temporaire
 lOptionsQuickAddSnippetSubmenu	Sous-menu pour ~1~
+lOptionsQuickLaunchExtended	Recherche étendue (chercher dans toutes les propriétés)
+lOptionsQuickLaunchRecentsFrequents	Inclure les items des menus RÃ©cents et FrÃ©quents
+lOptionsQuickLaunchRows	Nombre de lignes du résultat de recherche
+lOptionsQuickLaunchTitle	Options de Lancement rapide
 lOptionsRecentFolders	Nombre d'items récents dans le menu
 lOptionsRecentFoldersPrompt	Items récents et fréquemment utilisés
 lOptionsRecentPopularLevelsMax	Nombre maximum de niveaux dans le sous-dossiers des éléments dans les menus Récents/Fréquents`n(les niveaux excédentaires seront retranchés du début , 0 pour conserver tous les sous-dossiers)
@@ -991,10 +995,6 @@ lOptionsRunAsAdminAlert	Avertissement: Exécuter ~1~ en tant qu'administrateur pe
 lOptionsRunAsAdminChanged	Nouveau réglage "Exécuter en tant qu'administrateur" enregistré. Quittez et relancez ~1~ pour activer ce nouveau réglage (ne pas utiliser "Redémarrer ~1~").
 lOptionsRunAsAdminShort	admin
 lOptionsRunAtStartup	Exécuter au démarrage
-lOptionsSearchAndGoExtended	Recherche étendue (chercher dans toutes les propriétés)
-lOptionsSearchAndGoRecentsFrequents	Inclure les items des menus RÃ©cents et FrÃ©quents
-lOptionsSearchAndGoRows	Nombre de lignes du résultat de recherche
-lOptionsSearchAndGoTitle	Options de Recherche rapide
 lOptionsSearchFrom	Étendue de la recherche
 lOptionsSearchFromCurrent	Chercher à partir du menu ou groupe actuel
 lOptionsSearchFromMain	Toujours chercher à partir du menu principal

@@ -425,6 +425,7 @@ lDialogShortcut	Atalho
 lDialogShortcuts	Atalhos
 lDialogShortcutsDescription	Exibe uma caixa de diálogo com a visão global dos seus atalhos de teclado ou mouse. Você pode classificar os favoritos clicando no cabeçalho.`n`nClique duplo em um atalho para alterar ou remover a tecla de atalho atribuída.`n`nClique na caixa de marcação "Ver todos os favoritos" para atribuir atalhos para outros favoritos.
 lDialogSortBy	Classificação
+lDialogSortNaturalOrder	Ordem do menu
 lDialogSortOrder	Ordem de classificação
 lDialogSoundLabel	Toca este som ao executar o favorito (<a href="~1~">~2~</a>)
 lDialogSpecialFoldersCategoriesNames	Básico|Usuário Avançado|Administrador do Sistema|Conteúdos|Hardware
@@ -566,6 +567,7 @@ lGuiQuickAddSnippetExample	Digite ~1~ no editor de texto para expandi-lo.
 lGuiQuickAddSnippetExampleName	Exemplo de Recorte
 lGuiQuickAddSnippetTitle	Adicionar Recorte Rápido - ~1~ ~2~
 lGuiQuickLaunchDescription	Abra uma caixa de pesquisa, digite o termo a ser pesquisado e selecione um item nos resultados com o mouse (clique duplo) ou o teclado (Enter) para iniciar o item selecionado
+lGuiQuickLaunchTitle	Iniciar rápido
 lGuiRemoveFavorite	Remover
 lGuiResetDefault	Redefinir tecla de atalho padrão
 lGuiSave	Salvar
@@ -760,6 +762,7 @@ lMenuReopenCurrentFolderDescription	Altera a pasta em caixas de diálogo de arqui
 lMenuReopenInNewWindow	Reabrir Pasta Atual a partir da Caixa de Diálogo
 lMenuReopenInNewWindowDescription	Reabre a pasta atual em uma nova janela do Explorer (também no Directory Opus ou Total Commander). Útil quando você quer abrir a pasta em que está navegando em uma caixa de diálogo de arquivo em uma janela do Explorer.
 lMenuResetQAPSpecialDefaultNames	Redefinir Nomes Padrão de Recursos do QAP e Pastas Especiais
+lMenuRestoreQuickLaunchWindowPosition	Restaurar posição da janela "Iniciar rápido"
 lMenuRestoreSettingsWindowPosition	Restaurar posição da janela "Personalizar"
 lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e a posição da janela "Personalizar" para o centro da tela principal.
 lMenuRunAtStartup	Executar na Inicialização
@@ -846,6 +849,7 @@ lOopsInvalidIcon	Imagens de ícones devem ser quadradas e devem ter entre 16x16 e
 lOopsInvalidIconDownload	O ícone deste site não está disponível ou é inválido:`n`n~1~
 lOopsInvalidWinCmdIni	Arquivo de configuração "wincmd.ini" do Total Commander não encontrado.`n`nSelecione o arquivo em "Opções", aba "Gerenciadores de arquivos".
 lOopsInvalidWindowPosition	Valor(es) inválido(s) da posição da janela
+lOopsItemCannotBeEdited	Este item não pode ser editado.
 lOopsJLiconsError	Ícone da área de notificação do QAP não encontrado. Veja se você atualizou o arquivo JLicons.dll para ~1~.
 lOopsJLiconsOutdated	O seguinte arquivo precisa ser atualizado:`n`n~1~`n`nSubstitua-o pelo arquivo JLicons.dll versão ~2~ do arquivo ZIP de instalação portátil mais recente e reinicie o ~3~.
 lOopsLastSaveIncomplete	Algo interrompeu o ~1~ da última vez que ele salvou os seus favoritos no arquivo de configurações:`n`n~2~`n`nOs favoritos anteriores neste arquivo foram restaurados.
@@ -987,7 +991,9 @@ lOptionsQAPconnectIntro	O QAPconnect é uma interface que oferece suporte parcial
 lOptionsQAPTempFolder	Pasta Temporária
 lOptionsQuickAddSnippetSubmenu	Submenu para ~1~
 lOptionsQuickLaunchExtended	Pesquisa estendida (pesquisar todas as propriedades)
+lOptionsQuickLaunchRecentsFrequents	Incluir itens do menu Recente e Frequente
 lOptionsQuickLaunchRows	Número de linhas do resultado da pesquisa
+lOptionsQuickLaunchTitle	Opções de Iniciar rápido
 lOptionsRecentFolders	Número de itens nos menus
 lOptionsRecentFoldersPrompt	Menus de Itens Recentes e Populares:
 lOptionsRecentPopularLevelsMax	Número máximo de níveis de caminhos nos menus Recente/Frequente`n(níveis excedentes serão truncados a partir do início, 0 para manter o caminho completo)
