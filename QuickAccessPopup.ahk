@@ -12256,14 +12256,22 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 			strSearchType := "" ; search based on strFavoriteName
 		
 		loop
+		{
+			strNameToCompareWithLv := o_MenuInGui.SA[A_Index].AA.strFavoriteName
+			if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue ; add popularity index
+				and StrLen(o_MenuInGui.SA[A_Index].AA.strFavoriteName) ; exclude separators
+				and o_MenuInGui.SA[A_Index].AA.intFavoriteUsageDb) ; exclude if no usage index
+				strNameToCompareWithLv .= " [" . o_MenuInGui.SA[A_Index].AA.intFavoriteUsageDb . "]"
+
 			if (StrLen(strSearchType) and strSearchType = o_MenuInGui.SA[A_Index].AA.strFavoriteType)
-				or (o_MenuInGui.SA[A_Index].AA.strFavoriteName = strLvName)
+				or (strNameToCompareWithLv = strLvName)
 			; this is the next favorite in the listview
 			{
 				saTempContainer.Push(o_MenuInGui.SA[A_Index]) ; push it to the temporary container
 				o_MenuInGui.SA.RemoveAt(A_Index) ; remove it from the source container (to avoid confusion if multiple "X" or "K")
 				break ; continue with next line in listview
 			}
+		}
 	}
 	
 	; here o_MenuInGui.SA is empty
