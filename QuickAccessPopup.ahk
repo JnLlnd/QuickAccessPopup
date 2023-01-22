@@ -31,6 +31,68 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6 (2023-01-22)
+ 
+Quick Launch
+  https://www.quickaccesspopup.com/can-i-quickly-search-qap-to-launch-one-of-my-favorites/
+- a new quick way to launch your favorites: type a few characters and press Enter or double-click your item in the search result
+- to show the "Quick Launch" box:
+  - for new installations: the feature is automatically added under the "My QAP Essentials" menu and is associated with the Shift+Control+Q keyboard shortcut
+  - IMPORTANT! users UPGRADING to v11.6 must add this feature to their menu (add a favorite of type "QAP Feature" and select the feature "Quick Launch")
+  - in both cases, the "Quick Launch" box can be open from the "Customize" window menu "Tools, Quick Search"
+- by default, the "Quick Launch" searches in the name of all your favorites and in the content of your "Recent/Frequent Files" and "Recent/Frequent Folders"
+- you can search one or more sequence of characters (for example "qui pop" to search items having "qui" AND "pop" in their name)
+- "Quick Launch Options" under "Options, Customize window"
+  - a checkbox to use "Extended search" to search in all properties instead of only in the favorite name (default is disabled)
+  - checkbox to include or not "Recent/Frequent" menus items in "Quick Search" results (default is checked)
+  - the initial height of "Quick Launch" window (default is 10 rows)
+  - set the order of "Quick Search" result by "Usage" (default sort order), by "Favorite name" or by "Menu order" (QAP menu natural order)
+- the "Quick Launch" box is displayed...
+  - always on top and is closed automatically when you select an item in the search result, when you click the Close button or when you hit Escape
+  - initially at the center of the main monitor and is afterward displayed at its last location (if the box ever becomes invisible, for example, after a change of monitors configuration, it can be centered again on the main monitor using the menu "Tools, Restore 'Quick Launch' window position")
+- Alternative menu features
+  - show the "Alternative menu" in "Quick Launch" by right-clicking an item or using the "Alternative menus" modifiers hotkeys (see "Options, Alternative Menu Hotkeys")
+  - features supported are "Edit a Favorite", "Copy a Favorite Path or URL" (or snippet content), "Run as administrator" and "Open the Containing folder"
+ 
+Placeholders
+  https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/
+- {Menu:...} placeholder replaced with the selected item in a popup menu
+  - {Menu:text1|text2|text3} show a menu with the specified items 
+  - menu text can be preceed with a short label and the tilde (~) separator, for example {Menu:label1~long or multiline text|label2~another item|...} if text is long or includes line breaks
+  - for better readability in the "Edit favorite" dialog box, the labels can include line breaks and tabs (that will not be displayed in the menu)
+  - make the first menu item bold when it has a label but no content (to make it look like a title)
+- {RandomText:...} and {RandomNumber:...} placeholders replaced with random text, random integer or random floating point numbers
+  - {RandomText:text1|text2|text3} is replaced with one of the three pieces of text (for example, {RandomText:Today|Tomorrow|One of these days})
+  - {RandomNumber:x|y} is replaced with an integer number between integers x and y (for example, {RandomNumber:5|10})
+  - {RandomNumber:x|y|n} is replaced with a floating point number between x and y with n decimals (for example, {RandomNumber:0.5|1.49|2}
+- {GUID} placeholder replaced with a GUID (Globally Unique ID) of 32 hex digits (128-bit)
+- {SETTINGS_LOC}, {SETTINGS_DIR}, {SETTINGS_DRIVE}, etc. placeholders replaced with the path (or part of the path) of the QAP Settings ini file
+ 
+Hotkeys exclusion
+  https://www.quickaccesspopup.com/can-i-block-the-qap-keyboard-shortcuts-if-they-interfere-with-one-of-my-apps/
+- under "Options, Launch Advanced Options", add an option to disable/enable ("exclude" or "include only") all QAP keyboard shortcuts (favorites shortcuts, Main and Alternative menus shortcuts and Alternative menus features shortcuts)
+ 
+High DPI screens 
+- new hires images for QAP dialog boxes ("Customize", "Welcome" and "Startup Tips") for better display results on high DPI screens (hires images are used when resolution is 144 DPI or higher)
+- in "Add Favorite - Select Type" dialog box, fix icons alignement on both regular and high DPI screens, and make these icons clickable
+ 
+Bug fixes
+- fix bug when opening a folder in Windows 11 Explorer when active tab is not the first tab
+- fix bug when a macro Snippet is calling another QAP favorite using its hotkey
+- prevent editing dynamic menu items with the Alternative menu feature "Edit favorite"
+ 
+Various improvements
+- new JLicons.dll file v1.6.4 (user with PORTABLE installation must overwrite JLicons.dll in the working directory with the file in the ZIP file)
+- merge dark mode beta options in "Options, Customize Window" and "Options, Menu Appearance" into a new official option under "Options, General", default to true
+  https://www.quickaccesspopup.com/does-qap-support-windows-dark-mode/
+- force QAP theme to "Windows" when dark mode is enabled in QAP and active in Windows
+- in the "Customize" window, you can now search one or more sequence of characters (for example "qui pop" to search items having "qui" AND "pop" in their name)
+- new option to expand environment variables in a snippet, in "Add favorite", type "Snippet", "Advanced Settings" tab
+- in "Special Folders", add "Environment Variables" under the "Power User" section
+- add the QAPmessenger command "ShowMenuDynamic" to display QAP Feature dynamic menus ("Recent/Frequent Folders", "Current Windows", "TC Directory Hotlist", "DOpus Favorites", etc.); menus must be present in the QAP menu
+- when gathering usage statistics, consider "Parameters" (in favorites "Advanced options") to distinguish favorites (before this change, favorites with the same location but with different parameters were counted together)
+- French, Italian, Korean, German, Portuguese and Brazilian Portuguese language files update
+
 Version BETA: 11.5.99.9 (2023-01-15)
 - add icons to "Quick Launch" to items in search result
 - make sure the width of the "Quick Launch" box does not exceed the right end of the monitor
@@ -5337,7 +5399,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.5.99.9
+;@Ahk2Exe-SetVersion 11.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5404,8 +5466,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.5.99.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.4"
 
@@ -10106,7 +10168,7 @@ GuiControl, 2:, f_strAlternativeTrayIcon, % o_Settings.LaunchAdvanced.strAlterna
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strAlternativeTrayIcon
 
 ; HotkeyTriggerExclusionList
-strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-launch-my-favorites-with-keyboard-or-mouse-shortcuts/", A_ThisLabel, "Help")
+strUrl := AddUtm2Url("https://www.quickaccesspopup.com/can-i-block-the-qap-keyboard-shortcuts-if-they-interfere-with-one-of-my-apps/", A_ThisLabel, "Help")
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w600 hidden vf_lnkHotkeyTriggerExclusionList, % o_L["OptionsHotkeyTriggerExclusionListTitle"]
 	. " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
