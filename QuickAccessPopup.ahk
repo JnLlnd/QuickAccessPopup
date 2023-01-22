@@ -80,6 +80,7 @@ Bug fixes
 - fix bug when opening a folder in Windows 11 Explorer when active tab is not the first tab
 - fix bug when a macro Snippet is calling another QAP favorite using its hotkey
 - prevent editing dynamic menu items with the Alternative menu feature "Edit favorite"
+- fix bug when using drag and drop to move favorites in the Customize window when the database usage stats are displayed
  
 Various improvements
 - new JLicons.dll file v1.6.4 (user with PORTABLE installation must overwrite JLicons.dll in the working directory with the file in the ZIP file)
