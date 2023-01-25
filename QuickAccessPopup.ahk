@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.x (2023-01-xx)
+
 Version: 11.6 (2023-01-22)
  
 Quick Launch
@@ -5400,7 +5402,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6
+;@Ahk2Exe-SetVersion 11.6.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5467,8 +5469,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.6.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.4"
 
@@ -10440,7 +10442,7 @@ if (f_radOptionsQuickLaunchSort1)
 else if (f_radOptionsQuickLaunchSort2)
 	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 2 ; 2 -> usage
 else ; f_radOptionsQuickLaunchSort0
-	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 0 ; 0 or empty -> natural order
+	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 0 ; 0 or empty -> menu order
 o_Settings.SettingsWindow.intQuickLaunchSort.WriteIni("", true) ; value already updated
 
 blnDarkModePrev := o_Settings.SettingsWindow.blnDarkMode.IniValue
@@ -24367,7 +24369,10 @@ if StrLen(f_strQuickLaunch)
 		ParseIconResource(oQuickLaunchResult.SA[A_Index].AA.strFavoriteIconResource, strIconFile, intIconIndex)
 		IL_Add(oImageListID, strIconFile, intIconIndex) 
 	}
-	
+
+	; if database is disabled and sort order is by usage, fall back to sort by menu order
+	if (!g_blnUsageDbEnabled and o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2) ; 2 is usage order
+		o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 0 ; 0 is menu order
 	; populate listview
 	Loop, % oQuickLaunchResult.SA.MaxIndex()
 	{
@@ -24377,7 +24382,9 @@ if StrLen(f_strQuickLaunch)
 		strRow := StrReplace(strRow, g_strEscapeReplacement, "&") ; restore preserved  existing double ampersand
 		if (o_Settings.Database.blnUsageDbShowPopularityIndex.IniValue and StrLen(oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb))
 			strRow .= " [" . oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb . "]"
-		oSort := [strRow, oQuickLaunchResult.SA[A_Index].AA.strFavoriteName, oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb] ; contains 3 possible sort criterias
+		oSort := [oQuickLaunchResult.SA[A_Index].AA.oParentMenu.AA.strMenuPath ; sort by menu order 
+			, oQuickLaunchResult.SA[A_Index].AA.strFavoriteName ; sort by name
+			, oQuickLaunchResult.SA[A_Index].AA.intFavoriteUsageDb] ; sort by usage
 		LV_Add("Icon" . A_Index, strRow, oSort[o_Settings.SettingsWindow.intQuickLaunchSort.IniValue + 1], A_Index) ; in col 2 select active sort criteria, in col 3 add item order in oQuickLaunchResult.SA object
 		intRowWidth := GetPixelSizeOfText(strRow) + 30 + (IsHighDPI() ? 30 : 0) + 20 ; +20 for icon width
 		intListViewWidth := (intRowWidth > intListViewWidth ? intRowWidth : intListViewWidth)
