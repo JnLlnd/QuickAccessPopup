@@ -6642,8 +6642,9 @@ o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0,
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
-o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchExtended", "QuickLaunchExtended", 0, "SettingsWindow", "f_lblOptionsQuickLaunchTitle|f_blnQuickLaunchExtended")
+o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchNavigate", "QuickLaunchNavigate", 1, "SettingsWindow", "f_lblOptionsQuickLaunchTitle|f_blnQuickLaunchNavigate")
 o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchRecentsFrequents", "QuickLaunchRecentsFrequents", 0, "SettingsWindow", "f_blnQuickLaunchRecentsFrequents")
+o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchExtended", "QuickLaunchExtended", 0, "SettingsWindow", "f_blnQuickLaunchExtended")
 o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchRows", "QuickLaunchRows", 10, "SettingsWindow", "f_intQuickLaunchRowsEdit|f_intQuickLaunchRows|f_lblQuickLaunchRows")
 o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchSort", "QuickLaunchSort", 2, "SettingsWindow"
 	, "f_lblOptionsQuickLaunchSort|f_radOptionsQuickLaunchSort0|f_radOptionsQuickLaunchSort1|f_radOptionsQuickLaunchSort2") ; default 2 -> usage
@@ -9559,39 +9560,41 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w220 vf_blnAddAutoAtTop
 ; Search Results (col 2)
 
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Text, y+20 y%intGroupItemsY% x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSettingsSearchResults, % o_L["OptionsSearchResults"]
+Gui, 2:Add, Text, y+20 y%intGroupItemsY% x%g_intGroupItemsTab4X% w320 hidden vf_lblOptionsSettingsSearchResults, % o_L["OptionsSearchResults"]
 Gui, 2:Font
 
 ; SearchFromMain
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsSearchFrom, % o_L["OptionsSearchFrom"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsSearchFrom1 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromMain"]
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_lblOptionsSearchFrom0 gGuiOptionsGroupChanged hidden " . (!o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromCurrent"]
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w320 hidden vf_lblOptionsSearchFrom, % o_L["OptionsSearchFrom"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w320 vf_lblOptionsSearchFrom1 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromMain"]
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w320 vf_lblOptionsSearchFrom0 gGuiOptionsGroupChanged hidden " . (!o_Settings.SettingsWindow.blnSearchFromMain.IniValue ? "Checked" : ""), % o_L["OptionsSearchFromCurrent"]
 
 ; SearchWithLocale
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnSearchWithLocale gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSearchWithLocale"]
+Gui, 2:Add, CheckBox, y+5 x%g_intGroupItemsTab4X% vf_blnSearchWithLocale gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsSearchWithLocale"]
 GuiControl, , f_blnSearchWithLocale, % (o_Settings.SettingsWindow.blnSearchWithLocale.IniValue = true)
 
 ; QuickLaunch
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Text, y+20 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsQuickLaunchTitle, % o_L["OptionsQuickLaunchTitle"]
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w350 hidden vf_lblOptionsQuickLaunchTitle, % o_L["OptionsQuickLaunchTitle"]
 Gui, 2:Font
 
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchExtended gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsQuickLaunchExtended"]
-GuiControl, , f_blnQuickLaunchExtended, % (o_Settings.SettingsWindow.blnQuickLaunchExtended.IniValue = true)
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchRecentsFrequents gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsQuickLaunchRecentsFrequents"]
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchNavigate gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsQuickLaunchNavigate"]
+GuiControl, , f_blnQuickLaunchNavigate, % (o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue = true)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchRecentsFrequents gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsQuickLaunchRecentsFrequents"]
 GuiControl, , f_blnQuickLaunchRecentsFrequents, % (o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.IniValue = true)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchExtended gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsQuickLaunchExtended"]
+GuiControl, , f_blnQuickLaunchExtended, % (o_Settings.SettingsWindow.blnQuickLaunchExtended.IniValue = true)
 
 Gui, 2:Add, Edit, y+10 x%g_intGroupItemsTab4X% w51 h22 vf_intQuickLaunchRowsEdit number center hidden
 Gui, 2:Add, UpDown, vf_intQuickLaunchRows Range5-9999 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
-Gui, 2:Add, Text, yp x+10 w200 hidden vf_lblQuickLaunchRows, % o_L["OptionsQuickLaunchRows"]
+Gui, 2:Add, Text, yp x+10 w300 hidden vf_lblQuickLaunchRows, % o_L["OptionsQuickLaunchRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intQuickLaunchRowsEdit
 
-Gui, 2:Add, Text, y+15 x%g_intGroupItemsTab4X% w230 hidden vf_lblOptionsQuickLaunchSort, % o_L["DialogSortBy"] . ":"
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsQuickLaunchSort0 Group gGuiOptionsGroupChanged hidden "
+Gui, 2:Add, Text, y+15 x%g_intGroupItemsTab4X% w330 hidden vf_lblOptionsQuickLaunchSort, % o_L["DialogSortBy"] . ":"
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w300 vf_radOptionsQuickLaunchSort0 Group gGuiOptionsGroupChanged hidden "
 	. (!o_Settings.SettingsWindow.intQuickLaunchSort.IniValue ? "Checked" : ""), % o_L["DialogSortNaturalOrder"] ; 0 or empty -> natural order
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsQuickLaunchSort1 gGuiOptionsGroupChanged hidden "
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w300 vf_radOptionsQuickLaunchSort1 gGuiOptionsGroupChanged hidden "
 	. (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 1 ? "Checked" : ""), % o_L["DialogMenuSortFavoriteName"] ; 1 -> favorite name
-Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w220 vf_radOptionsQuickLaunchSort2 gGuiOptionsGroupChanged hidden "
+Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w300 vf_radOptionsQuickLaunchSort2 gGuiOptionsGroupChanged hidden "
 	. (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2 ? "Checked" : ""), % o_L["DialogMenuSortUsage"] ; 2 -> usage
 
 GuiControlGet, arrPos, Pos, f_lblOptionsQuickLaunchSort2 ; if col 2 is taller than col 1
@@ -10434,8 +10437,9 @@ o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_b
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
-o_Settings.SettingsWindow.blnQuickLaunchExtended.WriteIni(f_blnQuickLaunchExtended)
+o_Settings.SettingsWindow.blnQuickLaunchNavigate.WriteIni(f_blnQuickLaunchNavigate)
 o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.WriteIni(f_blnQuickLaunchRecentsFrequents)
+o_Settings.SettingsWindow.blnQuickLaunchExtended.WriteIni(f_blnQuickLaunchExtended)
 o_Settings.SettingsWindow.intQuickLaunchRows.WriteIni(f_intQuickLaunchRows)
 if (f_radOptionsQuickLaunchSort1)
 	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 1 ; 1 -> favorite name
@@ -21169,6 +21173,7 @@ OpenWorkingDirectory:
 OpenBackupDirectory:
 OpenSwitchFolderOrApp:
 OpenFavoriteFromMsg:
+OpenFavoriteFromQuickLaunch:
 OpenAlternativeFromQuickLaunch:
 ;------------------------------------------------------------
 
@@ -21188,7 +21193,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 			return
 Diag(A_ThisLabel, "Enter", 2)
 
-if !InStr("OpenFavoriteFromLastAction|OpenAlternativeFromQuickLaunch|", A_ThisLabel . "|") ; we already have o_ThisFavorite from RepeatLastAction or QuickLaunch
+if !InStr("OpenFavoriteFromLastAction|OpenFavoriteFromQuickLaunch|OpenAlternativeFromQuickLaunch|", A_ThisLabel . "|") ; we already have o_ThisFavorite from RepeatLastAction or QuickLaunch
 	gosub, OpenFavoriteGetFavoriteObject ; define o_ThisFavorite
 
 if !IsObject(o_ThisFavorite) ; OpenFavoriteGetFavoriteObject was aborted
@@ -24457,15 +24462,21 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 		else
 		{
 			Gosub, QuickLaunchGuiEscape
-			gosub, GetAlternativeMenuModifierFromQuickLaunch
+			Gosub, GetAlternativeMenuModifierFromQuickLaunch
 			if StrLen(g_strAlternativeMenuModifier)
 			{
 				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
-				gosub, OpenAlternativeFromQuickLaunch
+				Gosub, OpenAlternativeFromQuickLaunch
 				g_strAlternativeMenuModifier := ""
 			}
 			else
-				oQuickLaunchResult.SA[g_intQuickLaunchIndex].OpenFavorite("", "LaunchFromQuickLaunch", "", "Launch")
+			{
+				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
+				; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
+				GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true) ; returns current or latest file manager window ID and Window class
+				g_strHotkeyTypeDetected := (o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue ? "Navigate" : "Launch")
+				Gosub, OpenFavoriteFromQuickLaunch
+			}
 			
 			oQuickLaunchResult := ""
 			intRowWidth := ""

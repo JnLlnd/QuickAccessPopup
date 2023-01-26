@@ -987,6 +987,7 @@ this["OptionsQAPconnectIntro"] := "QAPconnect is an interface offering partial s
 this["OptionsQAPTempFolder"] := "Temporary Folder"
 this["OptionsQuickAddSnippetSubmenu"] := "Submenu for ~1~"
 this["OptionsQuickLaunchExtended"] := "Extended Search (search all properties)"
+this["OptionsQuickLaunchNavigate"] := "Change folder in file manager and dialog boxes"
 this["OptionsQuickLaunchRecentsFrequents"] := "Include Recent and Frequent menus items"
 this["OptionsQuickLaunchRows"] := "Number of rows of search result"
 this["OptionsQuickLaunchTitle"] := "Quick Launch Options"
