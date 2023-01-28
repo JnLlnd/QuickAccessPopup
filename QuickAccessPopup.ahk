@@ -11962,6 +11962,7 @@ return
 BuildGui:
 ;------------------------------------------------------------
 
+; intFontSize := 16 
 strTextColor := o_Settings.ReadIniValue("TextColor", 000000, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 g_strGuiListviewBackgroundColor := o_Settings.ReadIniValue("ListviewBackground", FFFFFF, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 g_strGuiListviewTextColor := o_Settings.ReadIniValue("ListviewText", 000000, "Gui-" . o_Settings.Launch.strTheme.IniValue)
@@ -12019,14 +12020,17 @@ g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipShowContainerInGui"]
 Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search_c.png ; Static20
 g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
 
-Gui, 1:Font, s8 w400, Arial ; button legend
+; Gui, 1:Font, s14 w400, Arial ; button legend (was Arial 8)
+Gui, 1:Font, s8 ; 8, 9, 10, 11, 12 or 13
+Gui, 1:Font, w400, Arial ; button legend (was Arial 8)
 Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType w88 x0 y+20, % o_L["GuiAddFavorite"] ; Static21
 Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static22, w88 to make room fot when multiple favorites are selected
 Gui, 1:Add, Text, vf_lblGuiRemoveFavorite center gGuiRemoveFavorite x+1 yp w88, % o_L["GuiRemoveFavorite"] ; Static23
 Gui, 1:Add, Text, vf_lblGuiCopyFavorite center gGuiCopyFavorite x+1 yp w88, % o_L["DialogCopy"] ; Static24
 Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88, % o_L["GuiMove"] ; Static25
 
-Gui, 1:Font, s8 w400 normal, Verdana
+; Gui, 1:Font, s8 w400 normal, Verdana ; (was Verdana 8)
+Gui, 1:Font, w400 normal, Verdana ; (was Verdana 8)
 Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static26
 Gui, 1:Add, DropDownList, vf_drpMenusList gGuiMenusListChanged x0 y+1 ; ComboBox1
 
@@ -12057,7 +12061,7 @@ LV_ModifyCol(1, "Integer") ; original order column
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
 	LV_ModifyCol(10, "Integer") ; usage column
 
-Gui, 1:Font, s8 w600, Verdana
+Gui, 1:Font, w600, Verdana ; was Verdana 8
 Gui, 1:Add, Button, vf_btnGuiSaveAndCloseFavorites Disabled gGuiSaveAndCloseFavorites x200 y400 w140 h35, % aaSettingsL["GuiSaveAndClose"] ; Button3
 Gui, 1:Add, Button, vf_btnGuiSaveAndStayFavorites Disabled gGuiSaveAndStayFavorites x350 yp w100 h35, % aaSettingsL["GuiSave"] ; Button4
 Gui, 1:Add, Button, vf_btnGuiCancel gGuiCancel Default x500 yp w100 h35, % aaSettingsL["GuiClose"] ; Close until changes occur - Button5
