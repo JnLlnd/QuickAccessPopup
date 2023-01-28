@@ -310,7 +310,7 @@ lDialogIconsManageParentMenu	Menu contenant ce favori
 lDialogIconsManageSetDefaultIcon	Icône par défaut
 lDialogIconsManageTitle	Gérer les icônes - ~1~ ~2~
 lDialogIconsSelectPrompt	Pour sélectionner une icône, faites un double-clic sur l'icône ou utilisez les flèches et appuyez sur Entrée.
-lDialogIconsSelectTitle	SÃ©lection de l'icÃ´ne - ~1~ ~2~
+lDialogIconsSelectTitle	Sélection de l'icône - ~1~ ~2~
 lDialogIconsSizeInMenu	Taille des icônes dans ce menu:
 lDialogInputExample	Exemple de saisie
 lDialogInputParameter	Saisie du paramètre - ~1~
@@ -836,7 +836,7 @@ lOopsInvalidIcon	Les images des icônes doivent être carrées et avoir entre 16x16
 lOopsInvalidIconDownload	L'icône pour ce site web n'est pas disponible ou est invalide:`n`n~1~
 lOopsInvalidWinCmdIni	Le fichier des paramêtres "wincmd.ini" de Total Commander est introuvable.`n`nSélectionnez "Options" et l'onglet "Gestionnaires de fichiers".
 lOopsInvalidWindowPosition	Valeur(s) de position de la fenêtre invalide
-lOopsItemCannotBeEdited	Cet item ne peut pas Ãªtre Ã©ditÃ©.
+lOopsItemCannotBeEdited	Cet item ne peut pas être édité.
 lOopsJLiconsError	Icône de la zone de notification introuvable. Assurez-vous d'avoir mis à jour le fichier JLicons.dll à la version ~1~.
 lOopsJLiconsOutdated	Ce fichier doit être mis à jour:`n`n~1~`n`nRemplacez-le avec le fichier JLicons.dll version ~2~ contenu dans le plus récent fichier d'installation portable (ZIP) et relancez ~3~.
 lOopsLastSaveIncomplete	La dernière sauvegarde des favoris de ~1~ dans ce fichier de configuration a été interrompue:`n`n~2~`n`nLa version précédente de vos favoris dans ce fichier ont été restaurée.
@@ -976,7 +976,7 @@ lOptionsQAPconnectIntro	QAPconnect est une interface qui permet à QAP de fonctio
 lOptionsQAPTempFolder	Dossier temporaire
 lOptionsQuickAddSnippetSubmenu	Sous-menu pour ~1~
 lOptionsQuickLaunchExtended	Recherche étendue (chercher dans toutes les propriétés)
-lOptionsQuickLaunchRecentsFrequents	Inclure les items des menus RÃ©cents et FrÃ©quents
+lOptionsQuickLaunchRecentsFrequents	Inclure les items des menus Récents et Fréquents
 lOptionsQuickLaunchRows	Nombre de lignes du résultat de recherche
 lOptionsQuickLaunchTitle	Options de Lancement rapide
 lOptionsRecentFolders	Nombre d'items récents dans le menu
