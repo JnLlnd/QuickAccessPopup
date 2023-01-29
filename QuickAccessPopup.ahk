@@ -25087,7 +25087,9 @@ ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDef
 	
 	intIconIndex := (intIconIndex = 0 ? 1 : intIconIndex) ; replace index 0 that does not exist in icon files
 
-	; if strExpandedIconResource has a relative path, make it absolute based on the QAP working directory
+	if InStr(strIconFile, "{SETTINGS_")
+		strIconFile := ExpandPlaceholders(strIconFile, "", "", "")
+	; if strIconFile has a relative path, make it absolute based on the QAP working directory
 	strIconFile := PathCombine(A_WorkingDir, EnvVars(strIconFile))
 }
 ;------------------------------------------------------------
@@ -32165,18 +32167,6 @@ class Container
 							strMenuItemIcon := aaThisFavorite.strFavoriteIconResource
 						else
 							strMenuItemIcon := GetIcon4Location(aaThisFavorite.strFavoriteLocation) ; #### default value for dynamic menus?
-					; ParseIconResource(strThisIconFileIndex, strThisIconFile, intThisIconIndex, "iconFolder") ; only folder favorite may need the default icon
-					
-					; Menu, % this.AA.strMenuPath, UseErrorLevel, on
-					; ErrorLevel := 0 ; for safety clear in case Menu is not called in next if
-					; Menu, % this.AA.strMenuPath, Icon, %strMenuItemLabel%, %strThisIconFile%, %intThisIconIndex%, % o_Settings.MenuIcons.intIconSize.IniValue
-					; if (ErrorLevel)
-					; {
-						; ParseIconResource("iconUnknown", strIconFile, intIconIndex)
-						; Menu, % this.AA.strMenuPath, Icon, %strMenuItemLabel%
-							; , %strIconFile%, %intIconIndex%, % o_Settings.MenuIcons.intIconSize.IniValue
-					; }
-					; Menu, % this.AA.strMenuPath, UseErrorLevel, off
 				}
 				else
 					strMenuItemIcon := "iconNoIcon"
