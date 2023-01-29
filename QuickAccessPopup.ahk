@@ -25716,7 +25716,7 @@ ComUnHTML(html)
 
 
 ;------------------------------------------------------------
-ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLocation, blnIsParameters := false)
+ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLocation, blnIsParameters := false, blnExpandingForUserVariables := false)
 ; Location replacements:
 ;   strOriginal: string to be expanded
 ;   strLocation: {LOC} (full location), {NAME} (file name), {DIR} (directory), {EXT} (extension), {NOEXT} (file name without extension) or {DRIVE} (drive)
@@ -25834,6 +25834,8 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		strExpanded := EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
 	else
 		strExpanded := ExpandUserVariables(strExpanded) ; bypass Envvars() (as always before v11.5.3)
+	if !(blnExpandingForUserVariables) ; expand placeholders in user variables
+		strExpanded := ExpandPlaceholders(strExpanded, strLocation, strCurrentLocation, strSelectedLocation, blnIsParameters, true) ; last true to avoid infinite loop
 		
 	if StrLen(strUserVariablesBackup) ; if we added a temporary user variable, restore original user variables
 		o_Settings.UserVariables.strUserVariablesList.IniValue := strUserVariablesBackup
