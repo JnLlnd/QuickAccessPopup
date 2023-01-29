@@ -32041,10 +32041,7 @@ class Container
 				strMenuItemLabel := this.MenuNameWithNumericShortcut(strMenuItemLabel, true) ; true for blnUseAmpersandPlaceholder
 			
 			if (aaThisFavorite.strFavoriteType = "Group")
-			{
-				; ###_O("aaThisFavorite.oSubmenu.SA", aaThisFavorite.oSubmenu.SA, "AA", "strFavoriteName")
-				strMenuItemLabel .= " " . g_strGroupIndicatorPrefix . aaThisFavorite.oSubmenu.SA.MaxIndex() . g_strGroupIndicatorSuffix
-			}
+				strMenuItemLabel .= " " . g_strGroupIndicatorPrefix . aaThisFavorite.oSubmenu.ContainerCount() . g_strGroupIndicatorSuffix
 			
 			if StrLen(aaThisFavorite.strFavoriteShortcut) or StrLen(aaThisFavorite.strFavoriteHotstring)
 				strMenuItemLabel .= MenuNameReminder(aaThisFavorite.strFavoriteShortcut, GetHotstringTrigger(aaThisFavorite.strFavoriteHotstring))
@@ -32114,7 +32111,7 @@ class Container
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
 				
 				strMenuItemAction := ":" . aaThisFavorite.oSubMenu.AA.strMenuPath
-				intMenuItemStatus := (aaThisFavorite.oSubMenu.SA.MaxIndex() > 0
+				intMenuItemStatus := (aaThisFavorite.oSubMenu.ContainerCount() > 0
 					and (aaThisFavorite.oSubMenu.AA.strMenuType <> "External" or aaThisFavorite.oSubMenu.AA.blnMenuExternalLoaded)) ; 0 disabled, 1 enabled, 2 default
 				strMenuItemIcon := aaThisFavorite.strFavoriteIconResource
 			}
@@ -32185,6 +32182,8 @@ class Container
 					; block MenuContainerInGui menu if not in Main menu
 					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
+				else if (aaThisFavorite.strFavoriteType = "Group")
+					intMenuItemStatus := (aaThisFavorite.oSubMenu.ContainerCount() > 0)
 				else
 					intMenuItemStatus := 1
 			}
@@ -33312,6 +33311,20 @@ class Container
 			if oItem.IsContainer() ; scan submenus
 				oItem.AA.oSubMenu.LaunchAutoExec() ; RECURSIVE
 		}
+	}
+	;---------------------------------------------------------
+
+	;---------------------------------------------------------
+	ContainerCount()
+	; number of items not hidden in menus or not disabled in groups
+	; intFavoriteDisabled: enabled+visible (0), disabled+hidden (1), enabled+hidden (-1)
+	;---------------------------------------------------------
+	{
+		intCount := 0
+		for intKey, oItem in this.SA
+			if !(oItem.AA.intFavoriteDisabled)
+				intCount++
+		return intCount
 	}
 	;---------------------------------------------------------
 
