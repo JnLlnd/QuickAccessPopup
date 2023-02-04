@@ -31,7 +31,23 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.6.x (2023-01-xx)
+Version: 11.6.1 (2023-02-04)
+ 
+Quick Launch
+- when opening a favorite Folder from the Quick Launch box, change folder (navigate) if the window under the Quick Launch box is a file manager or dialog box
+- new checkbox "Change folder in file manager and dialog boxes" under "Options, Customize Window" (default enabled); if disabled, folders are always open in a new Explorer window
+- when the database is disabled, sort quick launch search result my Menu order
+ 
+Various improvements
+- expand placeholders inside User variables
+- expand {SETTINGS_...} placeholder when parsing icon resource
+- disable Submenus and Groups when all their items are disabled or hidden
+- in menu label for Groups, show the number of items that are not disabled
+ 
+Bug fixes
+- fix bug to add AutoHotkey script files (extension .ahk) as Application favorite when adding them from a Windows Explorer context menu or using drag and drop to the Customize window
+- new JLicons.dll file v1.6.5 fixing an error in v1.6.4 (user with PORTABLE installation must overwrite JLicons.dll in the working directory with the file in the ZIP file)
+- fix some encoding issues in French language file
 
 Version: 11.6 (2023-01-22)
  
@@ -5402,7 +5418,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.0.1
+;@Ahk2Exe-SetVersion 11.6.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5469,8 +5485,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.6.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
@@ -5739,7 +5755,7 @@ global o_Utc2LocalTime := new Utc2LocalTime
 ; Prepare executable extensions list from PATHEXT env variable
 global g_strExeExtensions
 EnvGet, g_strExeExtensions, PathExt ; for example ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC"
-if StrLen(GetRegistry("HKEY_LOCAL_MACHINE\SOFTWARE\AutoHotkey", InstallDir))
+if StrLen(GetRegistry("HKEY_LOCAL_MACHINE\SOFTWARE\AutoHotkey", "InstallDir"))
 	g_strExeExtensions .= ";.AHK" ; add AutoHotkey scripts extension
 
 ;---------------------------------
@@ -24472,9 +24488,15 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 			else
 			{
 				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
-				; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
-				GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true) ; returns current or latest file manager window ID and Window class
-				g_strHotkeyTypeDetected := (o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue ? "Navigate" : "Launch")
+				SetTargetWinInfo(false) ; set g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
+				; navigate if the last active window (active after closing the Quick Launch box) is a file manager
+				g_strHotkeyTypeDetected := ((o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue
+					and (WindowIsExplorer(g_strTargetClass)
+						or (WindowIsDirectoryOpus(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 2)
+						or (WindowIsTotalCommander(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 3)
+						or (WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !blnExcludeDialogBox)))
+					? "Navigate" : "Launch")
+						
 				Gosub, OpenFavoriteFromQuickLaunch
 			}
 			
