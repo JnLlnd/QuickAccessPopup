@@ -22709,6 +22709,7 @@ if (f_radImpExpExport)
 	strImpExpFile := StrReplace(StrReplace(f_strImpExpFile, "%A_Now%", A_Now), "%A_NowUTC%", A_NowUTC)
 else
 	strImpExpFile := f_strImpExpFile
+strImpExpFile := EnvVars(strImpExpFile)
 
 g_strImpExpSourceFile := (f_radImpExpExport ? o_Settings.strIniFile : strImpExpFile) ; settings file or other file
 g_strImpExpDestinationFile := (f_radImpExpExport ? strImpExpFile : o_Settings.strIniFile) ; other file or settings file
