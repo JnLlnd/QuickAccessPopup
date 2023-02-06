@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.6.1.9.1 (2023-02-04)
+- test bypassing CanHotkeyTrigger to avoid issue calling hotkey when active window is elevated
+
 Version: 11.6.1.1 (2023-02-04)
 - fix bug breaking the use of tabs in Win 11 Explorer since the roll-out of Windows 11 build 22621.1105 (started Jan 10 2023)
  
@@ -5421,7 +5424,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.1.1
+;@Ahk2Exe-SetVersion 11.6.1.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5488,8 +5491,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.6.1.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
@@ -32075,10 +32078,16 @@ class Container
 			{
 				g_aaItemsByShortcut[aaThisFavorite.strFavoriteShortcut] := this.SA[A_Index]
 				
-				; enable shortcut
-				Hotkey, If, CanHotkeyTrigger()
+				; bypass CanHotkeyTrigger if option to be created is true
+				if (1)
 					Hotkey, % aaThisFavorite.strFavoriteShortcut, OpenFavoriteFromShortcut, On UseErrorLevel
-				Hotkey, If
+				else
+				{
+					; enable shortcut
+					Hotkey, If, CanHotkeyTrigger()
+						Hotkey, % aaThisFavorite.strFavoriteShortcut, OpenFavoriteFromShortcut, On UseErrorLevel
+					Hotkey, If
+				}
 				if (ErrorLevel)
 					Oops(0, o_L["DialogInvalidHotkeyFavorite"], aaThisFavorite.strFavoriteShortcut
 						, (StrLen(aaThisFavorite.strFavoriteName) ? aaThisFavorite.strFavoriteName
