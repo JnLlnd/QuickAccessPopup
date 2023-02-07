@@ -6709,6 +6709,7 @@ if (g_blnPortableMode)
 o_Settings.ReadIniOption("MenuPopup", "blnExclusionMouseListWhitelist", "ExclusionMouseListWhitelist", 0, "PopupMenu", "f_blnExclusionMouseListBlacklist|f_blnExclusionMouseListWhitelist")
 o_Settings.ReadIniOption("MenuPopup", "strExclusionMouseList", "ExclusionMouseList", " ", "PopupMenu"
 	, "f_lnkExclusionMouseList1|f_lnkExclusionMouseList2|f_lnkExclusionMouseList3|f_strExclusionMouseList|f_btnGetWinInfoMouseExclusions") ; g_strExclusionMouseList
+o_Settings.MenuPopup.strExclusionMouseList.IniValue := (!o_Settings.MenuPopup.strExclusionMouseList.IniValue ? "" : o_Settings.MenuPopup.strExclusionMouseList.IniValue) ; in case it contains "0"
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; Group MenuExclusions
@@ -6720,10 +6721,13 @@ o_Settings.ReadIniOption("Execution", "blnSwitchExclusionListInclude", "SwitchEx
 
 o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
 	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
+o_Settings.Execution.strFoldersExclusionList.IniValue := (!o_Settings.Execution.strFoldersExclusionList.IniValue ? "" : o_Settings.Execution.strFoldersExclusionList.IniValue) ; in case it contains "0"
 o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
 	, "f_lnkFilesExclusionList|f_strFilesExclusionList|f_lblFilesExclusionList")
+o_Settings.Execution.strFilesExclusionList.IniValue := (!o_Settings.Execution.strFilesExclusionList.IniValue ? "" : o_Settings.Execution.strFilesExclusionList.IniValue) ; in case it contains "0"
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
 	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning") ; g_strSwitchExclusionList
+o_Settings.Execution.strSwitchExclusionList.IniValue := (!o_Settings.Execution.strSwitchExclusionList.IniValue ? "" : o_Settings.Execution.strSwitchExclusionList.IniValue) ; in case it contains "0"
 
 ; Group PopupHotkeys
 o_Settings.ReadIniOption("MenuPopup", "blnLeftControlDoublePressed", "LeftControlDoublePressed", 0, "PopupHotkeys", "f_lblChangeShortcutTitle|f_lblControlDoublePressedTitle|f_blnLeftControlDoublePressed") ; g_blnLeftControlDoublePressed
@@ -6781,6 +6785,8 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnHotkeyTriggerExclusionListWhiteli
 	, "f_lblHotkeyTriggerExclusionListTitle|f_lnkHotkeyTriggerExclusionList|f_blnHotkeyTriggerExclusionListBlacklist|f_blnHotkeyTriggerExclusionListWhitelist")
 o_Settings.ReadIniOption("LaunchAdvanced", "strHotkeyTriggerExclusionList", "HotkeyTriggerExclusionList", 0, "AdvancedLaunch"
 	, "f_strHotkeyTriggerExclusionList|f_lblHotkeyTriggerExclusionListHelp")
+o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue := (!o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue ? ""
+	: o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ; in case it contains "0"
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
