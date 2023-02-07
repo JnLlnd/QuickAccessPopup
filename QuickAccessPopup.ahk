@@ -31,8 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.6.1.9.2 (2023-02-04)
-- in CanHotkeyTrigger, exit before SetTargetWinInfo if not exclusion list to avoid issue calling hotkey when active window is elevated
+Version BETA: 11.6.1.9.2 (2023-02-07)
+- when checking for hotkey exclusions (Options, Launch Advanced Options), bypass window verification (exit before SetTargetWinInfo) if the exclusion list is empty to avoid issue calling hotkey when active window is elevated (and other issues?
+- when loading exclusions lists (mouse, folders, files, current window and hotkeys), empty the list if it contains only "0"
 
 Version BETA: 11.6.1.9.1 (2023-02-04)
 - test bypassing CanHotkeyTrigger to avoid issue calling hotkey when active window is elevated
