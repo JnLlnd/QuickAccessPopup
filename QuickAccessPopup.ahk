@@ -28052,7 +28052,7 @@ ContainsPlaceholder(strLocation)
 ;------------------------------------------------------------
 {
 	if StrLen(strLocation)
-		return RegExMatch(strLocation, "i){(CUR_|SEL_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|NOW:.*)}") ; case insensitive
+		return RegExMatch(strLocation, "i){(CUR_|SEL_|SETTINGS_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|NOW:.*)}") ; case insensitive
 	; else return false
 }
 ;------------------------------------------------------------
