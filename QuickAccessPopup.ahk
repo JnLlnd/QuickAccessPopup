@@ -34587,21 +34587,25 @@ class Container
 				BlockInput, On
 				objPrevClipboard := ClipboardAll ; save the clipboard (text or data)
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[1] ; safety delay default 40 ms
-				ClipBoard := ""
-				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms
+				
 				; DecodeSnippet: convert from raw content (as from ini file) to display format (when f_blnProcessEOLTab is true) or to paste format
-				ClipBoard := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders, true)
+				strClipboardContent := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders, true)
 				if !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "O") ; OmitEndChar (by default false, behaviour change compared to previous version where end char was never pasted)
 					and !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "*") ; there is not end char when option "Do not wait for Ending key"
-					Clipboard .= g_strHotstringEndChar
-				ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
-				intErrorLevel := ErrorLevel
-				if (intErrorLevel)
-					return intErrorLevel ; 1 if wait time exceeded
+					strClipboardContent .= g_strHotstringEndChar
 				
+				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms (2023-02-19 now consecutive to delay #1...)
+				Clipboard := strClipboardContent
+				
+				; ClipWait removed 2023-02-19 after error in Quick Clipboard Editor
+				; ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
+				; intErrorLevel := ErrorLevel
+				; if (intErrorLevel)
+					; return intErrorLevel ; 1 if wait time exceeded
 				; avoid using SendInput to send ^v
 				; (see: https://autohotkey.com/board/topic/77928-ctrl-v-sendinput-v-is-not-working-in-many-applications/#entry495555)
 				; tried "ControlSend, %g_strTargetControl%, ^v" with disappointing results (not working on Explorer address zone, send "v" to Word, etc.)
+				
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[3] ; delay required by some application, including Notepad, default 180 ms
 				SendEvent, ^v
 				BlockInput, Off
