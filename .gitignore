@@ -37,3 +37,9 @@ acd7fb058701bebc698386ee7f5c9623
 icons/
 *.pui
 Distribution-files/Old/
+*.lnk
+*.bak
+*.dll
+*.exe
+*.session
+toto.ahk
