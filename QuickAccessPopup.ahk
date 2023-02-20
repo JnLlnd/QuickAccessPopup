@@ -10448,7 +10448,7 @@ loop, % g_objOptionsLanguageLabels.Length()
 o_Settings.Launch.strLanguageCode.WriteIni("", true) ; value already changed in the loop
 
 strThemePrev := o_Settings.Launch.strTheme.IniValue
-o_Settings.Launch.strTheme.WriteIni(f_drpTheme)
+o_Settings.Launch.strTheme.WriteIni((StrLen(f_drpTheme) ? f_drpTheme : "Windows")) ; dropdown not displayed in dark mode, force "Windows"
 
 o_Settings.Launch.arrStartupTips.WriteIni(f_blnStartupTipsShow . "," . f_intStartupTipsDaysEdit . ","
 	. o_Settings.Launch.arrStartupTips.IniValue[3] . "," . o_Settings.Launch.arrStartupTips.IniValue[4]) ; StartupTips=1,0,20210322190241,n|n
