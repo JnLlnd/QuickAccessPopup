@@ -33885,7 +33885,7 @@ class Container
 			}
 			else
 			{
-				if (this.aaTemp.strOpenFavoriteLabel = "OpenAlternativeFromQuickLaunch") ; we already have menu position for Quick Launch
+				if InStr(this.aaTemp.strOpenFavoriteLabel, "FromQuickLaunch") ; we already have menu position for Quick Launch
 					g_intOriginalMenuPosition := this.AA.intSearchItemPositionInOriginalMenu
 				else
 					g_intOriginalMenuPosition := A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
