@@ -31,11 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.6.1.2 (2023-02-09)
+Version: 11.6.1.3 (2023-02-21)
 - update RECOMMENDED for all users of v11.6+
 - fix bug not identifying the active window and breaking some placeholders replacements when checking that Main menu hotkeys are not blocked in "Options, Various Launch Options"
 - fix bug when validating a favorite path including a {SETTINGS_...} placeholder causing an unwanted error message
 - fix bug saving options when dark mode is enabled
+- fix bug when editing a favorite with location is not found from the Quick Launch search result
 - fix visual bug in "Add Favorite - Select type" dialog box when types label are larger that the available space in some language German
 - change how "text mode" Snippets are use the Clipboard when pasting to the active window (to avoid or minimize issues in interaction with Quick Clipboard Editor)
 
@@ -5440,7 +5441,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.1.2
+;@Ahk2Exe-SetVersion 11.6.1.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5507,7 +5508,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.1.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.1.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
