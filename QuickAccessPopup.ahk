@@ -32,6 +32,14 @@ HISTORY
 =======
 
 Version: 11.6.1.2 (2023-02-09)
+- update RECOMMENDED for all users of v11.6+
+- fix bug not identifying the active window and breaking some placeholders replacements when checking that Main menu hotkeys are not blocked in "Options, Various Launch Options"
+- fix bug when validating a favorite path including a {SETTINGS_...} placeholder causing an unwanted error message
+- fix bug saving options when dark mode is enabled
+- fix visual bug in "Add Favorite - Select type" dialog box when types label are larger that the available space in some language German
+- change how "text mode" Snippets are use the Clipboard when pasting to the active window (to avoid or minimize issues in interaction with Quick Clipboard Editor)
+
+Version: 11.6.1.2 (2023-02-09)
 - fix bug blocking hotkeys unexpectedly (upgrade recommended to all users of v11.6+)
 - when exporting or importing settings, support environment variables and QAP user variables in file path
 
@@ -12810,7 +12818,8 @@ Gui, 2:Add, Text, x10 y+20, % o_L["DialogAdd"] . ":"
 ; g_strAddFavIconsTypes: "icon type, favorite type", empty items are used for icons spacing
 g_strAddFavIconsTypes := "iconFolder;Folder|iconSpecialFolders;Special||iconDocuments;Document|iconApplication;Application|iconDesktop;WindowsApp|"
 	. g_strURLIconFileIndex . ";URL|iconFTP;FTP||iconPaste;Snippet||iconQAP;QAP||iconSubmenu;Menu|iconNetwork;External|iconGroup;Group||iconTextDocument;Text"
-	
+
+intMaxTypeWidht := 0
 loop, Parse, g_strAddFavIconsTypes, |
 {
 	if !StrLen(A_LoopField)
@@ -12825,6 +12834,8 @@ loop, Parse, g_strAddFavIconsTypes, |
 		Gui, 2:Add, Picture, % "x25 y+8 w16 h16 Icon" . intThisIconIndex . " vf_icoRadioFavoriteType" . StrSplit(A_LoopField, ";")[2] . " gFavoriteSelectTypeRadioButtonsChanged", %strThisIconFile%
 		Gui, 2:Add, Radio, % "x52 yp+1 vf_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2]
 			. " gFavoriteSelectTypeRadioButtonsChanged", % o_Favorites.GetFavoriteTypeObject(StrSplit(A_LoopField, ";")[2]).strFavoriteTypeLabel
+		GuiControlGet, saPos, Pos, % "f_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2]
+		intMaxTypeWidht := (saPosW > intMaxTypeWidht ? saPosW : intMaxTypeWidht)
 	}
 }
 
@@ -12832,7 +12843,7 @@ Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavorite
 Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, % o_L["GuiCancel"]
 Gui, 2:Add, Link, x20 y+20 vf_lnkAddFavoriteMultiple gGuiMultipleAddSelectSource, % "<a>" . o_L["DialogMultipleAdd"] . "</a>"
 Gui, Add, Text
-Gui, 2:Add, Text, xs+140 ys vf_lblAddFavoriteTypeHelp w260 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
+Gui, 2:Add, Text, % "ys vf_lblAddFavoriteTypeHelp w260 h290 xs+" . intMaxTypeWidht + 50, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSelectTypeContinue", "f_btnAddFavoriteSelectTypeCancel")
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_lnkAddFavoriteMultiple")
@@ -12840,6 +12851,7 @@ Gosub, ShowGui2AndDisableGui1
 
 o_ExternalMenu := ""
 strGuiTitle := ""
+intMaxTypeWidht := ""
 
 return
 ;------------------------------------------------------------
