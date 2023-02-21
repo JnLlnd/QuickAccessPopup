@@ -24839,6 +24839,9 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 ;------------------------------------------------------------
 {
 	global g_strDOpusSelectedListText
+	
+	Diag(A_ThisFunc, "strClass", strClass)
+	Diag(A_ThisFunc, "strWinId", strWinId)
 
 	if WindowIsExplorer(strClass)
 	; LearningOne and jethrow on https://autohotkey.com/board/topic/60723-can-autohotkey-retrieve-file-path-of-the-selected-file/page-2
@@ -24848,6 +24851,7 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 			{
 				; retrieve list of selected items in strWinId Explorer window
 				objSelectedItems := objWindow.Document.SelectedItems
+				Diag(A_ThisFunc, "objSelectedItems", "FOUND")
 				break
 			}
 		for objItem in objSelectedItems
@@ -24859,6 +24863,7 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 				break
 		}
 		strSelection := SubStr(strSelection, 1, -1) ; remove last |
+		Diag(A_ThisFunc, "strSelection", strSelection)
 	}
 	else if WindowIsDesktop(strClass)
 	{
@@ -35071,7 +35076,8 @@ class Container
 					this.aaTemp.strAppWorkingDirWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteAppWorkingDir, this.aaTemp.strLocationWithPlaceholders
 						, (InStr(this.AA.strFavoriteAppWorkingDir, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
 						, (InStr(this.AA.strFavoriteAppWorkingDir, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
-					
+					Diag(A_ThisFunc, "this.aaTemp.strAppWorkingDirWithPlaceholders", this.aaTemp.strAppWorkingDirWithPlaceholders)
+
 					strAppWorkingDirBeforeFileExist := this.aaTemp.strAppWorkingDirWithPlaceholders
 					strTemp := this.aaTemp.strAppWorkingDirWithPlaceholders ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 					if StrLen(strTemp) and !FileExistInPath(strTemp)
