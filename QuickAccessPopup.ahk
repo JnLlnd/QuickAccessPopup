@@ -20804,14 +20804,6 @@ DialogBoxParentExcluded(strTargetWinId)
 CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
-	; avoid blocking all hotkeys in case strHotkeyTriggerExclusionList is true (approved) and exclusion list is empty
-	; moved before SetTargetWinInfo to avoid issue calling hotkey when active window is elevated
-	if !StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
-		
-		return true ; regardless of o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
-
-	; else continue
-	
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
 	Diag(A_ThisFunc, "A_ThisHotkey", A_ThisHotkey)
 	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
@@ -20821,6 +20813,14 @@ CanHotkeyTrigger()
 	Diag(A_ThisFunc, "strHotkeyTriggerExclusionList", o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
 	Diag(A_ThisFunc, "ExclusionListWhitelist", o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
 	Diag(A_ThisFunc, "ExclusionList?", (StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ? "Yes" : "No"))
+	
+	; avoid blocking all hotkeys in case strHotkeyTriggerExclusionList is true (approved) and exclusion list is empty
+	; moved before SetTargetWinInfo to avoid issue calling hotkey when active window is elevated
+	if !StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
+		
+		return true ; regardless of o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
+
+	; else continue
 	
 	Loop, Parse, % o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue, |
 	{
