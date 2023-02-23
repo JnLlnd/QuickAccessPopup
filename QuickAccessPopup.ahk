@@ -31,8 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.6.1.3 (2023-02-21)
+Version: 11.6.1.4 (2023-02-23)
 - update RECOMMENDED for all users of v11.6+
+- fix bug preventing from changing folder in a dialog box when the QAP menu was open using the keyboard shortcut (Win + W, if you kept the default setting)
+- blocked applications in "Keyboard shortcuts" in "Options, Launch Advanced Options" now only block the favorites keyboard shortcuts but not anymnore the main QAP menu keyboard hotkey (Win + W, if you kept the default setting)
+ 
+Version: 11.6.1.3 (2023-02-21)
 - fix bug not identifying the active window and breaking some placeholders replacements when checking that Main menu hotkeys are not blocked in "Options, Various Launch Options"
 - fix bug when validating a favorite path including a {SETTINGS_...} placeholder causing an unwanted error message
 - fix bug saving options when dark mode is enabled
@@ -5441,7 +5445,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.1.3
+;@Ahk2Exe-SetVersion 11.6.1.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5508,7 +5512,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.1.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.1.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -29010,11 +29014,7 @@ class Triggers.MouseButtons
 					if (strTriggerType = "Mouse")
 						Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
 					else
-					{
-						Hotkey, If, CanHotkeyTrigger()
-							Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
-						Hotkey, If
-					}
+						Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
 				if (ErrorLevel)
 					Oops(0, o_L["DialogInvalidHotkey"], this.AA.strPopupHotkeyText, this.AA.strPopupHotkeyLocalizedName)
 			}
