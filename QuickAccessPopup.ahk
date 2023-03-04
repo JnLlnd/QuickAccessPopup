@@ -16875,12 +16875,16 @@ Loop
 	{
 		oParentMenu := o_Containers.AA[g_strMultipleAddDestinationMenu] ; get parent menu object
 		o_EditedFavorite.AA.oParentMenu := oParentMenu ; set item's parent menu
+		strFavoriteName := o_EditedFavorite.AA.strFavoriteName ;to get a unique name
+		o_EditedFavorite.GetUniqueName(strFavoriteName, "", o_EditedFavorite.AA.oParentMenu.AA.strMenuPath, true) ; last true for blnRename
+		o_EditedFavorite.AA.strFavoriteName := strFavoriteName
+
 		oParentMenu.SA.Push(o_EditedFavorite) ; add new item to parent menu object simple array
 	}
 	else
 	{
 		g_strNewFavoriteIconResource := "" ; avoid re-use of variable from saving previous favorite
-		gosub, GuiAddFavoriteSaveFromMultipleAdd
+		gosub, GuiAddFavoriteSaveFromMultipleAdd ; make the favorite name unique
 	}
 }
 
