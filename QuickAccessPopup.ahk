@@ -20590,6 +20590,8 @@ else if (g_strMenuTriggerLabel = "LaunchFromAlternativeMenu")
 	g_strHotkeyTypeDetected := "Alternative"
 else if InStr(g_strMenuTriggerLabel, "FromMsg")
 	g_strHotkeyTypeDetected := (InStr(g_strMenuTriggerLabel, "Navigate") ? "Navigate" : "Launch")
+else if (g_strMenuTriggerLabel = "LaunchFromReopenMenu")
+	g_strHotkeyTypeDetected := "Launch"
 else
 	g_strHotkeyTypeDetected := SubStr(g_strMenuTriggerLabel, 1, InStr(g_strMenuTriggerLabel, "Hotkey") - 1) ; "Navigate" or "Launch"
 
