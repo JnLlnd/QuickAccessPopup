@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.1.5 (2023-04-11)
+- update RECOMMENDED for users of Windows 11 (for better support of Explorer tabs)
+- detect current tab in Win 11 Explorer to return the correct current location with placeholder {CUR_...} and the correct selected item with the placeholder {SEL_...}
+- make sure the added favorite names are unique when adding multiple favorites from a settings file "Favorite, Add Multiple Favorites, QAP Settings File (flat view)"
+- fix bug when launching a favorite the the option "Reopen this menu after launching items" enabled
+- show minimize button in the Custormize window
+- Dutch language file update
+
 Version: 11.6.1.4 (2023-02-23)
 - update RECOMMENDED for all users of v11.6+
 - fix bug preventing from changing folder in a dialog box when the QAP menu was open using the keyboard shortcut (Win + W, if you kept the default setting)
@@ -5445,7 +5453,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.1.4
+;@Ahk2Exe-SetVersion 11.6.1.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5512,7 +5520,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.1.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.1.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
