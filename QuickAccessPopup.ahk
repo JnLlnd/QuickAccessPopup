@@ -12017,7 +12017,8 @@ g_strGuiListviewTextColor := o_Settings.ReadIniValue("ListviewText", 000000, "Gu
 g_strGuiFullTitle := L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion)
 ; temporarily set the tray icon used for the gui
 gosub, SetTrayMenuIconForCurrentBranch
-Gui, 1:New, +Hwndg_strGui1Hwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
+; no minimize -> Gui, 1:New, +Hwndg_strGui1Hwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
+Gui, 1:New, +Hwndg_strGui1Hwnd +Resize +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
 ; return to loading icon
 Menu, Tray, Icon, % o_JLicons.strFileLocation, 60, 1 ; 60 is iconQAPloading, last 1 to freeze icon during pause or suspend
 
@@ -23970,6 +23971,23 @@ GetCurrentLocation(strClass, strWinID)
 					{
 						if (pExplorer.HWND = strWinID)
 						{
+							; version "10.0.22621.675" is first Win 11 Explorer with tabs
+							if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+							{
+								intActiveTab := 0
+								try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinID%
+								if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
+								{
+									static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+									oShellBrowser := ComObjQuery(pExplorer, IID_IShellBrowser, IID_IShellBrowser)
+									DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
+									if (intThisTab != intActiveTab)
+										continue
+									ObjRelease(oShellBrowser)
+								}
+								else
+									return ; error
+							}
 							strLocation :=  ProcessLocationURL(UriDecode(pExplorer.LocationURL))
 							Break, 2 ; exit for loop and loop intTries
 						}
@@ -24872,6 +24890,23 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 		for objWindow in ComObjCreate("Shell.Application").Windows
 			if (objWindow.hwnd = strWinId)
 			{
+								; version "10.0.22621.675" is first Win 11 Explorer with tabs
+								if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+								{
+									intActiveTab := 0
+									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
+									if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
+									{
+										static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+										oShellBrowser := ComObjQuery(objWindow, IID_IShellBrowser, IID_IShellBrowser)
+										DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
+										if (intThisTab != intActiveTab)
+											continue
+										ObjRelease(oShellBrowser)
+									}
+									else
+										return false ; error
+								}
 				; retrieve list of selected items in strWinId Explorer window
 				objSelectedItems := objWindow.Document.SelectedItems
 				Diag(A_ThisFunc, "objSelectedItems", "FOUND")
