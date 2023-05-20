@@ -43,3 +43,4 @@ Distribution-files/Old/
 *.exe
 *.session
 toto.ahk
+*.csv
