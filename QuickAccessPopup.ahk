@@ -16180,11 +16180,12 @@ Gui, 2:Font
 
 if (g_strMultipleAddSourceKey = "Folder")
 	strStep1 :=  o_L["DialogMultipleAddIntro1f"]
-else if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+else if InStr("SettingsFileMenus|CSV", g_strMultipleAddSourceKey)
 	strStep1 :=  o_L["DialogMultipleAddIntro1s"]
 else
 	strStep1 :=  o_L["DialogMultipleAddIntro1"]
-strStep1 .= " " . (g_strMultipleAddSourceKey <> "SettingsFileMenus" ? o_L["DialogMultipleAddIntro1a"] : o_L["DialogMultipleAddIntro1t"]) . "."
+strStep1 .= " " . (g_strMultipleAddSourceKey <> "SettingsFileMenus" and g_strMultipleAddSourceKey <> "CSV"
+	? o_L["DialogMultipleAddIntro1a"] : o_L["DialogMultipleAddIntro1t"]) . "."
 Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, %strStep1%
 Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro2"] . " " . o_L["DialogMultipleAddIntro2a"]
 Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro3"]
@@ -16213,7 +16214,7 @@ if (!blnUsePath or g_strMultipleAddSourceKey = "SettingsFileItems")
 
 Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged, % o_L["DialogMultipleAddExcludeExisting"]
 
-if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+if InStr("SettingsFileMenus|CSV", g_strMultipleAddSourceKey)
 {
 	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
 	Gui, 2:Add, TreeView, % "x10 y+5 w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
@@ -16279,8 +16280,12 @@ return
 
 ;------------------------------------------------------------
 GuiMultipleAddFilterChanged:
+GuiMultipleAddFilterChangedFromCSV:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
+
+if (A_ThisLabel <> "GuiMultipleAddFilterChangedFromCSV") ; path already set in GuiMultipleAddSourceCSVLoad
+	g_strMultipleAddSourcePath := f_strMultipleAddSourcePath ; use g_strMultipleAddSourcePath except when loading the CSV file
 
 Critical, On ; avoid interruptin while loading
 SetCursor(true, "wait")
@@ -16312,16 +16317,16 @@ else if (g_strMultipleAddSourceKey = "Special")
 	gosub, GuiMultipleAddSourceSpecialLoad
 
 else if (g_strMultipleAddSourceKey = "Folder")
-	and StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
+	and StrLen(g_strMultipleAddSourcePath) and FileExist(g_strMultipleAddSourcePath)
 	
 	gosub, GuiMultipleAddSourceFolderLoad
 	
 else if (g_strMultipleAddSourceKey = "CSV")
 	and StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
 	
-	gosub, GuiMultipleAddSourceCSVLoad
+	gosub, GuiMultipleAddSourceCSVLoad ; will convert CSV file to ini file and redirect GuiMultipleAddSourceSettingsMenusLoad
 	
-else if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath) and GetFileExtension(f_strMultipleAddSourcePath) = "ini"
+else if StrLen(g_strMultipleAddSourcePath) and FileExist(g_strMultipleAddSourcePath) and GetFileExtension(g_strMultipleAddSourcePath) = "ini"
 	if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 		gosub, GuiMultipleAddSourceSettingsMenusLoad
 	else ; SettingsFileItems
@@ -16352,41 +16357,8 @@ return
 ;------------------------------------------------------------
 GuiMultipleAddSourcePathChanged:
 ;------------------------------------------------------------
-Gui, 2:Submit, NoHide
 
-Critical, On ; avoid interruptin while loading
-SetCursor(true, "wait")
-DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
-
-if (g_strMultipleAddSourceKey = "SettingsFileMenus")
-	TV_Delete()	
-else
-	LV_Delete()
-
-if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
-	if (g_strMultipleAddSourceKey = "SettingsFileMenus")
-	{
-		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
-			gosub, GuiMultipleAddSourceSettingsMenusLoad
-		; no else, enclose in curly brackets
-	}
-	else if (g_strMultipleAddSourceKey = "SettingsFileItems")
-	{
-		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
-			gosub, GuiMultipleAddSourceSettingsItemsLoad
-		; no else, enclose in curly brackets
-	}
-	else if (g_strMultipleAddSourceKey = "Folder") ; o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-		gosub, GuiMultipleAddSourceFolderLoad
-	; else if (g_strMultipleAddSourceKey = "CSV")
-		; gosub, GuiMultipleAddSourceCSVLoad
-
-GuiControl, , f_blnMultipleAddSelectAllNone, % 0
 gosub, GuiMultipleAddFilterChanged
-
-DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
-SetCursor(false)
-Critical, Off
 
 return
 ;------------------------------------------------------------
@@ -16515,12 +16487,12 @@ return
 GuiMultipleAddSourceFolderLoad:
 ;------------------------------------------------------------
 
-if !StrLen(f_strMultipleAddSourcePath)
+if !StrLen(g_strMultipleAddSourcePath)
 	return
 
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-Loop, Files, %f_strMultipleAddSourcePath%, DF
+Loop, Files, %g_strMultipleAddSourcePath%, DF
 {
 	strThisFilePath := A_LoopFileLongPath
 	strThisFileName := A_LoopFileName
@@ -16564,59 +16536,51 @@ return
 GuiMultipleAddSourceCSVLoad:
 ;------------------------------------------------------------
 
-if !StrLen(f_strMultipleAddSourcePath)
+if !StrLen(f_strMultipleAddSourcePath) ; use f_strMultipleAddSourcePath, not g_strMultipleAddSourcePath
 	return
 
-/*
-DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
-
-; ObjCSV_CSV2Collection(strFilePath, ByRef strFieldNames, blnHeader := 1, blnMultiline := 1, intProgressType := 0
-	; , strFieldDelimiter := ",", strEncapsulator := """", strEolReplacement := "", strProgressText := "", ByRef strFileEncoding := "", strMergeDelimiters := "")
 oCSV := ObjCSV_CSV2Collection(f_strMultipleAddSourcePath, strFieldNames)
+g_strMultipleAddSourcePath := g_strTempDir . "\TempSettings_" . RandomBetween() . ".ini" ; temporary QAP favorites file (will be deleted when quiting the app)
+strFavoriteSection := "[Favorites]`r`n"
+intFavorite := 1
 for intIndex, oItem in oCSV
-; oItem fields: FavoriteType, FavoriteName, FavoriteLocation, FavoriteIconResource, FavoriteArguments, FavoriteAppWorkingDir, FavoriteLaunchWith, FavoriteLoginName, FavoritePassword
-
-			; 1 strFavoriteType, 2 strFavoriteName, 3 strFavoriteLocation, 4 strFavoriteIconResource, 5 strFavoriteArguments, 6 strFavoriteAppWorkingDir,
-			; 7 strFavoriteWindowPosition, (X strFavoriteHotkey), 8 strFavoriteLaunchWith, 9 strFavoriteLoginName, 10 strFavoritePassword,
-			; 11 strFavoriteGroupSettings, 12 blnFavoriteFtpEncoding, 13 blnFavoriteElevate, 14 intFavoriteDisabled,
-			; 15 intFavoriteFolderLiveLevels, 16 blnFavoriteFolderLiveDocuments, 17 intFavoriteFolderLiveColumns, 18 blnFavoriteFolderLiveIncludeExclude,
-			; 19 strFavoriteFolderLiveExtensions, 20 strFavoriteShortcut, 21 strFavoriteHotstring, 22 strFavoriteFolderLiveSort, 23 strFavoriteSoundLocation,
-			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
-			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
-			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
-			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec, 37 blnReopenAfterLaunchingItem
-
+; oItem fields: FavoriteType (1), FavoriteName (2), FavoriteLocation (3), FavoriteIconResource (4), FavoriteShortcut (20), FavoriteHotstring (21),
+; FavoriteArguments (5), FavoriteAppWorkingDir (6), FavoriteLaunchWith (8), FavoriteLoginName (9), FavoritePassword (10)
 {
-	###_O("", oItem)
-	oMultipleAddFavorite := new Container.Item([oItem["FavoriteType"], oItem["FavoriteName"], oItem["FavoriteLocation"]
-		, oItem["FavoriteIconResource"], oItem["FavoriteArguments"], oItem["FavoriteAppWorkingDir"], , oItem["FavoriteLaunchWith"]
-		, oItem["FavoriteLoginName"], oItem["FavoritePassword"]])
-	; GuiMultipleAddSourceLoadLV(oItem["FavoriteType"], oItem["FavoriteLocation"], f_blnMultipleAddExcludeExisting, ""
-	; , true, oItem["FavoriteName"], "", intIndex)
-	if (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
-	{
-		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
-			, oMultipleAddFavorite.AA.strFavoriteLocation, oMultipleAddFavorite.AA.strFavoriteType)
-	}
+	oFavorite := Object()
+	oFavorite[1] := (oItem["FavoriteType"] = "Menu-BEGIN" ? "Menu" : (oItem["FavoriteType"] = "Menu-END" ? "Z" : oItem["FavoriteType"]))
+	oFavorite[2] := oItem["FavoriteName"]
+	oFavorite[3] := oItem["FavoriteLocation"]
+	oFavorite[4] := oItem["FavoriteIconResource"]
+	oFavorite[5] := oItem["FavoriteArguments"]
+	oFavorite[6] := oItem["FavoriteAppWorkingDir"]
+	oFavorite[8] := oItem["FavoriteLaunchWith"]
+	oFavorite[9] := oItem["FavoriteLoginName"]
+	oFavorite[10] := oItem["FavoritePassword"]
+	oFavorite[20] := oItem["FavoriteShortcut"]
+	oFavorite[21] := oItem["FavoriteHotstring"]
+
+	strFavoriteLine := 
+	loop, 21
+		strFavoriteLine .= StrReplace(oFavorite[A_Index], "|", g_strEscapePipe) . "|"
+	strFavoriteSection .= "Favorite" . intFavorite . "=" . strFavoriteLine . "`r`n"
+	intFavorite++
 }
+FileAppend, % strFavoriteSection . "Favorite" . intFavorite . "=Z", %g_strMultipleAddSourcePath%, UTF-16
 
-LV_ModifyCol()
-LV_ModifyCol(4, 0) ; hide internal type column
+; call GuiMultipleAddFilterChangedFromCSV to import data converted to QAP ini file format
+g_strMultipleAddSourceKey := "SettingsFileMenus"
+Gosub, GuiMultipleAddFilterChangedFromCSV ; using g_strMultipleAddSourcePath to use instead of f_strMultipleAddSourcePath
 
-DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
+oCSV := ""
+strFavoriteSection := ""
+intFavorite := ""
+intIndex := ""
+oItem := ""
+strFieldNames := ""
+strFavoriteLine := ""
+oFavorite := ""
 
-strInternalType := ""
-strThisFilePath := ""
-strThisFileName := ""
-strShortcutFilePath := ""
-strShortcutWorkingDir := ""
-strShortcutArgs := ""
-strShortcutIconFile := ""
-strShortcutIconIndex := ""
-strShortcutIconFileIndex := ""
-intShortcutRunState := ""
-strFavoriteWindowPosition := ""
-*/
 return
 ;------------------------------------------------------------
 
@@ -16666,12 +16630,12 @@ GuiMultipleAddSourceSettingsItemsLoad:
 
 g_aaTreeViewItemsByIDs := Object() ; reset objects in TreeView
 
-if !StrLen(f_strMultipleAddSourcePath)
+if !StrLen(g_strMultipleAddSourcePath)
 	return
 
 oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "", "init", false, false) ; deleted after use in GuiMultipleAddFromListView
 
-g_strMultipleAddSourceKeySettingsFile := f_strMultipleAddSourcePath
+g_strMultipleAddSourceKeySettingsFile := g_strMultipleAddSourcePath
 
 if (oMultipleAddMain.LoadFavoritesFromIniFile(false, true, g_strMultipleAddSourceKeySettingsFile) = "EOM")
 	if (A_ThisLabel = "GuiMultipleAddSourceSettingsMenusLoad")
@@ -16919,7 +16883,7 @@ Loop
 	{
         if !InStr(strFavoriteLocation, "\") ; if a full path extracted from a file shortcut, keep it as is
         {
-            SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
+            SplitPath, g_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
             strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
         }
 		
