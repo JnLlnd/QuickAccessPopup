@@ -15672,8 +15672,10 @@ GetFolderIcon(strFolderLocation)
 	
 	if StrLen(strDesktopIconFileIndex)
 	{
-		strDesktopIconFile := SubStr(strDesktopIconFileIndex, 1, InStr(strDesktopIconFileIndex, ",") - 1)
-		intDesktopIconIndex := SubStr(strDesktopIconFileIndex, InStr(strDesktopIconFileIndex, ",") + 1)
+		strDesktopIconFile := (InStr(strDesktopIconFileIndex, ",") ? SubStr(strDesktopIconFileIndex, 1, InStr(strDesktopIconFileIndex, ",") - 1)
+			: strDesktopIconFileIndex) ; if there is no comma, use the full strDesktopIconFileIndex as file
+		intDesktopIconIndex := (InStr(strDesktopIconFileIndex, ",") ? SubStr(strDesktopIconFileIndex, InStr(strDesktopIconFileIndex, ",") + 1)
+			: 0) ; if there is no comma, set default index 0 (will be adjusted to 1 below)
 	}
 	else
 	{
