@@ -16207,7 +16207,7 @@ if (blnUsePath)
 	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 }
 
-if (!blnUsePath or InStr("Folder|SettingsFileItems", g_strMultipleAddSourceKey)
+if (!blnUsePath or InStr("Folder|SettingsFileItems", g_strMultipleAddSourceKey))
 {
 	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
 	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
