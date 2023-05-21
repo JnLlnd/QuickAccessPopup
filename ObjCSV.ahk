@@ -1103,7 +1103,6 @@ ObjCSV_ReturnDSVObjectArray(strCurrentDSVLine, strDelimiter := ",", strEncapsula
 			field := StrReplace(field, strTempDelimiterReplacement, strDelimiter)
 		; This is the Line you'll have to change if you want different treatment
 		; otherwise your resulting fields from the DSV data Line will be stored in an object array
-		###_V("", field, Asc(field), strEncapsulator, Asc(strEncapsulator), field=strEncapsulator)
 		if (SubStr(field,1,1)=strEncapsulator)
 		{
 			; This is the exception handling for removing any doubled strEncapsulators and
