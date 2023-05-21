@@ -6032,7 +6032,7 @@ if !GetKeyState("Shift")
 	o_MainMenu.LaunchAutoExec()
 
 ; ####
-Gosub, GuiMultipleAddSelectSource
+; Gosub, GuiMultipleAddSelectSource
 
 return
 
@@ -16207,7 +16207,7 @@ if (blnUsePath)
 	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 }
 
-if (!blnUsePath or g_strMultipleAddSourceKey = "SettingsFileItems")
+if (!blnUsePath or InStr("Folder|SettingsFileItems", g_strMultipleAddSourceKey)
 {
 	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
 	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
@@ -16494,6 +16494,7 @@ Loop, Files, %g_strMultipleAddSourcePath%, DF
 	strLvLocationOrContent := strThisFileName
 	oMultipleAddFavorite := new Container.Item(saFavorite) ; type, name, path
 	if (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
+		and (!StrLen(f_strMultipleAddFilter) or InStrMultiple(oMultipleAddFavorite.AA.strFavoriteName, f_strMultipleAddFilter))
 	{
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			, strLvLocationOrContent, oMultipleAddFavorite.AA.strFavoriteType)
@@ -16592,7 +16593,7 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 	else if (strInternalType <> "Special") ; search only the name for Special
 		strFilterSearchIn .= "|" . strLocation
 	
-	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
+	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStrMultiple(strFilterSearchIn, strMultipleAddFilter))
 		return
 	
 	oMultipleAddFavorite := new Container.Item([strInternalType, strName, strLocation]) ; type, name, path
