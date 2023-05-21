@@ -21363,6 +21363,7 @@ o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_str
 Diag(A_ThisLabel, "o_ThisFavorite.OpenFavorite", "AFTER")
 
 if (o_ThisFavorite.AA.oParentMenu.AA.blnReopenAfterLaunchingItem)
+	and !(A_ThisMenuItemPos = 1) ; this is the "Launch all items" menu, do not reopen the menu
 {
 	g_strShowMenu := o_ThisFavorite.AA.oParentMenu.AA.strMenuPath
 	Gosub, LaunchFromReopenMenu
