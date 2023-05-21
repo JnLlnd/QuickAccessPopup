@@ -16201,18 +16201,18 @@ if (blnUsePath)
 		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFile x10 y+10 w" . intCol1Width . " right", % o_L["MenuFile"]
 	else
 		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-	Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddSourcePathChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
 	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 }
 
 if (!blnUsePath or g_strMultipleAddSourceKey = "SettingsFileItems")
 {
 	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
-	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
 	Gui, 2:Add, Button, x+5 yp gButtonMultipleAddClearFilter vf_btnMultipleAddClearFilter, X
 }
 
-Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged, % o_L["DialogMultipleAddExcludeExisting"]
+Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterOrPathChanged, % o_L["DialogMultipleAddExcludeExisting"]
 
 if InStr("SettingsFileMenus|CSV", g_strMultipleAddSourceKey)
 {
@@ -16236,7 +16236,7 @@ GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGuiMultipleAddAddFavorites", "f
 
 Gui, 2:Add, Text
 
-Gosub, GuiMultipleAddFilterChanged
+Gosub, GuiMultipleAddFilterOrPathChanged
 
 Gosub, ShowGui2AndDisableGui1
 
@@ -16279,12 +16279,12 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAddFilterChanged:
-GuiMultipleAddFilterChangedFromCSV:
+GuiMultipleAddFilterOrPathChanged:
+GuiMultipleAddFilterOrPathChangedFromCSV:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 
-if (A_ThisLabel <> "GuiMultipleAddFilterChangedFromCSV") ; path already set in GuiMultipleAddSourceCSVLoad
+if (A_ThisLabel <> "GuiMultipleAddFilterOrPathChangedFromCSV") ; path already set in GuiMultipleAddSourceCSVLoad
 	g_strMultipleAddSourcePath := f_strMultipleAddSourcePath ; use g_strMultipleAddSourcePath except when loading the CSV file
 
 Critical, On ; avoid interruptin while loading
@@ -16349,16 +16349,6 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 SetCursor(false)
 Critical, Off
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiMultipleAddSourcePathChanged:
-;------------------------------------------------------------
-
-gosub, GuiMultipleAddFilterChanged
 
 return
 ;------------------------------------------------------------
@@ -16568,9 +16558,9 @@ for intIndex, oItem in oCSV
 }
 FileAppend, % strFavoriteSection . "Favorite" . intFavorite . "=Z", %g_strMultipleAddSourcePath%, UTF-16
 
-; call GuiMultipleAddFilterChangedFromCSV to import data converted to QAP ini file format
+; call GuiMultipleAddFilterOrPathChangedFromCSV to import data converted to QAP ini file format
 g_strMultipleAddSourceKey := "SettingsFileMenus"
-Gosub, GuiMultipleAddFilterChangedFromCSV ; using g_strMultipleAddSourcePath to use instead of f_strMultipleAddSourcePath
+Gosub, GuiMultipleAddFilterOrPathChangedFromCSV ; using g_strMultipleAddSourcePath to use instead of f_strMultipleAddSourcePath
 
 oCSV := ""
 strFavoriteSection := ""
@@ -16679,7 +16669,7 @@ return
 ButtonMultipleAddClearFilter:
 ;------------------------------------------------------------
 
-GuiControl, , f_strMultipleAddFilter ; reset filter, triggers GuiMultipleAddFilterChanged
+GuiControl, , f_strMultipleAddFilter ; reset filter, triggers GuiMultipleAddFilterOrPathChanged
 
 return
 ;------------------------------------------------------------
