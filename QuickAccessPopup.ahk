@@ -31,6 +31,18 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.6.1.9.3 (2023-05-22)
+ 
+Add Multiple Favorites
+- support CSV files (see format description here: https://forum.quickaccesspopup.com/showthread.php?tid=2182&pid=6629#pid6629)
+- for sources with filters, support multiple strings filters (for example "abc xyz" to filter items with "abc AND xyz")
+- support filter when adding from source "Folder"
+ 
+Various improvements
+- expand Environment variables, User variables and Placeholders in Favorites names
+- stop reopening a Group menu after selecting "Launch all items"
+- fix bug when icon resource in a desktop.ini file has no comma
+
 Version: 11.6.1.5 (2023-04-11)
 - update RECOMMENDED for users of Windows 11 (for better support of Explorer tabs)
 - detect current tab in Win 11 Explorer to return the correct current location with placeholder {CUR_...} and the correct selected item with the placeholder {SEL_...}
@@ -5453,7 +5465,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.1.5
+;@Ahk2Exe-SetVersion 11.6.1.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5521,8 +5533,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.1.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.6.1.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
@@ -32338,7 +32350,7 @@ class Container
 				strMenuItemLabel := EnvVars(ExpandPlaceholders(strMenuItemLabel, aaThisFavorite.strFavoriteLocation, "", ""))
 				while !this.FavoriteNameIsUnique(strMenuItemLabel, true) ; true to check strExpandedMenuItemLabel
 					strMenuItemLabel := AddUniqueSuffix(strMenuItemLabel)
-				aaThisFavorite.strExpandedMenuItemLabel := strMenuItemLabel ; alolowing to check unique name for next items
+				aaThisFavorite.strExpandedMenuItemLabel := strMenuItemLabel ; allowing to check unique name for next items
 			}
 			
 			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
