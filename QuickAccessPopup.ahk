@@ -9167,16 +9167,14 @@ if !(A_ThisLabel = "RefreshContainerInGuiFromShortcut") and !(o_QAPfeatures.aaQA
 	return
 
 o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object() ; reset array
-if (o_MenuInGui.AA.strMenuType = "Search")
-	for intKey, oItem in o_MenuInGui.SA
-	{
-		oItemCopy := oItem.BackupItem() ; copy items to keep original untouched in case we need to change names
-		while !o_Containers.AA[o_L["MenuContainerInGui"]].FavoriteNameIsUnique(oItemCopy.AA.strFavoriteName)
-			oItemCopy.AA.strFavoriteName := AddUniqueSuffix(oItemCopy.AA.strFavoriteName)
-		o_Containers.AA[o_L["MenuContainerInGui"]].SA[intKey] := oItemCopy
-	}
-else
-	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
+for intKey, oItem in o_MenuInGui.SA
+{
+	oItemCopy := oItem.BackupItem() ; copy items to keep original untouched
+	oItemCopy.AA.strExpandedMenuItemLabel := "" ; reset expanded label to avoid false duplicate when building menu
+	while !o_Containers.AA[o_L["MenuContainerInGui"]].FavoriteNameIsUnique(oItemCopy.AA.strFavoriteName)
+		oItemCopy.AA.strFavoriteName := AddUniqueSuffix(oItemCopy.AA.strFavoriteName)
+	o_Containers.AA[o_L["MenuContainerInGui"]].SA[intKey] := oItemCopy
+}
 o_Containers.AA[o_L["MenuContainerInGui"]].AA.intMenuIconsSize := o_MenuInGui.AA.intMenuIconsSize
 
 if (A_ThisLabel = "RefreshContainerInGuiFromShortcut")
@@ -32332,6 +32330,17 @@ class Container
 				and aaThisFavorite.intFavoriteUsageDb) ; exclude if no usage index
 				strMenuItemLabel .= " [" . aaThisFavorite.intFavoriteUsageDb . "]"
 			
+			; if favorite has a name and is under Main menu, expand favorite name with env vars, user vars and placeholders
+			if (StrLen(strMenuItemLabel)
+				and (SubStr(this.AA.strMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
+					or this.AA.strMenuPath = o_L["MenuContainerInGui"]))
+			{
+				strMenuItemLabel := EnvVars(ExpandPlaceholders(strMenuItemLabel, aaThisFavorite.strFavoriteLocation, "", ""))
+				while !this.FavoriteNameIsUnique(strMenuItemLabel, true) ; true to check strExpandedMenuItemLabel
+					strMenuItemLabel := AddUniqueSuffix(strMenuItemLabel)
+				aaThisFavorite.strExpandedMenuItemLabel := strMenuItemLabel ; alolowing to check unique name for next items
+			}
+			
 			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
 			if (aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
 				this.AddMenuIcon(strMenuItemLabel, strMenuItemAction, strMenuItemIcon, intMenuItemStatus, blnFlagNextItemHasColumnBreak)
@@ -32790,11 +32799,12 @@ class Container
 	;------------------------------------------------------------
 
 	;------------------------------------------------------------
-	FavoriteNameIsUnique(strCandidateName)
+	FavoriteNameIsUnique(strCandidateName, blnCheckExpandedMenuItemLabel := false)
+	; blnCheckExpandedMenuItemLabel when checking unique name on favorite expanded names
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
-			if (strCandidateName = oItem.AA.strFavoriteName)
+			if (strCandidateName = (blnCheckExpandedMenuItemLabel ? oItem.AA.strExpandedMenuItemLabel : oItem.AA.strFavoriteName))
 				return false
 			
 		return true
