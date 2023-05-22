@@ -31,7 +31,70 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.6.x (2023-01-xx)
+Version BETA: 11.6.1.9.3 (2023-05-22)
+ 
+Add Multiple Favorites
+- support CSV files (see format description here: https://forum.quickaccesspopup.com/showthread.php?tid=2182&pid=6629#pid6629)
+- for sources with filters, support multiple strings filters (for example "abc xyz" to filter items with "abc AND xyz")
+- support filter when adding from source "Folder"
+ 
+Various improvements
+- expand Environment variables, User variables and Placeholders in Favorites names
+- stop reopening a Group menu after selecting "Launch all items"
+- fix bug when icon resource in a desktop.ini file has no comma
+
+Version: 11.6.1.5 (2023-04-11)
+- update RECOMMENDED for users of Windows 11 (for better support of Explorer tabs)
+- detect current tab in Win 11 Explorer to return the correct current location with placeholder {CUR_...} and the correct selected item with the placeholder {SEL_...}
+- make sure the added favorite names are unique when adding multiple favorites from a settings file "Favorite, Add Multiple Favorites, QAP Settings File (flat view)"
+- fix bug when launching a favorite the the option "Reopen this menu after launching items" enabled
+- show minimize button in the Custormize window
+- Dutch language file update
+
+Version: 11.6.1.4 (2023-02-23)
+- update RECOMMENDED for all users of v11.6+
+- fix bug preventing from changing folder in a dialog box when the QAP menu was open using the keyboard shortcut (Win + W, if you kept the default setting)
+- blocked applications in "Keyboard shortcuts" in "Options, Launch Advanced Options" now only block the favorites keyboard shortcuts but not anymnore the main QAP menu keyboard hotkey (Win + W, if you kept the default setting)
+ 
+Version: 11.6.1.3 (2023-02-21)
+- fix bug not identifying the active window and breaking some placeholders replacements when checking that Main menu hotkeys are not blocked in "Options, Various Launch Options"
+- fix bug when validating a favorite path including a {SETTINGS_...} placeholder causing an unwanted error message
+- fix bug saving options when dark mode is enabled
+- fix bug when editing a favorite with location is not found from the Quick Launch search result
+- fix visual bug in "Add Favorite - Select type" dialog box when types label are larger that the available space in some language German
+- change how "text mode" Snippets are use the Clipboard when pasting to the active window (to avoid or minimize issues in interaction with Quick Clipboard Editor)
+
+Version: 11.6.1.2 (2023-02-09)
+- fix bug blocking hotkeys unexpectedly (upgrade recommended to all users of v11.6+)
+- when exporting or importing settings, support environment variables and QAP user variables in file path
+
+Version BETA: 11.6.1.9.2 (2023-02-07)
+- when checking for hotkey exclusions (Options, Launch Advanced Options), bypass window verification (exit before SetTargetWinInfo) if the exclusion list is empty to avoid issue calling hotkey when active window is elevated (and other issues?
+- when loading exclusions lists (mouse, folders, files, current window and hotkeys), empty the list if it contains only "0"
+
+Version BETA: 11.6.1.9.1 (2023-02-04)
+- test bypassing CanHotkeyTrigger to avoid issue calling hotkey when active window is elevated
+
+Version: 11.6.1.1 (2023-02-04)
+- fix bug breaking the use of tabs in Win 11 Explorer since the roll-out of Windows 11 build 22621.1105 (started Jan 10 2023)
+ 
+Version: 11.6.1 (2023-02-04)
+ 
+Quick Launch
+- when opening a favorite Folder from the Quick Launch box, change folder (navigate) if the window under the Quick Launch box is a file manager or dialog box
+- new checkbox "Change folder in file manager and dialog boxes" under "Options, Customize Window" (default enabled); if disabled, folders are always open in a new Explorer window
+- when the database is disabled, sort quick launch search result my Menu order
+ 
+Various improvements
+- expand placeholders inside User variables
+- expand {SETTINGS_...} placeholder when parsing icon resource
+- disable Submenus and Groups when all their items are disabled or hidden
+- in menu label for Groups, show the number of items that are not disabled
+ 
+Bug fixes
+- fix bug to add AutoHotkey script files (extension .ahk) as Application favorite when adding them from a Windows Explorer context menu or using drag and drop to the Customize window
+- new JLicons.dll file v1.6.5 fixing an error in v1.6.4 (user with PORTABLE installation must overwrite JLicons.dll in the working directory with the file in the ZIP file)
+- fix some encoding issues in French language file
 
 Version: 11.6 (2023-01-22)
  
@@ -5402,7 +5465,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.0.1
+;@Ahk2Exe-SetVersion 11.6.1.9.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5427,6 +5490,7 @@ ComObjError(False) ; we will do our own error handling
 #Include %A_ScriptDir%\XML_Class.ahk ; by Maestrith (Chad) https://autohotkey.com/boards/viewtopic.php?f=62&t=33114
 #Include %A_ScriptDir%\QAPtools.ahk ; by Jean Lalonde
 #Include %A_ScriptDir%\Class_LV_Rows.ahk ; https://github.com/Pulover/Class_LV_Rows from Rodolfo U. Batista / Pulover (as of 2020-11-22)
+#Include %A_ScriptDir%\ObjCSV.ahk ; https://github.com/Pulover/Class_LV_Rows from Rodolfo U. Batista / Pulover (as of 2020-11-22)
 
 ; avoid error message when shortcut destination is missing
 ; see http://ahkscript.org/boards/viewtopic.php?f=5&t=4477&p=25239#p25236
@@ -5469,10 +5533,10 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.1.9.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
-global g_strJLiconsVersion := "1.6.4"
+global g_strJLiconsVersion := "1.6.5"
 
 ;---------------------------------
 ; Init class for JLicons
@@ -5739,7 +5803,7 @@ global o_Utc2LocalTime := new Utc2LocalTime
 ; Prepare executable extensions list from PATHEXT env variable
 global g_strExeExtensions
 EnvGet, g_strExeExtensions, PathExt ; for example ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC"
-if StrLen(GetRegistry("HKEY_LOCAL_MACHINE\SOFTWARE\AutoHotkey", InstallDir))
+if StrLen(GetRegistry("HKEY_LOCAL_MACHINE\SOFTWARE\AutoHotkey", "InstallDir"))
 	g_strExeExtensions .= ";.AHK" ; add AutoHotkey scripts extension
 
 ;---------------------------------
@@ -5980,8 +6044,7 @@ if !GetKeyState("Shift")
 	o_MainMenu.LaunchAutoExec()
 
 ; ####
-; Gosub, GuiOptionsGroupSettingsWindow
-; Gosub, GuiQuickLaunch
+; Gosub, GuiMultipleAddSelectSource
 
 return
 
@@ -6684,6 +6747,7 @@ if (g_blnPortableMode)
 o_Settings.ReadIniOption("MenuPopup", "blnExclusionMouseListWhitelist", "ExclusionMouseListWhitelist", 0, "PopupMenu", "f_blnExclusionMouseListBlacklist|f_blnExclusionMouseListWhitelist")
 o_Settings.ReadIniOption("MenuPopup", "strExclusionMouseList", "ExclusionMouseList", " ", "PopupMenu"
 	, "f_lnkExclusionMouseList1|f_lnkExclusionMouseList2|f_lnkExclusionMouseList3|f_strExclusionMouseList|f_btnGetWinInfoMouseExclusions") ; g_strExclusionMouseList
+o_Settings.MenuPopup.strExclusionMouseList.IniValue := (!o_Settings.MenuPopup.strExclusionMouseList.IniValue ? "" : o_Settings.MenuPopup.strExclusionMouseList.IniValue) ; in case it contains "0"
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
 ; Group MenuExclusions
@@ -6695,10 +6759,13 @@ o_Settings.ReadIniOption("Execution", "blnSwitchExclusionListInclude", "SwitchEx
 
 o_Settings.ReadIniOption("Execution", "strFoldersExclusionList", "FoldersExclusionList", " ", "MenuExclusions"
 	, "f_lnkFoldersExclusionList|f_strFoldersExclusionList|f_lblFoldersExclusionList|f_lblFoldersExclusionListBottom")
+o_Settings.Execution.strFoldersExclusionList.IniValue := (!o_Settings.Execution.strFoldersExclusionList.IniValue ? "" : o_Settings.Execution.strFoldersExclusionList.IniValue) ; in case it contains "0"
 o_Settings.ReadIniOption("Execution", "strFilesExclusionList", "FilesExclusionList", " ", "MenuExclusions"
 	, "f_lnkFilesExclusionList|f_strFilesExclusionList|f_lblFilesExclusionList")
+o_Settings.Execution.strFilesExclusionList.IniValue := (!o_Settings.Execution.strFilesExclusionList.IniValue ? "" : o_Settings.Execution.strFilesExclusionList.IniValue) ; in case it contains "0"
 o_Settings.ReadIniOption("Execution", "strSwitchExclusionList", "SwitchExclusionList", " ", "MenuExclusions"
 	, "f_lnkSwitchExclusionList|f_strSwitchExclusionList|f_lnkGetWinInfoSwitchExclusion|f_btnGetWinInfoSwitchExclusion|f_drpSwitchExclusionRunning") ; g_strSwitchExclusionList
+o_Settings.Execution.strSwitchExclusionList.IniValue := (!o_Settings.Execution.strSwitchExclusionList.IniValue ? "" : o_Settings.Execution.strSwitchExclusionList.IniValue) ; in case it contains "0"
 
 ; Group PopupHotkeys
 o_Settings.ReadIniOption("MenuPopup", "blnLeftControlDoublePressed", "LeftControlDoublePressed", 0, "PopupHotkeys", "f_lblChangeShortcutTitle|f_lblControlDoublePressedTitle|f_blnLeftControlDoublePressed") ; g_blnLeftControlDoublePressed
@@ -6756,6 +6823,8 @@ o_Settings.ReadIniOption("LaunchAdvanced", "blnHotkeyTriggerExclusionListWhiteli
 	, "f_lblHotkeyTriggerExclusionListTitle|f_lnkHotkeyTriggerExclusionList|f_blnHotkeyTriggerExclusionListBlacklist|f_blnHotkeyTriggerExclusionListWhitelist")
 o_Settings.ReadIniOption("LaunchAdvanced", "strHotkeyTriggerExclusionList", "HotkeyTriggerExclusionList", 0, "AdvancedLaunch"
 	, "f_strHotkeyTriggerExclusionList|f_lblHotkeyTriggerExclusionListHelp")
+o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue := (!o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue ? ""
+	: o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ; in case it contains "0"
 
 ; Group AdvancedOther
 o_Settings.ReadIniOption("DialogBoxes", "intWaitDelayInDialogBox", "WaitDelayInDialogBox", 100, "AdvancedOther", "f_lblWaitDelayInDialogBox|f_intWaitDelayInDialogBox") ; default 100 ms ; g_intWaitDelayInDialogBox
@@ -9110,16 +9179,14 @@ if !(A_ThisLabel = "RefreshContainerInGuiFromShortcut") and !(o_QAPfeatures.aaQA
 	return
 
 o_Containers.AA[o_L["MenuContainerInGui"]].SA := Object() ; reset array
-if (o_MenuInGui.AA.strMenuType = "Search")
-	for intKey, oItem in o_MenuInGui.SA
-	{
-		oItemCopy := oItem.BackupItem() ; copy items to keep original untouched in case we need to change names
-		while !o_Containers.AA[o_L["MenuContainerInGui"]].FavoriteNameIsUnique(oItemCopy.AA.strFavoriteName)
-			oItemCopy.AA.strFavoriteName := AddUniqueSuffix(oItemCopy.AA.strFavoriteName)
-		o_Containers.AA[o_L["MenuContainerInGui"]].SA[intKey] := oItemCopy
-	}
-else
-	o_Containers.AA[o_L["MenuContainerInGui"]].SA := o_MenuInGui.SA
+for intKey, oItem in o_MenuInGui.SA
+{
+	oItemCopy := oItem.BackupItem() ; copy items to keep original untouched
+	oItemCopy.AA.strExpandedMenuItemLabel := "" ; reset expanded label to avoid false duplicate when building menu
+	while !o_Containers.AA[o_L["MenuContainerInGui"]].FavoriteNameIsUnique(oItemCopy.AA.strFavoriteName)
+		oItemCopy.AA.strFavoriteName := AddUniqueSuffix(oItemCopy.AA.strFavoriteName)
+	o_Containers.AA[o_L["MenuContainerInGui"]].SA[intKey] := oItemCopy
+}
 o_Containers.AA[o_L["MenuContainerInGui"]].AA.intMenuIconsSize := o_MenuInGui.AA.intMenuIconsSize
 
 if (A_ThisLabel = "RefreshContainerInGuiFromShortcut")
@@ -10412,7 +10479,7 @@ loop, % g_objOptionsLanguageLabels.Length()
 o_Settings.Launch.strLanguageCode.WriteIni("", true) ; value already changed in the loop
 
 strThemePrev := o_Settings.Launch.strTheme.IniValue
-o_Settings.Launch.strTheme.WriteIni(f_drpTheme)
+o_Settings.Launch.strTheme.WriteIni((StrLen(f_drpTheme) ? f_drpTheme : "Windows")) ; dropdown not displayed in dark mode, force "Windows"
 
 o_Settings.Launch.arrStartupTips.WriteIni(f_blnStartupTipsShow . "," . f_intStartupTipsDaysEdit . ","
 	. o_Settings.Launch.arrStartupTips.IniValue[3] . "," . o_Settings.Launch.arrStartupTips.IniValue[4]) ; StartupTips=1,0,20210322190241,n|n
@@ -11014,7 +11081,6 @@ GuiOptionsFileManagerPreferencesChanged:
 Gui, 2:Submit, NoHide
 
 strEnableDisable := (f_radFileManagerNavigateCurrent ? "Disable" : "Enable")
-GuiControl, %strEnableDisable%, f_blnFileManagerUseTabs
 GuiControl, %strEnableDisable%, f_lblFileManagerNewTabSide
 GuiControl, %strEnableDisable%, f_intFileManagerNewTabSideActive
 GuiControl, %strEnableDisable%, f_intFileManagerNewTabSideLeft
@@ -11172,7 +11238,7 @@ if (A_ThisLabel <> "ActiveFileManagerClickedGroupButton")
 }
 
 ; disable f_blnFileManagerUseTabs if active file manager is Explorer and is not Win 11 with tabs
-GuiControl, % (f_radActiveFileManager1 and GetOSVersionInfo().DetailedBuild < "10.0.22621.675" ? "Disable" : "Enable"), f_blnFileManagerUseTabs
+GuiControl, % (f_radActiveFileManager1 and FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") < 0 ? "Disable" : "Enable"), f_blnFileManagerUseTabs
 
 strHelpUrl := ""
 strQAPconnectFileManagersList := ""
@@ -11970,7 +12036,8 @@ g_strGuiListviewTextColor := o_Settings.ReadIniValue("ListviewText", 000000, "Gu
 g_strGuiFullTitle := L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion)
 ; temporarily set the tray icon used for the gui
 gosub, SetTrayMenuIconForCurrentBranch
-Gui, 1:New, +Hwndg_strGui1Hwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
+; no minimize -> Gui, 1:New, +Hwndg_strGui1Hwnd +Resize -MinimizeBox +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
+Gui, 1:New, +Hwndg_strGui1Hwnd +Resize +MinSize%g_intGuiDefaultWidth%x%g_intGuiDefaultHeight%, %g_strGuiFullTitle%
 ; return to loading icon
 Menu, Tray, Icon, % o_JLicons.strFileLocation, 60, 1 ; 60 is iconQAPloading, last 1 to freeze icon during pause or suspend
 
@@ -12779,7 +12846,8 @@ Gui, 2:Add, Text, x10 y+20, % o_L["DialogAdd"] . ":"
 ; g_strAddFavIconsTypes: "icon type, favorite type", empty items are used for icons spacing
 g_strAddFavIconsTypes := "iconFolder;Folder|iconSpecialFolders;Special||iconDocuments;Document|iconApplication;Application|iconDesktop;WindowsApp|"
 	. g_strURLIconFileIndex . ";URL|iconFTP;FTP||iconPaste;Snippet||iconQAP;QAP||iconSubmenu;Menu|iconNetwork;External|iconGroup;Group||iconTextDocument;Text"
-	
+
+intMaxTypeWidht := 0
 loop, Parse, g_strAddFavIconsTypes, |
 {
 	if !StrLen(A_LoopField)
@@ -12794,6 +12862,8 @@ loop, Parse, g_strAddFavIconsTypes, |
 		Gui, 2:Add, Picture, % "x25 y+8 w16 h16 Icon" . intThisIconIndex . " vf_icoRadioFavoriteType" . StrSplit(A_LoopField, ";")[2] . " gFavoriteSelectTypeRadioButtonsChanged", %strThisIconFile%
 		Gui, 2:Add, Radio, % "x52 yp+1 vf_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2]
 			. " gFavoriteSelectTypeRadioButtonsChanged", % o_Favorites.GetFavoriteTypeObject(StrSplit(A_LoopField, ";")[2]).strFavoriteTypeLabel
+		GuiControlGet, saPos, Pos, % "f_intRadioFavoriteType" . StrSplit(A_LoopField, ";")[2]
+		intMaxTypeWidht := (saPosW > intMaxTypeWidht ? saPosW : intMaxTypeWidht)
 	}
 }
 
@@ -12801,7 +12871,7 @@ Gui, 2:Add, Button, x20 y+20 vf_btnAddFavoriteSelectTypeContinue gGuiAddFavorite
 Gui, 2:Add, Button, yp vf_btnAddFavoriteSelectTypeCancel gGuiAddFavoriteCancel, % o_L["GuiCancel"]
 Gui, 2:Add, Link, x20 y+20 vf_lnkAddFavoriteMultiple gGuiMultipleAddSelectSource, % "<a>" . o_L["DialogMultipleAdd"] . "</a>"
 Gui, Add, Text
-Gui, 2:Add, Text, xs+140 ys vf_lblAddFavoriteTypeHelp w260 h290, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
+Gui, 2:Add, Text, % "ys vf_lblAddFavoriteTypeHelp w260 h290 xs+" . intMaxTypeWidht + 50, % L(o_L["DialogFavoriteSelectType"], o_L["DialogContinue"])
 
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnAddFavoriteSelectTypeContinue", "f_btnAddFavoriteSelectTypeCancel")
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_lnkAddFavoriteMultiple")
@@ -12809,6 +12879,7 @@ Gosub, ShowGui2AndDisableGui1
 
 o_ExternalMenu := ""
 strGuiTitle := ""
+intMaxTypeWidht := ""
 
 return
 ;------------------------------------------------------------
@@ -15615,8 +15686,10 @@ GetFolderIcon(strFolderLocation)
 	
 	if StrLen(strDesktopIconFileIndex)
 	{
-		strDesktopIconFile := SubStr(strDesktopIconFileIndex, 1, InStr(strDesktopIconFileIndex, ",") - 1)
-		intDesktopIconIndex := SubStr(strDesktopIconFileIndex, InStr(strDesktopIconFileIndex, ",") + 1)
+		strDesktopIconFile := (InStr(strDesktopIconFileIndex, ",") ? SubStr(strDesktopIconFileIndex, 1, InStr(strDesktopIconFileIndex, ",") - 1)
+			: strDesktopIconFileIndex) ; if there is no comma, use the full strDesktopIconFileIndex as file
+		intDesktopIconIndex := (InStr(strDesktopIconFileIndex, ",") ? SubStr(strDesktopIconFileIndex, InStr(strDesktopIconFileIndex, ",") + 1)
+			: 0) ; if there is no comma, set default index 0 (will be adjusted to 1 below)
 	}
 	else
 	{
@@ -15975,12 +16048,12 @@ if !(g_blnMenuReady)
 
 ; list of available sources
 oMultipleAddSourcesIndex := ["CurrentWindows", "RecentFolders", "RecentFiles", "FrequentFolders", "FrequentFiles"
-	, "QAP", "Special", "Folder", "SettingsFileItems", "SettingsFileMenus"]
+	, "QAP", "Special", "Folder", "SettingsFileItems", "SettingsFileMenus", "CSV"]
 oMultipleAddSources := {CurrentWindows: o_L["MenuSwitchFolderOrApp"], RecentFolders: o_L["MenuRecentFolders"]
 	, RecentFiles: o_L["MenuRecentFiles"], FrequentFolders: o_L["MenuPopularMenusFolders"], FrequentFiles: o_L["MenuPopularMenusFiles"]
 	, QAP: o_Favorites.GetFavoriteTypeObject("QAP").strFavoriteTypeLabelNoAmpersand, Special: o_Favorites.GetFavoriteTypeObject("Special").strFavoriteTypeLabelNoAmpersand
 	, Folder: o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand, SettingsFileItems: o_L["DialogMultipleAddSettingsFileItems"]
-	, SettingsFileMenus: o_L["DialogMultipleAddSettingsFileMenus"]}
+	, SettingsFileMenus: o_L["DialogMultipleAddSettingsFileMenus"], CSV: o_L["DialogMultipleAddCSV"]}
 
 if (A_ThisLabel = "GuiMultipleAddSelectSourceFromQAPFeature")
 	gosub, GuiShowFromGuiAddFavoriteQAPFeature
@@ -16090,13 +16163,14 @@ GuiMultipleAddQAP:
 GuiMultipleAddSpecial:
 GuiMultipleAddSettingsFileItems:
 GuiMultipleAddSettingsFileMenus:
+GuiMultipleAddCSV:
 ;------------------------------------------------------------
 
 if !(g_blnMenuReady)
 	return
 
 g_strMultipleAddSourceKey := StrReplace(A_ThisLabel, "GuiMultipleAdd", "")
-blnUsePath := InStr("Folder|SettingsFileMenus|SettingsFileItems", g_strMultipleAddSourceKey)
+blnUsePath := InStr("Folder|SettingsFileMenus|SettingsFileItems|CSV", g_strMultipleAddSourceKey)
 
 intCol1Width := 80
 intCol2X := intCol1Width + 15
@@ -16122,11 +16196,12 @@ Gui, 2:Font
 
 if (g_strMultipleAddSourceKey = "Folder")
 	strStep1 :=  o_L["DialogMultipleAddIntro1f"]
-else if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+else if InStr("SettingsFileMenus|CSV", g_strMultipleAddSourceKey)
 	strStep1 :=  o_L["DialogMultipleAddIntro1s"]
 else
 	strStep1 :=  o_L["DialogMultipleAddIntro1"]
-strStep1 .= " " . (g_strMultipleAddSourceKey <> "SettingsFileMenus" ? o_L["DialogMultipleAddIntro1a"] : o_L["DialogMultipleAddIntro1t"]) . "."
+strStep1 .= " " . (g_strMultipleAddSourceKey <> "SettingsFileMenus" and g_strMultipleAddSourceKey <> "CSV"
+	? o_L["DialogMultipleAddIntro1a"] : o_L["DialogMultipleAddIntro1t"]) . "."
 Gui, 2:Add, Text, % "x10 y+5 w" . intGuiContentWidth, %strStep1%
 Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro2"] . " " . o_L["DialogMultipleAddIntro2a"]
 Gui, 2:Add, Text, % "x10 y+2 w" . intGuiContentWidth, % o_L["DialogMultipleAddIntro3"]
@@ -16138,24 +16213,24 @@ GuiControl, ChooseString, f_drpGuiMultipleAddMenu, % o_MenuInGui.AA.strMenuPath
 
 if (blnUsePath)
 {
-	if InStr("SettingsFileMenus|SettingsFileItems", g_strMultipleAddSourceKey)
+	if InStr("SettingsFileMenus|SettingsFileItems|CSV", g_strMultipleAddSourceKey)
 		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFile x10 y+10 w" . intCol1Width . " right", % o_L["MenuFile"]
 	else
 		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-	Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddSourcePathChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
 	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 }
 
-if (!blnUsePath or g_strMultipleAddSourceKey = "SettingsFileItems")
+if (!blnUsePath or InStr("Folder|SettingsFileItems", g_strMultipleAddSourceKey))
 {
 	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
-	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
 	Gui, 2:Add, Button, x+5 yp gButtonMultipleAddClearFilter vf_btnMultipleAddClearFilter, X
 }
 
-Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterChanged, % o_L["DialogMultipleAddExcludeExisting"]
+Gui, 2:Add, Checkbox, vf_blnMultipleAddExcludeExisting x+10 yp+5 gGuiMultipleAddFilterOrPathChanged, % o_L["DialogMultipleAddExcludeExisting"]
 
-if (g_strMultipleAddSourceKey = "SettingsFileMenus")
+if InStr("SettingsFileMenus|CSV", g_strMultipleAddSourceKey)
 {
 	Gui, 2:Add, Checkbox, vf_blnMultipleAddSelectAllNone x15 y+10 gGuiMultipleAddSelectAllNoneClicked, % o_L["DialogCloseAllWindowsSelectAll"]
 	Gui, 2:Add, TreeView, % "x10 y+5 w" . intGuiContentWidth . " Checked -ReadOnly r23 vf_tvMultipleAddList AltSubmit gGuiMultipleAddTreeEvents"
@@ -16177,7 +16252,7 @@ GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnGuiMultipleAddAddFavorites", "f
 
 Gui, 2:Add, Text
 
-Gosub, GuiMultipleAddFilterChanged
+Gosub, GuiMultipleAddFilterOrPathChanged
 
 Gosub, ShowGui2AndDisableGui1
 
@@ -16220,9 +16295,13 @@ return
 
 
 ;------------------------------------------------------------
-GuiMultipleAddFilterChanged:
+GuiMultipleAddFilterOrPathChanged:
+GuiMultipleAddFilterOrPathChangedFromCSV:
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
+
+if (A_ThisLabel <> "GuiMultipleAddFilterOrPathChangedFromCSV") ; path already set in GuiMultipleAddSourceCSVLoad
+	g_strMultipleAddSourcePath := f_strMultipleAddSourcePath ; use g_strMultipleAddSourcePath except when loading the CSV file
 
 Critical, On ; avoid interruptin while loading
 SetCursor(true, "wait")
@@ -16254,11 +16333,16 @@ else if (g_strMultipleAddSourceKey = "Special")
 	gosub, GuiMultipleAddSourceSpecialLoad
 
 else if (g_strMultipleAddSourceKey = "Folder")
-	and StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
+	and StrLen(g_strMultipleAddSourcePath) and FileExist(g_strMultipleAddSourcePath)
 	
 	gosub, GuiMultipleAddSourceFolderLoad
 	
-else if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath) and GetFileExtension(f_strMultipleAddSourcePath) = "ini"
+else if (g_strMultipleAddSourceKey = "CSV")
+	and StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
+	
+	gosub, GuiMultipleAddSourceCSVLoad ; will convert CSV file to ini file and redirect GuiMultipleAddSourceSettingsMenusLoad
+	
+else if StrLen(g_strMultipleAddSourcePath) and FileExist(g_strMultipleAddSourcePath) and GetFileExtension(g_strMultipleAddSourcePath) = "ini"
 	if (g_strMultipleAddSourceKey = "SettingsFileMenus")
 		gosub, GuiMultipleAddSourceSettingsMenusLoad
 	else ; SettingsFileItems
@@ -16277,47 +16361,6 @@ if (g_strMultipleAddSourceKey <> "SettingsFileMenus") ; not for treeview
 	
 	GuiControl, , f_blnMultipleAddSelectAllNone, % 0 ; reset select all/none to none
 }
-
-DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
-SetCursor(false)
-Critical, Off
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-GuiMultipleAddSourcePathChanged:
-;------------------------------------------------------------
-Gui, 2:Submit, NoHide
-
-Critical, On ; avoid interruptin while loading
-SetCursor(true, "wait")
-DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
-
-if (g_strMultipleAddSourceKey = "SettingsFileMenus")
-	TV_Delete()	
-else
-	LV_Delete()
-
-if StrLen(f_strMultipleAddSourcePath) and FileExist(f_strMultipleAddSourcePath)
-	if (g_strMultipleAddSourceKey = "SettingsFileMenus")
-	{
-		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
-			gosub, GuiMultipleAddSourceSettingsMenusLoad
-		; no else, enclose in curly brackets
-	}
-	else if (g_strMultipleAddSourceKey = "SettingsFileItems")
-	{
-		if GetFileExtension(f_strMultipleAddSourcePath) = "ini"
-			gosub, GuiMultipleAddSourceSettingsItemsLoad
-		; no else, enclose in curly brackets
-	}
-	else ; o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
-		gosub, GuiMultipleAddSourceFolderLoad
-
-GuiControl, , f_blnMultipleAddSelectAllNone, % 0
-gosub, GuiMultipleAddFilterChanged
 
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 SetCursor(false)
@@ -16450,12 +16493,12 @@ return
 GuiMultipleAddSourceFolderLoad:
 ;------------------------------------------------------------
 
-if !StrLen(f_strMultipleAddSourcePath)
+if !StrLen(g_strMultipleAddSourcePath)
 	return
 
 DllCall("LockWindowUpdate", Uint, g_strGui2Hwnd) ; lock window
 
-Loop, Files, %f_strMultipleAddSourcePath%, DF
+Loop, Files, %g_strMultipleAddSourcePath%, DF
 {
 	strThisFilePath := A_LoopFileLongPath
 	strThisFileName := A_LoopFileName
@@ -16465,6 +16508,7 @@ Loop, Files, %f_strMultipleAddSourcePath%, DF
 	strLvLocationOrContent := strThisFileName
 	oMultipleAddFavorite := new Container.Item(saFavorite) ; type, name, path
 	if (f_blnMultipleAddExcludeExisting ? !o_MainMenu.FoundIdenticalFavorite(oMultipleAddFavorite) : true)
+		and (!StrLen(f_strMultipleAddFilter) or InStrMultiple(oMultipleAddFavorite.AA.strFavoriteName, f_strMultipleAddFilter))
 	{
 		LV_Add(, oMultipleAddFavorite.AA.strFavoriteName, o_Favorites.GetFavoriteTypeObject(oMultipleAddFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			, strLvLocationOrContent, oMultipleAddFavorite.AA.strFavoriteType)
@@ -16496,6 +16540,59 @@ return
 
 
 ;------------------------------------------------------------
+GuiMultipleAddSourceCSVLoad:
+;------------------------------------------------------------
+
+if !StrLen(f_strMultipleAddSourcePath) ; use f_strMultipleAddSourcePath, not g_strMultipleAddSourcePath
+	return
+
+oCSV := ObjCSV_CSV2Collection(f_strMultipleAddSourcePath, strFieldNames)
+g_strMultipleAddSourcePath := g_strTempDir . "\TempSettings_" . RandomBetween() . ".ini" ; temporary QAP favorites file (will be deleted when quiting the app)
+strFavoriteSection := "[Favorites]`r`n"
+intFavorite := 1
+for intIndex, oItem in oCSV
+; oItem fields: FavoriteType (1), FavoriteName (2), FavoriteLocation (3), FavoriteIconResource (4), FavoriteShortcut (20), FavoriteHotstring (21),
+; FavoriteArguments (5), FavoriteAppWorkingDir (6), FavoriteLaunchWith (8), FavoriteLoginName (9), FavoritePassword (10)
+{
+	oFavorite := Object()
+	oFavorite[1] := (oItem["FavoriteType"] = "Menu-BEGIN" ? "Menu" : (oItem["FavoriteType"] = "Menu-END" ? "Z" : oItem["FavoriteType"]))
+	oFavorite[2] := oItem["FavoriteName"]
+	oFavorite[3] := oItem["FavoriteLocation"]
+	oFavorite[4] := oItem["FavoriteIconResource"]
+	oFavorite[5] := oItem["FavoriteArguments"]
+	oFavorite[6] := oItem["FavoriteAppWorkingDir"]
+	oFavorite[8] := oItem["FavoriteLaunchWith"]
+	oFavorite[9] := oItem["FavoriteLoginName"]
+	oFavorite[10] := oItem["FavoritePassword"]
+	oFavorite[20] := oItem["FavoriteShortcut"]
+	oFavorite[21] := oItem["FavoriteHotstring"]
+
+	strFavoriteLine := 
+	loop, 21
+		strFavoriteLine .= StrReplace(oFavorite[A_Index], "|", g_strEscapePipe) . "|"
+	strFavoriteSection .= "Favorite" . intFavorite . "=" . strFavoriteLine . "`r`n"
+	intFavorite++
+}
+FileAppend, % strFavoriteSection . "Favorite" . intFavorite . "=Z", %g_strMultipleAddSourcePath%, UTF-16
+
+; call GuiMultipleAddFilterOrPathChangedFromCSV to import data converted to QAP ini file format
+g_strMultipleAddSourceKey := "SettingsFileMenus"
+Gosub, GuiMultipleAddFilterOrPathChangedFromCSV ; using g_strMultipleAddSourcePath to use instead of f_strMultipleAddSourcePath
+
+oCSV := ""
+strFavoriteSection := ""
+intFavorite := ""
+intIndex := ""
+oItem := ""
+strFieldNames := ""
+strFavoriteLine := ""
+oFavorite := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeExisting, strMultipleAddFilter
 	, blnCondition, strName := "", strMenuPath := "", intItemPositionInMenu := "")
 ;------------------------------------------------------------
@@ -16510,7 +16607,7 @@ GuiMultipleAddSourceLoadLV(strInternalType, strLocation, blnMultipleAddExcludeEx
 	else if (strInternalType <> "Special") ; search only the name for Special
 		strFilterSearchIn .= "|" . strLocation
 	
-	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStr(strFilterSearchIn, strMultipleAddFilter))
+	if !(blnCondition) or (StrLen(strMultipleAddFilter) and !InStrMultiple(strFilterSearchIn, strMultipleAddFilter))
 		return
 	
 	oMultipleAddFavorite := new Container.Item([strInternalType, strName, strLocation]) ; type, name, path
@@ -16540,12 +16637,12 @@ GuiMultipleAddSourceSettingsItemsLoad:
 
 g_aaTreeViewItemsByIDs := Object() ; reset objects in TreeView
 
-if !StrLen(f_strMultipleAddSourcePath)
+if !StrLen(g_strMultipleAddSourcePath)
 	return
 
 oMultipleAddMain := new Container("Menu", g_strMultipleAddMainMenuName, false, "", "init", false, false) ; deleted after use in GuiMultipleAddFromListView
 
-g_strMultipleAddSourceKeySettingsFile := f_strMultipleAddSourcePath
+g_strMultipleAddSourceKeySettingsFile := g_strMultipleAddSourcePath
 
 if (oMultipleAddMain.LoadFavoritesFromIniFile(false, true, g_strMultipleAddSourceKeySettingsFile) = "EOM")
 	if (A_ThisLabel = "GuiMultipleAddSourceSettingsMenusLoad")
@@ -16567,6 +16664,8 @@ Gui, 2:+OwnDialogs
 
 if (g_strMultipleAddSourceKey = "SettingsFileMenus" or g_strMultipleAddSourceKey = "SettingsFileItems")
 	FileSelectFile, g_strMultipleAddSourceKeyPath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSwitchSettings"], *.ini
+else if (g_strMultipleAddSourceKey = "CSV")
+	FileSelectFile, g_strMultipleAddSourceKeyPath, 3, %f_strMultipleAddSourcePath%, % o_L["DialogSelectCSV"], *.csv
 else
 {
 	g_strMultipleAddSourceKeyPath := ChooseFolder([g_strGui2Hwnd, o_L["DialogSelectFolder"]], f_strMultipleAddSourcePath)
@@ -16587,7 +16686,7 @@ return
 ButtonMultipleAddClearFilter:
 ;------------------------------------------------------------
 
-GuiControl, , f_strMultipleAddFilter ; reset filter, triggers GuiMultipleAddFilterChanged
+GuiControl, , f_strMultipleAddFilter ; reset filter, triggers GuiMultipleAddFilterOrPathChanged
 
 return
 ;------------------------------------------------------------
@@ -16791,7 +16890,7 @@ Loop
 	{
         if !InStr(strFavoriteLocation, "\") ; if a full path extracted from a file shortcut, keep it as is
         {
-            SplitPath, f_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
+            SplitPath, g_strMultipleAddSourcePath, , g_strMultipleAddSourceKeyPath ; path without wildcards or filename
             strFavoriteLocation := g_strMultipleAddSourceKeyPath . "\" . strFavoriteLocation
         }
 		
@@ -16827,12 +16926,16 @@ Loop
 	{
 		oParentMenu := o_Containers.AA[g_strMultipleAddDestinationMenu] ; get parent menu object
 		o_EditedFavorite.AA.oParentMenu := oParentMenu ; set item's parent menu
+		strFavoriteName := o_EditedFavorite.AA.strFavoriteName ;to get a unique name
+		o_EditedFavorite.GetUniqueName(strFavoriteName, "", o_EditedFavorite.AA.oParentMenu.AA.strMenuPath, true) ; last true for blnRename
+		o_EditedFavorite.AA.strFavoriteName := strFavoriteName
+
 		oParentMenu.SA.Push(o_EditedFavorite) ; add new item to parent menu object simple array
 	}
 	else
 	{
 		g_strNewFavoriteIconResource := "" ; avoid re-use of variable from saving previous favorite
-		gosub, GuiAddFavoriteSaveFromMultipleAdd
+		gosub, GuiAddFavoriteSaveFromMultipleAdd ; make the favorite name unique
 	}
 }
 
@@ -20538,6 +20641,8 @@ else if (g_strMenuTriggerLabel = "LaunchFromAlternativeMenu")
 	g_strHotkeyTypeDetected := "Alternative"
 else if InStr(g_strMenuTriggerLabel, "FromMsg")
 	g_strHotkeyTypeDetected := (InStr(g_strMenuTriggerLabel, "Navigate") ? "Navigate" : "Launch")
+else if (g_strMenuTriggerLabel = "LaunchFromReopenMenu")
+	g_strHotkeyTypeDetected := "Launch"
 else
 	g_strHotkeyTypeDetected := SubStr(g_strMenuTriggerLabel, 1, InStr(g_strMenuTriggerLabel, "Hotkey") - 1) ; "Navigate" or "Launch"
 
@@ -20784,6 +20889,7 @@ CanHotkeyTrigger()
 	Diag(A_ThisFunc, "ExclusionList?", (StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ? "Yes" : "No"))
 	
 	; avoid blocking all hotkeys in case strHotkeyTriggerExclusionList is true (approved) and exclusion list is empty
+	; moved before SetTargetWinInfo to avoid issue calling hotkey when active window is elevated
 	if !StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
 		
 		return true ; regardless of o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
@@ -21271,6 +21377,7 @@ o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_str
 Diag(A_ThisLabel, "o_ThisFavorite.OpenFavorite", "AFTER")
 
 if (o_ThisFavorite.AA.oParentMenu.AA.blnReopenAfterLaunchingItem)
+	and !(A_ThisMenuItemPos = 1) ; this is the "Launch all items" menu, do not reopen the menu
 {
 	g_strShowMenu := o_ThisFavorite.AA.oParentMenu.AA.strMenuPath
 	Gosub, LaunchFromReopenMenu
@@ -22695,6 +22802,7 @@ if (f_radImpExpExport)
 	strImpExpFile := StrReplace(StrReplace(f_strImpExpFile, "%A_Now%", A_Now), "%A_NowUTC%", A_NowUTC)
 else
 	strImpExpFile := f_strImpExpFile
+strImpExpFile := EnvVars(strImpExpFile)
 
 g_strImpExpSourceFile := (f_radImpExpExport ? o_Settings.strIniFile : strImpExpFile) ; settings file or other file
 g_strImpExpDestinationFile := (f_radImpExpExport ? strImpExpFile : o_Settings.strIniFile) ; other file or settings file
@@ -23914,6 +24022,23 @@ GetCurrentLocation(strClass, strWinID)
 					{
 						if (pExplorer.HWND = strWinID)
 						{
+							; version "10.0.22621.675" is first Win 11 Explorer with tabs
+							if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+							{
+								intActiveTab := 0
+								try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinID%
+								if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
+								{
+									static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+									oShellBrowser := ComObjQuery(pExplorer, IID_IShellBrowser, IID_IShellBrowser)
+									DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
+									if (intThisTab != intActiveTab)
+										continue
+									ObjRelease(oShellBrowser)
+								}
+								else
+									return ; error
+							}
 							strLocation :=  ProcessLocationURL(UriDecode(pExplorer.LocationURL))
 							Break, 2 ; exit for loop and loop intTries
 						}
@@ -24476,9 +24601,15 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 			else
 			{
 				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
-				; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
-				GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true) ; returns current or latest file manager window ID and Window class
-				g_strHotkeyTypeDetected := (o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue ? "Navigate" : "Launch")
+				SetTargetWinInfo(false) ; set g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
+				; navigate if the last active window (active after closing the Quick Launch box) is a file manager
+				g_strHotkeyTypeDetected := ((o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue
+					and (WindowIsExplorer(g_strTargetClass)
+						or (WindowIsDirectoryOpus(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 2)
+						or (WindowIsTotalCommander(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 3)
+						or (WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !blnExcludeDialogBox)))
+					? "Navigate" : "Launch")
+						
 				Gosub, OpenFavoriteFromQuickLaunch
 			}
 			
@@ -24800,6 +24931,9 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 ;------------------------------------------------------------
 {
 	global g_strDOpusSelectedListText
+	
+	Diag(A_ThisFunc, "strClass", strClass)
+	Diag(A_ThisFunc, "strWinId", strWinId)
 
 	if WindowIsExplorer(strClass)
 	; LearningOne and jethrow on https://autohotkey.com/board/topic/60723-can-autohotkey-retrieve-file-path-of-the-selected-file/page-2
@@ -24807,8 +24941,26 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 		for objWindow in ComObjCreate("Shell.Application").Windows
 			if (objWindow.hwnd = strWinId)
 			{
+								; version "10.0.22621.675" is first Win 11 Explorer with tabs
+								if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+								{
+									intActiveTab := 0
+									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
+									if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
+									{
+										static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+										oShellBrowser := ComObjQuery(objWindow, IID_IShellBrowser, IID_IShellBrowser)
+										DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
+										if (intThisTab != intActiveTab)
+											continue
+										ObjRelease(oShellBrowser)
+									}
+									else
+										return false ; error
+								}
 				; retrieve list of selected items in strWinId Explorer window
 				objSelectedItems := objWindow.Document.SelectedItems
+				Diag(A_ThisFunc, "objSelectedItems", "FOUND")
 				break
 			}
 		for objItem in objSelectedItems
@@ -24820,6 +24972,7 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 				break
 		}
 		strSelection := SubStr(strSelection, 1, -1) ; remove last |
+		Diag(A_ThisFunc, "strSelection", strSelection)
 	}
 	else if WindowIsDesktop(strClass)
 	{
@@ -25091,7 +25244,9 @@ ParseIconResource(strIconResource, ByRef strIconFile, ByRef intIconIndex, strDef
 	
 	intIconIndex := (intIconIndex = 0 ? 1 : intIconIndex) ; replace index 0 that does not exist in icon files
 
-	; if strExpandedIconResource has a relative path, make it absolute based on the QAP working directory
+	if InStr(strIconFile, "{SETTINGS_")
+		strIconFile := ExpandPlaceholders(strIconFile, "", "", "")
+	; if strIconFile has a relative path, make it absolute based on the QAP working directory
 	strIconFile := PathCombine(A_WorkingDir, EnvVars(strIconFile))
 }
 ;------------------------------------------------------------
@@ -25718,7 +25873,7 @@ ComUnHTML(html)
 
 
 ;------------------------------------------------------------
-ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLocation, blnIsParameters := false)
+ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLocation, blnIsParameters := false, blnExpandingForUserVariables := false)
 ; Location replacements:
 ;   strOriginal: string to be expanded
 ;   strLocation: {LOC} (full location), {NAME} (file name), {DIR} (directory), {EXT} (extension), {NOEXT} (file name without extension) or {DRIVE} (drive)
@@ -25836,6 +25991,8 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		strExpanded := EnvVars(strExpanded) ; EnvVars() includes ExpandUserVariables()
 	else
 		strExpanded := ExpandUserVariables(strExpanded) ; bypass Envvars() (as always before v11.5.3)
+	if !(blnExpandingForUserVariables) ; expand placeholders in user variables
+		strExpanded := ExpandPlaceholders(strExpanded, strLocation, strCurrentLocation, strSelectedLocation, blnIsParameters, true) ; last true to avoid infinite loop
 		
 	if StrLen(strUserVariablesBackup) ; if we added a temporary user variable, restore original user variables
 		o_Settings.UserVariables.strUserVariablesList.IniValue := strUserVariablesBackup
@@ -28009,7 +28166,7 @@ ContainsPlaceholder(strLocation)
 ;------------------------------------------------------------
 {
 	if StrLen(strLocation)
-		return RegExMatch(strLocation, "i){(CUR_|SEL_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|NOW:.*)}") ; case insensitive
+		return RegExMatch(strLocation, "i){(CUR_|SEL_|SETTINGS_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|NOW:.*)}") ; case insensitive
 	; else return false
 }
 ;------------------------------------------------------------
@@ -28949,11 +29106,7 @@ class Triggers.MouseButtons
 					if (strTriggerType = "Mouse")
 						Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
 					else
-					{
-						Hotkey, If, CanHotkeyTrigger()
-							Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
-						Hotkey, If
-					}
+						Hotkey, % this.P_strAhkHotkey, %strLabel%, On UseErrorLevel
 				if (ErrorLevel)
 					Oops(0, o_L["DialogInvalidHotkey"], this.AA.strPopupHotkeyText, this.AA.strPopupHotkeyLocalizedName)
 			}
@@ -32041,10 +32194,7 @@ class Container
 				strMenuItemLabel := this.MenuNameWithNumericShortcut(strMenuItemLabel, true) ; true for blnUseAmpersandPlaceholder
 			
 			if (aaThisFavorite.strFavoriteType = "Group")
-			{
-				; ###_O("aaThisFavorite.oSubmenu.SA", aaThisFavorite.oSubmenu.SA, "AA", "strFavoriteName")
-				strMenuItemLabel .= " " . g_strGroupIndicatorPrefix . aaThisFavorite.oSubmenu.SA.MaxIndex() . g_strGroupIndicatorSuffix
-			}
+				strMenuItemLabel .= " " . g_strGroupIndicatorPrefix . aaThisFavorite.oSubmenu.ContainerCount() . g_strGroupIndicatorSuffix
 			
 			if StrLen(aaThisFavorite.strFavoriteShortcut) or StrLen(aaThisFavorite.strFavoriteHotstring)
 				strMenuItemLabel .= MenuNameReminder(aaThisFavorite.strFavoriteShortcut, GetHotstringTrigger(aaThisFavorite.strFavoriteHotstring))
@@ -32114,7 +32264,7 @@ class Container
 					Try Menu, % aaThisFavorite.oSubMenu.AA.strMenuPath, Color, %g_strMenuBackgroundColor% ; Try because this can fail if submenu is empty
 				
 				strMenuItemAction := ":" . aaThisFavorite.oSubMenu.AA.strMenuPath
-				intMenuItemStatus := (aaThisFavorite.oSubMenu.SA.MaxIndex() > 0
+				intMenuItemStatus := (aaThisFavorite.oSubMenu.ContainerCount() > 0
 					and (aaThisFavorite.oSubMenu.AA.strMenuType <> "External" or aaThisFavorite.oSubMenu.AA.blnMenuExternalLoaded)) ; 0 disabled, 1 enabled, 2 default
 				strMenuItemIcon := aaThisFavorite.strFavoriteIconResource
 			}
@@ -32169,18 +32319,6 @@ class Container
 							strMenuItemIcon := aaThisFavorite.strFavoriteIconResource
 						else
 							strMenuItemIcon := GetIcon4Location(aaThisFavorite.strFavoriteLocation) ; #### default value for dynamic menus?
-					; ParseIconResource(strThisIconFileIndex, strThisIconFile, intThisIconIndex, "iconFolder") ; only folder favorite may need the default icon
-					
-					; Menu, % this.AA.strMenuPath, UseErrorLevel, on
-					; ErrorLevel := 0 ; for safety clear in case Menu is not called in next if
-					; Menu, % this.AA.strMenuPath, Icon, %strMenuItemLabel%, %strThisIconFile%, %intThisIconIndex%, % o_Settings.MenuIcons.intIconSize.IniValue
-					; if (ErrorLevel)
-					; {
-						; ParseIconResource("iconUnknown", strIconFile, intIconIndex)
-						; Menu, % this.AA.strMenuPath, Icon, %strMenuItemLabel%
-							; , %strIconFile%, %intIconIndex%, % o_Settings.MenuIcons.intIconSize.IniValue
-					; }
-					; Menu, % this.AA.strMenuPath, UseErrorLevel, off
 				}
 				else
 					strMenuItemIcon := "iconNoIcon"
@@ -32197,6 +32335,8 @@ class Container
 					; block MenuContainerInGui menu if not in Main menu
 					; check favorite's location, not its name (that can now be changed)
 					intMenuItemStatus := 0
+				else if (aaThisFavorite.strFavoriteType = "Group")
+					intMenuItemStatus := (aaThisFavorite.oSubMenu.ContainerCount() > 0)
 				else
 					intMenuItemStatus := 1
 			}
@@ -32205,6 +32345,17 @@ class Container
 				and StrLen(strMenuItemLabel) ; exclude separators
 				and aaThisFavorite.intFavoriteUsageDb) ; exclude if no usage index
 				strMenuItemLabel .= " [" . aaThisFavorite.intFavoriteUsageDb . "]"
+			
+			; if favorite has a name and is under Main menu, expand favorite name with env vars, user vars and placeholders
+			if (StrLen(strMenuItemLabel)
+				and (SubStr(this.AA.strMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
+					or this.AA.strMenuPath = o_L["MenuContainerInGui"]))
+			{
+				strMenuItemLabel := EnvVars(ExpandPlaceholders(strMenuItemLabel, aaThisFavorite.strFavoriteLocation, "", ""))
+				while !this.FavoriteNameIsUnique(strMenuItemLabel, true) ; true to check strExpandedMenuItemLabel
+					strMenuItemLabel := AddUniqueSuffix(strMenuItemLabel)
+				aaThisFavorite.strExpandedMenuItemLabel := strMenuItemLabel ; allowing to check unique name for next items
+			}
 			
 			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
 			if (aaThisFavorite.intFavoriteDisabled <> -1) ; if not hidden
@@ -32664,11 +32815,12 @@ class Container
 	;------------------------------------------------------------
 
 	;------------------------------------------------------------
-	FavoriteNameIsUnique(strCandidateName)
+	FavoriteNameIsUnique(strCandidateName, blnCheckExpandedMenuItemLabel := false)
+	; blnCheckExpandedMenuItemLabel when checking unique name on favorite expanded names
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
-			if (strCandidateName = oItem.AA.strFavoriteName)
+			if (strCandidateName = (blnCheckExpandedMenuItemLabel ? oItem.AA.strExpandedMenuItemLabel : oItem.AA.strFavoriteName))
 				return false
 			
 		return true
@@ -33327,6 +33479,20 @@ class Container
 	}
 	;---------------------------------------------------------
 
+	;---------------------------------------------------------
+	ContainerCount()
+	; number of items not hidden in menus or not disabled in groups
+	; intFavoriteDisabled: enabled+visible (0), disabled+hidden (1), enabled+hidden (-1)
+	;---------------------------------------------------------
+	{
+		intCount := 0
+		for intKey, oItem in this.SA
+			if !(oItem.AA.intFavoriteDisabled)
+				intCount++
+		return intCount
+	}
+	;---------------------------------------------------------
+
 	; === end of methods for class Container ===
 	
 	;=============================================================
@@ -33824,7 +33990,7 @@ class Container
 			}
 			else
 			{
-				if (this.aaTemp.strOpenFavoriteLabel = "OpenAlternativeFromQuickLaunch") ; we already have menu position for Quick Launch
+				if InStr(this.aaTemp.strOpenFavoriteLabel, "FromQuickLaunch") ; we already have menu position for Quick Launch
 					g_intOriginalMenuPosition := this.AA.intSearchItemPositionInOriginalMenu
 				else
 					g_intOriginalMenuPosition := A_ThisMenuItemPos + this.AA.oParentMenu.GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
@@ -34072,7 +34238,7 @@ class Container
 						strExplorerIDsBefore := this.aaTemp.strExplorerIDs ;  save the list before launching this new Explorer
 					}
 					
-					if (GetOSVersionInfo().DetailedBuild >= "10.0.22621.675") ; open a new tab if Win 11 Explorer with tabs
+					if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; open a new tab if Win 11 Explorer with tabs
 						and (g_aaFileManagerExplorer.blnFileManagerUseTabs) ; use tabs option enabled
 						and (WinExist("ahk_class ExploreWClass") or WinExist("ahk_class CabinetWClass")) ; if an Explorer window already exists
 						and !(this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ; except if we set a window position, necessarily in a new window
@@ -34543,21 +34709,25 @@ class Container
 				BlockInput, On
 				objPrevClipboard := ClipboardAll ; save the clipboard (text or data)
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[1] ; safety delay default 40 ms
-				ClipBoard := ""
-				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms
+				
 				; DecodeSnippet: convert from raw content (as from ini file) to display format (when f_blnProcessEOLTab is true) or to paste format
-				ClipBoard := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders, true)
+				strClipboardContent := DecodeSnippet(this.aaTemp.strLocationWithPlaceholders, true)
 				if !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "O") ; OmitEndChar (by default false, behaviour change compared to previous version where end char was never pasted)
 					and !InStr(GetHotstringOptions(this.AA.strFavoriteHotstring), "*") ; there is not end char when option "Do not wait for Ending key"
-					Clipboard .= g_strHotstringEndChar
-				ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
-				intErrorLevel := ErrorLevel
-				if (intErrorLevel)
-					return intErrorLevel ; 1 if wait time exceeded
+					strClipboardContent .= g_strHotstringEndChar
 				
+				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms (2023-02-19 now consecutive to delay #1...)
+				Clipboard := strClipboardContent
+				
+				; ClipWait removed 2023-02-19 after error in Quick Clipboard Editor
+				; ClipWait, 0 ; SecondsToWait, specifying 0 is the same as specifying 0.5
+				; intErrorLevel := ErrorLevel
+				; if (intErrorLevel)
+					; return intErrorLevel ; 1 if wait time exceeded
 				; avoid using SendInput to send ^v
 				; (see: https://autohotkey.com/board/topic/77928-ctrl-v-sendinput-v-is-not-working-in-many-applications/#entry495555)
 				; tried "ControlSend, %g_strTargetControl%, ^v" with disappointing results (not working on Explorer address zone, send "v" to Word, etc.)
+				
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[3] ; delay required by some application, including Notepad, default 180 ms
 				SendEvent, ^v
 				BlockInput, Off
@@ -35023,7 +35193,8 @@ class Container
 					this.aaTemp.strAppWorkingDirWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteAppWorkingDir, this.aaTemp.strLocationWithPlaceholders
 						, (InStr(this.AA.strFavoriteAppWorkingDir, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
 						, (InStr(this.AA.strFavoriteAppWorkingDir, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
-					
+					Diag(A_ThisFunc, "this.aaTemp.strAppWorkingDirWithPlaceholders", this.aaTemp.strAppWorkingDirWithPlaceholders)
+
 					strAppWorkingDirBeforeFileExist := this.aaTemp.strAppWorkingDirWithPlaceholders
 					strTemp := this.aaTemp.strAppWorkingDirWithPlaceholders ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 					if StrLen(strTemp) and !FileExistInPath(strTemp)
