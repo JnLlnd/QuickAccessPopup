@@ -6044,7 +6044,7 @@ if !GetKeyState("Shift")
 	o_MainMenu.LaunchAutoExec()
 
 ; ####
-; Gosub, GuiMultipleAddSelectSource
+; Gosub, GuiOptionsGroupSettingsWindow
 
 return
 
@@ -6697,6 +6697,8 @@ global g_blnUseColors := (o_Settings.Launch.strTheme.IniValue <> "Windows")
 o_Settings.ReadIniOption("SettingsWindow", "strAvailableThemes", "AvailableThemes") ; g_strAvailableThemes
 
 ; Group SettingsWindow
+o_Settings.ReadIniOption("SettingsWindow", "intLabelsFontSize", "LabelsFontSize", 8, "SettingsWindow", "f_intLabelsFontSizeEdit|f_intLabelsFontSize|f_lblLabelsFontSize")
+o_Settings.ReadIniOption("SettingsWindow", "intListFontSize", "ListFontSize", 8, "SettingsWindow", "f_intListFontSizeEdit|f_intListFontSize|f_lblListFontSize")
 o_Settings.ReadIniOption("SettingsWindow", "blnDisplaySettingsStartup", "DisplaySettingsStartup", 0, "SettingsWindow", "f_blnDisplaySettingsStartup|f_lblOptionsSettingsWindow")
 o_Settings.ReadIniOption("SettingsWindow", "blnRememberSettingsPosition", "RememberSettingsPosition", 1, "SettingsWindow", "f_blnRememberSettingsPosition") ; g_blnRememberSettingsPosition
 o_Settings.ReadIniOption("SettingsWindow", "blnOpenSettingsOnActiveMonitor", "OpenSettingsOnActiveMonitor", 1, "SettingsWindow", "f_blnOpenSettingsOnActiveMonitor") ; g_blnOpenSettingsOnActiveMonitor
@@ -6705,6 +6707,7 @@ o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0,
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
+o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchFontSize", "QuickLaunchFontSize", 8, "SettingsWindow", "f_intQuickLaunchFontSizeEdit|f_intQuickLaunchFontSize|f_lblQuickLaunchFontSize")
 o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchNavigate", "QuickLaunchNavigate", 1, "SettingsWindow", "f_lblOptionsQuickLaunchTitle|f_blnQuickLaunchNavigate")
 o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchRecentsFrequents", "QuickLaunchRecentsFrequents", 0, "SettingsWindow", "f_blnQuickLaunchRecentsFrequents")
 o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchExtended", "QuickLaunchExtended", 0, "SettingsWindow", "f_blnQuickLaunchExtended")
@@ -9599,8 +9602,20 @@ Gui, 2:Font, s8 w700
 Gui, 2:Add, Text, y+20 y%intGroupItemsY% x%g_intGroupItemsX% w230 hidden vf_lblOptionsSettingsWindow, % o_L["OptionsSettingsWindow"]
 Gui, 2:Font
 
+; LabelsFontSize
+Gui, 2:Add, Edit, x%g_intGroupItemsX% y+12 h20 w40 vf_intLabelsFontSizeEdit hidden
+Gui, 2:Add, UpDown, Range6-12 h20 gGuiOptionsGroupChanged hidden vf_intLabelsFontSize, % o_Settings.SettingsWindow.intLabelsFontSize.IniValue
+Gui, 2:Add, Text, yp x+5 hidden vf_lblLabelsFontSize, % o_L["OptionsLabelsFontSize"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intLabelsFontSizeEdit
+
+; ListFontSize
+Gui, 2:Add, Edit, x%g_intGroupItemsX% y+15 h20 w40 vf_intListFontSizeEdit hidden
+Gui, 2:Add, UpDown, Range6-16 h20 gGuiOptionsGroupChanged hidden vf_intListFontSize, % o_Settings.SettingsWindow.intListFontSize.IniValue
+Gui, 2:Add, Text, yp x+5 hidden vf_lblListFontSize, % o_L["OptionsListFontSize"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intListFontSizeEdit
+
 ; DisplaySettingsStartup
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnDisplaySettingsStartup gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsStartup"]
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% vf_blnDisplaySettingsStartup gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsStartup"]
 GuiControl, , f_blnDisplaySettingsStartup, % (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue = true)
 
 ; SearchWithStats (also applies to Customize regular listview)
@@ -9644,18 +9659,27 @@ Gui, 2:Font, s8 w700
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w350 hidden vf_lblOptionsQuickLaunchTitle, % o_L["OptionsQuickLaunchTitle"]
 Gui, 2:Font
 
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchNavigate gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsQuickLaunchNavigate"]
+; QuickLaunchFontSize
+Gui, 2:Add, Edit, x%g_intGroupItemsTab4X% y+10 h20 w40 vf_intQuickLaunchFontSizeEdit hidden
+Gui, 2:Add, UpDown, Range6-16 h20 gGuiOptionsGroupChanged hidden vf_intQuickLaunchFontSize, % o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
+Gui, 2:Add, Text, yp x+5 hidden vf_lblQuickLaunchFontSize, % o_L["OptionsQuickLaunchFontSize"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intQuickLaunchFontSizeEdit
+
+; QuickLaunchNavigate
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsTab4X% vf_blnQuickLaunchNavigate gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsQuickLaunchNavigate"]
 GuiControl, , f_blnQuickLaunchNavigate, % (o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue = true)
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchRecentsFrequents gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsQuickLaunchRecentsFrequents"]
 GuiControl, , f_blnQuickLaunchRecentsFrequents, % (o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.IniValue = true)
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchExtended gGuiOptionsGroupChanged w330 hidden, % o_L["OptionsQuickLaunchExtended"]
 GuiControl, , f_blnQuickLaunchExtended, % (o_Settings.SettingsWindow.blnQuickLaunchExtended.IniValue = true)
 
+; QuickLaunchRowsEdit
 Gui, 2:Add, Edit, y+10 x%g_intGroupItemsTab4X% w51 h22 vf_intQuickLaunchRowsEdit number center hidden
 Gui, 2:Add, UpDown, vf_intQuickLaunchRows Range5-9999 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
 Gui, 2:Add, Text, yp x+10 w300 hidden vf_lblQuickLaunchRows, % o_L["OptionsQuickLaunchRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intQuickLaunchRowsEdit
 
+; QuickLaunchSort
 Gui, 2:Add, Text, y+15 x%g_intGroupItemsTab4X% w330 hidden vf_lblOptionsQuickLaunchSort, % o_L["DialogSortBy"] . ":"
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w300 vf_radOptionsQuickLaunchSort0 Group gGuiOptionsGroupChanged hidden "
 	. (!o_Settings.SettingsWindow.intQuickLaunchSort.IniValue ? "Checked" : ""), % o_L["DialogSortNaturalOrder"] ; 0 or empty -> natural order
@@ -10087,13 +10111,13 @@ Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w500 vf_blnSnippetDefaultFixedFon
 GuiControl, , f_blnSnippetDefaultFixedFont, % (o_Settings.Snippets.blnSnippetDefaultFixedFont.IniValue = true)
 
 ; SnippetDefaultFontSize
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% hidden vf_lblSnippetDefaultFontSize, % o_L["DialogFavoriteSnippetFontSize"]
-Gui, 2:Add, Edit, x+5 yp h20 w52 vf_intSnippetDefaultFontSizeEdit hidden, % o_L["DialogFavoriteSnippetFontSize"]
+Gui, 2:Add, Edit, x%g_intGroupItemsX% y+10 h20 w40 vf_intSnippetDefaultFontSizeEdit hidden
 Gui, 2:Add, UpDown, Range6-18 h20 gGuiOptionsGroupChanged hidden vf_intSnippetDefaultFontSize, % o_Settings.Snippets.intSnippetDefaultFontSize.IniValue
+Gui, 2:Add, Text, yp x+5 hidden vf_lblSnippetDefaultFontSize, % o_L["DialogFavoriteSnippetFontSize"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intSnippetDefaultFontSizeEdit
 
 ; SnippetDefaultMacro
-Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gGuiOptionsGroupChanged hidden, % o_L["DialogFavoriteSnippetSendModeMacro"]
+Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gGuiOptionsGroupChanged hidden, % o_L["DialogFavoriteSnippetSendModeMacro"]
 GuiControl, , f_blnSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
 ; HotstringsDefaultOptions
@@ -10495,6 +10519,10 @@ o_Settings.Launch.strQAPTempFolderParent.WriteIni(StrLen(f_strQAPTempFolderParen
 
 ; === SettingsWindow ===
 
+intLabelsFontSizePrev := o_Settings.SettingsWindow.intLabelsFontSize.IniValue
+o_Settings.SettingsWindow.intLabelsFontSize.WriteIni(f_intLabelsFontSizeEdit)
+intListFontSizePrev := o_Settings.SettingsWindow.intListFontSize.IniValue
+o_Settings.SettingsWindow.intListFontSize.WriteIni(f_intListFontSizeEdit)
 o_Settings.SettingsWindow.blnDisplaySettingsStartup.WriteIni(f_blnDisplaySettingsStartup)
 blnSearchWithStatsPrev := o_Settings.SettingsWindow.blnSearchWithStats.IniValue
 o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
@@ -10504,6 +10532,8 @@ o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_b
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
+intQuickLaunchFontSizePrev := o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
+o_Settings.SettingsWindow.intQuickLaunchFontSize.WriteIni(f_intQuickLaunchFontSizeEdit)
 o_Settings.SettingsWindow.blnQuickLaunchNavigate.WriteIni(f_blnQuickLaunchNavigate)
 o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.WriteIni(f_blnQuickLaunchRecentsFrequents)
 o_Settings.SettingsWindow.blnQuickLaunchExtended.WriteIni(f_blnQuickLaunchExtended)
@@ -10847,6 +10877,9 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (strQAPTempFolderParentPrev <> o_Settings.Launch.strQAPTempFolderParent.IniValue)
 	or (blnDisplayIconsPrev <> o_Settings.MenuIcons.blnDisplayIcons.IniValue)
 	or (intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue)
+	or (intLabelsFontSizePrev  <> o_Settings.SettingsWindow.intLabelsFontSize.IniValue)
+	or (intListFontSizePrev  <> o_Settings.SettingsWindow.intListFontSize.IniValue)
+	or (intQuickLaunchFontSizePrev  <> o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
@@ -10879,10 +10912,25 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 		strOption := o_L["OptionsDisplayIcons"]
 		strValue := (o_Settings.MenuIcons.blnDisplayIcons.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
-	else ; intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue
+	else if (intIconSizePrev <> o_Settings.MenuIcons.intIconSize.IniValue)
 	{
 		strOption := o_L["OptionsIconSize"]
 		strValue := o_Settings.MenuIcons.intIconSize.IniValue
+	}
+	else if (intLabelsFontSizePrev <> o_Settings.SettingsWindow.intLabelsFontSize.IniValue)
+	{
+		strOption := o_L["OptionsLabelsFontSize"]
+		strValue := o_Settings.SettingsWindow.intLabelsFontSize.IniValue
+	}
+	else if (intListFontSizePrev <> o_Settings.SettingsWindow.intListFontSize.IniValue)
+	{
+		strOption := o_L["OptionsListFontSize"]
+		strValue := o_Settings.SettingsWindow.intListFontSize.IniValue
+	}
+	else if (intQuickLaunchFontSizePrev <> o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue)
+	{
+		strOption := o_L["OptionsQuickLaunchFontSize"]
+		strValue := o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
 	}
 
 	MsgBox, 52, %g_strAppNameText%, % L(o_L["ReloadPrompt"], strOption, """" . strValue . """", g_strAppNameText)
@@ -12028,7 +12076,6 @@ return
 BuildGui:
 ;------------------------------------------------------------
 
-; intFontSize := 16 
 strTextColor := o_Settings.ReadIniValue("TextColor", 000000, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 g_strGuiListviewBackgroundColor := o_Settings.ReadIniValue("ListviewBackground", FFFFFF, "Gui-" . o_Settings.Launch.strTheme.IniValue)
 g_strGuiListviewTextColor := o_Settings.ReadIniValue("ListviewText", 000000, "Gui-" . o_Settings.Launch.strTheme.IniValue)
@@ -12087,8 +12134,11 @@ g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipShowContainerInGui"]
 Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search_c.png ; Static20
 g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
 
+intLabelFontSize := o_Settings.SettingsWindow.intLabelsFontSize.IniValue
+intListViewFontSize := o_Settings.SettingsWindow.intListFontSize.IniValue
+Gui, 1:Font, s%intLabelFontSize%
+
 ; Gui, 1:Font, s14 w400, Arial ; button legend (was Arial 8)
-Gui, 1:Font, s8 ; 8, 9, 10, 11, 12 or 13
 Gui, 1:Font, w400, Arial ; button legend (was Arial 8)
 Gui, 1:Add, Text, vf_lblGuiAddFavorite center gGuiAddFavoriteSelectType w88 x0 y+20, % o_L["GuiAddFavorite"] ; Static21
 Gui, 1:Add, Text, vf_lblGuiEditFavorite center gGuiEditFavorite x+1 yp w88, % o_L["GuiEditFavorite"] ; Static22, w88 to make room fot when multiple favorites are selected
@@ -12099,6 +12149,7 @@ Gui, 1:Add, Text, vf_lblGuiMoveFavorite center gGuiMoveFavoriteToMenu x+1 yp w88
 ; Gui, 1:Font, s8 w400 normal, Verdana ; (was Verdana 8)
 Gui, 1:Font, w400 normal, Verdana ; (was Verdana 8)
 Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropdownLabel"] ; Static26
+Gui, 1:Font, w400 normal, Verdana ; (was Verdana 8)
 Gui, 1:Add, DropDownList, vf_drpMenusList gGuiMenusListChanged x0 y+1 ; ComboBox1
 
 Gui, 1:Add, Edit, vf_strFavoritesListFilter r1 gLoadFavoritesInGui hidden ; Edit1 (EditN controls do not support tooltips)
@@ -12107,11 +12158,14 @@ g_aaToolTipsMessages["Button1"] := o_L["ControlToolTipSearchBoxExtended"]
 Gui, 1:Add, Button, vf_btnFavoritesListNoFilter gGuiGotoMenuPrev x+10 yp w20 h20 hidden, X ; Button2
 g_aaToolTipsMessages["Button2"] := o_L["ControlToolTipSearchBoxClear"]
 ; #| + Name|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
+
+Gui, 1:Font, s%intListViewFontSize%
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList +Hwndg_strFavoritesListHwnd Count32 AltSubmit NoSortHdr LV0x10 LV0x10000 "
 		. (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
 	, % o_L["GuiLvFavoritesHeader"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? "|" . o_L["GuiLvFavoritesHeaderFilteredDates"]
 	. (g_blnUsageDbEnabled ? "|" . o_L["GuiLvFavoritesHeaderFilteredStats"] : "") : "") ; SysHeader321 / SysListView321
+Gui, 1:Font, s%intLabelFontSize%
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
 	LV_ModifyCol(8, "Integer") ; usage column
 
@@ -24431,9 +24485,12 @@ Gui, QuickLaunch:Default
 Gui +LastFound
 WinSet, AlwaysOnTop, On
 
+Gui, Font, % "s" . o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
+
 Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged
+intYp := 7 + Round(o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue * 1.6667)
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
-	. " yp+20 Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvQuickLaunch AltSubmit gGuiQuickLaunchEvents", Col1|Sort|Index
+	. " yp+" . intYp . " Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvQuickLaunch AltSubmit gGuiQuickLaunchEvents", Col1|Sort|Index
 Gui, Add, Button, Default Hidden gQuickLaunchEnter, Default
 
 if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
@@ -24455,6 +24512,7 @@ Gui, QuickLaunch:Show, % "Autosize " . (saQuickLaunchPosition[1] = -1 or saQuick
 intQuickLaunchGuiMinHeight := ""
 strQuickLaunchPosition := ""
 saQuickLaunchPosition := ""
+intYp := ""
 
 return
 ;------------------------------------------------------------
