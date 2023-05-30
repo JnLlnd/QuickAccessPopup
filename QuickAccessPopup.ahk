@@ -28240,7 +28240,7 @@ ContainsPlaceholder(strLocation)
 ;------------------------------------------------------------
 {
 	if StrLen(strLocation)
-		return RegExMatch(strLocation, "i){(CUR_|SEL_|SETTINGS_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|NOW:.*)}") ; case insensitive
+		return RegExMatch(strLocation, "i){(CUR_|SEL_|SETTINGS_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|MENU:.*|NOW[:\+-].*|RANDOMTEXT:.*|RANDOMNUMBER:.*|GUID)}") ; case insensitive
 	; else return false
 }
 ;------------------------------------------------------------
@@ -32794,10 +32794,11 @@ class Container
 			Menu, % this.AA.strMenuPath, UseErrorLevel, off
 		}
 		
-		if !(intStatus)
-			Menu, % this.AA.strMenuPath, Disable, %strMenuItemName%
-		else if (intStatus = 2)
-			Menu, % this.AA.strMenuPath, Default, %strMenuItemName%
+		if StrLen(strMenuItemName) ; prevent error situation where name would be empty - do not add to menu
+			if !(intStatus)
+				Menu, % this.AA.strMenuPath, Disable, %strMenuItemName%
+			else if (intStatus = 2)
+				Menu, % this.AA.strMenuPath, Default, %strMenuItemName%
 	}
 	;------------------------------------------------------------
 	
