@@ -19385,6 +19385,7 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 		Gui, Add, Radio, % "yp x+10 disabled vf_radRight" . SS_saModifiersLabels[A_Index], % o_L["DialogWindowPositionRight"]
 	}
 	Gosub, SetModifiersCheckBoxAndRadio ; set checkboxes and radio buttons according to o_HotkeyActual.strModifiers
+	Gui, Add, Text, x10 y+10 w400, % o_L["DialogChangeHotkeyAltGrHelp"]
 
 	Gui, Add, Button, y+25 x10 vf_btnChangeShortcutOK gButtonChangeShortcutOK, % SS_aaL["DialogOK"]
 	Gui, Add, Button, yp x+20 vf_btnChangeShortcutCancel gButtonChangeShortcutCancel, % SS_aaL["GuiCancel"]
@@ -29233,11 +29234,12 @@ class Triggers.MouseButtons
 			else 
 			{
 				intPosFirstNotModifier := 0
-				loop, Parse, strHotkey
-					if InStr("^!+#<>", A_LoopField)
-						intPosFirstNotModifier++
-					else
-						break ; got first character not a modifier
+				if !(strHotkey = "<" or strHotkey = ">") ; do not consider <> as left/right modifiers
+					loop, Parse, strHotkey
+						if InStr("^!+#<>", A_LoopField)
+							intPosFirstNotModifier++
+						else
+							break ; got first character not a modifier
 				str := SubStr(strHotkey, 1, intPosFirstNotModifier)
 				this.strModifiers := str
 				str := SubStr(strHotkey, intPosFirstNotModifier + 1)
