@@ -31,6 +31,27 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.2 (2023-06-01)
+ 
+Customize the fonts of the "Customize" window
+- under "Options, Customize window", customize the font size of:
+  - the "Customize" window labels (from 6 to 12 points, default 8)
+  - the favorites list (from 6 to 16 points, default 8)
+  - and of the "Quick Launch" search (from 6 to 16 points, default 8)
+- you will have to reload QAP after changing one of these options
+ 
+Add Multiple Favorites
+- support adding favorites from a CSV files (see the format description here: https://www.quickaccesspopup.com/can-i-add-multiple-favorites-in-one-click/#csv)
+- for sources with filters, support multiple strings filters (for example "abc xyz" to filter items with "abc AND xyz")
+- support filter when adding from source "Folder"
+ 
+Various improvements
+- in Favorites Names, expand Environment variables, User variables and Placeholders 
+- fix bug preventing the use of < and > as hotkeys
+- add this note to the "Select Shortcut" dialog box: If your keyboard layout has AltGr (or AltCar), select both Ctrl and Alt checkboxes to use this key as a modifier
+- fix bug when icon resource in a desktop.ini file has no comma
+- stop reopening a Group menu after selecting "Launch all items"
+
 Version BETA: 11.6.1.9.7 (2023-05-31)
 - fix bug preventing the use of < and > as hotkeys
 - add this note to the "Select Shortcut" dialog box: If your keyboard layout has AltGr instead of Right-Alt, select both Ctrl and Alt checkboxes to use AltGr as a modifier.
@@ -5485,7 +5506,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.1.9.7
+;@Ahk2Exe-SetVersion 11.6.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5553,8 +5574,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.1.9.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.6.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
