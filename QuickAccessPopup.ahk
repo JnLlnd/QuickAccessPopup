@@ -29258,16 +29258,21 @@ class Triggers.MouseButtons
 			}
 			else 
 			{
-				intPosFirstNotModifier := 0
-				if !(strHotkey = "<" or strHotkey = ">") ; do not consider <> as left/right modifiers
-					loop, Parse, strHotkey
-						if InStr("^!+#<>", A_LoopField)
-							intPosFirstNotModifier++
-						else
-							break ; got first character not a modifier
-				str := SubStr(strHotkey, 1, intPosFirstNotModifier)
+				intPosLastModifier := 0 ; if there is no modifier
+				saHotkey := StrSplit(strHotkey)
+				intPos := StrLen(strHotkey) - 1 ; start from the end but do not consider last char (it is never a modifier even if < or >)
+				loop, % StrLen(strHotkey) - 1
+					if InStr("^!+#<>", saHotkey[intPos])
+					{
+						intPosLastModifier := intPos ; position of character before 
+						break ; got first character not a modifier
+					}
+					else
+						intPos--
+					
+				str := SubStr(strHotkey, 1, intPosLastModifier)
 				this.strModifiers := str
-				str := SubStr(strHotkey, intPosFirstNotModifier + 1)
+				str := SubStr(strHotkey, intPosLastModifier + 1)
 				this.strKey := str
 				
 				if o_MouseButtons.IsMouseButton(this.strKey) ; we have a mouse button
