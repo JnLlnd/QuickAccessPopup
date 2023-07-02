@@ -28474,7 +28474,7 @@ GetPixelSizeOfText(str)
 	; GuiFont     := Control_GetFont( hwnd ) ; provide control's HWND
 	; GuiFontSize := A_LastError
 	strFont := "MS Shell Dlg"
-	strFontSize := 8
+	strFontSize := o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
 	oTextExtentPoint := GetTextExtentPoint(str, strFont, strFontSize, 0)
 	a1 := oTextExtentPoint.W
 	
