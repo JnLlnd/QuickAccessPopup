@@ -26062,7 +26062,8 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			strExpanded := ExpandPlaceholderMenu(strExpanded)
 	
 		; process Clipboard
-		strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
+		if ClipboardIsFree(A_ThisFunc) ; avoid error if Clipboard is used by another application and not released after 1 second
+			strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
 		; process Input
 		while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
@@ -28527,6 +28528,27 @@ Control_GetFont( hwnd )
 	DllCall( "ReleaseDC", Int,0, UInt,hDC ), S := Round( ( -NumGet( LF,0,"Int" )*72 ) / DPI )
 	
 	Return DllCall( "MulDiv",Int,&LF+28, Int,1,Int,1, Str ), DllCall( "SetLastError", UInt,S )
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ClipboardIsFree(strCaller)
+; see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=114865
+; https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getopenclipboardwindow
+;------------------------------------------------------------
+{
+	while, DllCall("GetOpenClipboardWindow")
+		if (A_Index > 10)
+		{
+			Diag(A_ThisFunc . " - BUSY", "Caller", strCaller)
+			return false ; Clipboard is locked by another application for more than one second
+		}
+		else
+			Sleep, 100
+	
+	Diag(A_ThisFunc . " - FREE", "Caller", strCaller)
+	return true ; Clipboard is free
 }
 ;------------------------------------------------------------
 
