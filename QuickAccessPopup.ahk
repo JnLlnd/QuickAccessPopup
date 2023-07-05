@@ -16646,8 +16646,8 @@ g_strMultipleAddSourcePath := g_strTempDir . "\TempSettings_" . RandomBetween() 
 strFavoriteSection := "[Favorites]`r`n"
 intFavorite := 1
 for intIndex, oItem in oCSV
-; oItem fields: FavoriteType (1), FavoriteName (2), FavoriteLocation (3), FavoriteIconResource (4), FavoriteShortcut (20), FavoriteHotstring (21),
-; FavoriteArguments (5), FavoriteAppWorkingDir (6), FavoriteLaunchWith (8), FavoriteLoginName (9), FavoritePassword (10)
+; oItem fields: FavoriteType (1), FavoriteName (2), FavoriteLocation (3), FavoriteIconResource (4), FavoriteArguments (5), FavoriteAppWorkingDir (6),
+; FavoriteLaunchWith (8), FavoriteLoginName (9), FavoritePassword (10), FavoriteDisabled (14), FavoriteShortcut (20), FavoriteHotstring (21)
 {
 	oFavorite := Object()
 	oFavorite[1] := (oItem["FavoriteType"] = "Menu-BEGIN" ? "Menu" : (oItem["FavoriteType"] = "Menu-END" ? "Z" : oItem["FavoriteType"]))
@@ -16659,6 +16659,7 @@ for intIndex, oItem in oCSV
 	oFavorite[8] := oItem["FavoriteLaunchWith"]
 	oFavorite[9] := oItem["FavoriteLoginName"]
 	oFavorite[10] := oItem["FavoritePassword"]
+	oFavorite[14] := oItem["FavoriteDisabled"]
 	oFavorite[20] := oItem["FavoriteShortcut"]
 	oFavorite[21] := oItem["FavoriteHotstring"]
 
