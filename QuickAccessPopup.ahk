@@ -5787,6 +5787,7 @@ global g_intMenuPosY
 global g_strHotstringEndChar
 global g_blnAlternativeMenuFromQuickLaunch
 global g_intQuickLaunchGuiMinWidth
+global g_intRunCommandMax := 8191
 
 ;---------------------------------
 ; Initial validation
@@ -14374,7 +14375,8 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 if !InStr("Group|Snippet|QAP|Folder", o_EditedFavorite.AA.strFavoriteType, true)
 {
 	Gui, 2:Add, Text, y+20 x20 w400  vf_lblFavoriteArguments, % o_L["DialogArgumentsLabel"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
-	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteArguments gFavoriteArgumentChanged, % o_EditedFavorite.AA.strFavoriteArguments
+	Gui, 2:Add, Edit, % "x20 y+5 w400 vf_strFavoriteArguments gFavoriteArgumentChanged r"
+		. (StrLen(o_EditedFavorite.AA.strFavoriteArguments) > 60 ? 2 : 1), % o_EditedFavorite.AA.strFavoriteArguments
 	Gui, 2:Add, Text, x20 y+5 w500, % o_L["DialogArgumentsLabelHelp"]
 	Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"]
 		, AddUtm2Url("https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders", A_ThisLabel, "Help"))
@@ -28559,6 +28561,21 @@ ClipboardIsFree(strCaller)
 ;------------------------------------------------------------
 
 
+;------------------------------------------------------------
+RunCommandTooLong(strRunCommand)
+;------------------------------------------------------------
+{
+	strRunCommandLength := StrLen(strRunCommand)
+	blnRunCommandTooLong := (StrLen(strRunCommand) > g_intRunCommandMax)
+	
+	if (blnRunCommandTooLong)
+		Oops("", o_L["OopsRunCommandTooLong"], strRunCommandLength, g_intRunCommandMax)
+	
+	return blnRunCommandTooLong
+}
+;------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -34990,6 +35007,9 @@ class Container
 			; TAKE CARE to keep RunWait and Run parameters identical
 			
 			strTarget := (this.AA.blnFavoriteElevate or g_strAlternativeMenu = o_L["MenuAlternativeRunAs"] ? "*RunAs " : "") . this.aaTemp.strFullLocation
+			if RunCommandTooLong(strTarget)
+				return -1
+			
 			strWorkingDir := this.aaTemp.strAppWorkingDirWithPlaceholders
 			strOptions := "UseErrorLevel" . (StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[4] ? " Min" : "") ; 4 boolean launch minimized
 			
@@ -35083,6 +35103,9 @@ class Container
 		; called for links and documents only, return 0 if success or error code
 		;---------------------------------------------------------
 		{
+			if RunCommandTooLong(this.aaTemp.strFullLocation)
+				return -1
+			
 			if PlaceholderDebug(this.aaTemp.strFullLocation, this.AA.blnFavoriteDebug)
 				return -1
 			Run, % this.aaTemp.strFullLocation, , UseErrorLevel, intPid
