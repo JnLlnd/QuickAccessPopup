@@ -7950,7 +7950,7 @@ loop, Parse, % "Main|File|Favorite|Tools|Options|MoreOptions|Help|SpecialSearch"
 
 aaMenuFileL := o_L.InsertAmpersand(true, "GuiSave", "GuiSaveAndClose", "GuiCancel", "GuiClose", "MenuOpenWorkingDirectory"
 	, "MenuOpenBackupDirectory", "MenuEditIniFile@" . o_Settings.strIniFileNameExtOnly, "MenuSwitchSettings", "MenuSwitchSettingsDefault"
-	, "ImpExpMenu", "MenuReload@" . g_strAppNameText, "MenuExitApp@" . g_strAppNameText)
+	, "ImpExpMenu", "ImpExpImportFavorites", "ImpExpMenuExport", "MenuReload@" . g_strAppNameText, "MenuExitApp@" . g_strAppNameText)
 saMenuItemsTable := Object()
 saMenuItemsTable.Push(["SettingsCtrlS", aaMenuFileL["GuiSave"] . "`tCtrl+S", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiSaveAndCloseFavorites", aaMenuFileL["GuiSaveAndClose"], "", "iconNoIcon"])
@@ -7965,7 +7965,10 @@ if (o_Settings.MenuAdvanced.blnShowAdvancedSettingsMenusItems.IniValue = 1)
 	saMenuItemsTable.Push(["SwitchSettings", aaMenuFileL["MenuSwitchSettings"] . g_strEllipse, "", "iconNoIcon"])
 	saMenuItemsTable.Push(["SwitchSettingsDefault", aaMenuFileL["MenuSwitchSettingsDefault"], "", "iconNoIcon"])
 }
-saMenuItemsTable.Push(["ImportExport", aaMenuFileL["ImpExpMenu"] . g_strEllipse, "", "iconNoIcon"])
+saMenuItemsTable.Push(["X"])
+saMenuItemsTable.Push(["ExportOptionsFavorites", aaMenuFileL["ImpExpMenuExport"] . g_strEllipse, "", "iconNoIcon"])
+saMenuItemsTable.Push(["ImportOptions", aaMenuFileL["ImpExpMenu"] . g_strEllipse, "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiMultipleAddSettingsFileMenus", aaMenuFileL["ImpExpImportFavorites"] . g_strEllipse, "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["ReloadQAP", aaMenuFileL["MenuReload@" . g_strAppNameText], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
@@ -22782,7 +22785,9 @@ return
 
 
 ;------------------------------------------------------------
-ImportExport:
+ImportOptions:
+ExportOptionsFavorites:
+; #####
 ;------------------------------------------------------------
 
 if !(g_blnMenuReady)
@@ -30582,8 +30587,14 @@ class QAPfeatures
 		this.AddQAPFeatureObject("CloseMenu",				o_L["MenuCloseThisMenu"],					"", "DoNothing",							"7-QAPManagement"
 			, o_L["MenuCloseThisMenuDescription"], 0, "iconClose", ""
 			, "what-is-the-close-menu-issue")
-		this.AddQAPFeatureObject("ImportExport",			o_L["ImpExpMenu"] . g_strEllipse,			"", "ImportExport",							"7-QAPManagement"
+		this.AddQAPFeatureObject("ImportExport",			o_L["ImpExpMenu"] . g_strEllipse,			"", "ImportOptions",						"7-QAPManagement"
 			, o_L["ImpExpMenuDescription"], 0, "iconSettings", ""
+			, "can-i-backup-import-or-export-my-favorites-and-settings")
+		this.AddQAPFeatureObject("ExportOptionsFavorites",			o_L["ImpExpMenuExport"] . g_strEllipse, "", "ExportOptionsFavorites",			"7-QAPManagement"
+			, o_L["ImpExpMenuExportDescription"], 0, "iconSettings", ""
+			, "can-i-backup-import-or-export-my-favorites-and-settings")
+		this.AddQAPFeatureObject("ImportFavorites",			o_L["ImpExpImportFavorites"] . g_strEllipse, "", "GuiMultipleAddSettingsFileMenus",		"7-QAPManagement"
+			, L(o_L["ImportFavoritesDescription"], o_L["DialogMultipleAdd"], o_L["DialogMultipleAddSettingsFileMenus"]), 0, "iconSettings", ""
 			, "can-i-backup-import-or-export-my-favorites-and-settings")
 		this.AddQAPFeatureObject("SwitchSettings",			o_L["MenuSwitchSettings"] . g_strEllipse,	"", "SwitchSettings",						"3-QAPMenuEditing~7-QAPManagement"
 			, o_L["MenuSwitchSettingsDescription"], 0, "iconSettings", ""
