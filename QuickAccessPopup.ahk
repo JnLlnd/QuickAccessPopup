@@ -22787,7 +22787,6 @@ return
 ;------------------------------------------------------------
 ImportOptions:
 ExportOptionsFavorites:
-; #####
 ;------------------------------------------------------------
 
 if !(g_blnMenuReady)
@@ -22799,7 +22798,9 @@ if SettingsUnsaved()
 	return
 }
 
-strGuiTitle := L(o_L["ImpExpTitle"], g_strAppNameText)
+blnExport := InStr(A_ThisLabel, "Export")
+
+strGuiTitle := (blnExport ? o_L["ImpExpMenuExport"] : o_L["ImpExpMenu"]) . " - " . g_strAppNameText
 Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
 Gui, 2:+Owner1
 Gui, 2:+OwnDialogs
@@ -22807,36 +22808,33 @@ if (g_blnUseColors)
 	Gui, 2:Color, %g_strGuiWindowColor%
 
 Gui, 2:Font, w700
-; f_radImpExpExport: Export / f_radImpExpImport: Import
-Gui, 2:Add, Radio, y+20 x10 w130 vf_radImpExpExport gImpExpClicked Checked Group, % o_L["ImpExpExport"]
-Gui, 2:Add, Radio, x150 yp w130 vf_radImpExpImport gImpExpClicked, % o_L["ImpExpImport"]
-
-Gui, 2:Font, w700
-Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpFile, % L(o_L["ImpExpFile"], o_L["ImpExpDestination"])
+Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpFile, % L(o_L["ImpExpFile"], (blnExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))
 Gui, 2:Font
 Gui, 2:Add, Edit, x10 w320 h20 vf_strImpExpFile
 Gui, 2:Add, Button, x+10 yp vf_btnImpExpFile gButtonImpExpFile, % o_L["DialogBrowseButton"]
 
 Gui, 2:Font, w700
-Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpOptions, % o_L["ImpExpExport"]
+Gui, 2:Add, Text, y+20 x10 w400 vf_lblImpExpOptions, % L(blnExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"])
 Gui, 2:Font
 
 Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpGlobal Checked, % o_L["ImpExpFileGlobal"]
 Gui, 2:Add, CheckBox, y+10 x10 w400 vf_blnImpExpAlternative Checked, % o_L["ImpExpOptionAlternative"]
 Gui, 2:Add, Checkbox, y+10 x10 w400 vf_blnImpExpThemes Checked, % o_L["ImpExpFileThemes"]
-Gui, 2:Add, CheckBox, y+10 x10 w200 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
-
-Gui, 2:Add, Button, y+1 x10 vf_btnImportFavorites gGuiMultipleAddSettingsFileMenus, % o_L["ImpExpImportFavorites"]
-GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnImportFavorites")
+if (blnExport)
+	Gui, 2:Add, CheckBox, y+10 x10 w200 vf_blnImpExpFavorites Checked, % o_L["ImpExpOptionFavorites"]
 
 aaImportExportL := o_L.InsertAmpersand(false, "ImpExpImport", "ImpExpExport", "GuiClose")
 
-Gui, 2:Add, Button, y+20 x10 vf_btnImpExpGo gButtonImpExpGo default, % aaImportExportL["ImpExpExport"]
+Gui, 2:Add, Button, y+20 x10 vf_btnImpExpGo gButtonImpExpGo default, % L(blnExport ? aaImportExportL["ImpExpExport"] : aaImportExportL["ImpExpImport"])
 Gui, 2:Add, Button, yp x+20 vf_btnImpExpClose gButtonImpExpClose, % aaImportExportL["GuiClose"]
 GuiCenterButtons(g_strGui2Hwnd, 10, 5, 20, "f_btnImpExpGo", "f_btnImpExpClose")
+if !(blnExport)
+	Gui, 2:Add, Text, y+20 x10 w400 center, % L(o_L["ImpExpHelpImportFavorites"], o_L["ImpExpImportFavorites"])
 Gui, 2:Add, Text
 
-gosub, ImpExpClicked
+strImpExpFile := o_Settings.ReadIniValue((blnExport ? "LastExportFile" : "LastImportFile"), " ") ; empty if not found
+GuiControl, , f_strImpExpFile, %strImpExpFile%
+
 CalculateTopGuiPosition(g_strGui2Hwnd, g_strGui1Hwnd, intX, intY)
 Gosub, ShowGui2AndDisableGui1
 
@@ -22847,40 +22845,14 @@ return
 
 
 ;------------------------------------------------------------
-ImpExpClicked:
-; f_radImpExpExport: Export / f_radImpExpImport: Import
-;------------------------------------------------------------
-Gui, 2:Submit, NoHide
-
-GuiControl, , f_lblImpExpFile, % L(o_L["ImpExpFile"], (f_radImpExpExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))
-GuiControl, , f_lblImpExpOptions, % L(f_radImpExpExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"])
-GuiControl, , f_btnImpExpGo, % L(f_radImpExpExport ? o_L["ImpExpExport"] : aaImportExportL["ImpExpImport"])
-
-if (f_radImpExpExport)
-	strImpExpFile := o_Settings.ReadIniValue("LastExportFile", " ") ; empty if not found
-else
-{
-	strImpExpFile := ""
-	GuiControl, , f_blnImpExpFavorites, 0
-}
-GuiControl, % (f_radImpExpExport ? "Enable" : "Disable"), f_blnImpExpFavorites
-GuiControl, % (f_radImpExpExport ? "Hide" : "Show"), f_btnImportFavorites
-GuiControl, , f_strImpExpFile, %strImpExpFile%
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
 ButtonImpExpFile:
-; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 Gui, 2:+OwnDialogs
 
-strImpExpFolder := o_Settings.ReadIniValue("Last" . (f_radImpExpExport ? "Ex" : "Im") . "portFolder", A_WorkingDir)
+strImpExpFolder := o_Settings.ReadIniValue("Last" . (blnExport ? "Ex" : "Im") . "portFolder", A_WorkingDir)
 
-FileSelectFile, strImpExpSelectedFile, % (f_radImpExpExport ? 2 : 3), %strImpExpFolder%, % o_L["DialogAddFolderSelect"], *.ini
+FileSelectFile, strImpExpSelectedFile, % (blnExport ? 2 : 3), %strImpExpFolder%, % L(o_L["ImpExpSelectFile"], StrLower((blnExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))), *.ini
 if !(StrLen(strImpExpSelectedFile))
 	return
 
@@ -22898,14 +22870,13 @@ return
 
 ;------------------------------------------------------------
 ButtonImpExpGo:
-; f_radImpExpExport: Export / f_radImpExpImport: Import
 ;------------------------------------------------------------
 Gui, 2:Submit, NoHide
 Gui, 2:+OwnDialogs
 
 if !StrLen(f_strImpExpFile)
 {
-	Oops("ImpExp", o_L["ImpExpSelectFile"], (f_radImpExpExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))
+	Oops("ImpExp", L(o_L["ImpExpSelectFile"], StrLower((blnExport ? o_L["ImpExpDestination"] : o_L["ImpExpSource"]))) . ".")
 	return
 }
 
@@ -22913,20 +22884,22 @@ blnAbort := false
 blnContentTransfered := false
 blnContentIdentical := false
 
-if (f_radImpExpExport)
+if (blnExport)
 	strImpExpFile := StrReplace(StrReplace(f_strImpExpFile, "%A_Now%", A_Now), "%A_NowUTC%", A_NowUTC)
 else
 	strImpExpFile := f_strImpExpFile
 strImpExpFile := EnvVars(strImpExpFile)
+; supported placeholders {Now:format}, {Settings_...}, {Clipboard}, {Input:prompt}, {Menu:prompt}, {RandomText:...}, {RandomNumber:...} and {GUID}
+strImpExpFile := ExpandPlaceholders(strImpExpFile, "", -1, -1)
 
-g_strImpExpSourceFile := (f_radImpExpExport ? o_Settings.strIniFile : strImpExpFile) ; settings file or other file
-g_strImpExpDestinationFile := (f_radImpExpExport ? strImpExpFile : o_Settings.strIniFile) ; other file or settings file
+g_strImpExpSourceFile := (blnExport ? o_Settings.strIniFile : strImpExpFile) ; settings file or other file
+g_strImpExpDestinationFile := (blnExport ? strImpExpFile : o_Settings.strIniFile) ; other file or settings file
 
 SplitPath, g_strImpExpDestinationFile, , strImpExpFolder, strImpExpExt
 if !StrLen(strImpExpExt) ; add ini to destination file
 	g_strImpExpDestinationFile .= ".ini"
 
-if (f_radImpExpExport) ; if export, check destination folder
+if (blnExport) ; if export, check destination folder
 	while !FileExist(strImpExpFolder)
 	{
 		MsgBox, 547, % o_L["ImpExpMenu"] . " " o_L["ImpExpFavorites"] . " - " . g_strAppNameText, % L(o_L["DialogOptionsPathNotExist"], strImpExpFolder) ; Option 2 Yes-No-Cancel + 5 question icon + 512 cancel default
@@ -22948,10 +22921,9 @@ else ; if import, check if source file exists
 		return ; leave blnAbort := false
 	}
 	
-strImEx := (f_radImpExpExport ? "Ex" : "Im")
-IniWrite, %strImpExpFolder%, % o_Settings.strIniFile, Global, Last%strImEx%portFolder
-if (f_radImpExpExport)
-	IniWrite, % f_strImpExpFile, % o_Settings.strIniFile, Global, LastExportFile ; store f_strImpExpFile, not strImpExpFile that may contain current time
+strImEx := (blnExport ? "Ex" : "Im")
+IniWrite, % strImpExpFolder, % o_Settings.strIniFile, Global, Last%strImEx%portFolder
+IniWrite, % f_strImpExpFile, % o_Settings.strIniFile, Global, Last%strImEx%portFile ; store f_strImpExpFile, not strImpExpFile that may contain current time
 
 if !(blnAbort) and (f_blnImpExpFavorites)
 {
@@ -22994,12 +22966,12 @@ if !(blnAbort) and (f_blnImpExpFavorites)
 	Loop
 	{
 		intIniLine++
-		ShowToolTip((f_radImpExpExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"]) . " - " . o_L["ImpExpOptionFavorites"] . ": #" . intIniLine)
+		ShowToolTip((blnExport ? o_L["ImpExpExport"] : o_L["ImpExpImport"]) . " - " . o_L["ImpExpOptionFavorites"] . ": #" . intIniLine, true)
 		strAppendFavorite := o_Settings.ReadIniValue("Favorite" . intIniLine, "", "Favorites", g_strImpExpSourceFile) ; ERROR if not found
 		if (strAppendFavorite = "ERROR")
 			Break
-		intDestintIniLine := intIniLine + intLastFavorite
-		IniWrite, %strAppendFavorite%, %g_strImpExpDestinationFile%, Favorites, Favorite%intDestintIniLine%
+		intDestIntIniLine := intIniLine + intLastFavorite
+		IniWrite, %strAppendFavorite%, %g_strImpExpDestinationFile%, Favorites, Favorite%intDestIntIniLine%
 	}
 	ToolTip
 	blnContentTransfered := (intIniLine > 0)
@@ -23013,7 +22985,10 @@ if (f_blnImpExpGlobal)
 	WriteIniSection("Global", o_L["ImpExpFileGlobal"], blnAbort, blnContentTransfered, blnContentIdentical) ; update blnAbort, blnContentTransfered and blnContentIdentical
 
 if (f_blnImpExpAlternative)
+{
 	WriteIniSection("AlternativeMenuHotkeys", "", blnAbort, blnContentTransfered, blnContentIdentical) ; update blnAbort, blnContentTransfered and blnContentIdentical
+	WriteIniSection("AlternativeMenuModifiers", "", blnAbort, blnContentTransfered, blnContentIdentical) ; update blnAbort, blnContentTransfered and blnContentIdentical
+}
 
 if (f_blnImpExpThemes)
 {
@@ -23025,7 +23000,7 @@ if (f_blnImpExpThemes)
 			WriteIniSection("Gui-" . A_LoopField, "", blnAbort, blnContentTransfered, blnContentIdentical) ; update blnAbort, blnContentTransfered and blnContentIdentical
 }
 
-if (f_radImpExpExport)
+if (blnExport)
 	MsgBox, 0, %g_strAppNameText%
 		, % L(o_L["ImpExpFinalReport"], (blnAbort or !blnContentTransfered ? o_L["ImpExpAborted"] : o_L["ImpExpCompleted"]) . (blnContentIdentical ? " " . o_L["ImpExpOrIdentical"] : ""), g_strImpExpSourceFile, g_strImpExpDestinationFile)
 else
@@ -28211,11 +28186,13 @@ Get_MACAddress()
 
 
 ;---------------------------------------------------------
-ShowToolTip(strContent)
+ShowToolTip(strContent, blnDoNotPause := false)
 ;---------------------------------------------------------
 {
 	ToolTip, %strContent%
-	Sleep, 75 ; make the tooltip minimally visible
+	if !(blnDoNotPause)
+		Sleep, 75 ; make the tooltip minimally visible
+
 }
 ;---------------------------------------------------------
 
