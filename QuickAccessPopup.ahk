@@ -19859,7 +19859,7 @@ UpdateFavoriteObjectSaveShortcut:
 UpdateFavoriteObjectSaveShortcutList:
 ;-----------------------------------------------------------
 
-if (o_EditedFavorite.AA.strFavoriteShortcut = g_strNewFavoriteShortcut) ; if not changed
+if (o_EditedFavorite.AA.strFavoriteShortcut . "" = g_strNewFavoriteShortcut . "") ; if not changed
 	or (!HasShortcut(o_EditedFavorite.AA.strFavoriteShortcut) and !HasShortcut(g_strNewFavoriteShortcut)) ; if both are "None" or empty
 	return
 
@@ -19868,8 +19868,8 @@ if (o_EditedFavorite.AA.strFavoriteShortcut = g_strNewFavoriteShortcut) ; if not
 if HasShortcut(g_strNewFavoriteShortcut)
 {
 	; add item to g_aaItemsByShortcut and remove from g_aaItemsByShortcutToRemoveWhenBuildingMenu (because it is now re-used)
-	g_aaItemsByShortcut[g_strNewFavoriteShortcut] := o_EditedFavorite ; insert new shortcut as in g_strNewFavoriteShortcut
-	g_aaItemsByShortcutToRemoveWhenBuildingMenu.Delete(g_strNewFavoriteShortcut) ; in case this shortcut was removed from another favorite before
+	g_aaItemsByShortcut[g_strNewFavoriteShortcut . ""] := o_EditedFavorite ; insert new shortcut as in g_strNewFavoriteShortcut (. "" to preserve text format of "+1" for example)
+	g_aaItemsByShortcutToRemoveWhenBuildingMenu.Delete(g_strNewFavoriteShortcut . "") ; in case this shortcut was removed from another favorite before
 }
 
 if HasShortcut(o_EditedFavorite.AA.strFavoriteShortcut)
@@ -19952,7 +19952,7 @@ ShortcutIfAvailable(strShortcut, strFavoriteName)
 	
 	; check favorites hotkeys
 	if !StrLen(strExistingName)
-		strExistingName := g_aaItemsByShortcut[strShortcut].AA.strFavoriteName
+		strExistingName := g_aaItemsByShortcut[strShortcut . ""].AA.strFavoriteName
 
 	if StrLen(strExistingName)
 	{
@@ -25769,7 +25769,7 @@ HasShortcut(strCandidateShortcut)
 ; checking the shortcut internal code
 ;------------------------------------------------------------
 {
-	return StrLen(strCandidateShortcut) and (strCandidateShortcut <> "None")
+	return StrLen(strCandidateShortcut) and (strCandidateShortcut . "" <> "None")
 }
 ;------------------------------------------------------------
 
