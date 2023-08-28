@@ -13464,7 +13464,14 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
 	}
 	else if (strGuiFavoriteLabel = "GuiCopyFavorite")
+	{
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) ; true blnDuplicateSubmenu
+		if (strGuiFavoriteLabel = "GuiCopyFavorite") ; copied favorite has no hotkey and no hotstring
+		{
+			o_EditedFavorite.AA.strFavoriteShortcut := "None" 
+			o_EditedFavorite.AA.strFavoriteHotstring := "" 
+		}
+	}
 	else
 		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
 	
@@ -13478,10 +13485,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 	g_strNewFavoriteWindowPosition := o_EditedFavorite.AA.strFavoriteWindowPosition
 	g_blnNewFavoriteFtpEncoding := o_EditedFavorite.AA.blnFavoriteFtpEncoding
 
-	if (strGuiFavoriteLabel = "GuiCopyFavorite")
-		g_strNewFavoriteShortcut := "None" ; copied favorite has no hotkey
-	else
-		g_strNewFavoriteShortcut := o_EditedFavorite.AA.strFavoriteShortcut
+	g_strNewFavoriteShortcut := o_EditedFavorite.AA.strFavoriteShortcut
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Group")
 		; 1 boolean: replace existing Explorer windows if true, add to existing Explorer Windows if false
