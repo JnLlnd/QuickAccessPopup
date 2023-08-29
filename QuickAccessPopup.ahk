@@ -14805,7 +14805,7 @@ if (oThisMenu.AA.intMenuAutoSort)
 else
 {
 	for intIndex, oItem in oThisMenu.SA
-		if (o_EditedFavorite.AA.strFavoriteName = oItem.AA.strFavoriteName and o_EditedFavorite.AA.strFavoriteType = oItem.AA.strFavoriteType) ; to cover items of diff types with empty name
+		if (o_EditedFavorite.AA.strFavoriteName . "" = oItem.AA.strFavoriteName . "" and o_EditedFavorite.AA.strFavoriteType = oItem.AA.strFavoriteType) ; to cover items of diff types with empty name
 				and (o_MenuInGui.AA.strMenuPath = o_Containers.AA[f_drpParentMenu].AA.strMenuPath ; skip edited item itself
 				and !InStr(strGuiFavoriteLabel, "Copy")) ; and that we are not copying a favorite
 			Continue
@@ -17121,7 +17121,7 @@ Loop
 	
 	strUniqueName := oAddedItem.AA.strFavoriteName
 	oAddedItem.GetUniqueName(strUniqueName, "", strMenuPath, true) ; last true for blnRename
-	if (strUniqueName <> oAddedItem.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+	if (strUniqueName . "" <> oAddedItem.AA.strFavoriteName . "") ; favorite was renamed to make it temporarily unique
 	{
 		Oops(1, o_L["OopsErrorIniFileDuplicateNames"], oAddedItem.AA.strFavoriteName
 			, oParentMenu.AA.strMenuPath, strUniqueName)
@@ -18050,7 +18050,7 @@ if !o_EditedFavorite.GetUniqueName(strUniqueName, strOriginalMenu, strDestinatio
 ; in case strUniqueName has been modified by GetUniqueName()
 if (blnRename)
 {
-	if (strUniqueName <> o_EditedFavorite.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+	if (strUniqueName . "" <> o_EditedFavorite.AA.strFavoriteName . "") ; favorite was renamed to make it temporarily unique
 		and InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel)
 		Oops(1, o_L["OopsErrorIniFileDuplicateNames"], o_EditedFavorite.AA.strFavoriteName, strDestinationMenu, strUniqueName)
 
@@ -21779,7 +21779,7 @@ GetFavoriteObjectFromNameInMenu(strFavoriteMenuName)
 	Diag(A_ThisFunc, "strMenuPath", "!" . strMenuPath . "!")
 	Diag(A_ThisFunc, "strFavoriteName", "!" . strFavoriteName . "!")
 	Loop, % saMenu.Length()
-		if (saMenu[A_Index].AA.strFavoriteName = strFavoriteName)
+		if (saMenu[A_Index].AA.strFavoriteName . "" = strFavoriteName . "")
 			return saMenu[A_Index]
 
 	return false ; if not found return false
@@ -27871,7 +27871,7 @@ FindItemInMenuInGui(strFavoriteToFind, ByRef oFoundFavorite, ByRef oMenuOfFoundI
 		oFoundFavorite := o_Containers.AA[saFavoriteToFind[2]].SA[intSearchItemPositionInOriginalMenu]
 		
 		if (oFoundFavorite.AA.oParentMenu.AA.strMenuPath = saFavoriteToFind[2]
-			and oFoundFavorite.AA.strFavoriteName = saFavoriteToFind[3]
+			and oFoundFavorite.AA.strFavoriteName . "" = saFavoriteToFind[3] . ""
 			and oFoundFavorite.AA.strFavoriteType = saFavoriteToFind[4])
 		; this is the correct item
 		{
@@ -27882,7 +27882,7 @@ FindItemInMenuInGui(strFavoriteToFind, ByRef oFoundFavorite, ByRef oMenuOfFoundI
 		{
 			for intPos, oItem in o_Containers.AA[saFavoriteToFind[2]].SA
 			{
-				if (oItem.AA.strFavoriteName = saFavoriteToFind[3] and oItem.AA.strFavoriteType = saFavoriteToFind[4])
+				if (oItem.AA.strFavoriteName . "" = saFavoriteToFind[3] . "" and oItem.AA.strFavoriteType = saFavoriteToFind[4])
 				{
 					oFoundFavorite := oItem
 					oMenuOfFoundItem := o_Containers.AA[saFavoriteToFind[2]]
@@ -32989,7 +32989,7 @@ class Container
 	;------------------------------------------------------------
 	{
 		for intKey, oItem in this.SA
-			if (strCandidateName = (blnCheckExpandedMenuItemLabel ? oItem.AA.strExpandedMenuItemLabel : oItem.AA.strFavoriteName))
+			if (strCandidateName . "" = (blnCheckExpandedMenuItemLabel ? oItem.AA.strExpandedMenuItemLabel : oItem.AA.strFavoriteName))
 				return false
 			
 		return true
@@ -33519,7 +33519,7 @@ class Container
 	;------------------------------------------------------------
 	{
 		loop
-			if (this.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . this.AA.oParentMenu.SA[A_Index].AA.strFavoriteName
+			if (this.AA.oParentMenu.AA.strMenuPath . g_strMenuPathSeparatorWithSpaces . this.AA.oParentMenu.SA[A_Index].AA.strFavoriteName . ""
 				. (this.AA.oParentMenu.SA[A_Index].AA.strFavoriteType = "Group" ? " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix : "") = this.AA.strMenuPath)
 				return A_Index
 	}
@@ -33737,7 +33737,7 @@ class Container
 			{
 				strUniqueName := this.AA.strFavoriteName
 				this.GetUniqueName(strUniqueName, "", this.AA.oParentMenu.AA.strMenuPath, true)
-				if (strUniqueName <> this.AA.strFavoriteName) ; favorite was renamed to make it temporarily unique
+				if (strUniqueName . "" <> this.AA.strFavoriteName . "") ; favorite was renamed to make it temporarily unique
 				{
 					Oops(1, o_L["OopsErrorIniFileDuplicateNames"], this.AA.strFavoriteName, this.AA.oParentMenu.AA.strMenuPath, strUniqueName)
 					this.AA.strFavoriteName := strUniqueName
@@ -35844,7 +35844,7 @@ class Container
 				else ; we have the same name in the destination menu
 					
 					if (strOriginalMenu <> strDestinationMenu ; the favorite was moved to new destination menu
-						or strCandidateName <> this.AA.strFavoriteName ; the name has been edited from another menu
+						or strCandidateName . "" <> this.AA.strFavoriteName . "" ; the name has been edited from another menu
 						or blnRename) ; same name in same menu in multiple copy or new favorite having the same name
 						
 						if (blnRename) ; if GuiCopyOneFavoriteSave, GuiMoveOneFavoriteSave, GuiAddFavoriteSaveXpress, GuiAddFavoriteSaveXpressFromMsg or GuiAddExternalSave
