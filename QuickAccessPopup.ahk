@@ -51,7 +51,7 @@ Version: 11.6.2.2 (2023-07-11)
 - in the "Advanced Options" tab of "Edit Favorite" dialog box (for Application, Document and Link favorites), remove the 250 characters limit for the "Parameters" text box
 - display this text box on one line if it is not longer than 60 characters and on two lines if it is longer (scrollable)
 - when launching a favorite with parameters, check that the command does not exceed the Windows limit of 8191 characters
- 
+
 Version: 11.6.2.1 (2023-07-05)
 - fix bug adjusting the width of Quick Launch dialog box based on font setting introduced in previous release
 - fix bug preventing the use of < and > as hotkeys (undo incomplete fix in previous release)
