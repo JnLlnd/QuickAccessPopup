@@ -31,6 +31,22 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.2.3 (2023-08-29)
+ 
+Import/Export
+- review and clarify the "Import Settings" and "Export Settings" dialog boxes user interface
+- in "Import/Export" dialog box, replace the generic word "Settings" with the more specific words "Options" and "Favorites"
+- split the "Export/Import Settings" menu in two distinct entries: "Export Options and Favorites" and "Import Options"
+- add the menu bar entry "File, Import Favorites" (opening the 'Add Multiple Favorites...' dialog box)
+- add text at the bottom of the "Import Options" dialog box suggesting to import favorites with "File, Import Favorites"
+- remove the "Import Favorites" button and the "Favorites" checkbox from the "Import Options" dialog box
+- remember the last "Import Options" file selected in the previous import
+- support placeholders in the import/export source/destination filename path: supported placeholders are {Now+calculation:format}, {Settings_...}, {Clipboard}, {Input:prompt}, {Menu:prompt}, {RandomText:...}, {RandomNumber:...} and {GUID}; see https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders/
+ 
+Other bug fixes
+- when using "Export Options and Favorites", fix bug preventing the export of the options section for Alternative menus modifiers
+- when setting a favorite keyboard shortcut, fix bug preventing from using Shift+0, Shift+1 to Shift+9
+ 
 Version: 11.6.2.2 (2023-07-11)
 - in the "Advanced Options" tab of "Edit Favorite" dialog box (for Application, Document and Link favorites), remove the 250 characters limit for the "Parameters" text box
 - display this text box on one line if it is not longer than 60 characters and on two lines if it is longer (scrollable)
@@ -5517,7 +5533,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.2.2
+;@Ahk2Exe-SetVersion 11.6.2.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5585,7 +5601,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.2.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.2.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
