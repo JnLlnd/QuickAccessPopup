@@ -29532,7 +29532,7 @@ TODO
 	;---------------------------------------------------------
 	{
 		saActiveFileManagerSystemNames := StrSplit("WindowsExplorer|DirectoryOpus|TotalCommander|QAPconnect", "|")
-		saActiveFileManagerDisplayNames := StrSplit("Windows Explorer|Directory Opus|Total Commander|QAPconnect", "|")
+		saActiveFileManagerDisplayNames := StrSplit("Windows Explorer|Directory Opus|Total Commander|" . o_L["OptionsThirdPartyQAPconnect"], "|")
 		
 		this.SA[1] := new this.Explorer(saActiveFileManagerSystemNames[1], saActiveFileManagerDisplayNames[1])
 		this.SA[2] := new this.DirectoryOpus(saActiveFileManagerSystemNames[2], saActiveFileManagerDisplayNames[2])
