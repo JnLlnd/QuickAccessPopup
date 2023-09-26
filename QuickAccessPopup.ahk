@@ -14287,7 +14287,7 @@ Gui, 2:Add, Checkbox, % "yp x260 vf_blnFavoriteFolderLiveExcludeFolders hidden "
 Gui, 2:Add, Radio, % "x20 y+10 vf_radFavoriteFolderLiveInclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "checked" : ""), % o_L["DialogFavoriteFolderLiveInclude"]
 Gui, 2:Add, Radio, % "x+5 yp vf_radFavoriteFolderLiveExclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "" : "checked"), % o_L["DialogFavoriteFolderLiveExclude"]
 Gui, 2:Add, Text, yp x+0 vf_lblFavoriteFolderLiveFiles hidden, % o_L["DialogFavoriteFolderLiveFiles"]
-Gui, 2:Add, Edit, x20 y+5 w400 vf_strFavoriteFolderLiveExtensions hidden, % o_EditedFavorite.AA.strFavoriteFolderLiveExtensions
+Gui, 2:Add, Edit, x20 y+5 w500 vf_strFavoriteFolderLiveExtensions hidden, % o_EditedFavorite.AA.strFavoriteFolderLiveExtensions
 Gui, 2:Add, Text, x20 y+5 w500 vf_lblFavoriteFolderLiveExtensions hidden, % o_L["DialogFavoriteFolderLiveExtensions"]
 
 strLiveFolderSortOrder := ""
@@ -15447,7 +15447,14 @@ GuiControl, %strShowHideCommand%, f_lblFavoriteFolderLiveFiles
 GuiControl, %strShowHideCommand%, f_lblFavoriteFolderLiveExtensions
 GuiControl, %strShowHideCommand%, f_strFavoriteFolderLiveExtensions
 GuiControl, %strShowHideCommand%, f_blnFavoriteFolderLiveExcludeFolders
-GuiControl, , % (f_blnFavoriteFolderLiveDocuments ? "" : f_strFavoriteFolderLiveExtensions)
+
+GuiControl, % (f_blnFavoriteFolderLiveDocuments ? "Enable" : "Disable"), f_radLiveFolderSort3 ; disable sort by size for folders
+
+if !(f_blnFavoriteFolderLiveDocuments)
+{
+	GuiControl, , f_strFavoriteFolderLiveExtensions
+	GuiControl, , f_radLiveFolderSort3, 0
+}
 
 strShowHideCommand := ""
 
