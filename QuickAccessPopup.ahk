@@ -6745,7 +6745,7 @@ Gosub, LoadIniAlternativeMenuFeaturesHotkeysAndModifiers ; load from ini file an
 ; Load Options
 
 ; Group General
-o_Settings.ReadIniOption("Launch", "blnRunAtStartup", "", , "General", "f_lblOptionsRunAtStartup|f_blnOptionsRunAtStartup") ; blnRunAtStartup is not used but strGuiControls is
+o_Settings.ReadIniOption("Launch", "blnRunAtStartup", "", , "General", "f_lblOptionsRunAtStartup|f_blnOptionsRunAtStartup|f_blnDisplaySettingsStartupDuplicate") ; blnRunAtStartup is not used but strGuiControls is
 o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "ChangeFolderInDialog", 0, "General", "f_lblChangeFolderInDialog|f_blnChangeFolderInDialog") ; g_blnChangeFolderInDialog
 if (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue)
 	o_Settings.ReadIniOption("MenuPopup", "blnChangeFolderInDialog", "UnderstandChangeFoldersInDialogRisk", 0) ; keep same ini instance but replace value if false
@@ -8069,14 +8069,12 @@ saMenuItemsTable := Object()
 saMenuItemsTable.Push(["GuiOptionsGroupGeneral", aaL["OptionsGeneral"] . "`tCtrl+O", "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupSettingsWindow", aaL["OptionsSettingsWindow"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
-saMenuItemsTable.Push(["GuiOptionsGroupMenuIcons", aaL["OptionsMenuIcons"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiOptionsGroupMenuAppearance", aaL["OptionsMenuAppearance"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["X", "", "", ""])
-saMenuItemsTable.Push(["GuiOptionsGroupPopupMenu", aaL["OptionsPopupMenu"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeys", aaL["OptionsPopupHotkeys"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeysAlternative", aaL["OptionsPopupHotkeysAlternative"], "", "iconNoIcon"])
-saMenuItemsTable.Push(["X", "", "", ""])
+saMenuItemsTable.Push(["GuiOptionsGroupPopupMenu", aaL["OptionsPopupMenu"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiOptionsGroupMenuAppearance", aaL["OptionsMenuAppearance"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiOptionsGroupMenuIcons", aaL["OptionsMenuIcons"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["GuiOptionsGroupMenuExclusions", aaL["OptionsMenuExclusions"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiOptionsGroupPopupHotkeysAlternative", aaL["OptionsPopupHotkeysAlternative"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
 saMenuItemsTable.Push(["GuiOptionsGroupFileManagers", aaL["OptionsFileManagers"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["X", "", "", ""])
@@ -9608,6 +9606,10 @@ if (g_blnPortableMode) ; get value from existence of startup file shortcut
 	GuiControl, , f_blnOptionsRunAtStartup, % (FileExist(A_Startup . "\" . g_strAppNameFile . ".lnk") ? 1 : 0)
 else ; setup mode, get value form current user registry
 	GuiControl, , f_blnOptionsRunAtStartup, % (RegistryExist("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run", g_strAppNameText) ? 1 : 0)
+
+; DisplaySettingsStartup (duplicate)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnDisplaySettingsStartupDuplicate gGuiOptionsGroupChanged hidden, % o_L["OptionsSettingsStartup"]
+GuiControl, , f_blnDisplaySettingsStartupDuplicate, % (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue = true)
 
 ; StartupTips
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnStartupTipsShow gGuiOptionsStartupTipsClicked hidden, % o_L["StartupTipsShow"], [2] frequency (0=each launch, n=days)
@@ -11218,9 +11220,21 @@ return
 ;------------------------------------------------------------
 GuiOptionsGroupChanged:
 ;------------------------------------------------------------
+Gui, 2:Submit, NoHide
 
 g_blnGroupChanged := true
 GuiControl, % "2:" . (g_blnGroupChanged ? "Enable" : "Disable"), f_btnOptionsSave
+
+; manage duplicate control in General and Customize window
+if (A_GuiControl = "f_blnDisplaySettingsStartup")
+	o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue := f_blnDisplaySettingsStartup
+else if (A_GuiControl = "f_blnDisplaySettingsStartupDuplicate")
+	o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue := f_blnDisplaySettingsStartupDuplicate
+if InStr("f_blnDisplaySettingsStartup|f_blnDisplaySettingsStartupDuplicate", A_GuiControl)
+{
+	GuiControl, , f_blnDisplaySettingsStartup, % (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue = true)
+	GuiControl, , f_blnDisplaySettingsStartupDuplicate, % (o_Settings.SettingsWindow.blnDisplaySettingsStartup.IniValue = true)
+}
 
 return
 ;------------------------------------------------------------
@@ -31248,10 +31262,13 @@ TODO
 		this.strIniFileNameExtOnly := strIniFileNameExtOnly
 		this.strIniFileDefault := this.strIniFile
 		
-		this.saOptionsGroups := ["General", "SettingsWindow", "MenuIcons", "MenuAppearance"
-			, "PopupMenu", "PopupHotkeys", "PopupHotkeysAlternative", "MenuExclusions"
-			, "FileManagers", "Snippets", "UserVariables", "Database"
-			, "MenuAdvanced", "AdvancedLaunch", "AdvancedOther"]
+		; this.saOptionsGroups := ["General", "SettingsWindow", "MenuIcons", "MenuAppearance"
+			; , "PopupMenu", "PopupHotkeys", "PopupHotkeysAlternative", "MenuExclusions"
+			; , "FileManagers", "Snippets", "UserVariables", "Database"
+			; , "MenuAdvanced", "AdvancedLaunch", "AdvancedOther"]
+		this.saOptionsGroups := ["General", "SettingsWindow", "PopupHotkeys", "PopupMenu", "MenuAppearance"
+			, "MenuIcons", "MenuExclusions", "PopupHotkeysAlternative", "FileManagers", "Snippets"
+			, "UserVariables", "Database", "MenuAdvanced", "AdvancedLaunch", "AdvancedOther"]
 			
 		; at first launch quickaccesspopup.ini does not exist, read language value in quickaccesspopup-setup.ini (if exist) created by Setup
 		this.ReadIniOption("Launch", "strLanguageCode", "LanguageCode", "EN", "General", "f_drpLanguage|f_lblLanguage", "Global"
@@ -31264,8 +31281,11 @@ TODO
 	; called after o_L is initialized
 	;---------------------------------------------------------
 	{
-		this.saOptionsGroupsLabelNames := ["OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu"
-			, "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsMenuExclusions", "OptionsFileManagers", "OptionsSnippets"
+		; this.saOptionsGroupsLabelNames := ["OptionsGeneral", "OptionsSettingsWindow", "OptionsMenuIcons", "OptionsMenuAppearance", "OptionsPopupMenu"
+			; , "OptionsPopupHotkeys", "OptionsPopupHotkeysAlternative", "OptionsMenuExclusions", "OptionsFileManagers", "OptionsSnippets"
+			; , "OptionsUserVariables", "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther"]
+		this.saOptionsGroupsLabelNames := ["OptionsGeneral", "OptionsSettingsWindow", "OptionsPopupHotkeys", "OptionsPopupMenu", "OptionsMenuAppearance"
+			, "OptionsMenuIcons", "OptionsMenuExclusions", "OptionsPopupHotkeysAlternative", "OptionsFileManagers", "OptionsSnippets"
 			, "OptionsUserVariables", "OptionsDatabase", "OptionsMenuAdvanced", "OptionsAdvancedLaunch", "OptionsAdvancedOther"]
 	}
 	;---------------------------------------------------------
