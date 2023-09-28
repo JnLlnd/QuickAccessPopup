@@ -6057,10 +6057,14 @@ DllCall("CreateMutex", "uint", 0, "int", false, "str", g_strAppNameFile . "Mutex
 
 Hotkey, If, WinActive(QAPSettingsString()) ; main Gui title
 
-	Hotkey, ^Right, SettingsCtrlRight, On UseErrorLevel
 	Hotkey, ^Left, SettingsCtrlLeft, On UseErrorLevel
-	Hotkey, +^Right, SettingsShiftCtrlRight, On UseErrorLevel
+	Hotkey, ^Right, SettingsCtrlRight, On UseErrorLevel
 	Hotkey, +^Left, SettingsShiftCtrlLeft, On UseErrorLevel
+	Hotkey, !Left, SettingsShiftCtrlLeft, On UseErrorLevel
+	Hotkey, XButton1, SettingsShiftCtrlLeft, On UseErrorLevel
+	Hotkey, +^Right, SettingsShiftCtrlRight, On UseErrorLevel
+	Hotkey, !Right, SettingsShiftCtrlRight, On UseErrorLevel
+	Hotkey, XButton2, SettingsShiftCtrlRight, On UseErrorLevel
 
 HotKey, If, WinActive(SI_strGuiTitle) ; Select icon in gui in function SelectIcon()
 	Hotkey, Enter, SI_SelectorEnter
@@ -6162,8 +6166,8 @@ SettingsCtrlDown: ; ^Down::
 SettingsCtrlA: ; ^A::
 SettingsCtrlRight: ; ^Right::
 SettingsCtrlLeft: ; ^Left::
-SettingsShiftCtrlRight: ; +^Right::
-SettingsShiftCtrlLeft: ; +^Left::
+SettingsShiftCtrlLeft: ; +^Left:: XButton1:: !Left::
+SettingsShiftCtrlRight: ; +^Right:: XButton2:: !Right::
 
 ; for these keys, if Settings displays a search result, simply discard the hotkey
 if InStr("SettingsCtrlE|SettingsCtrlR|SettingsCtrlY|SettingsCtrlUp|SettingsCtrlDown|SettingsCtrlRight|SettingsCtrlLeft|", A_ThisLabel . "|")
@@ -12581,6 +12585,14 @@ GuiHotkeysHelpClicked:
 Gui, 1:+OwnDialogs
 Gui, 1:Submit, NoHide
 
+strHotkeys := "GuiHotkeysSelectNextItem`tDown/Up|DialogAdd`tCtrl+N|DialogEdit`tCtrl+E|"
+	. "GuiHotkeysSelectContiguousItems`tShift+Up/Down|GuiHotkeysSelectNonContiguousItems`tCtrl+Click|MenuSelectAll`tCtrl+A|GuiRemoveFavorite`tCtrl+R|"
+	. "GuiMove`tCtrl+M|DialogCopy`tCtrl+Y|ControlToolTipMoveUp`tCtrl+Up|ControlToolTipMoveDown`tCtrl+Down|GuiHotkeysOpenParentMenu`tCtrl+Left|GuiHotkeysOpenSubmenuOrEditFavorite`tCtrl+Right|"
+	. "ControlToolTipPreviousMenu`tAlt+Left|ControlToolTipNextMenu`tAlt+Right|ControlToolTipSearchButton`tCtrl+F|GuiOptions`tCtrl+O|MenuHelp`tCtrl+H|"
+	. "GuiHotkeysHelp`tF1|GuiSave`tCtrl+S|GuiClose`tEsc|MenuExitApp@g_strAppNameText`tAlt+F4|"
+	. "DialogContextMenu`t" . o_L["DialogRightButton"] . "|ControlToolTipPreviousMenu`t" . o_L["DialogBackwardButton"] . "|ControlToolTipNextMenu`t" . o_L["DialogForwardButton"]
+saHotkeys := StrSplit(strHotkeys, "|")
+
 strGuiTitle := o_L["GuiHotkeysHelp"]
 Gui, 2:New, +Hwndg_strGui2Hwnd, %strGuiTitle%
 if (g_blnUseColors)
@@ -12588,17 +12600,12 @@ if (g_blnUseColors)
 Gui, 2:+Owner1
 
 Gui, 2:Add, ListView 
-	, % "vf_lvFavoritesList Count32 LV0x10 w350 h411" . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "")
+	, % "vf_lvFavoritesList Count32 LV0x10 w350 h" . 30 + saHotkeys.Length() * 17 . (g_blnUseColors ? " c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "")
 	, % o_L["DialogHotkeysHelpHeader"] ; SysHeader321 / SysListView321
 
-loop, Parse, % "GuiHotkeysSelectNextItem`tDown/Up|DialogAdd`tCtrl+N|DialogEdit`tCtrl+E|"
-	. "GuiHotkeysSelectContiguousItems`tShift+Up/Down|GuiHotkeysSelectNonContiguousItems`tCtrl+Click|MenuSelectAll`tCtrl+A|GuiRemoveFavorite`tCtrl+R|"
-	. "GuiMove`tCtrl+M|DialogCopy`tCtrl+Y|ControlToolTipMoveUp`tCtrl+Up|ControlToolTipMoveDown`tCtrl+Down|GuiHotkeysOpenParentMenu`tCtrl+Left|GuiHotkeysOpenSubmenuOrEditFavorite`tCtrl+Right|"
-	. "ControlToolTipPreviousMenu`tShift+Ctrl+Left|ControlToolTipNextMenu`tShift+Ctrl+Right|ControlToolTipSearchButton`tCtrl+F|GuiOptions`tCtrl+O|"
-	. "MenuHelp`tCtrl+H|GuiHotkeysHelp`tF1|GuiSave`tCtrl+S|GuiClose`tEsc|MenuExitApp@g_strAppNameText`tAlt+F4"
-	, |
+loop, % saHotkeys.Length()
 {
-	saLine := StrSplit(A_LoopField, "`t")
+	saLine := StrSplit(saHotkeys[A_Index], "`t")
 	strShortcut := saLine[2]
 	if InStr(saLine[1], "@")
 	{
@@ -12620,6 +12627,8 @@ GuiControl, Focus, f_btnHotkeysHelpClose
 Gosub, ShowGui2AndDisableGui1
 
 strGuiTitle := ""
+strHotkeys := ""
+saHotkeys := ""
 
 return
 ;------------------------------------------------------------
