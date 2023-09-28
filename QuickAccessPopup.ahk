@@ -26029,7 +26029,8 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 ;   Do not process strCurrentLocation or strSelectedLocation if = -1
 ;   Note: {SETTINGS_LOC}, {SETTINGS_DIR}, etc. are processed using the settings file location
 ;
-; This function also process {Clipboard}, {Input:prompt}, {Now:format}, {ActiveWindow}, {Menu:...}, {RandomText:...}, {RandomNumber:...}, {GUID} and user variables.
+; This function also process {Clipboard}, {SelectedText}, {Input:prompt}, {Now:format}, {ActiveWindow}, {Menu:...}, {RandomText:...}, {RandomNumber:...}
+; , {GUID} and user variables.
 ;------------------------------------------------------------
 {
 	; protect escaped open curly brackets `{
@@ -26101,7 +26102,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			strExpanded := ExpandPlaceholdersRandom(strExpanded)
 	
 		; process GUID
-		while InStr(strExpanded, "{GUID}") ; not case sensitive, expand {GUID}
+		while InStr(strExpanded, "{GUID}") ; not case sensitive, different GUIDs if multiple {GUID} in strExpanded
 			strExpanded := StrReplace(strExpanded, "{GUID}", CreateGUID(), , 1) ; replace only first occurence of {GUID}
 	
 		while InStr(strExpanded, "{Menu:") ; not case sensitive, expand {Menu:...}
@@ -26110,6 +26111,18 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		; process Clipboard
 		if ClipboardIsFree(A_ThisFunc) ; avoid error if Clipboard is used by another application and not released after 1 second
 			strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
+		
+		; process SelectedText
+		if InStr(strExpanded, "{SelectedText}") ; get selected text to the Clipboard (Clipboard will be restored)
+		{
+			objPrevClipboard := ClipboardAll ; Save the entire clipboard
+			Clipboard := ""
+			Send, ^c
+			ClipWait, 0, 0 ; timeout 0 is the same as specifying 0.5, second 0 is to wait for text only
+			if !(ErrorLevel) ; in case of timeout
+				strExpanded := StrReplace(strExpanded, "{SelectedText}", Clipboard) ; expand {SelectedText}
+			Clipboard := objPrevClipboard
+		}
 		
 		; process Input
 		while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
@@ -28316,7 +28329,8 @@ ContainsPlaceholder(strLocation)
 ;------------------------------------------------------------
 {
 	if StrLen(strLocation)
-		return RegExMatch(strLocation, "i){(CUR_|SEL_|SETTINGS_)?(LOC|NAME|DIR|EXT|NOEXT|DRIVE|CLIPBOARD|INPUT:.*|MENU:.*|NOW[:\+-].*|RANDOMTEXT:.*|RANDOMNUMBER:.*|GUID)}") ; case insensitive
+		return RegExMatch(strLocation, "i){(CUR_|SEL_|SETTINGS_)+(LOC|NAME|DIR|EXT|NOEXT|DRIVE)}}") ; case insensitive
+			or RegExMatch(strLocation, "i){(CLIPBOARD|SELECTEDTEXT|GUID|INPUT:.+|MENU:.+|NOW([+-].*)?:.+|RANDOMTEXT:.+|RANDOMNUMBER:.+)}") ; case insensitive
 	; else return false
 }
 ;------------------------------------------------------------
