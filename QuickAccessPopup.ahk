@@ -5898,7 +5898,8 @@ if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; add [admin] tag only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
 
-global g_strURLIconFileIndex := GetDefaultBrowserIcon()
+global g_strURLIconFileIndex := (StrLen(o_Settings.MenuIcons.strCustomLinksIcon.IniValue)
+	? o_Settings.MenuIcons.strCustomLinksIcon.IniValue : GetDefaultBrowserIcon())
 
 ; Init diag mode
 if (o_Settings.Launch.blnDiagMode.IniValue)
@@ -6792,6 +6793,7 @@ Gosub, ProcessIconDocumentsList
 o_Settings.ReadIniOption("MenuIcons", "strIconReplacementList", "IconReplacementList", " ", "MenuIcons", "f_lnkIconReplacementList1|f_lnkIconReplacementList2|f_lnkIconReplacementList3|f_strIconReplacementList") ; g_strIconReplacementList
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 o_Settings.ReadIniOption("MenuIcons", "strIconsCustomFolder", "IconsCustomFolder", A_WorkingDir, "MenuIcons", "f_strIconsCustomFolder|f_lblIconsCustomFolder|f_btnIconsCustomFolder")
+o_Settings.ReadIniOption("MenuIcons", "strCustomLinksIcon", "CustomLinksIcon", " ", "MenuIcons", "f_lblCustomLinksIcon|f_strCustomLinksIcon")
 
 ; Group MenuAppearance
 o_Settings.ReadIniOption("Menu", "intHotkeyRemindersShortcuts", "HotkeyReminders" ; keep this name (not "HotkeyRemindersShortcuts" for backward compatibility)
@@ -9791,19 +9793,25 @@ Gui, 2:Font, s8 w700
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w500 hidden vf_lnkIconDocumentsList1
 	, % o_L["OptionsIconDocumentsList"] . " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-use-my-own-documents-icons-instead-of-those-configured-in-windows/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>):"
 Gui, 2:Font
-Gui, 2:Add, Link, x%g_intGroupItemsX% y+5 w500 hidden vf_lnkIconDocumentsList2, % o_L["OptionsIconDocumentsListInstructions"]
-Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w500 r4 vf_strIconDocumentsList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconDocumentsList.IniValue)
+Gui, 2:Add, Link, x%g_intGroupItemsX% y+5 w580 hidden vf_lnkIconDocumentsList2, % o_L["OptionsIconDocumentsListInstructions"]
+Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w580 r4 vf_strIconDocumentsList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconDocumentsList.IniValue)
 	? StrReplace(Trim(o_Settings.MenuIcons.strIconDocumentsList.IniValue), "|", "`n") : "")
-Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w500 hidden vf_lnkIconReplacementList3, % o_L["OptionsIconListsInstructions"]
+Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w580 hidden vf_lnkIconReplacementList3, % o_L["OptionsIconListsInstructions"]
 
 ; strIconReplacementList
 Gui, 2:Font, s8 w700
-Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w500 hidden vf_lnkIconReplacementList1
+Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w580 hidden vf_lnkIconReplacementList1
 	, % o_L["OptionsIconReplacementList"] . " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-replace-the-qap-standard-icons-with-my-own-custom-icons/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>):"
 Gui, 2:Font
-Gui, 2:Add, Link, x%g_intGroupItemsX% y+5 w500 hidden vf_lnkIconReplacementList2, % o_L["OptionsIconReplacementListInstructions"]
-Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w500 r4 vf_strIconReplacementList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconReplacementList.IniValue)
+Gui, 2:Add, Link, x%g_intGroupItemsX% y+5 w580 hidden vf_lnkIconReplacementList2, % o_L["OptionsIconReplacementListInstructions"]
+Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w580 r4 vf_strIconReplacementList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 	? StrReplace(Trim(o_Settings.MenuIcons.strIconReplacementList.IniValue), "|", "`n") : "iconUnknown=" . o_JLicons.AA["iconUnknown"])
+
+; CustomLinksIcon
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblCustomLinksIcon hidden, % o_L["OptionsCustomLinksIcon"] . ":"
+Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w580 h20 vf_strCustomLinksIcon hidden ; gLabel after GuiControl that changes the value below
+GuiControl, 2:, f_strCustomLinksIcon, % o_Settings.MenuIcons.strCustomLinksIcon.IniValue
+GuiControl, 2:+gGuiOptionsGroupChanged, f_strCustomLinksIcon
 
 GuiControlGet, arrPos, Pos, f_strIconReplacementList
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -10636,6 +10644,10 @@ Gosub, ProcessIconDocumentsList
 o_Settings.MenuIcons.strIconReplacementList.WriteIni(OptionsListCleanup(f_strIconReplacementList))
 o_JLicons.ProcessReplacements(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 o_Settings.MenuIcons.strIconsCustomFolder.WriteIni(f_strIconsCustomFolder)
+o_Settings.MenuIcons.strCustomLinksIcon.WriteIni(f_strCustomLinksIcon)
+if StrLen(o_Settings.MenuIcons.strCustomLinksIcon.IniValue)
+	g_strURLIconFileIndex := o_Settings.MenuIcons.strCustomLinksIcon.IniValue
+; else keep existing value
 
 ; === MenuAppearance ===
 
