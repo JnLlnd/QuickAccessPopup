@@ -6463,6 +6463,7 @@ if IsHighDPI()
 	FileInstall, FileInstall\generic_sorting-39_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-39_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-39_c.png, %g_strTempDir%\QAP-pin-on_c.png
+	FileInstall, FileInstall\circled_play-39_c.png, %g_strTempDir%\circled_play_c.png
 	
 	FileInstall, FileInstall\left-half-18_c.png, %g_strTempDir%\left-half_c.png
 	FileInstall, FileInstall\right-half-18_c.png, %g_strTempDir%\right-half_c.png
@@ -6493,6 +6494,7 @@ else
 	FileInstall, FileInstall\generic_sorting-26_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on_c.png
+	FileInstall, FileInstall\circled_play-26_c.png, %g_strTempDir%\circled_play_c.png
 	
 	FileInstall, FileInstall\left-half-12_c.png, %g_strTempDir%\left-half_c.png
 	FileInstall, FileInstall\right-half-12_c.png, %g_strTempDir%\right-half_c.png
@@ -6566,6 +6568,7 @@ InsertGuiControlPos("f_picGuiAlwaysOnTopOn",			  10,  -105, , true)
 InsertGuiControlPos("f_picGuiAlwaysOnTopOff",			  10,  -105, , true)
 InsertGuiControlPos("f_picSortFavoritesBottom",			  10,  -135, , true)
 InsertGuiControlPos("f_picMenuContainerInGuiBottom",	  10,  -165, , true)
+InsertGuiControlPos("f_picLaunchSelectedBottom",		  10,  -195, , true)
 InsertGuiControlPos("f_picSearch",						-111,    23, , true)
 
 InsertGuiControlPos("f_btnGuiSaveAndCloseFavorites",	  0,  -70, , true)
@@ -12233,8 +12236,10 @@ Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempD
 g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOff"]
 Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane_c.png ; Static19
 g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipShowContainerInGui"]
-Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search_c.png ; Static20
-g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipSearchButton"]
+Gui, 1:Add, Picture, vf_picLaunchSelectedBottom gOpenFavoriteSelectedInGui x+1 yp, %g_strTempDir%\circled_play_c.png ; Static20
+g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipLaunchSelected"]
+Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search_c.png ; Static21
+g_aaToolTipsMessages["Static21"] := o_L["ControlToolTipSearchButton"]
 
 intLabelFontSize := o_Settings.SettingsWindow.intLabelsFontSize.IniValue
 intListViewFontSize := o_Settings.SettingsWindow.intListFontSize.IniValue
@@ -21460,7 +21465,25 @@ OpenSwitchFolderOrApp:
 OpenFavoriteFromMsg:
 OpenFavoriteFromQuickLaunch:
 OpenAlternativeFromQuickLaunch:
+OpenFavoriteSelectedInGui:
 ;------------------------------------------------------------
+/* #####
+			g_intOriginalMenuPosition := LV_GetNext()
+
+	if SearchIsVisible()
+	{
+		o_MenuInGui.AA.intSearchPositionBeforeEdit := g_intOriginalMenuPosition ; to restore position after favorite is saved or canceled
+		o_SearchResultContainerBK := o_MenuInGui ; to be restored in after saving or canceling the gui edit (in 2GuiClose or 2GuiCancel)
+		
+		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intSearchItemPositionInOriginalMenu ; switching g_intOriginalMenuPosition to position in search result item original menu
+		o_MenuInGui := o_MenuInGui.SA[o_MenuInGui.AA.intSearchPositionBeforeEdit].AA.oParentMenu ; giving temporary access to original menu of search result item
+		
+		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
+	}
+	else
+		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
+
+*/
 
 if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
  	return
