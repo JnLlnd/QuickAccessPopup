@@ -8280,6 +8280,7 @@ RefreshClipboardMenu:
 ;------------------------------------------------------------
 
 if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Clipboard}") ; we don't have this QAP feature in at least one menu
+	or !ClipboardIsFree(A_ThisLabel)
 	return
 
 ; Diag(A_ThisLabel, "", "START")
