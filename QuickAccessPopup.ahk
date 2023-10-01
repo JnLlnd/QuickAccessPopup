@@ -26124,7 +26124,8 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 
 	if (strCurrentLocation = o_L["DialogArgumentsPlaceholdersCurrentExample"]) ; this is for an example only
 	{
-		strExpanded := StrReplace(strExpanded, "{Clipboard}", o_L["MenuClipboard"])
+		if ClipboardIsFree(A_ThisFunc)
+			strExpanded := StrReplace(strExpanded, "{Clipboard}", o_L["MenuClipboard"])
 		strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", o_L["DialogInputExample"]) ; replace all occurences
 		strExpanded := StrReplace(strExpanded, "{ActiveWindow}", "C:\PATH\ACTIVE_WINDOW_APP.EXE")
 	}
@@ -26146,7 +26147,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
 		; process SelectedText
-		if InStr(strExpanded, "{SelectedText}") ; get selected text to the Clipboard (Clipboard will be restored)
+		if InStr(strExpanded, "{SelectedText}") and ClipboardIsFree(A_ThisFunc) ; get selected text to the Clipboard (Clipboard will be restored)
 		{
 			objPrevClipboard := ClipboardAll ; Save the entire clipboard
 			Clipboard := ""
@@ -28633,16 +28634,24 @@ ClipboardIsFree(strCaller)
 ; https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getopenclipboardwindow
 ;------------------------------------------------------------
 {
-	while, DllCall("GetOpenClipboardWindow")
+	pGetClipboardOwner := DllCall("GetClipboardOwner")
+	WinGetTitle, strGetClipboardOwner, ahk_id %pGetClipboardOwner%
+	
+	while, pClipboardOwner := DllCall("GetOpenClipboardWindow")
+	{
+		Diag(A_ThisFunc . " - BUSY " . A_Index, "Caller", strCaller)
+		Diag(A_ThisFunc . " - BUSY " . A_Index, "Owner", strGetClipboardOwner . "(" . pGetClipboardOwner . ")")
 		if (A_Index > 10)
 		{
-			Diag(A_ThisFunc . " - BUSY", "Caller", strCaller)
 			return false ; Clipboard is locked by another application for more than one second
 		}
 		else
 			Sleep, 100
+	}
 	
 	Diag(A_ThisFunc . " - FREE", "Caller", strCaller)
+	Diag(A_ThisFunc . " - FREE", "Owner", strGetClipboardOwner . "(" . pGetClipboardOwner . ")")
+
 	return true ; Clipboard is free
 }
 ;------------------------------------------------------------
