@@ -8622,6 +8622,7 @@ ContainerInGuiShortcut:
 
 SetCursor(true, "wait")
 
+Gosub, RefreshDynamicMenus
 Gosub, RefreshContainerInGuiFromShortcut
 
 Gosub, SetMenuPosition
@@ -20841,19 +20842,7 @@ if InStr(g_strMenuTriggerLabel, "Mouse")
 }
 
 ; refresh the dynamic menus before showing the main menu
-Gosub, RefreshSwitchFolderOrAppMenu ; also refreshes menu o_L["MenuCurrentFolders"]
-Gosub, RefreshClipboardMenu
-Gosub, RefreshTotalCommanderHotlist
-Gosub, RefreshDirectoryOpusFavorites
-Gosub, RefreshLastActionsMenu
-Gosub, RefreshContainerInGui
-
-if (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
-{
-	Gosub, RefreshPopularMenus
-	Gosub, RefreshRecentItemsMenus
-	Gosub, RefreshDrivesMenu
-}
+Gosub, RefreshDynamicMenus
 ToolTip ; clear tooltip after refresh
 
 if !StrLen(g_strShowMenu) ; init if triggered by QAPmessenger (see NavigateFromMsg and LaunchFromMsg)
@@ -20873,6 +20862,28 @@ Menu, %g_strShowMenu%, Show, %g_intMenuPosX%, %g_intMenuPosY% ; at mouse pointer
 
 g_strShowMenu := ""
 strWinID := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+RefreshDynamicMenus:
+;------------------------------------------------------------
+
+Gosub, RefreshSwitchFolderOrAppMenu ; also refreshes menu o_L["MenuCurrentFolders"]
+Gosub, RefreshClipboardMenu
+Gosub, RefreshTotalCommanderHotlist
+Gosub, RefreshDirectoryOpusFavorites
+Gosub, RefreshLastActionsMenu
+Gosub, RefreshContainerInGui
+
+if (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
+{
+	Gosub, RefreshPopularMenus
+	Gosub, RefreshRecentItemsMenus
+	Gosub, RefreshDrivesMenu
+}
 
 return
 ;------------------------------------------------------------
