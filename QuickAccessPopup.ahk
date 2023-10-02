@@ -26124,8 +26124,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 
 	if (strCurrentLocation = o_L["DialogArgumentsPlaceholdersCurrentExample"]) ; this is for an example only
 	{
-		if ClipboardIsFree(A_ThisFunc)
-			strExpanded := StrReplace(strExpanded, "{Clipboard}", o_L["MenuClipboard"])
+		strExpanded := StrReplace(strExpanded, "{Clipboard}", o_L["MenuClipboard"])
 		strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", o_L["DialogInputExample"]) ; replace all occurences
 		strExpanded := StrReplace(strExpanded, "{ActiveWindow}", "C:\PATH\ACTIVE_WINDOW_APP.EXE")
 	}
@@ -26143,7 +26142,8 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			strExpanded := ExpandPlaceholderMenu(strExpanded)
 	
 		; process Clipboard
-		if ClipboardIsFree(A_ThisFunc) ; avoid error if Clipboard is used by another application and not released after 1 second
+		; strExpanded := StrReplace(strExpanded, "{Clipboard}", MakeClipboardAvailable(A_ThisFunc)) ; expand {Clipboard}
+		if InStr(strExpanded, "{Clipboard}") and ClipboardIsFree(A_ThisFunc) ; avoid error if Clipboard is used by another application and not released after 1 second
 			strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
 		; process SelectedText
@@ -28629,6 +28629,21 @@ Control_GetFont( hwnd )
 
 
 ;------------------------------------------------------------
+RunCommandTooLong(strRunCommand)
+;------------------------------------------------------------
+{
+	strRunCommandLength := StrLen(strRunCommand)
+	blnRunCommandTooLong := (StrLen(strRunCommand) > g_intRunCommandMax)
+	
+	if (blnRunCommandTooLong)
+		Oops("", o_L["OopsRunCommandTooLong"], strRunCommandLength, g_intRunCommandMax)
+	
+	return blnRunCommandTooLong
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 ClipboardIsFree(strCaller)
 ; see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=114865
 ; https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getopenclipboardwindow
@@ -28653,21 +28668,6 @@ ClipboardIsFree(strCaller)
 	Diag(A_ThisFunc . " - FREE", "Owner", strGetClipboardOwner . "(" . pGetClipboardOwner . ")")
 
 	return true ; Clipboard is free
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-RunCommandTooLong(strRunCommand)
-;------------------------------------------------------------
-{
-	strRunCommandLength := StrLen(strRunCommand)
-	blnRunCommandTooLong := (StrLen(strRunCommand) > g_intRunCommandMax)
-	
-	if (blnRunCommandTooLong)
-		Oops("", o_L["OopsRunCommandTooLong"], strRunCommandLength, g_intRunCommandMax)
-	
-	return blnRunCommandTooLong
 }
 ;------------------------------------------------------------
 
