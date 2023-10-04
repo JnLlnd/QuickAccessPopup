@@ -12733,7 +12733,7 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 		GuiControl, +gGuiMoveFavoriteDown, f_picMoveFavoriteDown
 	}
 	intFavoritesSelectedIndex := LV_GetNext("Selected")
-	blnSelectedCanBeLaunched := InStr("Folder|Document|Application|Special|URL|FTP|QAP|Group|Snippet", o_MenuInGui.SA[intFavoritesSelectedIndex].AA.strFavoriteType)
+	blnSelectedCanBeLaunched := InStr("Folder|Document|Application|Special|URL|FTP|QAP|Group", o_MenuInGui.SA[intFavoritesSelectedIndex].AA.strFavoriteType) ; Snippet excluded
 	GuiControl, % (blnSelectedCanBeLaunched ? "Show" : "Hide"), f_picLaunchSelectedBottomOn
 	GuiControl, % (blnSelectedCanBeLaunched ? "Hide" : "Show"), f_picLaunchSelectedBottomOff
 
