@@ -6463,7 +6463,8 @@ if IsHighDPI()
 	FileInstall, FileInstall\generic_sorting-39_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-39_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-39_c.png, %g_strTempDir%\QAP-pin-on_c.png
-	FileInstall, FileInstall\circled_play-39_c.png, %g_strTempDir%\circled_play_c.png
+	FileInstall, FileInstall\circled_play-on-39_c.png, %g_strTempDir%\circled_play-on_c.png
+	FileInstall, FileInstall\circled_play-off-39_c.png, %g_strTempDir%\circled_play-off_c.png
 	
 	FileInstall, FileInstall\left-half-18_c.png, %g_strTempDir%\left-half_c.png
 	FileInstall, FileInstall\right-half-18_c.png, %g_strTempDir%\right-half_c.png
@@ -6494,7 +6495,8 @@ else
 	FileInstall, FileInstall\generic_sorting-26_c.png, %g_strTempDir%\generic_sorting_c.png
 	FileInstall, FileInstall\QAP-pin-off-26_c.png, %g_strTempDir%\QAP-pin-off_c.png
 	FileInstall, FileInstall\QAP-pin-on-26_c.png, %g_strTempDir%\QAP-pin-on_c.png
-	FileInstall, FileInstall\circled_play-26_c.png, %g_strTempDir%\circled_play_c.png
+	FileInstall, FileInstall\circled_play-on-26_c.png, %g_strTempDir%\circled_play-on_c.png
+	FileInstall, FileInstall\circled_play-off-26_c.png, %g_strTempDir%\circled_play-off_c.png
 	
 	FileInstall, FileInstall\left-half-12_c.png, %g_strTempDir%\left-half_c.png
 	FileInstall, FileInstall\right-half-12_c.png, %g_strTempDir%\right-half_c.png
@@ -6568,7 +6570,8 @@ InsertGuiControlPos("f_picGuiAlwaysOnTopOn",			  10,  -105, , true)
 InsertGuiControlPos("f_picGuiAlwaysOnTopOff",			  10,  -105, , true)
 InsertGuiControlPos("f_picSortFavoritesBottom",			  10,  -135, , true)
 InsertGuiControlPos("f_picMenuContainerInGuiBottom",	  10,  -165, , true)
-InsertGuiControlPos("f_picLaunchSelectedBottom",		  10,  -195, , true)
+InsertGuiControlPos("f_picLaunchSelectedBottomOn",		  10,  -195, , true)
+InsertGuiControlPos("f_picLaunchSelectedBottomOff",		  10,  -195, , true)
 InsertGuiControlPos("f_picSearch",						-111,    23, , true)
 
 InsertGuiControlPos("f_btnGuiSaveAndCloseFavorites",	  0,  -70, , true)
@@ -12238,10 +12241,12 @@ Gui, 1:Add, Picture, vf_picGuiAlwaysOnTopOff gGuiAlwaysOnTop x+1 yp, %g_strTempD
 g_aaToolTipsMessages["Static18"] := o_L["ControlToolTipAlwaysOnTopOff"]
 Gui, 1:Add, Picture, vf_picMenuContainerInGuiBottom gContainerInGuiShortcut x+1 yp, %g_strTempDir%\preview_pane_c.png ; Static19
 g_aaToolTipsMessages["Static19"] := o_L["ControlToolTipShowContainerInGui"]
-Gui, 1:Add, Picture, vf_picLaunchSelectedBottom gOpenFavoriteSelectedInGui x+1 yp, %g_strTempDir%\circled_play_c.png ; Static20
+Gui, 1:Add, Picture, vf_picLaunchSelectedBottomOn gOpenFavoriteSelectedInGui x+1 yp, %g_strTempDir%\circled_play-on_c.png ; Static20
 g_aaToolTipsMessages["Static20"] := o_L["ControlToolTipLaunchSelected"]
-Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search_c.png ; Static21
-g_aaToolTipsMessages["Static21"] := o_L["ControlToolTipSearchButton"]
+Gui, 1:Add, Picture, vf_picLaunchSelectedBottomOff x+1 yp, %g_strTempDir%\circled_play-off_c.png ; Static21
+g_aaToolTipsMessages["Static21"] := o_L["ControlToolTipLaunchSelected"] . " (" . o_L["ControlToolTipLaunchSelectedOff"] . ")"
+Gui, 1:Add, Picture, vf_picSearch gGuiFavoritesListFilterShowOpen x+1 yp, %g_strTempDir%\search_c.png ; Static22
+g_aaToolTipsMessages["Static22"] := o_L["ControlToolTipSearchButton"]
 
 intLabelFontSize := o_Settings.SettingsWindow.intLabelsFontSize.IniValue
 intListViewFontSize := o_Settings.SettingsWindow.intListFontSize.IniValue
@@ -12682,23 +12687,23 @@ if (A_GuiEvent = "DoubleClick")
 
 else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls or change button labels
 {
-	g_intFavoriteSelected := LV_GetCount("Selected")
-	if (g_intFavoriteSelected > 1)
+	intFavoritesSelectedCount := LV_GetCount("Selected")
+	if (intFavoritesSelectedCount > 1)
 	{
 		GuiControl, Disable, f_lblGuiEditFavorite
 		GuiControl, Show, f_picGuiEditFavorites
 		GuiControl, Hide, f_picGuiEditFavorite
 		g_blnEditButtonDisabled := true
 		
-		GuiControl, , f_lblGuiRemoveFavorite, % o_L["GuiRemoveFavorite"] . " (" . g_intFavoriteSelected . ")"
+		GuiControl, , f_lblGuiRemoveFavorite, % o_L["GuiRemoveFavorite"] . " (" . intFavoritesSelectedCount . ")"
 		GuiControl, +gGuiRemoveMultipleFavorites, f_lblGuiRemoveFavorite
 		GuiControl, +gGuiRemoveMultipleFavorites, f_picGuiRemoveFavorite
 		
-		GuiControl, , f_lblGuiCopyFavorite, % o_L["DialogCopy"] . " (" . g_intFavoriteSelected . ")"
+		GuiControl, , f_lblGuiCopyFavorite, % o_L["DialogCopy"] . " (" . intFavoritesSelectedCount . ")"
 		GuiControl, +gGuiCopyMultipleFavoritesToMenu, f_lblGuiCopyFavorite
 		GuiControl, +gGuiCopyMultipleFavoritesToMenu, f_picGuiCopyFavorite
 		
-		GuiControl, , f_lblGuiMoveFavorite, % o_L["GuiMove"] . " (" . g_intFavoriteSelected . ")"
+		GuiControl, , f_lblGuiMoveFavorite, % o_L["GuiMove"] . " (" . intFavoritesSelectedCount . ")"
 		GuiControl, +gGuiMoveMultipleFavoritesToMenu, f_lblGuiMoveFavorite
 		GuiControl, +gGuiMoveMultipleFavoritesToMenu, f_picGuiMoveFavorite
 		
@@ -12727,10 +12732,14 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 		GuiControl, +gGuiMoveFavoriteUp, f_picMoveFavoriteUp
 		GuiControl, +gGuiMoveFavoriteDown, f_picMoveFavoriteDown
 	}
+	intFavoritesSelectedIndex := LV_GetNext("Selected")
+	blnSelectedCanBeLaunched := InStr("Folder|Document|Application|Special|URL|FTP|QAP|Group|Snippet", o_MenuInGui.SA[intFavoritesSelectedIndex].AA.strFavoriteType)
+	GuiControl, % (blnSelectedCanBeLaunched ? "Show" : "Hide"), f_picLaunchSelectedBottomOn
+	GuiControl, % (blnSelectedCanBeLaunched ? "Hide" : "Show"), f_picLaunchSelectedBottomOff
 
-	Menu, menuBarFavorite, % (g_intFavoriteSelected = 1 ? "Enable" : "Disable"), % aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E" ; edit menu only if one item is selected
+	Menu, menuBarFavorite, % (intFavoritesSelectedCount = 1 ? "Enable" : "Disable"), % aaFavoriteL["DialogEdit"] . g_strEllipse . "`tCtrl+E" ; edit menu only if one item is selected
 	Loop, Parse, % "menuSortMainMenu|menuSortSearchResult|menuSortManual|menuSortAutomatic", |
-		Menu, % A_LoopField . "ContextMenu", % (g_intFavoriteSelected > 1 ? "Disable" : "Enable"), % g_aaSortMenusFavoriteL["DialogEdit"] . g_strEllipse
+		Menu, % A_LoopField . "ContextMenu", % (intFavoritesSelectedCount > 1 ? "Disable" : "Enable"), % g_aaSortMenusFavoriteL["DialogEdit"] . g_strEllipse
 	if !SearchIsVisible()
 		Menu, menuBarFavorite, Enable, % aaFavoriteL["ControlToolTipSortFavorites"] ; re-enable if disabled by GuiCancel for Favorite Tray menu
 	
@@ -12740,7 +12749,7 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 		, |
 	{
 		saItem := StrSplit(A_LoopField, "`t") ; saItem[1]: language item, saItem[2]: ellipse, saItem[3]: shortcut
-		Menu, menuBarFavorite, % (g_intFavoriteSelected ? "Enable" : "Disable")
+		Menu, menuBarFavorite, % (intFavoritesSelectedCount ? "Enable" : "Disable")
 			, % aaFavoriteL[saItem[1]] . (StrLen(saItem[2]) ? g_strEllipse : "") . "`t" . saItem[3]
 		saItem := ""
 	}
@@ -12797,6 +12806,9 @@ else if (A_GuiEvent == "D") ; case sensitive to exclude "d" for right click
 intNewItemPos := ""
 saTempContainer := ""
 strSearchType := ""
+intFavoritesSelectedCount := ""
+intFavoritesSelectedIndex := ""
+blnSelectedCanBeLaunched := ""
 
 return
 ;------------------------------------------------------------
@@ -21504,6 +21516,7 @@ g_strOpenFavoriteLabel := A_ThisLabel
 g_strNewWindowId := "" ; start fresh for any new favorite to open, used to position Explorer and Total Commander windows only
 
 if (g_strOpenFavoriteLabel <> "OpenAlternativeFromQuickLaunch") ; we already have the modifiers from QuickLaunch
+	and (g_strOpenFavoriteLabel <> "OpenFavoriteSelectedInGui") ; we don't suport modifiers when launched from gui
 	gosub, GetAlternativeMenuModifier
 
 Diag(A_ThisLabel, "Enter", 1)
@@ -21747,6 +21760,14 @@ else if (g_strOpenFavoriteLabel = "OpenFavoriteFromMsg")
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass) ; returns current or latest file manager window ID and Window class
 	g_strHotkeyTypeDetected := "Launch"
 }
+else if (g_strOpenFavoriteLabel = "OpenFavoriteSelectedInGui")
+{
+	intFavoritesSelectedIndex := LV_GetNext("Selected")
+	o_ThisFavorite := o_MenuInGui.SA[intFavoritesSelectedIndex]
+	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
+	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass) ; returns current or latest file manager window ID and Window class
+	g_strHotkeyTypeDetected := "Launch"
+}
 else
 	o_ThisFavorite := GetFavoriteObjectFromMenuPosition(intMenuItemPos) ; was g_objThisFavorite
 
@@ -21761,6 +21782,7 @@ strMenuPath := ""
 strReopenWindowsID := ""
 strReopenWindowClass := ""
 strCurrentLocation := ""
+intFavoritesSelectedIndex := ""
 
 return
 ;------------------------------------------------------------
@@ -34112,11 +34134,13 @@ class Container
 				intOpenError := this.LaunchWindowsApp() ; returns 0 if no error
 			}
 			; QAP COMMAND
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|LaunchFromQuickLaunch"
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|LaunchFromQuickLaunch|OpenFavoriteSelectedInGui"
 				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
 				Diag(A_ThisFunc, "this.AA.strFavoriteLocation", this.AA.strFavoriteLocation)
 				Diag(A_ThisFunc, "o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand", o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
+				g_strTargetWinId := ""
+				g_strTargetClass := ""
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
 			}
 			; SWITCH APP
