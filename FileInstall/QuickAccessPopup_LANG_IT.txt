@@ -29,12 +29,14 @@ lContextShowMenu	Mostra il menù Quick Access Popup
 lControlToolTipAlwaysOnTopOff	Non mantenere piú questa finestra in primo piano
 lControlToolTipAlwaysOnTopOn	Mantieni questa finestra sempre in primo piano
 lControlToolTipColumnBreak	Inserisci un separatore di colonna
+lControlToolTipLaunchSelected	Esegui i preferiti selezionati nella finestra Personalizza
+lControlToolTipLaunchSelectedOff	quest'oggetto non può essere eseguito
 lControlToolTipMoveDown	Sposta in giú il preferito selezionato/i
 lControlToolTipMoveUp	Sposta in su il preferito selezionato/i
-lControlToolTipNextMenu	Torna al menù successivo
+lControlToolTipNextMenu	Procedi al menù successivo
 lControlToolTipOpenMenuContainingSearchItem	Apri il sottomenù o il gruppo contenente il preferito selezionato
 lControlToolTipParentMenu	Vai al menú superiore
-lControlToolTipPreviousMenu	Ritorna al menú precedente
+lControlToolTipPreviousMenu	Ritorna indietro al menú precedente
 lControlToolTipSearchBoxClear	Svuota la casella di ricerca e mostra tutti i preferiti
 lControlToolTipSearchBoxExtended	Cerca a partire dal menù corrente nomi dei preferiti *e* varie proprietà
 lControlToolTipSearchButton	Cerca preferiti
@@ -71,12 +73,14 @@ lDialogArgumentsPlaceholdersCheckLabel	Parametri correnti con segnaposto estesi
 lDialogArgumentsPlaceholdersCurrentExample	x:\cartella_contenitore\ultima_cartella
 lDialogArgumentsPlaceholdersSelectedExample	x:\cartella_contenitore\cartella_o_file_selezionato.ext
 lDialogAscending	Ascendente
+lDialogBackwardButton	Tasto Indietro
 lDialogBrowseButton	Sfoglia
 lDialogBrowseOrSelectApplication	Ricerca un file eseguibile o`nseleziona una applicazione in esecuzione in questo elenco
 lDialogCancelButton	Annulla
 lDialogCancelPrompt	Vuoi scartare le modifiche?
 lDialogCancelTitle	Annulla - ~1~ ~2~
 lDialogChangeHotkeyAlternative	Questa è una scorciatoia alternativa per il menù.`n`nVuoi controllare "~1~" con "~2~"?
+lDialogChangeHotkeyAltGrHelp	Nota: Se nel layout della tua tastiera c'è AltGr invece di Alt-destro, seleziona entrambe le caselle Ctrl e Alt per usare AltGr come modificatore.
 lDialogChangeHotkeyAny	Qualunque
 lDialogChangeHotkeyLeftAnyRight	Ciascun modificatore di tasti può essere vincolato al solo tasto "Sinistra", al solo tasto "Destra" o a "Qualunque" di loro.
 lDialogChangeHotkeyModifierAndNone	Modificatori come "Alt" o "Control" non possono essere selezionati da soli. Inoltre, seleziona anche un hotkey per mouse o tastiera nella sezione appropriata.
@@ -119,6 +123,7 @@ lDialogCloseComputerStartScreenSaverDescription	Avvia lo screen saver predefinit
 lDialogCloseComputerSuspend	Sospensione del computer (stand-by)
 lDialogCloseComputerSuspendDescription	Metti il computer in modalità di risparmio energetico che gli permette di riprendere rapidamente la piena operatività quando desideri riprendere l'attività. La modalità di stand-by (sospensione) utilizza pochissima energia, il computer si riavvia più velocemente, e ritrovi in un istante tutto come lo avevi lasciato.
 lDialogCloseComputerSuspendImmediately	Sospendi immediatamente (può causare perdita di dati)
+lDialogContextMenu	Menù contestuale
 lDialogContinue	Continua
 lDialogCopy	Copia
 lDialogCopyFavoritesTitle	Copia Preferiti - ~1~ ~2~
@@ -251,6 +256,7 @@ lDialogFileLabel	Documento
 lDialogFileName	Nome del File
 lDialogFileSize	Dimensione del File
 lDialogFolderLabel	Cartella
+lDialogForwardButton	Tasto Avanti
 lDialogFreeEditionItems	Usa Ctrl+Tab per inserire tab ed Enter per inserire fine-linea..
 lDialogFreeEditionLabel	Gratuita
 lDialogFreeEditionLive	Cartelle Lives con al massimo ~1~ oggetti
@@ -353,6 +359,7 @@ lDialogMoveSettingsReload	~1~ deve essere riavviato...
 lDialogMoveSettingsSuccess	File Impostazioni copiati con successo.`n`nVecchia cartella:`n~1~`n`nNuova cartella: `n~2~`n`nI file nella vecchia cartella non sono stati cancellati. Eliminali se/quando vuoi dopo aver chiuso ~3~.
 lDialogMoveSettingsUnder	Non puoi spostare la cartella Impostazioni in se stessa. Scegli un'altra destinazione.
 lDialogMultipleAdd	Aggiungi più di un preferiti
+lDialogMultipleAddCSV	File CSV (file di valori separati da virgola)
 lDialogMultipleAddDescription	Aggiungi con un solo click molteplici preferiti al sottomenu prescelto dalla lista delle finestre attualmente aperte, da Cartelle Frequenti o File e Cartelle Recenti, da Funzioni Caratt. di QAP o liste di Cartelle Speciali, da una cartella o da un file di impostazioni di QAP.
 lDialogMultipleAddExcludeExisting	Escludi preferiti preesistenti
 lDialogMultipleAddFilter	Filtro
@@ -397,6 +404,7 @@ lDialogReadOnly	Sola-Lettura
 lDialogRefresh	Aggiorna
 lDialogRemoveMultipleFavorites	Vuoi davvero eliminare ~1~ preferiti / sottomenù?
 lDialogResetQAPSpecialDefaultNames	Questo comando resetta tutte le Cartelle Speciali e Caratteristiche di QAP preferite nel tuo menù al loro nome di default in "~1~".`n`nContinuare?
+lDialogRightButton	Tasto destro
 lDialogSameLocartionExistsPrompt	Il seguente preferito ha lo stesso contenuto:
 lDialogSameLocartionExistsQuestion	Vuoi salvare comunque questo preferito?
 lDialogSearch	Cerca
@@ -406,6 +414,7 @@ lDialogSearchBrokenLinks	Ricerca Link Preferiti inesistenti (404)
 lDialogSearchBrokenLocations	Ricerca Cartelle, Documenti o Applicazioni non trovate
 lDialogSearchNotInDatabaseFavorites	Ricerca Preferiti non usati negli ultimi ~1~ giorni
 lDialogSearchSpecial	Ricerche Speciali
+lDialogSelectCSV	Seleziona il file CSV da importare
 lDialogSelectFolder	Seleziona Cartella
 lDialogSelectIcon	Cambia icona
 lDialogSelectIconJL	Seleziona da:
@@ -425,6 +434,7 @@ lDialogShortcut	Scorciatoia
 lDialogShortcuts	Scorciatoie
 lDialogShortcutsDescription	Visualizza una casella di dialogo con una visione complessiva delle tue scorciatoie di mouse o tastiera. Puoi ordinare i preferiti cliccando sul'intestazione.`n`nFai doppio click su una scorciatoia per cambiare o rimuovere la combinazione di tasti assegnata.`n`nClicca la casella "Vedi tutti i preferiti" per assegnare scorciatoie ad altri preferiti.
 lDialogSortBy		Ordina per
+lDialogSortNaturalOrder	Ordinamento Menù
 lDialogSortOrder	Tipo di ordinamento
 lDialogSoundLabel	Esegui questo suono quando richiami il preferito (<a href="~1~">~2~</a>)
 lDialogSpecialFoldersCategoriesNames	Base|Esperto|Amministr. di sistema|Contenuti|Hardware
@@ -566,6 +576,7 @@ lGuiQuickAddSnippetExample	Digita ~1~ in un editor di testo per farlo espandere.
 lGuiQuickAddSnippetExampleName	Esempio di frammento testuale (Snippet)
 lGuiQuickAddSnippetTitle	Aggiunta veloce di frammenti di testo (Snippet) - ~1~ ~2~
 lGuiQuickLaunchDescription	Apri una casella di ricerca, inserisci una stringa di ricerca e seleziona un elemento nei risultati con il mouse (doppio clic) o la tastiera (Invio) per lanciare l'elemento selezionato, o clic destro per aprire il menù Alternativo per editare il preferito, copiarne la posizione, ecc.
+lGuiQuickLaunchTitle	Esecuzione Veloce
 lGuiRemoveFavorite	Elimina
 lGuiResetDefault	Ripristina hotkey predefinito
 lGuiSave	Salva
@@ -633,16 +644,19 @@ lImpExpDestination	Destinazione
 lImpExpExport	Esportare
 lImpExpFavorites	Preferiti
 lImpExpFile	file ~1~
-lImpExpFileGlobal	Scorciatoie per le Impostazioni Globali ed il Menù Principale
+lImpExpFileGlobal	Tasti per le Impostazioni Globali ed il Menù Principale
 lImpExpFileThemes	Temi
 lImpExpFinalReport	Trasferimento di ~1~.`n`nSorgente:`n~2~`n`nDestinazione:`n~3~
+lImpExpHelpImportFavorites	Nota: Per importare preferiti nel tuo menù, seleziona il "File, ~1~".
 lImpExpImport	Importare
 lImpExpImportFavorites	Importa i Preferiti
 lImpExpInvalidDestinationFolder	Cartella di destinazione invalida:`n`n~1~
-lImpExpMenu	Impostazioni per Importare/Esportare
-lImpExpMenuDescription	Visualizza una casella di dialogo dove puoi esportare i tuoi preferiti ed altre impostazioni per creare un backup da conservare dove preferisci.`n`nPuoi anche importare preferiti e impostazioni da un altro PC o da un altro utente.
+lImpExpMenu	Impostazioni per Importare
+lImpExpMenuDescription	Mostra una casella di dialogo dove puoi importare le impostazioni di QAP installato su un altro PC, o quelle di un altro utente.
+lImpExpMenuExport	Esporta Impostazioni e Preferiti
+lImpExpMenuExportDescription	Mostra una casella di dialogo dove puoi esportare i tuoi preferiti e le impostazioni. Il file creato in una destinazione a tua scelta può essere usato per importare i preferiti e le impostazioni in un'altra installazione o per conservarlo come backup.
 lImpExpNoThemes	Non trovo nessun elenco di Temi nel valore "~1~" della sezione "~2~".`n`nFile sorgente:`n~3~
-lImpExpOptionAlternative	Scorciatoie dei menù Alternativi
+lImpExpOptionAlternative	Tasti e modificatori dei menù alternativi
 lImpExpOptionFavorites	Preferiti
 lImpExpOrIdentical	(o dal contenuto identico)
 lImpExpReplaceAll	Sostituire tutto
@@ -650,10 +664,11 @@ lImpExpReplaceFavorites	Ci sono Preferiti nel file di destinazione. Cosa intendi
 lImpExpReplaceSection	Sostituire (SOVRASCRIVERE) la sezione ~2~ nel file esistente?`n`n~1~`n`n[~2~]`n~3~
 lImpExpRestartApp	Vuoi riavviare ~1~ caricando le nuove impostazioni adesso?
 lImpExpSectionNotFound	Contenuto non trovato nel file:`n`n~1~`n`nSezione: [~2~]`nDescrizione: ~3~
-lImpExpSelectFile	Per favore, seleziona il file  ~1~.
+lImpExpSelectFile	Seleziona il file ~1~.
 lImpExpSource	Sorgente
 lImpExpTitle	Impostazioni per Importare / Esportare - ~1~
 lImpExpUnsavedSettings	Una finestra "Personalizzare" è già aperta, senza aver salvato eventuali cambiamenti.`n`nPer favore, chiudi le finestre delle impostazioni prima di importarle o esportarle.
+lImportFavoritesDescription	Apri la casella di dialogo "~1~" con l'opzione "~2~" per importare preferiti selezionati da un file di impostazioni QAP in un sottomenù scelto da te.
 lMainMenuName	Principale
 lMenuAbout	Crediti
 lMenuAddFavorite	Aggiungi Preferito
@@ -760,6 +775,7 @@ lMenuReopenCurrentFolderDescription	Usa come cartella corrente nelle caselle di 
 lMenuReopenInNewWindow	Riapri la Cartella Corrente dalla casella di Dialogo
 lMenuReopenInNewWindowDescription	Riapri la cartella corrente in una nuova finestra di Explorer (vale anche per Directory Opus o Total Commander). Utile quando vuoi aprire la cartella che stai sfogliando in una casella di dialogo per file, in una finestra di Explorer.
 lMenuResetQAPSpecialDefaultNames	Resetta Nomi di Default delle Cartelle Speciali e Caratteristiche di QAP
+lMenuRestoreQuickLaunchWindowPosition	Ripristina la posizione della finestra "Esecuzione Veloce"
 lMenuRestoreSettingsWindowPosition	Ripristina la posizione della finestra "Personalizzare"
 lMenuRestoreSettingsWindowPositionDescription	Ripristina dimensione finestra e posizione della finestra "Personalizzare" al centro dello schermo principale.
 lMenuRunAtStartup	Esegui all'Avvio
@@ -844,6 +860,7 @@ lOopsInvalidIcon	Le immagini delle icone devono essere quadrate e comprese tra 1
 lOopsInvalidIconDownload	L'icona per questo sito web non è disponibile o non è valida:`n`n~1~
 lOopsInvalidWinCmdIni	File delle impostazioni di Total Commander ("wincmd.ini") non trovato.`n`nSelezionalo in "Opzioni" > "File manager".
 lOopsInvalidWindowPosition	Valori non validi per la posizione della finestra
+lOopsItemCannotBeEdited	Quest'oggetto non può essere editato.
 lOopsJLiconsError	Icona di QAP per l'area notifiche non trovata. Assicurati di aver aggiornato il file JLicons.dll in ~1~.
 lOopsJLiconsOutdated	Il seguente file deve essere aggiornato:`n`n~1~`n`nSostituiscilo con JLicons.dll versione ~2~ dal piu recente file ZIP di installazione (portabile) e riavvia ~3~.
 lOopsLastSaveIncomplete	Qualcosa ha interrotto ~1~ l'ultima volta che ha salvato il tuo preferito nel file impostazioni:`n`n~2~`n`nIl tuo preferito precedente in questo file è stato ripristinato.
@@ -864,6 +881,7 @@ lOopsNowPlaceholderInvalid	Formato del segnaposto "Adesso" non valido
 lOopsOptionsPathNotExist	~1~ non esiste:`n~2~`n`nPer favore, seleziona un percorso valido.
 lOopsOptionsPathTrayIcon	File dell'icona nell'area notifiche
 lOopsOSVerrsionError	~1~ richiede Window 7 o un sistema operativo più recente. Windows Vista e utenti XP sono invitati ad usare il Folders Popup che è compatibile con queste versioni.`n`nVuoi visitare il sito web di Folders Popup?
+lOopsRunCommandTooLong	Comando Esegui troppo lungo (~1~ contro un massimo di ~2~)
 lOopsSelectedItemDialogBoxes	L'oggetto selezionato non può essere individuato in caselle di dialogo.
 lOopsSelectedItemTotalCommander	L'oggetto selezionato non può essere individuato in finestre di Total Commander.
 lOopsSortOnHiddenColumns	Hai selezionato un criterio di ordinamento per una colonna che non è attualmente visualizzata nella finestra "Personalizza".`n`nDovresti abilitare l'opzione "~1~" in "Opzioni, Personalizza Finestra" ed il database QAP in "Opzioni, Database".
@@ -903,6 +921,7 @@ lOptionsClipboardMaxSizeDefault	(valore predefinito 10000 bytes)
 lOptionsControlDoublePressed	Apri il menù principale con Ctrl + Ctrl (tasto CTRL premuto due volte)
 lOptionsControlDoublePressedLeft	Tasto CTRL sinistro attivo
 lOptionsControlDoublePressedRight	Tasto CTRL destro attivo
+lOptionsCustomLinksIcon	Icona per risorsa Link Personalizzati "file,indice" (lascia vuoto per usare l'icona di default del browser)
 lOptionsDarkMode	Supporto Modalità scura
 lOptionsDarkModeMenus	Supporto Modalità scura per i menù
 lOptionsDatabase	Database
@@ -950,9 +969,11 @@ lOptionsIconsCustomFolder	Cartella personalizzata delle icone
 lOptionsIconSize	Dimensione predefinita delle icone del menù
 lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto lo spazio disponibile)
 lOptionsKeepExtensionInShortName	Mantieni l'estensione del file nelle abbreviazioni dei preferiti
+lOptionsLabelsFontSize	Dimensione dei caratteri per le etichette
 lOptionsLanguage	Lingua
 lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian
 lOptionsLaunchAdvancedQAPTitle	Esecuzione di Quick Access Popup
+lOptionsListFontSize	Dimensione dei caratteri per la lista di Preferiti
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
 lOptionsMenuAppearance	Aspetto dei Menù
@@ -981,13 +1002,17 @@ lOptionsPopupHotkeysAlternative	Combinazioni per il Menù Alternativo
 lOptionsPopupHotkeyTitles	Tasto del Mouse di Quick Access Popup|Scorciatoia da tastiera di Quick Access Popup|Tasto del Mouse del Menù Alternativo|Scorciatoia da tastiera del Menù Alternativo
 lOptionsPopupHotkeyTitlesSub	Questo tasto del mouse visualizza il menù popup ovunque (tranne che su <a>excluded applications</a>) e apre direttamente il Preferito o la cartella scelta.|Questo tasto apre il menù popup ovunque e apre direttamente il Preferito o la cartella scelta.|Questo tasto del mouse apre un menù alternativo che contiene varie funzioni. Tale menù può essere aperto ovunque (senza eccezioni).|Questo tasto apre un menù alternativo con varie funzioni. Tale menù può essere aperto ovunque.
 lOptionsPopupMenu	Menù Popup
-lOptionsQAPconnectIntro	QAPconnect è un'interfaccia che offre un parziale supporto per un'elenco di circa 15 file manager.
+lOptionsQAPconnectIntro	QAPconnect è un'interfaccia che offre un parziale supporto per un'elenco di circa 25 file manager.
 lOptionsQAPTempFolder	Cartella Temporanea
 lOptionsQuickAddSnippetSubmenu	Sottomenù per ~1~
 lOptionsQuickLaunchExtended	Ricerca Estesa (cerca tutte le proprietà)
+lOptionsQuickLaunchFontSize	Dimensione dei caratteri per la lista Esecuzione Rapida
+lOptionsQuickLaunchNavigate	Cambia cartella nel file manager e caselle di dialogo
+lOptionsQuickLaunchRecentsFrequents	Includi oggetti dei menù Recenti e Frequenti
 lOptionsQuickLaunchRows	Numero di righe per i risultati di ricerca
+lOptionsQuickLaunchTitle	Opzioni di Esecuzione Veloce
 lOptionsRecentFolders	Numero di oggetti nei Menù
-lOptionsRecentFoldersPrompt	Menù di file/cartelle Recenti e Frequenti:
+lOptionsRecentFoldersPrompt	Menù di file/cartelle Recenti e Frequenti
 lOptionsRecentPopularLevelsMax	Massimo numero di livelli in profondità in menù Recenti/Frequenti`n(livelli eccedenti saranno troncati dall'inizio, 0 per mantenere il percorso completo)
 lOptionsRefreshedMenusAttached	Aggiungi tutti i menù dinamici al menù principale di QAP
 lOptionsRefreshedMenusAttachedInfo	Se abiliti questa opzione, ci potrebbe essere un leggero ritardo nell'aggiornamento (a seconda della configurazione del tuo sistema) ogni volta che visualizzi il menu a popup.`n`nLa durata del ritardo dipende dal tempo che Windows impiega per fornire le informazioni richieste aggiornate per costruire il menu (lista degli oggetti recenti e spazio attualmente disponibile nei dischi). Questo ritardo puó avere durata variabile di volta in volta.`n`nSe disabiliti questa opzione, i menu "~1~", "~2~", "~3~", "~4~" e "~5~" saranno aggiornati solo su richiesta e visualizzati separatamente dal menu principale.
@@ -1039,6 +1064,7 @@ lOptionsThirdParty	Altri File Manager
 lOptionsThirdPartyDetail	Seleziona il file del programma (.exe) ~1~ per abilitare l'integrazione di ~1~ .
 lOptionsThirdPartyDetailQAPconnect	Seleziona il tuo file manager (o modifica ~1~ per aggiungerlo - vedi l'Aiuto per dettagli).
 lOptionsThirdPartyFileNotFound	~1~ file dell'applicazione  "~2~" non trovato.
+lOptionsThirdPartyQAPconnect	QAPConnect (supporto parziale`nper 25 altri file manager)
 lOptionsThirdPartySelectedHelp	File Manager selezionato: ~1~ (<a href="~2~">~3~</a>)
 lOptionsThirdPartySelectFile	Puoi selezionare il file dell'applicazione di ~1~ usando il tasto "Sfoglia"
 lOptionsThirdPartyUseTabs	Usa i tab invece di aprire (in) una nuova finestra

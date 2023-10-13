@@ -474,8 +474,6 @@ lImpExpFileGlobal	Configuración global y atajos del menú principal
 lImpExpFileThemes	Temas
 lImpExpFinalReport	Transferido ~1~.`n`nOrigen:`n~2~`n`nDestino:`n~3~
 lImpExpImport	Importar 
-lImpExpMenu	Importar/exportar la configuración
-lImpExpMenuDescription	Mostrar un cuadro de diálogo para exportar favoritos y otros parámetros para crear una copia de seguridad en la ubicación deseada. `n`n También puede importar favoritos y parámetros desde otro equipo o usuario.
 lImpExpNoThemes	Alguna lista de temas en el valor "~1~" de la sección "~2~".`n`nArchivo origen:`n~3~
 lImpExpOptionAlternative	Atajos de menú Alternativos
 lImpExpOptionFavorites	Favoritos
@@ -740,7 +738,7 @@ lOptionsPopupHotkeyTitlesSub	Este botón del ratón hace que se abra el menú en cu
 lOptionsPopupMenu	Menú emergente
 lOptionsQAPTempFolder	Carpeta Temporal
 lOptionsRecentFolders	Número de elementos en el menú 
-lOptionsRecentFoldersPrompt	Recent Elementos y menús Frecuentes:
+lOptionsRecentFoldersPrompt	Recent Elementos y menús Frecuentes
 lOptionsRecentPopularLevelsMax	Número máximo de niveles de ubicaciones en los menús Recientes/Frecuentes`n (los niveles anteriores a este número se truncarán desde el principio, 0 para mantener la ubicación completa)
 lOptionsRefreshedMenusAttached	Adjuntar todos los menús dinámicos al menú principal de QAP
 lOptionsRefreshedMenusAttachedInfo	Si habilita esta opción, puede haber un ligero retardo de actualización (dependiendo de la configuración del sistema) cada vez que aparezca el menú emergente.`n`nLa duración del retardo depende del tiempo que Windows toma para proporcionar la información refrescada requerida para construir el menú (lista de elementos recientes y espacio disponible en unidades actuales). Esta duración puede variar para cada llamada.`n`nIf deshabilite esta opción en "~1~", "~2~", "~3~", "~4~" y "~5~" menús se actualizará sólo bajo demanda y se mostrará separado del menú principal.

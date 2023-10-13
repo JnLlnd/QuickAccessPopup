@@ -641,8 +641,6 @@ lImpExpFinalReport	Transferir ~1~.`n`nOrigem:`n~2~`n`nDestino:`n~3~
 lImpExpImport	Importar
 lImpExpImportFavorites	Importar Favoritos
 lImpExpInvalidDestinationFolder	Pasta de destino inválida:`n`n~1~
-lImpExpMenu	Definições de Importação/Exportação
-lImpExpMenuDescription	Exibe uma caixa de diálogo onde pode exportar os seus favoritos e outras definições para criar uma cópia de segurança num local da sua escolha.`n`nTambém pode importar favoritos e definições de outro PC ou utilizador.
 lImpExpNoThemes	Nenhuma lista de temas encontrada no valor "~1~" da secção "~2~".`n`nFicheiro de origem:`n~3~
 lImpExpOptionAlternative	Teclas de atalhos dos menus alternativos
 lImpExpOptionFavorites	Favoritos
@@ -995,7 +993,7 @@ lOptionsQuickLaunchRecentsFrequents	Incluir itens do menu Recentes e Frequentes
 lOptionsQuickLaunchRows	Numero de linhas do resultado da procura
 lOptionsQuickLaunchTitle	Opções "Inicialização Rápida"
 lOptionsRecentFolders	Número de itens em menus
-lOptionsRecentFoldersPrompt	Itens Recentes e Menus Frequentes:
+lOptionsRecentFoldersPrompt	Itens Recentes e Menus Frequentes
 lOptionsRecentPopularLevelsMax	Número máximo de níveis de caminhos nos menus Recentes/Frequentes`n(os níveis excedentes serão truncados a partir do início, 0 para manter caminho completo)
 lOptionsRefreshedMenusAttached	Anexar todos os menus dinÃ¢micos ao menu principal do QAP
 lOptionsRefreshedMenusAttachedInfo	Se activar esta opção, pode ocorrer um ligeiro atraso na actualização (dependendo da configuração do seu sistema) cada vez que exibir o menu emergente.`n`nA duração do atraso depende do tempo que o Windows leva a fornecer a informação de actualização necessária para a construção do menu (lista de itens recentes e espaço disponível nas unidades actuais). Esta duração pode variar em cada caso.`n`nSe desactivar esta opção, os menus "~1~", "~2~", "~3~", "~4~" e "~5~" serão actualizados apenas a pedido e exibidos separadamente do menu principal.
