@@ -31,6 +31,28 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.3 (2023-10-16)
+ 
+Options
+- reorder options sections in "Options" dialog box and menu
+- add new option under "Menu Icons" to set a custom icon for "Link" favorites and, if present, use it instead of the default browser's icon
+- duplicate the "Open Customize window at Startup" option in "General" section
+ 
+Customize window
+- when the "Customize" window is active
+  - add support for extra mouse button (side buttons) to navigate Forward and Backward in submenus
+  - support for extra mouse button (side buttons) to navigate Forward and Backward in submenus
+  - support Alt+Right and Alt+Left to navigate backward and forward in submenus (in addition to existing hotkeys Shift+Ctrl+Right and Shift+Ctrl+Left)
+  - update the "Customize Window Shortcuts Help" dialog box (F1) under the "Help" menu
+- add button on the left side of the window to launch the favorite selected in the "Customize" window
+- enable this button for launchable favorite types Folder, Document, Application, Special, URL, FTP, QAP and Group (not applicable for Snippet)
+ 
+Various improvements
+- support the new placeholder "{SelectedText}" and replace it with the text currently selected in the active window
+- check if the Clipboard is free before refreshing the "Clipboard" menu
+- QAP is now compiled with AHK runtime v1.1.37.1
+- update language files for French, Italian, Korean, Brazilian Portuguese and German
+
 Version: 11.6.2.3 (2023-08-29)
  
 Import/Export
@@ -5533,7 +5555,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.2.4
+;@Ahk2Exe-SetVersion 11.6.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5601,7 +5623,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.2.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -9820,7 +9842,7 @@ Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w580 r4 vf_strIconReplacementList gGu
 	? StrReplace(Trim(o_Settings.MenuIcons.strIconReplacementList.IniValue), "|", "`n") : "iconUnknown=" . o_JLicons.AA["iconUnknown"])
 
 ; CustomLinksIcon
-Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblCustomLinksIcon hidden, % o_L["OptionsCustomLinksIcon"] . ":"
+Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w580 vf_lblCustomLinksIcon hidden, % o_L["OptionsCustomLinksIcon"] . ":"
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w580 h20 vf_strCustomLinksIcon hidden ; gLabel after GuiControl that changes the value below
 GuiControl, 2:, f_strCustomLinksIcon, % o_Settings.MenuIcons.strCustomLinksIcon.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strCustomLinksIcon
@@ -21491,23 +21513,6 @@ OpenFavoriteFromQuickLaunch:
 OpenAlternativeFromQuickLaunch:
 OpenFavoriteSelectedInGui:
 ;------------------------------------------------------------
-/* #####
-			g_intOriginalMenuPosition := LV_GetNext()
-
-	if SearchIsVisible()
-	{
-		o_MenuInGui.AA.intSearchPositionBeforeEdit := g_intOriginalMenuPosition ; to restore position after favorite is saved or canceled
-		o_SearchResultContainerBK := o_MenuInGui ; to be restored in after saving or canceling the gui edit (in 2GuiClose or 2GuiCancel)
-		
-		g_intOriginalMenuPosition := o_MenuInGui.SA[g_intOriginalMenuPosition].AA.intSearchItemPositionInOriginalMenu ; switching g_intOriginalMenuPosition to position in search result item original menu
-		o_MenuInGui := o_MenuInGui.SA[o_MenuInGui.AA.intSearchPositionBeforeEdit].AA.oParentMenu ; giving temporary access to original menu of search result item
-		
-		o_EditedFavorite := (strGuiFavoriteLabel = "GuiCopyFavorite" ? o_MenuInGui.SA[g_intOriginalMenuPosition].BackupItem(true) : o_MenuInGui.SA[g_intOriginalMenuPosition]) ; get edited favorite object from its original menu
-	}
-	else
-		o_EditedFavorite := o_MenuInGui.SA[g_intOriginalMenuPosition]
-
-*/
 
 if (g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
  	return

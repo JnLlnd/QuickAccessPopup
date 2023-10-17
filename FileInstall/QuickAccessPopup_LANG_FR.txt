@@ -640,6 +640,7 @@ lImpExpFileThemes	Thèmes
 lImpExpFinalReport	Transfert ~1~.`n`nSource:`n~2~`n`nDestination:`n~3~
 lImpExpHelpImportFavorites	Note: pour importer des favoris dans votre menu, choisissez "Fichier, ~1~".
 lImpExpImport	Importer
+lImpExpImportFavorites	Importer des favoris
 lImpExpInvalidDestinationFolder	Dossier de destination invalide:`n`n~1~
 lImpExpMenu	Importer les options globales
 lImpExpMenuDescription	Affiche une boîte de dialogue permettant d'importer les options globales d'un autre ordinateur ou d'un autre utilisateur.
