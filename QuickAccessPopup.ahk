@@ -32342,11 +32342,7 @@ class Container
 						saThisFavorite[4] := GetIconForClassId(saThisFavorite[3])
 					saThisFavorite[1] := "Special"
 				}
-				else
-				{
-					saThisFavorite[2] := "Please, report: label """ . xmlItemAttributes.label . """ / node: """ . xmlItem.NodeName . """" ; FavoriteName
-					saThisFavorite[1] := "Text" ; FavoriteType
-				}
+				; else this is probably an empty folder
 				if !StrLen(saThisFavorite[2]) ; if no FavoriteName
 					saThisFavorite[2] := saThisFavorite[3] ; use FavoriteLocation
 			}
