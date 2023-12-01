@@ -26446,16 +26446,16 @@ GetLastDayOfMonth(strDate)
 	
 	if (intMonth = 12)
 	{
-		intNextMonth := 1
+		intNextMonth := "01" ; consider as a string
 		intYear := intYear + 1
 	}
 	else
 	{
 		intNextMonth := intMonth + 1
 		if (intNextMonth < 10)
-			intNextMonth := "0" . intNextMonth ; int -> string
+			intNextMonth := "0" . intNextMonth ; consider as a string
 	}
-	strFirstDayOfNextMonth := intYear . intNextMonth . "01"
+	strFirstDayOfNextMonth := intYear . intNextMonth . "0100000000" ; first of mont at midnight
 	strFirstDayOfNextMonth += -1, day ; subtract one day to get last day of strDate month
 	
 	return SubStr(strFirstDayOfNextMonth, 7, 2)
