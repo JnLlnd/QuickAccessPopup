@@ -10142,6 +10142,7 @@ Gui, Font
 loop, % o_FileManagers.SA.Length()
 	Gui, 2:Add, Radio, % "y+10 x" . g_intGroupItemsTab1X . " hidden gActiveFileManagerClicked vf_radActiveFileManager" . A_Index 
 		. (o_FileManagers.P_intActiveFileManager = A_Index ? " checked" : ""), % o_FileManagers.SA[A_Index].AA.strDisplayName
+		. (A_Index = 4 ? " " . o_L["OptionsThirdPartyQAPconnectDetail"] : "")
 
 ; --- bottom ---
 ; see ...\QuickAccessPopup\Divers\options-layout-filemanagers.xlsx
