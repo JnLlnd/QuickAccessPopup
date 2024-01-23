@@ -31,6 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.3.2 (2024-01-23)
+- fix a bug in the placeholder {Now} wrongly calculating the last day of month (as in "{Now:ld}")
+- for some favorites without shortcut, fix a bug showing erroneously in menus the reminder "None" instead of nothing
+- fix a bug when saving a favorite with a placeholder in its location, alerting erroneously that the favorite does not exist
+- fix a display issue in "Options, File managers" when QAPconnect was selected
+- in DOpus Favorites dynamic menu, handle the situation when DOpus favorites folder is empty
+- update Portuguese language file
+ 
 Version: 11.6.3.1 (2023-10-17)
 - fix a bug breaking the "Reopen current folder in dialog box" command and possibly other QAP features commands
  
@@ -5558,7 +5566,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.3.1
+;@Ahk2Exe-SetVersion 11.6.3.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5626,7 +5634,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.3.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.3.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -26468,6 +26476,21 @@ GetLastDayOfMonth(strDate)
 ExpandPlaceholdersForThis(strExpanded, strThisLocation, strPrefix := "")
 ;------------------------------------------------------------
 {
+	if (strPrefix = "CUR_") ; extract fallback location if provided after | (e.g. "{CUR_LOC|C:\another\location\}")
+	{
+		RegExMatch(strExpanded, "\{CUR_(.*?)\}", strCurPlaceholder) ; strCurPlaceholder contains the full placeholder (e.g. "{CUR_LOC}" or "{CUR_LOC|C:\another\location\}")
+		saCurPlaceholder := StrSplit(strCurPlaceholder, "|") ; isolate the fallback location after "|"
+		saCurPlaceholder[2] := SubStr(saCurPlaceholder[2], 1, -1) ; remove the ending "}"
+		if StrLen(saCurPlaceholder[2]) ; we have a fallback location
+		{
+			if !StrLen(strThisLocation) ; if we don't have a current location, use the fallback location
+				strThisLocation := saCurPlaceholder[2]
+			; else keep empty strThisLocation
+			; remove the fallback location from original {CUR_...} placeholder
+			strExpanded := StrReplace(strExpanded, "|" . saCurPlaceholder[2]) ; remove "|" and fallback location 
+		}
+		; else keep strThisLocation empty and strExpanded as-is
+	}
 	SplitPath, strThisLocation, strOutFileName, strOutDir, strOutExtension, strOutNameNoExt, strOutDrive
 	
 	strExpanded := StrReplace(strExpanded, "{" . strPrefix . "LOC}", strThisLocation) ; default replace all occurences
