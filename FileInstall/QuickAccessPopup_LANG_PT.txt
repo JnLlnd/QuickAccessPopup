@@ -29,12 +29,14 @@ lContextShowMenu	Mostrar o menu do Quick Access Popup
 lControlToolTipAlwaysOnTopOff	Mantem esta janela sempre visível em primeiro plano
 lControlToolTipAlwaysOnTopOn	Para de manter esta janela sempre visível
 lControlToolTipColumnBreak	Insere uma quebra de coluna
+lControlToolTipLaunchSelected	Carrega os favoritos seleccionados na janela Personalizar
+lControlToolTipLaunchSelectedOff	não foi possível carregar este item
 lControlToolTipMoveDown	Move o(s) favorito(s) seleccionado(s) para baixo
 lControlToolTipMoveUp	Move o(s) favorito(s) seleccionado(s) para cima
-lControlToolTipNextMenu	Volta ao menu seguinte
+lControlToolTipNextMenu	Avança para o próximo menu
 lControlToolTipOpenMenuContainingSearchItem	Abre o submenu ou grupo contendo o favorito seleccionado
 lControlToolTipParentMenu	Vai para o menu principal
-lControlToolTipPreviousMenu	Regressa ao menu anterior
+lControlToolTipPreviousMenu	Volta ao menu anterior
 lControlToolTipSearchBoxClear	Limpa a caixa de procura e mostra todos os favoritos
 lControlToolTipSearchBoxExtended	Procura por nomes de favoritos no menu actual *e* vÃ¡rias propriedades
 lControlToolTipSearchButton	Procurar favoritos
@@ -71,12 +73,14 @@ lDialogArgumentsPlaceholdersCheckLabel	Parâmetros actuais com recipientes expand
 lDialogArgumentsPlaceholdersCurrentExample	x:\pasta_respectiva\última_pasta
 lDialogArgumentsPlaceholdersSelectedExample	x:\pasta_respectiva\ficheiro_ou_pasta seleccionado(a).ext
 lDialogAscending	Ascendente
+lDialogBackwardButton	Botão voltar
 lDialogBrowseButton	Procurar
 lDialogBrowseOrSelectApplication	Procurar um ficheiro executável ou`nseleccionar um programa activo desta lista
 lDialogCancelButton	Cancelar
 lDialogCancelPrompt	Descartar alteração?
 lDialogCancelTitle	Cancelar - ~1~ ~2~
 lDialogChangeHotkeyAlternative	Trata-se de uma tecla de atalho ao menu Alternativo.`n`nDeseja manusear "~1~" em "~2~"?
+lDialogChangeHotkeyAltGrHelp	Nota: Se o seu teclado tiver AltGr em vez de Right-Alt, seleccione ambas as caixas de selecção Ctrl e Alt para usar AltGr como um modificador.
 lDialogChangeHotkeyAny	Qualquer uma
 lDialogChangeHotkeyLeftAnyRight	A combinação de teclas pode ser associada só à tecla "Esquerda", só à "Direita" ou a "Qualquer uma" delas.
 lDialogChangeHotkeyModifierAndNone	Modificadores como "Alt" ou "Control" não podem usados sozinhos. Seleccione também um atalho de teclado ou de rato na secção à direita.
@@ -119,6 +123,7 @@ lDialogCloseComputerStartScreenSaverDescription	Inicia a protecção de ecrã padrã
 lDialogCloseComputerSuspend	Suspender o computador
 lDialogCloseComputerSuspendDescription	Coloca o computador num estado de economia de energia que lhe permite voltar rapidamente ao estado operacional quando pretender voltar a trabalhar. O modo Suspensão utiliza muito pouca energia, o seu computador arranca rapidamente e regressa de imediato ao que estava a fazer.
 lDialogCloseComputerSuspendImmediately	Suspender immediatamente (pode provocar perda de dados)
+lDialogContextMenu	Menu de contexto
 lDialogContinue	Continuar
 lDialogCopy	Copiar
 lDialogCopyFavoritesTitle	Copiar Favoritos - ~1~ ~2~
@@ -251,6 +256,7 @@ lDialogFileLabel	Documento
 lDialogFileName	Nome do ficheiro
 lDialogFileSize	Tamanho do ficheiro
 lDialogFolderLabel	Pasta
+lDialogForwardButton	Botão avançar
 lDialogFreeEditionItems	Itens no menu: actual ~1~ / permitidos ~2~
 lDialogFreeEditionLabel	Gratuíto
 lDialogFreeEditionLive	Máximo de ~1~ itens para pastas 'live'
@@ -353,6 +359,7 @@ lDialogMoveSettingsReload	O ~1~ necessita ser reiniciado...
 lDialogMoveSettingsSuccess	Os ficheiros de definições foram copiados com êxito.`n`nAntiga pasta:`n~1~`n`nNova pasta: `n~2~`n`nOs ficheiros da antiga pasta não foram eliminados. Elimine-os de for conveniente após sair do ~3~.
 lDialogMoveSettingsUnder	Não pode mover a pasta de definições para si própria. Escolha outro destino.
 lDialogMultipleAdd	Adicionar vários favoritos
+lDialogMultipleAddCSV	Ficheiro CSV (ficheiros com valores separados por vírgula)
 lDialogMultipleAddDescription	Adiciona com apenas um clique vários favoritos ao submenu da sua escolha da lista de janelas actualmente abertas, das pastas e ficheiros Frequentes ou Recentes, das listas de funcionalidades QAP ou da de Pastas Especiais, de uma pasta ou de um ficheiro de definições do QAP.
 lDialogMultipleAddExcludeExisting	Excluir favoritos existentes
 lDialogMultipleAddFilter	Filtrar
@@ -397,6 +404,7 @@ lDialogReadOnly	Só de leitura
 lDialogRefresh	Actualizar
 lDialogRemoveMultipleFavorites	Deseja mesmo remover ~1~ favoritos ou submenus?
 lDialogResetQAPSpecialDefaultNames	Este comando irá redefinir para o nome padrão todas as Pastas Especiais e Favoritos QAP no seu menu em "~1~".`n`nContinuar?
+lDialogRightButton	Botão direita
 lDialogSameLocartionExistsPrompt	Os seguintes favoritos têm o mesmo conteúdo:
 lDialogSameLocartionExistsQuestion	Ainda deseja guardar este favorito?
 lDialogSearch	Procurar
@@ -406,6 +414,7 @@ lDialogSearchBrokenLinks	Procurar ligações perdidas de Favoritos
 lDialogSearchBrokenLocations	Procurar pastas, documentos ou programas não encontrados
 lDialogSearchNotInDatabaseFavorites	Procurar Favoritos não usados nos últimos ~1~ dias
 lDialogSearchSpecial	Procuras especiais
+lDialogSelectCSV	Seleccione o ficheiro CSV para importar
 lDialogSelectFolder	Seleccionar pasta
 lDialogSelectIcon	Alterar ícone
 lDialogSelectIconJL	Seleccionar em:
@@ -635,14 +644,19 @@ lImpExpDestination	Destino
 lImpExpExport	Exportar
 lImpExpFavorites	favoritos
 lImpExpFile	ficheiro ~1~
-lImpExpFileGlobal	Definições gerais e teclas de atalho do menu principal
+lImpExpFileGlobal	Opções Gerais e teclas de atalho do menu principal
 lImpExpFileThemes	Temas
 lImpExpFinalReport	Transferir ~1~.`n`nOrigem:`n~2~`n`nDestino:`n~3~
+lImpExpHelpImportFavorites	Nota: Para importar favoritos para o seu menu, seleccione o "Ficheiro, ~1~".
 lImpExpImport	Importar
 lImpExpImportFavorites	Importar Favoritos
 lImpExpInvalidDestinationFolder	Pasta de destino inválida:`n`n~1~
+lImpExpMenu	Opções de importação
+lImpExpMenuDescription	Exibe uma caixa de diálogo onde pode importar opções QAP de outra instação do PC ou de outro utilizador QAP.
+lImpExpMenuExport	Opções de exportação e Favoritos
+lImpExpMenuExportDescription	Exibe uma caixa de diálogo onde pode exportar os seus favorito e opções. O ficheiro criado num local à sua escolha pode ser usado para importar os favoritos e opções para outra instalação ou pode ser mantido como cópia de segurança.
 lImpExpNoThemes	Nenhuma lista de temas encontrada no valor "~1~" da secção "~2~".`n`nFicheiro de origem:`n~3~
-lImpExpOptionAlternative	Teclas de atalhos dos menus alternativos
+lImpExpOptionAlternative	Teclas de atalho e Modificadores dos menus alternativos
 lImpExpOptionFavorites	Favoritos
 lImpExpOrIdentical	(ou conteúdo idêntico)
 lImpExpReplaceAll	Substituir tudo
@@ -650,10 +664,11 @@ lImpExpReplaceFavorites	Existem favoritos no ficheiro de destino. O que pretende
 lImpExpReplaceSection	Substituir (SOBRESCREVER) a secção ~2~ no ficheiro existente?`n`n~1~`n`n[~2~]`n~3~
 lImpExpRestartApp	Deseja reiniciar ~1~ e carregar já as novas definições?
 lImpExpSectionNotFound	Conteúdo não encontrado no ficheiro:`n`n~1~`n`nSecção: [~2~]`nDescrição: ~3~
-lImpExpSelectFile	Por favor, seleccione ficheiro ~1~.
+lImpExpSelectFile	Seleccione o ficheiro ~1~
 lImpExpSource	Origem
 lImpExpTitle	Definições de Importação / Exportação - ~1~
 lImpExpUnsavedSettings	Está aberta uma janela de definições, possivelmente com alterações não guardadas.`n`nPor favor encerre antes de alternar, importar ou exportar definições.
+lImportFavoritesDescription	Abre a caixa de diálogo "~1~" com a opção "~2~" para importar os favoritos seleccionados de um ficheiro de definições do QAP num sub-menu à sua escolha.
 lMainMenuName	Principal
 lMenuAbout	Acerca
 lMenuAddFavorite	Adicionar Favorito
@@ -868,6 +883,7 @@ lOopsNowPlaceholderInvalid	Formato do espaço reservado "Agora" inválido
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, seleccione um atalho válido.
 lOopsOptionsPathTrayIcon	Ficheiro do ícone da área de notificação
 lOopsOSVerrsionError	O ~1~ requer o Window 7 ou mais recente. Os utilizadores do Windows Vista e XP users devem usar o Folders Popup que é compatível com essas versões.`n`nDeseja visitar o site do Folders Popup?
+lOopsRunCommandTooLong	Comando demasiado longo (~1~ vs máximo ~2~)
 lOopsSelectedItemDialogBoxes	Não é possível detectar o item seleccionado em caixas de diálogo.
 lOopsSelectedItemTotalCommander	Não é possível detectar o item seleccionado nas janelas do Total Commander.
 lOopsSortOnHiddenColumns	Seleccionou um critério de ordenação de uma coluna que não é exibida actualmente na janela "Personalizar".`n`nTem que activar a opção "~1~" em "Opções, Janela Personalizar" e activar a base de dados QAP em "Opções, Base de dados".
@@ -907,6 +923,7 @@ lOptionsClipboardMaxSizeDefault	(padrão 10000 bytes)
 lOptionsControlDoublePressed	Abrir o menu principal com Ctrl + Ctrl (Tecla Ctrl pressionada duas vezes)
 lOptionsControlDoublePressedLeft	Usando a tecla Control Esquerda
 lOptionsControlDoublePressedRight	Usando a tecla Control Direita
+lOptionsCustomLinksIcon	Recurso de ícone de links personalizados "ficheiro,índice" (deixe em branco para usar ícone padrão do navegador)
 lOptionsDarkMode	Suporte de modo escuro
 lOptionsDarkModeMenus	Suporte de modo escuro para os menus
 lOptionsDatabase	Base de dados
@@ -954,9 +971,11 @@ lOptionsIconsCustomFolder	Pasta personalizada de ícones
 lOptionsIconSize	Tamanho padrão dos ícones do menu
 lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponível)
 lOptionsKeepExtensionInShortName	Manter extensão do ficheiro nas abreviaturas dos favoritos
+lOptionsLabelsFontSize	Tamanho da letra das etiquetas
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
 lOptionsLaunchAdvancedQAPTitle	Carregar o Quick Access Popup
+lOptionsListFontSize	Tamanho da letra da lista de Favoritos
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela activa
 lOptionsMenuAdvanced	Oções Avançadas de Menus
 lOptionsMenuAppearance	Aspecto dos Menus
@@ -985,10 +1004,12 @@ lOptionsPopupHotkeysAlternative	Teclas de atalho do Menu Alternativo
 lOptionsPopupHotkeyTitles	Quick Access Popup Botão do rato|Quick Access Popup Atalho teclado|Menu Alternativo Botão do rato|Menu Alternativo Atalho teclado
 lOptionsPopupHotkeyTitlesSub	Este botão do rato mostra o menu em toda a parte (excepto nas <a>aplicações excluídas</a>) e abre os seus favoritos ou navega para a sua pasta.|Esta tecla de atalho mostra o menu em toda a parte e abre os seus favoritos ou navega para a sua pasta.|Este botão do rato exibe um menu aternativo disponibilizando diversas funções. Este menu pode ser aberto em toda a parte (sem excepções).|Esta tecla de atalho exibe um menu aternativo disponibilizando diversas funções. Este menu pode ser aberto em toda a parte.
 lOptionsPopupMenu	Menu Emergente
-lOptionsQAPconnectIntro	QAPconnect é uma interface que oferece suporte parcial para uma lista de cerca de 15 gestores de ficheiros.
+lOptionsQAPconnectIntro	QAPconnect é uma interface que oferece suporte parcial para uma lista de cerca de 25 gestores de ficheiros.
 lOptionsQAPTempFolder	Pasta Temporária
 lOptionsQuickAddSnippetSubmenu	Sub-menu para ~1~
 lOptionsQuickLaunchExtended	Procura alargada (todas as propriedades da procura)
+lOptionsQuickLaunchFontSize	Tamanho da letra da lista de inicialização rápida
+lOptionsQuickLaunchNavigate	Alterar pasta no gestor de ficheiros e caixas de diálogo
 lOptionsQuickLaunchRecentsFrequents	Incluir itens do menu Recentes e Frequentes
 lOptionsQuickLaunchRows	Numero de linhas do resultado da procura
 lOptionsQuickLaunchTitle	Opções "Inicialização Rápida"
@@ -1045,6 +1066,7 @@ lOptionsThirdParty	Gestores de ficheiros
 lOptionsThirdPartyDetail	Seleccione o programa ~1~ (.exe) para activar a integração com ~1~.
 lOptionsThirdPartyDetailQAPconnect	Seleccione o seu gestor de ficheiros (ou edite ~1~ para adicioná-lo - ver a ajuda).
 lOptionsThirdPartyFileNotFound	~1~ ficheiro da aplicação "~2~" não encontrado.
+lOptionsThirdPartyQAPconnect	QAPConnect (suporte parcial`npara outros 25 gestores de ficheiros)
 lOptionsThirdPartySelectedHelp	Gestor de Ficheiros Seleccionado: ~1~ (<a href="~2~">~3~</a>)
 lOptionsThirdPartySelectFile	Por favor, seleccione o ficheiro da aplicação ~1~ utilizando o botão "Procurar"
 lOptionsThirdPartyUseTabs	Usar separadores em vez de abrir numa nova janela
