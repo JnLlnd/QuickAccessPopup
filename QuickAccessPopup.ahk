@@ -25650,7 +25650,7 @@ GetDeepestMenuPath(strPath)
 MenuNameReminder(strHotkey, strHotstring := "")
 ;------------------------------------------------------------
 {
-	if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) and StrLen(strHotkey)
+	if (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue > 1) and HasShortcut(strHotkey)
 		strHotkeyReminder := (o_Settings.Menu.intHotkeyRemindersShortcuts.IniValue = 2 ? strHotkey : new Triggers.HotkeyParts(strHotkey).Hotkey2Text(true))
 	
 	if (o_Settings.Menu.intHotkeyRemindersHotstrings.IniValue > 1) and StrLen(strHotstring)
