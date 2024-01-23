@@ -32,6 +32,7 @@ HISTORY
 =======
 
 Version: 11.6.3.2 (2024-01-23)
+- in current location placeholders "{CUR_...}", support a fallback location used when the current location cannot be detected; insert the fallback location after "|", for exemple "{CUR_LOC|c:\fallback_location\}"
 - fix a bug in the placeholder {Now} wrongly calculating the last day of month (as in "{Now:ld}")
 - for some favorites without shortcut, fix a bug showing erroneously in menus the reminder "None" instead of nothing
 - fix a bug when saving a favorite with a placeholder in its location, alerting erroneously that the favorite does not exist
