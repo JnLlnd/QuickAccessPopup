@@ -6958,6 +6958,7 @@ o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippe
 if !(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4])
 	o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] := 150 ; new default added 2020-11-05 (was 100 ms)
 o_Settings.ReadIniOption("MenuIcons", "intIconsManageRowsSettings", "IconsManageRows", 0, "AdvancedOther", "f_intIconsManageRowsSettingsEdit|f_intIconsManageRowsSettings|f_lblIconsManageRows") ; g_intIconsManageRowsSettings
+o_Settings.ReadIniOption("Execution", "intWaitClipboardFreeMaxSeconds", "WaitClipboardFreeMaxSeconds", 5, "AdvancedOther", "f_lblWaitClipboardFreeMaxSeconds|f_intWaitClipboardFreeMaxSeconds")
 
 ; not in Options Gui
 o_Settings.ReadIniOption("SettingsFile", "blnExternalMenusCataloguePathReadOnly", "ExternalMenusCataloguePathReadOnly", 0) ; false by default
@@ -10417,6 +10418,10 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% vf_lblWaitDelayInDialogBox hidden, % o_L["OptionsWaitDelayInDialogBox"]
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intWaitDelayInDialogBox gGuiOptionsGroupChanged hidden, % o_Settings.DialogBoxes.intWaitDelayInDialogBox.IniValue
 
+; WaitClipboardFreeMaxSeconds
+Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblWaitClipboardFreeMaxSeconds hidden, % o_L["OptionsWaitClipboardFreeMaxSeconds"] . ":"
+Gui, 2:Add, Edit, x+10 yp h20 w40 number center vf_intWaitClipboardFreeMaxSeconds gGuiOptionsGroupChanged hidden, % o_Settings.Execution.intWaitClipboardFreeMaxSeconds.IniValue
+
 ; AlwaysLaunchURLs
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnAlwaysLaunchURLs gGuiOptionsGroupChanged hidden, % o_L["OptionsAlwaysLaunchURLs"]
 GuiControl, , f_blnAlwaysLaunchURLs, % (o_Settings.Execution.blnAlwaysLaunchURLs.IniValue = true)
@@ -10457,11 +10462,12 @@ loop, 4
 ; IconsManageRows
 Gui, 2:Add, Edit, % "y+10 x" . g_intGroupItemsX . " w51 h22 vf_intIconsManageRowsSettingsEdit number center hidden"
 Gui, 2:Add, UpDown, vf_intIconsManageRowsSettings Range0-9999 gGuiOptionsGroupChanged hidden, % o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue
-Gui, 2:Add, Text, % "yp x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsIconsManageRows"]
+Gui, 2:Add, Text, % "yp+3 x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsIconsManageRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intIconsManageRowsSettingsEdit
+
 gosub, DisplayIconsClickedInit
 
-GuiControlGet, arrPos, Pos, f_intWaitDelayInSnippet4
+GuiControlGet, arrPos, Pos, f_lblIconsManageRows
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -10944,6 +10950,8 @@ o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
+o_Settings.Execution.intWaitClipboardFreeMaxSeconds.WriteIni(f_intWaitClipboardFreeMaxSeconds)
+
 strNewHotstringsDefaultOptions := ""
 
 ; === Save new Working Folder in current user registry entry and update o_Settings.strIniFile
@@ -24192,6 +24200,16 @@ GetCurrentLocation(strClass, strWinID)
 	if WindowIsExplorer(strClass) or WindowIsTotalCommander(strClass) or WindowIsDirectoryOpus(strClass)
 		or WindowIsDialog(strClass, strWinID)
 	{
+		if WindowIsTotalCommander(strClass) or WindowIsDialog(strClass, strWinId) ; only case where the Clipboard is used
+		{
+			if !ClipboardIsFree(A_ThisFunc)
+				return ; return empty
+			; use the clipblard to get the current location from dialog box or Total Commander
+			objPrevClipboard := ClipboardAll ; Save the entire clipboard
+			Clipboard := ""
+
+		}
+
 		if WindowIsDirectoryOpus(strClass)
 		{
 			Gosub, RefreshDOpusListersListText
@@ -24213,10 +24231,6 @@ GetCurrentLocation(strClass, strWinID)
 		}
 		else ; Explorer, TotalCommander or dialog boxes
 		{
-			; use the clipblard to get the current location from dialog box or Total Commander
-			objPrevClipboard := ClipboardAll ; Save the entire clipboard
-			ClipBoard := ""
-
 			; Obsolete notes (since Shell.Application is used to get Explore current location) - but keep here anyway
 			; With Explorer, the key sequence {F4}{Esc} selects the current location of the window.
 			; With dialog boxes, the key sequence {F4}{Esc} generally selects the current location of the window. But, in some
@@ -24291,7 +24305,8 @@ GetCurrentLocation(strClass, strWinID)
 				strLocation := Clipboard
 			}
 
-			Clipboard := objPrevClipboard ; Restore the original clipboard
+			if WindowIsTotalCommander(strClass) or WindowIsDialog(strClass, strWinId) ; only case where the Clipboard is used
+				Clipboard := objPrevClipboard ; Restore the original clipboard
 		}
 	}
 	else if WindowIsDesktop(strClass)
@@ -28715,27 +28730,33 @@ ClipboardIsFree(strCaller)
 ; https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getopenclipboardwindow
 ;------------------------------------------------------------
 {
-	pGetClipboardOwner := DllCall("GetClipboardOwner")
-	WinGetTitle, strGetClipboardOwner, ahk_id %pGetClipboardOwner%
+	Diag(A_ThisFunc, "Caller", strCaller)
 	
-	while, pClipboardOwner := DllCall("GetOpenClipboardWindow")
+	intStartTime := TickCount64()
+	while, DllCall("GetOpenClipboardWindow")
 	{
-		Diag(A_ThisFunc . " - BUSY " . A_Index, "Caller", strCaller)
-		Diag(A_ThisFunc . " - BUSY " . A_Index, "Owner", strGetClipboardOwner . "(" . pGetClipboardOwner . ")")
-		if (A_Index > 10)
+		if (TickCount64() - intStartTime > o_Settings.Execution.intWaitClipboardFreeMaxSeconds.IniValue * 1000)
 		{
-			return false ; Clipboard is locked by another application for more than one second
+			Diag(A_ThisFunc, "CLIPBOARD_BUSY", TickCount64() - intStartTime . " ms")
+			return false ; Clipboard locked by another application for too long
 		}
-		else
-			Sleep, 100
+		Sleep, 100
 	}
 	
-	Diag(A_ThisFunc . " - FREE", "Caller", strCaller)
-	Diag(A_ThisFunc . " - FREE", "Owner", strGetClipboardOwner . "(" . pGetClipboardOwner . ")")
+	Diag(A_ThisFunc, "CLIPBOARD_FREE", TickCount64() - intStartTime . " ms")
 
-	return true ; Clipboard is free
+	return true ; Clipboard free
 }
 ;------------------------------------------------------------
+
+
+;-----------------------------------------------------------
+TickCount64()
+;-----------------------------------------------------------
+{
+	return DllCall("GetTickCount64", "Cdecl UInt64") ; number of milliseconds that have elapsed since the system was started
+}
+;-----------------------------------------------------------
 
 
 ;========================================================================================================================
