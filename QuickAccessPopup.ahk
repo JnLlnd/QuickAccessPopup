@@ -5567,7 +5567,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.3.2
+;@Ahk2Exe-SetVersion 11.6.3.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5635,7 +5635,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.3.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.3.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -8318,13 +8318,13 @@ RefreshClipboardMenu:
 ;------------------------------------------------------------
 
 if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{Clipboard}") ; we don't have this QAP feature in at least one menu
-	or !ClipboardIsFree(A_ThisLabel)
+	or !ClipboardIsFree(A_ThisLabel, intClipboardLength)
 	return
 
 ; Diag(A_ThisLabel, "", "START")
 
 strContentsInClipboard := ""
-if (StrLen(Clipboard) <= o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue) ; Clipboard is too large - 22 000 bytes of AHK code took close to 2 seconds
+if (intClipboardLength <= o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue) ; Clipboard is too large
 {
 	; gather info for menu (can be long if large Clipboard) before refreshing the menu with Critical On
 	; parse Clipboard for folder, document or application filenames (filenames alone on one line)
@@ -8353,9 +8353,9 @@ saMenuItemsTable := Object()
 
 if !StrLen(strContentsInClipboard)
 {
-	if !StrLen(Clipboard)
+	if !(intClipboardLength)
 		strMenuName := o_L["MenuClipboardEmpty"]
-	else if (StrLen(Clipboard) > o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue)
+	else if (intClipboardLength > o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue)
 		strMenuName := L(o_L["MenuClipboardTooLarge"], o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue)
 	else
 		strMenuName := o_L["MenuClipboardNoContent"]
@@ -8388,6 +8388,7 @@ strURLSearchString := ""
 saOneLine := ""
 saMenuItemsTable := ""
 strFavoriteLocationSwap := ""
+intClipboardLength := ""
 
 ; Diag(A_ThisLabel, "", "STOP")
 return
@@ -24202,7 +24203,7 @@ GetCurrentLocation(strClass, strWinID)
 	{
 		if WindowIsTotalCommander(strClass) or WindowIsDialog(strClass, strWinId) ; only case where the Clipboard is used
 		{
-			if !ClipboardIsFree(A_ThisFunc)
+			if !ClipboardIsFree(A_ThisFunc, intClipboardLength) ; intClipboardLength not used here
 				return ; return empty
 			; use the clipblard to get the current location from dialog box or Total Commander
 			objPrevClipboard := ClipboardAll ; Save the entire clipboard
@@ -26209,11 +26210,11 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 	
 		; process Clipboard
 		; strExpanded := StrReplace(strExpanded, "{Clipboard}", MakeClipboardAvailable(A_ThisFunc)) ; expand {Clipboard}
-		if InStr(strExpanded, "{Clipboard}") and ClipboardIsFree(A_ThisFunc) ; avoid error if Clipboard is used by another application and not released after 1 second
+		if InStr(strExpanded, "{Clipboard}") and ClipboardIsFree(A_ThisFunc, intClipboardLength) ; avoid error if Clipboard is used by another application and not released after 1 second
 			strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
 		; process SelectedText
-		if InStr(strExpanded, "{SelectedText}") and ClipboardIsFree(A_ThisFunc) ; get selected text to the Clipboard (Clipboard will be restored)
+		if InStr(strExpanded, "{SelectedText}") and ClipboardIsFree(A_ThisFunc, intClipboardLength) ; get selected text to the Clipboard (Clipboard will be restored)
 		{
 			objPrevClipboard := ClipboardAll ; Save the entire clipboard
 			Clipboard := ""
@@ -28725,26 +28726,47 @@ RunCommandTooLong(strRunCommand)
 
 
 ;------------------------------------------------------------
-ClipboardIsFree(strCaller)
+ClipboardIsFree(strCaller, ByRef intClipboardLength)
 ; see https://www.autohotkey.com/boards/viewtopic.php?f=76&t=114865
 ; https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getopenclipboardwindow
 ;------------------------------------------------------------
 {
+	static blnAlreadyBusy := false
+	
 	Diag(A_ThisFunc, "Caller", strCaller)
 	
+	intClipboardLength := 0 ; set to zero in case we get an error
 	intStartTime := TickCount64()
 	while, DllCall("GetOpenClipboardWindow")
 	{
+		if (blnAlreadyBusy)
+		{
+			Diag(A_ThisFunc, "CLIPBOARD_ALREADY_BUSY", "")
+			return false ; Clipboard locked by another application, already waited max time
+		}
+		
 		if (TickCount64() - intStartTime > o_Settings.Execution.intWaitClipboardFreeMaxSeconds.IniValue * 1000)
 		{
 			Diag(A_ThisFunc, "CLIPBOARD_BUSY", TickCount64() - intStartTime . " ms")
+			blnAlreadyBusy := true
 			return false ; Clipboard locked by another application for too long
 		}
 		Sleep, 100
 	}
-	
-	Diag(A_ThisFunc, "CLIPBOARD_FREE", TickCount64() - intStartTime . " ms")
+	Diag(A_ThisFunc, "CLIPBOARD_OPEN_SUCCESS", TickCount64() - intStartTime . " ms")
 
+	; additional test (catch an error if an application - like Excel - is using the clipboard without being detected by GetOpenClipboardWindow
+	try intClipboardLength := StrLen(Clipboard) ; intTest not used
+	catch ; abort at first fail
+	{
+		Diag(A_ThisFunc, "CLIPBOARD_CANNOT_ACCESS", TickCount64() - intStartTime . " ms")
+		blnAlreadyBusy := false ; reset static variable for next call
+		return false ; QAP was not able to access the clipboard
+	}
+
+	Diag(A_ThisFunc, "CLIPBOARD_FREE", TickCount64() - intStartTime . " ms")
+	Diag(A_ThisFunc, "CLIPBOARD_LENGTH", intClipboardLength)
+	blnAlreadyBusy := false
 	return true ; Clipboard free
 }
 ;------------------------------------------------------------
