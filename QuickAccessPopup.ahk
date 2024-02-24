@@ -34304,6 +34304,12 @@ class Container
 				
 				; LOG ACTION
 				this.CollectUsageDb() ; was UsageDbCollectMenu:
+				if (this.AA.strFavoriteType = "Document") ; also collect documents parent folder
+				{
+					SplitPath, % this.AA.strFavoriteLocation, , strParentFolder
+					aaParentFolderFavorite := new Container.Item(["Folder", strParentFolder, strParentFolder])
+					aaParentFolderFavorite.CollectUsageDb()
+				}
 				
 				return 0 ; no error
 			}
