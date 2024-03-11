@@ -35061,7 +35061,7 @@ class Container
 			
 			WinGetClass, strClassSnippet, % "ahk_id " . this.aaTemp.strTargetWinId
 			
-			if !(this.AA.blnSnippetNeverPrompt) and (g_blnLaunchFromTrayIcon or WindowIsTray(strClassSnippet) or WindowIsDesktop(strClassSnippet) or StrLen(this.AA.strSnippetPrompt))
+			if !(this.AA.blnSnippetNeverPrompt) and (g_blnLaunchFromTrayIcon or WindowIsTray(strClassSnippet) or StrLen(this.AA.strSnippetPrompt))
 			{
 				this.aaTemp.strSnippetPromptExpanded := ExpandPlaceholders(this.AA.strSnippetPrompt, ""
 					, (InStr(this.AA.strSnippetPrompt, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
