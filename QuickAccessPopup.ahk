@@ -20851,7 +20851,7 @@ if (!g_blnMenuReady or g_blnChangeShortcutInProgress or g_blnChangeHotstringInPr
 
 g_strMenuTriggerLabel := A_ThisLabel
 
-; Diag(g_strMenuTriggerLabel, "", "START-SHOW")
+Diag(g_strMenuTriggerLabel, "", "START-SHOW")
 
 if (g_blnGetWinInfo)
 {
@@ -28933,6 +28933,7 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
 	
+	Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
 	saData := StrSplit(strCopyOfData, "|")
 	
 	; before v11.5.7.9.5 was SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
