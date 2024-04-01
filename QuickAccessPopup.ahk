@@ -24734,13 +24734,19 @@ if StrLen(f_strQuickLaunch)
 {
 	GuiControl, -Redraw, f_lvQuickLaunch
 	Critical, On
+	; Diag(A_ThisLabel, "f_strQuickLaunch", f_strQuickLaunch)
 	oQuickLaunchResult := new Container("Menu", "Quick Launch", , , , , true, true) ; init o_MainMenu that replace g_objMainMenu, object of menu structure entry point
 	oQuickLaunchResult.AA.blnFavoritesListFilterExtended := o_Settings.SettingsWindow.blnQuickLaunchExtended.IniValue
+	; Diag(A_ThisLabel, "START", "Main menu")
 	o_MainMenu.LoadSearchResult(f_strQuickLaunch, oQuickLaunchResult) ; populate search result object starting at Main menu
 	if (o_Settings.SettingsWindow.blnQuickLaunchRecentsFrequents.IniValue)
 		loop, parse, % "Recent|Frequent", |
 			loop, parse, % "Menu" . A_LoopField . "Files|" . "Menu" . A_LoopField . "Folders", |
+			{
+				; Diag(A_ThisLabel, "START", A_LoopField)
 				o_Containers.AA[o_L[A_Loopfield] . (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue ? "" : g_strEllipse)].LoadSearchResult(f_strQuickLaunch, oQuickLaunchResult)
+			}
+	; Diag(A_ThisLabel, "FINISH", "All")
 	
 	; build image list
 	oImageListID := IL_Create(oQuickLaunchResult.SA.MaxIndex())
@@ -28915,6 +28921,7 @@ AHK_NOTIFYICON(wParam, lParam)
 REPLY_QAPISRUNNING(wParam, lParam) 
 ;------------------------------------------------------------
 {
+	Diag(A_ThisFunc, "", "")
 	return true
 } 
 ;------------------------------------------------------------
