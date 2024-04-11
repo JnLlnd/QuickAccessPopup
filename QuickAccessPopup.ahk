@@ -31,6 +31,13 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.3.3 (2024-##-##)
+- add an option under "Various Advanced Options" to set the "Maximum number of seconds to wait when the Clipboard is busy" (default 5 seconds)
+- fix a bug when waiting for the cliboard to be free when getting the current location in "Add this folder" dialog boxes and in some placeholders
+- when opening a document from the QAP menu, add the document's parent folder in the "Recent folders" menu
+- stop showing the snippet default prompt when using a snippet on the Desktop (for example when renaming a Desktop file)
+- now running with the latest AutoHotkey v1.1 engine (v1.1.37.2)
+
 Version: 11.6.3.2 (2024-01-23)
 - in current location placeholders "{CUR_...}", support a fallback location used when the current location cannot be detected; insert the fallback location after "|", for exemple "{CUR_LOC|c:\fallback_location\}"
 - fix a bug in the placeholder {Now} wrongly calculating the last day of month (as in "{Now:ld}")
@@ -13286,6 +13293,7 @@ GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false
 
 	strBrowsersClass := g_strModernBrowsers . "," . g_strLegacyBrowsers
 	
+	Diag(A_ThisFunc, "blnActivate", blnActivate)
 	Loop, %strIDs%
 	{
 		intThisIDIndex := A_Index
@@ -21623,7 +21631,11 @@ Diag(A_ThisLabel, "g_strHotkeyTypeDetected-3", g_strHotkeyTypeDetected)
 ; beginning of OpenFavorite execution
 
 Diag(A_ThisLabel, "o_ThisFavorite.OpenFavorite", "BEFORE")
+Diag(A_ThisLabel, "g_strTargetWinId", g_strTargetWinId)
+Diag(A_ThisLabel, "g_strTargetClass", g_strTargetClass)
+
 o_ThisFavorite.OpenFavorite(g_strMenuTriggerLabel, g_strOpenFavoriteLabel, g_strTargetWinId, g_strHotkeyTypeDetected) ; returns intResult not used here
+
 Diag(A_ThisLabel, "o_ThisFavorite.OpenFavorite", "AFTER")
 
 if (o_ThisFavorite.AA.oParentMenu.AA.blnReopenAfterLaunchingItem)
@@ -21685,6 +21697,7 @@ OpenFavoriteGetFavoriteObject:
 ;------------------------------------------------------------
 
 g_strLastActionRepeated := "" ; if we are here, we are not repeating an action, so kill this variable
+Diag(A_ThisLabel, "g_strOpenFavoriteLabel", g_strOpenFavoriteLabel)
 
 if (g_strOpenFavoriteLabel <> "OpenFavoriteFromHotstring")
 	g_strHotstringEndChar := "" ; reset in case a snippet is pasted with menu or shorcut after snippet was launched with a hotstring
@@ -21694,6 +21707,8 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 	o_ThisFavorite := (g_strOpenFavoriteLabel = "OpenFavoriteFromShortcut"
 		? g_aaItemsByShortcut[A_ThisHotkey]
 		: g_dicItemsByHotstring.Item(g_strHotstringOptionsSeparator . SubStr(A_ThisHotkey, 3))) ; remove "X" (g_strHotstringOptionsExecute) as first option (":X:trigger" or ":XC*:trigger")
+	Diag(A_ThisLabel, "A_ThisHotkey", A_ThisHotkey)
+	Diag(A_ThisLabel, "g_aaItemsByShortcut[A_ThisHotkey].aa.strFavoriteName", g_aaItemsByShortcut[A_ThisHotkey].aa.strFavoriteName)
 
 	if !IsObject(o_ThisFavorite)
 	{
@@ -21743,6 +21758,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 	}
 	else
 	{
+		Diag(A_ThisLabel, "CanNavigate/CanLaunch false", "active window is on exclusion list")
 		gosub, OpenFavoriteGetFavoriteObjectCleanup
 		return ; active window is on exclusion list
 	}
@@ -21765,6 +21781,7 @@ else if InStr("OpenReopenCurrentFolder|OpenReopenInNewWindow|", g_strOpenFavorit
 	}
 	
 	strCurrentLocation := GetCurrentLocation(strReopenWindowClass, strReopenWindowsID)
+	Diag(A_ThisLabel, "strCurrentLocation", strCurrentLocation)
 	global o_ThisFavorite := new Container.Item(["Folder", strCurrentLocation, strCurrentLocation])
 	o_ThisFavorite.AA.blnFavoritePseudo := true
 }
@@ -21797,6 +21814,7 @@ else if (g_strOpenFavoriteLabel = "OpenFavoriteSelectedInGui")
 }
 else
 	o_ThisFavorite := GetFavoriteObjectFromMenuPosition(intMenuItemPos) ; was g_objThisFavorite
+Diag(A_ThisLabel, "o_ThisFavorite.aa.strFavoriteName", o_ThisFavorite.aa.strFavoriteName)
 
 OpenFavoriteGetFavoriteObjectCleanup:
 saMenu := ""
@@ -28943,11 +28961,15 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
 	saData := StrSplit(strCopyOfData, "|")
 	
+	Diag(A_ThisFunc, "g_strTargetWinId before", g_strTargetWinId)
+	Diag(A_ThisFunc, "g_strTargetClass before", g_strTargetClass)
 	; before v11.5.7.9.5 was SetTargetWinInfo(false) ; as if keyboard because mouse position can go out of Explorer window where menu was called
 	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass
-		, InStr(saData[1], "AddFolder") or InStr(saData[1], "AddFile") ; activate only if adding a fiole or folder (caused a bug in v11.5.8)
+		, InStr(saData[1], "AddFolder") or InStr(saData[1], "AddFile") ; activate only if adding a file or folder (caused a bug in v11.5.8)
 		, false, true)
+	Diag(A_ThisFunc, "g_strTargetWinId", g_strTargetWinId)
+	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
 
 	if SubStr(saData[1], 1, 4) <> "Show" and SettingsUnsaved()
 		return 0xFFFF
