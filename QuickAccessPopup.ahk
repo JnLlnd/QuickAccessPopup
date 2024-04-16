@@ -20855,7 +20855,14 @@ if SettingsUnsaved()
 		return
 
 if (!g_blnMenuReady or g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
+{
+	Diag(A_ThisFunc, "!g_blnMenuReady", !g_blnMenuReady)
+	Diag(A_ThisFunc, "g_blnChangeShortcutInProgress", g_blnChangeShortcutInProgress)
+	Diag(A_ThisFunc, "g_blnChangeHotstringInProgress", g_blnChangeHotstringInProgress)
+	Diag(A_ThisFunc, "g_blnChangeIconInProgress", g_blnChangeIconInProgress)
+	
 	return
+}
 
 g_strMenuTriggerLabel := A_ThisLabel
 
@@ -28981,6 +28988,7 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	if (saData[2] = "C:""")
 		saData[2] := "C:\"
 	
+	Diag(A_ThisFunc, "saData[1]", saData[1])
 	if (saData[1] = "AddFolder")
 	{
 		g_strNewLocation := saData[2]
@@ -29017,6 +29025,8 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		else ; ShowMenuNavigate and ShowMenuLaunch
 			g_strShowMenu := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
 		
+		Diag(A_ThisFunc, "g_strShowMenu", g_strShowMenu)
+		Diag(A_ThisFunc, "IsObject(o_Containers.AA[g_strShowMenu])", IsObject(o_Containers.AA[g_strShowMenu]))
 		if IsObject(o_Containers.AA[g_strShowMenu])
 			if (saData[1] = "ShowMenuNavigate")
 				Gosub, NavigateFromMsg
@@ -29034,7 +29044,10 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		Gosub, OpenFavoriteFromMsg
 	}
 	else
+	{
+		Diag(A_ThisFunc, "last else return", 0)
 		return 0
+	}
 
 	return 1
 }
