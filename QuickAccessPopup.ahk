@@ -7689,7 +7689,10 @@ return
 InitDiagMode:
 ;------------------------------------------------------------
 
-MsgBox, 4, %g_strAppNameText%, % L(o_L["DiagModeCaution"], g_strAppNameText, g_strDiagFile)
+if FileExist("C:\Dropbox\AutoHotkey\QuickAccessPopup\QuickAccessPopup-HOME.ini") ; only on dev machine
+	MsgBox, 4, %g_strAppNameText%, % L(o_L["DiagModeCaution"], g_strAppNameText, g_strDiagFile), 1
+else
+	MsgBox, 52, %g_strAppNameText%, % L(o_L["DiagModeCaution"], g_strAppNameText, g_strDiagFile)
 IfMsgBox, No
 {
 	o_Settings.Launch.blnDiagMode.WriteIni(0)
@@ -7750,7 +7753,7 @@ CleanUpBeforeExit:
 ; if (o_Settings.Launch.blnDiagMode.IniValue)
 	; Diag("ListLines", ScriptInfo("ListLines"), "")
 
-if (o_Settings.Launch.blnDiagMode.IniValue)
+if (o_Settings.Launch.blnDiagMode.IniValue) and !FileExist("C:\Dropbox\AutoHotkey\QuickAccessPopup\QuickAccessPopup-HOME.ini")
 	Run, %g_strDiagFile%
 ; display MsgBox is not working for an unknown reason
 ; {
@@ -20854,14 +20857,17 @@ if SettingsUnsaved()
 	if SettingsNotSavedReturn()
 		return
 
-if (!g_blnMenuReady or g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
+intTries := 1
+while (!g_blnMenuReady or g_blnChangeShortcutInProgress or g_blnChangeHotstringInProgress or g_blnChangeIconInProgress)
 {
-	Diag(A_ThisFunc, "!g_blnMenuReady", !g_blnMenuReady)
-	Diag(A_ThisFunc, "g_blnChangeShortcutInProgress", g_blnChangeShortcutInProgress)
-	Diag(A_ThisFunc, "g_blnChangeHotstringInProgress", g_blnChangeHotstringInProgress)
-	Diag(A_ThisFunc, "g_blnChangeIconInProgress", g_blnChangeIconInProgress)
-	
-	return
+	Diag(A_ThisLabel, "!g_blnMenuReady", !g_blnMenuReady)
+	Diag(A_ThisLabel, "g_blnChangeShortcutInProgress", g_blnChangeShortcutInProgress)
+	Diag(A_ThisLabel, "g_blnChangeHotstringInProgress", g_blnChangeHotstringInProgress)
+	Diag(A_ThisLabel, "g_blnChangeIconInProgress", g_blnChangeIconInProgress)
+	Sleep, 200
+	intTries++
+	if (intTries > 5)
+		return ; wait for up to 1 second
 }
 
 g_strMenuTriggerLabel := A_ThisLabel
@@ -27609,6 +27615,8 @@ GetSavedSettingsWindowPosition(ByRef saSettingsPosition)
 		{
 			strSettingsPosition := o_Settings.ReadIniValue("SettingsPosition", -1) ; by default -1 to center at minimal size
 			saSettingsPosition := StrSplit(strSettingsPosition, "|")
+			if (saSettingsPosition[1] = -32000) ; if remembered position was minimized (not supposed but happened), center the window
+				saSettingsPosition[1] := -1 ; returned value by first ByRef parameter
 		}
 		else ; delete Settings position
 		{
