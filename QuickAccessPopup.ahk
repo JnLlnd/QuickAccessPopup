@@ -32,11 +32,12 @@ HISTORY
 =======
 
 Version: 11.6.3.3 (2024-##-##)
-- add an option under "Various Advanced Options" to set the "Maximum number of seconds to wait when the Clipboard is busy" (default 5 seconds)
-- fix a bug when waiting for the cliboard to be free when getting the current location in "Add this folder" dialog boxes and in some placeholders
-- when opening a document from the QAP menu, add the document's parent folder in the "Recent folders" menu
 - stop showing the snippet default prompt when using a snippet on the Desktop (for example when renaming a Desktop file)
-- now running with the latest AutoHotkey v1.1 engine (v1.1.37.2)
+- when opening a document from the QAP menu, add the document's parent folder in the "Recent folders" menu
+- add an option under "Various Advanced Options" to set the "Maximum number of seconds to wait when the Clipboard is busy" (default 5 seconds)
+- fix a bug waiting for the cliboard to be free when getting the current location in "Add this folder" dialog boxes and in some placeholders
+- wait up to 5 seconds when showing the menu from QAPmessenger and the menu is being refereshed
+- prevent loading Customize window in an unvisible position if invalid position was remembered at last exit
 
 Version: 11.6.3.2 (2024-01-23)
 - in current location placeholders "{CUR_...}", support a fallback location used when the current location cannot be detected; insert the fallback location after "|", for exemple "{CUR_LOC|c:\fallback_location\}"
