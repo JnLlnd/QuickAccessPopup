@@ -37,7 +37,7 @@ Version: 11.6.3.3 (2024-##-##)
 - add an option under "Various Advanced Options" to set the "Maximum number of seconds to wait when the Clipboard is busy" (default 5 seconds)
 - fix a bug waiting for the cliboard to be free when getting the current location in "Add this folder" dialog boxes and in some placeholders
 - wait up to 5 seconds when showing the menu from QAPmessenger and the menu is being refereshed
-- prevent loading Customize window in an unvisible position if invalid position was remembered at last exit
+- prevent loading Customize window in an invisible position if invalid position was remembered at last exit
 
 Version: 11.6.3.2 (2024-01-23)
 - in current location placeholders "{CUR_...}", support a fallback location used when the current location cannot be detected; insert the fallback location after "|", for exemple "{CUR_LOC|c:\fallback_location\}"
@@ -20868,7 +20868,10 @@ while (!g_blnMenuReady or g_blnChangeShortcutInProgress or g_blnChangeHotstringI
 	Sleep, 200
 	intTries++
 	if (intTries > 5)
-		return ; wait for up to 1 second
+		if InStr(A_ThisLabel, "FromMsg")
+			break ; continue anyway (assuming the menu is ready #### reconsider)
+		else
+			return ; wait for up to 1 second and abort
 }
 
 g_strMenuTriggerLabel := A_ThisLabel
