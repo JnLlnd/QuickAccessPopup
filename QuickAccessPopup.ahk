@@ -32886,7 +32886,9 @@ class Container
 						strFileLocation := A_LoopFileLongPath
 					}
 					
-					if StrLen(A_LoopFileExt) and InStr("exe.com.bat.vbs.ahk", A_LoopFileExt)
+					if StrLen(A_LoopFileExt)
+						and (InStr("exe.com.bat.vbs.ahk", A_LoopFileExt)
+							or (A_LoopFileExt = "lnk" and ExtensionIsApplication(strFileLocation)))
 						strFavoriteType := "Application"
 					else
 						strFavoriteType := "Document"
