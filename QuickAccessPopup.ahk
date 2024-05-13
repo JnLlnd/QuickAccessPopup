@@ -20808,7 +20808,11 @@ return
 
 strKeyPressed := A_ThisLabel
 
-if ((strKeyPressed = "~LCtrl") and !(o_Settings.MenuPopup.blnLeftControlDoublePressed.IniValue))
+; detect AltGr (like pressing Left Ctrl + Alt, see https://forum.quickaccesspopup.com/showthread.php?tid=2747)
+sleep, 10
+blnAltKeyIsDown := GetKeyState("Alt", "P") ; "P" required, 
+
+if ((strKeyPressed = "~LCtrl") and !(o_Settings.MenuPopup.blnLeftControlDoublePressed.IniValue) or blnAltKeyIsDown) ; exclude if AltGr pressed
 	or ((strKeyPressed = "~RCtrl") and !(o_Settings.MenuPopup.blnRightControlDoublePressed.IniValue))
 	return
 
