@@ -13221,8 +13221,7 @@ If !StrLen(g_strNewLocation)
 		IfMsgBox, Yes
 		{
 			Gosub, GuiShowFromAddThisFolder
-			g_strAddFavoriteType := "Folder"
-			Gosub, GuiAddFavorite
+			Gosub, GuiAddFavoriteSelectType
 		}
 	}
 	return
