@@ -21404,7 +21404,7 @@ GetRunningExecutableFilename(strWinId)
 NavigateInBrowserSupported(strExecutable)
 ;------------------------------------------------------------
 {
-	return InStr("|chrome.exe|firefox.exe|msedge.exe|", "|" . strExecutable . "|")
+	return InStr("|chrome.exe|firefox.exe|msedge.exe|vivaldi.exe|", "|" . strExecutable . "|")
 }
 ;------------------------------------------------------------
 
