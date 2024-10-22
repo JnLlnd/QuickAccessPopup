@@ -12525,9 +12525,6 @@ else
 
 DllCall("LockWindowUpdate", Uint, 0) ; 0 to unlock the window
 
-strGuiMenuLocation := ""
-strThisType := ""
-strThisHotkey := ""
 strExternalMenuName := ""
 strFavoriteName := ""
 strFilter := ""
@@ -17690,8 +17687,6 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave", "|" . strThisLabel) 
 	strDestinationMenu := ""
 	strMenuLocation := ""
 	strThisLocation := ""
-	strThisType := ""
-	strThisHotkey := ""
 	strNewFavoriteWindowPosition := ""
 	strMenuPath := ""
 	g_intNewItemPos := "" ; in case we abort save and retry
@@ -19449,7 +19444,6 @@ else if (A_ThisLabel <> "GuiSaveAndDoNothing")
 	
 strSavedMenuInGui := ""
 strThisNameLocation := ""
-strThisHotkey := ""
 
 return
 ;------------------------------------------------------------
@@ -24792,6 +24786,8 @@ if StrLen(f_strQuickLaunch)
 	LV_SetImageList(oImageListID) 
 	Loop, % oQuickLaunchResult.SA.MaxIndex()
 	{
+		if (oQuickLaunchResult.SA[A_Index].AA.strFavoriteIconResource = "iconFolderLiveOpened") ; this is the self folder in first position of live folder menu
+			oQuickLaunchResult.SA[A_Index].AA.strFavoriteIconResource := "iconFolder" ; replace the icon with a standard folder icon
 		ParseIconResource(oQuickLaunchResult.SA[A_Index].AA.strFavoriteIconResource, strIconFile, intIconIndex)
 		IL_Add(oImageListID, strIconFile, intIconIndex) 
 	}
@@ -32300,35 +32296,13 @@ class Container
 				or (strSearchString = "{BrokenLinks}" and oItem.LinkBroken())
 				or (strSearchString = "{AutoExec}" and oItem.AA.blnFavoriteAutoExec))
 			{
-				strThisType := oItem.GetItemTypeLabelForList()
-				strThisHotkey := new Triggers.HotkeyParts(oItem.AA.strFavoriteShortcut).Hotkey2Text(true)
-				if StrLen(oItem.AA.strFavoriteHotstring)
-					strThisHotkey .= " " . BetweenParenthesis(GetHotstringTrigger(oItem.AA.strFavoriteHotstring))
-				if InStr("Menu|Group|External", oItem.AA.strFavoriteType, true) ; this is a menu, a group or an external menu
-				{
-					if (oItem.AA.strFavoriteType = "Menu")
-						strGuiMenuLocation := g_strMenuPathSeparator
-					else if (oItem.AA.strFavoriteType = "Group")
-						strGuiMenuLocation := " " . g_strGroupIndicatorPrefix . g_strGroupIndicatorSuffix
-					else ; oItem.AA.strFavoriteType = "External"
-					{
-						if ExternalMenuIsReadOnly(oItem.AA.oSubMenu.AA.strMenuExternalSettingsPath)
-							strGuiMenuLocation := o_L["DialogReadOnly"] . " "
-						else if !(oItem.AA.oSubMenu.AA.blnMenuExternalLoaded)
-							strGuiMenuLocation := o_L["OopsErrorIniFileUnavailable"] . " "
-						else
-							strGuiMenuLocation := ""
-						strGuiMenuLocation .= g_strMenuPathSeparator . g_strMenuPathSeparator . " " . oItem.AA.oSubMenu.AA.strMenuExternalSettingsPath
-					}
-				}
-				
 				oItem.AA.intSearchItemPositionInOriginalMenu := intKey ; used in search result to locate the original favorite object in the container
 				Container.s_intOriginalPositionInResult++
 				oItem.AA.intSearchItemOriginalPositionInResult := Container.s_intOriginalPositionInResult ; used to reorder items in the original search result order
 				oSearchResultContainer.SA.Push(oItem)
 			}
 			
-			if (oItem.IsContainer())
+			if (oItem.IsContainer() or oItem.AA.intFavoriteFolderLiveLevels)
 				oItem.AA.oSubMenu.LoadSearchResult(strSearchString, oSearchResultContainer) ; RECURSIVE
 		}
 		
