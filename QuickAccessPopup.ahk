@@ -35591,6 +35591,7 @@ class Container
 					; except if the location is a DOpus Favorite special folder identified with <pidl>
 				and (this.aaTemp.strOpenFavoriteLabel <> "OpenDOpusLayout") ; except if the location is a DOpus Layout (with format "layout_name_or_sub/sub/name")
 				and !(SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{") ; except is location is a CLSID (for example, some control panel items)
+				and !(SubStr(this.aaTemp.strLocationWithPlaceholders, 1, 1) = "/" and WindowIsDirectoryOpus(g_strTargetClass))
 			{
 				strTemp := this.aaTemp.strLocationWithPlaceholders ; strTemp because "Fields of objects are not considered variables for the purposes of ByRef"
 				if !FileExistInPath(strTemp) ; return g_strLocationWithPlaceholders with expanded relative path and envvars, also search in PATH
