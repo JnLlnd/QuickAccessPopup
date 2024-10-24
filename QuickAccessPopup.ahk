@@ -9249,20 +9249,35 @@ if !o_QAPfeatures.aaQAPfeaturesInMenus.HasKey("{DOpus Favorites}")
 
 ; Diag(A_ThisLabel, "", "START")
 
-If o_FileManagers.SA[2].DirectoryOpusFavoritesFileExist() ; Directory Opus favorites file exists
+If FileExist(o_FileManagers.SA[2].AA.strDirectoryOpusFavoritesFile) ; Directory Opus favorites file exists
 {
 	global xmlDirectoryOpusXML := New XML("xml")
-	o_Containers.AA[o_L["DOpusMenuName"]].LoadDirectoryOpusFavoritesFromXML() ; RECURSIVE
+	o_Containers.AA[o_L["DOpusMenuName"]].LoadDirectoryOpusFavoritesFromXML(g_aaFileManagerDirectoryOpus.strDirectoryOpusFavoritesFile) ; RECURSIVE
 	
-	if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and o_FileManagers.SA[2].DirectoryOpusLayoutsFileExist())
+	if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts or g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowAlias)
+		; insert separator before Layouts and/or Aliaises menus
+	{
+		oNewItem := new Container.Item(["X"], o_Containers.AA[o_L["DOpusLayoutsName"]]) ; separator
+		o_Containers.AA[o_L["DOpusMenuName"]].SA.Push(oNewItem) ; add to the current container object
+	}
+		
+	if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and FileExist(o_FileManagers.SA[2].AA.strDirectoryOpusLayoutsFile))
 	{
 		o_Containers.AA[o_L["DOpusLayoutsName"]].LoadDirectoryOpusLayoutsFromXML()
 		o_Containers.AA[o_L["DOpusLayoutsName"]].BuildMenu() ; recurse for submenus
 		
-		oNewItem := new Container.Item(["X"], o_Containers.AA[o_L["DOpusLayoutsName"]]) ; separator
-		o_Containers.AA[o_L["DOpusMenuName"]].SA.Push(oNewItem) ; add to the current container object
 		oNewItem := new Container.Item(["Menu", o_L["DOpusLayoutsName"]], o_Containers.AA[o_L["DOpusLayoutsName"]]) ; Layouts menu
 		oNewItem.AA.oSubMenu := o_Containers.AA[o_L["DOpusLayoutsName"]] ; attach menu
+		o_Containers.AA[o_L["DOpusMenuName"]].SA.Push(oNewItem) ; add to the current container object
+	}
+	
+	if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowAlias and FileExist(o_FileManagers.SA[2].AA.strDirectoryOpusAliasFile))
+	{
+		o_Containers.AA[o_L["DOpusAliasName"]].LoadDirectoryOpusFavoritesFromXML(g_aaFileManagerDirectoryOpus.strDirectoryOpusAliasFile)
+		o_Containers.AA[o_L["DOpusAliasName"]].BuildMenu()
+		
+		oNewItem := new Container.Item(["Menu", o_L["DOpusAliasName"]], o_Containers.AA[o_L["DOpusAliasName"]]) ; Alias menu
+		oNewItem.AA.oSubMenu := o_Containers.AA[o_L["DOpusAliasName"]] ; attach menu
 		o_Containers.AA[o_L["DOpusMenuName"]].SA.Push(oNewItem) ; add to the current container object
 	}
 	
@@ -10215,6 +10230,10 @@ GuiControl, , f_blnFileManagerDirectoryOpusShowLayouts, % (g_aaFileManagerDirect
 Gui, 2:Add, Button, yp x%g_intGroupItemsTab3X% vf_btnQAPconnectEdit gShowQAPconnectIniFile hidden, % L(o_L["MenuEditIniFile"], "QAPconnect.ini")
 Gui, 2:Add, Button, x+10 yp vf_btnQAPconnectRefresh gActiveFileManagerClickedInit hidden, % o_L["OptionsRefreshQAPconnectList"] ; ActiveFileManagerClickedInit will refresh the dropdown list
 
+; FileManagerDOpusShowAlias
+Gui, 2:Add, Checkbox, y+5 x%g_intGroupItemsTab3X% w590 vf_blnFileManagerDirectoryOpusShowAlias gGuiOptionsGroupChanged hidden, % L(o_L["DopusMenuNameShowAlias"], o_L["DOpusMenuName"])
+GuiControl, , f_blnFileManagerDirectoryOpusShowAlias, % (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowAlias = true)
+
 ; line 6
 ; FileManagerNewTabSide
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab3X%  vf_lblFileManagerNewTabSide
@@ -10234,7 +10253,7 @@ Gosub, FileManagerNavigateClickedInit
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strFileManagerPath
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strTotalCommanderWinCmd
 
-GuiControlGet, arrPos, Pos, f_blnFileManagerDirectoryOpusShowLayouts
+GuiControlGet, arrPos, Pos, f_blnFileManagerDirectoryOpusShowAlias
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -10853,6 +10872,7 @@ else ; 2 DirectoryOpus or 3 TotalCommander
 			strClickedNewTabOrWindow := "NEW" ; open new folder in a new DOpus lister (instance)
 		
 		o_Settings.FileManagers.blnDirectoryOpusShowLayouts.WriteIni(f_blnFileManagerDirectoryOpusShowLayouts)
+		o_Settings.FileManagers.blnDirectoryOpusShowAlias.WriteIni(f_blnFileManagerDirectoryOpusShowAlias)
 	}
 	else ; TotalCommander
 	{
@@ -11379,6 +11399,7 @@ GuiControl, %strShowHideCommand%, f_intFileManagerNewTabSideDest
 
 strShowHideCommand := (!f_radActiveFileManager2 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; DOpus only
 GuiControl, %strShowHideCommand%, f_blnFileManagerDirectoryOpusShowLayouts
+GuiControl, %strShowHideCommand%, f_blnFileManagerDirectoryOpusShowAlias
 
 strShowHideCommand := (!f_radActiveFileManager3 or g_strSettingsGroup <> "FileManagers" ? "Hide" : "Show") ; TC only
 GuiControl, %strShowHideCommand%, f_btnTotalCommanderWinCmd
@@ -29983,8 +30004,14 @@ TODO
 				
 				this.AA.blnFileManagerDirectoryOpusShowLayouts := o_Settings.ReadIniOption("FileManagers", "blnDirectoryOpusShowLayouts", "FileManagerDOpusShowLayouts", 1, "FileManagers"
 					, "f_blnFileManagerDirectoryOpusShowLayouts")
+				this.AA.blnFileManagerDirectoryOpusShowAlias := o_Settings.ReadIniOption("FileManagers", "blnDirectoryOpusShowAlias", "FileManagerDOpusShowAlias", 1, "FileManagers"
+					, "f_blnFileManagerDirectoryOpusShowAlias")
 				
 				o_JLicons.AddIcon("DirectoryOpus", this.AA.strFileManagerPathExpanded . ",1")
+				
+				this.AA.strDirectoryOpusFavoritesFile := this.DirectoryOpusConfigTypeRoot() . "\ConfigFiles\favorites.ofv"
+				this.AA.strDirectoryOpusLayoutsFile := this.DirectoryOpusConfigTypeRoot() . "\Layouts\order.xml"
+				this.AA.strDirectoryOpusAliasFile := this.DirectoryOpusConfigTypeRoot() . "\ConfigFiles\folderaliases.oxc"
 			}
 		}
 		
@@ -30003,24 +30030,6 @@ TODO
 			
 			if FileExist(this.AA.strDirectoryOpusRtPath) ; for safety only
 				Run, % """" . this.AA.strDirectoryOpusRtPath . """ " . strCommand . " """ . strLocation . """" . strParam
-		}
-		;-----------------------------------------------------
-		
-		;-----------------------------------------------------
-		DirectoryOpusFavoritesFileExist()
-		;-----------------------------------------------------
-		{
-			this.AA.strDirectoryOpusFavoritesFile := this.DirectoryOpusConfigTypeRoot() . "\ConfigFiles\favorites.ofv"
-			return FileExist(this.AA.strDirectoryOpusFavoritesFile)
-		}
-		;-----------------------------------------------------
-		
-		;-----------------------------------------------------
-		DirectoryOpusLayoutsFileExist()
-		;-----------------------------------------------------
-		{
-			this.AA.strDirectoryOpusLayoutsFile := this.DirectoryOpusConfigTypeRoot() . "\Layouts\order.xml"
-			return FileExist(this.AA.strDirectoryOpusLayoutsFile)
 		}
 		;-----------------------------------------------------
 		
@@ -31113,8 +31122,11 @@ class QAPfeatures
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
 			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, , "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
 		
-		if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and o_FileManagers.SA[2].DirectoryOpusLayoutsFileExist())
+		if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and FileExist(o_FileManagers.SA[2].AA.strDirectoryOpusLayoutsFile))
 			new Container("Menu", o_L["DOpusLayoutsName"]) ; init DOpus Layouts sub menu of DOpus Favorites menu
+		
+		if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowAlias and FileExist(o_FileManagers.SA[2].AA.strDirectoryOpusAliasFile))
+			new Container("Menu", o_L["DOpusAliasName"]) ; init DOpus Folder Aliases sub menu of DOpus Favorites menu
 	}
 	;---------------------------------------------------------
 }
@@ -32383,14 +32395,14 @@ class Container
 	;---------------------------------------------------------
 
 	;-----------------------------------------------------
-	LoadDirectoryOpusFavoritesFromXML(strNodeXml := "")
+	LoadDirectoryOpusFavoritesFromXML(strXmlFile, strNodeXml := "")
 	;-----------------------------------------------------
 	{
 		this.SA := Object() ; re-init
 		
 		if !StrLen(strNodeXml) ; first level only
 		{
-			FileRead, strNodeXml, % g_aaFileManagerDirectoryOpus.strDirectoryOpusFavoritesFile
+			FileRead, strNodeXml, %strXmlFile%
 		}
 
 		xmlDirectoryOpusXML.XML.LoadXML(strNodeXml)
@@ -32406,7 +32418,7 @@ class Container
 			if (blnItemIsMenu)
 			{
 				oNewSubMenu := new Container("Menu", xmlItemAttributes.label, , this, "init", true) ; last parameter for blnDoubleAmpersands
-				oNewSubMenu.LoadDirectoryOpusFavoritesFromXML(xmlItem.xml) ; RECURSIVE
+				oNewSubMenu.LoadDirectoryOpusFavoritesFromXML(strXmlFile, xmlItem.xml) ; RECURSIVE
 			}
 			
 			saThisFavorite := Object() ; insert DOpus item values in standard QAP item values object
@@ -32421,7 +32433,7 @@ class Container
 				if (SSN(xmlItem, "descendant::pathstring").NodeName = "pathstring")
 				{
 					saThisFavorite[3] := SSN(xmlItem, "descendant::pathstring").text ; FavoriteLocation
-					saThisFavorite[4] := GetFolderIcon(objLoadDOpusFavorite.FavoriteLocation) ; FavoriteIconResource
+					saThisFavorite[4] := (blnItemIsMenu ? "iconSubmenu" : GetFolderIcon(objLoadDOpusFavorite.FavoriteLocation)) ; FavoriteIconResource
 				}
 				else if (SSN(xmlItem, "descendant::pidl").NodeName = "pidl")
 					; <path label="Ce PC">
