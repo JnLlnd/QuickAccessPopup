@@ -31,6 +31,19 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.4 (2024-10-25)
+ 
+Directory Opus Folder Aliases
+- support folder location containing a DOpus Folder Aliases (like "/my_alias") when Directory Opus is the target window
+- in "Options, File Managers" add an option to add a submenu to "Directory Opus favorites" containing user's Folder Aliases (not built-in aliases)
+- fix a minor bug setting the submenu icon for DOpus favorites subfolders
+ 
+Various improvements
+- include "Live Folders" content (folders and/or documents) in the "Quick Launch" (search results)
+- add the Vivaldi browser to the list of browsers supporting "navigate mode"
+- add the "Quick Launch" window hotkey (Shift+Ctrl+Q) under the "Tools" menubar
+- when checking for double press of Left Ctrl key to open the QAP menu (see "Options, Popup Hotkeys"), detect and disregard AltGr key (acting as Left Ctrl+Alt)
+
 Version: 11.6.3.3 (2024-04-27)
 - stop showing the snippet default prompt when using a snippet on the Desktop (for example when renaming a Desktop file)
 - fix a bug with the working directory when launching an application from a shortcut file (.lnk) in a Live folder
@@ -5576,7 +5589,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.3.3
+;@Ahk2Exe-SetVersion 11.6.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5644,7 +5657,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.3.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -8098,7 +8111,7 @@ aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogE
 	, "GuiSearchAndReplaceTitle", "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
 	, "MenuRestoreSettingsWindowPosition", "ControlToolTipAlwaysOnTopOff")
 saMenuItemsTable := Object()
-saMenuItemsTable.Push(["GuiQuickLaunch", aaMenuToolsL["GuiQuickLaunchTitle"], "", "iconNoIcon"])
+saMenuItemsTable.Push(["GuiQuickLaunch", aaMenuToolsL["GuiQuickLaunchTitle"] . "`tShift+Ctrl+Q", "", "iconNoIcon"])
 saMenuItemsTable.Push(["X"])
 saMenuItemsTable.Push(["GuiFavoritesListFilterShowOpen", aaMenuToolsL["ControlToolTipSearchButton"] . "`tCtrl+F", "", "iconNoIcon"])
 saMenuItemsTable.Push(["FilterExtendedClick", aaMenuToolsL["DialogExtendedSearch"], "", "iconNoIcon"])
