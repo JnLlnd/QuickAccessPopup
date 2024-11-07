@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.4.1 (2024-11-07)
+- fix a font issue in the Settings window when dark mode is active
+ 
 Version: 11.6.4 (2024-10-25)
  
 Directory Opus Folder Aliases
@@ -5589,7 +5592,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.4
+;@Ahk2Exe-SetVersion 11.6.4.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5657,7 +5660,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.4.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -12377,6 +12380,7 @@ if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnable
 o_LvRowsHandle := New LV_Rows(g_strFavoritesListHwnd)
 o_LvRowsHandle.SetHwnd(g_strFavoritesListHwnd)
 
+Gui, 1:Font, s%intListViewFontSize%
 ; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesListSearch Count32 AltSubmit NoSortHdr LV0x10 hidden " . (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
@@ -12427,12 +12431,12 @@ if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 		if InStr(strControl, "ListView") ; for ListView control
 		{
 			GuiControl, +Background%g_intWindowColor%, %strControl%
-			Gui,Font, c%g_intControlColor%
+			Gui, Font, c%g_intControlColor% s%intListViewFontSize%, Verdana
 			GuiControl, Font, %strControl%
 		}
 		if InStr(strControl, "Static")
 		{
-			Gui, Font, c%g_intControlColor%
+			Gui, Font, c%g_intControlColor% s%intLabelFontSize%, Arial
 			GuiControl, Font, %strControl%
 		}
 	}
@@ -24756,7 +24760,8 @@ if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 	
 	Gui, Color, %g_intWindowColor%, %g_intControlColor%
 	GuiControl, +Background%g_intWindowColor%, SysListView321
-	Gui, Font, c%g_intControlColor%
+	intListViewFontSize := o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
+	Gui, Font, c%g_intControlColor% s%intListViewFontSize%, Verdana
 	GuiControl, Font, SysListView321
 }
 
@@ -24769,6 +24774,7 @@ intQuickLaunchGuiMinHeight := ""
 strQuickLaunchPosition := ""
 saQuickLaunchPosition := ""
 intYp := ""
+intListViewFontSize := ""
 
 return
 ;------------------------------------------------------------
