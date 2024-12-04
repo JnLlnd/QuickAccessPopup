@@ -15241,11 +15241,17 @@ if InStr("|Folder|Document|Application", "|" . o_EditedFavorite.AA.strFavoriteTy
 		GuiControl, 2:, f_strFavoriteLocation, % Trim(f_strFavoriteLocation, """")
 	
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
+	{
 		strFolderIcon := GetFolderIcon(f_strFavoriteLocation)
-	if !(strFolderIcon = "iconFolder" and StrLen(g_strNewFavoriteIconResource))
-		; if favorite has a custom icon and there is no icon folder, keep custom icon
-		; else use the folder icon
-		g_strNewFavoriteIconResource := strFolderIcon
+		if !(strFolderIcon = "iconFolder" and StrLen(g_strNewFavoriteIconResource))
+			; if favorite has a custom icon and there is no icon folder, keep custom icon
+			; else use the folder icon
+			g_strNewFavoriteIconResource := strFolderIcon
+	}
+	else ; Document or Application
+		if (g_strNewFavoriteIconResource = "iconUnknown") ; when adding a new favorite
+			g_strNewFavoriteIconResource := GetIcon4Location(f_strFavoriteLocation)
+		; else keep existing icon resource (default or custom)
 	
 	if !StrLen(g_strNewFavoriteIconResource)
 		gosub, GuiFavoriteIconDefault
