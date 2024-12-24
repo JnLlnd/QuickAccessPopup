@@ -31,9 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.4.### (2024-12-##)
+- when editing a favorite document or application, if user selected a custom icon, keep this icon (instead of reseting to the default icon)
+ 
 Version: 11.6.4.1 (2024-11-07)
 - fix a font issue in the Settings window when dark mode is active
- 
+
 Version: 11.6.4 (2024-10-25)
  
 Directory Opus Folder Aliases
@@ -22796,7 +22799,7 @@ else if ProposeUpdate(strLatestVersionProd, g_strCurrentVersion, strLatestSkippe
 }
 else if (A_ThisLabel = "Check4UpdateNow")
 {
-	MsgBox, 4, % l(o_L["UpdateTitle"], g_strAppNameText), % l(o_L["UpdateYouHaveLatest"], g_strAppVersion, g_strAppNameText)
+	MsgBox, 3, % l(o_L["UpdateTitle"], g_strAppNameText), % l(o_L["UpdateYouHaveLatest"], g_strAppVersion, g_strAppNameText)
 	IfMsgBox, Yes
 		Run, %g_strUrlAppLandingPage%
 }
