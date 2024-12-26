@@ -31,12 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.6.4.### (2024-12-##)
-- when editing a favorite document or application, if user selected a custom icon, keep this icon (instead of reseting to the default icon)
+Version: 11.6.4.2 (2024-12-26)
+- when editing a favorite document or application, if user selected a custom icon, keep this icon when the favorite is edited (instead of resetting to the default icon)
+- retrieve Windows Apps (UWP) icons for the "Current Windows" menu (QAP can retrieve only icons from running and not minimized apps)
+- when adding or editing a Windows App (UWP) favorite, retrieve the favorite's icon using a temporary Windows shortcut (.lnk) file
+- enable the Close (X) button in the "Check dor update" dialog box
  
 Version: 11.6.4.1 (2024-11-07)
 - fix a font issue in the Settings window when dark mode is active
-
+ 
 Version: 11.6.4 (2024-10-25)
  
 Directory Opus Folder Aliases
@@ -5595,7 +5598,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.4.1
+;@Ahk2Exe-SetVersion 11.6.4.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5663,7 +5666,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.4.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.4.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -6041,8 +6044,13 @@ if !StrLen(o_Settings.UserVariables.strUserVariablesList.IniValue)
 	gosub, DetectCloudUserVariables ; must be after UsageDbInit because it uses SQLite files for Google Drive database
 
 ;---------------------------------
-; Refresh Windows Apps list
+; Windows Apps (UWP) init
 
+; Init module to retrieve running Windows Apps icon (from monoblaine https://github.com/monoblaine/alttab-replacer)
+global g_hUwpModule := DllCall("LoadLibrary", Str, A_ScriptDir . "\UWPIconExtractor.dll", Ptr) ; file in QAP executable folder
+global g_hUwpProc := DllCall("GetProcAddress", Ptr, g_hUwpModule, AStr, "getFileName", Ptr)
+
+; Refresh Windows Apps list
 if (o_Settings.LaunchAdvanced.blnRefreshWindowsAppsListAtStartup.IniValue)
 	Gosub, ButtonRefreshWindowsAppsListAtStartup
 
@@ -8862,6 +8870,7 @@ if ((A_ThisLabel <> "RefreshReopenFolderMenu")
 			aaFolderOrApp.strLocationURL := objWindowProperties.ProcessPath
 			aaFolderOrApp.strWindowId := strWinIDs%A_Index%
 			aaFolderOrApp.strWindowType := "APP"
+			aaFolderOrApp.strAppIconResource := objWindowProperties.strAppIconResource
 			
 			saFoldersAndAppsList.Push(aaFolderOrApp)
 		}
@@ -8912,7 +8921,7 @@ if (intWindowsIdIndex)
 			else if (aaFolderOrApp.strWindowType = "TC")
 				strIcon := (strFolderIcon = "iconFolder" ? g_aaFileManagerTotalCommander.strFileManagerPathExpanded . ",1" : strFolderIcon)
 			else
-				strIcon := aaFolderOrApp.strLocationURL . ",1"
+				strIcon := aaFolderOrApp.strAppIconResource
 			saSwitchFolderOrAppTable.Push(["OpenSwitchFolderOrApp", strMenuName, aaFolderOrApp.strWindowType . "|" . aaFolderOrApp.strWindowId, strIcon])
 			if (aaFolderOrApp.strWindowType = "APP") ; {Switch Apps}
 				saSwitchAppTable.Push(["OpenSwitchFolderOrApp", strMenuName, aaFolderOrApp.strWindowType . "|" . aaFolderOrApp.strWindowId, strIcon])
@@ -27412,30 +27421,22 @@ KeepThisWindow(intIndex, strWinID, strCaller, ByRef objWindowProperties)
         ControlGet, intUniversalApplicationID, Hwnd, , Windows.UI.Core.CoreWindow1, % "ahk_id " . strWinID
         if (intUniversalApplicationID)
 		{
-            WinGet strUniversalApplicationName, ProcessName, ahk_id %intUniversalApplicationID%
+            WinGet, strUniversalApplicationName, ProcessName, ahk_id %intUniversalApplicationID%
 			objWindowProperties.UniversalApplicationName := strUniversalApplicationName
 			objWindowProperties.UniversalApplicationID := intUniversalApplicationID
 		}
-		; if (intExStyle = 0x00200000) ; WS_EX_NOREDIRECTIONBITMAP (see https://greenshot.atlassian.net/browse/BUG-2017)
-		; {
-			; remember titles of window of intExStyle 0x00200000 because another window with same name and intExStyle 0x00200100 is also a ghost window (not real active window)
-			; s_strWinTitlesWinApps .= strWindowTitle . "|"
-			; ###_V("s_strWinTitlesWinApps", s_strWinTitlesWinApps)
-			; always skip windows with intExStyle is 0x00200000 because it is a ghost Windows app (not real active window)
-		; }
-		; #### to be validated or continued
-		; #### run after loops, not here
-		; remove apps of ExStyle 0x00200100 if we previously had a ghost Windows app of same title
-		; Loop, % objFoldersAndAppsList.MaxIndex()
-		;	if (objFoldersAndAppsList[A_Index].ExStyle = 0x00200100) and InStr(s_strWinTitlesWinApps, objFoldersAndAppsList[A_Index].Name . "|")
-		;		objFoldersAndAppsList.Remove(A_Index)
+		
+		hWnd_coreWindow := GetChildWinByClass(strWinID, "Windows.UI.Core.CoreWindow")
+		if (hWnd_coreWindow) ; retrieve running and not minimized Windows Apps icon (from monoblaine https://github.com/monoblaine/alttab-replacer)
+			objWindowProperties.strAppIconResource := DllCall(g_hUwpProc, Ptr, hWnd_coreWindow, "Cdecl AStr")
+		else
+			objWindowProperties.strAppIconResource := objWindowProperties.ProcessPath . ",1"
+        DllCall("CloseHandle", Ptr, hWnd_coreWindow)
+        hWnd_coreWindow := ""
 	}
+	else
+		objWindowProperties.strAppIconResource := objWindowProperties.ProcessPath . ",1"
 	
-	; if InStr(strWindowTitle, "Calendrier")
-		; ###_O("objWindowProperties", objWindowProperties)
-	; if InStr(strProcessPath, "opus")
-		; ###_O(strCaller . " / " . strProcessPath . " / " . g_strDirectoryOpusPath . " / " . g_intActiveFileManager, objWindowProperties)
-
 	if (strCaller = g_saDialogListApplicationsDropdown[n]) ; "List All"
 		return true
 	
@@ -28995,6 +28996,29 @@ SaveHICONtoFile(hicon, iconFile)
   DllCall( "DeleteObject", "Ptr",ICONINFO.hbmColor )
 
   Return True  
+}
+;------------------------------------------------
+
+
+;------------------------------------------------
+GetChildWinByClass(hParent, childClass)
+; from monoblaine https://github.com/monoblaine/alttab-replacer
+;------------------------------------------------
+{
+    hWnd := DllCall("GetWindow", Ptr, hParent, UInt, 5, Ptr) ; GW_CHILD=5
+	strDebug := childClass . "`n`n"
+
+    Loop
+	{
+        WinGetClass, winClass, ahk_id %hWnd%
+		strDebug .= winClass . "`n"
+
+        if (winClass = childClass)
+            return hWnd
+
+        DllCall("CloseHandle", Ptr, hWnd)
+        hWnd := DllCall("GetWindow", Ptr, hWnd, UInt, 2, Ptr) ; GW_HWNDNEXT=2
+    } Until !hWnd
 }
 ;------------------------------------------------
 
