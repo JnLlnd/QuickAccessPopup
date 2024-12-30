@@ -246,9 +246,9 @@ lDialogFavoriteTypesHelp6	Crie um atalho para um "Site FTP".`n`nDefina o nome do
 lDialogFavoriteTypesHelp7	Insira em qualquer lugar do seu menu "Recursos do Quick Access Popup" como: ~1~, ~2~, ~3~, ~4~, ~5~, etc. Consulte as descrições e links de ajuda para maiores informações.
 lDialogFavoriteTypesHelp8	Reúna favoritos relacionados em um "Submenu".`n`nDê um nome para seu submenu e selecione as opções de menu.`n`nAdicione favoritos em seu submenu. Mova um favorito para outro submenu ou grupo usando o botão "Mover" ou a aba "Opções de Menu" da janela "Editar Favorito".
 lDialogFavoriteTypesHelp9	Inicie um "Grupo" de favoritos, todos em um atalho!`n`nDê um nome para seu grupo e defina várias opções para seu grupo.`n`nAdicione favoritos em seu grupo. Mova um favorito de outro grupo ou submenu usando o botão "Mover" ou a aba "Opções de Menu" da janela "Editar Favorito".`n`nConfigurações avançadas permitem controlar a velocidade de restauração inserindo um atraso entre cada favorito para restaurar.
-lDialogFavoriteTypesLabels	Pasta|Documento|Aplicativo|Pasta Especial|Link (URL)|Site FTP|Recurso do QAP|Clipboard Command|Submenu|Grupo||||Recorte|Menu Compartilhado|Separador de Texto|App do Windows
-lDialogFavoriteTypesLocationLabels	Pasta (caminho)|Documento (caminho e nome do arquivo)|Aplicativo (caminho e nome do arquivo)||Link (URL)|Site FTP (URL)||||||||Conteúdo|Arquivo de configurações externo (caminho)|Separador de Texto|ID do App do Windows App (AUMID)
-lDialogFavoriteTypesShortNames	Pasta|Documento|Aplicativo|Especial|Link|FTP|QAP|QCE|Menu|Grupo|Separador|Quebra de Coluna|..|Recorte|Compartilhado|Texto|Aplicativo do Windows
+lDialogFavoriteTypesLabels	Pasta|Documento|Aplicativo|Pasta Especial|Link (URL)|Site FTP|Recurso do QAP|Submenu|Grupo||||Recorte|Menu Compartilhado|Separador de Texto|App do Windows|Clipboard Command
+lDialogFavoriteTypesLocationLabels	Pasta (caminho)|Documento (caminho e nome do arquivo)|Aplicativo (caminho e nome do arquivo)||Link (URL)|Site FTP (URL)|||||||Conteúdo|Arquivo de configurações externo (caminho)|Separador de Texto|ID do App do Windows App (AUMID)|
+lDialogFavoriteTypesShortNames	Pasta|Documento|Aplicativo|Especial|Link|FTP|QAP|Menu|Grupo|Separador|Quebra de Coluna|..|Recorte|Compartilhado|Texto|Aplicativo do Windows|QCE
 lDialogFavoriteWorkingDirNotFoundPrompt	A configuração avançada "Iniciar em" do favorito "~1~" não foi encontrada:`n~2~
 lDialogFavoriteWorkingDirNotFoundTitle	Parâmetro 'Iniciar em' não encontrado - ~1~
 lDialogFileExtension	Extensão de arquivo

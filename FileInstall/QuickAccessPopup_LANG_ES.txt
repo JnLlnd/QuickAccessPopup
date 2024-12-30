@@ -206,9 +206,9 @@ lDialogFavoriteTypesHelp6	Crear un acceso directo a un "FTP Sitio".`n`nEstablece
 lDialogFavoriteTypesHelp7	Insertar en cualquier lugar de su menú "Quick Access Popup Características" such as: ~1~, ~2~, ~3~, ~4~, ~5~, etc.`n`nVer descripciones y enlaces de ayuda para más información. 
 lDialogFavoriteTypesHelp8	Reúne los favoritos relacionados en un "Submenú".`n`nAsigne un nombre a su submenú y seleccione opciones de menú.`n`nAgregue favoritos a su submenú. Mover un favorito a otro submenú o grupo utilizando el botón "Mover" o la pestaña "Opciones de menú" de la ventana "Editar favorito". 
 lDialogFavoriteTypesHelp9	Lanzar un "Grupo" de favoritos, todo en un solo acceso directo!`n`nAsigne un nombre a su grupo y establezca varias opciones para su grupo.`n`nAñadir favoritos a su grupo. Mover un favorito a otro grupo o submenú mediante el botón "Mover" o la pestaña "Opciones de menú" de la ventana "Editar favorito".`n`nLa configuración avanzada le permite controlar la velocidad de restauración insertando un retardo entre cada uno de los favoritos para restaurar. 
-lDialogFavoriteTypesLabels	Carpeta|Documento|Aplicación|Carpeta especial|Link (URL)|FTP Sitio|QAP Característica|Clipboard Command|Submenú|Grupo||||Fragmento|Menú compartido|Texto Separador|Windows App
-lDialogFavoriteTypesLocationLabels	Carpeta (ruta)|Documento (ruta y nombre de archivo)|Aplicación (ruta y nombre de archivo)||Link (URL)|FTP Sitio (URL)||||||||Contenido|Archivo de configuración externo (ruta)|Texto Separador|Windows App ID (AUMID)
-lDialogFavoriteTypesShortNames	Carpeta|Doc|App|Especial|Link|FTP|QAP|QCE|Menú|Grupo|Separador|Salto de columna|..|Fragmento|Compartido|Texto|Win App
+lDialogFavoriteTypesLabels	Carpeta|Documento|Aplicación|Carpeta especial|Link (URL)|FTP Sitio|QAP Característica|Submenú|Grupo||||Fragmento|Menú compartido|Texto Separador|Windows App|Clipboard Command
+lDialogFavoriteTypesLocationLabels	Carpeta (ruta)|Documento (ruta y nombre de archivo)|Aplicación (ruta y nombre de archivo)||Link (URL)|FTP Sitio (URL)|||||||Contenido|Archivo de configuración externo (ruta)|Texto Separador|Windows App ID (AUMID)|
+lDialogFavoriteTypesShortNames	Carpeta|Doc|App|Especial|Link|FTP|QAP|Menú|Grupo|Separador|Salto de columna|..|Fragmento|Compartido|Texto|Win App|QCE
 lDialogFavoriteWorkingDirNotFoundPrompt	La configuración avanzada "Iniciar en" del favorito "~1~" no se encuentra:`n~2~
 lDialogFavoriteWorkingDirNotFoundTitle	No se encuentra el parametro Inicio en - ~1~
 lDialogFileExtension	File Extensión
