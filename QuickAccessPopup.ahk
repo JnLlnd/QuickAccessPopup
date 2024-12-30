@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.6.9.0.1 (2024-12-19)
+
 Version: 11.6.4.2 (2024-12-26)
 - when editing a favorite document or application, if user selected a custom icon, keep this icon when the favorite is edited (instead of resetting to the default icon)
 - retrieve Windows Apps (UWP) icons for the "Current Windows" menu (QAP can retrieve only icons from running and not minimized apps)
@@ -5598,7 +5600,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.4.2
+;@Ahk2Exe-SetVersion 11.6.9.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5666,8 +5668,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.4.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.6.9.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
@@ -5874,6 +5876,12 @@ global g_strHotstringEndChar
 global g_blnAlternativeMenuFromQuickLaunch
 global g_intQuickLaunchGuiMinWidth
 global g_intRunCommandMax := 8191
+
+;---------------------------------
+; Quick Clipboard Editor (QCE) related variables
+global g_aaQCEAppTitle := {"Receiver" : "ahk_exe QuickClipboardEditor-Receiver.exe", "ReceiverLite" : "ahk_exe QuickClipboardEditor-ReceiverLite.exe"}
+global g_saQCECommands ; list of QCE commands retreived from QCE Receiver or ReceiverLite
+global g_strQCECommandsSeparator := Chr(135)
 
 ;---------------------------------
 ; Initial validation
@@ -6117,7 +6125,7 @@ OnMessage(0x203, "WM_LBUTTONDBLCLK")
 OnMessage(0x2224, "REPLY_QAPISRUNNING")
 
 ; Respond to SendMessage sent by QAPmessenger after execution of the requested action from Explorer context menu
-OnMessage(0x4a, "RECEIVE_QAPMESSENGER")
+OnMessage(0x4a, "RECEIVE_MESSENGER")
 
 ; Create a mutex to allow Inno Setup to detect if FP is running before uninstall or update
 DllCall("CreateMutex", "uint", 0, "int", false, "str", g_strAppNameFile . "Mutex")
@@ -6149,8 +6157,15 @@ HotKey, If, WinActive(o_L["GuiQuickLaunchTitle"]) ; Quick Launch
 	Hotkey, Down, QuickLaunchDown
 	Hotkey, Up, QuickLaunchUp
 
-
 Hotkey, If
+
+;---------------------------------
+; Init collect QCE commands
+
+Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
+Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
+RequestQCEcommands() ; send a message to QCE Receiver or ReceiverLite to request data for ReceiveQCEcommands() storing commands in g_saQCECommands
+###_O("g_saQCECommands", g_saQCECommands)
 
 ;---------------------------------
 ; Start task collecting recent items
@@ -7826,6 +7841,10 @@ if IsObject(o_UsageDb) ; use IsObject instead of g_blnUsageDbEnabled in case it 
 	if (blnDbClosed)
 		FileCopy, %g_strUsageDbFile%, % StrReplace(g_strUsageDbFile, ".DB", ".DB-BK"), 1
 }
+
+; send message to receiver to exit app in QCE ReceiverLite
+if !InStr(A_ScriptName, ".ahk") ; avoid closing prod receiver when closing main in dev
+	intResult := Send_WM_COPYDATA("Shutdown", "ahk_exe QuickClipboardEditor-ReceiverLite.exe")
 
 ExitApp
 ;-----------------------------------------------------------
@@ -13241,7 +13260,7 @@ if ((A_ThisLabel = "AddThisFolder" or A_ThisLabel = "AddThisFolderXpress") and g
 	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, false, true)
 
-; if A_ThisLabel contains "Msg", we already have g_strNewLocation set by RECEIVE_QAPMESSENGER
+; if A_ThisLabel contains "Msg", we already have g_strNewLocation set by RECEIVE_MESSENGER
 
 if !InStr(A_ThisLabel, "Msg") ; exclude AddThisFolderFromMsg, AddThisFileFromMsg and AddThisShortcutFromMsg
 	g_strNewLocation := GetCurrentLocation(g_strTargetClass, g_strTargetWinId)
@@ -13334,7 +13353,7 @@ return
 GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 ; return ByRef parameters for g_strTargetWinId and g_strTargetClass (or current file manager ID and class if called to reopen current location)
 ; called when g_strTargetWinId and g_strTargetClass are not updated when invoking the popup menu
-; with blnActivate true when add folder from QAP tray icon or (starting with 11.5.7.9.5) when called from RECEIVE_QAPMESSENGER
+; with blnActivate true when add folder from QAP tray icon or (starting with 11.5.7.9.5) when called from RECEIVE_MESSENGER
 ; with blnExcludeDialogBox true when reopen file manager current location in dialog box
 ;------------------------------------------------------------
 {
@@ -20928,8 +20947,8 @@ return
 ;------------------------------------------------------------
 NavigateHotkeyMouse:		; g_strTargetWinId set by CanNavigate
 NavigateHotkeyKeyboard:		; g_strTargetWinId set by CanNavigate
-NavigateFromMsg:			; g_strTargetWinId set by RECEIVE_QAPMESSENGER
-LaunchFromMsg:				; g_strTargetWinId set by RECEIVE_QAPMESSENGER
+NavigateFromMsg:			; g_strTargetWinId set by RECEIVE_MESSENGER
+LaunchFromMsg:				; g_strTargetWinId set by RECEIVE_MESSENGER
 LaunchFromReopenMenu:		; g_strTargetWinId set by CanNavigate
 LaunchHotkeyMouse:			; g_strTargetWinId set by CanNavigate
 LaunchHotkeyKeyboard:		; g_strTargetWinId set by CanNavigate
@@ -29164,7 +29183,7 @@ REPLY_QAPISRUNNING(wParam, lParam)
 
 
 ;------------------------------------------------------------
-RECEIVE_QAPMESSENGER(wParam, lParam) 
+RECEIVE_MESSENGER(wParam, lParam) 
 ; Adapted from AHK documentation (https://autohotkey.com/docs/commands/OnMessage.htm)
 ; Commands: ShowMenuLaunch, ShowMenuNavigate, ShowMenuAlternative, ShowMenuDynamic, LaunchFavorite, AddFolder, AddFolderXpress, AddFile and AddFileXpress
 ;------------------------------------------------------------
@@ -29175,8 +29194,16 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
+	; Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
+	; Diag(A_ThisFunc, "StrSplit(strCopyOfData, g_strQCECommandsSeparator)[1]", StrSplit(strCopyOfData, g_strQCECommandsSeparator)[1])
 	
-	Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
+	if (StrSplit(strCopyOfData, g_strQCECommandsSeparator)[1] = "QCEcommands") ; QCE commands list separated by g_strQCECommandsSeparator
+	{
+		ReceiveQCEcommands(strCopyOfData)
+		return 1
+	}
+	; else continue
+	
 	saData := StrSplit(strCopyOfData, "|")
 	
 	Diag(A_ThisFunc, "g_strTargetWinId before", g_strTargetWinId)
@@ -29261,6 +29288,116 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 	}
 
 	return 1
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+RequestQCEcommands()
+;------------------------------------------------------------
+{
+	g_saQCECommands := Object() ; reset object
+	
+	loop, Parse, % "Receiver|ReceiverLite", |
+		if QCERisRunning(A_LoopField)
+		{
+			; try to send message to request "List" from compiled QCER with A_ScriptName as return address
+			strArgs := "List|" . A_ScriptName
+			Diag("Send_WM_COPYDATA:Param", strArgs, "")
+			Diag("Send_WM_COPYDATA:g_aaQCEAppTitle[A_LoopField]", g_aaQCEAppTitle[A_LoopField], "")
+			intResult := Send_WM_COPYDATA(strArgs, g_aaQCEAppTitle[A_LoopField])
+			; returns FAIL or 0 if an error occurred, or 1 if success
+			; Diag("Send_WM_COPYDATA (1=OK)", intResult, "")
+			if (intResult = 1)
+				break
+		}
+		else
+			if (A_Index = 2) ; after trying for both Receiver and ReceiverLite
+				Oops(0, o_L["OopsQCEReceiverError"] . "`n`n" . OopsQCEReceiverHelp, "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+	
+	intCount := 0
+	while (!g_saQCECommands.Length() or intCount > 10)
+	{
+		sleep, 100
+		intCount++
+	}
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+QCERisRunning(strReceiverType)
+;------------------------------------------------------------
+{
+    strPrevDetectHiddenWindows := A_DetectHiddenWindows
+    intPrevTitleMatchMode := A_TitleMatchMode
+    DetectHiddenWindows, On
+    SetTitleMatchMode, 2
+	
+	strQCEAppTitle := g_aaQCEAppTitle[strReceiverType]
+	SendMessage, 0x2225, , , , %strQCEAppTitle% ; QuickClipboardEditor-Receiver.exe or QuickClipboardEditor-ReceiverLite.exe
+	intErrorLevel := ErrorLevel
+	; Diag("strQCEAppTitle", strQCEAppTitle, "")
+	; Diag("QCERisRunning:ErrorLevel (1=OK)", intErrorLevel, "")
+	if (intErrorLevel <> 1) ; try again with 64-bit
+	{
+		strQCEAppTitle := StrReplace(strQCEAppTitle, "-" . strReceiverType, "-64-bit-" . strReceiverType)
+		SendMessage, 0x2225, , , , %strQCEAppTitle% ; 64-bit
+		intErrorLevel := ErrorLevel
+		; Diag("strQCEAppTitle", strQCEAppTitle, "")
+		; Diag("QCERisRunning:ErrorLevel (1=OK)", intErrorLevel, "")
+	}
+	if (intErrorLevel <> 1) ; try again with 32-bit
+	{
+		strQCEAppTitle := StrReplace(strQCEAppTitle, "-64-", "-32-")
+		SendMessage, 0x2225, , , , %strQCEAppTitle% ; 32-bit
+		intErrorLevel := ErrorLevel
+		; Diag("strQCEAppTitle", strQCEAppTitle, "")
+		; Diag("QCERisRunning:ErrorLevel (1=OK)", intErrorLevel, "")
+	}
+    DetectHiddenWindows, %strPrevDetectHiddenWindows%
+    SetTitleMatchMode, %intPrevTitleMatchMode%
+	Sleep, -1 ; prevent the cursor to turn to WAIT image for 5 seconds (did not search why) when showing menu from Desktop background
+	
+    return (intErrorLevel = 1) ; QCER reply 1 if it runs, else SendMessage returns "FAIL".
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+ReceiveQCEcommands(strCopyOfData)
+;------------------------------------------------------------
+{
+	g_saQCECommands := StrSplit(strCopyOfData, "`n")
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+Send_WM_COPYDATA(ByRef strStringToSend, ByRef strTargetScriptTitle) ; ByRef saves a little memory in this case.
+; Adapted from AHK documentation (https://autohotkey.com/docs/commands/OnMessage.htm)
+; This function sends the specified string to the specified window and returns the reply.
+; The reply is 1 if the target window processed the message, or 0 if it ignored it.
+;------------------------------------------------------------
+{
+    VarSetCapacity(varCopyDataStruct, 3 * A_PtrSize, 0) ; Set up the structure's memory area.
+	
+    ; First set the structure's cbData member to the size of the string, including its zero terminator:
+    intSizeInBytes := (StrLen(strStringToSend) + 1) * (A_IsUnicode ? 2 : 1)
+    NumPut(intSizeInBytes, varCopyDataStruct, A_PtrSize) ; OS requires that this be done.
+    NumPut(&strStringToSend, varCopyDataStruct, 2 * A_PtrSize) ; Set lpData to point to the string itself.
+
+	strPrevDetectHiddenWindows := A_DetectHiddenWindows
+    intPrevTitleMatchMode := A_TitleMatchMode
+    DetectHiddenWindows On
+    SetTitleMatchMode 2
+	
+    SendMessage, 0x4a, 0, &varCopyDataStruct, , %strTargetScriptTitle% ; 0x4a is WM_COPYDATA. Must use Send not Post.
+	
+    DetectHiddenWindows %strPrevDetectHiddenWindows% ; Restore original setting for the caller.
+    SetTitleMatchMode %intPrevTitleMatchMode% ; Same.
+	
+    return ErrorLevel ; Return SendMessage's reply back to our caller.
 }
 ;------------------------------------------------------------
 
