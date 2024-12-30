@@ -246,9 +246,9 @@ lDialogFavoriteTypesHelp6	Criar um atalho para um "Site FTP".`n`nDefina o nome d
 lDialogFavoriteTypesHelp7	Inserir algures no seu menu "Funções Quick Access Popup" tais como: ~1~, ~2~, ~3~, ~4~, ~5~, etc.`n`nVer descrições e ligações de ajuda para mais informação.
 lDialogFavoriteTypesHelp8	Reunir favoritos relacionados num "Submenu".`n`nAtribua um nome ao seu submenu e seleccione opções de menu.`n`nAdicione favoritos ao seu submenu. Mova um favorito para outro submenu ou grupo usando o botão "Mover" ou o separador "Opções do Menu" da janela "Editar favorito".
 lDialogFavoriteTypesHelp9	Carregar um "Grupo" de favoritos, todos com uma só tecla de atalho!`n`nAtribua um nome ao seu grupo e defina diversas opções para o seu grupo.`n`nAdicione favoritos ao seu grupo. Mova um favorito para outro grupo ou submenu usando o botão "Mover" ou o separador "Opções do Menu" da janela "Editar favorito".`n`nAs opções avançadas permitem controlar a velocidade de restauro inserindo um atraso entre cada favorito a restaurar.
-lDialogFavoriteTypesLabels	Pasta|Documento|Aplicação|Pasta Especial|Ligação (URL)|Site FTP|Função QAP|Submenu|Grupo||||Snippet|Menu Partilhado|Separador de Texto|App Windows App
-lDialogFavoriteTypesLocationLabels	Pasta (atalho)|Documento (atalho e nome de ficheiro)|Aplicação (atalho e nome de ficheiro)||Ligação (URL)|Site FTP (URL)|||||||Conteúdo|Ficheiro de definições externas (atalho)|Separador de Texto|ID App Windows (AUMID)
-lDialogFavoriteTypesShortNames	Pasta|Doc|App|Especial|Ligação|FTP|QAP|Menu|Grupo|Separador|Quebra de Coluna|..|Snippet|Partilhado|Texto|App Win
+lDialogFavoriteTypesLabels	Pasta|Documento|Aplicação|Pasta Especial|Ligação (URL)|Site FTP|Função QAP|Clipboard Command|Submenu|Grupo||||Snippet|Menu Partilhado|Separador de Texto|App Windows App
+lDialogFavoriteTypesLocationLabels	Pasta (atalho)|Documento (atalho e nome de ficheiro)|Aplicação (atalho e nome de ficheiro)||Ligação (URL)|Site FTP (URL)||||||||Conteúdo|Ficheiro de definições externas (atalho)|Separador de Texto|ID App Windows (AUMID)
+lDialogFavoriteTypesShortNames	Pasta|Doc|App|Especial|Ligação|FTP|QAP|QCE|Menu|Grupo|Separador|Quebra de Coluna|..|Snippet|Partilhado|Texto|App Win
 lDialogFavoriteWorkingDirNotFoundPrompt	A definição avançada "Iniciar em" do favorito "~1~" não foi encontrada:`n~2~
 lDialogFavoriteWorkingDirNotFoundTitle	Parâmetro Iniciar em não encontrado - ~1~
 lDialogFileExtension	Extensão do ficheiro
@@ -1066,7 +1066,6 @@ lOptionsThirdParty	Gestores de ficheiros
 lOptionsThirdPartyDetail	Seleccione o programa ~1~ (.exe) para activar a integração com ~1~.
 lOptionsThirdPartyDetailQAPconnect	Seleccione o seu gestor de ficheiros (ou edite ~1~ para adicioná-lo - ver a ajuda).
 lOptionsThirdPartyFileNotFound	~1~ ficheiro da aplicação "~2~" não encontrado.
-lOptionsThirdPartyQAPconnect	QAPConnect (suporte parcial`npara outros 25 gestores de ficheiros)
 lOptionsThirdPartySelectedHelp	Gestor de Ficheiros Seleccionado: ~1~ (<a href="~2~">~3~</a>)
 lOptionsThirdPartySelectFile	Por favor, seleccione o ficheiro da aplicação ~1~ utilizando o botão "Procurar"
 lOptionsThirdPartyUseTabs	Usar separadores em vez de abrir numa nova janela

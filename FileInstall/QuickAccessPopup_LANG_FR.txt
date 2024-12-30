@@ -59,7 +59,7 @@ lDialogAddFavoriteTabs	Réglages de base|Options du menu|Options de fenêtres|Régl
 lDialogAddFavoriteTabsExternal	Menu partagé
 lDialogAddFavoriteTabsLive	Options de dossier actif
 lDialogAddFileSelect	Choisir un nouveau document:
-lDialogAddFolderManuallyPrompt	Désolé, nous ne pouvons détecter automatiquement le dossier actif dans ce type de fenêtre.`n`nVoulez-vous ajouter un dossier favori manuellement?
+lDialogAddFolderManuallyPrompt	Désolé, nous ne pouvons détecter automatiquement le dossier actif ou la page web active dans ce type de fenêtre.`n`nVoulez-vous ajouter un dossier favori manuellement?
 lDialogAddFolderManuallyTitle	Ajouter le dossier actif ou la page web active - ~1~ ~2~
 lDialogAddFolderSelect	Choisir ou créer ce nouveau dossier:
 lDialogAddSingle	Ajouter un seul favori
@@ -183,7 +183,7 @@ lDialogFavoriteFolderLiveColumns	Nombre d'items par colonne (0 pour pas de colon
 lDialogFavoriteFolderLiveDocuments	Inclure les documents
 lDialogFavoriteFolderLiveExclude	Exclure
 lDialogFavoriteFolderLiveExcludeFolders	Exclure les dossiers (dernier niveau seulement)
-lDialogFavoriteFolderLiveExtensions	Entrez les extensions separées par des espaces (par exemple "bak bk") ou des expressions avec caractères génériques ("*.bak "abc ??.ext" *copie*.*"). Ou entrez une expression régulière avec "Regex:<votre expression>".
+lDialogFavoriteFolderLiveExtensions	Entrez les extensions separées par des espaces (par exemple "bak bk"), entrez des expressions avec caractères génériques séparées par des espaces ("*.bak "abc ??.ext" *copie*.*"
 lDialogFavoriteFolderLiveFiles	fichiers
 lDialogFavoriteFolderLiveHideExtensions	Extension de fichiers
 lDialogFavoriteFolderLiveHideIcons	Icônes
@@ -238,6 +238,7 @@ lDialogFavoriteTypesHelp13	Créez un "Fragment de texte". Indiquez le nom, le con
 lDialogFavoriteTypesHelp14	Créez un "Menu partagé" pour utiliser des favoris sur divers systèmes à partir d'un même fichier de configuration dans un emplacement externe. Choisissez le nom, l'emplacement du fichier externe de configuration et diverses options.`n`nLes menus partagés peuvent être de types "Personnel", "Collaboratif" ou "Centralisé". Un Catalogue des menus partagés peut être sélectionné dans les "Options, Options avancées diverses", pour faciliter l'ajout de menus partagés.`n`nLes menus partagés peuvent être modifiés comme des menus réguliers. Seuls les utilisateurs désignés peuvent modifier les menus partagés de type "Centralisé". Voir la foire aux questions (FAQ) du site web pour plus de détails.
 lDialogFavoriteTypesHelp15	Créer un "Texte séparateur" pour insérer une entête améliorant la clarté du menu.`n`nPar défaut, les textes séparateurs n'ont pas d'icône mais vous pouvez en sélectionner un dans l'onglet "Options de Menu".
 lDialogFavoriteTypesHelp16	Créer un raccourci vers une "Appli Windows".`n`nChoisissez une Appli Windows dans la liste des applis installées sur votre système.`n`nCette liste est actualisée au démarrage de QAP et peut être actualisée sur demande.
+lDialogFavoriteTypesHelp17	Lances une "Commande Presse-papiers" pour modifier le texte contenu dans le Presse-papiers.`n`nChoisissez une commande dans la liste des commandes disponibles dans Quick Clipboard Editor.`n`nCette liste est mise à jour au lancement de QAP et peut être raffraîchie sur demande dans la boîte de dialog "Ajouter un favori".
 lDialogFavoriteTypesHelp2	Créez un raccourci vers un "Document".`n`nChoisissez le nom, l'emplacement et diverses options pour le menu.`n`nLes réglages avancés permettent de choisir l'application qui lancera ce document et d'ajouter des paramètres optionnels.
 lDialogFavoriteTypesHelp3	Créez un raccourci vers une "Application" (programme, batch ou script).`n`nParcourez les dossiers pour choisir le fichier exécutable ou choisissez-le dans la liste déroulante des programmes actifs. Réglez diverses options pour le menu.`n`nLes réglages avancés permettent de choisir le dossier de démarrage de l'application et d'ajouter des paramètres optionnels.
 lDialogFavoriteTypesHelp4	Créez un raccourci vers l'un des 50 "Dossiers spéciaux" de Windows tel que: Bibliothèque, Mes Images, Corbeille, Téléchargements, etc.`n`nRéglez diverses options pour le menu. Les réglages avancés permettent de définir la position de la fenêtre et diverses options de gestion de fichier.
@@ -246,9 +247,9 @@ lDialogFavoriteTypesHelp6	Créez un raccourci vers un "Site FTP".`n`nChoisissez l
 lDialogFavoriteTypesHelp7	Dans n'importe quel menu, insérez des fonctionnalités de QAP tel que: ~1~, ~2~, ~3~, ~4~, ~5~, etc.`n`nVoyez les descriptions et liens d'aide pour plus d'information.
 lDialogFavoriteTypesHelp8	Rassemblez des favoris apparentés dans un "Sous-menu".`n`nDonnez un nom à ce sous-menu et sélectionnez diverses options.`n`nAjoutez des favoris à votre sous-menu ou déplacez-les à partir d'autres menus ou groupes avec le bouton "Déplacer" ou dans l'onglet "Options du menu" de la boîte de dialogue "Modifier un favori".
 lDialogFavoriteTypesHelp9	Lancez un "Groupe" de favoris en un seul raccourci.`n`nDonnez un nom à ce groupe et sélectionnez diverses options.`n`nAjoutez des favoris à votre groupe. Déplacez un favori vers un autre groupe ou sous-menu avec le bouton "Déplacer" ou dans l'onglet "Options du menu" de la boîte de dialogue "Modifier un favori".`n`nLes Réglages avancés permettent de contrôle la vitesse de restauration en insérant un délai entre chaque favori à restaurer.
-lDialogFavoriteTypesLabels	Dossier|Document|Application|Dossier spécial|Lien (URL)|Site FTP|Fonctionnalité QAP|Sous-menu|Groupe||||Fragments de texte|Menu partagé|Texte séparateur|Appli Windows
-lDialogFavoriteTypesLocationLabels	Dossier (emplacement)|Document (emplacement et nom de fichier)|Application (emplacement et nom de fichier)||Lien (URL)|Site FTP (URL)|||||||Contenu|Menu externe (emplacement et nom du fichier)|Texte séparateur|ID d'Appli Windows (AUMID)
-lDialogFavoriteTypesShortNames	Dossier|Doc|App|Spécial|Lien|FTP|QAP|Menu|Groupe|Separateur|Colonne|..|Fragment|Partagé|Texte|App Win
+lDialogFavoriteTypesLabels	Dossier|Document|Application|Dossier spécial|Lien (URL)|Site FTP|Fonctionnalité QAP|Commande Presse-papiers|Sous-menu|Groupe||||Fragments de texte|Menu partagé|Texte séparateur|Appli Windows
+lDialogFavoriteTypesLocationLabels	Dossier (emplacement)|Document (emplacement et nom de fichier)|Application (emplacement et nom de fichier)||Lien (URL)|Site FTP (URL)||||||||Contenu|Menu externe (emplacement et nom du fichier)|Texte séparateur|ID d'Appli Windows (AUMID)
+lDialogFavoriteTypesShortNames	Dossier|Doc|App|Spécial|Lien|FTP|QAP|QCE|Menu|Groupe|Separateur|Colonne|..|Fragment|Partagé|Texte|App Win
 lDialogFavoriteWorkingDirNotFoundPrompt	Le dossier "Démarrer dans" du favori "~1~" est introuvable:`n~2~
 lDialogFavoriteWorkingDirNotFoundTitle	Paramètre "Démarrer dans" introuvable - ~1~
 lDialogFileExtension	Extension du fichier
@@ -366,6 +367,7 @@ lDialogMultipleAddFrom	Ajouter à partir de
 lDialogMultipleAddHelp	Faire un double-clic sur les lignes pour de l'aide sur Fonctionnalités QAP
 lDialogMultipleAddIntro1	1) Sélectionner un menu de destination et filtrer la liste si désiré.
 lDialogMultipleAddIntro1a	Pour trier la liste, cliquer sur l'entête d'une colonne
+lDialogMultipleAddIntro1s	1) Choisissez un menu de destination et un fichier de configuration QAP (.ini) ou un fichier CSV.
 lDialogMultipleAddIntro2	2) Cliquer la case à cocher des favoris à ajouter.
 lDialogMultipleAddIntro2a	Pour modifier le nom d'un favori, sélectionner sa rangée et appuyer sur F2.
 lDialogMultipleAddIntro3	3) Cliquer "Ajouter" pour insérer les favoris dans le menu de destination et cliquer "Enregistrer" dans la fenêtre "Personnaliser".
@@ -508,9 +510,11 @@ lDonateOnline	Votre licence n'a pas été vérifiée depuis plus de ~1~ jours.`n`nVe
 lDonateTextSaveLicense	Enregistrer votre code de licence pour ~1~
 lDonateThankyou	Merci de soutenir le développement de ce logiciel!
 lDonateThankyouRestart	Merci de soutenir le développement de ~1~!`n`nL'application sera relancée dans un moment.
+lDOpusAliasName	Alias de dossier
 lDOpusLayoutsName	Dispositions
 lDOpusMenuName	Favoris Directory Opus
 lDopusMenuNameDescription	Pour les utilisateurs de Directory Opus (DOpus), affiche un menu dynamique comportant les dossiers ajoutés aux Favoris de DOpus. Si DOpus était sélectionné quand QAP a été installé, les Favoris Directory Opus ont été automatiquement ajoutés à votre menu.
+lDopusMenuNameShowAlias	Afficher les alias de dossier dans le menu ~1~
 lDopusMenuNameShowLayout	Afficher les Dispositions dans les ~1~
 lGuiAbout	À propos
 lGuiAboutDescription	Afficher les crédits pour le développement, la traduction et autres contributions, les numéros de version de l'application et de l'environnement d'exécution, la licence, les noms de l'utilisateur et de l'ordinateur, un lien vers le site web de l'application.
@@ -871,6 +875,8 @@ lOopsNowPlaceholderInvalid	Format de calcul de date invalide dans le code de rem
 lOopsOptionsPathNotExist	~1~ n'existe pas:`n~2~`n`nVeuillez choisir un emplacement valide.
 lOopsOptionsPathTrayIcon	Icône dans la zone de notification
 lOopsOSVerrsionError	~1~ nécessite Window 7 ou une version plus récente du système d'exploitation. Les utilisateurs de Windows Vista et XP sont invités à utiliser Folders Popup qui est compatible avec ces versions.`n`nVoulez-vous visiter le site web de Folders Popup?
+lOopsQCEReceiverError	Une erreur s'est produite lors du chargement des commandes de Quick Clipboard Editor commands.`n`nAssurez-vous que ~1~ ou ~2~ fonctionne avant d'ajouter des Commandes Presse-papiers.
+lOopsQCEReceiverHelp	Recherchez "QCE Receiver" sur www.QuickAccessPopup.com pour de l'aide.
 lOopsRunCommandTooLong	Commande trop longue (~1~ vs un maximum de ~2~)
 lOopsSelectedItemDialogBoxes	L'item sélectionné ne peut pas être détecté dans une boîte de dialogue.
 lOopsSelectedItemTotalCommander	L'item sélectionné ne peut pas être détecté dans Total Commander.
@@ -1000,7 +1006,7 @@ lOptionsQuickLaunchRecentsFrequents	Inclure les items des menus Récents et Fréqu
 lOptionsQuickLaunchRows	Nombre de lignes du résultat de recherche
 lOptionsQuickLaunchTitle	Options de Lancement rapide
 lOptionsRecentFolders	Nombre d'items récents dans le menu
-lOptionsRecentFoldersPrompt	Items récents et fréquemment utilisés
+lOptionsRecentFoldersPrompt	Items récents et fréquemment utilisés:
 lOptionsRecentPopularLevelsMax	Nombre maximum de niveaux dans le sous-dossiers des éléments dans les menus Récents/Fréquents`n(les niveaux excédentaires seront retranchés du début , 0 pour conserver tous les sous-dossiers)
 lOptionsRefreshedMenusAttached	Attacher les menus dynamiques au menu de QAP
 lOptionsRefreshedMenusAttachedInfo	lOptionsRefreshedMenusAttachedInfo Si vous activez cette option, Il pourrait y avoir un léger délai de raffraîchissement (selon la configuration de votre système) chaque fois que vous affichez le menu popup.`n`nLa durée de ce délai dépend du temps requis par Windows pour fournir les renseignements à jour requis pour bâtir le menu (liste des fichiers récents est espace disponible sur les disques). Ce délai peut varier d'une fois à l'autre.`n`nSi vous désactivez cette option, les menus "~1~", "~2~", "~3~", "~4~" et "~5~" seront raffraîchis seulement sur demande et seront affichés détachés du menu de QAP.
@@ -1051,7 +1057,8 @@ lOptionsThirdParty	Gestionnaires
 lOptionsThirdPartyDetail	Pour activer l'intégration avec ~1~, localisez le programme .exe sous votre dossier Program Files.
 lOptionsThirdPartyDetailQAPconnect	Sélectionnez votre gestionnaire de fichiers (ou modifiez ~1~ pour l'ajouter - voir l'aide)
 lOptionsThirdPartyFileNotFound	Le fichier de l'application ~1~ est introuvable: "~2~".
-lOptionsThirdPartyQAPconnect	QAPConnect (support partiel de`n25 autres logiciels)
+lOptionsThirdPartyQAPconnect	QAPConnect
+lOptionsThirdPartyQAPconnectDetail	(support partiel de`n25 autres logiciels)
 lOptionsThirdPartySelectedHelp	Gestionnaire de fichiers: ~1~ (<a href="~2~">~3~</a>)
 lOptionsThirdPartySelectFile	Veuillez choisir le fichier exécutable de l'application ~1~ à l'aide du bouton "Parcourir"
 lOptionsThirdPartyUseTabs	Utiliser les onglets au lieu d'ouvrir dans une nouvelle fenêtre
@@ -1071,6 +1078,7 @@ lOptionsUsageDbStatementTitle	Déclaration sur la confidentialité
 lOptionsUserVariables	Variables de l'utilisateur
 lOptionsUserVariablesList	Variables de l'utilisateur
 lOptionsUserVariablesListInstructions	Saisissez les variables de l'utilisateur, une variable par ligne. Chaque ligne doit commencer par le nom de la variable entre accolades (par exemple "{MaVariable}"), suivi du signe d'égalité "=" et du contenu de la variable (par exemple "{MaVariable}=Mon Contenu").`n`nPar exemple, si une ligne contient "{NotreDossierPartage}=S:\NotreDossier", le code de remplacement {NotreDossierPartage} sera remplacé par "S:\NotreDossier" dans les emplacements des favoris et dans les fragments de texte.
+lOptionsWaitClipboardFreeMaxSeconds	Nombre maximal de secondes à attendre lorsque le Presse-papiers est occupé
 lOptionsWaitDelayInDialogBox	Delai (en ms) lors des changements d'emplacement dans les boîtes de dialogue:
 lOptionsWaitDelayInSnippet	Delai (en ms) lors de l'exécution des Fragments de texte
 lOptionsWorkingFolder	Dossier des paramètres
