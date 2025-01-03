@@ -5880,8 +5880,7 @@ global g_intRunCommandMax := 8191
 ;---------------------------------
 ; Quick Clipboard Editor (QCE) related variables
 global g_aaQCEAppTitle := {"Receiver" : "ahk_exe QuickClipboardEditor-Receiver.exe", "ReceiverLite" : "ahk_exe QuickClipboardEditor-ReceiverLite.exe"}
-global g_saQCECommands ; list of QCE commands retreived from QCE Receiver or ReceiverLite
-global g_strQCECommandsSeparator := Chr(135)
+global g_strUnitSeparator := Chr(31) ; see https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 
 ;---------------------------------
 ; Initial validation
@@ -5932,6 +5931,10 @@ global o_Favorites := new Favorites
 ;---------------------------------
 ; Init class for QAP Features
 global o_QAPfeatures := new QAPfeatures
+
+;---------------------------------
+; Init class for QAP Features
+global o_QCEcommands := new QCEcommands
 
 ;---------------------------------
 ; Init class for Special Folders
@@ -6162,10 +6165,26 @@ Hotkey, If
 ;---------------------------------
 ; Init collect QCE commands
 
-Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
-Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
-RequestQCEcommands() ; send a message to QCE Receiver or ReceiverLite to request data for ReceiveQCEcommands() storing commands in g_saQCECommands
-###_O("g_saQCECommands", g_saQCECommands)
+if !InStr(A_ScriptName, ".ahk") ; do not launch if not compiled
+{
+	if !WinExist("ahk_exe QuickClipboardEditor-Receiver.exe")
+	{
+		Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
+		Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
+	}
+}
+else
+{
+	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage.txt
+	if !StrLen(strQCECommands) ; for dev only ####
+		Oops(0, "QCE COMMANDS FILEREAD ERROR")
+	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
+	strQCECommands := ""
+}
+
+; Collect QCE commands
+if !InStr(A_ScriptName, ".ahk") ; do not collect if not compiled
+	o_QCECommands.RequestQCEcommands()
 
 ;---------------------------------
 ; Start task collecting recent items
@@ -6204,7 +6223,6 @@ if !GetKeyState("Shift")
 
 ; ####
 ; Gosub, GuiOptionsGroupSettingsWindow
-
 return
 
 ;========================================================================================================================
@@ -13144,10 +13162,10 @@ if (g_blnUseColors)
 
 Gui, 2:Add, Text, x10 y+20, % o_L["DialogAdd"] . ":"
 
-; Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|Text
+; Folder|Document|Application|Special|URL|FTP|QAP|QCE|Menu|Group|X|K|B|Snippet|Text
 ; g_strAddFavIconsTypes: "icon type, favorite type", empty items are used for icons spacing
 g_strAddFavIconsTypes := "iconFolder;Folder|iconSpecialFolders;Special||iconDocuments;Document|iconApplication;Application|iconDesktop;WindowsApp|"
-	. g_strURLIconFileIndex . ";URL|iconFTP;FTP||iconPaste;Snippet||iconQAP;QAP||iconSubmenu;Menu|iconNetwork;External|iconGroup;Group||iconTextDocument;Text"
+	. g_strURLIconFileIndex . ";URL|iconFTP;FTP||iconPaste;Snippet||iconQAP;QAP|iconClipboardCheck;QCE||iconSubmenu;Menu|iconNetwork;External|iconGroup;Group||iconTextDocument;Text"
 
 intMaxTypeWidht := 0
 loop, Parse, g_strAddFavIconsTypes, |
@@ -13890,7 +13908,7 @@ if (InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true) and 
 else if (o_EditedFavorite.AA.strFavoriteType = "URL")
 	Gui, 2:Add, Button, x+10 yp gGuiGetWebPageTitle, % o_L["DialogGetWebPageTitle"] ; o_L["DialogGetWebPageTitleIcon"] if also retrieving icon again
 
-if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
+if !InStr("Special|QAP|QCE|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 {
 	if !InStr("|Menu|Group|External|Text", "|" . o_EditedFavorite.AA.strFavoriteType, true)
 	{
@@ -13970,7 +13988,7 @@ if !InStr("Special|QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 		Gosub, ProcessEOLTabChanged ; encode/decode snippet and update f_lblSnippetHelp text
 	}
 }
-else ; "Special", "QAP" or "WindowsApp"
+else ; "Special", "QAP", "WindowsApp" or "QCE"
 {
 	if (o_EditedFavorite.AA.strFavoriteType <> "WindowsApp")
 		Gui, 2:Add, Edit, x20 yp hidden section vf_strFavoriteLocation, % o_EditedFavorite.AA.strFavoriteLocation ; hidden because set by TreeViewSpecialChanged or TreeviewQAPChanged
@@ -13988,7 +14006,7 @@ else ; "Special", "QAP" or "WindowsApp"
 			. (blnIsCustomWindowsApp ? "" : " hidden") ; hidden because Windows Apps dropdown list except if starts with "Custom:"
 			, % (blnIsCustomWindowsApp ? SubStr(o_EditedFavorite.AA.strFavoriteLocation, 8) : o_EditedFavorite.AA.strFavoriteLocation)
 	}
-	else ; "Special" or "QAP"
+	else ; "Special", "QAP" or "QCE"
 	{
 		g_blnFirstInitDone := false
 		GuiControlGet, arrPosLocationLabel, Pos, f_lblLocation
@@ -13997,14 +14015,16 @@ else ; "Special", "QAP" or "WindowsApp"
 		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 			Gui, 2:Add, Link, x+5 yp w200 vf_tvQAPFeatureURL
 		
-		intTreeViewWidth := (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "300" : "400")
-		Gui, 2:Add, TreeView, % "x20 y+5 w" . intTreeViewWidth . " h" . intTreeViewHeight . " " . (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP gTreeViewQAPChanged" : "vf_tvSpecial gTreeViewSpecialChanged")
+		intTreeViewWidth := (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "300" : (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "400" : "400"))
+		Gui, 2:Add, TreeView, % "x20 y+5 w" . intTreeViewWidth . " h" . intTreeViewHeight . " " . (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP gTreeViewQAPChanged" : (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "vf_tvQAP gTreeViewQCEChanged" : "vf_tvSpecial gTreeViewSpecialChanged"))
 		
 		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 		{
 			Gui, 2:Add, Edit, % "x+5 yp w200 h" . intTreeViewHeight . " ReadOnly vf_tvQAPDescription"
 			gosub, LoadTreeviewQAP
 		}
+		else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
+			gosub, LoadTreeviewQCE
 		else
 			gosub, LoadTreeviewSpecial
 	}
@@ -14226,25 +14246,30 @@ SelectSortCriteria(P_intActualSortCriteria, ByRef blnEscaped)
 
 ;------------------------------------------------------------
 LoadTreeviewQAP:
+LoadTreeviewQCE:
 LoadTreeviewSpecial:
 ;------------------------------------------------------------
 
 blnSelectDone := false
 aaCategoriesID := Object()
 
-aaCategories := (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.aaQAPFeaturesCategories : o_SpecialFolders.aaSpecialFoldersCategories)
+aaCategories := (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.aaQAPFeaturesCategories : (A_ThisLabel = "LoadTreeviewQCE" ? o_QCECommands.saQCECommandsCategories : o_SpecialFolders.aaSpecialFoldersCategories))
 aaCategories["8-All"] := o_L["DialogQAPFeatureCategoriesNamesAll"]
 
 ; build name|code|categories (sorted by name)
 strItemsNameCodeCategories := ""
-for strItemCode, oItem in % (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.AA : o_SpecialFolders.AA)
+for strItemCode, oItem in % (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.AA
+	: (A_ThisLabel = "LoadTreeviewQCE" ? o_QCEcommands.AA : o_SpecialFolders.AA))
 	if (A_ThisLabel = "LoadTreeviewQAP" and !oItem.intQAPFeatureAlternativeOrder)
 		strItemsNameCodeCategories .= oItem.strLocalizedName . "|" . strItemCode . "|" . oItem.strQAPFeatureCategories . "`n"
+	else if (A_ThisLabel = "LoadTreeviewQCE")
+		strItemsNameCodeCategories .= oItem.strCommandName . "|" . strCommandName . "|" . oItem.strQCECommandCategory . "`n"
 	else ; LoadTreeviewSpecial
 		if StrLen(oItem.strDefaultName) ; to skip class object non-special folders items
 			strItemsNameCodeCategories .= oItem.strDefaultName . "|" . strItemCode . "|" . StrReplace(oItem.strCategories, "|", "~") . "`n"
 Sort, strItemsNameCodeCategories, CL ; CL for Case insensitive sort based on the current user's locale
 
+; ###_V("strItemsNameCodeCategories", strItemsNameCodeCategories)
 for strCategory, strCategoryLabel in aaCategories
 {
 	if (strCategory = "3.1-AddFavoriteOfType")
@@ -15193,6 +15218,7 @@ return
 
 ;------------------------------------------------------------
 TreeViewQAPChanged:
+TreeViewQCEChanged:
 TreeViewSpecialChanged:
 ;------------------------------------------------------------
 
@@ -29042,6 +29068,19 @@ GetChildWinByClass(hParent, childClass)
 ;------------------------------------------------
 
 
+;-------------------------------------------------------------
+PadString(str, intWidth := 80, strSide := "Right", strPadChar := " ")
+; pad left if blnRight is false
+;-------------------------------------------------------------
+{
+	while StrLen(str) < intWidth
+		str := (strSide = "Left" ? strPadChar : "") . str . (strSide = "Right" ? strPadChar : "")
+	
+	return str
+}
+;-------------------------------------------------------------
+
+
 ;========================================================================================================================
 ; END OF VARIOUS_FUNCTIONS
 ;========================================================================================================================
@@ -29194,17 +29233,18 @@ RECEIVE_MESSENGER(wParam, lParam)
 	
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
-	; Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
-	; Diag(A_ThisFunc, "StrSplit(strCopyOfData, g_strQCECommandsSeparator)[1]", StrSplit(strCopyOfData, g_strQCECommandsSeparator)[1])
+	Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
+	Diag(A_ThisFunc, "StrSplit(strCopyOfData, ""`n"")[1]", StrSplit(strCopyOfData, "`n")[1])
+	Diag(A_ThisFunc, "= QCEcommands", StrSplit(strCopyOfData, "`n")[1] = "QCEcommands")
 	
-	if (StrSplit(strCopyOfData, g_strQCECommandsSeparator)[1] = "QCEcommands") ; QCE commands list separated by g_strQCECommandsSeparator
+	if (StrSplit(strCopyOfData, g_strUnitSeparator)[1] = "QCEcommands") ; QCE commands list separated by "`n"
 	{
-		ReceiveQCEcommands(strCopyOfData)
+		o_QCEcommands.ReceiveQCEcommands(strCopyOfData)
 		return 1
 	}
 	; else continue
 	
-	saData := StrSplit(strCopyOfData, "|")
+	saData := StrSplit(strCopyOfData, "|") ; separartor for QAPmessenger
 	
 	Diag(A_ThisFunc, "g_strTargetWinId before", g_strTargetWinId)
 	Diag(A_ThisFunc, "g_strTargetClass before", g_strTargetClass)
@@ -29293,39 +29333,6 @@ RECEIVE_MESSENGER(wParam, lParam)
 
 
 ;------------------------------------------------------------
-RequestQCEcommands()
-;------------------------------------------------------------
-{
-	g_saQCECommands := Object() ; reset object
-	
-	loop, Parse, % "Receiver|ReceiverLite", |
-		if QCERisRunning(A_LoopField)
-		{
-			; try to send message to request "List" from compiled QCER with A_ScriptName as return address
-			strArgs := "List|" . A_ScriptName
-			Diag("Send_WM_COPYDATA:Param", strArgs, "")
-			Diag("Send_WM_COPYDATA:g_aaQCEAppTitle[A_LoopField]", g_aaQCEAppTitle[A_LoopField], "")
-			intResult := Send_WM_COPYDATA(strArgs, g_aaQCEAppTitle[A_LoopField])
-			; returns FAIL or 0 if an error occurred, or 1 if success
-			; Diag("Send_WM_COPYDATA (1=OK)", intResult, "")
-			if (intResult = 1)
-				break
-		}
-		else
-			if (A_Index = 2) ; after trying for both Receiver and ReceiverLite
-				Oops(0, o_L["OopsQCEReceiverError"] . "`n`n" . OopsQCEReceiverHelp, "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
-	
-	intCount := 0
-	while (!g_saQCECommands.Length() or intCount > 10)
-	{
-		sleep, 100
-		intCount++
-	}
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
 QCERisRunning(strReceiverType)
 ;------------------------------------------------------------
 {
@@ -29360,15 +29367,6 @@ QCERisRunning(strReceiverType)
 	Sleep, -1 ; prevent the cursor to turn to WAIT image for 5 seconds (did not search why) when showing menu from Desktop background
 	
     return (intErrorLevel = 1) ; QCER reply 1 if it runs, else SendMessage returns "FAIL".
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-ReceiveQCEcommands(strCopyOfData)
-;------------------------------------------------------------
-{
-	g_saQCECommands := StrSplit(strCopyOfData, "`n")
 }
 ;------------------------------------------------------------
 
@@ -29561,8 +29559,9 @@ class JLicons
 			. "|iconPaste|iconPasteSpecial|iconNoIcon|iconUAClogo|iconQAPadmin"
 			. "|iconQAPadminBeta|iconQAPadminDev|iconQAPbeta|iconQAPdev|iconQAPloading"
 			. "|iconFolderLiveOpened|iconSortAlphaAsc|iconSortAlphaDesc|iconSortNumAsc|iconSortNumDesc"
-			. "|iconQAC|iconQACadmin|iconQACadminBeta|iconQACadminDev|iconQACbeta"
-			. "|iconQACdev|iconQuickLaunch"
+			. "|iconQCE|iconQCEadmin|iconQCEadminBeta|iconQCEadminDev|iconQCEbeta"
+			. "|iconQCEdev|iconQuickLaunch|iconClock|iconClipboardCheck|iconClipboardItem"
+			. "|iconRecycle|iconScreenCheck|iconCheckGreen|iconSearch|iconNotebook"
 
 		; EXAMPLE
 		; JLicons.AA["iconAbout"] -> "file,2"
@@ -31448,6 +31447,96 @@ class QAPfeatures
 ;-------------------------------------------------------------
 
 ;-------------------------------------------------------------
+class QCEcommands
+;-------------------------------------------------------------
+{
+	AA := Object() ; simple array of QCE commands retreived from QCE Receiver or ReceiverLite
+	saQCECommandsCategories := Object() ; simple array of ordered categories containing associative arrays with .strCategoryName and .strCategoryLabel
+	
+	;---------------------------------------------------------
+	###__Call(function, parameters*)
+	; based on code from LinearSpoon https://www.autohotkey.com/boards/viewtopic.php?t=1435#p9133
+	{
+		funcRef := Func(funcName := this.__class "." function)
+		if CheckParameters(funcRef, function, parameters*) ; if everything is good call the function, else return false
+			return funcRef.(this, parameters*) ; everything is good
+		else
+			return
+	}
+	;---------------------------------------------------------
+
+	;---------------------------------------------------------
+	__New()
+	;---------------------------------------------------------
+	{
+	}
+	;---------------------------------------------------------
+
+	;---------------------------------------------------------
+	RequestQCEcommands()
+	;---------------------------------------------------------
+	{
+		this.SA := Object() ; reset object
+		
+		loop, Parse, % "Receiver|ReceiverLite", |
+			if QCERisRunning(A_LoopField)
+			{
+				; try to send message to request "List" from compiled QCER with A_ScriptName as return address
+				strArgs := "List|" . "ahk_exe " . A_ScriptName
+				Diag("Send_WM_COPYDATA:Param", strArgs, "")
+				Diag("Send_WM_COPYDATA:g_aaQCEAppTitle[A_LoopField]", g_aaQCEAppTitle[A_LoopField], "")
+				intResult := Send_WM_COPYDATA(strArgs, g_aaQCEAppTitle[A_LoopField])
+				; returns FAIL or 0 if an error occurred, or 1 if success
+				; Diag("Send_WM_COPYDATA (1=OK)", intResult, "")
+				if (intResult = 1) ; success
+					break
+			}
+			else
+				if (A_Index = 2) ; after trying for both Receiver and ReceiverLite
+					Oops(0, o_L["OopsQCEReceiverError"] . "`n`n" . OopsQCEReceiverHelp, "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+		
+	}
+	;---------------------------------------------------------
+
+	;---------------------------------------------------------
+	ReceiveQCEcommands(strQCEData)
+	;---------------------------------------------------------
+	; strItemsNameCodeCategories .= oItem.strCommandName . "|" . strItemOrder . "|" . oItem.strQCECommandCategory . "`n"
+	{
+		saQCEData := StrSplit(strQCEData, "`n", "`r")
+		
+		intIndex := 3 ; 1 is header, 2 is group sepatator
+		loop
+		{
+			if !StrLen(saQCEData[intIndex])
+				break
+			saQCECategory := StrSplit(saQCEData[intIndex], g_strUnitSeparator)
+			strCategoryCode := PadString(A_Index, 3, "Left", "0") . "-" . saQCECategory[1] ; use A_Index (starting at 1), not intIndex
+			strCategoryLabel := saQCECategory[2]
+			this.saQCECommandsCategories[strCategoryCode] := strCategoryLabel
+			intIndex++
+		}
+
+		intIndex++ ; skip group separator
+		loop
+		{
+			if !StrLen(saQCEData[intIndex])
+				break
+			saQCECommand := StrSplit(saQCEData[intIndex], g_strUnitSeparator)
+			aaOneQCECommand := Object() ; reset object
+			aaOneQCECommand.strQCECommandCategory := saQCECommand[1]
+			aaOneQCECommand.strCommandName := saQCECommand[2]
+			this.AA["{" . aaOneQCECommand.strQCECommandCategory . "~" . aaOneQCECommand.strCommandName] := aaOneQCECommand
+			intIndex++
+		}
+	}
+	;---------------------------------------------------------
+
+}
+;-------------------------------------------------------------
+
+
+;-------------------------------------------------------------
 class Favorites
 /*
 TODO
@@ -31483,7 +31572,7 @@ FAVORITE TYPES REPLACED
 	__New()
 	;---------------------------------------------------------
 	{
-		saFavoriteTypes := StrSplit("Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|External|Text|WindowsApp", "|")
+		saFavoriteTypes := StrSplit("Folder|Document|Application|Special|URL|FTP|QAP|Menu|Group|X|K|B|Snippet|External|Text|WindowsApp|QCE", "|")
 		saFavoriteTypesLabelsNoAmpersand := StrSplit(o_L["DialogFavoriteTypesLabels"], "|")
 		saFavoriteTypesLabels := StrSplit(o_L.InsertAmpersandInString(o_L["DialogFavoriteTypesLabels"]), "|") ; insert ampersands in string
 		saFavoriteTypesShortNames := StrSplit(o_L["DialogFavoriteTypesShortNames"], "|")
@@ -34570,12 +34659,31 @@ class Container
 				intOpenError := this.LaunchWindowsApp() ; returns 0 if no error
 			}
 			; QAP COMMAND
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|LaunchFromQuickLaunch|OpenFavoriteSelectedInGui"
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|OpenFavoriteSelectedInGui"
 				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
 				Diag(A_ThisFunc, "this.AA.strFavoriteLocation", this.AA.strFavoriteLocation)
 				Diag(A_ThisFunc, "o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand", o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
+			}
+			; QCE COMMANDS
+			/*
+			*/
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|OpenFavoriteSelectedInGui"
+				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QCE") and StrLen("###")
+			{
+				if (### = "Copy") ; temporary place for code to be used later
+				{
+					oClipBackup := ClipboardAll
+					Clipboard =
+					Send, ^c
+					if (saData[2])
+					{
+						ClipWait, % saData[2] ; wait for the clipboard for a maximum of time
+						if (ErrorLevel)
+							Clipboard := oClipBackup
+					}
+				}
 			}
 			; SWITCH APP
 			else if (this.AA.strFavoriteType = "OpenSwitchFolderOrApp")
