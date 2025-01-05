@@ -5812,7 +5812,8 @@ global g_intNbExternalMenusCount ; number of external menus built (vs maximum fo
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
-global g_aaTreeViewItemsByIDs := Object() ; items in TreeView, used in LoadTreeviewQAP, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
+global g_aaTreeViewItemsByIDs := Object() ; items in TreeView, used in LoadTreeviewQAP, LoadTreeviewQCE, LoadTreeviewSpecial and GuiMultipleAddSourceSettingsMenusLoad
+global g_aaTreeViewItemsChildIDs := Object() ; child items of a category in TreeView, used in LoadTreeviewQCE
 global g_strMultipleAddMainMenuName := "Multiple Add Main" ; used in Multiple Add when loading a menu from a Settings file
 global g_blnUsageDbUpdateFavoritesCompleted := false ; prevent special search NotInDatabase if favorites has not been completely updated with database data
 global g_strBrokenLinks ; for ToolTip listing broken favorites
@@ -5881,6 +5882,10 @@ global g_intRunCommandMax := 8191
 ; Quick Clipboard Editor (QCE) related variables
 global g_aaQCEAppTitle := {"Receiver" : "ahk_exe QuickClipboardEditor-Receiver.exe", "ReceiverLite" : "ahk_exe QuickClipboardEditor-ReceiverLite.exe"}
 global g_strUnitSeparator := Chr(31) ; see https://en.wikipedia.org/wiki/C0_and_C1_control_codes
+; see https://en.wikipedia.org/wiki/C0_and_C1_control_codes
+global g_strGroupSeparator := Chr(29)
+global g_strRecordSeparator := Chr(30)
+global g_strUnitSeparator := Chr(31)
 
 ;---------------------------------
 ; Initial validation
@@ -6223,6 +6228,9 @@ if !GetKeyState("Shift")
 
 ; ####
 ; Gosub, GuiOptionsGroupSettingsWindow
+; Gosub, GuiAddFavoriteFromQAPFeatureQCE
+; Gosub, GuiInstallQCE
+
 return
 
 ;========================================================================================================================
@@ -13095,6 +13103,7 @@ GuiAddFavoriteFromQAPFeatureSpecial:
 GuiAddFavoriteFromQAPFeatureURL:
 GuiAddFavoriteFromQAPFeatureFTP:
 GuiAddFavoriteFromQAPFeatureQAP:
+GuiAddFavoriteFromQAPFeatureQCE:
 GuiAddFavoriteFromQAPFeatureMenu:
 GuiAddFavoriteFromQAPFeatureGroup:
 GuiAddFavoriteFromQAPFeatureSnippet:
@@ -13554,6 +13563,8 @@ if (o_EditedFavorite.AA.strFavoriteType = "Special")
 	GuiControl, 2:Focus, f_tvSpecial
 else if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 	GuiControl, 2:Focus, f_tvQAP
+else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
+	GuiControl, 2:Focus, f_tvQCE
 else
 {
 	GuiControl, 2:Focus, f_strFavoriteShortName
@@ -14010,22 +14021,30 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 	{
 		g_blnFirstInitDone := false
 		GuiControlGet, arrPosLocationLabel, Pos, f_lblLocation
-		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 43 - (blnFolderInAGroupWithSide ? 46 : 0) ; -43 space normally required below, -46 if folder in group member with a side
+		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 48 - (blnFolderInAGroupWithSide ? 46 : 0) ; -43 space normally required below, -46 if folder in group member with a side
 			
-		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-			Gui, 2:Add, Link, x+5 yp w200 vf_tvQAPFeatureURL
-		
-		intTreeViewWidth := (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "300" : (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "400" : "400"))
-		Gui, 2:Add, TreeView, % "x20 y+5 w" . intTreeViewWidth . " h" . intTreeViewHeight . " " . (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP gTreeViewQAPChanged" : (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "vf_tvQAP gTreeViewQCEChanged" : "vf_tvSpecial gTreeViewSpecialChanged"))
-		
-		if (o_EditedFavorite.AA.strFavoriteType = "QAP")
+		if InStr("QAP|QCE|", o_EditedFavorite.AA.strFavoriteType . "|")
 		{
-			Gui, 2:Add, Edit, % "x+5 yp w200 h" . intTreeViewHeight . " ReadOnly vf_tvQAPDescription"
-			gosub, LoadTreeviewQAP
+			Gui, 2:Add, Link, x+5 yp w200 vf_tvItemURL
+			if (o_EditedFavorite.AA.strFavoriteType = "QCE")
+				GuiControl, , f_tvItemURL, % "<a href=""https://www.quickaccesspopup.com/qce"">"
+					. (o_QCECommands.strDataSource = "ReceiverLite" ? o_L["GuiInstallQCETitle"] : o_L["GuiClipboardCommandHelp"]) . "</a>"
 		}
-		else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
-			gosub, LoadTreeviewQCE
-		else
+		
+		intTreeViewWidth := (o_EditedFavorite.AA.strFavoriteType = "Special" ? "400" : "300") ; 300 for QAP and QCE
+		Gui, 2:Add, TreeView, % "x20 y+5 w" . intTreeViewWidth . " h" . intTreeViewHeight . " "
+			. (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP gTreeViewQAPChanged"
+			: (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "vf_tvQCE gTreeViewQCEChanged" : "vf_tvSpecial gTreeViewSpecialChanged"))
+		
+		if InStr("QAP|QCE|", o_EditedFavorite.AA.strFavoriteType . "|")
+		{
+			Gui, 2:Add, Edit, % "x+5 yp w200 h" . intTreeViewHeight . " ReadOnly vf_tvDescription"
+			if (o_EditedFavorite.AA.strFavoriteType = "QAP")
+				gosub, LoadTreeviewQAP
+			else ; QCE
+				gosub, LoadTreeviewQCE
+		}
+		else ; Special
 			gosub, LoadTreeviewSpecial
 	}
 }
@@ -14250,70 +14269,93 @@ LoadTreeviewQCE:
 LoadTreeviewSpecial:
 ;------------------------------------------------------------
 
-blnSelectDone := false
+strType := StrReplace(A_ThisLabel, "LoadTreeview")
 aaCategoriesID := Object()
 
-aaCategories := (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.aaQAPFeaturesCategories : (A_ThisLabel = "LoadTreeviewQCE" ? o_QCECommands.saQCECommandsCategories : o_SpecialFolders.aaSpecialFoldersCategories))
-aaCategories["8-All"] := o_L["DialogQAPFeatureCategoriesNamesAll"]
-
-; build name|code|categories (sorted by name)
-strItemsNameCodeCategories := ""
-for strItemCode, oItem in % (A_ThisLabel = "LoadTreeviewQAP" ? o_QAPfeatures.AA
-	: (A_ThisLabel = "LoadTreeviewQCE" ? o_QCEcommands.AA : o_SpecialFolders.AA))
-	if (A_ThisLabel = "LoadTreeviewQAP" and !oItem.intQAPFeatureAlternativeOrder)
-		strItemsNameCodeCategories .= oItem.strLocalizedName . "|" . strItemCode . "|" . oItem.strQAPFeatureCategories . "`n"
-	else if (A_ThisLabel = "LoadTreeviewQCE")
-		strItemsNameCodeCategories .= oItem.strCommandName . "|" . strCommandName . "|" . oItem.strQCECommandCategory . "`n"
-	else ; LoadTreeviewSpecial
-		if StrLen(oItem.strDefaultName) ; to skip class object non-special folders items
-			strItemsNameCodeCategories .= oItem.strDefaultName . "|" . strItemCode . "|" . StrReplace(oItem.strCategories, "|", "~") . "`n"
-Sort, strItemsNameCodeCategories, CL ; CL for Case insensitive sort based on the current user's locale
-
-; ###_V("strItemsNameCodeCategories", strItemsNameCodeCategories)
-for strCategory, strCategoryLabel in aaCategories
+if (strType = "QCE")
 {
-	if (strCategory = "3.1-AddFavoriteOfType")
-		aaCategoriesID[strCategory] := TV_Add(strCategoryLabel, aaCategoriesID["3-QAPMenuEditing"], "First Bold")
-	else if (strCategory = "5.1-CloseComputer")
-		aaCategoriesID[strCategory] := TV_Add(strCategoryLabel, aaCategoriesID["5-WindowsFeature"], "First Bold")
-	else
-		aaCategoriesID[strCategory] := TV_Add(strCategoryLabel, , (A_Index = 1 and InStr(strGuiFavoriteLabel, "GuiAdd") ? "Expand" : "") " Bold")
+	o_QCECommands.RequestQCEcommands()
 	
-	loop, Parse, strItemsNameCodeCategories, `n
+	for intIndex, oItemCategory in o_QCECommands.saQCECommandsCategories
 	{
-		if !StrLen(A_LoopField)
-			continue
+		intCategoryID := TV_Add(oItemCategory.strCategoryLabel, , (A_Index = 1 and InStr(strGuiFavoriteLabel, "GuiAdd") ? "Expand" : "") " Bold")
+		aaCategoriesID[oItemCategory.strCategoryCode] := intCategoryID
+		g_aaTreeViewItemsByIDs[intCategoryID] := oItemCategory
+		g_aaTreeViewItemsChildIDs[intCategoryID] := 0 ; init counter of children
 		
-		; name|code|categories
-		saItem := StrSplit(A_LoopField, "|")
-		
-		if InStr(saItem[3], strCategory) or (strCategory = "8-All")
-		{
-			if (A_ThisLabel = "LoadTreeviewQAP")
+		for strCode, oItem in o_QCECommands.AA
+			if (oItem.strCommandCategory = oItemCategory.strCategoryCode)
 			{
-				if (!blnSelectDone and o_QAPfeatures.AA[o_EditedFavorite.AA.strFavoriteLocation].strLocalizedName = saItem[1])
-				{
-					strSelect := "Select"
-					blnSelectDone := true
-				}
-				else
-					strSelect := ""
-				
-				intItemID := TV_Add(saItem[1], aaCategoriesID[strCategory], strSelect)
-				g_aaTreeViewItemsByIDs[intItemID] := o_QAPfeatures.AA[saItem[2]]
+				strSelect := (o_EditedFavorite.AA.strFavoriteLocation = "{" . oItem.strCommandCategory . "~" . oItem.strCommandName "}" ? "Select" : "")
+				intItemID := TV_Add(oItem.strCommandLabel, aaCategoriesID[oItem.strCommandCategory], strSelect)
+				g_aaTreeViewItemsByIDs[intItemID] := o_QCECommands.AA["{" . oItem.strCommandCategory . "~" . oItem.strCommandName . "}"]
+				g_aaTreeViewItemsByIDs[intItemID].intParentID := aaCategoriesID[oItemCategory.strCategoryCode]
+				g_aaTreeViewItemsChildIDs[intCategoryID]++ ; count number of children
 			}
-			else
+	}
+}
+else ; for QAP and Special
+{
+	blnSelectDone := false
+
+	aaCategories := (strType = "QAP" ? o_QAPfeatures.aaQAPFeaturesCategories : o_SpecialFolders.aaSpecialFoldersCategories)
+	aaCategories["8-All"] := o_L["DialogQAPFeatureCategoriesNamesAll"] ; same for QAP and Special
+
+	; build name|code|categories (sorted by name)
+	strItemsNameCodeCategories := ""
+	for strItemCode, oItem in % (strType = "QAP" ? o_QAPfeatures.AA : o_SpecialFolders.AA)
+		if (strType = "QAP" and !oItem.intQAPFeatureAlternativeOrder)
+			strItemsNameCodeCategories .= oItem.strLocalizedName . "|" . strItemCode . "|" . oItem.strQAPFeatureCategories . "`n"
+		else ; LoadTreeviewSpecial
+			if StrLen(oItem.strDefaultName) ; to skip class object non-special folders items
+				strItemsNameCodeCategories .= oItem.strDefaultName . "|" . strItemCode . "|" . StrReplace(oItem.strCategories, "|", "~") . "`n"
+	Sort, strItemsNameCodeCategories, CL ; CL for Case insensitive sort based on the current user's locale
+
+	for strCategory, strCategoryLabel in aaCategories
+	{
+		if (strCategory = "3.1-AddFavoriteOfType")
+			aaCategoriesID[strCategory] := TV_Add(strCategoryLabel, aaCategoriesID["3-QAPMenuEditing"], "First Bold")
+		else if (strCategory = "5.1-CloseComputer")
+			aaCategoriesID[strCategory] := TV_Add(strCategoryLabel, aaCategoriesID["5-WindowsFeature"], "First Bold")
+		else ; other QAP and all Special
+			aaCategoriesID[strCategory] := TV_Add(strCategoryLabel, , (A_Index = 1 and InStr(strGuiFavoriteLabel, "GuiAdd") ? "Expand" : "") " Bold")
+		
+		loop, Parse, strItemsNameCodeCategories, `n
+		{
+			if !StrLen(A_LoopField)
+				continue
+			
+			; name|code|categories
+			saItem := StrSplit(A_LoopField, "|")
+			
+			if InStr(saItem[3], strCategory) or (strCategory = "8-All")
 			{
-				if (!blnSelectDone and o_SpecialFolders.AA[o_EditedFavorite.AA.strFavoriteLocation].strDefaultName = saItem[1])
+				if (strType = "QAP")
 				{
-					strSelect := "Select"
-					blnSelectDone := true
+					if (!blnSelectDone and o_QAPfeatures.AA[o_EditedFavorite.AA.strFavoriteLocation].strLocalizedName = saItem[1])
+					{
+						strSelect := "Select"
+						blnSelectDone := true
+					}
+					else
+						strSelect := ""
+					
+					intItemID := TV_Add(saItem[1], aaCategoriesID[strCategory], strSelect)
+					g_aaTreeViewItemsByIDs[intItemID] := o_QAPfeatures.AA[saItem[2]]
 				}
 				else
-					strSelect := ""
-				
-				intItemID := TV_Add(saItem[1], aaCategoriesID[strCategory], strSelect)
-				g_aaTreeViewItemsByIDs[intItemID] := o_SpecialFolders.AA[saItem[2]]
+				{
+					if (!blnSelectDone and o_SpecialFolders.AA[o_EditedFavorite.AA.strFavoriteLocation].strDefaultName = saItem[1])
+					{
+						strSelect := "Select"
+						blnSelectDone := true
+					}
+					else
+						strSelect := ""
+					
+					intItemID := TV_Add(saItem[1], aaCategoriesID[strCategory], strSelect)
+					g_aaTreeViewItemsByIDs[intItemID] := o_SpecialFolders.AA[saItem[2]]
+				}
 			}
 		}
 	}
@@ -14982,6 +15024,8 @@ else ; to tab 1
 		GuiControl, 2:Focus, f_tvSpecial
 	else if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 		GuiControl, 2:Focus, f_tvQAP
+	else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
+		GuiControl, 2:Focus, f_tvQCE
 
 ; normally this should be called only if g_blnExternalLocationChanged but it need to run at each tab change to keep control's r-o option, do not know why
 gosub, LoadExternalFileGlobalReadOnly
@@ -15222,26 +15266,42 @@ TreeViewQCEChanged:
 TreeViewSpecialChanged:
 ;------------------------------------------------------------
 
+strType := StrReplace(StrReplace(strType, "TreeView"), "Changed")
+
 if (A_GuiEvent = "S")
 {
 	Gui, 2:Submit, NoHide
 	
-	strItemSelectedName := (A_ThisLabel = "TreeViewQAPChanged" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName : g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName)
-	if StrLen(strItemSelectedName) ; a QAP feature or Windows Special folder is selected
+	strItemSelectedName := (strType = "QAP" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName
+		: (strType = "QCE" ? "{" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandCategory . "~" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandName . "}"
+		: g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName))
+	if (strType = "QCE")
 	{
-		strLocation := (A_ThisLabel = "TreeViewQAPChanged" ? o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[strItemSelectedName] : o_SpecialFolders.aaClassIdOrPathByDefaultName[strItemSelectedName])
+		blnIsCategory := !g_aaTreeViewItemsByIDs[A_EventInfo].intParentID
+		blnCategoryHasChild := (blnIsCategory and g_aaTreeViewItemsChildIDs[A_EventInfo])
+	}
+	else
+		blnIsCategory := false
+	
+	if (StrLen(strItemSelectedName) and !blnIsCategory) ; a QAP feature, QCE command or Windows Special folder is selected
+	{
+		strLocation := (strType = "QAP" ? o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[strItemSelectedName]
+			: (strType = "QCE" ? strItemSelectedName ; o_QCECommands.AA[strItemSelectedName].xxxxx
+			: o_SpecialFolders.aaClassIdOrPathByDefaultName[strItemSelectedName]))
 		if (!StrLen(f_strFavoriteShortName) or g_blnFirstInitDone)
-			GuiControl, , f_strFavoriteShortName, %strItemSelectedName% ; fill name if empty or replace existing name after first initialization
+			GuiControl, , f_strFavoriteShortName, % (strType = "QCE" ? o_QCECommands.AA[strItemSelectedName].strCommandCategoryLabel . " > " . o_QCECommands.AA[strItemSelectedName].strCommandLabel
+				: strItemSelectedName) ; fill name if empty or replace existing name after first initialization
 		g_blnFirstInitDone := true
 		GuiControl, , f_strFavoriteLocation, %strLocation%
 		
 		if InStr(strGuiFavoriteLabel, "GuiAdd") ; set new and default icon only when adding a QAP feature favorite
 		{
-			g_strNewFavoriteIconResource := (A_ThisLabel = "TreeViewQAPChanged" ? o_QAPfeatures.AA[strLocation].strDefaultIcon : o_SpecialFolders.AA[strLocation].strDefaultIcon)
+			g_strNewFavoriteIconResource := (strType = "QAP" ? o_QAPfeatures.AA[strLocation].strDefaultIcon
+				: (strType = "QCE" ? o_QCECommands.AA[strLocation].strDefaultIcon : o_SpecialFolders.AA[strLocation].strDefaultIcon))
 			g_strDefaultIconResource := g_strNewFavoriteIconResource
 		}
 		
-		if (A_ThisLabel = "TreeViewQAPChanged") ; only QAP features can have default shortcut
+		if (strType = "QAP") ; only QAP features can have default shortcut
 		{
 			; set default shortcut
 			if InStr(strGuiFavoriteLabel, "GuiAdd") ; this is a new favorite
@@ -15255,18 +15315,26 @@ if (A_GuiEvent = "S")
 		}
 		strLocation := ""
 	}
+	else if (!blnCategoryHasChild and o_QCECommands.strDataSource = "ReceiverLite") ; an empty QCE category is selected and QCE is not running
+		Gosub, GuiInstallQCE
 
-	if (A_ThisLabel = "TreeViewQAPChanged")
+	if (strType = "QAP")
 	{
-		GuiControl, , f_tvQAPDescription, % g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureDescription
-		GuiControl, % (StrLen(g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL) ? "Show" : "Hide"), f_tvQAPFeatureURL
-		GuiControl, , f_tvQAPFeatureURL, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/" . g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL . "/", A_ThisLabel, "Help") . """>"
+		GuiControl, , f_tvDescription, % g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureDescription
+		GuiControl, % (StrLen(g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL) ? "Show" : "Hide"), f_tvItemURL
+		GuiControl, , f_tvItemURL, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/" . g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL . "/", A_ThisLabel, "Help") . """>"
 			. o_L["DialogQAPFeaturesHelpLink"] . "</a>"
+	}
+	if (strType = "QCE")
+	{
+		Gui, 2:Default ; in cas we open the InstallQCE: gui
+		GuiControl, , f_tvDescription, % (blnIsCategory ? g_aaTreeViewItemsByIDs[A_EventInfo].strCategoryHelp
+			: g_aaTreeViewItemsByIDs[g_aaTreeViewItemsByIDs[A_EventInfo].intParentID].strCategoryHelp)
 	}
 }
 else if (A_GuiEvent = "DoubleClick")
 {
-	strItemSelectedName := (A_ThisLabel = "TreeViewQAPChanged" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName : g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName)
+	strItemSelectedName := (strType = "QAP" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName : g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName)
 	if StrLen(strItemSelectedName) ; a QAP feature or Windows Special folder is selected
 		if InStr(strGuiFavoriteLabel, "GuiEditFavorite")
 			gosub, GuiEditFavoriteSave
@@ -15275,6 +15343,48 @@ else if (A_GuiEvent = "DoubleClick")
 		else
 			gosub, GuiAddFavoriteSave
 }
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiInstallQCE:
+;------------------------------------------------------------
+
+strGuiTitle := g_strAppNameText . " - " . o_L["GuiInstallQCETitle"]
+Gui, InstallQCE:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
+Gui, Color, White
+Gui, Font, w700 s11, Segoe UI
+Gui, Add, Text, w500, Get more Clipboard transformation options! Free...
+Gui, Font, w400 s11, Segoe UI
+Gui, Add, Text, w500, Supercharge your Quick Access Popup (QAP) menu and eliminate tedious manual editing of Windows Clipboard text!`n`nThe free Quick Clipboard Editor (QCE) integrates with QAP to provide powerful clipboard text manipulation directly within your QAP workflow. QCE automates tasks such as sorting text, performing find and replace, inserting/removing text on lines, filtering characters, reformatting paragraphs, and encoding/decoding text for different formats.`n`nThis allows users to quickly transform clipboard content without switching applications. Custom commands, from simple actions to complex scripts, can be created, saved, and easily added to the QAP menu.
+Gui, Font, s11, Arial
+Gui, Add, Button, y+25 gInstallQCEDownload vf_btnInstallQCEDownload default, Download QCE
+Gui, Add, Button, yp x+10 gInstallQCEHelp vf_btnInstallQCEHelp, Get help
+Gui, Add, Button, yp x+10 gInstallQCEClose vf_btnInstallQCEClose, % o_L["GuiClose"]
+Gui, Add, Text, y+10 
+Gui, Font
+GuiCenterButtons(g_strGui1Hwnd, 10, 5, 20, "f_btnInstallQCEDownload", "f_btnInstallQCEHelp", "f_btnInstallQCEClose")
+Gui, Show, AutoSize Center
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+InstallQCEDownload:
+InstallQCEHelp:
+InstallQCEClose:
+;------------------------------------------------------------
+
+if (A_ThisLabel = "InstallQCEDownload")
+	Run, https://clipboard.quickaccesspopup.com/download-quick-clipboard-editor/
+else if (A_ThisLabel = "InstallQCEHelp")
+	Run, https://www.quickaccesspopup.com/qce/
+; else only destroy
+
+Gui, InstallQCE:Destroy
 
 return
 ;------------------------------------------------------------
@@ -31452,6 +31562,7 @@ class QCEcommands
 {
 	AA := Object() ; simple array of QCE commands retreived from QCE Receiver or ReceiverLite
 	saQCECommandsCategories := Object() ; simple array of ordered categories containing associative arrays with .strCategoryName and .strCategoryLabel
+	aaQCECommandsCategoriesLabelsByCodes := Object() ; associative array of category labels by codes
 	
 	;---------------------------------------------------------
 	###__Call(function, parameters*)
@@ -31503,31 +31614,27 @@ class QCEcommands
 	;---------------------------------------------------------
 	; strItemsNameCodeCategories .= oItem.strCommandName . "|" . strItemOrder . "|" . oItem.strQCECommandCategory . "`n"
 	{
-		saQCEData := StrSplit(strQCEData, "`n", "`r")
+		saQCEData := StrSplit(strQCEData, g_strGroupSeparator) ; groups: 1 header, 2: categories, 3 commands
 		
-		intIndex := 3 ; 1 is header, 2 is group sepatator
-		loop
-		{
-			if !StrLen(saQCEData[intIndex])
-				break
-			saQCECategory := StrSplit(saQCEData[intIndex], g_strUnitSeparator)
-			strCategoryCode := PadString(A_Index, 3, "Left", "0") . "-" . saQCECategory[1] ; use A_Index (starting at 1), not intIndex
-			strCategoryLabel := saQCECategory[2]
-			this.saQCECommandsCategories[strCategoryCode] := strCategoryLabel
-			intIndex++
-		}
+		this.strDataSource := StrSplit(saQCEData[1], g_strUnitSeparator, g_strRecordSeparator)[2] ; Receiver or ReceiverLite (omit g_strRecordSeparator)
 
-		intIndex++ ; skip group separator
-		loop
+		for intIndex, strItem in StrSplit(saQCEData[2], g_strRecordSeparator) ; categories
 		{
-			if !StrLen(saQCEData[intIndex])
-				break
-			saQCECommand := StrSplit(saQCEData[intIndex], g_strUnitSeparator)
-			aaOneQCECommand := Object() ; reset object
-			aaOneQCECommand.strQCECommandCategory := saQCECommand[1]
-			aaOneQCECommand.strCommandName := saQCECommand[2]
-			this.AA["{" . aaOneQCECommand.strQCECommandCategory . "~" . aaOneQCECommand.strCommandName] := aaOneQCECommand
-			intIndex++
+			if !StrLen(strItem)
+				continue
+			saItem := StrSplit(strItem, g_strUnitSeparator) ; 1 order, 2 code, 3 label, 4 help
+			this.saQCECommandsCategories.Push({"strCategoryCode": saItem[2], "strCategoryLabel": saItem[3], "strCategoryHelp": saItem[4]})
+			this.aaQCECommandsCategoriesLabelsByCodes[saItem[2]] := saItem[3]
+		}
+		
+		for intIndex, strItem in StrSplit(saQCEData[3], g_strRecordSeparator) ; commands
+		{
+			saItem := StrSplit(strItem, g_strUnitSeparator) ; 1 category, 2 name, 3 label
+			if !StrLen(strItem) or (saItem[1] = "Find")
+				continue
+			this.AA["{" . saItem[1] . "~" . saItem[2] . "}"] := {"strCommandCategory": saItem[1]
+				, "strCommandCategoryLabel": this.aaQCECommandsCategoriesLabelsByCodes[saItem[1]]
+				, "strCommandName": saItem[2], "strCommandLabel": saItem[3], "strDefaultIcon": "iconClipboardCheck"}
 		}
 	}
 	;---------------------------------------------------------
