@@ -13561,18 +13561,9 @@ if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 else
 	GuiControl, 2:+Default, f_btnAddFavoriteAdd
 
-if (o_EditedFavorite.AA.strFavoriteType = "Special")
-	GuiControl, 2:Focus, f_tvSpecial
-else if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-	GuiControl, 2:Focus, f_tvQAP
-else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
-	GuiControl, 2:Focus, f_tvQCE
-else
-{
-	GuiControl, 2:Focus, f_strFavoriteShortName
-	if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel) 
-		SendInput, ^a
-}
+GuiControl, 2:Focus, f_strFavoriteShortName
+if InStr("GuiEditFavorite|GuiCopyFavorite", strGuiFavoriteLabel) 
+	SendInput, ^a
 
 Gosub, DropdownParentMenuChanged ; to init the content of menu items
 
@@ -13599,14 +13590,6 @@ if (SubStr(o_EditedFavorite.AA.strFavoriteName, 1, 3) = "::{")
 	o_EditedFavorite.AA.strFavoriteName := GetLocalizedNameForClassId(SubStr(o_EditedFavorite.AA.strFavoriteName, 3))
 	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
 }
-
-; enable g commands only after gui is shown to avoid irrelevant short name on control creation
-if (o_EditedFavorite.AA.strFavoriteType = "QAP")
-	GuiControl, +gTreeViewQAPChanged, f_tvQAP
-else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
-	GuiControl, +gTreeViewQCEChanged, f_tvQCE
-else if (o_EditedFavorite.AA.strFavoriteType = "Special")
-	GuiControl, +gTreeViewSpecialChanged, f_tvSpecial
 
 GuiAddFavoriteCleanup:
 g_strNewLocation := ""
@@ -14034,21 +14017,20 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 			
 		if InStr("QAP|QCE|", o_EditedFavorite.AA.strFavoriteType . "|")
 		{
-			Gui, 2:Add, Link, x+5 yp w200 vf_lnkItemURL
+			Gui, 2:Add, Link, x+5 yp w200 vf_lnkItemURL gGuiClipbpoardCommandsLinks
 			if (o_EditedFavorite.AA.strFavoriteType = "QCE")
-				GuiControl, , f_lnkItemURL, % "<a href=""https://www.quickaccesspopup.com/qce"">"
-					. (o_QCECommands.strDataSource = "ReceiverLite" ? o_L["GuiInstallQCETitle"] : o_L["GuiClipboardCommandHelp"]) . "</a>"
+				GuiControl, , f_lnkItemURL, % L(o_QCECommands.strDataSource = "ReceiverLite" ? o_L["GuiInstallQCELink"] : o_L["GuiClipboardCommandLinks"])
 		}
 		
 		intTreeViewWidth := (o_EditedFavorite.AA.strFavoriteType = "Special" ? "400" : "300") ; 300 for QAP and QCE
 		Gui, 2:Add, TreeView, % "x20 y+5 w" . intTreeViewWidth . " h" . intTreeViewHeight . " "
-			. (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP"
-			: (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "vf_tvQCE" : "vf_tvSpecial"))
-			; enable g commands only after gui will be shown to avoid irrelevant short name on control creation
+			. (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP gTreeViewQAPChanged"
+			: (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "vf_tvQCE gTreeViewQCEChanged" : "vf_tvSpecial gTreeViewSpecialChanged"))
 		
 		if InStr("QAP|QCE|", o_EditedFavorite.AA.strFavoriteType . "|")
 		{
 			Gui, 2:Add, Link, % "x+5 yp w200 h" . intTreeViewHeight . " vf_lnkDescription"
+				, % (o_EditedFavorite.AA.strFavoriteType = "QAP" ? o_L["GuiTreeViewPromptQAP"] : o_L["GuiTreeViewPromptQCE"])
 			if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 				gosub, LoadTreeviewQAP
 			else ; QCE
@@ -14284,7 +14266,14 @@ aaCategoriesID := Object()
 
 if (strType = "QCE")
 {
+	; reset in case we refresh
+	TV_Delete()
+	g_aaTreeViewItemsByIDs := Object()
+	g_aaTreeViewItemsChildIDs := Object()
+	
+	; response triggers RequestQCEcommands() that reset o_QCECommands.AA, o_QCECommands.saQCECommandsCategories and o_QCECommands.aaQCECommandsCategoriesLabelsByCodes
 	o_QCECommands.RequestQCEcommands()
+	Sleep, 200 ; give time to receive data
 	
 	for intIndex, oItemCategory in o_QCECommands.saQCECommandsCategories
 	{
@@ -14381,6 +14370,24 @@ intItemID := ""
 strSelect := ""
 blnSelectDone := ""
 strItemsNameCodeCategories := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GuiClipbpoardCommandsLinks:
+;------------------------------------------------------------
+intLink := ErrorLevel
+
+if (intLink = 1)
+	Run, https://www.quickaccesspopup.com/qce
+else if (intLink = 2)
+{
+	o_QCECommands.RequestQCEcommands()
+	Gosub, LoadTreeviewQCE
+}
+; else do nothing
 
 return
 ;------------------------------------------------------------
@@ -15279,6 +15286,7 @@ TreeViewSpecialChanged:
 if (A_GuiEvent = "S" or A_GuiEvent = "DoubleClick")
 {
 	strType := StrReplace(StrReplace(strType, "TreeView"), "Changed")
+	
 	strItemSelectedName := (strType = "QAP" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName
 		: (strType = "QCE" ? "{" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandCategory . "~" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandName . "}"
 		: g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName))
@@ -15343,7 +15351,7 @@ if (A_GuiEvent = "S")
 	}
 	if (strType = "QCE")
 	{
-		Gui, 2:Default ; in cas we open the InstallQCE: gui
+		Gui, 2:Default ; in case we open the InstallQCE: gui
 		GuiControl, , f_lnkDescription, % (blnIsCategory ? g_aaTreeViewItemsByIDs[A_EventInfo].strCategoryHelp
 			: g_aaTreeViewItemsByIDs[g_aaTreeViewItemsByIDs[A_EventInfo].intParentID].strCategoryHelp)
 			. (o_QCECommands.strDataSource = "ReceiverLite" ? "`n`n<a href=""https://www.quickaccesspopup.com/qce"">" . o_L["GuiInstallQCEPrompt"] . "</a>" : "")
@@ -31603,8 +31611,6 @@ class QCEcommands
 	RequestQCEcommands()
 	;---------------------------------------------------------
 	{
-		this.SA := Object() ; reset object
-		
 		loop, Parse, % "Receiver|ReceiverLite", |
 			if QCERisRunning(A_LoopField)
 			{
@@ -31628,8 +31634,11 @@ class QCEcommands
 	;---------------------------------------------------------
 	ReceiveQCEcommands(strQCEData)
 	;---------------------------------------------------------
-	; strItemsNameCodeCategories .= oItem.strCommandName . "|" . strItemOrder . "|" . oItem.strQCECommandCategory . "`n"
 	{
+		this.AA := Object()
+		this.saQCECommandsCategories := Object()
+		this.aaQCECommandsCategoriesLabelsByCodes := Object()
+		
 		saQCEData := StrSplit(strQCEData, g_strGroupSeparator) ; groups: 1 header, 2: categories, 3 commands
 		
 		this.strDataSource := StrSplit(saQCEData[1], g_strUnitSeparator, g_strRecordSeparator)[2] ; Receiver or ReceiverLite (omit g_strRecordSeparator)
