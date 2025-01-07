@@ -5886,6 +5886,7 @@ global g_strUnitSeparator := Chr(31) ; see https://en.wikipedia.org/wiki/C0_and_
 global g_strGroupSeparator := Chr(29)
 global g_strRecordSeparator := Chr(30)
 global g_strUnitSeparator := Chr(31)
+global g_blnInstallQCEAlreadyDisplayed ; flag the Install QCE gui has been shown
 
 ;---------------------------------
 ; Initial validation
@@ -12881,7 +12882,7 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 		GuiControl, +gGuiMoveFavoriteDown, f_picMoveFavoriteDown
 	}
 	intFavoritesSelectedIndex := LV_GetNext("Selected")
-	blnSelectedCanBeLaunched := InStr("Folder|Document|Application|Special|URL|FTP|QAP|Group", o_MenuInGui.SA[intFavoritesSelectedIndex].AA.strFavoriteType) ; Snippet excluded
+	blnSelectedCanBeLaunched := InStr("Folder|Document|Application|Special|URL|FTP|QAP|QCE|Group", o_MenuInGui.SA[intFavoritesSelectedIndex].AA.strFavoriteType) ; Snippet excluded
 	GuiControl, % (blnSelectedCanBeLaunched ? "Show" : "Hide"), f_picLaunchSelectedBottomOn
 	GuiControl, % (blnSelectedCanBeLaunched ? "Hide" : "Show"), f_picLaunchSelectedBottomOff
 
@@ -13457,6 +13458,7 @@ if !(g_blnMenuReady)
 
 strGuiFavoriteLabel := A_ThisLabel
 g_blnAbortEdit := false
+g_blnInstallQCEAlreadyDisplayed := false ; reset when add dialog box is reopen
 
 ; must be before GuiFavoriteInit and GuiAddFavoriteSaveXpress or GuiAddFavoriteSaveXpressFromMsg
 g_strTypesForTabWindowOptions := "|Folder|Special|FTP" . (o_Settings.Execution.blnTryWindowPosition.IniValue ? "|Document|Application|URL|WindowsApp" : "") ; must start with "|"
@@ -13598,6 +13600,13 @@ if (SubStr(o_EditedFavorite.AA.strFavoriteName, 1, 3) = "::{")
 	GuiControl, , f_strFavoriteShortName, % o_EditedFavorite.AA.strFavoriteName
 }
 
+; enable g commands only after gui is shown to avoid irrelevant short name on control creation
+if (o_EditedFavorite.AA.strFavoriteType = "QAP")
+	GuiControl, +gTreeViewQAPChanged, f_tvQAP
+else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
+	GuiControl, +gTreeViewQCEChanged, f_tvQCE
+else if (o_EditedFavorite.AA.strFavoriteType = "Special")
+	GuiControl, +gTreeViewSpecialChanged, f_tvSpecial
 
 GuiAddFavoriteCleanup:
 g_strNewLocation := ""
@@ -14025,20 +14034,21 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 			
 		if InStr("QAP|QCE|", o_EditedFavorite.AA.strFavoriteType . "|")
 		{
-			Gui, 2:Add, Link, x+5 yp w200 vf_tvItemURL
+			Gui, 2:Add, Link, x+5 yp w200 vf_lnkItemURL
 			if (o_EditedFavorite.AA.strFavoriteType = "QCE")
-				GuiControl, , f_tvItemURL, % "<a href=""https://www.quickaccesspopup.com/qce"">"
+				GuiControl, , f_lnkItemURL, % "<a href=""https://www.quickaccesspopup.com/qce"">"
 					. (o_QCECommands.strDataSource = "ReceiverLite" ? o_L["GuiInstallQCETitle"] : o_L["GuiClipboardCommandHelp"]) . "</a>"
 		}
 		
 		intTreeViewWidth := (o_EditedFavorite.AA.strFavoriteType = "Special" ? "400" : "300") ; 300 for QAP and QCE
 		Gui, 2:Add, TreeView, % "x20 y+5 w" . intTreeViewWidth . " h" . intTreeViewHeight . " "
-			. (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP gTreeViewQAPChanged"
-			: (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "vf_tvQCE gTreeViewQCEChanged" : "vf_tvSpecial gTreeViewSpecialChanged"))
+			. (o_EditedFavorite.AA.strFavoriteType = "QAP" ? "vf_tvQAP"
+			: (o_EditedFavorite.AA.strFavoriteType = "QCE" ? "vf_tvQCE" : "vf_tvSpecial"))
+			; enable g commands only after gui will be shown to avoid irrelevant short name on control creation
 		
 		if InStr("QAP|QCE|", o_EditedFavorite.AA.strFavoriteType . "|")
 		{
-			Gui, 2:Add, Edit, % "x+5 yp w200 h" . intTreeViewHeight . " ReadOnly vf_tvDescription"
+			Gui, 2:Add, Link, % "x+5 yp w200 h" . intTreeViewHeight . " vf_lnkDescription"
 			if (o_EditedFavorite.AA.strFavoriteType = "QAP")
 				gosub, LoadTreeviewQAP
 			else ; QCE
@@ -15266,12 +15276,9 @@ TreeViewQCEChanged:
 TreeViewSpecialChanged:
 ;------------------------------------------------------------
 
-strType := StrReplace(StrReplace(strType, "TreeView"), "Changed")
-
-if (A_GuiEvent = "S")
+if (A_GuiEvent = "S" or A_GuiEvent = "DoubleClick")
 {
-	Gui, 2:Submit, NoHide
-	
+	strType := StrReplace(StrReplace(strType, "TreeView"), "Changed")
 	strItemSelectedName := (strType = "QAP" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName
 		: (strType = "QCE" ? "{" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandCategory . "~" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandName . "}"
 		: g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName))
@@ -15282,6 +15289,11 @@ if (A_GuiEvent = "S")
 	}
 	else
 		blnIsCategory := false
+}
+
+if (A_GuiEvent = "S")
+{
+	Gui, 2:Submit, NoHide
 	
 	if (StrLen(strItemSelectedName) and !blnIsCategory) ; a QAP feature, QCE command or Windows Special folder is selected
 	{
@@ -15315,26 +15327,30 @@ if (A_GuiEvent = "S")
 		}
 		strLocation := ""
 	}
-	else if (!blnCategoryHasChild and o_QCECommands.strDataSource = "ReceiverLite") ; an empty QCE category is selected and QCE is not running
+	else if (strType = "QCE" and !blnCategoryHasChild and o_QCECommands.strDataSource = "ReceiverLite"
+		and !g_blnInstallQCEAlreadyDisplayed) ; an empty QCE category is selected and QCE is not running
+	{
 		Gosub, GuiInstallQCE
+		g_blnInstallQCEAlreadyDisplayed := true
+	}
 
 	if (strType = "QAP")
 	{
-		GuiControl, , f_tvDescription, % g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureDescription
-		GuiControl, % (StrLen(g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL) ? "Show" : "Hide"), f_tvItemURL
-		GuiControl, , f_tvItemURL, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/" . g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL . "/", A_ThisLabel, "Help") . """>"
+		GuiControl, , f_lnkDescription, % g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureDescription
+		GuiControl, % (StrLen(g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL) ? "Show" : "Hide"), f_lnkItemURL
+		GuiControl, , f_lnkItemURL, % "<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/" . g_aaTreeViewItemsByIDs[A_EventInfo].strQAPFeatureURL . "/", A_ThisLabel, "Help") . """>"
 			. o_L["DialogQAPFeaturesHelpLink"] . "</a>"
 	}
 	if (strType = "QCE")
 	{
 		Gui, 2:Default ; in cas we open the InstallQCE: gui
-		GuiControl, , f_tvDescription, % (blnIsCategory ? g_aaTreeViewItemsByIDs[A_EventInfo].strCategoryHelp
+		GuiControl, , f_lnkDescription, % (blnIsCategory ? g_aaTreeViewItemsByIDs[A_EventInfo].strCategoryHelp
 			: g_aaTreeViewItemsByIDs[g_aaTreeViewItemsByIDs[A_EventInfo].intParentID].strCategoryHelp)
+			. (o_QCECommands.strDataSource = "ReceiverLite" ? "`n`n<a href=""https://www.quickaccesspopup.com/qce"">" . o_L["GuiInstallQCEPrompt"] . "</a>" : "")
 	}
 }
 else if (A_GuiEvent = "DoubleClick")
 {
-	strItemSelectedName := (strType = "QAP" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName : g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName)
 	if StrLen(strItemSelectedName) ; a QAP feature or Windows Special folder is selected
 		if InStr(strGuiFavoriteLabel, "GuiEditFavorite")
 			gosub, GuiEditFavoriteSave
@@ -18302,10 +18318,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		return
 	}
 
-	if  InStr("|Special|QAP", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(strNewFavoriteLocation)
+	if  InStr("|Special|QAP|QCE", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(strNewFavoriteLocation)
 	{
 		Oops(2, o_L["DialogFavoriteDropdownEmpty"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel
-			, (o_EditedFavorite.AA.strFavoriteType = "Special" ? o_L["DialogDropDown"] : o_L["DialogTreeView"]))
+			, (o_EditedFavorite.AA.strFavoriteType = "Special" ? o_L["DialogDropDown"] : o_L["DialogTreeView"])) ; DialogTreeView for QAP and QCE
 		g_blnAbortSave := true
 		return
 	}
@@ -31604,7 +31620,7 @@ class QCEcommands
 			}
 			else
 				if (A_Index = 2) ; after trying for both Receiver and ReceiverLite
-					Oops(0, o_L["OopsQCEReceiverError"] . "`n`n" . OopsQCEReceiverHelp, "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+					Oops(0, o_L["OopsQCEReceiverError"] . "`n`n" . o_L["OopsQCEReceiverHelp"], "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
 		
 	}
 	;---------------------------------------------------------
@@ -34774,11 +34790,31 @@ class Container
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
 			}
 			; QCE COMMANDS
-			/*
-			*/
 			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|OpenFavoriteSelectedInGui"
-				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QCE") and StrLen("###")
+				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QCE")
 			{
+				strCommand := SubStr(this.AA.strFavoriteLocation, 2, -1) ; remove first and last character
+				saCommand := StrSplit(strCommand, "~")
+				if InStr("Case|Encode|Decode|", saCommand[1] . "|")
+					strQCECommand := saCommand[1] . "|" . saCommand[2]
+				else
+					strQCECommand := "Exec|" . saCommand[2]
+				if !StrLen(strQCECommand)
+					return 0 ; should not happen
+				; else continue
+				
+				loop, Parse, % "Receiver|ReceiverLite", |
+					if QCERisRunning(A_LoopField)
+					{
+						intResult := Send_WM_COPYDATA(strQCECommand, g_aaQCEAppTitle[A_LoopField])
+						if (intResult) ; success
+							break
+					}
+				if !(intResult)
+				{
+					Oops(0, o_L["OopsQCECommandError"] . "`n`n" . o_L["OopsQCEReceiverHelp"], "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+					return intOpenError ; do nothing, do not flag error
+				}
 				if (### = "Copy") ; temporary place for code to be used later
 				{
 					oClipBackup := ClipboardAll
