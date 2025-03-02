@@ -19681,7 +19681,9 @@ if (g_blnReplaceSpecialFolderLocationBackup)
 	Settings.BackupIniFile(o_Settings.strIniFile, g_blnReplaceSpecialFolderLocationBackup) ; backup external settings ini file, if required
 	
 SetCursor(true, "wait") ; set wait cursor during saving, was ToolTip, % o_L["ToolTipSaving"]
+Diag(A_ThisLabel, "Start Root", "START")
 o_MainMenu.SaveFavoritesToIniFile()
+Diag(A_ThisLabel, "Start Root", "STOP-SHOW")
 SetCursor(false) ; reset cursor after refresh
 
 g_blnReplaceSpecialFolderLocationBackup := false
@@ -33969,6 +33971,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteAutoExec . "|" ; 36
 			strIniLine .= oItem.AA.blnReopenAfterLaunchingItem . "|" ; 37
 			
+			Diag(A_ThisFunc, s_intIniLineSave . " " . oItem.AA.strFavoriteType, "ELAPSED")
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave
 			s_intIniLineSave++
 			
@@ -34009,6 +34012,7 @@ class Container
 			}
 		}
 		
+		Diag(A_ThisFunc, s_intIniLineSave . " Z", "ELAPSED")
 		IniWrite, Z, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave ; end of menu marker
 		s_intIniLineSave++
 		if (blnRoot) ; return to the top container, saving is completed
