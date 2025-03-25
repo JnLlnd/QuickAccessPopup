@@ -31,7 +31,29 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.6.9.0.1 (2024-12-19)
+Version BETA: 11.9.0.1 (2025-##-##)
+ 
+New favorite type "Clipboard Command"
+- implement "Add Favorite" and "Edit Favorite" for QCE command based on QAP Features with treeview and help link
+- add new icons for QCE commands in JLicons.dll
+- when QCE Receiver Lite is used
+  - show help window when user clicks on an empty category (show only once per session)
+  - in "Add/Edit Favorite", display a prompt to installl QCE
+- update language files (all languages) for new favorite type QCE
+ 
+Quick Access Popup Messaging
+- launch QCE Receiver Lite if QCE (normal receiver) is not running
+- send COPYDATA message to request the list of QCE commands from QCE Receiver (if running) or QCE ReceiverLite always launched by QAP
+- on QAP exit, quit QCE Receiver Lite if it was launched
+- when receiving data from QCE, use same control separators as QCE, unit separator Chr(31)
+- implement launching QCE commands
+- QCE commands can be launched from the Customize window Launch button (the "eye" button)
+ 
+Various
+- fix a bug with QAP, Special and QCE favorites setting a short name by error when opening the Add Favorite dialog box
+- make QAP and QCE description a Link instead of read-only edit (allowing to insert links)
+- refactor QAP and QCE treeview or Special dropdown changed command
+- in Add Favorite for Special, QAP and QCE types, fix issue showing unwanted help text
 
 Version: 11.6.4.2 (2024-12-26)
 - when editing a favorite document or application, if user selected a custom icon, keep this icon when the favorite is edited (instead of resetting to the default icon)
@@ -5600,7 +5622,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.9.0.1
+;@Ahk2Exe-SetVersion 11.9.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5668,7 +5690,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.9.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.9.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -6178,19 +6200,19 @@ if !InStr(A_ScriptName, ".ahk") ; do not launch if not compiled
 		Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
 		Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
 	}
+	
+	; Collect QCE commands
+	o_QCECommands.RequestQCEcommands()
 }
-else
+else ; load text file instead
 {
-	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage.txt
+	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
+	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Lite.txt
 	if !StrLen(strQCECommands) ; for dev only ####
 		Oops(0, "QCE COMMANDS FILEREAD ERROR")
 	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
 	strQCECommands := ""
 }
-
-; Collect QCE commands
-if !InStr(A_ScriptName, ".ahk") ; do not collect if not compiled
-	o_QCECommands.RequestQCEcommands()
 
 ;---------------------------------
 ; Start task collecting recent items
