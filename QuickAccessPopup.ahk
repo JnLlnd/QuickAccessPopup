@@ -6193,7 +6193,16 @@ Hotkey, If
 ;---------------------------------
 ; Init collect QCE commands
 
-if !InStr(A_ScriptName, ".ahk") ; do not launch if not compiled
+if InStr(A_ScriptName, ".ahk") ; read test file instead of launching QCE Receiver Lite
+{
+	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
+	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Lite.txt
+	if !StrLen(strQCECommands)
+		Oops(0, "QCE COMMANDS FILEREAD ERROR")
+	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
+	strQCECommands := ""
+}
+else ; launch QCE Receiver Lite if QCE is not running
 {
 	if !WinExist("ahk_exe QuickClipboardEditor-Receiver.exe")
 	{
@@ -6203,15 +6212,6 @@ if !InStr(A_ScriptName, ".ahk") ; do not launch if not compiled
 	
 	; Collect QCE commands
 	o_QCECommands.RequestQCEcommands()
-}
-else ; load text file instead
-{
-	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
-	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Lite.txt
-	if !StrLen(strQCECommands) ; for dev only ####
-		Oops(0, "QCE COMMANDS FILEREAD ERROR")
-	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
-	strQCECommands := ""
 }
 
 ;---------------------------------
@@ -14363,6 +14363,7 @@ else ; for QAP and Special
 					
 					intItemID := TV_Add(saItem[1], aaCategoriesID[strCategory], strSelect)
 					g_aaTreeViewItemsByIDs[intItemID] := o_QAPfeatures.AA[saItem[2]]
+					g_aaTreeViewItemsByIDs[intItemID].intParentID := aaCategoriesID[strCategory]
 				}
 				else
 				{
@@ -14376,6 +14377,7 @@ else ; for QAP and Special
 					
 					intItemID := TV_Add(saItem[1], aaCategoriesID[strCategory], strSelect)
 					g_aaTreeViewItemsByIDs[intItemID] := o_SpecialFolders.AA[saItem[2]]
+					g_aaTreeViewItemsByIDs[intItemID].intParentID := aaCategoriesID[strCategory]
 				}
 			}
 		}
@@ -15305,27 +15307,34 @@ TreeViewQCEChanged:
 TreeViewSpecialChanged:
 ;------------------------------------------------------------
 
-if (A_GuiEvent = "S" or A_GuiEvent = "DoubleClick")
+if (A_GuiEvent = "S") ; if user double-click the "S" event has been triggered just before the "DoubleClick" event
 {
+	blnIsCategory := !g_aaTreeViewItemsByIDs[A_EventInfo].intParentID
+	blnCategoryHasChild := (blnIsCategory and g_aaTreeViewItemsChildIDs[A_EventInfo])
+	
 	strType := StrReplace(StrReplace(strType, "TreeView"), "Changed")
 	
-	strItemSelectedName := (strType = "QAP" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName
-		: (strType = "QCE" ? "{" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandCategory . "~" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandName . "}"
-		: g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName))
-	if (strType = "QCE")
-	{
-		blnIsCategory := !g_aaTreeViewItemsByIDs[A_EventInfo].intParentID
-		blnCategoryHasChild := (blnIsCategory and g_aaTreeViewItemsChildIDs[A_EventInfo])
-	}
+	if (blnIsCategory)
+		strItemSelectedName := ""
 	else
-		blnIsCategory := false
+		strItemSelectedName := (strType = "QAP" ? g_aaTreeViewItemsByIDs[A_EventInfo].strLocalizedName
+			: (strType = "QCE" ? "{" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandCategory . "~" . g_aaTreeViewItemsByIDs[A_EventInfo].strCommandName . "}"
+			: g_aaTreeViewItemsByIDs[A_EventInfo].strDefaultName))
+		
 }
 
 if (A_GuiEvent = "S")
 {
 	Gui, 2:Submit, NoHide
 	
-	if (StrLen(strItemSelectedName) and !blnIsCategory) ; a QAP feature, QCE command or Windows Special folder is selected
+	if (blnIsCategory) ; a category is selected
+	{
+		strLocation := ""
+		GuiControl, , f_strFavoriteShortName ; remove name
+		g_blnFirstInitDone := false
+		GuiControl, , f_strFavoriteLocation ; remove location
+	}
+	else if StrLen(strItemSelectedName) ; a QAP feature, QCE command or Windows Special folder is selected
 	{
 		strLocation := (strType = "QAP" ? o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[strItemSelectedName]
 			: (strType = "QCE" ? strItemSelectedName ; o_QCECommands.AA[strItemSelectedName].xxxxx
@@ -15357,7 +15366,8 @@ if (A_GuiEvent = "S")
 		}
 		strLocation := ""
 	}
-	else if (strType = "QCE" and !blnCategoryHasChild and o_QCECommands.strDataSource = "ReceiverLite"
+	
+	if (strType = "QCE" and blnIsCategory and !blnCategoryHasChild and o_QCECommands.strDataSource = "ReceiverLite"
 		and !g_blnInstallQCEAlreadyDisplayed) ; an empty QCE category is selected and QCE is not running
 	{
 		Gosub, GuiInstallQCE
@@ -15381,7 +15391,8 @@ if (A_GuiEvent = "S")
 }
 else if (A_GuiEvent = "DoubleClick")
 {
-	if StrLen(strItemSelectedName) ; a QAP feature or Windows Special folder is selected
+	if StrLen(strItemSelectedName) and !(blnIsCategory) ; a QAP feature or Windows Special folder or QCE command is selected and it is not a category
+		and !(strItemSelectedName = "{~}")
 		if InStr(strGuiFavoriteLabel, "GuiEditFavorite")
 			gosub, GuiEditFavoriteSave
 		else if InStr(strGuiFavoriteLabel, "GuiCopyFavorite")
@@ -15402,12 +15413,12 @@ strGuiTitle := g_strAppNameText . " - " . o_L["GuiInstallQCETitle"]
 Gui, InstallQCE:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
 Gui, Color, White
 Gui, Font, w700 s11, Segoe UI
-Gui, Add, Text, w500, Get more Clipboard transformation options! Free...
+Gui, Add, Text, w500, % o_L["GuiInstallQCEGetMore"]
 Gui, Font, w400 s11, Segoe UI
-Gui, Add, Text, w500, Supercharge your Quick Access Popup (QAP) menu and eliminate tedious manual editing of Windows Clipboard text!`n`nThe free Quick Clipboard Editor (QCE) integrates with QAP to provide powerful clipboard text manipulation directly within your QAP workflow. QCE automates tasks such as sorting text, performing find and replace, inserting/removing text on lines, filtering characters, reformatting paragraphs, and encoding/decoding text for different formats.`n`nThis allows users to quickly transform clipboard content without switching applications. Custom commands, from simple actions to complex scripts, can be created, saved, and easily added to the QAP menu.
+Gui, Add, Text, w500, % o_L["GuiInstallQCEGetMoreDetail"]
 Gui, Font, s11, Arial
-Gui, Add, Button, y+25 gInstallQCEDownload vf_btnInstallQCEDownload default, Download QCE
-Gui, Add, Button, yp x+10 gInstallQCEHelp vf_btnInstallQCEHelp, Get help
+Gui, Add, Button, y+25 gInstallQCEDownload vf_btnInstallQCEDownload default, % o_L["GuiInstallQCEDownload"]
+Gui, Add, Button, yp x+10 gInstallQCEHelp vf_btnInstallQCEHelp, % o_L["GuiInstallQCEGetHelp"]
 Gui, Add, Button, yp x+10 gInstallQCEClose vf_btnInstallQCEClose, % o_L["GuiClose"]
 Gui, Add, Text, y+10 
 Gui, Font
