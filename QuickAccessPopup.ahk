@@ -6195,8 +6195,8 @@ Hotkey, If
 
 if InStr(A_ScriptName, ".ahk") ; read test file instead of launching QCE Receiver Lite
 {
-	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
-	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Lite.txt
+	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
+	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Lite.txt
 	if !StrLen(strQCECommands)
 		Oops(0, "QCE COMMANDS FILEREAD ERROR")
 	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
@@ -7066,6 +7066,7 @@ o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "42")
 o_Settings.ReadIniOption("LaunchAdvanced", "blnExpandEnvVarsInParameters", "ExpandEnvVarsInParameters", 1)
+o_Settings.ReadIniOption("Execution", "blnQCECommandShowPasteAfter", "QCECommandShowPasteAfter", 0)
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
@@ -13484,7 +13485,7 @@ g_blnInstallQCEAlreadyDisplayed := false ; reset when add dialog box is reopen
 
 ; must be before GuiFavoriteInit and GuiAddFavoriteSaveXpress or GuiAddFavoriteSaveXpressFromMsg
 g_strTypesForTabWindowOptions := "|Folder|Special|FTP" . (o_Settings.Execution.blnTryWindowPosition.IniValue ? "|Document|Application|URL|WindowsApp" : "") ; must start with "|"
-g_strTypesForTabAdvancedOptions := "|Folder|Document|Application|Special|URL|FTP|Snippet|QAP|Group|WindowsApp" ; must start with "|"
+g_strTypesForTabAdvancedOptions := "|Folder|Document|Application|Special|URL|FTP|Snippet|QAP|QCE|Group|WindowsApp" ; must start with "|"
 
 Gosub, GuiFavoriteInit ; set blnIsGroupMember
 
@@ -14662,6 +14663,21 @@ else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteSnippetNoPrompt" . (saFavoriteSnippetOptions[6] ? " checked" : ""), % o_L["DialogFavoriteSnippetPromptNever"]
 	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteSnippetExpandEnvVars " . (saFavoriteSnippetOptions[7] = 1 ? "checked" : ""), % o_L["DialogFavoriteSnippetExpandEnvVars"]
 }
+else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
+{
+	Gui, 2:Add, Checkbox, x20 y50 vf_blnQCECommandCopyBefore gQCECommandCopyBeforeChanged, % o_L["DialogQCECommandCopyBefore"]
+	GuiControl, , f_blnQCECommandCopyBefore, % (o_EditedFavorite.AA.blnQCECommandCopyBefore = 1)
+	Gui, 2:Add, Text, x36 y+5 vf_lblQCECommandCopyBeforeSeconds, % o_L["DialogQCECommandCopyBeforeSeconds"] . ":"
+	; Waiting for n > 0 will wait for n seconds and will skip the QCE command if failing
+	; Waiting 0 seconds will wait for 0.5 seconds (AHK default) but will not skip the QCE command
+	Gui, 2:Add, Edit, x+5 yp vf_intQCECommandCopyBeforeSeconds w30 Center Number, % (o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds ? o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds : 1)
+	if (o_Settings.Execution.blnQCECommandShowPasteAfter.IniValue)
+	{
+		Gui, 2:Add, Checkbox, x20 y+5 vf_blnQCECommandPasteAfter, % o_L["DialogQCECommandPasteAfter"]
+		GuiControl, , f_blnQCECommandPasteAfter, % (o_EditedFavorite.AA.blnQCECommandPasteAfter = 1)	
+		Gui, 2:Add, Link, x36 y+5 w450, % o_L["DialogQCECommandPasteAfterDetail"]
+	}
+}
 else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Folder, Document, Special, URL and FTP
 {
 	Gui, 2:Add, Text, x20 y50 w400 vf_lblFavoriteLaunchWith, % o_L["DialogLaunchWith"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
@@ -14684,7 +14700,7 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 	}
 }
 
-if !InStr("Group|Snippet|QAP|Folder", o_EditedFavorite.AA.strFavoriteType, true)
+if !InStr("Group|Snippet|QAP|QCE|Folder", o_EditedFavorite.AA.strFavoriteType, true)
 {
 	Gui, 2:Add, Text, y+20 x20 w400  vf_lblFavoriteArguments, % o_L["DialogArgumentsLabel"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
 	Gui, 2:Add, Edit, % "x20 y+5 w400 vf_strFavoriteArguments gFavoriteArgumentChanged r"
@@ -14879,6 +14895,20 @@ if (blnChangeDefaultSnippetIcon) ; change default snippet icon
 GuiControl, 2:, f_lblSnippetPrompt, % L(o_L["DialogFavoriteSnippetPromptLabel"], (f_blnRadioSendModeMacro = 1 ? o_L["DialogFavoriteSnippetPromptLabelLaunching"] : o_L["DialogFavoriteSnippetPromptLabelPasting"]))
 
 blnChangeDefaultSnippetIcon := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+QCECommandCopyBeforeChanged:
+;------------------------------------------------------------
+Gui, 2:Submit, NoHide
+
+strAction := (f_blnQCECommandCopyBefore ? "Enable" : "Disable")
+
+GuiControl, 2:%strAction%, f_lblQCECommandCopyBeforeSeconds
+GuiControl, 2:%strAction%, f_intQCECommandCopyBeforeSeconds
 
 return
 ;------------------------------------------------------------
@@ -17854,6 +17884,13 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.strSnippetPrompt := saSnippetOptionsTemp[2]
 		o_EditedFavorite.AA.blnSnippetNeverPrompt := saSnippetOptionsTemp[6]
 		o_EditedFavorite.AA.blnSnippetExpandEnvVars := saSnippetOptionsTemp[7]
+	}
+	else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
+	{
+		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnQCECommandCopyBefore . ";" . f_blnQCECommandPasteAfter . ";" . f_intQCECommandCopyBeforeSeconds
+		o_EditedFavorite.AA.blnQCECommandCopyBefore := f_blnQCECommandCopyBefore
+		o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds := f_intQCECommandCopyBeforeSeconds
+		o_EditedFavorite.AA.blnQCECommandPasteAfter := f_blnQCECommandPasteAfter
 	}
 	else
 	{
@@ -34572,7 +34609,7 @@ class Container
 			this.InsertItemValue("strFavoriteArguments", StrReplace(saFavorite[5], g_strEscapePipe, "|")) ; application arguments
 			this.InsertItemValue("strFavoriteAppWorkingDir", saFavorite[6]) ; application working directory
 			this.InsertItemValue("strFavoriteWindowPosition", saFavorite[7]) ; Boolean,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (will be split when open favorite)
-			this.InsertItemValue("strFavoriteLaunchWith", saFavorite[8]) ; launch favorite with this executable, or various options for type Application and Snippet
+			this.InsertItemValue("strFavoriteLaunchWith", saFavorite[8]) ; launch favorite with this executable, or various options for types Application, Snippet and QCE
 			if (this.AA.strFavoriteType = "Snippet" and this.AA.HasKey("strFavoriteLaunchWith"))
 			{
 				saTemp := StrSplit(this.AA.strFavoriteLaunchWith, ";") ; was arrFavoriteSnippetOptions
@@ -34580,6 +34617,13 @@ class Container
 				this.AA.strSnippetPrompt := saTemp[2]
 				this.AA.blnSnippetNeverPrompt := saTemp[6]
 				this.AA.blnSnippetExpandEnvVars := saTemp[7]
+			}
+			if (this.AA.strFavoriteType = "QCE" and this.AA.HasKey("strFavoriteLaunchWith"))
+			{
+				saTemp := StrSplit(this.AA.strFavoriteLaunchWith, ";")
+				this.AA.blnQCECommandCopyBefore := saTemp[1]
+				this.AA.blnQCECommandPasteAfter := saTemp[2]
+				this.AA.intQCECommandCopyBeforeSeconds := saTemp[3]
 			}
 			this.InsertItemValue("strFavoriteLoginName", StrReplace(saFavorite[9], g_strEscapePipe, "|")) ; login name for FTP favorite
 			this.InsertItemValue("strFavoritePassword", StrReplace(saFavorite[10], g_strEscapePipe, "|")) ; password for FTP favorite
@@ -34699,9 +34743,9 @@ class Container
 			Diag(A_ThisFunc, "this.aaTemp.strLocationWithPlaceholders", this.aaTemp.strLocationWithPlaceholders)
 			
 			; LAUNCH WITH
-			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|WindowsApp|", this.AA.strFavoriteType . "|")
+			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|QCE|WindowsApp|", this.AA.strFavoriteType . "|")
 			; this.AA.strFavoriteLaunchWith <> "0" for legacy of old ini file
-			; ignore for Application, Snippet, QAP and WindowsApp favorites because strFavoriteLaunchWith contains data for other options
+			; ignore for Application, Snippet, QAP, QCE and WindowsApp favorites because strFavoriteLaunchWith contains data for other options
 			{
 				strTemp := ExpandPlaceholders(this.AA.strFavoriteLaunchWith, this.AA.strFavoriteLocation
 					, (InStr(this.AA.strFavoriteLocation, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
@@ -34852,26 +34896,46 @@ class Container
 				loop, Parse, % "Receiver|ReceiverLite", |
 					if QCERisRunning(A_LoopField)
 					{
-						intResult := Send_WM_COPYDATA(strQCECommand, g_aaQCEAppTitle[A_LoopField])
-						if (intResult) ; success
+						intReceiverResult := 1
+						
+						if (this.AA.blnQCECommandCopyBefore)
+						; if intQCECommandCopyBeforeSeconds > 0 wait for n seconds and skip the QCE command if failing
+						; if intQCECommandCopyBeforeSeconds = 0 seconds will wait for 0.5 seconds (AHK default) but do not skip the QCE command
+						{
+							intCopyResult := Send_WM_COPYDATA("Copy|" . this.AA.intQCECommandCopyBeforeSeconds, g_aaQCEAppTitle[A_LoopField]) ; returns 1 if OK
+							Sleep, 200
+						}
+						else
+							intCopyResult := 1 ; OK if not executed
+						
+						if (intReceiverResult = 1 and intCopyResult = 1)
+							intCommandResult := Send_WM_COPYDATA(strQCECommand, g_aaQCEAppTitle[A_LoopField]) ; 1 is OK
+						else
+							intCommandResult := 0
+						
+						if (intCommandResult = 1 and this.AA.blnQCECommandPasteAfter)
+						{
+							Sleep, 200
+							intPasteResult := Send_WM_COPYDATA("Paste", g_aaQCEAppTitle[A_LoopField]) ; 1 is OK
+						}
+						else
+							intPasteResult := 1 ; OK if not executed
+						
+						if (intReceiverResult) ; QCE Receiver replied
 							break
 					}
-				if !(intResult)
+				if !(intReceiverResult and intCopyResult and intCommandResult and intPasteResult) ; an error occurred
 				{
-					Oops(0, o_L["OopsQCECommandError"] . "`n`n" . o_L["OopsQCEReceiverHelp"], "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+					if !(intReceiverResult)
+						Oops(0, o_L["OopsQCECommandErrorSending"] . "`n`n" . o_L["OopsQCEReceiverHelp"], "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+					else if !(intCopyResult)
+						Oops(0, o_L["OopsQCECommandErrorCopying"])
+					else if !(intCommandResult)
+						Oops(0, o_L["OopsQCECommandErrorExecuting"])
+					else if !(intPasteResult)
+						Oops(0, o_L["OopsQCECommandErrorPasting"])
+						
 					return intOpenError ; do nothing, do not flag error
-				}
-				if (### = "Copy") ; temporary place for code to be used later
-				{
-					oClipBackup := ClipboardAll
-					Clipboard =
-					Send, ^c
-					if (saData[2])
-					{
-						ClipWait, % saData[2] ; wait for the clipboard for a maximum of time
-						if (ErrorLevel)
-							Clipboard := oClipBackup
-					}
 				}
 			}
 			; SWITCH APP
@@ -36156,7 +36220,7 @@ class Container
 					}
 					; else URL or QAP (no need to expand or make absolute), keep this.aaTemp.strFullLocation as in this.AA.strFavoriteLocation
 				
-				if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet", this.AA.strFavoriteType) ; ignore for Application or Snippet favorites
+				if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QCE", this.AA.strFavoriteType) ; ignore for Application, Snippet or QCE favorites
 					this.aaTemp.strFullLocation := this.aaTemp.strExpandedLaunchWith . " """ . this.aaTemp.strFullLocation . """" ; enclose document path in double-quotes
 				
 				if StrLen(this.AA.strFavoriteArguments) and !this.IsContainer() ; not for menu (containing menu icons size in arguments)
@@ -36367,6 +36431,8 @@ class Container
 			else if (this.AA.strFavoriteType = "QAP")
 				; default icon for new QAP Feature if new location exists, or, if not, for existing favorite object location
 				return o_QAPfeatures.AA[(StrLen(strGuiFavoriteLocation) ? strGuiFavoriteLocation : this.AA.strFavoriteLocation)].strDefaultIcon
+			else if (this.AA.strFavoriteType = "QCE")
+				return "iconClipboardCheck"
 			else if (this.AA.strFavoriteType = "Text" or this.AA.strFavoriteType = "X" or this.AA.strFavoriteType = "K")
 				return "iconNoIcon"
 			else if (this.AA.strFavoriteType = "WindowsApp")
