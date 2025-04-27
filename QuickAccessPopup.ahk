@@ -5903,7 +5903,6 @@ global g_intRunCommandMax := 8191
 ;---------------------------------
 ; Quick Clipboard Editor (QCE) related variables
 global g_aaQCEAppTitle := {"Receiver" : "ahk_exe QuickClipboardEditor-Receiver.exe", "ReceiverLite" : "ahk_exe QuickClipboardEditor-ReceiverLite.exe"}
-global g_strUnitSeparator := Chr(31) ; see https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 ; see https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 global g_strGroupSeparator := Chr(29)
 global g_strRecordSeparator := Chr(30)
@@ -6155,7 +6154,9 @@ OnMessage(0x203, "WM_LBUTTONDBLCLK")
 ; No specific reason for 0x2224, except that is is > 0x1000 (http://ahkscript.org/docs/commands/OnMessage.htm)
 OnMessage(0x2224, "REPLY_QAPISRUNNING")
 
-; Respond to SendMessage sent by QAPmessenger after execution of the requested action from Explorer context menu
+; Respond to:
+; - SendMessage sent by QAPmessenger.exe after execution of the requested action from Explorer context menu
+; - SendMessage sent by QuickClipboardEditor.exe after execution of the requested action from QAP
 OnMessage(0x4a, "RECEIVE_MESSENGER")
 
 ; Create a mutex to allow Inno Setup to detect if FP is running before uninstall or update
@@ -6195,23 +6196,18 @@ Hotkey, If
 
 if InStr(A_ScriptName, ".ahk") ; read test file instead of launching QCE Receiver Lite
 {
-	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
+	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
+	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full&Pinned.txt
 	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Lite.txt
 	if !StrLen(strQCECommands)
 		Oops(0, "QCE COMMANDS FILEREAD ERROR")
 	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
 	strQCECommands := ""
 }
-else ; launch QCE Receiver Lite if QCE is not running
+else if !WinExist("ahk_exe QuickClipboardEditor-Receiver.exe") ; launch QCE Receiver Lite if QCE is not running
 {
-	if !WinExist("ahk_exe QuickClipboardEditor-Receiver.exe")
-	{
-		Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
-		Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
-	}
-	
-	; Collect QCE commands
-	o_QCECommands.RequestQCEcommands()
+	Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
+	Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
 }
 
 ;---------------------------------
@@ -14034,11 +14030,15 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 	}
 	else ; "Special", "QAP" or "QCE"
 	{
+		; response triggers RequestQCEcommands() that reset o_QCECommands.AA, o_QCECommands.saQCECommandsCategories and o_QCECommands.aaQCECommandsCategoriesLabelsByCodes
+		o_QCECommands.RequestQCEcommands() ; must be before the Gui contains a TreeView control (see https://www.autohotkey.com/boards/viewtopic.php?style=17&f=76&t=136977)
+		Sleep, 200 ; give time to receive data
+		
 		g_blnFirstInitDone := false
 		GuiControlGet, arrPosLocationLabel, Pos, f_lblLocation
 		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 48 - (blnFolderInAGroupWithSide ? 46 : 0) ; -43 space normally required below, -46 if folder in group member with a side
 			
-		if InStr("QAP|QCE|", o_EditedFavorite.AA.strFavoriteType . "|")
+		if (o_EditedFavorite.AA.strFavoriteType = "QCE")
 		{
 			Gui, 2:Add, Link, x+5 yp w200 vf_lnkItemURL gGuiClipbpoardCommandsLinks
 			if (o_EditedFavorite.AA.strFavoriteType = "QCE")
@@ -14294,10 +14294,6 @@ if (strType = "QCE")
 	g_aaTreeViewItemsByIDs := Object()
 	g_aaTreeViewItemsChildIDs := Object()
 	
-	; response triggers RequestQCEcommands() that reset o_QCECommands.AA, o_QCECommands.saQCECommandsCategories and o_QCECommands.aaQCECommandsCategoriesLabelsByCodes
-	o_QCECommands.RequestQCEcommands()
-	Sleep, 200 ; give time to receive data
-	
 	for intIndex, oItemCategory in o_QCECommands.saQCECommandsCategories
 	{
 		intCategoryID := TV_Add(oItemCategory.strCategoryLabel, , (A_Index = 1 and InStr(strGuiFavoriteLabel, "GuiAdd") ? "Expand" : "") " Bold")
@@ -14407,11 +14403,6 @@ intLink := ErrorLevel
 
 if (intLink = 1)
 	Run, https://www.quickaccesspopup.com/qce
-else if (intLink = 2)
-{
-	o_QCECommands.RequestQCEcommands()
-	Gosub, LoadTreeviewQCE
-}
 ; else do nothing
 
 return
@@ -14665,17 +14656,20 @@ else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
 {
-	Gui, 2:Add, Checkbox, x20 y50 vf_blnQCECommandCopyBefore gQCECommandCopyBeforeChanged, % o_L["DialogQCECommandCopyBefore"]
-	GuiControl, , f_blnQCECommandCopyBefore, % (o_EditedFavorite.AA.blnQCECommandCopyBefore = 1)
-	Gui, 2:Add, Text, x36 y+5 vf_lblQCECommandCopyBeforeSeconds, % o_L["DialogQCECommandCopyBeforeSeconds"] . ":"
-	; Waiting for n > 0 will wait for n seconds and will skip the QCE command if failing
-	; Waiting 0 seconds will wait for 0.5 seconds (AHK default) but will not skip the QCE command
-	Gui, 2:Add, Edit, x+5 yp vf_intQCECommandCopyBeforeSeconds w30 Center Number, % (o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds ? o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds : 1)
-	if (o_Settings.Execution.blnQCECommandShowPasteAfter.IniValue)
+	if !InStr(o_EditedFavorite.AA.strFavoriteLocation, "{PastePinned~") ; not copy before / paste after for Pinned clips
 	{
-		Gui, 2:Add, Checkbox, x20 y+5 vf_blnQCECommandPasteAfter, % o_L["DialogQCECommandPasteAfter"]
-		GuiControl, , f_blnQCECommandPasteAfter, % (o_EditedFavorite.AA.blnQCECommandPasteAfter = 1)	
-		Gui, 2:Add, Link, x36 y+5 w450, % o_L["DialogQCECommandPasteAfterDetail"]
+		Gui, 2:Add, Checkbox, x20 y50 vf_blnQCECommandCopyBefore gQCECommandCopyBeforeChanged, % o_L["DialogQCECommandCopyBefore"]
+		GuiControl, , f_blnQCECommandCopyBefore, % (o_EditedFavorite.AA.blnQCECommandCopyBefore = 1)
+		Gui, 2:Add, Text, x36 y+5 vf_lblQCECommandCopyBeforeSeconds, % o_L["DialogQCECommandCopyBeforeSeconds"] . ":"
+		; Waiting for n > 0 will wait for n seconds and will skip the QCE command if failing
+		; Waiting 0 seconds will wait for 0.5 seconds (AHK default) but will not skip the QCE command
+		Gui, 2:Add, Edit, x+5 yp vf_intQCECommandCopyBeforeSeconds w30 Center Number, % (o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds ? o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds : 1)
+		if (o_Settings.Execution.blnQCECommandShowPasteAfter.IniValue)
+		{
+			Gui, 2:Add, Checkbox, x20 y+5 vf_blnQCECommandPasteAfter, % o_L["DialogQCECommandPasteAfter"]
+			GuiControl, , f_blnQCECommandPasteAfter, % (o_EditedFavorite.AA.blnQCECommandPasteAfter = 1)	
+			Gui, 2:Add, Link, x36 y+5 w450, % o_L["DialogQCECommandPasteAfterDetail"]
+		}
 	}
 }
 else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Folder, Document, Special, URL and FTP
@@ -21068,7 +21062,7 @@ else
 	blnIsToMenuDialogBox := WindowIsToMenuDialogBox(strThisTitle)
 
 	if (blnIsAddEditCopyFavorite or blnIsToMenuDialogBox)
-		SaveWindowPosition((blnIsToMenuDialogBox ? "CopyMoveDialogPosition" : "AddEditCopyFavoriteDialogPosition"), "A")
+		SaveWindowPosition((blnIsToMenuDialogBox ? "CopyMoveDialogPosition" : "AddEditCopyFavoriteDialogPosition"), "ahk_id " . g_strGui2Hwnd)
 }
 
 Gui, 1:-Disabled
@@ -29440,8 +29434,8 @@ RECEIVE_MESSENGER(wParam, lParam)
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
 	Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
-	Diag(A_ThisFunc, "StrSplit(strCopyOfData, ""`n"")[1]", StrSplit(strCopyOfData, "`n")[1])
-	Diag(A_ThisFunc, "= QCEcommands", StrSplit(strCopyOfData, "`n")[1] = "QCEcommands")
+	Diag(A_ThisFunc, "StrSplit(strCopyOfData, g_strUnitSeparator)[1]", StrSplit(strCopyOfData, g_strUnitSeparator)[1])
+	Diag(A_ThisFunc, "= QCEcommands", StrSplit(strCopyOfData, g_strUnitSeparator)[1] = "QCEcommands")
 	
 	if (StrSplit(strCopyOfData, g_strUnitSeparator)[1] = "QCEcommands") ; QCE commands list separated by "`n"
 	{
@@ -31729,6 +31723,12 @@ class QCEcommands
 			saItem := StrSplit(strItem, g_strUnitSeparator) ; 1 category, 2 name, 3 label
 			if !StrLen(strItem) or (saItem[1] = "Find")
 				continue
+			if (saItem[1] = "PastePinned") ; Pinned clips exceptions, prefix label with Pinned clip order number
+			{
+				saItem[3] := saItem[2] . ") " . saItem[3]
+				if (saItem[2] = "10")
+					saItem[2] := "A" ; to keep this.AA correct order
+			}
 			this.AA["{" . saItem[1] . "~" . saItem[2] . "}"] := {"strCommandCategory": saItem[1]
 				, "strCommandCategoryLabel": this.aaQCECommandsCategoriesLabelsByCodes[saItem[1]]
 				, "strCommandName": saItem[2], "strCommandLabel": saItem[3], "strDefaultIcon": "iconClipboardCheck"}
@@ -34885,7 +34885,7 @@ class Container
 			{
 				strCommand := SubStr(this.AA.strFavoriteLocation, 2, -1) ; remove first and last character
 				saCommand := StrSplit(strCommand, "~")
-				if InStr("Case|Encode|Decode|", saCommand[1] . "|")
+				if InStr("Case|Encode|Decode|Paste|PastePinned|", saCommand[1] . "|")
 					strQCECommand := saCommand[1] . "|" . saCommand[2]
 				else
 					strQCECommand := "Exec|" . saCommand[2]
@@ -34931,7 +34931,7 @@ class Container
 					else if !(intCopyResult)
 						Oops(0, o_L["OopsQCECommandErrorCopying"])
 					else if !(intCommandResult)
-						Oops(0, o_L["OopsQCECommandErrorExecuting"])
+						Oops(0, o_L["OopsQCECommandErrorExecuting"], strQCECommand)
 					else if !(intPasteResult)
 						Oops(0, o_L["OopsQCECommandErrorPasting"])
 						
