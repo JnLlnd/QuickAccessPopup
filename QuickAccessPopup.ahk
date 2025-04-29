@@ -14030,9 +14030,6 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 	}
 	else ; "Special", "QAP" or "QCE"
 	{
-		; response triggers RequestQCEcommands() that reset o_QCECommands.AA, o_QCECommands.saQCECommandsCategories and o_QCECommands.aaQCECommandsCategoriesLabelsByCodes
-		o_QCECommands.RequestQCEcommands() ; must be before the Gui contains a TreeView control (see https://www.autohotkey.com/boards/viewtopic.php?style=17&f=76&t=136977)
-		Sleep, 200 ; give time to receive data
 		
 		g_blnFirstInitDone := false
 		GuiControlGet, arrPosLocationLabel, Pos, f_lblLocation
@@ -14042,7 +14039,8 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 		{
 			Gui, 2:Add, Link, x+5 yp w200 vf_lnkItemURL gGuiClipbpoardCommandsLinks
 			if (o_EditedFavorite.AA.strFavoriteType = "QCE")
-				GuiControl, , f_lnkItemURL, % L(o_QCECommands.strDataSource = "ReceiverLite" ? o_L["GuiInstallQCELink"] : o_L["GuiClipboardCommandLinks"])
+				GuiControl, , f_lnkItemURL, % L(o_QCECommands.strDataSource = "ReceiverLite" ? o_L["GuiInstallQCELink"]
+					: (InStr(strGuiFavoriteLabel, "GuiAdd") ? o_L["GuiClipboardCommandLinkRefresh"] . "    " : "") . o_L["GuiClipboardCommandLinkHelp"])
 		}
 		
 		intTreeViewWidth := (o_EditedFavorite.AA.strFavoriteType = "Special" ? "400" : "300") ; 300 for QAP and QCE
@@ -14289,6 +14287,10 @@ aaCategoriesID := Object()
 
 if (strType = "QCE")
 {
+	; response triggers ReceiveQCEcommands() that reset o_QCECommands.AA, o_QCECommands.saQCECommandsCategories and o_QCECommands.aaQCECommandsCategoriesLabelsByCodes
+	o_QCECommands.RequestQCEcommands() ; must be before the Gui contains a TreeView control (see https://www.autohotkey.com/boards/viewtopic.php?style=17&f=76&t=136977)
+	Sleep, 200 ; give time to receive data
+		
 	; reset in case we refresh
 	TV_Delete()
 	g_aaTreeViewItemsByIDs := Object()
@@ -14403,6 +14405,8 @@ intLink := ErrorLevel
 
 if (intLink = 1)
 	Run, https://www.quickaccesspopup.com/qce
+else if (intLink = 2)
+	Gosub, LoadTreeviewQCE ; calls o_QCECommands.RequestQCEcommands()
 ; else do nothing
 
 return
@@ -31681,7 +31685,7 @@ class QCEcommands
 			if QCERisRunning(A_LoopField)
 			{
 				; try to send message to request "List" from compiled QCER with A_ScriptName as return address
-				strArgs := "List|" . "ahk_exe " . A_ScriptName
+				strArgs := "List|" . "ahk_exe " . A_ScriptName . " ahk_class JeanLalonde.ca"
 				Diag("Send_WM_COPYDATA:Param", strArgs, "")
 				Diag("Send_WM_COPYDATA:g_aaQCEAppTitle[A_LoopField]", g_aaQCEAppTitle[A_LoopField], "")
 				intResult := Send_WM_COPYDATA(strArgs, g_aaQCEAppTitle[A_LoopField])
