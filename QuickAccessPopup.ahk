@@ -20820,7 +20820,7 @@ else
 	blnIsToMenuDialogBox := WindowIsToMenuDialogBox(strThisTitle)
 
 	if (blnIsAddEditCopyFavorite or blnIsToMenuDialogBox)
-		SaveWindowPosition((blnIsToMenuDialogBox ? "CopyMoveDialogPosition" : "AddEditCopyFavoriteDialogPosition"), "A")
+		SaveWindowPosition((blnIsToMenuDialogBox ? "CopyMoveDialogPosition" : "AddEditCopyFavoriteDialogPosition"), "ahk_id " . g_strGui2Hwnd)
 }
 
 Gui, 1:-Disabled
@@ -33654,6 +33654,7 @@ class Container
 			}
 		}
 		
+		Diag(A_ThisFunc, s_intIniLineSave . " Z", "ELAPSED")
 		IniWrite, Z, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave ; end of menu marker
 		s_intIniLineSave++
 		if (blnRoot) ; return to the top container, saving is completed
