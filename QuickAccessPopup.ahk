@@ -22743,7 +22743,7 @@ strLatestVersions := Url2Var(strQuery)
 if !StrLen(strLatestVersions)
 	if (A_ThisLabel = "Check4UpdateNow")
 	{
-		Oops(0, o_L["UpdateError"])
+		Oops(0, o_L["UpdateError"], "URL: " . strQuery)
 		gosub, Check4UpdateCleanup
 		return ; an error occured during ComObjCreate
 	}
@@ -22760,7 +22760,7 @@ Loop, Parse, strLatestVersions, , 0123456789.| ; strLatestVersions should only c
 	}
 	else
 	{
-		Oops(0, o_L["UpdateError"]) ; return with an error message
+		Oops(0, o_L["UpdateError"], "Response: " . strLatestVersions) ; return with an error message
 		gosub, Check4UpdateCleanup
 		return
 	}
@@ -26357,6 +26357,8 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		}
 		
 		; process Input
+		if InStr(strExpanded, "{Input:") ; take a backup of user variables
+			strUserVariablesBackup := o_Settings.UserVariables.strUserVariablesList.IniValue
 		while InStr(strExpanded, "{Input:") ; not case sensitive, expand {Input:prompt}
 		{
 			strInputPrompt := RegExReplace(StrSplit(strExpanded, "{Input:")[2], "(}.*)") ; display the part after "{Input:" and remove "}" and after
@@ -26367,7 +26369,6 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 			strExpanded := RegExReplace(strExpanded, "i)\{Input:(.*?)}", strInputContent, , 1) ; replace only first occurence
 			
 			; add user input as a temporary user variable
-			strUserVariablesBackup := o_Settings.UserVariables.strUserVariablesList.IniValue
 			o_Settings.UserVariables.strUserVariablesList.IniValue .= "|{" . strInputPrompt . "}=" . strInputContent ; add temporary content to user variables list
 		}
 		
