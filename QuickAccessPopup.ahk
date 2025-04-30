@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.4.3 (2025-04-30)
+- fix a bug when a favorite location (or snippet text) containing multiple {Input:Prompt} placeholders is used repeatedly
+- fix a bug when saving the size of "Add/Edit Favorite" dialog box for future use
+- add diag code when saving favorites to verify performance of AHK command IniWrite (impacted by some Windows Defender rules)
+- add info to the error message displayed when checking for QAP update returns an error (possibly impacted by some Windows Defender rules)
+ 
 Version: 11.6.4.2.1 (2024-12-26)
 - replace the DLL component to retrieve Windows Apps (UWP) icons with the same file signed with my certificate (in order to minimize false virus alerts)
  
@@ -5601,7 +5607,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.4.2.1
+;@Ahk2Exe-SetVersion 11.6.4.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5669,7 +5675,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.4.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.4.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
