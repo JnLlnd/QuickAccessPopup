@@ -13741,7 +13741,9 @@ else ; add favorite
 		strShortcutFilename := GetLocationPathName(g_strNewLocation) ; save the name of the lnk as new favorite name
 		; FileGetShortcut, %file%, OutTarget, OutDir, OutArgs, OutDesc, OutIcon, OutIconNum, OutRunState
 		FileGetShortcut, %g_strNewLocation%, strShortcutLocation, strShortcutWorkingDir, strShortcutArgs, , strShortcutIconFile, strShortcutIconIndex, intShortcutRunState
-		if StrLen(strShortcutLocation)
+		if !StrLen(strShortcutWorkingDir) ; if "Start In" is empty, use the location of the shortcut file (see: https://forum.quickaccesspopup.com/showthread.php?tid=3013&pid=8283#pid8283)
+			SplitPath, g_strNewLocation, , strShortcutWorkingDir
+		if StrLen(strShortcutLocation) ; must be after SplitPath
 			g_strNewLocation := strShortcutLocation
 		; else keep the original .lnk path-name
 	}
@@ -17477,6 +17479,8 @@ Loop
 			strFavoriteName := GetLocationPathName(strFavoriteLocation) ; use the name of the lnk file as favorite name
 			; FileGetShortcut, %file%, OutTarget, OutDir, OutArgs, OutDesc, OutIcon, OutIconNum, OutRunState
 			FileGetShortcut, %strFavoriteLocation%, strFavoriteLocation, strShortcutWorkingDir, strShortcutArgs, , strShortcutIconFile, strShortcutIconIndex, intShortcutRunState
+			if !StrLen(strShortcutWorkingDir) ; if "Start In" is empty, use the location of the shortcut file (see: https://forum.quickaccesspopup.com/showthread.php?tid=3013&pid=8283#pid8283)
+				SplitPath, strFavoriteLocation, , strShortcutWorkingDir
 			; strFavoriteLocation now contains the shortcut's target location
 			strFavoriteType := GetFavoriteType4Extension(strFavoriteLocation)
 			; before: intShortcutRunState = Shortcut RunState -> 1 Normal / 3 Maximized / 7 Minimized
