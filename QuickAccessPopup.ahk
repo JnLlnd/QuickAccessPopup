@@ -7065,7 +7065,7 @@ o_Settings.ReadIniOption("Execution", "blnTryWindowPosition", "TryWindowPosition
 o_Settings.ReadIniOption("Launch", "blnDiagMode", "DiagMode", 0) ; g_blnDiagMode
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "42")
 o_Settings.ReadIniOption("LaunchAdvanced", "blnExpandEnvVarsInParameters", "ExpandEnvVarsInParameters", 1)
-o_Settings.ReadIniOption("Execution", "blnQCECommandShowPasteAfter", "QCECommandShowPasteAfter", 0)
+o_Settings.ReadIniOption("Execution", "blnQCECommandShowPasteAfter", "QCECommandShowPasteAfter", 1)
 
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
@@ -14663,20 +14663,19 @@ else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
 {
-	if !InStr(o_EditedFavorite.AA.strFavoriteLocation, "{PastePinned~") ; not copy before / paste after for Pinned clips
+	strEnabledDisabled := (InStr(f_strFavoriteLocation, "{PastePinned~") ? "Disabled" : "") ; copy before / paste after disabled for Pinned clips (updated on TreeView changes)
+	Gui, 2:Add, Checkbox, x20 y50 vf_blnQCECommandCopyBefore gQCECommandCopyBeforeChanged %strEnabledDisabled%, % o_L["DialogQCECommandCopyBefore"]
+	GuiControl, , f_blnQCECommandCopyBefore, % (o_EditedFavorite.AA.blnQCECommandCopyBefore = 1)
+	Gui, 2:Add, Text, x36 y+5 vf_lblQCECommandCopyBeforeSeconds %strEnabledDisabled%, % o_L["DialogQCECommandCopyBeforeSeconds"] . ":"
+	; Waiting for n > 0 will wait for n seconds and will skip the QCE command if failing
+	; Waiting 0 seconds will wait for 0.5 seconds (AHK default) but will not skip the QCE command
+	Gui, 2:Add, Edit, x+5 yp vf_intQCECommandCopyBeforeSeconds w30 Center Number %strEnabledDisabled%
+		, % (o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds ? o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds : 1)
+	if (o_Settings.Execution.blnQCECommandShowPasteAfter.IniValue)
 	{
-		Gui, 2:Add, Checkbox, x20 y50 vf_blnQCECommandCopyBefore gQCECommandCopyBeforeChanged, % o_L["DialogQCECommandCopyBefore"]
-		GuiControl, , f_blnQCECommandCopyBefore, % (o_EditedFavorite.AA.blnQCECommandCopyBefore = 1)
-		Gui, 2:Add, Text, x36 y+5 vf_lblQCECommandCopyBeforeSeconds, % o_L["DialogQCECommandCopyBeforeSeconds"] . ":"
-		; Waiting for n > 0 will wait for n seconds and will skip the QCE command if failing
-		; Waiting 0 seconds will wait for 0.5 seconds (AHK default) but will not skip the QCE command
-		Gui, 2:Add, Edit, x+5 yp vf_intQCECommandCopyBeforeSeconds w30 Center Number, % (o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds ? o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds : 1)
-		if (o_Settings.Execution.blnQCECommandShowPasteAfter.IniValue)
-		{
-			Gui, 2:Add, Checkbox, x20 y+5 vf_blnQCECommandPasteAfter, % o_L["DialogQCECommandPasteAfter"]
-			GuiControl, , f_blnQCECommandPasteAfter, % (o_EditedFavorite.AA.blnQCECommandPasteAfter = 1)	
-			Gui, 2:Add, Link, x36 y+5 w450, % o_L["DialogQCECommandPasteAfterDetail"]
-		}
+		Gui, 2:Add, Checkbox, x20 y+5 vf_blnQCECommandPasteAfter %strEnabledDisabled%, % o_L["DialogQCECommandPasteAfter"]
+		GuiControl, , f_blnQCECommandPasteAfter, % (o_EditedFavorite.AA.blnQCECommandPasteAfter = 1)	
+		Gui, 2:Add, Link, x36 y+5 w450, % o_L["DialogQCECommandPasteAfterDetail"] ; Link control cannot be disabled if PastePinned
 	}
 }
 else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Folder, Document, Special, URL and FTP
@@ -15376,6 +15375,13 @@ if (A_GuiEvent = "S")
 		g_blnFirstInitDone := true
 		GuiControl, , f_strFavoriteLocation, %strLocation%
 		
+		if (strType = "QCE")
+		{
+			strEnableDisable := (InStr(strLocation, "{PastePinned~") ? "Disable" : "Enable")
+			Loop, Parse, % "f_blnQCECommandCopyBefore|f_lblQCECommandCopyBeforeSeconds|f_intQCECommandCopyBeforeSeconds|f_blnQCECommandPasteAfter", |
+				GuiControl, 2:%strEnableDisable%, %A_LoopField%
+		}
+		
 		if InStr(strGuiFavoriteLabel, "GuiAdd") ; set new and default icon only when adding a QAP feature favorite
 		{
 			g_strNewFavoriteIconResource := (strType = "QAP" ? o_QAPfeatures.AA[strLocation].strDefaultIcon
@@ -15431,6 +15437,8 @@ else if (A_GuiEvent = "DoubleClick")
 		else
 			gosub, GuiAddFavoriteSave
 }
+
+strEnableDisable := ""
 
 return
 ;------------------------------------------------------------
