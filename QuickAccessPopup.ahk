@@ -5796,7 +5796,6 @@ global g_aaWindowsAppsIDsByName := Object()
 
 global g_intNewWindowOffset := -1 ; to offset multiple Explorer windows positioned at center of screen
 
-global g_strIconsFiles := A_WorkingDir . "\icons"
 global g_aaIconDocumentsList := Object() ; list of default icon by document extensions
 
 global g_strLastConfiguration ; last screen configuration updated by GetScreenConfiguration
@@ -5971,6 +5970,8 @@ if (A_IsAdmin and !o_CommandLineParameters.AA.HasKey("AdminSilent")
 if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; add [admin] tag only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
+
+global g_strIconsFilesRoot := o_Settings.MenuIcons.strIconsCustomFolder.IniValue
 
 global g_strURLIconFileIndex := (StrLen(o_Settings.MenuIcons.strCustomLinksIcon.IniValue)
 	? o_Settings.MenuIcons.strCustomLinksIcon.IniValue : GetDefaultBrowserIcon())
@@ -17564,8 +17565,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		g_strNewFavoriteIconResource := o_EditedFavorite.GetDefaultIcon4Type(strNewFavoriteLocation)
 	if InStr(g_strNewFavoriteIconResource, g_strTempDir) ; for WindowsApp icon, move icon file from temporary folder to permanent icons folder
 	{
-		FileMove, %g_strNewFavoriteIconResource%, % StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFiles), 1 ; 1 to ovewrite
-		o_EditedFavorite.AA.strFavoriteIconResource := StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFiles)
+		If !FileExist(g_strIconsFilesRoot . "\WindowsAppsIcons") ; check if Windows Apps icons folder exists
+			FileCreateDir, % g_strIconsFilesRoot . "\WindowsAppsIcons"
+		FileMove, %g_strNewFavoriteIconResource%, % StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFilesRoot . "\WindowsAppsIcons"), 1 ; 1 to ovewrite
+		o_EditedFavorite.AA.strFavoriteIconResource := StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFilesRoot . "\WindowsAppsIcons")
 	}
 	else
 		o_EditedFavorite.AA.strFavoriteIconResource := g_strNewFavoriteIconResource
@@ -18158,7 +18161,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 
 	if  InStr("|Special|QAP", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(strNewFavoriteLocation)
 	{
-		Oops(2, o_L["DialogFavoriteDropdownEmpty"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel
+		Oops(2, o_L["DialogFavoriteDropdownEmpty"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			, (o_EditedFavorite.AA.strFavoriteType = "Special" ? o_L["DialogDropDown"] : o_L["DialogTreeView"]))
 		g_blnAbortSave := true
 		return
@@ -26007,12 +26010,12 @@ GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := false)
 	if (blnFaviconURL)
 		strLocation := SubStr(strLocation, 2) ; remove * prefix
 	
-	If !FileExist(g_strIconsFiles) ; check if icons folder exists
-		FileCreateDir, %g_strIconsFiles%
+	If !FileExist(g_strIconsFilesRoot . "\WebPageIcons") ; check if Web page icons folder exists
+		FileCreateDir, % g_strIconsFilesRoot . "\WebPageIcons"
 
 	SplitPath, strLocation, , , , , strProtocolDomain
 	strDomain := SubStr(strProtocolDomain, InStr(strProtocolDomain, "//") + 2)
-	strIconFilename := g_strIconsFiles . "\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
+	strIconFilename := g_strIconsFilesRoot . "\WebPageIcons\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
 		. ".ico"
 	
 	strIconURL := (blnFaviconURL ? strLocation : strProtocolDomain . "/" . "favicon.ico")
