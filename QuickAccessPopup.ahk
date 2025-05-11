@@ -34756,27 +34756,37 @@ class Container
 					if (WinExist("A") <> g_strTargetWinId) ; in case that some window just popped out, and initialy active window lost focus
 						WinActivate, ahk_id %g_strTargetWinId% ; we'll activate initialy active window
 					
-					WinGet, strProcessName, ProcessName, ahk_id %g_strTargetWinId% ; cmd.exe, powershell.exe, conemu.exe or conemu64.exe
-					; add /D option only for cmd.exe, not required for powershell.exe
-					strCommand := "CD " . (strProcessName = "cmd.exe" ? "/D " : "") ; must end with space
+					WinGet, strProcessName, ProcessName, ahk_id %g_strTargetWinId% ; cmd.exe, powershell.exe, conemu.exe, conemu64.exe or windowsterminal.exe (Win 11)
 					
-					if (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue) and (strProcessName = "cmd.exe") ; not required for PowerShell or ConEmu
-					; using ALT+0nnn ASCII codes for console with international keyboard input language
+					; We won't use the /D option anymore (see https://forum.quickaccesspopup.com/showthread.php?tid=3015). The /D option is not supported in
+					; Win 11 WindowsTerminal.exe tabs open in PowerShell mode. There is no way to distinguish cmd.exe vs Powershell.exe tabs modes. Instead, send two commands.
+					saCommandLines := Object()
+					if (SubStr(this.aaTemp.strFullLocation, 2, 1) = ":") ; there is a drive letter
 					{
-						strCommand .= """" . this.aaTemp.strFullLocation . """" ; double-quotes required for PowerShell
-						loop, parse, strCommand
-							; ANSI characters (like "é") are supported by preceeding the ASCII code with 0, but Unicode characters are not supported
-							; see https://autohotkey.com/docs/commands/Send.htm#asc
-							strSendToConsoleAscCodes .= "{ASC 0" . Asc(A_LoopField) . "}"
-						SendInput, %strSendToConsoleAscCodes%
-						
-						strSendToConsoleAscCodes := ""
+						strFolder := SubStr(this.aaTemp.strFullLocation, 3) ; remove drive letter and :
+						saCommandLines.Push(SubStr(this.aaTemp.strFullLocation, 1, 2)) ; change drive
 					}
 					else
-						SendInput, % "{Raw}" . strCommand . """" . this.aaTemp.strFullLocation . """" ; double-quotes required for PowerShell
+						strFolder := this.aaTemp.strFullLocation ; keep as is
+					saCommandLines.Push("CD """ . strFolder . """") ; change folder, double-quotes required for PowerShell and OK for CMD
 					
-					Sleep, 200
-					SendInput, {Enter}
+					for intIndex, strCommandLine in saCommandLines ; send 1 or 2 commands to change drive and folder
+					{
+						if (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue and !InStr("powershell.exe|conemu.exe|", strProcessName . "|")) ; not required for PowerShell or ConEmu
+						; using ALT+0nnn ASCII codes for console with international keyboard input language
+						{
+							loop, parse, strCommandLine
+								; ANSI characters (like "é") are supported by preceeding the ASCII code with 0, but Unicode characters are not supported
+								; see https://autohotkey.com/docs/commands/Send.htm#asc
+								strSendToConsoleAscCodes .= "{ASC 0" . Asc(A_LoopField) . "}"
+							SendInput, %strSendToConsoleAscCodes%
+							strSendToConsoleAscCodes := ""
+						}
+						else
+							SendInput, % "{Raw}" . strCommandLine
+						Sleep, 200
+						SendInput, {Enter}
+					}
 				}
 				else if (this.aaTemp.strTargetAppName = "Dialog")
 				{
