@@ -55,6 +55,12 @@ Various
 - refactor QAP and QCE treeview or Special dropdown changed command
 - in Add Favorite for Special, QAP and QCE types, fix issue showing unwanted help text
 
+Version: 11.6.4.3 (2025-04-30)
+- fix a bug when a favorite location (or snippet text) containing multiple {Input:Prompt} placeholders is used repeatedly
+- fix a bug when saving the size of "Add/Edit Favorite" dialog box for future use
+- add diag code when saving favorites to verify performance of AHK command IniWrite (impacted by some Windows Defender rules)
+- add info to the error message displayed when checking for QAP update returns an error (possibly impacted by some Windows Defender rules)
+ 
 Version: 11.6.4.2.1 (2024-12-26)
 - replace the DLL component to retrieve Windows Apps (UWP) icons with the same file signed with my certificate (in order to minimize false virus alerts)
  
@@ -5814,7 +5820,6 @@ global g_aaWindowsAppsIDsByName := Object()
 
 global g_intNewWindowOffset := -1 ; to offset multiple Explorer windows positioned at center of screen
 
-global g_strIconsFiles := A_WorkingDir . "\icons"
 global g_aaIconDocumentsList := Object() ; list of default icon by document extensions
 
 global g_strLastConfiguration ; last screen configuration updated by GetScreenConfiguration
@@ -6003,6 +6008,8 @@ if (A_IsAdmin and !o_CommandLineParameters.AA.HasKey("AdminSilent")
 if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; add [admin] tag only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
+
+global g_strIconsFilesRoot := o_Settings.MenuIcons.strIconsCustomFolder.IniValue
 
 global g_strURLIconFileIndex := (StrLen(o_Settings.MenuIcons.strCustomLinksIcon.IniValue)
 	? o_Settings.MenuIcons.strCustomLinksIcon.IniValue : GetDefaultBrowserIcon())
@@ -17810,8 +17817,10 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		g_strNewFavoriteIconResource := o_EditedFavorite.GetDefaultIcon4Type(strNewFavoriteLocation)
 	if InStr(g_strNewFavoriteIconResource, g_strTempDir) ; for WindowsApp icon, move icon file from temporary folder to permanent icons folder
 	{
-		FileMove, %g_strNewFavoriteIconResource%, % StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFiles), 1 ; 1 to ovewrite
-		o_EditedFavorite.AA.strFavoriteIconResource := StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFiles)
+		If !FileExist(g_strIconsFilesRoot . "\WindowsAppsIcons") ; check if Windows Apps icons folder exists
+			FileCreateDir, % g_strIconsFilesRoot . "\WindowsAppsIcons"
+		FileMove, %g_strNewFavoriteIconResource%, % StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFilesRoot . "\WindowsAppsIcons"), 1 ; 1 to ovewrite
+		o_EditedFavorite.AA.strFavoriteIconResource := StrReplace(g_strNewFavoriteIconResource, g_strTempDir, g_strIconsFilesRoot . "\WindowsAppsIcons")
 	}
 	else
 		o_EditedFavorite.AA.strFavoriteIconResource := g_strNewFavoriteIconResource
@@ -18411,7 +18420,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 
 	if  InStr("|Special|QAP|QCE", "|" . o_EditedFavorite.AA.strFavoriteType) and !StrLen(strNewFavoriteLocation)
 	{
-		Oops(2, o_L["DialogFavoriteDropdownEmpty"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel
+		Oops(2, o_L["DialogFavoriteDropdownEmpty"], o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabelNoAmpersand
 			, (o_EditedFavorite.AA.strFavoriteType = "Special" ? o_L["DialogDropDown"] : o_L["DialogTreeView"])) ; DialogTreeView for QAP and QCE
 		g_blnAbortSave := true
 		return
@@ -26262,12 +26271,12 @@ GetWebPageIcon(strLocation, ByRef strIconResource, blnExpress := false)
 	if (blnFaviconURL)
 		strLocation := SubStr(strLocation, 2) ; remove * prefix
 	
-	If !FileExist(g_strIconsFiles) ; check if icons folder exists
-		FileCreateDir, %g_strIconsFiles%
+	If !FileExist(g_strIconsFilesRoot . "\WebPageIcons") ; check if Web page icons folder exists
+		FileCreateDir, % g_strIconsFilesRoot . "\WebPageIcons"
 
 	SplitPath, strLocation, , , , , strProtocolDomain
 	strDomain := SubStr(strProtocolDomain, InStr(strProtocolDomain, "//") + 2)
-	strIconFilename := g_strIconsFiles . "\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
+	strIconFilename := g_strIconsFilesRoot . "\WebPageIcons\" . RegExReplace(strDomain, "i)[^a-z0-9]", "_") ; replace characters not in a-z (case insensitive) and 0-9 with _
 		. ".ico"
 	
 	strIconURL := (blnFaviconURL ? strLocation : strProtocolDomain . "/" . "favicon.ico")
@@ -35263,27 +35272,37 @@ class Container
 					if (WinExist("A") <> g_strTargetWinId) ; in case that some window just popped out, and initialy active window lost focus
 						WinActivate, ahk_id %g_strTargetWinId% ; we'll activate initialy active window
 					
-					WinGet, strProcessName, ProcessName, ahk_id %g_strTargetWinId% ; cmd.exe, powershell.exe, conemu.exe or conemu64.exe
-					; add /D option only for cmd.exe, not required for powershell.exe
-					strCommand := "CD " . (strProcessName = "cmd.exe" ? "/D " : "") ; must end with space
+					WinGet, strProcessName, ProcessName, ahk_id %g_strTargetWinId% ; cmd.exe, powershell.exe, conemu.exe, conemu64.exe or windowsterminal.exe (Win 11)
 					
-					if (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue) and (strProcessName = "cmd.exe") ; not required for PowerShell or ConEmu
-					; using ALT+0nnn ASCII codes for console with international keyboard input language
+					; We won't use the /D option anymore (see https://forum.quickaccesspopup.com/showthread.php?tid=3015). The /D option is not supported in
+					; Win 11 WindowsTerminal.exe tabs open in PowerShell mode. There is no way to distinguish cmd.exe vs Powershell.exe tabs modes. Instead, send two commands.
+					saCommandLines := Object()
+					if (SubStr(this.aaTemp.strFullLocation, 2, 1) = ":") ; there is a drive letter
 					{
-						strCommand .= """" . this.aaTemp.strFullLocation . """" ; double-quotes required for PowerShell
-						loop, parse, strCommand
-							; ANSI characters (like "é") are supported by preceeding the ASCII code with 0, but Unicode characters are not supported
-							; see https://autohotkey.com/docs/commands/Send.htm#asc
-							strSendToConsoleAscCodes .= "{ASC 0" . Asc(A_LoopField) . "}"
-						SendInput, %strSendToConsoleAscCodes%
-						
-						strSendToConsoleAscCodes := ""
+						strFolder := SubStr(this.aaTemp.strFullLocation, 3) ; remove drive letter and :
+						saCommandLines.Push(SubStr(this.aaTemp.strFullLocation, 1, 2)) ; change drive
 					}
 					else
-						SendInput, % "{Raw}" . strCommand . """" . this.aaTemp.strFullLocation . """" ; double-quotes required for PowerShell
+						strFolder := this.aaTemp.strFullLocation ; keep as is
+					saCommandLines.Push("CD """ . strFolder . """") ; change folder, double-quotes required for PowerShell and OK for CMD
 					
-					Sleep, 200
-					SendInput, {Enter}
+					for intIndex, strCommandLine in saCommandLines ; send 1 or 2 commands to change drive and folder
+					{
+						if (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue and !InStr("powershell.exe|conemu.exe|", strProcessName . "|")) ; not required for PowerShell or ConEmu
+						; using ALT+0nnn ASCII codes for console with international keyboard input language
+						{
+							loop, parse, strCommandLine
+								; ANSI characters (like "é") are supported by preceeding the ASCII code with 0, but Unicode characters are not supported
+								; see https://autohotkey.com/docs/commands/Send.htm#asc
+								strSendToConsoleAscCodes .= "{ASC 0" . Asc(A_LoopField) . "}"
+							SendInput, %strSendToConsoleAscCodes%
+							strSendToConsoleAscCodes := ""
+						}
+						else
+							SendInput, % "{Raw}" . strCommandLine
+						Sleep, 200
+						SendInput, {Enter}
+					}
 				}
 				else if (this.aaTemp.strTargetAppName = "Dialog")
 				{
