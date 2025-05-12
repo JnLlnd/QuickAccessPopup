@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.9.0.1 (2025-##-##)
+Version BETA: 11.9.0.2 (2025-##-##)
  
 New favorite type "Clipboard Command"
 - implement "Add Favorite" and "Edit Favorite" for QCE command based on QAP Features with treeview and help link
@@ -55,6 +55,11 @@ Various
 - refactor QAP and QCE treeview or Special dropdown changed command
 - in Add Favorite for Special, QAP and QCE types, fix issue showing unwanted help text
 
+Version: 11.6.4.4 (2025-05-12)
+- when adding a favorite and retrieving web page icons or Windows apps icons, now save the retrieved icons under the subfolders \WebPageIcons and \WindowsAppsIcons of user's custom icons folder set "Options, Menu Icons", by default under QAP Settings folder; this allow the user to save retrieved icons in a folder that can be shared on a multi-users system
+- better support changing folder in the new multi-tab Win 11 window CMD or PowerShell (WindowsTerminal.exe); in details: stop using the /D option not supported in Win 11 WindowsTerminal.exe tabs open in PowerShell mode, instead, send two commands to change drive, then change folder
+- remove unwanted & in favorite type label in some error messages
+ 
 Version: 11.6.4.3 (2025-04-30)
 - fix a bug when a favorite location (or snippet text) containing multiple {Input:Prompt} placeholders is used repeatedly
 - fix a bug when saving the size of "Add/Edit Favorite" dialog box for future use
