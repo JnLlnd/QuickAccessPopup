@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.4.4 (2025-05-12)
+- when adding a favorite and retrieving web page icons or Windows apps icons, now save the retrieved icons under the subfolders \WebPageIcons and \WindowsAppsIcons of user's custom icons folder set "Options, Menu Icons", by default under QAP Settings folder; this allow the user to save retrieved icons in a folder that can be shared on a multi-users system
+- better support changing folder in the new multi-tab Win 11 window CMD or PowerShell (WindowsTerminal.exe); in details: stop using the /D option not supported in Win 11 WindowsTerminal.exe tabs open in PowerShell mode, instead, send two commands to change drive, then change folder
+- remove unwanted & in favorite type label in some error messages
+ 
 Version: 11.6.4.3 (2025-04-30)
 - fix a bug when a favorite location (or snippet text) containing multiple {Input:Prompt} placeholders is used repeatedly
 - fix a bug when saving the size of "Add/Edit Favorite" dialog box for future use
@@ -5607,7 +5612,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.4.3
+;@Ahk2Exe-SetVersion 11.6.4.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5675,7 +5680,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.4.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.4.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
