@@ -5803,6 +5803,7 @@ global g_strSnippetOptionsSeparator := ":" ; separator between command and optio
 global g_strHotstringOptionsSeparator := ":" ; separator between trigger and options in hotstrings
 global g_strHotstringOptionsLongSeparator := " / " ; separator between hotstrings options long text
 global g_strHotstringOptionsExecute := "X"
+global g_strHotstringOptionsKeyboardDelay := "SEK"
 
 global g_saGuiControls := Object() ; to build Settings gui
 
@@ -7015,6 +7016,8 @@ o_Settings.ReadIniOption("Snippets", "intSnippetDefaultFontSize", "SnippetDefaul
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultMacro", "SnippetDefaultMacro", 0, "Snippets", "f_blnSnippetDefaultMacro") ; g_blnSnippetDefaultMacro
 o_Settings.ReadIniOption("Hotstrings", "strHotstringsDefaultOptions", "HotstringsDefaultOptions", " ", "Snippets"
 	, "f_lblSelectHotstringDefaultOptions|f_btnSelectHotstringDefaultOptions") ; g_strHotstringsDefaultOptions
+o_Settings.ReadIniOption("Hotstrings", "intHotstringsDefaultKeyboardDelay", "HotstringsDefaultKeyboardDelay", 10, "Snippets"
+	, "f_lblHotstringsDefaultKeyboardDelay|f_intHotstringsDefaultKeyboardDelay")
 
 ; Group User Variables (DetectCloudUserVariables will be executed after UsageDbInit), IconReplacement and SwitchExclusion
 o_Settings.ReadIniOption("UserVariables", "strUserVariablesList", "UserVariablesList", " ", "UserVariables", "f_lnkUserVariablesList|f_lnkUserVariablesListTitle|f_strUserVariablesList") ; g_strUserVariablesList
@@ -10396,6 +10399,8 @@ Gui, 2:Font, s8 w700
 Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% hidden vf_lblSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefault"]
 Gui, 2:Font
 Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% gSelectHotstringDefaultOptions hidden vf_btnSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefaultSelect"]
+Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblHotstringsDefaultKeyboardDelay, % o_L["OptionsHotstringsKeyboardDelay"]
+Gui, 2:Add, Edit, x+10 yp h20 w50 number center vf_intHotstringsDefaultKeyboardDelay gGuiOptionsGroupChanged hidden, % o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.IniValue
 
 GuiControlGet, arrPos, Pos, f_btnSelectHotstringDefaultOptions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -11006,6 +11011,7 @@ o_Settings.Snippets.blnSnippetDefaultFixedFont.WriteIni(f_blnSnippetDefaultFixed
 o_Settings.Snippets.intSnippetDefaultFontSize.WriteIni(f_intSnippetDefaultFontSizeEdit)
 o_Settings.Snippets.blnSnippetDefaultMacro.WriteIni(f_blnSnippetDefaultMacro)
 o_Settings.Hotstrings.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
+o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.WriteIni(f_intHotstringsDefaultKeyboardDelay)
 
 ; === UserVariables ===
 
@@ -22082,11 +22088,20 @@ if (g_strOpenFavoriteLabel <> "OpenFavoriteFromHotstring")
 
 if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavoriteLabel . "|")
 {
-	o_ThisFavorite := (g_strOpenFavoriteLabel = "OpenFavoriteFromShortcut"
-		? g_aaItemsByShortcut[A_ThisHotkey]
-		: g_dicItemsByHotstring.Item(g_strHotstringOptionsSeparator . SubStr(A_ThisHotkey, 3))) ; remove "X" (g_strHotstringOptionsExecute) as first option (":X:trigger" or ":XC*:trigger")
-	Diag(A_ThisLabel, "A_ThisHotkey", A_ThisHotkey)
-	Diag(A_ThisLabel, "g_aaItemsByShortcut[A_ThisHotkey].aa.strFavoriteName", g_aaItemsByShortcut[A_ThisHotkey].aa.strFavoriteName)
+	; Diag(A_ThisLabel, "A_ThisHotkey", A_ThisHotkey)
+	if (g_strOpenFavoriteLabel = "OpenFavoriteFromShortcut")
+	{
+		o_ThisFavorite := g_aaItemsByShortcut[A_ThisHotkey]
+		; Diag(A_ThisLabel, "g_aaItemsByShortcut[A_ThisHotkey].AA.strFavoriteName", g_aaItemsByShortcut[A_ThisHotkey].AA.strFavoriteName)
+	}
+	else
+	{
+		strHotkeyTrigger := StrReplace(A_ThisHotkey, g_strHotstringOptionsExecute . g_strHotstringOptionsKeyboardDelay
+				. o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.IniValue)
+		o_ThisFavorite := g_dicItemsByHotstring.Item(strHotkeyTrigger)
+		; Diag(A_ThisLabel, "strHotkeyTrigger", strHotkeyTrigger)
+		; Diag(A_ThisLabel, "g_dicItemsByHotstring.Item(strHotkeyTrigger).AA.strFavoriteName", g_dicItemsByHotstring.Item(strHotkeyTrigger).AA.strFavoriteName)
+	}
 
 	if !IsObject(o_ThisFavorite)
 	{
@@ -25846,9 +25861,10 @@ GetHotstringOptionsLong(strHotstringOptionsShort)
 PrepareHotstringForFunction(strHotstring, objFavorite)
 ;------------------------------------------------------------
 {
-	; insert X option as first option (":X...:trigger" or ":X...:trigger") just before creating the hotstring
+	; just before creating the hotstring, insert X and SEKn options as first options (":XSEK10...:trigger") 
 	SplitHotstring(strHotstring, strTrigger, strOptionsShort)
-	strPreparedHotstring := g_strHotstringOptionsSeparator . g_strHotstringOptionsExecute . strOptionsShort . g_strHotstringOptionsSeparator . strTrigger
+	strPreparedHotstring := g_strHotstringOptionsSeparator . g_strHotstringOptionsExecute . g_strHotstringOptionsKeyboardDelay
+		. o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.IniValue . strOptionsShort . g_strHotstringOptionsSeparator . strTrigger
 	
 	return strPreparedHotstring
 }
