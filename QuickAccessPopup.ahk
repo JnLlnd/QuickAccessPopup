@@ -18050,7 +18050,7 @@ if (!g_intNewItemPos)
 
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
-	and !(ContainsPlaceholder(strNewFavoriteLocation) or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
+	and !(ContainsPlaceholder(ExpandUserVariables(strNewFavoriteLocation)) or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
 {
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
