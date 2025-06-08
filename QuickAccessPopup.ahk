@@ -7014,9 +7014,9 @@ o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultProcessEOLTab", "SnippetD
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultFixedFont", "SnippetDefaultFixedFont", 0, "Snippets", "f_blnSnippetDefaultFixedFont") ; g_blnSnippetDefaultFixedFont
 o_Settings.ReadIniOption("Snippets", "intSnippetDefaultFontSize", "SnippetDefaultFontSize", 10, "Snippets", "f_lblSnippetDefaultFontSize|f_intSnippetDefaultFontSizeEdit|f_intSnippetDefaultFontSize") ; g_intSnippetDefaultFontSize
 o_Settings.ReadIniOption("Snippets", "blnSnippetDefaultMacro", "SnippetDefaultMacro", 0, "Snippets", "f_blnSnippetDefaultMacro") ; g_blnSnippetDefaultMacro
-o_Settings.ReadIniOption("Hotstrings", "strHotstringsDefaultOptions", "HotstringsDefaultOptions", " ", "Snippets"
+o_Settings.ReadIniOption("Snippets", "strHotstringsDefaultOptions", "HotstringsDefaultOptions", " ", "Snippets"
 	, "f_lblSelectHotstringDefaultOptions|f_btnSelectHotstringDefaultOptions") ; g_strHotstringsDefaultOptions
-o_Settings.ReadIniOption("Hotstrings", "intHotstringsDefaultKeyboardDelay", "HotstringsDefaultKeyboardDelay", 10, "Snippets"
+o_Settings.ReadIniOption("Snippets", "intHotstringsDefaultKeyboardDelay", "HotstringsDefaultKeyboardDelay", 10, "Snippets"
 	, "f_lblHotstringsDefaultKeyboardDelay|f_intHotstringsDefaultKeyboardDelay")
 
 ; Group User Variables (DetectCloudUserVariables will be executed after UsageDbInit), IconReplacement and SwitchExclusion
@@ -10394,13 +10394,13 @@ Gui, 2:Add, CheckBox, y+15 x%g_intGroupItemsX% w300 vf_blnSnippetDefaultMacro gG
 GuiControl, , f_blnSnippetDefaultMacro, % (o_Settings.Snippets.blnSnippetDefaultMacro.IniValue = true)
 
 ; HotstringsDefaultOptions
-strNewHotstringsDefaultOptions := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue ; to keep value when options are saved if the hotstrings options are not changed
+strNewHotstringsDefaultOptions := o_Settings.Snippets.strHotstringsDefaultOptions.IniValue ; to keep value when options are saved if the hotstrings options are not changed
 Gui, 2:Font, s8 w700
 Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% hidden vf_lblSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefault"]
 Gui, 2:Font
 Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% gSelectHotstringDefaultOptions hidden vf_btnSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefaultSelect"]
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblHotstringsDefaultKeyboardDelay, % o_L["OptionsHotstringsKeyboardDelay"]
-Gui, 2:Add, Edit, x+10 yp h20 w50 number center vf_intHotstringsDefaultKeyboardDelay gGuiOptionsGroupChanged hidden, % o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.IniValue
+Gui, 2:Add, Edit, x+10 yp h20 w50 number center vf_intHotstringsDefaultKeyboardDelay gGuiOptionsGroupChanged hidden, % o_Settings.Snippets.intHotstringsDefaultKeyboardDelay.IniValue
 
 GuiControlGet, arrPos, Pos, f_btnSelectHotstringDefaultOptions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -11010,8 +11010,8 @@ o_Settings.Snippets.blnSnippetDefaultProcessEOLTab.WriteIni(f_blnSnippetDefaultP
 o_Settings.Snippets.blnSnippetDefaultFixedFont.WriteIni(f_blnSnippetDefaultFixedFont)
 o_Settings.Snippets.intSnippetDefaultFontSize.WriteIni(f_intSnippetDefaultFontSizeEdit)
 o_Settings.Snippets.blnSnippetDefaultMacro.WriteIni(f_blnSnippetDefaultMacro)
-o_Settings.Hotstrings.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
-o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.WriteIni(f_intHotstringsDefaultKeyboardDelay)
+o_Settings.Snippets.strHotstringsDefaultOptions.WriteIni(strNewHotstringsDefaultOptions)
+o_Settings.Snippets.intHotstringsDefaultKeyboardDelay.WriteIni(f_intHotstringsDefaultKeyboardDelay)
 
 ; === UserVariables ===
 
@@ -20203,7 +20203,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 
 	SplitHotstring(P_strActualHotstring, SH_strFavoriteHotstringTrigger, SH_strFavoriteHotstringOptionsShort)
 	if !StrLen(P_strActualHotstring) ; if new hotstring, use default options
-		SH_strFavoriteHotstringOptionsShort := o_Settings.Hotstrings.strHotstringsDefaultOptions.IniValue
+		SH_strFavoriteHotstringOptionsShort := o_Settings.Snippets.strHotstringsDefaultOptions.IniValue
 
 	Gui, 3:New, +Hwndg_strGui3Hwnd, %SH_strGuiTitle%
 	Gui, 3:Default
@@ -22097,7 +22097,7 @@ if InStr("OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|", g_strOpenFavorit
 	else
 	{
 		strHotkeyTrigger := StrReplace(A_ThisHotkey, g_strHotstringOptionsExecute . g_strHotstringOptionsKeyboardDelay
-				. o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.IniValue)
+				. o_Settings.Snippets.intHotstringsDefaultKeyboardDelay.IniValue)
 		o_ThisFavorite := g_dicItemsByHotstring.Item(strHotkeyTrigger)
 		; Diag(A_ThisLabel, "strHotkeyTrigger", strHotkeyTrigger)
 		; Diag(A_ThisLabel, "g_dicItemsByHotstring.Item(strHotkeyTrigger).AA.strFavoriteName", g_dicItemsByHotstring.Item(strHotkeyTrigger).AA.strFavoriteName)
@@ -25864,7 +25864,7 @@ PrepareHotstringForFunction(strHotstring, objFavorite)
 	; just before creating the hotstring, insert X and SEKn options as first options (":XSEK10...:trigger") 
 	SplitHotstring(strHotstring, strTrigger, strOptionsShort)
 	strPreparedHotstring := g_strHotstringOptionsSeparator . g_strHotstringOptionsExecute . g_strHotstringOptionsKeyboardDelay
-		. o_Settings.Hotstrings.intHotstringsDefaultKeyboardDelay.IniValue . strOptionsShort . g_strHotstringOptionsSeparator . strTrigger
+		. o_Settings.Snippets.intHotstringsDefaultKeyboardDelay.IniValue . strOptionsShort . g_strHotstringOptionsSeparator . strTrigger
 	
 	return strPreparedHotstring
 }

@@ -981,7 +981,7 @@ this["OptionsHotkeyTriggerExclusionListHelp"] := "Select if the keyboard shortcu
 this["OptionsHotkeyTriggerExclusionListTitle"] := "Keyboard shortcuts"
 this["OptionsHotstringsDefault"] := "Hotstrings default options"
 this["OptionsHotstringsDefaultSelect"] := "Select options"
-this["OptionsHotstringsKeyboardDelay"] := "Keyboard delay when deleting a hotstring trigger"
+this["OptionsHotstringsKeyboardDelay"] := "Keyboard delay when deleting a hotstring trigger (ms)"
 this["OptionsIconDocumentsList"] := "Documents Default Icons Replacements"
 this["OptionsIconDocumentsListInstructions"] := "Default document icons are normally configured in Windows. To override this configuration, enter new default document icons below. Each line must start with a file type extension or multiple extensions separated by ""+"" (e.g. ""xlsx+xlsm"" for Excel), followed by the equal sign ""="" and the ""file,index"" or image file of the default icon."
 this["OptionsIconListsInstructions"] := "The ""file,index"" is the path to the file (.ico, .dll or .exe) containing the icon, and the index is the position of the icon in this file, e.g. ""C:\Icons\MyFile.dll,1"". You can also use square image files (.png, .bmp, .gif, .jpg) as long as their size is between 16x16 and 64x64 pixels."
