@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version BETA: 11.9.0.2 (2025-##-##)
+Version BETA: 11.9.0.3 (2025-06-09)
  
 New favorite type "Clipboard Command"
 - implement "Add Favorite" and "Edit Favorite" for QCE command based on QAP Features with treeview and help link
@@ -51,9 +51,11 @@ Quick Access Popup Messaging
  
 Various
 - fix a bug with QAP, Special and QCE favorites setting a short name by error when opening the Add Favorite dialog box
+- add an option under "Options, Snippets and Hotstrings" to set a "Keyboard delay when deleting a hotstring trigger" with a default value of 10ms; increase this value if the trigger is not complete deleted when expanding a hotstring
 - make QAP and QCE description a Link instead of read-only edit (allowing to insert links)
 - refactor QAP and QCE treeview or Special dropdown changed command
 - in Add Favorite for Special, QAP and QCE types, fix issue showing unwanted help text
+- when importing a file shortcut (.lnk), if the "Start In" value is empty, set it to the original shortcut's directory
 
 Version: 11.6.4.4 (2025-05-12)
 - when adding a favorite and retrieving web page icons or Windows apps icons, now save the retrieved icons under the subfolders \WebPageIcons and \WindowsAppsIcons of user's custom icons folder set "Options, Menu Icons", by default under QAP Settings folder; this allow the user to save retrieved icons in a folder that can be shared on a multi-users system
@@ -5636,7 +5638,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.9.0.2
+;@Ahk2Exe-SetVersion 11.9.0.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5704,7 +5706,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.9.0.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.9.0.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -10399,7 +10401,7 @@ Gui, 2:Font, s8 w700
 Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% hidden vf_lblSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefault"]
 Gui, 2:Font
 Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% gSelectHotstringDefaultOptions hidden vf_btnSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefaultSelect"]
-Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblHotstringsDefaultKeyboardDelay, % o_L["OptionsHotstringsKeyboardDelay"]
+Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblHotstringsDefaultKeyboardDelay hidden, % o_L["OptionsHotstringsKeyboardDelay"]
 Gui, 2:Add, Edit, x+10 yp h20 w50 number center vf_intHotstringsDefaultKeyboardDelay gGuiOptionsGroupChanged hidden, % o_Settings.Snippets.intHotstringsDefaultKeyboardDelay.IniValue
 
 GuiControlGet, arrPos, Pos, f_btnSelectHotstringDefaultOptions
