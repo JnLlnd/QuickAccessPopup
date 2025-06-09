@@ -6008,8 +6008,8 @@ global g_intNbExternalMenusMax := g_intMaximumValue
 global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
 
 ; Build main menus
+Gosub, BuildAlternativeMenu ; must be before BuildMainMenuInit because this menuAlternative can be included in Main
 Gosub, BuildMainMenuInit
-Gosub, BuildAlternativeMenu
 
 ; Build menu used in Settings Gui
 Gosub, BuildGuiMenuBar ; must be before BuildMainMenuInit
@@ -31000,6 +31000,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("DOpus Favorites",			o_L["DOpusMenuName"],				o_L["DOpusMenuName"],			"DirectoryOpusFavoritesMenuShortcut", 	"2-DynamicMenus"
 			, o_L["DOpusMenuNameDescription"], 0, "DirectoryOpus", ""
 			, "how-to-i-enable-directory-opus-support-in-quick-access-popup", "RefreshDirectoryOpusFavorites", true)
+		this.AddQAPFeatureObject("AttachAlternativeMenu",		o_L["DialogHotkeysManageAlternativeMenu"],		"menuAlternative",	"", 	"2-DynamicMenus~7-QAPManagement"
+			, o_L["MenuShowAlternativeMenuDescription"], 0, "iconOptions", ""
+			, "how-do-i-display-the-quick-access-popup-menu")
 		
 		; Command features
 		
