@@ -9397,10 +9397,10 @@ BuildAlternativeMenu:
 ;------------------------------------------------------------
 
 new Container("Menu", "menuAlternative")
-new Container("Menu", "menuAlternativeStartAndGo")
+new Container("Menu", "menuAlternativeQuickLaunch")
 
 saMenuItemsTable := Object()
-saMenuItemsTableStartAndGo := Object()
+saMenuItemsTableQuickLaunch := Object()
 Loop
 	if o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder.Haskey(A_Index)
 	{
@@ -9410,7 +9410,7 @@ Loop
 		saMenuItemsTable.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
 			, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
 		if (o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].blnIncludeInQuickLaunch)
-			saMenuItemsTableStartAndGo.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
+			saMenuItemsTableQuickLaunch.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
 				, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
 	}
 	else
@@ -9421,8 +9421,8 @@ Loop
 
 o_Containers.AA["menuAlternative"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuAlternative"].BuildMenu()
-o_Containers.AA["menuAlternativeStartAndGo"].LoadFavoritesFromTable(saMenuItemsTableStartAndGo)
-o_Containers.AA["menuAlternativeStartAndGo"].BuildMenu()
+o_Containers.AA["menuAlternativeQuickLaunch"].LoadFavoritesFromTable(saMenuItemsTableQuickLaunch)
+o_Containers.AA["menuAlternativeQuickLaunch"].BuildMenu()
 
 strMenuName := ""
 
@@ -24845,6 +24845,23 @@ return
 
 
 ;------------------------------------------------------------
+QuickLaunchGuiContextMenu:
+;------------------------------------------------------------
+
+if (A_GuiControl = "f_lvQuickLaunch")
+{
+	WinActivate, ahk_id %g_strGui1Hwnd% ; don't know why but this is required for arrow keys to work in the alternative menu
+	intQuickLaunchClickedRow := A_EventInfo ; item selected in the QuickLaunch list
+	LV_GetText(g_intQuickLaunchIndex, intQuickLaunchClickedRow, 3) ;  get selected item order in oQuickLaunchResult.SA object
+	g_blnAlternativeMenuFromQuickLaunch := true
+	Menu, menuAlternativeQuickLaunch, Show ; at mouse position
+}
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 QuickLaunchGuiSize:
 ;------------------------------------------------------------
 
@@ -24967,49 +24984,39 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 	g_intQuickLaunchIndex := ""
 	if (A_ThisLabel = "QuickLaunchEnter")
 		intQuickLaunchClickedRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
-	else if (A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick") ; retrieve favorite object and launch it (double-click) or open alternative menu (right-click)
+	else if (A_GuiEvent = "DoubleClick") ; retrieve favorite object and launch it
 		intQuickLaunchClickedRow := A_EventInfo
 	
-	if (A_ThisLabel = "QuickLaunchEnter" or A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick")
-	; retrieve favorite object and launch it (double-click or Enter) or open alternative menu (right-click)
+	if (A_ThisLabel = "QuickLaunchEnter" or A_GuiEvent = "DoubleClick") ; retrieve favorite object and launch it
 	{
 		LV_GetText(g_intQuickLaunchIndex, intQuickLaunchClickedRow, 3) ;  get selected item order in oQuickLaunchResult.SA object
 		
-		if (A_GuiEvent = "RightClick")
+		Gosub, QuickLaunchGuiEscape
+		Gosub, GetAlternativeMenuModifierFromQuickLaunch
+		o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
+		if StrLen(g_strAlternativeMenuModifier)
 		{
-			g_blnAlternativeMenuFromQuickLaunch := true
-			Menu, menuAlternativeStartAndGo, Show ; at mouse position
+			Gosub, OpenAlternativeFromQuickLaunch
+			g_strAlternativeMenuModifier := ""
 		}
 		else
 		{
-			Gosub, QuickLaunchGuiEscape
-			Gosub, GetAlternativeMenuModifierFromQuickLaunch
-			if StrLen(g_strAlternativeMenuModifier)
-			{
-				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
-				Gosub, OpenAlternativeFromQuickLaunch
-				g_strAlternativeMenuModifier := ""
-			}
-			else
-			{
-				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
-				SetTargetWinInfo(false) ; set g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
-				; navigate if the last active window (active after closing the Quick Launch box) is a file manager
-				g_strHotkeyTypeDetected := ((o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue
-					and (WindowIsExplorer(g_strTargetClass)
-						or (WindowIsDirectoryOpus(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 2)
-						or (WindowIsTotalCommander(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 3)
-						or (WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !blnExcludeDialogBox)))
-					? "Navigate" : "Launch")
-						
-				Gosub, OpenFavoriteFromQuickLaunch
-			}
-			
-			oQuickLaunchResult := ""
-			intRowWidth := ""
+			SetTargetWinInfo(false) ; set g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
+			; navigate if the last active window (active after closing the Quick Launch box) is a file manager
+			g_strHotkeyTypeDetected := ((o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue
+				and (WindowIsExplorer(g_strTargetClass)
+					or (WindowIsDirectoryOpus(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 2)
+					or (WindowIsTotalCommander(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 3)
+					or (WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !blnExcludeDialogBox)))
+				? "Navigate" : "Launch")
+					
+			Gosub, OpenFavoriteFromQuickLaunch
 		}
+		
+		oQuickLaunchResult := ""
+		intRowWidth := ""
 	}
-	; else skip other A_GuiEvent
+	; "RightClick" is processed in QuickLaunchGuiContextMenu, else skip other A_GuiEvent
 }
 else if (A_ThisLabel = "QuickLaunchDown") ; if on edit control, select first row of listview
 	if (strActiveControlV = "f_strQuickLaunch")
@@ -25038,9 +25045,9 @@ QuickLaunchAlternativeMenu:
 Gosub, QuickLaunchGuiEscape
 
 o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
+
 g_blnAlternativeMenu := true
 gosub, OpenAlternativeFromQuickLaunch
-
 g_blnAlternativeMenuFromQuickLaunch := false
 
 return
@@ -31307,7 +31314,7 @@ class QAPfeatures
 		aaOneQAPFeature.intQAPFeatureAlternativeOrder := intQAPFeatureAlternativeOrder
 		aaOneQAPFeature.strDefaultShortcut := strDefaultShortcut ; for Alternative Menu QAP features, the shortcut default contains the default strModifier
 		aaOneQAPFeature.blnDoubleAmpersands := blnDoubleAmpersands
-		aaOneQAPFeature.blnIncludeInQuickLaunch := blnIncludeInQuickLaunch
+		aaOneQAPFeature.blnIncludeInQuickLaunch := blnIncludeInQuickLaunch ; only those are relevant in Quick Launch window Atlernative menu
 		
 		this.AA["{" . strQAPFeatureCode . "}"] := aaOneQAPFeature
 		this.aaQAPFeaturesCodeByDefaultName[strThisLocalizedName] := "{" . strQAPFeatureCode . "}"
