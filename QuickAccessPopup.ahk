@@ -29272,6 +29272,11 @@ RECEIVE_QAPMESSENGER(wParam, lParam)
 		g_strOpenFavoriteFromMsg := saData[2] ; used in OpenFavoriteFromMsg
 		Gosub, OpenFavoriteFromMsg
 	}
+	else if (saData[1] = "QuickLaunch")
+	{
+		Gosub, GuiQuickLaunch
+		GuiControl,  QuickLaunch:, f_strQuickLaunch, % saData[2]
+	}
 	else
 	{
 		Diag(A_ThisFunc, "last else return", 0)
@@ -35351,6 +35356,13 @@ class Container
 					strClipboardContent .= g_strHotstringEndChar
 				
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms (2023-02-19 now consecutive to delay #1...)
+				if InStr(strClipboardContent, "{InsertCaret}")
+				{
+					strClipboardContentNoLF := StrReplace(strClipboardContent, "`n") ; remove LF, keep only CR to have only one count per newline
+					intStartInsertCaret := InStr(strClipboardContentNoLF, "{InsertCaret}") ; keep track of the position where the carte will be inserted
+					strClipboardContentNoLF := StrReplace(strClipboardContentNoLF, "{InsertCaret}") ; remove from temporary variable
+					strClipboardContent := StrReplace(strClipboardContent, "{InsertCaret}") ; remove from pasted variable
+				}
 				Clipboard := strClipboardContent
 				
 				; ClipWait removed 2023-02-19 after error in Quick Clipboard Editor
@@ -35368,6 +35380,11 @@ class Container
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] ; safety, default 150 ms (was 100 ms before 2020-11-05)
 				
 				Clipboard := objPrevClipboard ; Restore the original clipboard
+				if StrLen(strClipboardContentNoLF) ; there was a {InsertCaret}
+				{
+					intInsertCaret := StrLen(strClipboardContentNoLF) - intStartInsertCaret + 1
+					Send, {Left %intInsertCaret%} ; go back to the insert caret position
+				}
 			}
 			else ; snippet of type Macro
 			{
