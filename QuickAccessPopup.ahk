@@ -35667,7 +35667,7 @@ class Container
 			
 			if (this.aaTemp.strHotkeyTypeDetected = "Launch")
 				if ((this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
-					and this.AA.strGroupRestoreWithExplorerOrOther = "Windows Explorer")
+					and this.AA.oParentMenu.AA.strGroupRestoreWithExplorerOrOther = "Windows Explorer")
 					this.aaTemp.strTargetAppName := "Explorer"
 				else if InStr("Desktop|Dialog|Console|Unknown", this.aaTemp.strTargetAppName) ; these targets cannot launch in a new window
 					or (o_FileManagers.P_intActiveFileManager > 1) ; use file managers DirectoryOpus, TotalCommander or QAPconnect
