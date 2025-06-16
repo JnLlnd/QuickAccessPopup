@@ -13680,9 +13680,10 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		; 2 string: restore folders with "Explorer" or "Other" (Directory Opus, Total Commander or QAPconnect)
 		; 3 integer: delay in milliseconds to insert between each favorite to restore
 		; 4 boolean: display group in a submenu
-		g_saGroupInGuiSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
+		; 5 boolean: open folders in tabs of a new window
+		saFavoriteGroupSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
-		g_saGroupInGuiSettings := "" ; value not used if not a group
+		saFavoriteGroupSettings := "" ; value not used if not a group
 }
 else ; add favorite
 {
@@ -14019,18 +14020,22 @@ if (o_EditedFavorite.AA.strFavoriteType = "FTP")
 if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
 	Gui, 2:Add, Text, x20 y+20, % o_L["GuiGroupSaveRestoreOption"]
-	Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupAdd " . (g_saGroupInGuiSettings[1] ? "" : "checked"), % o_L["GuiGroupSaveAddWindowsLabel"]
-	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupReplace " . (g_saGroupInGuiSettings[1] ? "checked" : ""), % o_L["GuiGroupSaveReplaceWindowsLabel"]
+	Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupAdd " . (saFavoriteGroupSettings[1] ? "" : "checked"), % o_L["GuiGroupSaveAddWindowsLabel"]
+	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupReplace " . (saFavoriteGroupSettings[1] ? "checked" : ""), % o_L["GuiGroupSaveReplaceWindowsLabel"]
+
+	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3 ; DirectoryOpus or TotalCommander
+		or (o_FileManagers.P_intActiveFileManager = 2 and FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)) ; Win 11 Explorer with tabs
+		Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnGroupAddNewWindow " . (saFavoriteGroupSettings[5] ? "checked" : ""), % o_L["GuiGroupSaveAddNewWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; DirectoryOpus or TotalCommander
 	{
-		Gui, 2:Add, Text, x20 y+20, % o_L["GuiGroupSaveRestoreWith"]
-		Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupRestoreWithExplorer " . (g_saGroupInGuiSettings[2] = "Windows Explorer" ? "checked" : ""), Windows Explorer
-		Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupRestoreWithOther " . (g_saGroupInGuiSettings[2] <> "Windows Explorer" ? "checked" : "")
+		Gui, 2:Add, Text, x20 y+10, % o_L["GuiGroupSaveRestoreWith"]
+		Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupRestoreWithExplorer " . (saFavoriteGroupSettings[2] = "Windows Explorer" ? "checked" : ""), Windows Explorer
+		Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupRestoreWithOther " . (saFavoriteGroupSettings[2] <> "Windows Explorer" ? "checked" : "")
 			, % o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName ; will be selected by default if empty (when Add)
 	}
 	
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnGroupInMenu gGroupInMenuChanged " . (g_saGroupInGuiSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
+	Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnGroupInMenu gGroupInMenuChanged " . (saFavoriteGroupSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
 }
 
 if (blnFolderInAGroupWithSide) ; folder in a group with side
@@ -14536,7 +14541,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Application")
 else if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
 	Gui, 2:Add, Text, x20 y50, % o_L["GuiGroupRestoreDelay"]
-	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit7 vf_intGroupRestoreDelay, % g_saGroupInGuiSettings[3]
+	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit7 vf_intGroupRestoreDelay, % saFavoriteGroupSettings[3]
 	Gui, 2:Add, Text, x+10 yp, % o_L["GuiGroupRestoreDelayMilliseconds"]
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
@@ -17582,10 +17587,11 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 	
 	if (o_EditedFavorite.AA.strFavoriteType = "Group")
 	{
-		o_EditedFavorite.AA.strFavoriteGroupSettings := f_blnRadioGroupReplace
-		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer")
-		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay
-		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupInMenu
+		o_EditedFavorite.AA.strFavoriteGroupSettings := f_blnRadioGroupReplace ; 1
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer") ; 2
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay ; 3
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupInMenu ; 4
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupAddNewWindow ; 5
 		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem ; see also for other containers below
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
@@ -25340,23 +25346,23 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 		for objWindow in ComObjCreate("Shell.Application").Windows
 			if (objWindow.hwnd = strWinId)
 			{
-								; version "10.0.22621.675" is first Win 11 Explorer with tabs
-								if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
-								{
-									intActiveTab := 0
-									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
-									if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
-									{
-										static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
-										oShellBrowser := ComObjQuery(objWindow, IID_IShellBrowser, IID_IShellBrowser)
-										DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
-										if (intThisTab != intActiveTab)
-											continue
-										ObjRelease(oShellBrowser)
-									}
-									else
-										return false ; error
-								}
+				; version "10.0.22621.675" is first Win 11 Explorer with tabs
+				if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+				{
+					intActiveTab := 0
+					try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
+					if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
+					{
+						static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+						oShellBrowser := ComObjQuery(objWindow, IID_IShellBrowser, IID_IShellBrowser)
+						DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
+						if (intThisTab != intActiveTab)
+							continue
+						ObjRelease(oShellBrowser)
+					}
+					else
+						return false ; error
+				}
 				; retrieve list of selected items in strWinId Explorer window
 				objSelectedItems := objWindow.Document.SelectedItems
 				Diag(A_ThisFunc, "objSelectedItems", "FOUND")
@@ -25485,7 +25491,7 @@ GetOSVersion()
 
 
 ;------------------------------------------------------------
-GetOSVersionInfo()
+GetOSVersionInfo(blnFakeWin11 := false)
 ; by shajul (http://www.autohotkey.com/board/topic/54639-getosversion/?p=414249)
 ; reference: http://msdn.microsoft.com/en-ca/library/windows/desktop/ms724833(v=vs.85).aspx
 ;------------------------------------------------------------
@@ -25499,7 +25505,7 @@ GetOSVersionInfo()
 		If !DllCall("GetVersionExW", "Ptr", &OSVer)
 		   return 0 ; GetSysErrorText(A_LastError)
 		s_oVer := Object()
-		s_oVer.MajorVersion      := NumGet(OSVer, 4, "UInt")
+		s_oVer.MajorVersion      := (blnFakeWin11 ? 11 : NumGet(OSVer, 4, "UInt"))
 		s_oVer.MinorVersion      := NumGet(OSVer, 8, "UInt")
 		s_oVer.BuildNumber       := NumGet(OSVer, 12, "UInt")
 		s_oVer.PlatformId        := NumGet(OSVer, 16, "UInt")
@@ -25512,7 +25518,7 @@ GetOSVersionInfo()
 		
 		; to get last section of build number 10.0.22621.755 (from lexikos https://www.autohotkey.com/boards/viewtopic.php?p=488604#p488604)
 		FileGetVersion strDetailedBuild, %A_WinDir%\explorer.exe
-		s_oVer.DetailedBuild     := strDetailedBuild
+		s_oVer.DetailedBuild     := (blnFakeWin11 ? "10.0.22621.675" : strDetailedBuild)
 	}
 	return s_oVer
 }
@@ -30596,7 +30602,8 @@ class SpecialFolders
 			, "Favorites", "" ; Favoris (<> Favorites (Internet))
 			, "CLS", "CLS", "CLS", "NEW", "DOA", "NEW", "NEW"
 			, "4-Contents")
-		if (GetOSVersionInfo().MajorVersion < 10)
+		bln_FakeWin11Tabs_#### := false ; set true to test Win11 with tabs on Win 10 system
+		if (GetOSVersionInfo(bln_FakeWin11Tabs_####).MajorVersion < 10)
 			this.AddSpecialFolderObject("{3080F90E-D7AD-11D9-BD98-0000947B0257}", "", -1, "", "", ""
 				, "Flip 3D", "" ; Pas de traduction
 				, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
@@ -32474,6 +32481,7 @@ class Container
 					oNewItem.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
 					oNewItem.AA.oSubMenu.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
 					oNewItem.AA.oSubMenu.AA.blnGroupInMenu := saTemp[4]
+					oNewItem.AA.oSubMenu.AA.blnGroupAddNewWindow := saTemp[5]
 				}
 			}
 			
@@ -34307,7 +34315,8 @@ class Container
 		{
 			intOpenError := 0 ; no error by default
 			
-			this.aaTemp := Object() ; reset item temporary values
+			if !(this.AA.oParentMenu.AA.strMenuType = "Group") ; if member of a group, aaTemp was reset in OpenGroup()
+				this.aaTemp := Object() ; reset item temporary values
 			this.aaTemp.strMenuTriggerLabel := strMenuTriggerLabel
 			this.aaTemp.strOpenFavoriteLabel := strOpenFavoriteLabel
 			this.aaTemp.strTargetWinId := strTargetWinId
@@ -35214,12 +35223,20 @@ class Container
 		OpenGroup()
 		;---------------------------------------------------------
 		{
+			; backup blnGroupReplaceWindows in case it is used to fake opening a new window before opening tabs in a new Explorer window
+			blnGroupReplaceWindowsBK := this.AA.oSubMenu.AA.blnGroupReplaceWindows
+			
 			if (this.AA.oSubMenu.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
 				this.OpenGroupCloseExplorers()
-			
+			else if (this.AA.oSubMenu.AA.blnGroupAddNewWindow) ; open in tabs of a new window
+				this.AA.oSubMenu.AA.blnGroupReplaceWindows := true ; fake opening a new window before opening tabs in a new Explorer window
+
 			intFolderItemsCount := 0
 			for intMemberNumber, oGroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
 			{
+				if !IsObject(oGroupMember.aaTemp)
+					oGroupMember.aaTemp := Object() ; reset item temporary values
+				
 				if !(oGroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
 				{
 					if (oGroupMember.AA.strFavoriteType = "Folder" and oGroupMember.AA.intFavoriteFolderLiveLevels)
@@ -35251,12 +35268,16 @@ class Container
 					}
 					else
 					{
-						intMemberDelay := (StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] ? StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] : 0) ; make sure empty value doe not break the addition below
+						; make sure empty value does not break the addition below
+						intMemberDelay := (StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] ? StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] : 0)
 						; parent menu delay + group member (1) integer additional delay after launching member (in ms) + 200 ms as minimal default delay
 						Sleep, % oGroupMember.AA.oParentMenu.AA.intGroupRestoringDelay + intMemberDelay + 200 ; 200 ms minimum delay
 					}
 				}
 			}
+
+			; restore original value
+			this.AA.oSubMenu.AA.blnGroupReplaceWindows := blnGroupReplaceWindowsBK
 			
 			return 0 ; no error
 		}
