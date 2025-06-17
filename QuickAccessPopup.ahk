@@ -31,6 +31,24 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.5 (2025-06-17)
+ 
+PLEASE... I will soon have to pay a significant fee of $900 USD to renew QAP security certificate and online presence. If you haven't recently supported QAP, please consider donating to help me cover these expenses necessary for a secure distribution of this free software:
+https://www.quickaccesspopup.com/QAPcertificate
+ 
+Various improvements
+- for favorites of type "Group", add a checkbox option add folders in the group to in tabs of a new Explorer window; this option is visible when the file manager selected in "Options, File Managers" is Explorer (on Windows 11 with Explorer multiple tabs), Directory Opus or Total Commander
+- add the QAP Feature "Attach Alternative menu" to display the Alternative menu as part of the main QAP menu
+- in the "Quick Launch" window display the Alternative menu as a context menu not only with right-click but also with the Application key (Shift+F10)
+- add the QAPmessenger command "QuickLaunch" to display the "Quick Launch" window from the command line or from other programming/scripting languages; the second optional parameter can be used to enter a filter string (for example C:\>QAPmessenger.exe QuickLaunch "My filter")
+- add the new placeholder {InsertCaret} that will set the location of the cursor after pasting the snippet; this placeholder is only available for "Text mode" snippets (selected in the "Advanced Settings tab)
+- in QAPconnect-default.ini default template, add the file manager [File Pilot (v0.2.8)] (copy this section to your QAPconnece.ini file and adapt the application's path)
+ 
+Bug fixes
+- fix bug loosing some group settings values in various file managers
+- fix bug with the option "Restore folders with: Windows Explorer" when default file manager is Directory Opus or Total Commander
+- fix bug when saving a favorite if its location includes a user variable containing a placeholder
+
 Version: 11.6.4.4 (2025-05-12)
 - when adding a favorite and retrieving web page icons or Windows apps icons, now save the retrieved icons under the subfolders \WebPageIcons and \WindowsAppsIcons of user's custom icons folder set "Options, Menu Icons", by default under QAP Settings folder; this allow the user to save retrieved icons in a folder that can be shared on a multi-users system
 - better support changing folder in the new multi-tab Win 11 window CMD or PowerShell (WindowsTerminal.exe); in details: stop using the /D option not supported in Win 11 WindowsTerminal.exe tabs open in PowerShell mode, instead, send two commands to change drive, then change folder
@@ -5612,7 +5630,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.4.4
+;@Ahk2Exe-SetVersion 11.6.5
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5680,7 +5698,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.4.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -32771,8 +32789,6 @@ class Container
 	BuildMenu(blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false, blnDoNotCountItemsNow := false) ; build menu and recurse in submenus
 	;------------------------------------------------------------
 	{
-		if (this.SA[1].AA.strFavoriteType = "QCE")
-			a := a
 		this.s_intMenuShortcutNumber := 0
 		
 		; try because at first execution the strMenu menu does not exist and produces an error,
