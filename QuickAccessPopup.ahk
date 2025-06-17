@@ -32771,6 +32771,8 @@ class Container
 	BuildMenu(blnMenuShortcutAlreadyInserted := false, blnInitOrManualRefresh := false, blnDoNotCountItemsNow := false) ; build menu and recurse in submenus
 	;------------------------------------------------------------
 	{
+		if (this.SA[1].AA.strFavoriteType = "QCE")
+			a := a
 		this.s_intMenuShortcutNumber := 0
 		
 		; try because at first execution the strMenu menu does not exist and produces an error,
@@ -32795,6 +32797,7 @@ class Container
 			aaThisFavorite := this.SA[A_Index].AA
 			
 			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden (-1)
+				or (aaThisFavorite.strFavoriteType = "QCE" and !o_Favorites.HasKey(aaThisFavorite.strFavoriteType)) ; to exclude "QCE" if running a version before QCE type
 				continue
 				
 			strMenuItemAction := ""
