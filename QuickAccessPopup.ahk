@@ -32796,7 +32796,8 @@ class Container
 		{
 			aaThisFavorite := this.SA[A_Index].AA
 			
-			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden (-1)
+			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
+			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden
 				or (aaThisFavorite.strFavoriteType = "QCE" and !o_Favorites.HasKey(aaThisFavorite.strFavoriteType)) ; to exclude "QCE" if running a version before QCE type
 				continue
 				
