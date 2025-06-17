@@ -31,6 +31,24 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.5 (2025-06-17)
+ 
+PLEASE... I will soon have to pay a significant fee of $900 USD to renew QAP security certificate and online presence. If you haven't recently supported QAP, please consider donating to help me cover these expenses necessary for a secure distribution of this free software:
+https://www.quickaccesspopup.com/QAPcertificate
+ 
+Various improvements
+- for favorites of type "Group", add a checkbox option add folders in the group to in tabs of a new Explorer window; this option is visible when the file manager selected in "Options, File Managers" is Explorer (on Windows 11 with Explorer multiple tabs), Directory Opus or Total Commander
+- add the QAP Feature "Attach Alternative menu" to display the Alternative menu as part of the main QAP menu
+- in the "Quick Launch" window display the Alternative menu as a context menu not only with right-click but also with the Application key (Shift+F10)
+- add the QAPmessenger command "QuickLaunch" to display the "Quick Launch" window from the command line or from other programming/scripting languages; the second optional parameter can be used to enter a filter string (for example C:\>QAPmessenger.exe QuickLaunch "My filter")
+- add the new placeholder {InsertCaret} that will set the location of the cursor after pasting the snippet; this placeholder is only available for "Text mode" snippets (selected in the "Advanced Settings tab)
+- in QAPconnect-default.ini default template, add the file manager [File Pilot (v0.2.8)] (copy this section to your QAPconnece.ini file and adapt the application's path)
+ 
+Bug fixes
+- fix bug loosing some group settings values in various file managers
+- fix bug with the option "Restore folders with: Windows Explorer" when default file manager is Directory Opus or Total Commander
+- fix bug when saving a favorite if its location includes a user variable containing a placeholder
+
 Version BETA: 11.9.0.3 (2025-06-09)
  
 New favorite type "Clipboard Command"
@@ -6049,8 +6067,8 @@ global g_intNbExternalMenusMax := g_intMaximumValue
 global g_intNbLiveFolderItemsMax ; limit number of live folders, value is set in BuildMainMenuWithStatus in case the option is changed
 
 ; Build main menus
+Gosub, BuildAlternativeMenu ; must be before BuildMainMenuInit because this menuAlternative can be included in Main
 Gosub, BuildMainMenuInit
-Gosub, BuildAlternativeMenu
 
 ; Build menu used in Settings Gui
 Gosub, BuildGuiMenuBar ; must be before BuildMainMenuInit
@@ -9467,10 +9485,10 @@ BuildAlternativeMenu:
 ;------------------------------------------------------------
 
 new Container("Menu", "menuAlternative")
-new Container("Menu", "menuAlternativeStartAndGo")
+new Container("Menu", "menuAlternativeQuickLaunch")
 
 saMenuItemsTable := Object()
-saMenuItemsTableStartAndGo := Object()
+saMenuItemsTableQuickLaunch := Object()
 Loop
 	if o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder.Haskey(A_Index)
 	{
@@ -9480,7 +9498,7 @@ Loop
 		saMenuItemsTable.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
 			, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
 		if (o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].blnIncludeInQuickLaunch)
-			saMenuItemsTableStartAndGo.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
+			saMenuItemsTableQuickLaunch.Push(["OpenAlternativeMenu", strMenuName, o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]
 				, o_QAPfeatures.AA[o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder[A_Index]].strDefaultIcon])
 	}
 	else
@@ -9491,8 +9509,8 @@ Loop
 
 o_Containers.AA["menuAlternative"].LoadFavoritesFromTable(saMenuItemsTable)
 o_Containers.AA["menuAlternative"].BuildMenu()
-o_Containers.AA["menuAlternativeStartAndGo"].LoadFavoritesFromTable(saMenuItemsTableStartAndGo)
-o_Containers.AA["menuAlternativeStartAndGo"].BuildMenu()
+o_Containers.AA["menuAlternativeQuickLaunch"].LoadFavoritesFromTable(saMenuItemsTableQuickLaunch)
+o_Containers.AA["menuAlternativeQuickLaunch"].BuildMenu()
 
 strMenuName := ""
 
@@ -13747,9 +13765,10 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		; 2 string: restore folders with "Explorer" or "Other" (Directory Opus, Total Commander or QAPconnect)
 		; 3 integer: delay in milliseconds to insert between each favorite to restore
 		; 4 boolean: display group in a submenu
-		g_saGroupInGuiSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
+		; 5 boolean: open folders in tabs of a new window
+		saFavoriteGroupSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
-		g_saGroupInGuiSettings := "" ; value not used if not a group
+		saFavoriteGroupSettings := "" ; value not used if not a group
 }
 else ; add favorite
 {
@@ -14100,18 +14119,22 @@ if (o_EditedFavorite.AA.strFavoriteType = "FTP")
 if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
 	Gui, 2:Add, Text, x20 y+20, % o_L["GuiGroupSaveRestoreOption"]
-	Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupAdd " . (g_saGroupInGuiSettings[1] ? "" : "checked"), % o_L["GuiGroupSaveAddWindowsLabel"]
-	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupReplace " . (g_saGroupInGuiSettings[1] ? "checked" : ""), % o_L["GuiGroupSaveReplaceWindowsLabel"]
+	Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupAdd " . (saFavoriteGroupSettings[1] ? "" : "checked"), % o_L["GuiGroupSaveAddWindowsLabel"]
+	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupReplace " . (saFavoriteGroupSettings[1] ? "checked" : ""), % o_L["GuiGroupSaveReplaceWindowsLabel"]
+
+	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3 ; DirectoryOpus or TotalCommander
+		or (o_FileManagers.P_intActiveFileManager = 2 and FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)) ; Win 11 Explorer with tabs
+		Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnGroupAddNewWindow " . (saFavoriteGroupSettings[5] ? "checked" : ""), % o_L["GuiGroupSaveAddNewWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; DirectoryOpus or TotalCommander
 	{
-		Gui, 2:Add, Text, x20 y+20, % o_L["GuiGroupSaveRestoreWith"]
-		Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupRestoreWithExplorer " . (g_saGroupInGuiSettings[2] = "Windows Explorer" ? "checked" : ""), Windows Explorer
-		Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupRestoreWithOther " . (g_saGroupInGuiSettings[2] <> "Windows Explorer" ? "checked" : "")
+		Gui, 2:Add, Text, x20 y+10, % o_L["GuiGroupSaveRestoreWith"]
+		Gui, 2:Add, Radio, % "x20 y+10 vf_blnRadioGroupRestoreWithExplorer " . (saFavoriteGroupSettings[2] = "Windows Explorer" ? "checked" : ""), Windows Explorer
+		Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupRestoreWithOther " . (saFavoriteGroupSettings[2] <> "Windows Explorer" ? "checked" : "")
 			, % o_FileManagers.SA[o_FileManagers.P_intActiveFileManager].AA.strDisplayName ; will be selected by default if empty (when Add)
 	}
 	
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnGroupInMenu gGroupInMenuChanged " . (g_saGroupInGuiSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
+	Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnGroupInMenu gGroupInMenuChanged " . (saFavoriteGroupSettings[4] ? "checked" : ""), % o_L["GuiGroupSaveGroupInMenu"]
 }
 
 if (blnFolderInAGroupWithSide) ; folder in a group with side
@@ -14669,7 +14692,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Application")
 else if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
 	Gui, 2:Add, Text, x20 y50, % o_L["GuiGroupRestoreDelay"]
-	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit7 vf_intGroupRestoreDelay, % g_saGroupInGuiSettings[3]
+	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit7 vf_intGroupRestoreDelay, % saFavoriteGroupSettings[3]
 	Gui, 2:Add, Text, x+10 yp, % o_L["GuiGroupRestoreDelayMilliseconds"]
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
@@ -17842,10 +17865,11 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 	
 	if (o_EditedFavorite.AA.strFavoriteType = "Group")
 	{
-		o_EditedFavorite.AA.strFavoriteGroupSettings := f_blnRadioGroupReplace
-		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer")
-		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay
-		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupInMenu
+		o_EditedFavorite.AA.strFavoriteGroupSettings := f_blnRadioGroupReplace ; 1
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . (f_blnRadioGroupRestoreWithOther ? "Other" : "Windows Explorer") ; 2
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_intGroupRestoreDelay ; 3
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupInMenu ; 4
+		o_EditedFavorite.AA.strFavoriteGroupSettings .= "," . f_blnGroupAddNewWindow ; 5
 		o_EditedFavorite.AA.blnReopenAfterLaunchingItem := f_blnReopenAfterLaunchingItem ; see also for other containers below
 	}
 	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
@@ -18317,7 +18341,7 @@ if (!g_intNewItemPos)
 
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
-	and !(ContainsPlaceholder(strNewFavoriteLocation) or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
+	and !(ContainsPlaceholder(ExpandUserVariables(strNewFavoriteLocation)) or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
 {
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
@@ -25123,6 +25147,23 @@ return
 
 
 ;------------------------------------------------------------
+QuickLaunchGuiContextMenu:
+;------------------------------------------------------------
+
+if (A_GuiControl = "f_lvQuickLaunch")
+{
+	WinActivate, ahk_id %g_strGui1Hwnd% ; don't know why but this is required for arrow keys to work in the alternative menu
+	intQuickLaunchClickedRow := A_EventInfo ; item selected in the QuickLaunch list
+	LV_GetText(g_intQuickLaunchIndex, intQuickLaunchClickedRow, 3) ;  get selected item order in oQuickLaunchResult.SA object
+	g_blnAlternativeMenuFromQuickLaunch := true
+	Menu, menuAlternativeQuickLaunch, Show ; at mouse position
+}
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 QuickLaunchGuiSize:
 ;------------------------------------------------------------
 
@@ -25245,49 +25286,39 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 	g_intQuickLaunchIndex := ""
 	if (A_ThisLabel = "QuickLaunchEnter")
 		intQuickLaunchClickedRow := (LV_GetNext() = 0 ? 1 : LV_GetNext()) ; if edit control is active, LV_GetNext could return 0, then select 1
-	else if (A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick") ; retrieve favorite object and launch it (double-click) or open alternative menu (right-click)
+	else if (A_GuiEvent = "DoubleClick") ; retrieve favorite object and launch it
 		intQuickLaunchClickedRow := A_EventInfo
 	
-	if (A_ThisLabel = "QuickLaunchEnter" or A_GuiEvent = "DoubleClick" or A_GuiEvent = "RightClick")
-	; retrieve favorite object and launch it (double-click or Enter) or open alternative menu (right-click)
+	if (A_ThisLabel = "QuickLaunchEnter" or A_GuiEvent = "DoubleClick") ; retrieve favorite object and launch it
 	{
 		LV_GetText(g_intQuickLaunchIndex, intQuickLaunchClickedRow, 3) ;  get selected item order in oQuickLaunchResult.SA object
 		
-		if (A_GuiEvent = "RightClick")
+		Gosub, QuickLaunchGuiEscape
+		Gosub, GetAlternativeMenuModifierFromQuickLaunch
+		o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
+		if StrLen(g_strAlternativeMenuModifier)
 		{
-			g_blnAlternativeMenuFromQuickLaunch := true
-			Menu, menuAlternativeStartAndGo, Show ; at mouse position
+			Gosub, OpenAlternativeFromQuickLaunch
+			g_strAlternativeMenuModifier := ""
 		}
 		else
 		{
-			Gosub, QuickLaunchGuiEscape
-			Gosub, GetAlternativeMenuModifierFromQuickLaunch
-			if StrLen(g_strAlternativeMenuModifier)
-			{
-				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
-				Gosub, OpenAlternativeFromQuickLaunch
-				g_strAlternativeMenuModifier := ""
-			}
-			else
-			{
-				o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
-				SetTargetWinInfo(false) ; set g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
-				; navigate if the last active window (active after closing the Quick Launch box) is a file manager
-				g_strHotkeyTypeDetected := ((o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue
-					and (WindowIsExplorer(g_strTargetClass)
-						or (WindowIsDirectoryOpus(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 2)
-						or (WindowIsTotalCommander(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 3)
-						or (WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !blnExcludeDialogBox)))
-					? "Navigate" : "Launch")
-						
-				Gosub, OpenFavoriteFromQuickLaunch
-			}
-			
-			oQuickLaunchResult := ""
-			intRowWidth := ""
+			SetTargetWinInfo(false) ; set g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
+			; navigate if the last active window (active after closing the Quick Launch box) is a file manager
+			g_strHotkeyTypeDetected := ((o_Settings.SettingsWindow.blnQuickLaunchNavigate.IniValue
+				and (WindowIsExplorer(g_strTargetClass)
+					or (WindowIsDirectoryOpus(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 2)
+					or (WindowIsTotalCommander(g_strTargetClass) and o_FileManagers.P_intActiveFileManager = 3)
+					or (WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !blnExcludeDialogBox)))
+				? "Navigate" : "Launch")
+					
+			Gosub, OpenFavoriteFromQuickLaunch
 		}
+		
+		oQuickLaunchResult := ""
+		intRowWidth := ""
 	}
-	; else skip other A_GuiEvent
+	; "RightClick" is processed in QuickLaunchGuiContextMenu, else skip other A_GuiEvent
 }
 else if (A_ThisLabel = "QuickLaunchDown") ; if on edit control, select first row of listview
 	if (strActiveControlV = "f_strQuickLaunch")
@@ -25316,9 +25347,9 @@ QuickLaunchAlternativeMenu:
 Gosub, QuickLaunchGuiEscape
 
 o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
+
 g_blnAlternativeMenu := true
 gosub, OpenAlternativeFromQuickLaunch
-
 g_blnAlternativeMenuFromQuickLaunch := false
 
 return
@@ -25611,23 +25642,23 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 		for objWindow in ComObjCreate("Shell.Application").Windows
 			if (objWindow.hwnd = strWinId)
 			{
-								; version "10.0.22621.675" is first Win 11 Explorer with tabs
-								if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
-								{
-									intActiveTab := 0
-									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
-									if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
-									{
-										static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
-										oShellBrowser := ComObjQuery(objWindow, IID_IShellBrowser, IID_IShellBrowser)
-										DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
-										if (intThisTab != intActiveTab)
-											continue
-										ObjRelease(oShellBrowser)
-									}
-									else
-										return false ; error
-								}
+				; version "10.0.22621.675" is first Win 11 Explorer with tabs
+				if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+				{
+					intActiveTab := 0
+					try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
+					if (intActiveTab) ; for Win 11 Explorer with tabs (build number 22621.675 or more)
+					{
+						static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+						oShellBrowser := ComObjQuery(objWindow, IID_IShellBrowser, IID_IShellBrowser)
+						DllCall(NumGet(numGet(oShellBrowser + 0) + 3 * A_PtrSize), "Ptr", oShellBrowser, "UInt*", intThisTab)
+						if (intThisTab != intActiveTab)
+							continue
+						ObjRelease(oShellBrowser)
+					}
+					else
+						return false ; error
+				}
 				; retrieve list of selected items in strWinId Explorer window
 				objSelectedItems := objWindow.Document.SelectedItems
 				Diag(A_ThisFunc, "objSelectedItems", "FOUND")
@@ -25756,7 +25787,7 @@ GetOSVersion()
 
 
 ;------------------------------------------------------------
-GetOSVersionInfo()
+GetOSVersionInfo(blnFakeWin11 := false)
 ; by shajul (http://www.autohotkey.com/board/topic/54639-getosversion/?p=414249)
 ; reference: http://msdn.microsoft.com/en-ca/library/windows/desktop/ms724833(v=vs.85).aspx
 ;------------------------------------------------------------
@@ -25770,7 +25801,7 @@ GetOSVersionInfo()
 		If !DllCall("GetVersionExW", "Ptr", &OSVer)
 		   return 0 ; GetSysErrorText(A_LastError)
 		s_oVer := Object()
-		s_oVer.MajorVersion      := NumGet(OSVer, 4, "UInt")
+		s_oVer.MajorVersion      := (blnFakeWin11 ? 11 : NumGet(OSVer, 4, "UInt"))
 		s_oVer.MinorVersion      := NumGet(OSVer, 8, "UInt")
 		s_oVer.BuildNumber       := NumGet(OSVer, 12, "UInt")
 		s_oVer.PlatformId        := NumGet(OSVer, 16, "UInt")
@@ -25783,7 +25814,7 @@ GetOSVersionInfo()
 		
 		; to get last section of build number 10.0.22621.755 (from lexikos https://www.autohotkey.com/boards/viewtopic.php?p=488604#p488604)
 		FileGetVersion strDetailedBuild, %A_WinDir%\explorer.exe
-		s_oVer.DetailedBuild     := strDetailedBuild
+		s_oVer.DetailedBuild     := (blnFakeWin11 ? "10.0.22621.675" : strDetailedBuild)
 	}
 	return s_oVer
 }
@@ -29573,6 +29604,11 @@ RECEIVE_MESSENGER(wParam, lParam)
 		g_strOpenFavoriteFromMsg := saData[2] ; used in OpenFavoriteFromMsg
 		Gosub, OpenFavoriteFromMsg
 	}
+	else if (saData[1] = "QuickLaunch")
+	{
+		Gosub, GuiQuickLaunch
+		GuiControl,  QuickLaunch:, f_strQuickLaunch, % saData[2]
+	}
 	else
 	{
 		Diag(A_ThisFunc, "last else return", 0)
@@ -30954,7 +30990,8 @@ class SpecialFolders
 			, "Favorites", "" ; Favoris (<> Favorites (Internet))
 			, "CLS", "CLS", "CLS", "NEW", "DOA", "NEW", "NEW"
 			, "4-Contents")
-		if (GetOSVersionInfo().MajorVersion < 10)
+		bln_FakeWin11Tabs_#### := false ; set true to test Win11 with tabs on Win 10 system
+		if (GetOSVersionInfo(bln_FakeWin11Tabs_####).MajorVersion < 10)
 			this.AddSpecialFolderObject("{3080F90E-D7AD-11D9-BD98-0000947B0257}", "", -1, "", "", ""
 				, "Flip 3D", "" ; Pas de traduction
 				, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
@@ -31370,6 +31407,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("DOpus Favorites",			o_L["DOpusMenuName"],				o_L["DOpusMenuName"],			"DirectoryOpusFavoritesMenuShortcut", 	"2-DynamicMenus"
 			, o_L["DOpusMenuNameDescription"], 0, "DirectoryOpus", ""
 			, "how-to-i-enable-directory-opus-support-in-quick-access-popup", "RefreshDirectoryOpusFavorites", true)
+		this.AddQAPFeatureObject("AttachAlternativeMenu",		o_L["DialogHotkeysManageAlternativeMenu"],		"menuAlternative",	"", 	"2-DynamicMenus~7-QAPManagement"
+			, o_L["MenuShowAlternativeMenuDescription"], 0, "iconOptions", ""
+			, "how-do-i-display-the-quick-access-popup-menu")
 		
 		; Command features
 		
@@ -31669,7 +31709,7 @@ class QAPfeatures
 		aaOneQAPFeature.intQAPFeatureAlternativeOrder := intQAPFeatureAlternativeOrder
 		aaOneQAPFeature.strDefaultShortcut := strDefaultShortcut ; for Alternative Menu QAP features, the shortcut default contains the default strModifier
 		aaOneQAPFeature.blnDoubleAmpersands := blnDoubleAmpersands
-		aaOneQAPFeature.blnIncludeInQuickLaunch := blnIncludeInQuickLaunch
+		aaOneQAPFeature.blnIncludeInQuickLaunch := blnIncludeInQuickLaunch ; only those are relevant in Quick Launch window Atlernative menu
 		
 		this.AA["{" . strQAPFeatureCode . "}"] := aaOneQAPFeature
 		this.aaQAPFeaturesCodeByDefaultName[strThisLocalizedName] := "{" . strQAPFeatureCode . "}"
@@ -32923,6 +32963,7 @@ class Container
 					oNewItem.AA.oSubMenu.AA.strGroupRestoreWithExplorerOrOther := saTemp[2]
 					oNewItem.AA.oSubMenu.AA.intGroupRestoringDelay := (saTemp[3] ? saTemp[3] : 0)
 					oNewItem.AA.oSubMenu.AA.blnGroupInMenu := saTemp[4]
+					oNewItem.AA.oSubMenu.AA.blnGroupAddNewWindow := saTemp[5]
 				}
 			}
 			
@@ -33235,7 +33276,9 @@ class Container
 		{
 			aaThisFavorite := this.SA[A_Index].AA
 			
-			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden (-1)
+			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
+			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden
+				or (aaThisFavorite.strFavoriteType = "QCE" and !o_Favorites.HasKey(aaThisFavorite.strFavoriteType)) ; to exclude "QCE" if running a version before QCE type
 				continue
 				
 			strMenuItemAction := ""
@@ -34764,7 +34807,8 @@ class Container
 		{
 			intOpenError := 0 ; no error by default
 			
-			this.aaTemp := Object() ; reset item temporary values
+			if !(this.AA.oParentMenu.AA.strMenuType = "Group") ; if member of a group, aaTemp was reset in OpenGroup()
+				this.aaTemp := Object() ; reset item temporary values
 			this.aaTemp.strMenuTriggerLabel := strMenuTriggerLabel
 			this.aaTemp.strOpenFavoriteLabel := strOpenFavoriteLabel
 			this.aaTemp.strTargetWinId := strTargetWinId
@@ -35730,12 +35774,20 @@ class Container
 		OpenGroup()
 		;---------------------------------------------------------
 		{
+			; backup blnGroupReplaceWindows in case it is used to fake opening a new window before opening tabs in a new Explorer window
+			blnGroupReplaceWindowsBK := this.AA.oSubMenu.AA.blnGroupReplaceWindows
+			
 			if (this.AA.oSubMenu.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
 				this.OpenGroupCloseExplorers()
-			
+			else if (this.AA.oSubMenu.AA.blnGroupAddNewWindow) ; open in tabs of a new window
+				this.AA.oSubMenu.AA.blnGroupReplaceWindows := true ; fake opening a new window before opening tabs in a new Explorer window
+
 			intFolderItemsCount := 0
 			for intMemberNumber, oGroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
 			{
+				if !IsObject(oGroupMember.aaTemp)
+					oGroupMember.aaTemp := Object() ; reset item temporary values
+				
 				if !(oGroupMember.AA.intFavoriteDisabled = 1) ; OK if hidden (-1)
 				{
 					if (oGroupMember.AA.strFavoriteType = "Folder" and oGroupMember.AA.intFavoriteFolderLiveLevels)
@@ -35767,12 +35819,16 @@ class Container
 					}
 					else
 					{
-						intMemberDelay := (StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] ? StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] : 0) ; make sure empty value doe not break the addition below
+						; make sure empty value does not break the addition below
+						intMemberDelay := (StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] ? StrSplit(oGroupMember.AA.strFavoriteGroupRestoreOptions, ";")[1] : 0)
 						; parent menu delay + group member (1) integer additional delay after launching member (in ms) + 200 ms as minimal default delay
 						Sleep, % oGroupMember.AA.oParentMenu.AA.intGroupRestoringDelay + intMemberDelay + 200 ; 200 ms minimum delay
 					}
 				}
 			}
+
+			; restore original value
+			this.AA.oSubMenu.AA.blnGroupReplaceWindows := blnGroupReplaceWindowsBK
 			
 			return 0 ; no error
 		}
@@ -35879,6 +35935,13 @@ class Container
 					strClipboardContent .= g_strHotstringEndChar
 				
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[2] ; safety delay default 80 ms (2023-02-19 now consecutive to delay #1...)
+				if InStr(strClipboardContent, "{InsertCaret}")
+				{
+					strClipboardContentNoLF := StrReplace(strClipboardContent, "`n") ; remove LF, keep only CR to have only one count per newline
+					intStartInsertCaret := InStr(strClipboardContentNoLF, "{InsertCaret}") ; keep track of the position where the carte will be inserted
+					strClipboardContentNoLF := StrReplace(strClipboardContentNoLF, "{InsertCaret}") ; remove from temporary variable
+					strClipboardContent := StrReplace(strClipboardContent, "{InsertCaret}") ; remove from pasted variable
+				}
 				Clipboard := strClipboardContent
 				
 				; ClipWait removed 2023-02-19 after error in Quick Clipboard Editor
@@ -35896,6 +35959,11 @@ class Container
 				Sleep, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[4] ; safety, default 150 ms (was 100 ms before 2020-11-05)
 				
 				Clipboard := objPrevClipboard ; Restore the original clipboard
+				if StrLen(strClipboardContentNoLF) ; there was a {InsertCaret}
+				{
+					intInsertCaret := StrLen(strClipboardContentNoLF) - intStartInsertCaret + 1
+					Send, {Left %intInsertCaret%} ; go back to the insert caret position
+				}
 			}
 			else ; snippet of type Macro
 			{
@@ -36171,7 +36239,7 @@ class Container
 			
 			if (this.aaTemp.strHotkeyTypeDetected = "Launch")
 				if ((this.aaTemp.strOpenFavoriteLabel = "OpenFavoriteFromGroup" or this.AA.oParentMenu.AA.blnGroupInMenu)
-					and this.AA.strGroupRestoreWithExplorerOrOther = "Windows Explorer")
+					and this.AA.oParentMenu.AA.strGroupRestoreWithExplorerOrOther = "Windows Explorer")
 					this.aaTemp.strTargetAppName := "Explorer"
 				else if InStr("Desktop|Dialog|Console|Unknown", this.aaTemp.strTargetAppName) ; these targets cannot launch in a new window
 					or (o_FileManagers.P_intActiveFileManager > 1) ; use file managers DirectoryOpus, TotalCommander or QAPconnect
