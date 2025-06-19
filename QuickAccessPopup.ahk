@@ -31,6 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.5.1 (2025-06-19)
+- fix a bug not showing the checkbox "Add folders in tabs of a new window" in "Group" favorites even if Windows Explorer version supports tabs
+- fix a bug opening a group when the option "Add folders in tabs of a new window" is enabled
+ 
 Version: 11.6.5 (2025-06-17)
  
 PLEASE... I will soon have to pay a significant fee of $900 USD to renew QAP security certificate and online presence. If you haven't recently supported QAP, please consider donating to help me cover these expenses necessary for a secure distribution of this free software:
@@ -5630,7 +5634,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.5
+;@Ahk2Exe-SetVersion 11.6.5.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5698,7 +5702,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -14042,7 +14046,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Group")
 	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupReplace " . (saFavoriteGroupSettings[1] ? "checked" : ""), % o_L["GuiGroupSaveReplaceWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3 ; DirectoryOpus or TotalCommander
-		or (o_FileManagers.P_intActiveFileManager = 2 and FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)) ; Win 11 Explorer with tabs
+		or (o_FileManagers.P_intActiveFileManager = 1 and FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)) ; Win 11 Explorer with tabs
 		Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnGroupAddNewWindow " . (saFavoriteGroupSettings[5] ? "checked" : ""), % o_L["GuiGroupSaveAddNewWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; DirectoryOpus or TotalCommander
@@ -34913,7 +34917,15 @@ class Container
 						strExplorerIDsBefore := this.aaTemp.strExplorerIDs ;  save the list before launching this new Explorer
 					}
 					
-					if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; open a new tab if Win 11 Explorer with tabs
+					if ((FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; if Win 11 Explorer with tabs
+						and this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows)
+					{
+						; open a new Explorer window for first folder
+						Run, % this.aaTemp.strFullLocation
+						Sleep, 1000 ; for safety (200 not enough), tried to wait for ahk_pid but the PID is was not set when running the folder
+						return ; location will not be processed (if desired, manage to jump to the loop after saFavoriteWindowPosition[1] below)
+					}
+					else if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; open a new tab if Win 11 Explorer with tabs
 						and (g_aaFileManagerExplorer.blnFileManagerUseTabs) ; use tabs option enabled
 						and (WinExist("ahk_class ExploreWClass") or WinExist("ahk_class CabinetWClass")) ; if an Explorer window already exists
 						and !(this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ; except if we set a window position, necessarily in a new window
