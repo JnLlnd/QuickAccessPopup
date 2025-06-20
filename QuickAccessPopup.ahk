@@ -31,8 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
+Version BETA: 11.9.0.6 (2025-06-20)
+- fix bug with QCE command when building QAP menu
+
 Version BETA: 11.9.0.5 (2025-06-19)
-- Merge changes in v11.6.5.1 in this beta branch
+- merge changes in v11.6.5.1 in this beta branch
+
+Version BETA: 11.9.0.5 (2025-06-19)
+- merge changes in v11.6.5.1 in this beta branch
 
 Version: 11.6.5.1 (2025-06-19)
 - fix a bug not showing the checkbox "Add folders in tabs of a new window" in "Group" favorites even if Windows Explorer version supports tabs
@@ -5669,7 +5675,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.9.0.5
+;@Ahk2Exe-SetVersion 11.9.0.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5737,7 +5743,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.9.0.5" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.9.0.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -33291,7 +33297,7 @@ class Container
 			
 			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
 			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden
-				or (aaThisFavorite.strFavoriteType = "QCE" and !o_Favorites.HasKey(aaThisFavorite.strFavoriteType)) ; to exclude "QCE" if running a version before QCE type
+				; or (aaThisFavorite.strFavoriteType = "QCE" and !o_Favorites.HasKey(aaThisFavorite.strFavoriteType)) ; to exclude "QCE" if running a version before QCE type
 				continue
 				
 			strMenuItemAction := ""
