@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.5.2 (2025-06-19)
+- release for beta testers of QAP with "Clipboard commands", allowing them to revert to the main branch keeping the Clipboard commands in their menu (not useable in main branch, of course, but available when they will reinstall QAP beta with QCE commands).
+ 
 Version: 11.6.5.1 (2025-06-19)
 - fix a bug not showing the checkbox "Add folders in tabs of a new window" in "Group" favorites even if Windows Explorer version supports tabs
 - fix a bug opening a group when the option "Add folders in tabs of a new window" is enabled
@@ -5634,7 +5637,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.5.1
+;@Ahk2Exe-SetVersion 11.6.5.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5702,7 +5705,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.5.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.5.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
