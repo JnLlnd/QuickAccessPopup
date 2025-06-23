@@ -34700,11 +34700,8 @@ class Container
 				if !StrLen(saFavorite[2]) ; if Special Folder is unknown
 					saFavorite[2] := "* Unknown Special Folder * " . RandomBetween() . " *"
 			}
-			else if (saFavorite[1] = "QCE" and !IsObject(o_QCEcommands)) ; to exclude "QCE" if running a version before QCE type
-			{
-				###_O(IsObject(o_QCEcommands), saFavorite)
-				saFavorite[14] := 1 ; condider favorite disabled+hidden (1)
-			}
+			else if (saFavorite[1] = "QCE" and !IsObject(o_QCEcommands)) ; to exclude "QCE" favorites if running a version before QCE type
+				saFavorite[14] := 1 ; condider intFavoriteDisabled disabled+hidden (1)
 			
 			; this is a regular favorite, add it to the current menu
 			this.InsertItemValue("strFavoriteType", saFavorite[1]) ; see Favorite Types
