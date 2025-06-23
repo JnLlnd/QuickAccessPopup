@@ -33297,7 +33297,6 @@ class Container
 			
 			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
 			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden
-				; or (aaThisFavorite.strFavoriteType = "QCE" and !o_Favorites.HasKey(aaThisFavorite.strFavoriteType)) ; to exclude "QCE" if running a version before QCE type
 				continue
 				
 			strMenuItemAction := ""
@@ -34700,6 +34699,11 @@ class Container
 					saFavorite[2] := o_SpecialFolders.AA[saFavorite[3]].strDefaultName
 				if !StrLen(saFavorite[2]) ; if Special Folder is unknown
 					saFavorite[2] := "* Unknown Special Folder * " . RandomBetween() . " *"
+			}
+			else if (saFavorite[1] = "QCE" and !IsObject(o_QCEcommands)) ; to exclude "QCE" if running a version before QCE type
+			{
+				###_O(IsObject(o_QCEcommands), saFavorite)
+				saFavorite[14] := 1 ; condider favorite disabled+hidden (1)
 			}
 			
 			; this is a regular favorite, add it to the current menu
