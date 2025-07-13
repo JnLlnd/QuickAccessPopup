@@ -14049,7 +14049,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Group")
 	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupReplace " . (saFavoriteGroupSettings[1] ? "checked" : ""), % o_L["GuiGroupSaveReplaceWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3 ; DirectoryOpus or TotalCommander
-		or (o_FileManagers.P_intActiveFileManager = 1 and FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)) ; Win 11 Explorer with tabs
+		or (o_FileManagers.P_intActiveFileManager = 1 and OSVersionWithExplorerTabs())) ; Win 11 Explorer with tabs
 		Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnGroupAddNewWindow " . (saFavoriteGroupSettings[5] ? "checked" : ""), % o_L["GuiGroupSaveAddNewWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; DirectoryOpus or TotalCommander
@@ -24431,7 +24431,7 @@ GetCurrentLocation(strClass, strWinID)
 						if (pExplorer.HWND = strWinID)
 						{
 							; version "10.0.22621.675" is first Win 11 Explorer with tabs
-							if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+							if OSVersionWithExplorerTabs() ; returns 0 if equal, 1 if first greater
 							{
 								intActiveTab := 0
 								try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinID%
@@ -25372,7 +25372,7 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 			if (objWindow.hwnd = strWinId)
 			{
 				; version "10.0.22621.675" is first Win 11 Explorer with tabs
-				if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+				if OSVersionWithExplorerTabs()
 				{
 					intActiveTab := 0
 					try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
@@ -25498,6 +25498,15 @@ PlaceholderDebug(strMessage, blnFavoriteDebug)
 	return false
 }
 ;------------------------------------------------
+
+
+;------------------------------------------------------------
+OSVersionWithExplorerTabs()
+;------------------------------------------------------------
+{
+	return (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)
+}
+;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
@@ -34714,7 +34723,7 @@ class Container
 							if (pExplorer.hwnd = g_strTargetWinId)
 							{
 								; version "10.0.22621.675" is first Win 11 Explorer with tabs
-								if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+								if OSVersionWithExplorerTabs()
 								{
 									intActiveTab := 0
 									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %g_strTargetWinId%
@@ -34922,16 +34931,17 @@ class Container
 						strExplorerIDsBefore := this.aaTemp.strExplorerIDs ;  save the list before launching this new Explorer
 					}
 					
-					if ((FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; if Win 11 Explorer with tabs
-						and this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows)
+					if (OSVersionWithExplorerTabs() and this.aaTemp.blnFirstFolderOfGroup
+						and this.AA.oParentMenu.AA.blnGroupAddNewWindow) ; first folder of a group to open in tabs of a new window
 					{
 						; open a new Explorer window for first folder
 						Run, % this.aaTemp.strFullLocation
 						Sleep, 1000 ; for safety (200 not enough), tried to wait for ahk_pid but the PID is was not set when running the folder
 						return ; location will not be processed (if desired, manage to jump to the loop after saFavoriteWindowPosition[1] below)
 					}
-					else if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; open a new tab if Win 11 Explorer with tabs
-						and (g_aaFileManagerExplorer.blnFileManagerUseTabs) ; use tabs option enabled
+					else if OSVersionWithExplorerTabs() ; open a new tab if Win 11 Explorer with tabs
+						and (g_aaFileManagerExplorer.blnFileManagerUseTabs ; use tabs option enabled
+							or this.AA.oParentMenu.AA.blnGroupAddNewWindow) ; open in a tabs of a new window
 						and (WinExist("ahk_class ExploreWClass") or WinExist("ahk_class CabinetWClass")) ; if an Explorer window already exists
 						and !(this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ; except if we set a window position, necessarily in a new window
 					{
@@ -35260,13 +35270,8 @@ class Container
 		OpenGroup()
 		;---------------------------------------------------------
 		{
-			; backup blnGroupReplaceWindows in case it is used to fake opening a new window before opening tabs in a new Explorer window
-			blnGroupReplaceWindowsBK := this.AA.oSubMenu.AA.blnGroupReplaceWindows
-			
 			if (this.AA.oSubMenu.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
 				this.OpenGroupCloseExplorers()
-			else if (this.AA.oSubMenu.AA.blnGroupAddNewWindow) ; open in tabs of a new window
-				this.AA.oSubMenu.AA.blnGroupReplaceWindows := true ; fake opening a new window before opening tabs in a new Explorer window
 
 			intFolderItemsCount := 0
 			for intMemberNumber, oGroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
@@ -35313,9 +35318,6 @@ class Container
 				}
 			}
 
-			; restore original value
-			this.AA.oSubMenu.AA.blnGroupReplaceWindows := blnGroupReplaceWindowsBK
-			
 			return 0 ; no error
 		}
 		;---------------------------------------------------------
