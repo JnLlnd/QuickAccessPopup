@@ -5675,7 +5675,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.9.0.6
+;@Ahk2Exe-SetVersion 11.9.0.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5743,7 +5743,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.9.0.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.9.0.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -15513,7 +15513,7 @@ GuiInstallQCE:
 ;------------------------------------------------------------
 
 strGuiTitle := g_strAppNameText . " - " . o_L["GuiInstallQCETitle"]
-Gui, InstallQCE:New, +Hwndg_strGui1Hwnd, %strGuiTitle%
+Gui, InstallQCE:New, +Hwndg_strGuiInstallQCEHwnd, %strGuiTitle%
 Gui, Color, White
 Gui, Font, w700 s11, Segoe UI
 Gui, Add, Text, w500, % o_L["GuiInstallQCEGetMore"]
@@ -15525,7 +15525,7 @@ Gui, Add, Button, yp x+10 gInstallQCEHelp vf_btnInstallQCEHelp, % o_L["GuiInstal
 Gui, Add, Button, yp x+10 gInstallQCEClose vf_btnInstallQCEClose, % o_L["GuiClose"]
 Gui, Add, Text, y+10 
 Gui, Font
-GuiCenterButtons(g_strGui1Hwnd, 10, 5, 20, "f_btnInstallQCEDownload", "f_btnInstallQCEHelp", "f_btnInstallQCEClose")
+GuiCenterButtons(g_strGuiInstallQCEHwnd, 10, 5, 20, "f_btnInstallQCEDownload", "f_btnInstallQCEHelp", "f_btnInstallQCEClose")
 Gui, Show, AutoSize Center
 
 return
