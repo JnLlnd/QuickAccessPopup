@@ -396,6 +396,10 @@ lDialogPlay	Jouer
 lDialogQAPFeatureCategoriesNames	En vedette|Menus dynamiques|Édition du menu de QAP|Ajouter un favori avec type|Gestion des fenêtres|Fonctionnalités de Windows|Fermeture de l'ordinateur|Divers utilitaires|Gestion de QAP
 lDialogQAPFeatureCategoriesNamesAll	Tous (en ordre alphabétique)
 lDialogQAPFeaturesHelpLink	Aide sur cette fonctionnalité
+lDialogQCECommandCopyBefore	Copier le texte sélectionné avant d'exécuter la commande
+lDialogQCECommandCopyBeforeSeconds	Secondes à attendre avant d'annuler la commande Copier (défaut 1 seconde)
+lDialogQCECommandPasteAfter	Coller dans l'application active après avoir exécuté la commande
+lDialogQCECommandPasteAfterDetail	Certaines applications ne collent pas le texte modifié comme attendu. Voir cette <a href="~1~">page d'aide</a>.
 lDialogReadOnly	Lecture seulement
 lDialogRefresh	Actualiser
 lDialogRemoveMultipleFavorites	Voulez-vous vraiement supprimer ~1~ favoris ou sous-menus?
@@ -520,6 +524,8 @@ lGuiAbout	À propos
 lGuiAboutDescription	Afficher les crédits pour le développement, la traduction et autres contributions, les numéros de version de l'application et de l'environnement d'exécution, la licence, les noms de l'utilisateur et de l'ordinateur, un lien vers le site web de l'application.
 lGuiAddFavorite	Ajouter
 lGuiCancel	Annuler
+lGuiClipboardCommandLinkHelp	<a id="1">Aide sur QCE</a>
+lGuiClipboardCommandLinkRefresh	<a id="2">Rafraîchir cette liste</a>
 lGuiClose	Fermer
 lGuiCopy	Copier
 lGuiDonateCodeInput	Entrez votre code de licence
@@ -542,6 +548,7 @@ lGuiGroupRestoreMinimized	Lancer minimisé
 lGuiGroupRestoreSide	Afficher de quel côté de ~1~?
 lGuiGroupRestoreStopIfError	Arrêter en cas d'erreur
 lGuiGroupRestoreWaitFinish	Attendre la fin de l'exécution
+lGuiGroupSaveAddNewWindowsLabel	Ajouter les dossiers aux onglets d'une nouvelle fenêtre
 lGuiGroupSaveAddWindowsLabel	Ajouter les dossiers aux fenêtres existantes
 lGuiGroupSaveGroupInMenu	Aussi afficher de groupe dans un sous-menu
 lGuiGroupSaveReplaceWindowsLabel	Remplacer les dossiers dans les fenêtres existantes
@@ -555,6 +562,13 @@ lGuiHotkeysOpenSubmenuOrEditFavorite	Ouvrir le sous-menu ou modifier le favori
 lGuiHotkeysSelectContiguousItems	Sélectionner des items contigus
 lGuiHotkeysSelectNextItem	Sélectionner l'item suivant/précédent
 lGuiHotkeysSelectNonContiguousItems	Sélectionner des items non contigus
+lGuiInstallQCEDownload	Télécharger QCE
+lGuiInstallQCEGetHelp	Aide
+lGuiInstallQCEGetMore	Obtenez davantage d'options de transformation du Presse-papiers. Gratuit!
+lGuiInstallQCEGetMoreDetail	Augmentez les capacités du menu de Quick Access Popup (QAP) et éliminez les tâches manuelles répétitives du Presse-papiers!`n`nQuick Clipboard Editor (QCE) s'intègre gratuitement avec QAP pour donner une fenêtre, des mains agiles et une mémoire d'éléphant au Presse-papiers de Windows. Il inclut de puissantes commandes de manipulation du texte du Presse-papiers directement dans votre menu QAP. QCE automatise des tâches comme le tri du texte dans le Presse-papiers, des commandes Recherche et remplace, l'insertion ou le retrait de texte sur chaque ligne, le filtrage de caractères, le reformatage de paragraphes, et l'encodage/décodage de texte pour divers formats.`n`nCela permet à l'utilisateur de transformer rapidement le contenu du Presse-papiers sans avoir à basculer entre diverses applications. Les commandes personnalisées, simples ou complexes, peuvent être créées, enregistrées et facilement ajoutées au menu de QAP.
+lGuiInstallQCELink	<a id="1">Installer Quick Clipboard Editor</a>
+lGuiInstallQCEPrompt	Installez Quick Clipboard Editor pour utiliser toutes les commandes de QCE.
+lGuiInstallQCETitle	Installler Quick Clipboard Editor
 lGuiListApplicationsHeader	Index|ID|Titre de la fenêtre|Nom du processus|Emplacement du processus|H & L|MinMax|Style|ExStyle|UWP Hwnd|Nom Universal Application
 lGuiLoginName	Code d'utilisateur
 lGuiLvFavoritesHeader	Nom|Type|Raccourci|Emplacement ou contenu
@@ -598,6 +612,8 @@ lGuiSearchAndReplaceTitle	Rechercher et remplacer
 lGuiSearchAndReplaceTopMenu	Rechercher et remplacer dans ce menu et ses sous-menus
 lGuiSubmenuDropdownLabel	Menu à modifier:
 lGuiTitle	Personnaliser - ~1~ ~2~
+lGuiTreeViewPromptQAP	Sélectionnez une Fonctionnalité QAP dans la liste de gauche pour voir sa description et le lien d'aide. Voyez toutes les Fonctionnalités QAP sous la section "Tous (en ordre alphabétique)".
+lGuiTreeViewPromptQCE	Sélectionnez une Commande Presse-Papiers sous une des catégories à gauche.
 lHelpMenuKnowledgeBase	Base de connaissance
 lHelpMenuQuickStart	Démarrage rapide
 lHelpMenuSupportForum	Aide sur le Forum
@@ -778,6 +794,7 @@ lMenuSendTo	Envoyer à
 lMenuSettings	Personnaliser
 lMenuSettingsDescription	Afficher la fenêtre "Personnaliser" pour personnaliser le menu QAP, gérer les favoris et configurer diverses options.`n`nPar défaut, cette commande est incluse dans le menu principal de QAP.
 lMenuShareQAP	Recommander QAP à vos amis
+lMenuShowAlternativeMenuDescription	Joindre le "Menu Alternatif" menu au menu principal afin d'utiliser les commandes "Ouvrir dans une nouvelle fenêtre", "Modifier un favori", "Exécuter en tant qu'administrateur", "Ouvrir le dossier parent", etc.
 lMenuStartMenu	Menu Démarrer
 lMenuStartup	Démarrage
 lMenuSuspendHotkeys	Suspendre les déclencheurs (Hotkeys)
@@ -875,8 +892,12 @@ lOopsNowPlaceholderInvalid	Format de calcul de date invalide dans le code de rem
 lOopsOptionsPathNotExist	~1~ n'existe pas:`n~2~`n`nVeuillez choisir un emplacement valide.
 lOopsOptionsPathTrayIcon	Icône dans la zone de notification
 lOopsOSVerrsionError	~1~ nécessite Window 7 ou une version plus récente du système d'exploitation. Les utilisateurs de Windows Vista et XP sont invités à utiliser Folders Popup qui est compatible avec ces versions.`n`nVoulez-vous visiter le site web de Folders Popup?
-lOopsQCEReceiverError	Une erreur s'est produite lors du chargement des commandes de Quick Clipboard Editor commands.`n`nAssurez-vous que ~1~ ou ~2~ fonctionne avant d'ajouter des Commandes Presse-papiers.
-lOopsQCEReceiverHelp	Recherchez "QCE Receiver" sur www.QuickAccessPopup.com pour de l'aide.
+lOopsQCECommandErrorCopying	Une erreur est survenue pendant la copie du texte pour la Commande Presse-papiers. Assurez-vous que du texte est sélectionné avant de lancer la commande.
+lOopsQCECommandErrorExecuting	Une erreur est survenue en exécutant la Commande Presse-papiers.`n`nCommande: ~1~
+lOopsQCECommandErrorPasting	Une erreur est survenue pendant le collage du résultat de la Commande Presse-papiers.
+lOopsQCECommandErrorSending	Une erreur est survenue lors de l'envoi de la commande à Quick Clipboard Editor.
+lOopsQCEReceiverError	Une erreur s'est produite lors du chargement des commandes de Quick Clipboard Editor.
+lOopsQCEReceiverHelp	Assurez-vous que ~1~ ou ~2~ fonctionne avant d'ajouter des Commandes Presse-papiers. Recherchez "QCE Receiver" sur www.QuickAccessPopup.com pour de l'aide.
 lOopsRunCommandTooLong	Commande trop longue (~1~ vs un maximum de ~2~)
 lOopsSelectedItemDialogBoxes	L'item sélectionné ne peut pas être détecté dans une boîte de dialogue.
 lOopsSelectedItemTotalCommander	L'item sélectionné ne peut pas être détecté dans Total Commander.
@@ -928,7 +949,7 @@ lOptionsEnableExternalMenusCatalogue	Activer le Catalogue des menus partagés
 lOptionsEnableFavoriteDebugOption	Activer l'option de déboguage des codes de remplacement et des variables de l'utilisateur
 lOptionsExclusionMouseList	Fenêtres exclues
 lOptionsExclusionMouseListDescription	Liste des fenêtres bloquées ou approuvées pour le bouton de souris [~1~]
-lOptionsExclusionMouseListDetail1	Sélectionnez si le bouton de la souris sera utilisable dans toutes les fenêtres d'applications sauf exceptions (fenêtres bloquées) ou seulement dans certaines applications (fenêtres approuvées). Pour ajouter une application, tapez n'importe quelle partie du titre de sa fenêtre. Vous pouvez entrer plusieurs applications, une par ligne. Par exemple, pour exclure Chrome et Word, choisissez Fenêtres exclues  et entrez ces deux lignes dans la liste:`n`nGoogle Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail1	Sélectionnez si le bouton de la souris sera utilisable dans toutes les fenêtres d'applications sauf exceptions (fenêtres bloquées) ou seulement dans certaines applications (fenêtres approuvées). Pour ajouter une application, tapez n'importe quelle partie du titre de sa fenêtre (prenez note que Windows Explorer ne peut pas être exclu). Vous pouvez entrer plusieurs applications, une par ligne. Par exemple, pour exclure Chrome et Word, choisissez Fenêtres exclues  et entrez ces deux lignes dans la liste:`n`nGoogle Chrome`nMicrosoft Word
 lOptionsExclusionMouseListDetail2	Lorsque le déclencheur du menu n'est pas permis dans une application, le clic sur [~1~] sera traité par l'application visée comme si QAP ne roulait pas. Vous pouvez aussi ajouter des fenêtres d'applications par leur nom de classe ou leur nom de processus. Ajoutez un astérisque (*) au début du titre ou de la classe pour aussi exclure les boîtes de dialogue de l'application (exclusions seulement). Plus d'<a href="~2~">aide</a>.
 lOptionsExclusionMouseListWhitelist	Fenêtres approuvées
 lOptionsExplorerContextMenus	Activer les menus contextuels de Windows Explorer
@@ -955,7 +976,8 @@ lOptionsHotkeyRemindersShort	Afficher les rappels abrégés
 lOptionsHotkeyTriggerExclusionListHelp	Sélectionnez si les raccourcis clavier sont actif dans n'importe quelle application avec des exceptions (applications bloquées) ou seulement dans certaines applications (applications approuvées). Pour ajouter une application, tapez n'importe quelle partie du titre de sa fenêtre. Vous pouvez entrer plusieurs applications, une par ligne. Par exemple, pour entrer Chrome et Word, entrez ces deux lignes dans la liste:`n`nGoogle Chrome`nMicrosoft Word`n`nQuand les raccourcis ne sont pas autorisés dans une application, ils sont traités par l'application cible comme si QAP ne roulait pas. Vous pouvez aussi identifier des applications par leur nom de classe ou nom de processus (nom du fichier EXE). Voir <a href="~1~">l'aide</a>.
 lOptionsHotkeyTriggerExclusionListTitle	Raccourcis clavier
 lOptionsHotstringsDefault	Options par défaut des chaînes de substitution
-lOptionsHotstringsDefaultSelect	Sélectionner
+lOptionsHotstringsDefaultSelect	Sélectionner les options
+lOptionsHotstringsKeyboardDelay	Délai du clavier lors de l'effacement du déclencheur d'une chaîne de substitution (ms)
 lOptionsIconDocumentsList	Remplacement des icônes par défaut de documents
 lOptionsIconDocumentsListInstructions	Les icônes par défaut des documents sont normalement configurés dans Windows. Pour passer outre cette configuration, entrez un nouvel icône par defaut ci-dessous. Chaque ligne doit commencer par une extension de fichier ou de multiples extensions séparées par y "+" (par exemple "xlsx+xlsm" pour Excel), suivie du symbole "=" et du "fichier,index" ou du fichier de l'image de l'icône par défaut.
 lOptionsIconListsInstructions	Le "fichier,index" est l'emplacement et le nom du fichier (.ico, .dll or .exe) contenant l'icône. L'index est la position de l'icône dans ce fichier, i.e. "C:\Icons\MonFichier.dll,1". Vous pouvez aussi utiliser une image carrée (.png, .bmp, .gif, .jpg) si sa taille est entre 16x16 et 64x64 pixels.

@@ -59,7 +59,7 @@ lDialogAddFavoriteTabs	Configurações Básicas|Opções do Menu|Opções da Janela|Con
 lDialogAddFavoriteTabsExternal	Menu Compartilhado
 lDialogAddFavoriteTabsLive	Opções da Pasta Ativa
 lDialogAddFileSelect	Escolha o novo documento:
-lDialogAddFolderManuallyPrompt	Desculpe, não detectamos a pasta atual neste tipo de janela.`n`nDeseja adicionar uma pasta favorita manualmenet agora?
+lDialogAddFolderManuallyPrompt	Desculpe, não é possível detectar a pasta atual ou página da web neste tipo de janela.`n`nDeseja adicionar uma pasta favorita manualmente agora?
 lDialogAddFolderManuallyTitle	Adicionar Pasta Ativa ou Página da Web - ~1~ ~2~
 lDialogAddFolderSelect	Escolha ou crie a nova pasta:
 lDialogAddSingle	Adicionar somente um favorito
@@ -183,7 +183,7 @@ lDialogFavoriteFolderLiveColumns	Número de itens por coluna (0 para sem quebra d
 lDialogFavoriteFolderLiveDocuments	Incluir documentos
 lDialogFavoriteFolderLiveExclude	Excluir
 lDialogFavoriteFolderLiveExcludeFolders	Excluir pastas (somente último nível)
-lDialogFavoriteFolderLiveExtensions	Entre extensões separadas por espaços (por exemplo: "bak bk") ou expressões curinga separadas por espaços ("*.bak "meu arquivo??.ext" *cópia*.*"). Ou entre uma expressão regular com "Regex:<sua expressão>".
+lDialogFavoriteFolderLiveExtensions	Entre as extensões separadas por espaços (por exemplo: "bak bk"), ou expressões curinga separadas por espaços ("*.bak "meu arquivo??.ext" *cópia*.*"
 lDialogFavoriteFolderLiveFiles	arquivos
 lDialogFavoriteFolderLiveHideExtensions	Extensões de arquivos
 lDialogFavoriteFolderLiveHideIcons	Ícones
@@ -238,6 +238,7 @@ lDialogFavoriteTypesHelp13	Crie um "Recorte". Defina o título do recorte para o 
 lDialogFavoriteTypesHelp14	Crie um "Menu compartilhado" para usar favoritos em vários sistemas a partir de um arquivo de configurações comum em um local externo. Defina o nome do menu compartilhado para o menu, o local do arquivo de configurações externo e várias opções.`n`nMenus compartilhados podem ser usados no modo "Pessoal", "Colaborativo" ou "Centralizado". Um Catálogo de Menus Compartilhados pode ser definido na aba "Opções > Várias Opções Avançadas" para facilitar a adição de menus compartilhados.`n`nMenus compartilhados podem ser editados como menus regulares. Somente usuários selecionados podem editar menus compartilhados Centralizados. Consulte as Perguntas Frequentes (FAQ) no site para mais ajuda. 
 lDialogFavoriteTypesHelp15	Cria um "Separador de Texto" para inserir cabeçalhos, dando mais clareza ao seu menu.`n`nPor padrão, separadores de texto não possuem ícone, mas você pode selecionar um na aba "Opções do Menu".
 lDialogFavoriteTypesHelp16	Crie um atalho para um "Aplicativo do Windows".`n`nSelecione o aplicativo do Windows da lista de aplicativos instalados em seu sistema.`n`nEsta lista é atualizada na inicialização do QAP e pode ser atualizada sob demanda.
+lDialogFavoriteTypesHelp17	Execute um "Comando da Área de Transferência" para modificar o texto atual contido na Área de Transferência do Windows.`n`nSelecione Comando da Área de Transferência na lista de comandos disponíveis no Quick Clipboard Editor.`n`nEsta lista é atualizada na inicialização do QAP e pode ser atualizada sob demanda na caixa de diálogo "Adicionar Favorito".
 lDialogFavoriteTypesHelp2	Crie um atalho para um "Documento".`n`nDefina o nome do menu do favorito, caminho e várias opções de menu.`n`nConfigurações avançadas permitem escolher um aplicativo específico para exibir o documento e adicionar parâmetros adicionais.
 lDialogFavoriteTypesHelp3	Crie um atalho para um "Aplicativo" (programa, arquivo de lote ou script).`n`nProcure o arquivo executável ou selecione um dos programas em execução. Defina várias opções de menu.`n`nConfigurações avançadas permitem selecionar uma pasta "Iniciar em" e adicionar parâmetros.
 lDialogFavoriteTypesHelp4	Crie um atalho para uma das 50 "Pastas Especiais" predefinidas do Windows, como: Bibliotecas, Imagens, Lixeira, Downloads, etc.`n`nDefina várias opções do menu. Configurações avançadas permitem definir a posição da janela e opções do gerenciador de arquivos.
@@ -368,7 +369,7 @@ lDialogMultipleAddHelp	Duplo clique nas linhas para ajuda dos Recursos do QAP
 lDialogMultipleAddIntro1	1) Selecione um menu de destino e filtre os favoritos, se desejado.
 lDialogMultipleAddIntro1a	Para ordenar a lista, clique no cabeçalho das colunas
 lDialogMultipleAddIntro1f	1) Selecione um menu de destino, uma pasta de origem e filtre os favoritos, se desejado.
-lDialogMultipleAddIntro1s	1) Selecione um menu de destino e um arquivo (.ini) de configurações do QAP.
+lDialogMultipleAddIntro1s	1) Selecione um menu de destino e um arquivo (.ini) ou CSV de configurações do QAP.
 lDialogMultipleAddIntro1t	Os menus principais e favoritos serão carregados em visualização em árvore
 lDialogMultipleAddIntro2	2) Clique na caixa de marcação dos favoritos para adicionar.
 lDialogMultipleAddIntro2a	Para editar o nome de um favorito, selecione a sua linha e pressione F2.
@@ -400,6 +401,10 @@ lDialogPlay	Tocar
 lDialogQAPFeatureCategoriesNames	Destacado|Menus Dinâmicos|Edição de Menu do QAP|Adicionar Favorito do Tipo|Gerenciamento de janela|Recursos do Windows|Comandos para fechar o computador|Vários Utilitários|Gerenciamento do QAP
 lDialogQAPFeatureCategoriesNamesAll	Todas (ordem alfabética)
 lDialogQAPFeaturesHelpLink	Ajuda para este recurso
+lDialogQCECommandCopyBefore	Copiar texto selecionado antes de executar o comando
+lDialogQCECommandCopyBeforeSeconds	Segundos para esperar antes de falhar o comando Copiar (o padrão é 1 segundo)
+lDialogQCECommandPasteAfter	Colar no aplicativo ativo antes de executar o comando
+lDialogQCECommandPasteAfterDetail	Alguns aplicativos não colam o texto modificado como esperado. Veja a <a href="~1~">página de ajuda de QCE</a>.
 lDialogReadOnly	Somente leitura
 lDialogRefresh	Atualizar
 lDialogRemoveMultipleFavorites	Deseja realmente remover favoritos do ~1~ ou submenus?
@@ -515,14 +520,18 @@ lDonateOnline	Sua licença não foi verificada nos últimos ~1~ dias.`n`nPor favor,
 lDonateTextSaveLicense	Salvar sia licença ~1~
 lDonateThankyou	Obrigado ~1~ por ajudar este software!
 lDonateThankyouRestart	Obrigado por ajudar no desenvolvimento do ~1~!`n`nO aplicativo será reiniciado em instantes.
+lDOpusAliasName	Aliases de Pasta
 lDOpusLayoutsName	Esquemas
 lDOpusMenuName	Favoritos do Directory Opus
 lDopusMenuNameDescription	Para usuários do Directory Opus (DOpus), exibe um menu dinâmico criado com as pastas adicionadas aos Favoritos do DOpus. Se o DOpus foi selecionado quando você instalou o QAP, os Favoritos do Directory Opus foram automaticamente adicionados ao seu menu.
+lDopusMenuNameShowAlias	Mostrar Aliases de Pasta nos menus ~1~
 lDopusMenuNameShowLayout	Exibir Esquemas nos menus ~1~
 lGuiAbout	Sobre
 lGuiAboutDescription	Exibe o desenvolvimento, tradução e outros créditos, números da versão do aplicativo e tempo de execução, licença, nome do usuário atual e PC, link para o site de suporte.
 lGuiAddFavorite	Adicionar
 lGuiCancel	Cancelar
+lGuiClipboardCommandLinkHelp	<a id="1">Ajuda no QCE</a>
+lGuiClipboardCommandLinkRefresh	<a id="2">Atualizar lista</a>
 lGuiClose	Fechar
 lGuiCopy	Copiar
 lGuiDonateCodeInput	Entre o código de licença do QAP
@@ -545,6 +554,7 @@ lGuiGroupRestoreMinimized	Iniciar minimizado
 lGuiGroupRestoreSide	Exibir em qual lado de ~1~?
 lGuiGroupRestoreStopIfError	Parar em caso de erro
 lGuiGroupRestoreWaitFinish	Aguardar até o programa finalizar
+lGuiGroupSaveAddNewWindowsLabel	Adicionar pastas em abas de uma nova janela
 lGuiGroupSaveAddWindowsLabel	Adicionar pastas a janelas existentes
 lGuiGroupSaveGroupInMenu	Também exibir este grupo em um submenu
 lGuiGroupSaveReplaceWindowsLabel	Substituir pastas nas janelas existentes
@@ -558,6 +568,13 @@ lGuiHotkeysOpenSubmenuOrEditFavorite	Abrir submenu ou editar favorito
 lGuiHotkeysSelectContiguousItems	Selecionar itens contíguos
 lGuiHotkeysSelectNextItem	Selecionar item anterior/próximo
 lGuiHotkeysSelectNonContiguousItems	Selecionar itens não-contíguos
+lGuiInstallQCEDownload	Baixar o QCE
+lGuiInstallQCEGetHelp	Obter ajuda
+lGuiInstallQCEGetMore	Obtenha mais opções de alteração da Área de Transferência. Grátis!
+lGuiInstallQCEGetMoreDetail	Turbine o menu do Quick Access Popup (QAP) e elimine o tédio de editar manualmente o texto da área de transferência! O Quick Clipboard Editor (QCE) integra-se ao QAP para oferecer uma janela, mãos ágeis e uma memória poderosa à sua Área de Transferência. Ele oferece uma poderosa manipulação de texto da área de transferência diretamente no seu fluxo de trabalho do QAP. O QCE automatiza tarefas como classificar texto da área de transferência, executar funções de localizar e substituir, inserir/remover texto em linhas, filtrar caracteres, reformatar parágrafos e codificar/decodificar texto para diferentes formatos. Isso permite que os usuários transformem rapidamente o conteúdo da área de transferência sem alternar entre aplicativos. Comandos personalizados, desde ações simples até scripts complexos, podem ser criados, salvos e facilmente adicionados ao menu do QAP.
+lGuiInstallQCELink	<a id="1">Instalar o Quick Clipboard Editor</a>
+lGuiInstallQCEPrompt	Instale o Quick Clipboard Editor para usar todos os comando do QCE.
+lGuiInstallQCETitle	Instalar o Quick Clipboard Editor
 lGuiListApplicationsHeader	Índice|ID|Título da janela|Nome do Processo|Caminho do Processo|L & A|Mín-Máx|Estilo|ExStyle|UWP Hwnd|Nome do Aplicativo Universal
 lGuiLoginName	Nome de login
 lGuiLvFavoritesHeader	Nome|Tipo|Tecla de Atalho|Local ou conteúdo
@@ -601,6 +618,8 @@ lGuiSearchAndReplaceTitle	Pesquisar e substituir
 lGuiSearchAndReplaceTopMenu	Pesquisar e substituir neste menu e seus submenus
 lGuiSubmenuDropdownLabel	Menu ou grupo para editar:
 lGuiTitle	Personalizar - ~1~ ~2~
+lGuiTreeViewPromptQAP	Selecione um recurso do QAP na lista à esquerda para ver sua descrição e o link de ajuda. Veja todos os recursos do QAP na seção "Todos (ordem alfabética)".
+lGuiTreeViewPromptQCE	Selecione um comando da área de transferência em uma das categorias à esquerda.
 lHelpMenuKnowledgeBase	Base de Conhecimento
 lHelpMenuQuickStart	Início Rápido
 lHelpMenuSupportForum	Fórum de Suporte
@@ -785,6 +804,7 @@ lMenuSendTo	Enviar para
 lMenuSettings	Personalizar
 lMenuSettingsDescription	Exibe a janela "Personalizar" onde você pode personalizar seu menu popup do QAP, gerenciar seus favoritos e definir várias opções.`n`nPor padrão, este recurso é incluído no menu Principal.
 lMenuShareQAP	Indicar o QAP para seus amigos
+lMenuShowAlternativeMenuDescription	Anexe o "Menu alternativo" ao menu principal, permitindo usar seus comandos "Abrir em uma nova janela", "Editar favoritos", "Executar como administrador", "Abrir a pasta de destino", etc.
 lMenuStartMenu	Menu Iniciar
 lMenuStartup	Inicialização
 lMenuSuspendHotkeys	Teclas de Atalho de Suspensão
@@ -883,6 +903,12 @@ lOopsNowPlaceholderInvalid	Formato de espaço reservado "Agora" inválido
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, selecione um caminho válido.
 lOopsOptionsPathTrayIcon	Arquivo de ícone da Área de Notificação
 lOopsOSVerrsionError	O ~1~ necessita do Window 7 ou sistema operacional mais recente. Usuários do Windows Vista e XP podem usar o Folders Popup, que é compatível com estas versões.`n`nDeseja visitar o site do Folders Popup?
+lOopsQCECommandErrorCopying	Ocorreu um erro ao copiar o texto para o comando Quick Clipboard Editor. Certifique-se de que o texto esteja selecionado antes de chamar o comando.
+lOopsQCECommandErrorExecuting	Ocorreu um erro ao executar o comando do Quick Clipboard Editor.`n`nComando: ~1~
+lOopsQCECommandErrorPasting	Ocorreu um erro ao colar o resultado do comando do Quick Clipboard Editor.
+lOopsQCECommandErrorSending	Ocorreu um erro ao enviar o comando para o Quick Clipboard Editor.
+lOopsQCEReceiverError	Ocorreu um erro ao carregar comandos do Quick Clipboard Editor.`n`nCertifique-se de que ~1~ ou ~2~ esteja em execução antes de adicionar comandos da Área de Transferência.
+lOopsQCEReceiverHelp	Pesquise por "QCE Receiver" em www.QuickAccessPopup.com para ajuda.
 lOopsRunCommandTooLong	Comando de execução muito longo (~1~. Máximo: ~2~)
 lOopsSelectedItemDialogBoxes	O item selecionado não pôde ser detectado nas caixas de diálogo.
 lOopsSelectedItemTotalCommander	O item selecionado não pôde ser detectado nas janelas do Total Commander.
@@ -934,7 +960,7 @@ lOptionsEnableExternalMenusCatalogue	Habilitar o Catálogo de Menus Compartilhado
 lOptionsEnableFavoriteDebugOption	Ativar depuração de favorito para espaços reservados e variáveis do usuário
 lOptionsExclusionMouseList	Bloqueado
 lOptionsExclusionMouseListDescription	Bloqueado ou Aprovado do disparador do Mouse [~1~]
-lOptionsExclusionMouseListDetail1	Selecione se o botão do mouse pode ser usado em qualquer janela de aplicativo com exceções (bloqueado) ou somente em alguns aplicativos (aprovado). Para adicionar um aplicativo à lista, entre qualquer parte do título de sua janela. Você pode entrar múltiplos aplicativos, um por linha. Por exemplo, para entrar o Chrome ou Word, entre as seguintes duas linhas:`n`Google Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail1	Selecione se o botão do mouse pode ser usado em qualquer janela de aplicativo com exceções (bloqueado) ou somente em alguns aplicativos (aprovado). Para adicionar um aplicativo à lista, entre qualquer parte do título de sua janela(veja que Windows Explorer não pode ser excluído). Você pode entrar múltiplos aplicativos, um por linha. Por exemplo, para entrar o Chrome ou Word, entre as seguintes duas linhas:`n`Google Chrome`nMicrosoft Word
 lOptionsExclusionMouseListDetail2	Quando o disparador do menu não é permitido em um aplicativo, o clique {~1~} é enviado para a janela de destino, como se o QAP não estivesse em execução. Você também pode adicionar aplicativos pelo nome da sua classe ou nome do processo (nome do arquivo EXE). Prefixe o título ou classe com * (asterisco) para excluir (bloquear) também caixas de diálogo de aplicativos. Mais <a href="~2~">ajuda</a>.
 lOptionsExclusionMouseListWhitelist	Aprovado
 lOptionsExplorerContextMenus	Habilitar menus de contexto do Windows Explorer
@@ -961,7 +987,8 @@ lOptionsHotkeyRemindersShort	Exibir abreviado
 lOptionsHotkeyTriggerExclusionListHelp	Selecione se os atalhos de teclado podem ser usados em qualquer janela de aplicativo com exceções (bloqueado) ou somente em alguns aplicativos (aprovado). Para adicionar aplicativos à lista, digite qualquer parte do título se sua janela. Você pode digitar múltiplos aplicativos, um por linha. Por exemplo, para adicionar o Chrome e Word, digite as seguintes linhas:`n`nGoogle Chrome`nMicrosoft Word`n`nQuando os atalhos não são permitidos no aplicativo, eles são enviados para a janela de destino como se o QAP não estivesse rodando. Você também pode adicionar aplicativos pelo nome de sua classe ou nome do processo (nome do arquivo EXE). Mais <a href="~1~">Ajuda</a>.
 lOptionsHotkeyTriggerExclusionListTitle	Atalhos do teclado
 lOptionsHotstringsDefault	Opções padrão de strings de substituição
-lOptionsHotstringsDefaultSelect	Selecionar
+lOptionsHotstringsDefaultSelect	Selecionar opções
+lOptionsHotstringsKeyboardDelay	Atraso do teclado ao excluir um disparador de hotstring (ms)
 lOptionsIconDocumentsList	Substituições de ícones padrão de documentos
 lOptionsIconDocumentsListInstructions	Os ícones padrão dos documentos são geralmente configurados no Windows. Para substituir esta configuração, insira os novos ícones de documento padrão abaixo. Cada linha deve começar com uma extensão de tipo de arquivo ou várias extensões separadas por "+" (ex.: "xlsx+xlsm" para Excel), seguido pelo sinal de igual "=" e o "arquivo,índice" ou arquivo de imagem do ícone padrão.
 lOptionsIconListsInstructions	O "arquivo,índice" é o caminho para o arquivo (.ico, .dll ou .exe) contendo o ícone, e o índice é a posição do ícone neste arquivo, ex.: "C:\Ícones\Arquivo.dll,1". Você também pode usar arquivos de imagem quadrados (.png, .bmp, .gif, .jpg) desde que seu tamanho esteja entre 16x16 e 64x64 pixels.
@@ -1014,7 +1041,7 @@ lOptionsQuickLaunchRecentsFrequents	Incluir itens do menu Recente e Frequente
 lOptionsQuickLaunchRows	Número de linhas do resultado da pesquisa
 lOptionsQuickLaunchTitle	Opções de Iniciar rápido
 lOptionsRecentFolders	Número de itens nos menus
-lOptionsRecentFoldersPrompt	Menus de Itens Recentes e Populares
+lOptionsRecentFoldersPrompt	Menus de Itens Frequentes e Itens Recentes:
 lOptionsRecentPopularLevelsMax	Número máximo de níveis de caminhos nos menus Recente/Frequente`n(níveis excedentes serão truncados a partir do início, 0 para manter o caminho completo)
 lOptionsRefreshedMenusAttached	Anexar todos os menus dinâmicos ao menu do QAP
 lOptionsRefreshedMenusAttachedInfo	Se você habilitar esta opção, pode haver um pequeno atraso na atualização (dependendo da configuração do seu sistema) a cada vez que o menu popup for exibido.`n`nA duração do atraso depende do tempo que o Windows leva para fornecer as informações atualizadas necessárias para criar o menu (lista de itens recentes e espaço disponível nas unidades atuais). Esta duração pode variar a cada chamado.`n`nSe você desabilitar esta opção, os menus "~1~", "~2~", "~3~", "~4~" e "~5~" serão atualizados somente sob demanda e serão exibidos destacados do menu principal.
@@ -1066,6 +1093,8 @@ lOptionsThirdParty	Suporte para gerenciadores de arquivos
 lOptionsThirdPartyDetail	Selecione o arquivo de programa do ~1~ (.exe) para ativar a integração do ~1~.
 lOptionsThirdPartyDetailQAPconnect	Selecione seu gerenciador de arquivos (ou edite ~1~ para adicioná-lo - veja a ajuda).
 lOptionsThirdPartyFileNotFound	O arquivo executável do ~1~ "~2~" não foi encontrado.
+lOptionsThirdPartyQAPconnect	QAPConnect
+lOptionsThirdPartyQAPconnectDetail	(suporte parcial para cerca de`n25 gerenciadores de arquivos)
 lOptionsThirdPartySelectedHelp	Gerenciador de Arquivos Selecionado: ~1~ (<a href="~2~">~3~</a>)
 lOptionsThirdPartySelectFile	Por favor, selecione o arquivo executável do ~1~ usando o botão "Procurar"
 lOptionsThirdPartyUseTabs	Use abas em vez de abrir em uma nova janela
@@ -1085,6 +1114,7 @@ lOptionsUsageDbStatementTitle	Declaração de Privacidade
 lOptionsUserVariables	Variáveis do Usuário
 lOptionsUserVariablesList	Variáveis do Usuário
 lOptionsUserVariablesListInstructions	Entre suas variáveis de usuário, uma por linha. Cada linha deve iniciar pelo nome da variável entre chaves (ex. "{MyVariable}"), seguido pelo sinal de igual "=" e o conteúdo da variável (ex. "{MyVariable}=MyContent").`n`nPor exemplo, Se uma linha contém "{OurSharedFolder}=S:\ThisFolder", o espaço reservado {OurSharedFolder} será substituído por "S:\ThisFolder" nos caminhos de favoritos ou no conteúdo de recortes.
+lOptionsWaitClipboardFreeMaxSeconds	Número máximo de segundos para esperar quando a Área de Transferência estiver ocupada
 lOptionsWaitDelayInDialogBox	Atraso (em ms) ao alterar pasta em caixas de diálogo:
 lOptionsWaitDelayInSnippet	Atrasos (em ms) durante execução de Recorte
 lOptionsWorkingFolder	Pasta de Configurações
