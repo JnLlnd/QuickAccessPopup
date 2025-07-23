@@ -6931,7 +6931,7 @@ o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMe
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
 o_Settings.ReadIniOption("Menu", "intRecentPopularLevelsMax", "RecentPopularLevelsMax", 0, "MenuAppearance", "f_lblRecentPopularLevelsMax|f_intRecentPopularLevelsMaxEdit|f_intRecentPopularLevelsMax|f_lblRecentPopularLevelsMaxTitle")
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
-o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus
+o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus, now not only for dynamic menus
 
 ; Group PopupMenu
 o_Settings.ReadIniOption("MenuPopup", "intPopupMenuPosition", "PopupMenuPosition", 1, "PopupMenu", "f_radPopupMenuPositionTitle|f_radPopupMenuPosition1|f_radPopupMenuPosition2|f_radPopupMenuPosition3") ; g_intPopupMenuPosition
@@ -15943,6 +15943,7 @@ GuiShowFromIconsManage:
 GuiShowFromExternalCatalogue:
 GuiShowFromAddSnippetAndHotstring:
 GuiShowNeverCalled:
+GuiShowFromEditThisMenu:
 ;------------------------------------------------------------
 
 if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|GuiShowFromSearchAndReplace|", A_ThisLabel . "|") ; menu object already set in these cases
@@ -15953,7 +15954,7 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 		
 		strThisMenu := o_Containers.AA[A_ThisMenu].AA.oParentMenu.AA.strMenuPath
 		
-	else if (A_ThisLabel = "GuiShowFromGuiAddFavoriteQAPFeature") ; open gui in the menu where the add command was called ONLY if A_ThisMenu...
+	else if InStr("GuiShowFromGuiAddFavoriteQAPFeature|GuiShowFromEditThisMenu|", A_ThisLabel . "|") ; open gui in the menu where the add command was called
 		and StrLen(A_ThisMenu) ; by safety, check that menu is defined
 		and o_Containers.AA.HasKey(A_ThisMenu) ; by safety, check if menu object exists
 		and (A_ThisMenu <> o_L["MenuLastActions"]) ; is not called from the last actions menu
@@ -32218,7 +32219,7 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false, blnCountItems := false)
+	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false, blnMenuEditable := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
@@ -32227,7 +32228,7 @@ class Container
 		this.AA.intMenuAutoSort := intAutoSort
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
-		this.AA.blnCountItems := blnCountItems ; increment items counter for free edition limit
+		this.AA.blnMenuEditable := blnMenuEditable ; add edit this menu and increment items counter
 		this.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		
 		if (oParentMenu)
@@ -33018,8 +33019,11 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
+		if (this.AA.blnMenuEditable) ; option condition to be added #####
+			this.AddEditThisMenu()
+			
 		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring) or this.AA.blnReopenAfterLaunchingItem)
-			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
+			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue ; blnAddCloseToDynamicMenus is now not only for dynamic menus
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
 	}
@@ -33315,6 +33319,15 @@ class Container
 			Menu, % this.AA.strMenuPath, Add
 			this.AddMenuIcon(o_L["MenuCloseThisMenu"], "DoNothing", "iconClose")
 		}
+	}
+	;-------------------------------------------------------------
+	
+	;-------------------------------------------------------------
+	AddEditThisMenu()
+	;-------------------------------------------------------------
+	{
+		Menu, % this.AA.strMenuPath, Add
+		this.AddMenuIcon(o_L["DialogMenuSortEditMenu"], "GuiShowFromEditThisMenu", "iconEditFavorite")
 	}
 	;-------------------------------------------------------------
 	
