@@ -5845,9 +5845,9 @@ global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg or LaunchFromReopenMenu when reopening menu after launching items
 global g_strOpenFavoriteFromMsg ; used when QAPmessenger triggers OpenFavoriteFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
-global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
+global g_intMenuItemsCount ; number of items added to main menu
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
-global g_intNbExternalMenusCount ; number of external menus built (vs maximum for free edition)
+global g_intNbExternalMenusCount ; number of external menus built
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
@@ -9480,7 +9480,7 @@ gosub, DisableShortcuts ; turn off all favorites keyboard and mouse hotkeys
 g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
-g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
+g_intMenuItemsCount := 0 ; number of items added to main menu
 g_intNbExternalMenusCount := 0 ; number of external menus (vs maximum set in ini file)
 
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
@@ -9491,17 +9491,6 @@ if InStr(A_ThisLabel, "WithStatus")
 o_MainMenu.BuildMenu(, (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if InStr(A_ThisLabel, "WithStatus")
 	SetCursor(false)
-
-strLimitsIntro := (g_blnIniFileCreation ? o_L["DialogFreeEditionMessage0"] : o_L["DialogFreeEditionMessage1"])
-strLimitsMessage := (g_blnIniFileCreation or (g_intMenuItemsCount > g_intMenuItemsMax) ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
-strLimitsMessage .= (g_blnIniFileCreation or (g_intNbExternalMenusCount > g_intNbExternalMenusMax) ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
-
-if (g_blnIniFileCreation)
-	strLimitsMessage .= L(o_L["DialogFreeEditionLive"], g_intNbLiveFolderItemsMax) . "`n"
-else
-	strLimitsMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLiveExceeded"], g_intNbLiveFolderItemsMax) . "`n" : "")
-
-strLimitsMessage := ""
 
 return
 ;------------------------------------------------------------
@@ -10022,7 +10011,7 @@ Gui, 2:Add, UpDown, vf_intNbLastActions Range1-9999 gGuiOptionsGroupChanged hidd
 Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblNbLastActionsMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
 
-; AddCloseToDynamicMenus
+; AddCloseToDynamicMenus (now not only for dynamic menus)
 Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
 GuiControl, , f_blnAddCloseToDynamicMenus, % (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue = true)
 
@@ -32815,11 +32804,7 @@ class Container
 		Menu, % this.AA.strMenuPath, Add ; to avoid an error if menu is empty
 		Menu, % this.AA.strMenuPath, DeleteAll
 		
-		intMenuItemsCount := 0 ; counter of items in this menu
-		intDynamicMenuItemsCount := 0 ; counter of items in dynamic menus
-		blnCountDynamicMenusItems := o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath])
-			and (InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Popular") or InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Recent"))
-			; limit the number of enabled items only in Frequent and Recent menus for free edition
+		intMenuItemsCount := 0 ; counter of items in this menu (not used but not removed for safety)
 		
 		if (this.AA.intMenuAutoSort)
 			this.SortContainer("", strSortedItems)
@@ -32839,10 +32824,8 @@ class Container
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
 			
-			if (this.AA.blnCountItems and !blnDoNotCountItemsNow)
-				g_intMenuItemsCount++ ; for free edition limit
-			if (blnCountDynamicMenusItems)
-				intDynamicMenuItemsCount++ ; for free edition limit
+			if (this.AA.blnMenuEditable and !blnDoNotCountItemsNow)
+				g_intMenuItemsCount++ ; for stats
 			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
