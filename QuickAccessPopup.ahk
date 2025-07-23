@@ -6931,6 +6931,7 @@ o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMe
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
 o_Settings.ReadIniOption("Menu", "intRecentPopularLevelsMax", "RecentPopularLevelsMax", 0, "MenuAppearance", "f_lblRecentPopularLevelsMax|f_intRecentPopularLevelsMaxEdit|f_intRecentPopularLevelsMax|f_lblRecentPopularLevelsMaxTitle")
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
+o_Settings.ReadIniOption("Menu", "blnAddEditThisMenu", "AddEditThisMenu", 1, "MenuAppearance", "f_blnAddEditThisMenu")
 o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus, now not only for dynamic menus
 
 ; Group PopupMenu
@@ -10011,8 +10012,12 @@ Gui, 2:Add, UpDown, vf_intNbLastActions Range1-9999 gGuiOptionsGroupChanged hidd
 Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblNbLastActionsMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
 
+; AddEditThisMenu
+Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddEditThisMenu gGuiOptionsGroupChanged hidden, % o_L["OptionsAddEditThisMenu"]
+GuiControl, , f_blnAddEditThisMenu, % (o_Settings.Menu.blnAddEditThisMenu.IniValue = true)
+
 ; AddCloseToDynamicMenus (now not only for dynamic menus)
-Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
 GuiControl, , f_blnAddCloseToDynamicMenus, % (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue = true)
 
 GuiControlGet, arrPos, Pos, f_blnAddCloseToDynamicMenus
@@ -10819,6 +10824,7 @@ o_Settings.Menu.blnDisplayNumericShortcutsFromOne.WriteIni(f_blnDisplayNumericSh
 o_Settings.Menu.intRecentFoldersMax.WriteIni(f_intRecentFoldersMax)
 o_Settings.Menu.intRecentPopularLevelsMax.WriteIni(f_intRecentPopularLevelsMax)
 o_Settings.Menu.intNbLastActions.WriteIni(f_intNbLastActions)
+o_Settings.Menu.blnAddEditThisMenu.WriteIni(f_blnAddEditThisMenu)
 o_Settings.Menu.blnAddCloseToDynamicMenus.WriteIni(f_blnAddCloseToDynamicMenus)
 
 ; === PopupMenu ===
@@ -31091,6 +31097,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("CloseMenu",				o_L["MenuCloseThisMenu"],					"", "DoNothing",							"7-QAPManagement"
 			, o_L["MenuCloseThisMenuDescription"], 0, "iconClose", ""
 			, "what-is-the-close-menu-issue")
+		this.AddQAPFeatureObject("EditThisMenu",			o_L["DialogMenuSortEditMenu"],				"", "GuiShowFromEditThisMenu",				"3-QAPMenuEditing~7-QAPManagement"
+			, o_L["MenuCloseThisMenuDescription"], 0, "iconEditFavorite", ""
+			, "")
 		this.AddQAPFeatureObject("ImportExport",			o_L["ImpExpMenu"] . g_strEllipse,			"", "ImportOptions",						"7-QAPManagement"
 			, o_L["ImpExpMenuDescription"], 0, "iconSettings", ""
 			, "can-i-backup-import-or-export-my-favorites-and-settings")
@@ -33019,7 +33028,7 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
-		if (this.AA.blnMenuEditable) ; option condition to be added #####
+		if (this.AA.blnMenuEditable and o_Settings.Menu.blnAddEditThisMenu.IniValue)
 			this.AddEditThisMenu()
 			
 		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring) or this.AA.blnReopenAfterLaunchingItem)
@@ -33311,23 +33320,24 @@ class Container
 	;------------------------------------------------------------
 
 	;-------------------------------------------------------------
-	AddCloseMenu()
-	;-------------------------------------------------------------
-	{
-		if (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue)
-		{
-			Menu, % this.AA.strMenuPath, Add
-			this.AddMenuIcon(o_L["MenuCloseThisMenu"], "DoNothing", "iconClose")
-		}
-	}
-	;-------------------------------------------------------------
-	
-	;-------------------------------------------------------------
 	AddEditThisMenu()
 	;-------------------------------------------------------------
 	{
 		Menu, % this.AA.strMenuPath, Add
 		this.AddMenuIcon(o_L["DialogMenuSortEditMenu"], "GuiShowFromEditThisMenu", "iconEditFavorite")
+	}
+	;-------------------------------------------------------------
+	
+	;-------------------------------------------------------------
+	AddCloseMenu()
+	;-------------------------------------------------------------
+	{
+		if (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue)
+		{
+			if !(this.AA.blnMenuEditable and o_Settings.Menu.blnAddEditThisMenu.IniValue) ; do not add separator if already done for Edit this menu
+				Menu, % this.AA.strMenuPath, Add
+			this.AddMenuIcon(o_L["MenuCloseThisMenu"], "DoNothing", "iconClose")
+		}
 	}
 	;-------------------------------------------------------------
 	

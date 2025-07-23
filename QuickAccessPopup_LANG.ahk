@@ -892,6 +892,7 @@ this["OptionsAddAutoAtTop"] := "When adding automatically, add a favorite at....
 this["OptionsAddAutoBottomOfMenu"] := "Bottom of menu"
 this["OptionsAddAutoTopOfMenu"] := "Top of menu"
 this["OptionsAddCloseToDynamicMenus"] := "Add ""Close"" to menus"
+this["OptionsAddEditThisMenu"] := "Add ""Edit this menu"" to all editable menus"
 this["OptionsAdvancedLaunch"] := "Launch Advanced Options"
 this["OptionsAdvancedOther"] := "Various Advanced Options"
 this["OptionsAlternativeMenuFeatures"] := "Alternative Hotkeys"
