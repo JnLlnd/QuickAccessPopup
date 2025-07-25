@@ -59,7 +59,7 @@ lDialogAddFavoriteTabs	Definições Básicas|Opções de Menu|Opções de Janela|Defini
 lDialogAddFavoriteTabsExternal	Menu Partilhado
 lDialogAddFavoriteTabsLive	Opções Pasta Live
 lDialogAddFileSelect	Escolher um novo documento:
-lDialogAddFolderManuallyPrompt	Lamentamos, não é possível detectar a pasta actual neste tipo de janela.`n`nDeseja adicionar uma pasta favoritos manualmente?
+lDialogAddFolderManuallyPrompt	Lamentamos, não é possível detectar a pasta actual ou página web nesta janela.`n`nDeseja adicionar um favorito manualmente?
 lDialogAddFolderManuallyTitle	Adicionar Pasta Activa ou página Web - ~1~ ~2~
 lDialogAddFolderSelect	Seleccionar ou criar uma nova pasta:
 lDialogAddSingle	Adicionar apenas um favorito
@@ -183,7 +183,7 @@ lDialogFavoriteFolderLiveColumns	Número de itens por coluna (0 para sem quebra d
 lDialogFavoriteFolderLiveDocuments	Incluir documentos
 lDialogFavoriteFolderLiveExclude	Excluir
 lDialogFavoriteFolderLiveExcludeFolders	Excluir pastas (só o último nível)
-lDialogFavoriteFolderLiveExtensions	Introduza extensões separadas por espaços (por examplo "bak bk") ou expressões jokers separadas por espaços ("*.bak "o mau ficheiro??.ext" *copia*.*"). Ou introduza uma expressão regular com "Regex:<a sua expressão>".
+lDialogFavoriteFolderLiveExtensions	Introduza extensões separadas por espaços (por examplo "bak bk"), expressões jokers separadas por espaços ("*.bak "o meu ficheiro??.ext" *copia*.*"
 lDialogFavoriteFolderLiveFiles	ficheiros
 lDialogFavoriteFolderLiveHideExtensions	Extensões de ficheiros
 lDialogFavoriteFolderLiveHideIcons	Ícones
@@ -238,6 +238,7 @@ lDialogFavoriteTypesHelp13	Criar uma "Amostra de Texto". Defina o título para o 
 lDialogFavoriteTypesHelp14	Crie um "Menu Partilhado" para usar os favoritos em vários computadores a partir do mesmo ficheiro de definições numa localização externa. Defina o nome para o menu partilhado, a localização do ficheiro de definições externas e diversas opções.`n`nOs menus partilhados podem ser utilizados nos modos "Pessoal", "Participativo" ou "Centralizado". Pode ser definido um Catálogo de Menus Partilhados no separador "Opçõess, Várias Opções Avançadas" para facilitar a adição de menus partilhados.`n`nOs menus patilhados podem ser editados como menus normais. Só os utilizadores seleccionados podem editar menus partilhados Centralizados. Veja as perguntas frequentes (FAQ) no site para mais ajuda.
 lDialogFavoriteTypesHelp15	Crie um "Separador de Texto" para inserir cabeçalhos dando mais clareza ao seu menu.`n`nPor defeito, os separadores de texto não possuem ícone mas pode seleccionar um no separador "Opções do Menu".
 lDialogFavoriteTypesHelp16	Criar um atalho para uma "App Windows".`n`nSeleccione a App Windows da lista de apps instaladas no seu sistema.`n`nEsta lista é actualizada no arranque do QAP e a pedido do utilizador.
+lDialogFavoriteTypesHelp17	Carregue um "Comando da Área de Transferência" para modificar o texto actual contido na àrea de Transferência do Windows.`n`nSeleccione o Comando da lista de comandos disponíveis no Editor Rápido da Área de Transferência.`n`nEsta lista é actualizada no arranque do QAP e pode ser actualizada a pedido na caixa de diálogo "Adicionar Favorito".
 lDialogFavoriteTypesHelp2	Criar um atalho para um "Documento".`n`nDefina o nome do menu do favorito, atalho e diversas opções do menu.`n`nAs definições avançadas permitem escolhar uma aplicação específica para abrir o documento e adicionar parâmetros opcionais.
 lDialogFavoriteTypesHelp3	Criar um atalho para uma "Aplicação" (programa, batch ou script).`n`nLocalize o ficheiro executável ou seleccione um dos programas em execução. Defina diversas opções do menu.`n`nAs definições avançadas permitem escolher uma pasta "Iniciar Em" e adicionar parâmetros.
 lDialogFavoriteTypesHelp4	Criar um atalho para uma das 50 "Pastas Especiais" predefinidas do Windows, tais como: Bibliotecas, As Minhas Imagens, Reciclagem, Transferências, etc.`n`nDefina diversas opções do menu. As definições avançadas permitem definir a posição da janela e opções de gestão de ficheiros.
@@ -246,9 +247,9 @@ lDialogFavoriteTypesHelp6	Criar um atalho para um "Site FTP".`n`nDefina o nome d
 lDialogFavoriteTypesHelp7	Inserir algures no seu menu "Funções Quick Access Popup" tais como: ~1~, ~2~, ~3~, ~4~, ~5~, etc.`n`nVer descrições e ligações de ajuda para mais informação.
 lDialogFavoriteTypesHelp8	Reunir favoritos relacionados num "Submenu".`n`nAtribua um nome ao seu submenu e seleccione opções de menu.`n`nAdicione favoritos ao seu submenu. Mova um favorito para outro submenu ou grupo usando o botão "Mover" ou o separador "Opções do Menu" da janela "Editar favorito".
 lDialogFavoriteTypesHelp9	Carregar um "Grupo" de favoritos, todos com uma só tecla de atalho!`n`nAtribua um nome ao seu grupo e defina diversas opções para o seu grupo.`n`nAdicione favoritos ao seu grupo. Mova um favorito para outro grupo ou submenu usando o botão "Mover" ou o separador "Opções do Menu" da janela "Editar favorito".`n`nAs opções avançadas permitem controlar a velocidade de restauro inserindo um atraso entre cada favorito a restaurar.
-lDialogFavoriteTypesLabels	Pasta|Documento|Aplicação|Pasta Especial|Ligação (URL)|Site FTP|Função QAP|Submenu|Grupo||||Snippet|Menu Partilhado|Separador de Texto|App Windows App
-lDialogFavoriteTypesLocationLabels	Pasta (atalho)|Documento (atalho e nome de ficheiro)|Aplicação (atalho e nome de ficheiro)||Ligação (URL)|Site FTP (URL)|||||||Conteúdo|Ficheiro de definições externas (atalho)|Separador de Texto|ID App Windows (AUMID)
-lDialogFavoriteTypesShortNames	Pasta|Doc|App|Especial|Ligação|FTP|QAP|Menu|Grupo|Separador|Quebra de Coluna|..|Snippet|Partilhado|Texto|App Win
+lDialogFavoriteTypesLabels	Pasta|Documento|Aplicação|Pasta Especial|Ligação (URL)|Site FTP|Função QAP|Comando da Área de Transferência|Submenu|Grupo||||Snippet|Menu Partilhado|Separador de Texto|App Windows
+lDialogFavoriteTypesLocationLabels	Pasta (atalho)|Documento (atalho e nome de ficheiro)|Aplicação (atalho e nome de ficheiro)||Ligação (URL)|Site FTP (URL)||||||||Conteúdo|Ficheiro de definições externas (atalho)|ID App Windows (AUMID)
+lDialogFavoriteTypesShortNames	Pasta|Doc|App|Especial|Ligação|FTP|QAP|QCE|Menu|Grupo|Separador|Quebra de Coluna|..|Snippet|Partilhado|Texto|App Win
 lDialogFavoriteWorkingDirNotFoundPrompt	A definição avançada "Iniciar em" do favorito "~1~" não foi encontrada:`n~2~
 lDialogFavoriteWorkingDirNotFoundTitle	Parâmetro Iniciar em não encontrado - ~1~
 lDialogFileExtension	Extensão do ficheiro
@@ -257,15 +258,6 @@ lDialogFileName	Nome do ficheiro
 lDialogFileSize	Tamanho do ficheiro
 lDialogFolderLabel	Pasta
 lDialogForwardButton	Botão avançar
-lDialogFreeEditionItems	Itens no menu: actual ~1~ / permitidos ~2~
-lDialogFreeEditionLabel	Gratuíto
-lDialogFreeEditionLive	Máximo de ~1~ itens para pastas 'live'
-lDialogFreeEditionLiveExceeded	O número de itens de pastas 'live' excede o máximo de ~1~
-lDialogFreeEditionMessage0	Está a usar e Edição Gratuíta do Quick Access Popup.
-lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuíta do Quick Access Popup foram excedidos. Os itens em excesso foram desactivados.
-lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para obter ou guardar a sua licença QAP...
-lDialogFreeEditionMessage3	Obtenha a sua licença já para beneficiar de todas as funcionalidades do QAP
-lDialogFreeEditionShared	Menus partilhados: actual ~1~ / permitidos ~2~
 lDialogGetWebPageTitle	Obter título
 lDialogGetWebPageTitleIcon	Obter título e ícone
 lDialogGetWebSiteIcon	Obter ícone do site
@@ -368,7 +360,7 @@ lDialogMultipleAddHelp	Faça duplo clique nas linhas para ajuda nas funcionalidad
 lDialogMultipleAddIntro1	1) Seleccione um menu de destino e se desejar filtre os favoritos.
 lDialogMultipleAddIntro1a	Para ordenar a lista, clique no cabeçalho das colunas
 lDialogMultipleAddIntro1f	1) Seleccionar um menu de destino, uma pasta de origem e filtrar os favoritos se desejado.
-lDialogMultipleAddIntro1s	1) Seleccionar um menu de destino e um ficheiro de definições QAP (.ini).
+lDialogMultipleAddIntro1s	1) Seleccionar um menu de destino e um ficheiro de definições QAP (.ini) ou ficheiro CSV.
 lDialogMultipleAddIntro1t	Os menus principais e os favoritos serão carregados numa vista em árvore
 lDialogMultipleAddIntro2	2) Clique na caixa de verificação dos favorites a adicionar.
 lDialogMultipleAddIntro2a	Para editar o nome de um favorito seleccione a sua linha e prima F2.
@@ -515,9 +507,11 @@ lDonateOnline	A sua licença não é verificada há mais de ~1~ dias.`n`nPor favor, 
 lDonateTextSaveLicense	Guarde a sua licença ~1~
 lDonateThankyou	Obrigado ~1~ por apoiar este software!
 lDonateThankyouRestart	Obrigado por apoiar o denvolvimento do ~1~!`n`nO programa vai reiniciar em breve.
+lDOpusAliasName	Aliases de Pastas
 lDOpusLayoutsName	Esquemas
 lDOpusMenuName	Favoritos Directory Opus
 lDopusMenuNameDescription	Para utilizadores do Directory Opus (DOpus), exibe um menu dinâmico construído com as pastas adicionadas aos Favoritos DOpus. Se o DOpus foi seleccionado quando instalou o QAP, os Favoritos Directory Opus foram adicionados automaticamente ao seu menu.
+lDopusMenuNameShowAlias	Mostrar Aliases de Pastas nos menus ~1~
 lDopusMenuNameShowLayout	Exibir Esquemas nos menus ~1~
 lGuiAbout	Acerca
 lGuiAboutDescription	Exibe o desenvolvimento, traduções e outros créditos, versão da aplicação e runtime, licença, nome do utilizador actual e do PC, ligação para a página de suporte.
@@ -883,6 +877,8 @@ lOopsNowPlaceholderInvalid	Formato do espaço reservado "Agora" inválido
 lOopsOptionsPathNotExist	~1~ não existe:`n~2~`n`nPor favor, seleccione um atalho válido.
 lOopsOptionsPathTrayIcon	Ficheiro do ícone da área de notificação
 lOopsOSVerrsionError	O ~1~ requer o Window 7 ou mais recente. Os utilizadores do Windows Vista e XP users devem usar o Folders Popup que é compatível com essas versões.`n`nDeseja visitar o site do Folders Popup?
+lOopsQCEReceiverError	Ocorreu um erro ao carregar os comandos do Editor rápido da área de transferência.`n`nCertifique-se de que o ~1~ ou ~2~ estão em execução entes de adicionar os comandos.
+lOopsQCEReceiverHelp	Procure por "QCE Receiver" em www.QuickAccessPopup.com para ajuda.
 lOopsRunCommandTooLong	Comando demasiado longo (~1~ vs máximo ~2~)
 lOopsSelectedItemDialogBoxes	Não é possível detectar o item seleccionado em caixas de diálogo.
 lOopsSelectedItemTotalCommander	Não é possível detectar o item seleccionado nas janelas do Total Commander.
@@ -1014,7 +1010,7 @@ lOptionsQuickLaunchRecentsFrequents	Incluir itens do menu Recentes e Frequentes
 lOptionsQuickLaunchRows	Numero de linhas do resultado da procura
 lOptionsQuickLaunchTitle	Opções "Inicialização Rápida"
 lOptionsRecentFolders	Número de itens em menus
-lOptionsRecentFoldersPrompt	Itens Recentes e Menus Frequentes
+lOptionsRecentFoldersPrompt	Menus de Itens Frequentes e Itens Recentes:
 lOptionsRecentPopularLevelsMax	Número máximo de níveis de caminhos nos menus Recentes/Frequentes`n(os níveis excedentes serão truncados a partir do início, 0 para manter caminho completo)
 lOptionsRefreshedMenusAttached	Anexar todos os menus dinÃ¢micos ao menu principal do QAP
 lOptionsRefreshedMenusAttachedInfo	Se activar esta opção, pode ocorrer um ligeiro atraso na actualização (dependendo da configuração do seu sistema) cada vez que exibir o menu emergente.`n`nA duração do atraso depende do tempo que o Windows leva a fornecer a informação de actualização necessária para a construção do menu (lista de itens recentes e espaço disponível nas unidades actuais). Esta duração pode variar em cada caso.`n`nSe desactivar esta opção, os menus "~1~", "~2~", "~3~", "~4~" e "~5~" serão actualizados apenas a pedido e exibidos separadamente do menu principal.
@@ -1066,7 +1062,8 @@ lOptionsThirdParty	Gestores de ficheiros
 lOptionsThirdPartyDetail	Seleccione o programa ~1~ (.exe) para activar a integração com ~1~.
 lOptionsThirdPartyDetailQAPconnect	Seleccione o seu gestor de ficheiros (ou edite ~1~ para adicioná-lo - ver a ajuda).
 lOptionsThirdPartyFileNotFound	~1~ ficheiro da aplicação "~2~" não encontrado.
-lOptionsThirdPartyQAPconnect	QAPConnect (suporte parcial`npara outros 25 gestores de ficheiros)
+lOptionsThirdPartyQAPconnect	QAPConnect
+lOptionsThirdPartyQAPconnectDetail	(suporte parcial`npara outros 25 gestores de ficheiros)
 lOptionsThirdPartySelectedHelp	Gestor de Ficheiros Seleccionado: ~1~ (<a href="~2~">~3~</a>)
 lOptionsThirdPartySelectFile	Por favor, seleccione o ficheiro da aplicação ~1~ utilizando o botão "Procurar"
 lOptionsThirdPartyUseTabs	Usar separadores em vez de abrir numa nova janela
@@ -1086,6 +1083,7 @@ lOptionsUsageDbStatementTitle	Declaração de Privacidade
 lOptionsUserVariables	Variáveis do Utilizador
 lOptionsUserVariablesList	Variáveis do Utilizador
 lOptionsUserVariablesListInstructions	Introduza as suas variáveis, uma por linha. Cada linha deve começar com o nome da variável entre chavetas (p.e. "{MyVariable}"), seguido do sinal igual "=" e o conteúdo da variável (p.e. "{MyVariable}=MyContent").`n`nPor exemplo, se uma linha contém "{OurSharedFolder}=S:\ThisFolder", o espaço reservado {OurSharedFolder} será substituído por "S:\ThisFolder" nos atalhos dos favoritos ou conteúdo dos snippets.
+lOptionsWaitClipboardFreeMaxSeconds	Máximo de segundos a aguardar quando a Área de transferência está ocupada
 lOptionsWaitDelayInDialogBox	Atraso (em ms) ao mudar de pasta em caixas de diálogo:
 lOptionsWaitDelayInSnippet	Atrasos (em ms) durante a execução de Snippets
 lOptionsWorkingFolder	Pasta de Definições
