@@ -31,9 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 11.6.5.3 (2025-07-##)
-- fix bug with the option "Use tabs instead of opening in a new window" in "Options, File Managers" for Windows Explorer settings since the implementation of the group option "Add folders in tabs of a new window"
- 
+Version: 11.6.6 (2025-07-25)
+- in the QAP menu, at the bottom of each submenu, add the menu item "Customize this menu (or group)"; this applies only to user editable menus (not dynamic menus) and excludes the Main menu already containing the "Customize" menu item
+- for users not wanting this additional menu item, add an option under "Menu appearance" to set if the new "Customize this menu" item is added or not at the end of editable menus (default true)
+- for users wanting this menu item only in some menus or goups, add the QAP feature "Customize this menu (or group)" under the section "QAP Menu Editing"
+- fix a bug with the option "Use tabs instead of opening in a new window" in "Options, File Managers" for Windows Explorer settings since the implementation of the group option "Add folders in tabs of a new window" in v11.6.5.1
+- fix a bug in the QAP Feature "List Applications" (under "Window Management") when selecting "List All" in the dropdown menu
+- fix a bug excluding wrongly some Windows Apps (e.g. MS Teams) from the "Current Windows" dynamic menu
+- thanks to translators for German, Korean, Portuguese-Brazil, Portuguese and Italian language files updates
+
 Version: 11.6.5.2 (2025-06-19)
 - release for beta testers of QAP with "Clipboard commands", allowing them to revert to the main branch keeping the Clipboard commands in their menu (not useable in main branch, of course, but available when they will reinstall QAP beta with QCE commands).
  
@@ -6931,7 +6937,7 @@ o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMe
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
 o_Settings.ReadIniOption("Menu", "intRecentPopularLevelsMax", "RecentPopularLevelsMax", 0, "MenuAppearance", "f_lblRecentPopularLevelsMax|f_intRecentPopularLevelsMaxEdit|f_intRecentPopularLevelsMax|f_lblRecentPopularLevelsMaxTitle")
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
-o_Settings.ReadIniOption("Menu", "blnAddEditThisMenu", "AddEditThisMenu", 1, "MenuAppearance", "f_blnAddEditThisMenu")
+o_Settings.ReadIniOption("Menu", "blnAddCustomizeThisMenu", "AddCustomizeThisMenu", 1, "MenuAppearance", "f_blnAddCustomizeThisMenu")
 o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus, now not only for dynamic menus
 
 ; Group PopupMenu
@@ -10012,9 +10018,9 @@ Gui, 2:Add, UpDown, vf_intNbLastActions Range1-9999 gGuiOptionsGroupChanged hidd
 Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblNbLastActionsMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
 
-; AddEditThisMenu
-Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddEditThisMenu gGuiOptionsGroupChanged hidden, % o_L["OptionsAddEditThisMenu"]
-GuiControl, , f_blnAddEditThisMenu, % (o_Settings.Menu.blnAddEditThisMenu.IniValue = true)
+; AddCustomizeThisMenu
+Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddCustomizeThisMenu gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCustomizeThisMenu"]
+GuiControl, , f_blnAddCustomizeThisMenu, % (o_Settings.Menu.blnAddCustomizeThisMenu.IniValue = true)
 
 ; AddCloseToDynamicMenus (now not only for dynamic menus)
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
@@ -10824,7 +10830,7 @@ o_Settings.Menu.blnDisplayNumericShortcutsFromOne.WriteIni(f_blnDisplayNumericSh
 o_Settings.Menu.intRecentFoldersMax.WriteIni(f_intRecentFoldersMax)
 o_Settings.Menu.intRecentPopularLevelsMax.WriteIni(f_intRecentPopularLevelsMax)
 o_Settings.Menu.intNbLastActions.WriteIni(f_intNbLastActions)
-o_Settings.Menu.blnAddEditThisMenu.WriteIni(f_blnAddEditThisMenu)
+o_Settings.Menu.blnAddCustomizeThisMenu.WriteIni(f_blnAddCustomizeThisMenu)
 o_Settings.Menu.blnAddCloseToDynamicMenus.WriteIni(f_blnAddCloseToDynamicMenus)
 
 ; === PopupMenu ===
@@ -31097,8 +31103,8 @@ class QAPfeatures
 		this.AddQAPFeatureObject("CloseMenu",				o_L["MenuCloseThisMenu"],					"", "DoNothing",							"7-QAPManagement"
 			, o_L["MenuCloseThisMenuDescription"], 0, "iconClose", ""
 			, "what-is-the-close-menu-issue")
-		this.AddQAPFeatureObject("EditThisMenu",			o_L["DialogMenuSortEditMenu"],				"", "GuiShowFromEditThisMenu",				"3-QAPMenuEditing~7-QAPManagement"
-			, o_L["MenuCloseThisMenuDescription"], 0, "iconEditFavorite", ""
+		this.AddQAPFeatureObject("CustomizeThisMenu",		o_L["MenuCustomizeThisMenu"],				"", "GuiShowFromEditThisMenu",				"3-QAPMenuEditing~7-QAPManagement"
+			, o_L["MenuCustomizeThisMenuDescription"], 0, "iconEditFavorite", ""
 			, "")
 		this.AddQAPFeatureObject("ImportExport",			o_L["ImpExpMenu"] . g_strEllipse,			"", "ImportOptions",						"7-QAPManagement"
 			, o_L["ImpExpMenuDescription"], 0, "iconSettings", ""
@@ -31140,7 +31146,7 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Edit Settings file", 		L(o_L["MenuEditIniFile"], o_Settings.strIniFileNameExtOnly), "", "ShowSettingsIniFile", "7-QAPManagement"
 			, o_L["MenuEditIniFileDescription"], 0, "iconSettings", ""
 			, "how-can-i-edit-the-file-quickaccesspopup-ini")
-		this.AddQAPFeatureObject("List Applications", 		o_L["MenuListApplications"],				"", "ListApplications",						"7-QAPManagement"
+		this.AddQAPFeatureObject("List Applications", 		o_L["MenuListApplications"],				"", "ListApplications",						"4-WindowManagement~7-QAPManagement"
 			, o_L["MenuListApplicationsDescription"], 0, "iconDesktop", "", "")
 		this.AddQAPFeatureObject("Window Always on Top",	o_L["MenuWindowAlwaysonTop"],				"", "WindowsAlwaysOnTop",					"1-Featured~4-WindowManagement"
 			, o_L["MenuWindowAlwaysonTopDescription"], 0, "iconDesktop", ""
@@ -33028,8 +33034,8 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
-		if (this.AA.blnMenuEditable and o_Settings.Menu.blnAddEditThisMenu.IniValue)
-			this.AddEditThisMenu()
+		if (this.AA.blnMenuEditable and o_Settings.Menu.blnAddCustomizeThisMenu.IniValue)
+			this.AddCustomizeThisMenu()
 			
 		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring) or this.AA.blnReopenAfterLaunchingItem)
 			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue ; blnAddCloseToDynamicMenus is now not only for dynamic menus
@@ -33320,11 +33326,11 @@ class Container
 	;------------------------------------------------------------
 
 	;-------------------------------------------------------------
-	AddEditThisMenu()
+	AddCustomizeThisMenu()
 	;-------------------------------------------------------------
 	{
 		Menu, % this.AA.strMenuPath, Add
-		this.AddMenuIcon(o_L["DialogMenuSortEditMenu"], "GuiShowFromEditThisMenu", "iconEditFavorite")
+		this.AddMenuIcon(o_L["MenuCustomizeThisMenu"], "GuiShowFromEditThisMenu", "iconEditFavorite")
 	}
 	;-------------------------------------------------------------
 	
@@ -33334,7 +33340,7 @@ class Container
 	{
 		if (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue)
 		{
-			if !(this.AA.blnMenuEditable and o_Settings.Menu.blnAddEditThisMenu.IniValue) ; do not add separator if already done for Edit this menu
+			if !(this.AA.blnMenuEditable and o_Settings.Menu.blnAddCustomizeThisMenu.IniValue) ; do not add separator if already done for Edit this menu
 				Menu, % this.AA.strMenuPath, Add
 			this.AddMenuIcon(o_L["MenuCloseThisMenu"], "DoNothing", "iconClose")
 		}
