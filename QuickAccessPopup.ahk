@@ -27501,18 +27501,18 @@ KeepThisWindow(intIndex, strWinID, strCaller, ByRef objWindowProperties)
 	else
 		objWindowProperties.strAppIconResource := objWindowProperties.ProcessPath . ",1"
 	
-	if (strCaller = g_saDialogListApplicationsDropdown[n]) ; "List All"
+	if (strCaller = g_saDialogListApplicationsDropdown[1]) ; "List All"
 		return true
 	
 	if !StrLen(strWindowTitle)
 		or !StrLen(strProcessPath)
 		or !(blnWandH)
 		or (strProcessPath = A_ProgramFiles . "\Windows Sidebar\sidebar.exe")
-		or InStr(strProcessPath, A_ProgramFiles . "\WindowsApps\") ; and (intExStyle <> 0x00280000)
+		; or InStr(strProcessPath, A_ProgramFiles . "\WindowsApps\") and (intExStyle <> 0x00280000) - don't remember why this was excluded
 		return false
 
 	else if (strProcessName = "ApplicationFrameHost.exe")
-		; si minimisé conserver
+		; keep if minimized
 	{
 		if ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 			return false
