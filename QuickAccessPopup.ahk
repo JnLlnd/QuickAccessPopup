@@ -34,7 +34,7 @@ HISTORY
 Version: 11.6.6 (2025-07-25)
 - in the QAP menu, at the bottom of each submenu, add the menu item "Customize this menu (or group)"; this applies only to user editable menus (not dynamic menus) and excludes the Main menu already containing the "Customize" menu item
 - for users not wanting this additional menu item, add an option under "Menu appearance" to set if the new "Customize this menu" item is added or not at the end of editable menus (default true)
-- for users wanting this menu item only in some menus or goups, add the QAP feature "Customize this menu (or group)" under the section "QAP Menu Editing"
+- for users wanting this menu item only in some menus or groups, add the QAP feature "Customize this menu (or group)" under the section "QAP Menu Editing"
 - fix a bug with the option "Use tabs instead of opening in a new window" in "Options, File Managers" for Windows Explorer settings since the implementation of the group option "Add folders in tabs of a new window" in v11.6.5.1
 - fix a bug in the QAP Feature "List Applications" (under "Window Management") when selecting "List All" in the dropdown menu
 - fix a bug excluding wrongly some Windows Apps (e.g. MS Teams) from the "Current Windows" dynamic menu
@@ -5646,7 +5646,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.5.3
+;@Ahk2Exe-SetVersion 11.6.6
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5714,7 +5714,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.5.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -13610,13 +13610,13 @@ return
 
 
 ;------------------------------------------------------------
-BuildTabsList(strFavoriteType, blnIsGoupMember)
+BuildTabsList(strFavoriteType, blnIsGroupMember)
 ;------------------------------------------------------------
 {
 	global
 
 	; 1 Basic Settings, 2 Menu Options, 3 Window Options, 4 Advanced Settings
-	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . (blnIsGoupMember ? o_L["DialogGroupMemberOptions"] : g_objFavoriteGuiTabs[2])
+	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . (blnIsGroupMember ? o_L["DialogGroupMemberOptions"] : g_objFavoriteGuiTabs[2])
 	
 	if (strFavoriteType = "Folder")
 		strTabsList .= " | " . o_L["DialogAddFavoriteTabsLive"]
