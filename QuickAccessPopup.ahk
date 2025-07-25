@@ -31,6 +31,15 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.6 (2025-07-25)
+- in the QAP menu, at the bottom of each submenu, add the menu item "Customize this menu (or group)"; this applies only to user editable menus (not dynamic menus) and excludes the Main menu already containing the "Customize" menu item
+- for users not wanting this additional menu item, add an option under "Menu appearance" to set if the new "Customize this menu" item is added or not at the end of editable menus (default true)
+- for users wanting this menu item only in some menus or groups, add the QAP feature "Customize this menu (or group)" under the section "QAP Menu Editing"
+- fix a bug with the option "Use tabs instead of opening in a new window" in "Options, File Managers" for Windows Explorer settings since the implementation of the group option "Add folders in tabs of a new window" in v11.6.5.1
+- fix a bug in the QAP Feature "List Applications" (under "Window Management") when selecting "List All" in the dropdown menu
+- fix a bug excluding wrongly some Windows Apps (e.g. MS Teams) from the "Current Windows" dynamic menu
+- thanks to translators for German, Korean, Portuguese-Brazil, Portuguese and Italian language files updates
+
 Version BETA: 11.9.0.6 (2025-06-20)
 - fix bug with QCE command when building QAP menu
 
@@ -40,6 +49,9 @@ Version BETA: 11.9.0.5 (2025-06-19)
 Version BETA: 11.9.0.5 (2025-06-19)
 - merge changes in v11.6.5.1 in this beta branch
 
+Version: 11.6.5.2 (2025-06-19)
+- release for beta testers of QAP with "Clipboard commands", allowing them to revert to the main branch keeping the Clipboard commands in their menu (not useable in main branch, of course, but available when they will reinstall QAP beta with QCE commands).
+ 
 Version: 11.6.5.1 (2025-06-19)
 - fix a bug not showing the checkbox "Add folders in tabs of a new window" in "Group" favorites even if Windows Explorer version supports tabs
 - fix a bug opening a group when the option "Add folders in tabs of a new window" is enabled
@@ -5881,9 +5893,9 @@ global g_strNewLocation ; used in various places when adding a favorite
 global g_strShowMenu ; used when QAPmessenger triggers LaunchFromMsg or LaunchFromReopenMenu when reopening menu after launching items
 global g_strOpenFavoriteFromMsg ; used when QAPmessenger triggers OpenFavoriteFromMsg
 global g_intRemovedItems ; used when deleting or moving multiple favorites from regular listview
-global g_intMenuItemsCount ; number of items added to main menu (vs maximum for free edition)
+global g_intMenuItemsCount ; number of items added to main menu
 global g_intNbLiveFolderItems ; number of items added to live folders (vs maximum set in ini file)
-global g_intNbExternalMenusCount ; number of external menus built (vs maximum for free edition)
+global g_intNbExternalMenusCount ; number of external menus built
 global g_intNbItemsInContextMenuFavoritesSection ; when setting icons in listviews ...ContextMenu menus
 global g_strMultipleAddDestinationMenu ; used to set the destination menu when saving favorites from GuiMultipleAdd...
 
@@ -7003,7 +7015,8 @@ o_Settings.ReadIniOption("Menu", "blnDisplayNumericShortcutsFromOne", "DisplayMe
 o_Settings.ReadIniOption("Menu", "intRecentFoldersMax", "RecentFoldersMax", 10, "MenuAppearance", "f_lblRecentFoldersMax|f_intRecentFoldersMaxEdit|f_intRecentFoldersMax|f_lblRecentFoldersMaxTitle") ; g_intRecentFoldersMax
 o_Settings.ReadIniOption("Menu", "intRecentPopularLevelsMax", "RecentPopularLevelsMax", 0, "MenuAppearance", "f_lblRecentPopularLevelsMax|f_intRecentPopularLevelsMaxEdit|f_intRecentPopularLevelsMax|f_lblRecentPopularLevelsMaxTitle")
 o_Settings.ReadIniOption("Menu", "intNbLastActions", "NbLastActions", 10, "MenuAppearance", "f_lblNbLastActionsMaxTitle|f_lblNbLastActionsMax|f_intNbLastActionsMaxEdit|f_intNbLastActions") ; g_intNbLastActions
-o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus
+o_Settings.ReadIniOption("Menu", "blnAddCustomizeThisMenu", "AddCustomizeThisMenu", 1, "MenuAppearance", "f_blnAddCustomizeThisMenu")
+o_Settings.ReadIniOption("Menu", "blnAddCloseToDynamicMenus", "AddCloseToDynamicMenus", 1, "MenuAppearance", "f_blnAddCloseToDynamicMenus") ; g_blnAddCloseToDynamicMenus, now not only for dynamic menus
 
 ; Group PopupMenu
 o_Settings.ReadIniOption("MenuPopup", "intPopupMenuPosition", "PopupMenuPosition", 1, "PopupMenu", "f_radPopupMenuPositionTitle|f_radPopupMenuPosition1|f_radPopupMenuPosition2|f_radPopupMenuPosition3") ; g_intPopupMenuPosition
@@ -9559,7 +9572,7 @@ gosub, DisableShortcuts ; turn off all favorites keyboard and mouse hotkeys
 g_aaItemsByShortcut := Object()
 g_aaItemsByShortcutToRemoveWhenBuildingMenu := Object()
 
-g_intMenuItemsCount := 0 ; number of items added to main menu (vs maximum for free edition)
+g_intMenuItemsCount := 0 ; number of items added to main menu
 g_intNbExternalMenusCount := 0 ; number of external menus (vs maximum set in ini file)
 
 g_intNbLiveFolderItems := 0 ; number of items added to live folders (vs maximum set in ini file)
@@ -9570,17 +9583,6 @@ if InStr(A_ThisLabel, "WithStatus")
 o_MainMenu.BuildMenu(, (InStr(A_ThisLabel, "Init") or InStr(A_ThisLabel, "ManualRefresh"))) ; recurse for submenus, last param for blnInitOrManualRefresh
 if InStr(A_ThisLabel, "WithStatus")
 	SetCursor(false)
-
-strLimitsIntro := (g_blnIniFileCreation ? o_L["DialogFreeEditionMessage0"] : o_L["DialogFreeEditionMessage1"])
-strLimitsMessage := (g_blnIniFileCreation or (g_intMenuItemsCount > g_intMenuItemsMax) ? L(o_L["DialogFreeEditionItems"], g_intMenuItemsCount, g_intMenuItemsMax) . "`n" : "")
-strLimitsMessage .= (g_blnIniFileCreation or (g_intNbExternalMenusCount > g_intNbExternalMenusMax) ? L(o_L["DialogFreeEditionShared"], g_intNbExternalMenusCount, g_intNbExternalMenusMax) . "`n" : "")
-
-if (g_blnIniFileCreation)
-	strLimitsMessage .= L(o_L["DialogFreeEditionLive"], g_intNbLiveFolderItemsMax) . "`n"
-else
-	strLimitsMessage .= (g_intNbLiveFolderItems > g_intNbLiveFolderItemsMax ? L(o_L["DialogFreeEditionLiveExceeded"], g_intNbLiveFolderItemsMax) . "`n" : "")
-
-strLimitsMessage := ""
 
 return
 ;------------------------------------------------------------
@@ -10101,8 +10103,12 @@ Gui, 2:Add, UpDown, vf_intNbLastActions Range1-9999 gGuiOptionsGroupChanged hidd
 Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblNbLastActionsMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
 
-; AddCloseToDynamicMenus
-Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
+; AddCustomizeThisMenu
+Gui, 2:Add, CheckBox, y+25 x%g_intGroupItemsX% w500 vf_blnAddCustomizeThisMenu gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCustomizeThisMenu"]
+GuiControl, , f_blnAddCustomizeThisMenu, % (o_Settings.Menu.blnAddCustomizeThisMenu.IniValue = true)
+
+; AddCloseToDynamicMenus (now not only for dynamic menus)
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w500 vf_blnAddCloseToDynamicMenus gGuiOptionsGroupChanged hidden, % o_L["OptionsAddCloseToDynamicMenus"]
 GuiControl, , f_blnAddCloseToDynamicMenus, % (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue = true)
 
 GuiControlGet, arrPos, Pos, f_blnAddCloseToDynamicMenus
@@ -10911,6 +10917,7 @@ o_Settings.Menu.blnDisplayNumericShortcutsFromOne.WriteIni(f_blnDisplayNumericSh
 o_Settings.Menu.intRecentFoldersMax.WriteIni(f_intRecentFoldersMax)
 o_Settings.Menu.intRecentPopularLevelsMax.WriteIni(f_intRecentPopularLevelsMax)
 o_Settings.Menu.intNbLastActions.WriteIni(f_intNbLastActions)
+o_Settings.Menu.blnAddCustomizeThisMenu.WriteIni(f_blnAddCustomizeThisMenu)
 o_Settings.Menu.blnAddCloseToDynamicMenus.WriteIni(f_blnAddCloseToDynamicMenus)
 
 ; === PopupMenu ===
@@ -13685,13 +13692,13 @@ return
 
 
 ;------------------------------------------------------------
-BuildTabsList(strFavoriteType, blnIsGoupMember)
+BuildTabsList(strFavoriteType, blnIsGroupMember)
 ;------------------------------------------------------------
 {
 	global
 
 	; 1 Basic Settings, 2 Menu Options, 3 Window Options, 4 Advanced Settings
-	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . (blnIsGoupMember ? o_L["DialogGroupMemberOptions"] : g_objFavoriteGuiTabs[2])
+	strTabsList := " " . g_objFavoriteGuiTabs[1] . " | " . (blnIsGroupMember ? o_L["DialogGroupMemberOptions"] : g_objFavoriteGuiTabs[2])
 	
 	if (strFavoriteType = "Folder")
 		strTabsList .= " | " . o_L["DialogAddFavoriteTabsLive"]
@@ -14142,7 +14149,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "Group")
 	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioGroupReplace " . (saFavoriteGroupSettings[1] ? "checked" : ""), % o_L["GuiGroupSaveReplaceWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3 ; DirectoryOpus or TotalCommander
-		or (o_FileManagers.P_intActiveFileManager = 1 and FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)) ; Win 11 Explorer with tabs
+		or (o_FileManagers.P_intActiveFileManager = 1 and OSVersionWithExplorerTabs())) ; Win 11 Explorer with tabs
 		Gui, 2:Add, Checkbox, % "x20 y+10 vf_blnGroupAddNewWindow " . (saFavoriteGroupSettings[5] ? "checked" : ""), % o_L["GuiGroupSaveAddNewWindowsLabel"]
 
 	if (o_FileManagers.P_intActiveFileManager = 2 or o_FileManagers.P_intActiveFileManager = 3) ; DirectoryOpus or TotalCommander
@@ -16221,6 +16228,7 @@ GuiShowFromIconsManage:
 GuiShowFromExternalCatalogue:
 GuiShowFromAddSnippetAndHotstring:
 GuiShowNeverCalled:
+GuiShowFromEditThisMenu:
 ;------------------------------------------------------------
 
 if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|GuiShowRestoreDefaultPosition|GuiShowFromSearchAndReplace|", A_ThisLabel . "|") ; menu object already set in these cases
@@ -16231,7 +16239,7 @@ if !InStr("GuiShowFromAlternative|GuiShowFromGuiSettings|GuiShowFromGuiOutside|G
 		
 		strThisMenu := o_Containers.AA[A_ThisMenu].AA.oParentMenu.AA.strMenuPath
 		
-	else if (A_ThisLabel = "GuiShowFromGuiAddFavoriteQAPFeature") ; open gui in the menu where the add command was called ONLY if A_ThisMenu...
+	else if InStr("GuiShowFromGuiAddFavoriteQAPFeature|GuiShowFromEditThisMenu|", A_ThisLabel . "|") ; open gui in the menu where the add command was called
 		and StrLen(A_ThisMenu) ; by safety, check that menu is defined
 		and o_Containers.AA.HasKey(A_ThisMenu) ; by safety, check if menu object exists
 		and (A_ThisMenu <> o_L["MenuLastActions"]) ; is not called from the last actions menu
@@ -24721,7 +24729,7 @@ GetCurrentLocation(strClass, strWinID)
 						if (pExplorer.HWND = strWinID)
 						{
 							; version "10.0.22621.675" is first Win 11 Explorer with tabs
-							if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+							if OSVersionWithExplorerTabs() ; returns 0 if equal, 1 if first greater
 							{
 								intActiveTab := 0
 								try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinID%
@@ -25662,7 +25670,7 @@ GetSelectedLocation(strClass, strWinId, blnMultipleSelection := false)
 			if (objWindow.hwnd = strWinId)
 			{
 				; version "10.0.22621.675" is first Win 11 Explorer with tabs
-				if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+				if OSVersionWithExplorerTabs()
 				{
 					intActiveTab := 0
 					try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %strWinId%
@@ -25788,6 +25796,15 @@ PlaceholderDebug(strMessage, blnFavoriteDebug)
 	return false
 }
 ;------------------------------------------------
+
+
+;------------------------------------------------------------
+OSVersionWithExplorerTabs()
+;------------------------------------------------------------
+{
+	return (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0)
+}
+;------------------------------------------------------------
 
 
 ;------------------------------------------------------------
@@ -27784,18 +27801,18 @@ KeepThisWindow(intIndex, strWinID, strCaller, ByRef objWindowProperties)
 	else
 		objWindowProperties.strAppIconResource := objWindowProperties.ProcessPath . ",1"
 	
-	if (strCaller = g_saDialogListApplicationsDropdown[n]) ; "List All"
+	if (strCaller = g_saDialogListApplicationsDropdown[1]) ; "List All"
 		return true
 	
 	if !StrLen(strWindowTitle)
 		or !StrLen(strProcessPath)
 		or !(blnWandH)
 		or (strProcessPath = A_ProgramFiles . "\Windows Sidebar\sidebar.exe")
-		or InStr(strProcessPath, A_ProgramFiles . "\WindowsApps\") ; and (intExStyle <> 0x00280000)
+		; or InStr(strProcessPath, A_ProgramFiles . "\WindowsApps\") and (intExStyle <> 0x00280000) - don't remember why this was excluded
 		return false
 
 	else if (strProcessName = "ApplicationFrameHost.exe")
-		; si minimisé conserver
+		; keep if minimized
 	{
 		if ApplicationIsExcluded(strWindowClass, strWindowTitle, strProcessName)
 			return false
@@ -31471,6 +31488,9 @@ class QAPfeatures
 		this.AddQAPFeatureObject("CloseMenu",				o_L["MenuCloseThisMenu"],					"", "DoNothing",							"7-QAPManagement"
 			, o_L["MenuCloseThisMenuDescription"], 0, "iconClose", ""
 			, "what-is-the-close-menu-issue")
+		this.AddQAPFeatureObject("CustomizeThisMenu",		o_L["MenuCustomizeThisMenu"],				"", "GuiShowFromEditThisMenu",				"3-QAPMenuEditing~7-QAPManagement"
+			, o_L["MenuCustomizeThisMenuDescription"], 0, "iconEditFavorite", ""
+			, "")
 		this.AddQAPFeatureObject("ImportExport",			o_L["ImpExpMenu"] . g_strEllipse,			"", "ImportOptions",						"7-QAPManagement"
 			, o_L["ImpExpMenuDescription"], 0, "iconSettings", ""
 			, "can-i-backup-import-or-export-my-favorites-and-settings")
@@ -31511,7 +31531,7 @@ class QAPfeatures
 		this.AddQAPFeatureObject("Edit Settings file", 		L(o_L["MenuEditIniFile"], o_Settings.strIniFileNameExtOnly), "", "ShowSettingsIniFile", "7-QAPManagement"
 			, o_L["MenuEditIniFileDescription"], 0, "iconSettings", ""
 			, "how-can-i-edit-the-file-quickaccesspopup-ini")
-		this.AddQAPFeatureObject("List Applications", 		o_L["MenuListApplications"],				"", "ListApplications",						"7-QAPManagement"
+		this.AddQAPFeatureObject("List Applications", 		o_L["MenuListApplications"],				"", "ListApplications",						"4-WindowManagement~7-QAPManagement"
 			, o_L["MenuListApplicationsDescription"], 0, "iconDesktop", "", "")
 		this.AddQAPFeatureObject("Window Always on Top",	o_L["MenuWindowAlwaysonTop"],				"", "WindowsAlwaysOnTop",					"1-Featured~4-WindowManagement"
 			, o_L["MenuWindowAlwaysonTopDescription"], 0, "iconDesktop", ""
@@ -32693,7 +32713,7 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false, blnCountItems := false)
+	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false, blnMenuEditable := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
@@ -32702,7 +32722,7 @@ class Container
 		this.AA.intMenuAutoSort := intAutoSort
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
-		this.AA.blnCountItems := blnCountItems ; increment items counter for free edition limit
+		this.AA.blnMenuEditable := blnMenuEditable ; add edit this menu and increment items counter
 		this.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		
 		if (oParentMenu)
@@ -33279,11 +33299,7 @@ class Container
 		Menu, % this.AA.strMenuPath, Add ; to avoid an error if menu is empty
 		Menu, % this.AA.strMenuPath, DeleteAll
 		
-		intMenuItemsCount := 0 ; counter of items in this menu
-		intDynamicMenuItemsCount := 0 ; counter of items in dynamic menus
-		blnCountDynamicMenusItems := o_QAPfeatures.aaQAPFeaturesDynamicMenus.HasKey(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath])
-			and (InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Popular") or InStr(o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[this.AA.strMenuPath], "Recent"))
-			; limit the number of enabled items only in Frequent and Recent menus for free edition
+		intMenuItemsCount := 0 ; counter of items in this menu (not used but not removed for safety)
 		
 		if (this.AA.intMenuAutoSort)
 			this.SortContainer("", strSortedItems)
@@ -33302,10 +33318,8 @@ class Container
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
 			
-			if (this.AA.blnCountItems and !blnDoNotCountItemsNow)
-				g_intMenuItemsCount++ ; for free edition limit
-			if (blnCountDynamicMenusItems)
-				intDynamicMenuItemsCount++ ; for free edition limit
+			if (this.AA.blnMenuEditable and !blnDoNotCountItemsNow)
+				g_intMenuItemsCount++ ; for stats
 			
 			; menu items from dynamic menus having custom Gosub in Type field
 			if !o_Favorites.s_saFavoriteTypesByName.HasKey(aaThisFavorite.strFavoriteType)
@@ -33498,8 +33512,11 @@ class Container
 			blnFlagNextItemHasColumnBreak := false ; reset before next item
 		}
 		
+		if (this.AA.blnMenuEditable and o_Settings.Menu.blnAddCustomizeThisMenu.IniValue)
+			this.AddCustomizeThisMenu()
+			
 		if ((!IsObject(this.AA.oParentMenu) or HasShortcut(this.AA.strMenuShortcut) or StrLen(this.AA.strMenuHotstring) or this.AA.blnReopenAfterLaunchingItem)
-			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue
+			and o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue ; blnAddCloseToDynamicMenus is now not only for dynamic menus
 			and SubStr(this.AA.strMenuPath, 1, 7) <> "menuBar")
 			this.AddCloseMenu()
 	}
@@ -33787,12 +33804,22 @@ class Container
 	;------------------------------------------------------------
 
 	;-------------------------------------------------------------
+	AddCustomizeThisMenu()
+	;-------------------------------------------------------------
+	{
+		Menu, % this.AA.strMenuPath, Add
+		this.AddMenuIcon(o_L["MenuCustomizeThisMenu"], "GuiShowFromEditThisMenu", "iconEditFavorite")
+	}
+	;-------------------------------------------------------------
+	
+	;-------------------------------------------------------------
 	AddCloseMenu()
 	;-------------------------------------------------------------
 	{
 		if (o_Settings.Menu.blnAddCloseToDynamicMenus.IniValue)
 		{
-			Menu, % this.AA.strMenuPath, Add
+			if !(this.AA.blnMenuEditable and o_Settings.Menu.blnAddCustomizeThisMenu.IniValue) ; do not add separator if already done for Edit this menu
+				Menu, % this.AA.strMenuPath, Add
 			this.AddMenuIcon(o_L["MenuCloseThisMenu"], "DoNothing", "iconClose")
 		}
 	}
@@ -35256,7 +35283,7 @@ class Container
 							if (pExplorer.hwnd = g_strTargetWinId)
 							{
 								; version "10.0.22621.675" is first Win 11 Explorer with tabs
-								if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; returns 0 if equal, 1 if first greater
+								if OSVersionWithExplorerTabs()
 								{
 									intActiveTab := 0
 									try ControlGet, intActiveTab, Hwnd, , ShellTabWindowClass1, ahk_id %g_strTargetWinId%
@@ -35464,16 +35491,17 @@ class Container
 						strExplorerIDsBefore := this.aaTemp.strExplorerIDs ;  save the list before launching this new Explorer
 					}
 					
-					if ((FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; if Win 11 Explorer with tabs
-						and this.aaTemp.blnFirstFolderOfGroup and this.AA.oParentMenu.AA.blnGroupReplaceWindows)
+					if (OSVersionWithExplorerTabs() and this.aaTemp.blnFirstFolderOfGroup
+						and this.AA.oParentMenu.AA.blnGroupAddNewWindow) ; first folder of a group to open in tabs of a new window
 					{
 						; open a new Explorer window for first folder
 						Run, % this.aaTemp.strFullLocation
 						Sleep, 1000 ; for safety (200 not enough), tried to wait for ahk_pid but the PID is was not set when running the folder
 						return ; location will not be processed (if desired, manage to jump to the loop after saFavoriteWindowPosition[1] below)
 					}
-					else if (FirstVsSecondIs(GetOSVersionInfo().DetailedBuild, "10.0.22621.675") >= 0) ; open a new tab if Win 11 Explorer with tabs
-						and (g_aaFileManagerExplorer.blnFileManagerUseTabs) ; use tabs option enabled
+					else if OSVersionWithExplorerTabs() ; open a new tab if Win 11 Explorer with tabs
+						and (g_aaFileManagerExplorer.blnFileManagerUseTabs ; use tabs option enabled
+							or this.AA.oParentMenu.AA.blnGroupAddNewWindow) ; open in a tabs of a new window
 						and (WinExist("ahk_class ExploreWClass") or WinExist("ahk_class CabinetWClass")) ; if an Explorer window already exists
 						and !(this.aaTemp.saFavoriteWindowPosition[1] or this.aaTemp.blnOpenFavoritesOnActiveMonitor) ; except if we set a window position, necessarily in a new window
 					{
@@ -35802,13 +35830,8 @@ class Container
 		OpenGroup()
 		;---------------------------------------------------------
 		{
-			; backup blnGroupReplaceWindows in case it is used to fake opening a new window before opening tabs in a new Explorer window
-			blnGroupReplaceWindowsBK := this.AA.oSubMenu.AA.blnGroupReplaceWindows
-			
 			if (this.AA.oSubMenu.AA.blnGroupReplaceWindows) ; was g_blnGroupReplaceWindows
 				this.OpenGroupCloseExplorers()
-			else if (this.AA.oSubMenu.AA.blnGroupAddNewWindow) ; open in tabs of a new window
-				this.AA.oSubMenu.AA.blnGroupReplaceWindows := true ; fake opening a new window before opening tabs in a new Explorer window
 
 			intFolderItemsCount := 0
 			for intMemberNumber, oGroupMember in this.AA.oSubMenu.SA ; o_Containers.AA[o_L["MainMenuName"] . " " . objThisGroupFavorite.FavoriteLocation] 
@@ -35855,9 +35878,6 @@ class Container
 				}
 			}
 
-			; restore original value
-			this.AA.oSubMenu.AA.blnGroupReplaceWindows := blnGroupReplaceWindowsBK
-			
 			return 0 ; no error
 		}
 		;---------------------------------------------------------
