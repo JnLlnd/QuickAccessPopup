@@ -31,9 +31,6 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 12.0 (2025-09-##)
-- 
-
 Version: 11.6.6 (2025-07-25)
 - in the QAP menu, at the bottom of each submenu, add the menu item "Customize this menu (or group)"; this applies only to user editable menus (not dynamic menus) and excludes the Main menu already containing the "Customize" menu item
 - for users not wanting this additional menu item, add an option under "Menu appearance" to set if the new "Customize this menu" item is added or not at the end of editable menus (default true)
@@ -45,6 +42,9 @@ Version: 11.6.6 (2025-07-25)
 
 Version BETA: 11.9.0.6 (2025-06-20)
 - fix bug with QCE command when building QAP menu
+
+Version BETA: 11.9.0.5 (2025-06-19)
+- merge changes in v11.6.5.1 in this beta branch
 
 Version BETA: 11.9.0.5 (2025-06-19)
 - merge changes in v11.6.5.1 in this beta branch
@@ -5687,7 +5687,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.0
+;@Ahk2Exe-SetVersion 11.9.0.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5755,8 +5755,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.0" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "11.9.0.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
