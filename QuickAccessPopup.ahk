@@ -6263,9 +6263,7 @@ Hotkey, If
 
 if InStr(A_ScriptName, ".ahk") ; read test file instead of launching QCE Receiver Lite
 {
-	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full.txt
-	FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Full&Pinned.txt
-	; FileRead, strQCECommands, %A_ScriptDir%\! QCE SendMessage-Lite.txt
+	FileRead, strQCECommands, %A_ScriptDir%\QCE SendMessage-Fake.txt ; this file is updated automatically ech time the complied version is used to add a QCE command
 	if !StrLen(strQCECommands)
 		Oops(0, "QCE COMMANDS FILEREAD ERROR")
 	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
@@ -7134,6 +7132,7 @@ o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtens
 o_Settings.ReadIniOption("LaunchAdvanced", "blnExpandEnvVarsInParameters", "ExpandEnvVarsInParameters", 1)
 o_Settings.ReadIniOption("Execution", "blnQCECommandShowPasteAfter", "QCECommandShowPasteAfter", 1)
 
+; add default menus only once
 o_Settings.ReadIniOption("Launch", "blnDefaultDynamicMenusBuilt", "DefaultDynamicMenusBuilt", 0) ; blnDefaultDynamicMenusBuilt
 if !(o_Settings.Launch.blnDefaultDynamicMenusBuilt.IniValue) ; false for new installations (because done in LoadIniFile when creating the ini file)
  	Gosub, AddToIniDynamicDefaultMenu ; modify the ini file Favorites section before reading it
@@ -7146,6 +7145,10 @@ if !(o_Settings.Launch.blnSnippetsDefaultMenuBuilt.IniValue)
 o_Settings.ReadIniOption("Launch", "blnDefaultWindowsAppsMenuBuilt", "DefaultWindowsAppsMenuBuilt", 0) ; blnDefaultWindowsAppsMenuBuilt
 if !(o_Settings.Launch.blnDefaultWindowsAppsMenuBuilt.IniValue) and (GetOSVersionInfo().MajorVersion >= "10")
  	Gosub, AddToIniWindowsAppsDefaultMenu ; modify the ini file Favorites section before reading it
+o_Settings.ReadIniOption("Launch", "blnDefaultQCEMenuBuilt", "DefaultQCEMenuBuilt", 0)
+if !(o_Settings.Launch.blnDefaultQCEMenuBuilt.IniValue)
+ 	Gosub, AddToIniQCEDefaultMenu ; modify the ini file Favorites section before reading it
+
 o_Settings.ReadIniOption("SettingsFile", "strBackupFolder", "BackupFolder", A_WorkingDir, "General"
 	, "f_lblBackupFolder|f_strBackupFolder|f_btnBackupFolder|f_lblWorkingFolder|f_strWorkingFolder|f_btnWorkingFolder|f_lblWorkingFolderDisabled")
 
@@ -7509,6 +7512,36 @@ return
 
 
 ;------------------------------------------------------------
+AddToIniQCEDefaultMenu:
+AddToIniQCEDefaultMenuFirstLaunch:
+;------------------------------------------------------------
+
+g_strAddThisMenuName := o_L["MenuMyQCEMenu"]
+Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if g_strAddThisMenuName menu name exists
+if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
+{
+	g_intNextFavoriteNumber -= 1 ; minus one to overwrite the existing end of main menu marker
+	AddToIniOneDefaultMenu("", "", "X")
+}
+AddToIniOneDefaultMenu(g_strMenuPathSeparator . " " . g_strAddThisMenuNameWithInstance, g_strAddThisMenuNameWithInstance, "Menu")
+
+AddToIniOneDefaultMenu("{Add Favorite - QCE}", "", "QAP")
+AddToIniOneDefaultMenu("", "", "X")
+; AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := false, strCustomHotstring := "")
+loop, Parse, % "Upper|Lower|Title|Toggle", |
+	AddToIniOneDefaultMenu("{Case~" . A_LoopField . "}", o_L["MenuClipboardCommand" . A_LoopField], "QCE")
+AddToIniOneDefaultMenu("", "", "Z") ; close Windows Apps menu
+
+if !InStr(A_ThisLabel, "FirstLaunch") ; avoid if adding the menu at first launch
+	AddToIniOneDefaultMenu("", "", "Z") ; restore end of main menu marker
+
+IniWrite, 1, % o_Settings.strIniFile, Global, DefaultQCEMenuBuilt
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 AddToIniDefaultMenu:
 ;------------------------------------------------------------
 
@@ -7547,8 +7580,10 @@ AddToIniOneDefaultMenu("{21EC2020-3AEA-1069-A2DD-08002B30309D}", "", "Special") 
 AddToIniOneDefaultMenu("{645FF040-5081-101B-9F08-00AA002F954E}", "", "Special") ; Recycle Bin
 AddToIniOneDefaultMenu("", "", "Z") ; close special menu
 
-Gosub, AddToIniSnippetsDefaultMenuFirstLaunch ; modify the ini file Favorites section before reading it
-Gosub, AddToIniWindowsAppsDefaultMenuFirstLaunch ; modify the ini file Favorites section before reading it
+; modify the ini file Favorites section before reading it
+Gosub, AddToIniSnippetsDefaultMenuFirstLaunch
+Gosub, AddToIniWindowsAppsDefaultMenuFirstLaunch
+Gosub, AddToIniQCEDefaultMenuFirstLaunch
 
 g_strAddThisMenuName := o_QAPfeatures.aaQAPFeaturesCodeByDefaultName[o_L["MenuSettings"]] ; QAP feature code used here for comparison only, not for menu name
 Gosub, AddToIniGetMenuName ; find next favorite number in ini file and check if the QAP feature exist in this menu
@@ -7675,6 +7710,8 @@ AddToIniOneDefaultMenu(strLocation, strName, strFavoriteType, blnAddShortcut := 
 			strIconResource := o_SpecialFolders.AA[strLocation].strDefaultIcon
 		else if (strFavoriteType = "WindowsApp")
 			strIconResource := "iconDesktop"
+		else if (strFavoriteType = "QCE")
+			strIconResource := "iconClipboardCheck"
 		else
 			strIconResource := o_QAPfeatures.AA[strLocation].strDefaultIcon
 		
@@ -14100,7 +14137,6 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 	}
 	else ; "Special", "QAP" or "QCE"
 	{
-		
 		g_blnFirstInitDone := false
 		GuiControlGet, arrPosLocationLabel, Pos, f_lblLocation
 		intTreeViewHeight := intTabHeight - arrPosLocationLabelY - 48 - (blnFolderInAGroupWithSide ? 46 : 0) ; -43 space normally required below, -46 if folder in group member with a side
@@ -29556,6 +29592,12 @@ RECEIVE_MESSENGER(wParam, lParam)
 	Diag(A_ThisFunc, "StrSplit(strCopyOfData, g_strUnitSeparator)[1]", StrSplit(strCopyOfData, g_strUnitSeparator)[1])
 	Diag(A_ThisFunc, "= QCEcommands", StrSplit(strCopyOfData, g_strUnitSeparator)[1] = "QCEcommands")
 	
+	if FileExist("C:\Dropbox\AutoHotkey\QuickAccessPopup\QuickAccessPopup-HOME.ini") ; only on dev machine, update test file for next use with .ahk source file
+	{
+		FileDelete, C:\Dropbox\AutoHotkey\QuickAccessPopup\QCE SendMessage-Fake.txt
+		FileAppend, %strCopyOfData%, C:\Dropbox\AutoHotkey\QuickAccessPopup\QCE SendMessage-Fake.txt
+	}
+	
 	if (StrSplit(strCopyOfData, g_strUnitSeparator)[1] = "QCEcommands") ; QCE commands list separated by "`n"
 	{
 		o_QCEcommands.ReceiveQCEcommands(strCopyOfData)
@@ -35029,7 +35071,7 @@ class Container
 				strCommand := SubStr(this.AA.strFavoriteLocation, 2, -1) ; remove first and last character
 				saCommand := StrSplit(strCommand, "~")
 				if InStr("Case|Encode|Decode|Paste|PastePinned|", saCommand[1] . "|")
-					strQCECommand := saCommand[1] . "|" . saCommand[2]
+					strQCECommand := saCommand[1] . "|" . (saCommand[1] = "PastePinned" and saCommand[2] = "A" ? "10" : saCommand[2]) ; if pinned ID "A", restore QCE ID "10"
 				else
 					strQCECommand := "Exec|" . saCommand[2]
 				if !StrLen(strQCECommand)
