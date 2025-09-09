@@ -14,7 +14,7 @@ http://www.autohotkey.com/docs/scripts/FavoriteFolders.htm
 or Rexx version Folder Menu
 http://www.autohotkey.com/board/topic/13392-folder-menu-a-popup-menu-to-quickly-change-your-folders/
 
-Copyright 2013-2022 Jean Lalonde
+Copyright 2013-2025 Jean Lalonde
 --------------------------------
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,6 +30,14 @@ limitations under the License.
 
 HISTORY
 =======
+
+Version BETA: 11.9.0.8 (2025-09-09)
+- automatically add the "My Clipboard Commands" menu at first QAP launch or when running this release for the first time (this menu can be changed, moved or removed in the "Customize" window)
+- fix bug when using the QCE command "Paste Pinned clip" for item #10
+- in the dialog box displayed before searching for broken links (under "Tools, Special Searches"), add the "Cancel" button to abort the command
+
+Version BETA: 11.9.0.7 (2025-07-25)
+- merge changes in v11.6.6 in this beta branch
 
 Version: 11.6.6 (2025-07-25)
 - in the QAP menu, at the bottom of each submenu, add the menu item "Customize this menu (or group)"; this applies only to user editable menus (not dynamic menus) and excludes the Main menu already containing the "Customize" menu item
@@ -5687,7 +5695,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.9.0.7
+;@Ahk2Exe-SetVersion 11.9.0.8
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5755,7 +5763,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.9.0.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.9.0.8" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
