@@ -8960,8 +8960,8 @@ blnWeHaveFolders := false
 if (o_FileManagers.P_intActiveFileManager = 2) ; DirectoryOpus
 	for intIndex, aaLister in saDOpusListers
 	{
-		; if we have no path or a DOpus collection, skip it
-		if !StrLen(aaLister.strLocationURL) or InStr(aaLister.strLocationURL, "coll://")
+		; if we have no path, skip it
+		if !StrLen(aaLister.strLocationURL)
 			continue
 		
 		if NameIsInObject(aaLister.strName, saFoldersAndAppsList)
