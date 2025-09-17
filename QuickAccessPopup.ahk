@@ -28405,7 +28405,7 @@ SetRegistry(strValue, strKeyName, strValueName)
 {
 	RegWrite, REG_SZ, %strKeyName%, %strValueName%, %strValue%
 	if (ErrorLevel)
-		Oops(0, "An error occurred while writing the registry key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName)
+		Oops(0, "An error occurred while writing the registry key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName . "`nError code: " . A_LastError)
 }
 ;---------------------------------------------------------
 
