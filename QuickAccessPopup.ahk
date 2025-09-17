@@ -8960,8 +8960,8 @@ blnWeHaveFolders := false
 if (o_FileManagers.P_intActiveFileManager = 2) ; DirectoryOpus
 	for intIndex, aaLister in saDOpusListers
 	{
-		; if we have no path or a DOpus collection, skip it
-		if !StrLen(aaLister.strLocationURL) or InStr(aaLister.strLocationURL, "coll://")
+		; if we have no path, skip it
+		if !StrLen(aaLister.strLocationURL)
 			continue
 		
 		if NameIsInObject(aaLister.strName, saFoldersAndAppsList)
@@ -18409,13 +18409,14 @@ if (!g_intNewItemPos)
 		g_intNewItemPos := f_drpParentMenuItems
 	else ; if f_drpParentMenuItems is not set, add to the end of menu
 		g_intNewItemPos := o_Containers.AA[strDestinationMenu].SA.MaxIndex() + 1
-
-; for these favorites, file/folder must exist
-
+	
 if InStr("Folder|Document|Application", o_EditedFavorite.AA.strFavoriteType)
 	and StrLen(strNewFavoriteLocation) ; to exclude situations (like move) where strNewFavoriteLocation is empty
-	and !(ContainsPlaceholder(ExpandUserVariables(strNewFavoriteLocation)) or SubStr(strNewFavoriteLocation, 1, 3) = "::{")
+	and !(ContainsPlaceholder(ExpandUserVariables(strNewFavoriteLocation))
+		or SubStr(strNewFavoriteLocation, 1, 3) = "::{"
+		or SubStr(strNewFavoriteLocation, 1, 7) = "coll://")
 {
+	; for these favorites, file/folder must exist
 	strExpandedNewFavoriteLocation := strNewFavoriteLocation
 	if !FileExistInPath(strExpandedNewFavoriteLocation)
 	{
@@ -28404,7 +28405,7 @@ SetRegistry(strValue, strKeyName, strValueName)
 {
 	RegWrite, REG_SZ, %strKeyName%, %strValueName%, %strValue%
 	if (ErrorLevel)
-		Oops(0, "An error occurred while writing the registry key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName)
+		Oops(0, "An error occurred while writing the registry key.`n`nValue: " . strValueName . "`nKey name: " . strKeyName . "`nError code: " . A_LastError)
 }
 ;---------------------------------------------------------
 
@@ -36411,6 +36412,7 @@ class Container
 					if InStr("Folder|Document|Application", this.AA.strFavoriteType) ; not for URL, Special Folder and others
 						and !LocationIsHTTP(this.AA.strFavoriteLocation) ; except if the folder location is on a server (like WebDAV)
 						and !(SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{") ; except for CLSIDs
+						and !(SubStr(this.AA.strFavoriteLocation, 1, 7) = "coll://")
 					{
 						; placeholders are already expanded but need to expand other variables
 						; make the location absolute based on the current working directory
@@ -36508,6 +36510,7 @@ class Container
 				and !(SubStr(this.aaTemp.strLocationWithPlaceholders, 1, 1) = "?" and this.aaTemp.strOpenFavoriteLabel = "OpenDOpusFavorite")
 					; except if the location is a DOpus Favorite special folder identified with <pidl>
 				and (this.aaTemp.strOpenFavoriteLabel <> "OpenDOpusLayout") ; except if the location is a DOpus Layout (with format "layout_name_or_sub/sub/name")
+				and !(SubStr(this.AA.strFavoriteLocation, 1, 7) = "coll://") ; except is location is a DOpus collection
 				and !(SubStr(this.AA.strFavoriteLocation, 1, 3) = "::{") ; except is location is a CLSID (for example, some control panel items)
 				and !(SubStr(this.aaTemp.strLocationWithPlaceholders, 1, 1) = "/" and WindowIsDirectoryOpus(g_strTargetClass))
 			{
