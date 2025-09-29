@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.7 (2025-09-28)
+- when Directory Opus is the selected file manager, support collections (coll://) when adding and opening a favorite folder and in Current windows, Recent Folders and Reopen a Folder dynamic menus
+- before searching for broken favorite links (in "Tools, Special Searches"), add the Cancel button allowing to abort the command
+- add an error code to the message received when setting a registry key causes an error
+ 
 Version: 11.6.6 (2025-07-25)
 - in the QAP menu, at the bottom of each submenu, add the menu item "Customize this menu (or group)"; this applies only to user editable menus (not dynamic menus) and excludes the Main menu already containing the "Customize" menu item
 - for users not wanting this additional menu item, add an option under "Menu appearance" to set if the new "Customize this menu" item is added or not at the end of editable menus (default true)
@@ -5646,7 +5651,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 11.6.6
+;@Ahk2Exe-SetVersion 11.6.7
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5714,7 +5719,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "11.6.6" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "11.6.7" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
