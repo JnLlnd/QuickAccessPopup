@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 11.6.7 (2025-09-28)
+- when Directory Opus is the selected file manager, support collections (coll://) when adding and opening a favorite folder and in Current windows, Recent Folders and Reopen a Folder dynamic menus
+- before searching for broken favorite links (in "Tools, Special Searches"), add the Cancel button allowing to abort the command
+- add an error code to the message received when setting a registry key causes an error
+
 Version BETA: 11.9.0.8 (2025-09-09)
 - automatically add the "My Clipboard Commands" menu at first QAP launch or when running this release for the first time (this menu can be changed, moved or removed in the "Customize" window)
 - fix bug when using the QCE command "Paste Pinned clip" for item #10
@@ -8980,7 +8985,7 @@ if (o_FileManagers.P_intActiveFileManager = 2) ; DirectoryOpus
 else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
 	for intIndex, aaTCTab in saTCTabs
 	{
-		; if we have no path or a DOpus collection, skip it
+		; if we have no path, skip it
 		if !StrLen(aaTCTab.strLocation)
 			continue
 		
