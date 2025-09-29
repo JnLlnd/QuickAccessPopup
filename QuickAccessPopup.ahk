@@ -12551,7 +12551,9 @@ if (A_ThisLabel <> "ReorderFavoritesInGui") ; avoid if o_MenuInGui is already lo
 		
 		if (o_MenuInGui.AA.strMenuPath = "{BrokenLinks}")
 		{
-			MsgBox, 0, % g_strAppNameText . " - " . o_L["ToolTipBrokenLinksIntro"], % o_L["ToolTipBrokenLinksWarnings"]
+			MsgBox, 1, % g_strAppNameText . " - " . o_L["ToolTipBrokenLinksIntro"], % o_L["ToolTipBrokenLinksWarnings"]
+			IfMsgBox, Cancel
+				return
 			SetCursor(true, "wait")
 			g_strBrokenLinks := o_L["ToolTipBrokenLinksList"] . ":"
 			Tooltip, % o_L["ToolTipBrokenLinksIntro"] . "...", 55, 140, 3
