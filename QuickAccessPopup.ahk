@@ -31,6 +31,40 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.0 (2025-10-05)
+ 
+New favorite type "Clipboard Command"
+  see: https://www.quickaccesspopup.com/qce/
+ 
+- implement "Add Favorite" and "Edit Favorite" for Clipboard Commands using a treeview list of commands from Quick Clipboard Editor (QCE) available in QAP
+- built-in Clipboard commands:
+  - change case (lowercase, UPPERCASE, tOGGLE CASE, Title Case, Sentence case, etc.)
+  - Encode/Decode commands: encoding and decoding for various programming (PHP, HTML, AHK) and technical needs (URL, XML, Base64, Hexadecimal)
+- Integration with Quick Clipboard Editor
+  - add QCE Saved commands from simple commands like "Find and Replace" to more advanced commands like "Insert string", "Filter lines", and "Script" (groups of Saved commands)
+  - show help window when QCE is not running, prompting user to install QCE form more commands
+- at first QAP launch (or when running this release for the first time), automatically add the "My Clipboard Commands" menu with builtin QCE commands (this menu can be changed, moved or removed in the "Customize" window)
+- update language files (all languages) for new favorite type QCE
+ 
+Quick Access Popup Messaging (background tasks)
+- receive from QCE the list of commands available for QAP (using Windows "COPYDATA" command)
+- launch "QCE Receiver Lite" if QCE is not running, allowing to add builtin QCE commands
+- on QAP exit, quit "QCE Receiver Lite" if it was launched
+ 
+Various
+- add new icons for QCE commands in JLicons.dll
+- fix bugs with QAP Features, Special folders and Clipboard commands favorites setting a short name by error when opening the "Add Favorite" dialog box
+- add an option under "Options, Snippets and Hotstrings" to set a "Keyboard delay when deleting a hotstring trigger" with a default value of 10ms; increase this value if the trigger is not completely deleted when expanding a hotstring
+- when importing a file shortcut (.lnk), if the "Start In" value is empty, set it to the original shortcut's directory
+
+Version BETA: 11.9.0.9 (2025-09-30)
+- merge changes in v11.6.7 in this beta branch
+
+Version: 11.6.7 (2025-09-28)
+- when Directory Opus is the selected file manager, support collections (coll://) when adding and opening a favorite folder and in Current windows, Recent Folders and Reopen a Folder dynamic menus
+- before searching for broken favorite links (in "Tools, Special Searches"), add the Cancel button allowing to abort the command
+- add an error code to the message received when setting a registry key causes an error
+
 Version BETA: 11.9.0.8 (2025-09-09)
 - automatically add the "My Clipboard Commands" menu at first QAP launch or when running this release for the first time (this menu can be changed, moved or removed in the "Customize" window)
 - fix bug when using the QCE command "Paste Pinned clip" for item #10
@@ -8980,7 +9014,7 @@ if (o_FileManagers.P_intActiveFileManager = 2) ; DirectoryOpus
 else if (o_FileManagers.P_intActiveFileManager = 3) ; Total Commander
 	for intIndex, aaTCTab in saTCTabs
 	{
-		; if we have no path or a DOpus collection, skip it
+		; if we have no path, skip it
 		if !StrLen(aaTCTab.strLocation)
 			continue
 		
