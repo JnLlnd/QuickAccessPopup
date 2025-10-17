@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.0.1 (2025-10-05)
+
 Version: 12.0 (2025-10-05)
  
 New favorite type "Clipboard Command"
@@ -5729,7 +5731,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.0
+;@Ahk2Exe-SetVersion 12.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5797,7 +5799,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.0" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -6311,7 +6313,8 @@ if InStr(A_ScriptName, ".ahk") ; read test file instead of launching QCE Receive
 	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
 	strQCECommands := ""
 }
-else if !WinExist("ahk_exe QuickClipboardEditor-Receiver.exe") ; launch QCE Receiver Lite if QCE is not running
+else if (!WinExist("ahk_exe QuickClipboardEditor-Receiver.exe") ; launch QCE Receiver Lite if QCE is not running
+	and !o_Settings.Execution.blnDoNotLaunchQCEReceiver.IniValue)
 {
 	Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
 	Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
@@ -7156,6 +7159,7 @@ o_Settings.ReadIniOption("Execution", "blnAlwaysLaunchURLs", "AlwaysLaunchURLs",
 o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFavoriteDebugOption", 0, "AdvancedOther", "f_blnEnableFavoriteDebugOption") ; enable debug checkbox in favorites basic settings tab
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "f_blnKeepExtensionInShortName") ; keep file extension when gettig short name from a document or application location
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
+o_Settings.ReadIniOption("Execution", "blnDoNotLaunchQCEReceiver", "DoNotLaunchQCEReceiver", 0, "AdvancedOther", "f_blnDoNotLaunchQCEReceiver") ; default false
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
 o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180|150", "AdvancedOther"
@@ -10707,6 +10711,10 @@ GuiControl, , f_blnKeepExtensionInShortName, % (o_Settings.Execution.blnKeepExte
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnSendToConsoleWithAlt gGuiOptionsGroupChanged hidden, % o_L["OptionsSendToConsoleWithAlt"]
 GuiControl, , f_blnSendToConsoleWithAlt, % (o_Settings.Execution.blnSendToConsoleWithAlt.IniValue = true)
 
+; DoNotLaunchQCEReceiver
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnDoNotLaunchQCEReceiver gGuiOptionsGroupChanged hidden, % o_L["OptionsDoNotLaunchQCEReceiver"]
+GuiControl, , f_blnDoNotLaunchQCEReceiver, % (o_Settings.Execution.blnDoNotLaunchQCEReceiver.IniValue = true)
+
 ; ExternalMenusCataloguePath
 if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 {
@@ -11219,6 +11227,7 @@ o_Settings.Execution.blnAlwaysLaunchURLs.WriteIni(f_blnAlwaysLaunchURLs)
 o_Settings.Execution.blnEnableFavoriteDebugOption.WriteIni(f_blnEnableFavoriteDebugOption)
 o_Settings.Execution.blnKeepExtensionInShortName.WriteIni(f_blnKeepExtensionInShortName)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
+o_Settings.Execution.blnDoNotLaunchQCEReceiver.WriteIni(f_blnDoNotLaunchQCEReceiver)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
