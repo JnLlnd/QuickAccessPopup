@@ -5965,6 +5965,8 @@ global g_blnLightMode
 global g_intWindowColor := 0x2B2B2B
 global g_intControlColor := 0xFFFFFF
 
+global g_blnInputFieldsFont ; font used in Edit controls ("Segoe UI" or "Consolas")
+
 ;---------------------------------
 ; Used in SelectIcon()
 global SI_intPickIconCols := 10 ; 20
@@ -7024,6 +7026,8 @@ o_Settings.ReadIniOption("SettingsWindow", "blnRememberSettingsPosition", "Remem
 o_Settings.ReadIniOption("SettingsWindow", "blnOpenSettingsOnActiveMonitor", "OpenSettingsOnActiveMonitor", 1, "SettingsWindow", "f_blnOpenSettingsOnActiveMonitor") ; g_blnOpenSettingsOnActiveMonitor
 o_Settings.ReadIniOption("SettingsWindow", "blnCheckIfExistingFavoriteForSameLocation", "CheckIfExistingFavoriteForSameLocation", 1, "SettingsWindow", "f_blnCheckIfExistingFavoriteForSameLocation")
 o_Settings.ReadIniOption("SettingsWindow", "blnAddAutoAtTop", "AddAutoAtTop", 0, "SettingsWindow", "f_lblAddAutoAtTop|f_blnAddAutoAtTop0|f_blnAddAutoAtTop1") ; g_blnAddAutoAtTop
+o_Settings.ReadIniOption("SettingsWindow", "blnUseConsolasInEdit", "UseConsolasInEdit", 0, "SettingsWindow", "f_blnUseConsolasInEdit")
+g_blnInputFieldsFont := (o_Settings.SettingsWindow.blnUseConsolasInEdit.IniValue ? "Consolas" : "Segoe UI")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchFromMain", "SearchFromMain", 1, "SettingsWindow", "f_lblOptionsSettingsSearchResults|f_lblOptionsSearchFrom|f_lblOptionsSearchFrom1|f_lblOptionsSearchFrom0")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithStats", "SearchWithStats", 0, "SettingsWindow", "f_blnSearchWithStats")
 o_Settings.ReadIniOption("SettingsWindow", "blnSearchWithLocale", "SearchWithLocale", 1, "SettingsWindow", "f_blnSearchWithLocale")
@@ -10020,6 +10024,10 @@ GuiControl, , f_blnOpenSettingsOnActiveMonitor, % (o_Settings.SettingsWindow.bln
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnCheckIfExistingFavoriteForSameLocation gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsSettingsCheckIfSameLocation"]
 GuiControl, , f_blnCheckIfExistingFavoriteForSameLocation, % (o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.IniValue = true)
 
+; UseConsolasInEdit
+Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% vf_blnUseConsolasInEdit gGuiOptionsGroupChanged w230 hidden, % o_L["OptionsUseConsolasInEdit"]
+GuiControl, , f_blnUseConsolasInEdit, % (o_Settings.SettingsWindow.blnUseConsolasInEdit.IniValue = true)
+
 ; AddAutoAtTop
 Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w230 hidden vf_lblAddAutoAtTop, % o_L["OptionsAddAutoAtTop"]
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX + 10 . " w220 vf_blnAddAutoAtTop0 Group gGuiOptionsGroupChanged hidden " . (o_Settings.SettingsWindow.blnAddAutoAtTop.IniValue ? "Checked" : ""), % o_L["OptionsAddAutoTopOfMenu"]
@@ -10941,7 +10949,10 @@ o_Settings.SettingsWindow.blnSearchWithStats.WriteIni(f_blnSearchWithStats)
 o_Settings.SettingsWindow.blnRememberSettingsPosition.WriteIni(f_blnRememberSettingsPosition)
 o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.WriteIni(f_blnOpenSettingsOnActiveMonitor)
 o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_blnCheckIfExistingFavoriteForSameLocation)
+o_Settings.SettingsWindow.blnUseConsolasInEdit.WriteIni(f_blnUseConsolasInEdit)
+g_blnInputFieldsFont := (o_Settings.SettingsWindow.blnUseConsolasInEdit.IniValue ? "Consolas" : "Segoe UI")
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
+
 o_Settings.SettingsWindow.blnSearchFromMain.WriteIni(f_lblOptionsSearchFrom1)
 o_Settings.SettingsWindow.blnSearchWithLocale.WriteIni(f_blnSearchWithLocale)
 intQuickLaunchFontSizePrev := o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
@@ -14081,9 +14092,11 @@ if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 
 Gui, 2:Add, Text, % "x20 y+10 vf_ShortNameLabel", % (o_EditedFavorite.AA.strFavoriteType = "Text" ? o_Favorites.GetFavoriteTypeObject("Text").strFavoriteTypeLocationLabel : o_L["DialogFavoriteShortNameLabel"]) . " *"
 
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit
 	, % "x20 y+5 Limit250 vf_strFavoriteShortName h21 w" . 400 - (o_EditedFavorite.AA.strFavoriteType = "Menu" ? 50 : 0)
 	, % o_EditedFavorite.AA.strFavoriteName
+Gui, 2:Font
 
 if (InStr("Menu|Group|External", o_EditedFavorite.AA.strFavoriteType, true) and InStr(strGuiFavoriteLabel, "GuiEditFavorite"))
 	Gui, 2:Add, Button, x+10 yp gGuiOpenThisMenu, % (o_EditedFavorite.AA.strFavoriteType = "Group" ? o_L["DialogOpenThisGroup"] : o_L["DialogOpenThisMenu"])
@@ -14115,7 +14128,6 @@ if !InStr("Special|QAP|QCE|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 					. o_Settings.Snippets.intSnippetDefaultFontSize.IniValue
 			saFavoriteSnippetOptions := StrSplit(o_EditedFavorite.AA.strFavoriteLaunchWith, ";")
 			
-			Gui, Font
 			Gui, Font, w700
 			Gui, 2:Add, Button, x500 yp h18 w20 vf_btnEnlarge gEnlargeSnippetContent, +
 			Gui, Font
@@ -14123,9 +14135,12 @@ if !InStr("Special|QAP|QCE|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 			g_intContentLabelY := arrPosEnlargeY
 		}
 		
+		Gui, 2:Font, , %g_blnInputFieldsFont%
 		Gui, 2:Add, Edit, % "x20 y+5 vf_strFavoriteLocation "
 			. (o_EditedFavorite.AA.strFavoriteType = "Snippet" ? "w500 r5 t8" : "gEditFavoriteLocationChanged w400 h20")
 			, % o_EditedFavorite.AA.strFavoriteLocation ; do not process snippet according to f_blnProcessEOLTab here
+		Gui, 2:Font
+		
 		if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 		{
 			GuiControlGet, arrPosSnippetContent, Pos, f_strFavoriteLocation
@@ -14159,7 +14174,9 @@ if !InStr("Special|QAP|QCE|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 	{
 		g_strSnippetFormat := "raw" ; control initialy loaded with unprocessed content as in ini file
 		Gui, 2:Add, Text, x20 y+10 vf_lblFontSize, % o_L["DialogFavoriteSnippetFontSize"]
+		Gui, 2:Font, , %g_blnInputFieldsFont%
 		Gui, 2:Add, Edit, x+5 yp w40 vf_intFontSize gContentEditFontChanged
+		Gui, 2:Font
 		Gui, 2:Add, UpDown, Range6-18 vf_intFontUpDown, % (StrLen(saFavoriteSnippetOptions[5]) ? saFavoriteSnippetOptions[5] : o_Settings.Snippets.intSnippetDefaultFontSize.IniValue)
 		GuiControlGet, arrPosUpDown, Pos, f_intFontUpDown
 		Gui, 2:Add, Checkbox, % "x+10 yp vf_blnFixedFont gContentEditFontChanged " . (saFavoriteSnippetOptions[4] = 1 ? "checked" : ""), % o_L["DialogFavoriteSnippetFixedFont"]
@@ -14173,7 +14190,11 @@ if !InStr("Special|QAP|QCE|WindowsApp", o_EditedFavorite.AA.strFavoriteType)
 else ; "Special", "QAP", "WindowsApp" or "QCE"
 {
 	if (o_EditedFavorite.AA.strFavoriteType <> "WindowsApp")
+	{
+		Gui, 2:Font, , %g_blnInputFieldsFont%
 		Gui, 2:Add, Edit, x20 yp hidden section vf_strFavoriteLocation, % o_EditedFavorite.AA.strFavoriteLocation ; hidden because set by TreeViewSpecialChanged or TreeviewQAPChanged
+		Gui, 2:Font
+	}
 	Gui, 2:Add, Text, y+10 xs w300 vf_lblLocation, % o_Favorites.GetFavoriteTypeObject(o_EditedFavorite.AA.strFavoriteType).strFavoriteTypeLabel . " *"
 
 	if (o_EditedFavorite.AA.strFavoriteType = "WindowsApp")
@@ -14184,9 +14205,11 @@ else ; "Special", "QAP", "WindowsApp" or "QCE"
 		Gui, 2:Add, DropDownList, x20 y+5 w400 vf_drpWindowsAppsList gDropdownWindowsAppsListChanged
 			, % strWindowsAppsDropdownList . "|* " . o_L["DialogWindowsAppsListCustom"] . (blnIsCustomWindowsApp ? "||" : "")
 		Gui, 2:Add, Button, x+10 yp gButtonRefreshWindowsAppsList vf_btnRefreshWindowsAppsList, % o_L["DialogRefresh"]
+		Gui, 2:Font, , %g_blnInputFieldsFont%
 		Gui, 2:Add, Edit, % "x20 y+5 section vf_strFavoriteLocation w400 h20"
 			. (blnIsCustomWindowsApp ? "" : " hidden") ; hidden because Windows Apps dropdown list except if starts with "Custom:"
 			, % (blnIsCustomWindowsApp ? SubStr(o_EditedFavorite.AA.strFavoriteLocation, 8) : o_EditedFavorite.AA.strFavoriteLocation)
+		Gui, 2:Font
 	}
 	else ; "Special", "QAP" or "QCE"
 	{
@@ -14226,8 +14249,10 @@ if (o_EditedFavorite.AA.strFavoriteType = "FTP")
 	Gui, 2:Add, Text, x20 y+5, % o_L["GuiLoginName"]
 	Gui, 2:Add, Text, x230 yp, % o_L["GuiPassword"]
 	
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, x20 y+5 w190 h20 vf_strFavoriteLoginName, % o_EditedFavorite.AA.strFavoriteLoginName
 	Gui, 2:Add, Edit, x230 yp w190 h20 Password vf_strFavoritePassword, % o_EditedFavorite.AA.strFavoritePassword
+	Gui, 2:Font
 	Gui, 2:Add, Text, x20 y+5, % o_L["GuiPasswordNotEncripted"]
 }
 
@@ -14267,8 +14292,10 @@ if (blnFolderInAGroupWithSide) ; folder in a group with side
 if (o_EditedFavorite.AA.strFavoriteType = "External")
 {
 	Gui, 2:Add, Text, x20 y+10, % o_L["DialogExternalLocation"] . "*"
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, % (StrLen(o_EditedFavorite.AA.strFavoriteAppWorkingDir) ? "Disabled " : "")
 		. "x20 y+5 w400 Limit250 gEditFavoriteExternalLocationChanged vf_strFavoriteAppWorkingDir", % o_EditedFavorite.AA.strFavoriteAppWorkingDir
+	Gui, 2:Font
 	if StrLen(o_EditedFavorite.AA.strFavoriteAppWorkingDir)
 		Gui, 2:Add, Text, x20 y+5 w500, % o_L["DialogExternalLocationReadOnly"]
 	else
@@ -14620,7 +14647,9 @@ if (blnIsGroupMember)
 {
 	Gui, 2:Add, Text, y+10 x20, % o_L["DialogGroupMemberOptions"]
 	Gui, 2:Add, Text, y+10 x20, % o_L["GuiGroupRestoreLaunchAndWait"] . ":"
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, yp x+5 w36 center number limit7 vf_intGroupRestoreDelayAfter, % StrSplit(o_EditedFavorite.AA.strFavoriteGroupRestoreOptions, ";")[1] ; 1 integer additional delay after launching member (in ms)
+	Gui, 2:Font
 	Gui, 2:Add, Text, yp x+5, % o_L["GuiGroupRestoreDelayMilliseconds"]
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Application")
@@ -14684,7 +14713,9 @@ Gui, 2:Tab, % ++intTabNumber
 
 Gui, 2:Add, Checkbox, % "x20 y50 w500 vf_blnFavoriteFolderLive gCheckboxFolderLiveClicked " . (o_EditedFavorite.AA.intFavoriteFolderLiveLevels ? "checked" : ""), % o_L["DialogFavoriteFolderLive"]
 
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x20 y+15 w51 h22 vf_intFavoriteFolderLiveLevelsEdit number limit1 center hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intFavoriteFolderLiveLevels Range1-9, % o_EditedFavorite.AA.intFavoriteFolderLiveLevels
 Gui, 2:Add, Text, x+5 yp w385 vf_lblFavoriteFolderLiveLevels hidden, % o_L["DialogFavoriteFolderLiveLevels"]
 
@@ -14717,7 +14748,9 @@ Gui, 2:Add, Checkbox, % "x+5 yp vf_blnFavoriteFolderLiveShowHidden hidden " . (o
 Gui, 2:Add, Checkbox, % "x+5 yp vf_blnFavoriteFolderLiveShowSystem hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveShowSystem ? "checked" : "")
 	, % o_L["DialogFavoriteFolderLiveShowSystem"]
 
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x20 y+15 w51 h22 vf_intFavoriteFolderLiveColumnsEdit number limit3 center hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intFavoriteFolderLiveColumns Range0-999, % o_EditedFavorite.AA.intFavoriteFolderLiveColumns
 Gui, 2:Add, Text, x+5 yp w385 vf_lblFavoriteFolderLiveColumns hidden, % o_L["DialogFavoriteFolderLiveColumns"]
 
@@ -14730,7 +14763,9 @@ Gui, 2:Add, Checkbox, % "yp x260 vf_blnFavoriteFolderLiveExcludeFolders hidden "
 Gui, 2:Add, Radio, % "x20 y+10 vf_radFavoriteFolderLiveInclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "checked" : ""), % o_L["DialogFavoriteFolderLiveInclude"]
 Gui, 2:Add, Radio, % "x+5 yp vf_radFavoriteFolderLiveExclude hidden " . (o_EditedFavorite.AA.blnFavoriteFolderLiveIncludeExclude ? "" : "checked"), % o_L["DialogFavoriteFolderLiveExclude"]
 Gui, 2:Add, Text, yp x+0 vf_lblFavoriteFolderLiveFiles hidden, % o_L["DialogFavoriteFolderLiveFiles"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x20 y+5 w500 vf_strFavoriteFolderLiveExtensions hidden, % o_EditedFavorite.AA.strFavoriteFolderLiveExtensions
+Gui, 2:Font
 Gui, 2:Add, Text, x20 y+5 w500 vf_lblFavoriteFolderLiveExtensions hidden, % o_L["DialogFavoriteFolderLiveExtensions"]
 
 strLiveFolderSortOrder := ""
@@ -14762,7 +14797,9 @@ Gui, 2:Add, Radio, % "y+10 x20 vf_lblWindowPositionMinMax3 gRadioButtonWindowPos
 	. (saNewFavoriteWindowPosition[1] ? "" : " hidden") . (saNewFavoriteWindowPosition[2] = -1 ? " checked" : ""), % o_L["DialogMinimized"]
 
 Gui, 2:Add, Text, % "y+20 x20 vf_lblWindowPositionDelayLabel " . (saNewFavoriteWindowPosition[1] ? "" : "hidden"), % o_L["DialogWindowPositionDelay"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, % "yp x+20 w36 center number limit5 vf_lblWindowPositionDelay " . (saNewFavoriteWindowPosition[1] ? "" : "hidden"), % (saNewFavoriteWindowPosition[7] = "" ? 200 : saNewFavoriteWindowPosition[7])
+Gui, 2:Font
 Gui, 2:Add, Text, % "x+10 yp vf_lblWindowPositionMillisecondsLabel " . (saNewFavoriteWindowPosition[1] ? "" : "hidden"), % o_L["GuiGroupRestoreDelayMilliseconds"]
 Gui, 2:Add, Text, % "y+20 x20 vf_lblWindowPositionMayFail " . (saNewFavoriteWindowPosition[1] ? "" : "hidden"), % o_L["DialogWindowPositionMayFail"]
 
@@ -14774,10 +14811,12 @@ Gui, 2:Add, Text, % "ys+40 xs vf_lblWindowPositionY " . (saNewFavoriteWindowPosi
 Gui, 2:Add, Text, % "ys+60 xs vf_lblWindowPositionW " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % o_L["DialogWindowPositionW"]
 Gui, 2:Add, Text, % "ys+80 xs vf_lblWindowPositionH " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % o_L["DialogWindowPositionH"]
 
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, % "ys+20 xs+72 w50 h17 vf_intWindowPositionX center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[3]
 Gui, 2:Add, Edit, % "ys+40 xs+72 w50 h17 vf_intWindowPositionY center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[4]
 Gui, 2:Add, Edit, % "ys+60 xs+72 w50 h17 vf_intWindowPositionW center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[5]
 Gui, 2:Add, Edit, % "ys+80 xs+72 w50 h17 vf_intWindowPositionH center " . (saNewFavoriteWindowPosition[1] and saNewFavoriteWindowPosition[2] = 0 ? "" : "hidden"), % saNewFavoriteWindowPosition[6]
+Gui, 2:Font
 
 saNewFavoriteWindowPosition := ""
 
@@ -14796,7 +14835,9 @@ if (o_EditedFavorite.AA.strFavoriteType = "Application")
 	Gui, 2:Add, Checkbox, x20 y50 w400 vf_blnFavoriteElevate, % o_L["DialogElevate"]
 	GuiControl, , f_blnFavoriteElevate, % (o_EditedFavorite.AA.blnFavoriteElevate = 1)	
 	Gui, 2:Add, Text, x20 y+20 w400, % o_L["DialogWorkingDirLabel"]
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteAppWorkingDir, % o_EditedFavorite.AA.strFavoriteAppWorkingDir
+	Gui, 2:Font
 	Gui, 2:Add, Button, x+10 yp vf_btnBrowseAppWorkingDir gButtonSelectWorkingDir, % o_L["DialogBrowseButton"]
 	Gui, 2:Add, Checkbox, x20 y+5 w500 vf_blnAppWorkingDirCurrent gButtonAppWorkingDirCurrentChanged, % o_L["DialogAppWorkingDirCurrent"] . "."
 	GuiControl, , f_blnAppWorkingDirCurrent, % (o_EditedFavorite.AA.strFavoriteAppWorkingDir = "{CUR_LOC}")
@@ -14807,7 +14848,9 @@ if (o_EditedFavorite.AA.strFavoriteType = "Application")
 else if (o_EditedFavorite.AA.strFavoriteType = "Group")
 {
 	Gui, 2:Add, Text, x20 y50, % o_L["GuiGroupRestoreDelay"]
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, x20 y+5 w50 center number Limit7 vf_intGroupRestoreDelay, % saFavoriteGroupSettings[3]
+	Gui, 2:Font
 	Gui, 2:Add, Text, x+10 yp, % o_L["GuiGroupRestoreDelayMilliseconds"]
 }
 else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
@@ -14817,7 +14860,9 @@ else if (o_EditedFavorite.AA.strFavoriteType = "Snippet")
 	Gui, 2:Add, Radio, % "x20 y+5 vf_blnRadioSendModeMacro gSnippetModeChanged " . (saFavoriteSnippetOptions[1] = 1 ? "checked" : ""), % o_L["DialogFavoriteSnippetSendModeMacro"]
 	
 	Gui, 2:Add, Text, x20 y+15 vf_lblSnippetPrompt w400, % L(o_L["DialogFavoriteSnippetPromptLabel"], (saFavoriteSnippetOptions[1] = 1 ? o_L["DialogFavoriteSnippetPromptLabelLaunching"] : o_L["DialogFavoriteSnippetPromptLabelPasting"]))
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteSnippetPrompt, % saFavoriteSnippetOptions[2]
+	Gui, 2:Font
 	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteSnippetNoPrompt" . (saFavoriteSnippetOptions[6] ? " checked" : ""), % o_L["DialogFavoriteSnippetPromptNever"]
 	Gui, 2:Add, Checkbox, % "x20 y+5 vf_blnFavoriteSnippetExpandEnvVars " . (saFavoriteSnippetOptions[7] = 1 ? "checked" : ""), % o_L["DialogFavoriteSnippetExpandEnvVars"]
 }
@@ -14829,8 +14874,10 @@ else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
 	Gui, 2:Add, Text, x36 y+5 vf_lblQCECommandCopyBeforeSeconds %strEnabledDisabled%, % o_L["DialogQCECommandCopyBeforeSeconds"] . ":"
 	; Waiting for n > 0 will wait for n seconds and will skip the QCE command if failing
 	; Waiting 0 seconds will wait for 0.5 seconds (AHK default) but will not skip the QCE command
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, x+5 yp vf_intQCECommandCopyBeforeSeconds w30 Center Number %strEnabledDisabled%
 		, % (o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds ? o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds : 1)
+	Gui, 2:Font
 	if (o_Settings.Execution.blnQCECommandShowPasteAfter.IniValue)
 	{
 		Gui, 2:Add, Checkbox, x20 y+5 vf_blnQCECommandPasteAfter %strEnabledDisabled%, % o_L["DialogQCECommandPasteAfter"]
@@ -14841,7 +14888,9 @@ else if (o_EditedFavorite.AA.strFavoriteType = "QCE")
 else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Folder, Document, Special, URL and FTP
 {
 	Gui, 2:Add, Text, x20 y50 w400 vf_lblFavoriteLaunchWith, % o_L["DialogLaunchWith"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, x20 y+5 w400 Limit250 vf_strFavoriteLaunchWith, % o_EditedFavorite.AA.strFavoriteLaunchWith
+	Gui, 2:Font
 	Gui, 2:Add, Button, x+10 yp vf_btnFavoriteLaunchWith gButtonSelectLaunchWith, % o_L["DialogBrowseButton"]
 
 	if (o_EditedFavorite.AA.strFavoriteType = "Folder")
@@ -14863,14 +14912,18 @@ else if !InStr("QAP|WindowsApp", o_EditedFavorite.AA.strFavoriteType, true) ; Fo
 if !InStr("Group|Snippet|QAP|QCE|Folder", o_EditedFavorite.AA.strFavoriteType, true)
 {
 	Gui, 2:Add, Text, y+20 x20 w400  vf_lblFavoriteArguments, % o_L["DialogArgumentsLabel"] . " " . o_L["DialogUnavailableWithLiveFolders"] ; last part generally hidden but make room for when visible
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, % "x20 y+5 w400 vf_strFavoriteArguments gFavoriteArgumentChanged r"
 		. (StrLen(o_EditedFavorite.AA.strFavoriteArguments) > 60 ? 2 : 1), % o_EditedFavorite.AA.strFavoriteArguments
+	Gui, 2:Font
 	Gui, 2:Add, Text, x20 y+5 w500, % o_L["DialogArgumentsLabelHelp"]
 	Gui, 2:Add, Link, x20 y+5 w500, % L(o_L["DialogPlaceholders"]
 		, AddUtm2Url("https://www.quickaccesspopup.com/can-i-insert-values-in-favorites-location-or-parameters-using-placeholders", A_ThisLabel, "Help"))
 	
 	Gui, 2:Add, Text, x20 y+10 w500 vf_PlaceholdersCheckLabel, % o_L["DialogArgumentsPlaceholdersCheckLabel"]
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, x20 y+5 w500 vf_strPlaceholdersCheck ReadOnly
+	Gui, 2:Font
 	
 	gosub, FavoriteArgumentChanged
 }
@@ -14882,7 +14935,9 @@ if (o_EditedFavorite.AA.strFavoriteType = "FTP")
 }
 
 Gui, 2:Add, Link, x20 y+10, % L(o_L["DialogSoundLabel"], AddUtm2Url("https://www.quickaccesspopup.com/can-i-play-a-sound-when-i-launch-a-favorite/", A_ThisLabel, "Help"), o_L["GuiHelp"])
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x20 y+10 vf_strFavoriteSoundLocation w300 h20, % o_EditedFavorite.AA.strFavoriteSoundLocation
+Gui, 2:Font
 Gui, 2:Add, Button, x+10 yp gButtonSelectFavoriteSoundLocation, % o_L["DialogBrowseButton"]
 Gui, 2:Add, Button, x+10 yp gButtonPlayFavoriteSoundLocation, % o_L["DialogPlay"]
 
@@ -14910,7 +14965,9 @@ Loop, 3 ; no default type
 
 ; Gui, 2:Add, Checkbox, x20 y50 vf_blnExternalMenuReadOnly gExternalMenuReadOnlyClicked, % o_L["DialogReadOnly"]
 Gui, 2:Add, Text, x20 y+10 vf_lblExternalMenuName, % o_L["DialogExternalMenuName"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x20 y+5 w400 vf_strExternalMenuName
+Gui, 2:Font
 
 Gui, 2:Add, Text, x20 y+10 w500 vf_lblExternalSource, % o_L["DialogExternalSource"]
 Gui, 2:Add, Radio, x20 y+5 w480 vf_radExternalSourceNetwork, % o_L["DialogExternalSourceNetwork"] ; current value set by LoadExternalFileGlobalValues
@@ -14918,10 +14975,14 @@ GuiControl, , f_radExternalSourceNetwork, 1 ; default true (Network), backward c
 Gui, 2:Add, Radio, x20 y+5 w480 vf_radExternalSourceCloud, % o_L["DialogExternalSourceCloud"]
 
 Gui, 2:Add, Text, x20 y+10 vf_lblExternalWriteAccessUsers, % o_L["DialogExternalWriteAccessUsers"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x20 y+5 w400 vf_strExternalWriteAccessUsers
+Gui, 2:Font
 
 Gui, 2:Add, Text, x20 y+10 vf_lblExternalWriteAccessMessage, % o_L["DialogExternalWriteAccessMessage"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x20 y+5 w400 r3 vf_strExternalWriteAccessMessage
+Gui, 2:Font
 
 ; Gui, 2:Add, Text, x20 y+15, % o_L["DialogExternalStartingNumber"] ; DEPRECATED since v8.1.9.1
 ; Gui, 2:Add, Edit, % "x20 y+5 w50 center number Limit4 vf_intExternalStartingNumber " . (strGuiFavoriteLabel <> "GuiAddFavorite" ? "Disabled" : "")
@@ -15083,9 +15144,9 @@ g_blnContentEditFixedFont := f_blnFixedFont
 g_blnContentEditFontSize := f_intFontSize
 
 if (g_blnContentEditFixedFont)
-	Gui, 2:Font, % "s" . g_blnContentEditFontSize, Courier New
+	Gui, 2:Font, % "s" . g_blnContentEditFontSize, Consolas
 else
-	Gui, 2:Font, % "s" . g_blnContentEditFontSize
+	Gui, 2:Font, % "s" . g_blnContentEditFontSize, Segoe UI
 GuiControl, Font, f_strFavoriteLocation
 Gui, 2:Font
 
@@ -16953,14 +17014,18 @@ if (blnUsePath)
 		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFile x10 y+10 w" . intCol1Width . " right", % o_L["MenuFile"]
 	else
 		Gui, 2:Add, Text, % "vf_lblMultipleAddSourceFolder x10 y+10 w" . intCol1Width . " right", % o_Favorites.GetFavoriteTypeObject("Folder").strFavoriteTypeLabelNoAmpersand
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, % "vf_strMultipleAddSourcePath gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Font
 	Gui, 2:Add, Button, x+5 yp w100 gButtonMultipleAddSourcePath vf_btnMultipleAddSourcePath, % o_L["DialogBrowseButton"]
 }
 
 if (!blnUsePath or InStr("Folder|SettingsFileItems", g_strMultipleAddSourceKey))
 {
 	Gui, 2:Add, Text, % "vf_lblMultipleAddFilter x10 y+10 w" . intCol1Width . " right", % o_L["DialogMultipleAddFilter"]
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, % "vf_strMultipleAddFilter gGuiMultipleAddFilterOrPathChanged x" . intCol2X . " yp w" . intCol2Width
+	Gui, 2:Font
 	Gui, 2:Add, Button, x+5 yp gButtonMultipleAddClearFilter vf_btnMultipleAddClearFilter, X
 }
 

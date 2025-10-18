@@ -1106,6 +1106,7 @@ this["OptionsUsageDbMaximumSizeInvalid"] := "The maximum size of the database is
 this["OptionsUsageDbShowPopularityIndex"] := "Show frequency index in ""Customize"" window and menus"
 this["OptionsUsageDbStatement"] := "The data in the ~1~ database is collected and stored locally, solely to build dynamic menus and increase performance. This data resides ONLY on your system and NO information from this database is transmitted by ~1~ to a remote server."
 this["OptionsUsageDbStatementTitle"] := "Privacy Statement"
+this["OptionsUseConsolasInEdit"] := "Use Consolas font in text fields"
 this["OptionsUserVariables"] := "User Variables"
 this["OptionsUserVariablesList"] := "User Variables"
 this["OptionsUserVariablesListInstructions"] := "Enter your user variables, one per line. Each line must start with the variable name between curly brackets (e.g. ""{MyVariable}""), followed by the equal sign ""="" and the variable content (e.g. ""{MyVariable}=MyContent"").`n`nFor example, if one line contains ""{OurSharedFolder}=S:\ThisFolder"", the placeholder {OurSharedFolder} will be replaced by ""S:\ThisFolder"" in favorites paths or snippets content."
