@@ -9930,7 +9930,9 @@ GuiControl, , f_blnDisplaySettingsStartupDuplicate, % (o_Settings.SettingsWindow
 ; StartupTips
 Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab3X% vf_blnStartupTipsShow gGuiOptionsStartupTipsClicked hidden, % o_L["StartupTipsShow"], [2] frequency (0=each launch, n=days)
 GuiControl, , f_blnStartupTipsShow, % (o_Settings.Launch.arrStartupTips.IniValue[1] = true) ; [1] show tip
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x%g_intGroupItemsTab3aX% y+5 w60 h22 vf_intStartupTipsDaysEdit center disabled hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intStartupTipsDays Range0-31 disabled hidden gGuiOptionsGroupChanged
 	, % (o_Settings.Launch.arrStartupTips.IniValue[2] ? o_Settings.Launch.arrStartupTips.IniValue[2] : 1)
 Gui, 2:Add, Text, yp x+10 vf_lblStartupTipsDays Disabled hidden, % o_L["StartupTipsDays"]
@@ -9949,8 +9951,10 @@ Gui, 2:Add, Link, yp x+1 gCheck4UpdateNow vf_lnkCheck4Update hidden, % "(<a>" . 
 if (!g_blnPortableMode)
 {
 	Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% w105 vf_lblWorkingFolder hidden, % o_L["OptionsWorkingFolder"] . ":"
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, % "yp x" . g_intGroupItemsTab3X . " w300 h20 vf_strWorkingFolder hidden "
 		. (StrLen(o_CommandLineParameters.AA["Working"]) ? "disabled" : "") ; gLabel after GuiControl that changes the value below
+	Gui, 2:Font
 	Gui, 2:Add, Button, % "x+5 yp w100 gButtonWorkingFolder vf_btnWorkingFolder hidden " 
 		. (StrLen(o_CommandLineParameters.AA["Working"]) ? "disabled" : ""), % o_L["DialogBrowseButton"]
 	if StrLen(o_CommandLineParameters.AA["Working"])
@@ -9968,14 +9972,18 @@ if (!g_blnPortableMode)
 
 ; BackupFolder
 Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% w105 vf_lblBackupFolder hidden, % o_L["OptionsBackupFolder"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strBackupFolder hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Font
 Gui, 2:Add, Button, x+5 yp w100 gButtonBackupFolder vf_btnBackupFolder hidden, % o_L["DialogBrowseButton"]
 GuiControl, 2:, f_strBackupFolder, % o_Settings.SettingsFile.strBackupFolder.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strBackupFolder
 
 ; QAPTempFolder
 Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% w105 vf_lblQAPTempFolderParentPath hidden, % o_L["OptionsQAPTempFolder"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strQAPTempFolderParentPath hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Font
 Gui, 2:Add, Button, x+5 yp w100 gButtonQAPTempFolderParentPath vf_btnQAPTempFolderParentPath hidden, % o_L["DialogBrowseButton"]
 GuiControl, 2:, f_strQAPTempFolderParentPath, % o_Settings.Launch.strQAPTempFolderParent.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strQAPTempFolderParentPath
@@ -9993,13 +10001,17 @@ Gui, 2:Add, Text, y+20 y%intGroupItemsY% x%g_intGroupItemsX% w230 hidden vf_lblO
 Gui, 2:Font
 
 ; LabelsFontSize
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x%g_intGroupItemsX% y+12 h20 w40 vf_intLabelsFontSizeEdit hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, Range6-12 h20 gGuiOptionsGroupChanged hidden vf_intLabelsFontSize, % o_Settings.SettingsWindow.intLabelsFontSize.IniValue
 Gui, 2:Add, Text, yp x+5 hidden vf_lblLabelsFontSize, % o_L["OptionsLabelsFontSize"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intLabelsFontSizeEdit
 
 ; ListFontSize
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x%g_intGroupItemsX% y+15 h20 w40 vf_intListFontSizeEdit hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, Range6-16 h20 gGuiOptionsGroupChanged hidden vf_intListFontSize, % o_Settings.SettingsWindow.intListFontSize.IniValue
 Gui, 2:Add, Text, yp x+5 hidden vf_lblListFontSize, % o_L["OptionsListFontSize"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intListFontSizeEdit
@@ -10054,7 +10066,9 @@ Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab4X% w350 hidden vf_lblOptionsQuickLau
 Gui, 2:Font
 
 ; QuickLaunchFontSize
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x%g_intGroupItemsTab4X% y+10 h20 w40 vf_intQuickLaunchFontSizeEdit hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, Range6-16 h20 gGuiOptionsGroupChanged hidden vf_intQuickLaunchFontSize, % o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
 Gui, 2:Add, Text, yp x+5 hidden vf_lblQuickLaunchFontSize, % o_L["OptionsQuickLaunchFontSize"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intQuickLaunchFontSizeEdit
@@ -10068,7 +10082,9 @@ Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsTab4X% vf_blnQuickLaunchExtended gGu
 GuiControl, , f_blnQuickLaunchExtended, % (o_Settings.SettingsWindow.blnQuickLaunchExtended.IniValue = true)
 
 ; QuickLaunchRowsEdit
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+10 x%g_intGroupItemsTab4X% w51 h22 vf_intQuickLaunchRowsEdit number center hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intQuickLaunchRows Range5-9999 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
 Gui, 2:Add, Text, yp x+10 w300 hidden vf_lblQuickLaunchRows, % o_L["OptionsQuickLaunchRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intQuickLaunchRowsEdit
@@ -10101,7 +10117,9 @@ GuiControl, 2:+gGuiOptionsGroupChanged, f_drpIconSize
 
 ; IconsCustomFolder
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblIconsCustomFolder hidden, % o_L["OptionsIconsCustomFolder"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, yp x+5 w300 h20 vf_strIconsCustomFolder hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Font
 Gui, 2:Add, Button, x+5 yp w100 gButtonIconsCustomFolder vf_btnIconsCustomFolder hidden, % o_L["DialogBrowseButton"]
 GuiControl, 2:, f_strIconsCustomFolder, % o_Settings.MenuIcons.strIconsCustomFolder.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strIconsCustomFolder
@@ -10112,8 +10130,10 @@ Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w500 hidden vf_lnkIconDocumentsList1
 	, % o_L["OptionsIconDocumentsList"] . " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-use-my-own-documents-icons-instead-of-those-configured-in-windows/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>):"
 Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+5 w580 hidden vf_lnkIconDocumentsList2, % o_L["OptionsIconDocumentsListInstructions"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w580 r4 vf_strIconDocumentsList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconDocumentsList.IniValue)
 	? StrReplace(Trim(o_Settings.MenuIcons.strIconDocumentsList.IniValue), "|", "`n") : "")
+Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w580 hidden vf_lnkIconReplacementList3, % o_L["OptionsIconListsInstructions"]
 
 ; strIconReplacementList
@@ -10122,12 +10142,16 @@ Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w580 hidden vf_lnkIconReplacementList
 	, % o_L["OptionsIconReplacementList"] . " (<a href=""" . AddUtm2Url("https://www.quickaccesspopup.com/can-i-replace-the-qap-standard-icons-with-my-own-custom-icons/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>):"
 Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+5 w580 hidden vf_lnkIconReplacementList2, % o_L["OptionsIconReplacementListInstructions"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+10 x%g_intGroupItemsX% w580 r4 vf_strIconReplacementList gGuiOptionsGroupChanged hidden, % (StrLen(o_Settings.MenuIcons.strIconReplacementList.IniValue)
 	? StrReplace(Trim(o_Settings.MenuIcons.strIconReplacementList.IniValue), "|", "`n") : "iconUnknown=" . o_JLicons.AA["iconUnknown"])
+Gui, 2:Font
 
 ; CustomLinksIcon
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w580 vf_lblCustomLinksIcon hidden, % o_L["OptionsCustomLinksIcon"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w580 h20 vf_strCustomLinksIcon hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Font
 GuiControl, 2:, f_strCustomLinksIcon, % o_Settings.MenuIcons.strCustomLinksIcon.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strCustomLinksIcon
 
@@ -10176,20 +10200,26 @@ gosub, DisplayMenuShortcutsClickedInit
 
 ; RecentFoldersMax
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% w500 hidden vf_lblRecentFoldersMaxTitle, % o_L["OptionsRecentFoldersPrompt"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w51 h22 vf_intRecentFoldersMaxEdit number center hidden ; %g_intRecentFoldersMax%
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intRecentFoldersMax Range1-9999 gGuiOptionsGroupChanged hidden, % o_Settings.Menu.intRecentFoldersMax.IniValue
 Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblRecentFoldersMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intRecentFoldersMaxEdit
 
 ; RecentPopularLevelsMax
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+15 x%g_intGroupItemsX% w51 h22 vf_intRecentPopularLevelsMaxEdit number center hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intRecentPopularLevelsMax Range0-9999 gGuiOptionsGroupChanged hidden, % o_Settings.Menu.intRecentPopularLevelsMax.IniValue
 Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblRecentPopularLevelsMax, % o_L["OptionsRecentPopularLevelsMax"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intRecentPopularLevelsMaxEdit
 
 ; NbLastActions
 Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% w500 hidden vf_lblNbLastActionsMaxTitle, % o_L["MenuLastActions"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w51 h22 vf_intNbLastActionsMaxEdit number center hidden ; %g_intNbLastActions%
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intNbLastActions Range1-9999 gGuiOptionsGroupChanged hidden, % o_Settings.Menu.intNbLastActions.IniValue
 Gui, 2:Add, Text, yp x+10 w435 hidden vf_lblNbLastActionsMax, % o_L["OptionsRecentFolders"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intNbLastActionsMaxEdit
@@ -10218,10 +10248,14 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " hidden vf_radPopupMenuPositi
 	. (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 3 ? "Checked" : ""), % o_L["OptionsMenuFixPosition"]
 
 Gui, 2:Add, Text, % "yp x+10 hidden vf_lblPopupFixPositionX " . (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 3 ? "" : "Disabled"), % o_L["OptionsPopupFixPositionX"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, % "yp x+5 w51 h22 hidden vf_intPopupFixPositionXEdit number center " . (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 3 ? "" : "Disabled")
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intPopupFixPositionX Range1-9999 gGuiOptionsGroupChanged hidden, % o_Settings.MenuPopup.arrPopupFixPosition.IniValue[1]
 Gui, 2:Add, Text, % "yp x+5 hidden vf_lblPopupFixPositionY " . (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 3 ? "" : "Disabled"), % o_L["OptionsPopupFixPositionY"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, % "yp x+5 w51 h22 hidden vf_intPopupFixPositionYEdit number center " . (o_Settings.MenuPopup.intPopupMenuPosition.IniValue = 3 ? "" : "Disabled")
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intPopupFixPositionY Range1-9999 gGuiOptionsGroupChanged hidden, % o_Settings.MenuPopup.arrPopupFixPosition.IniValue[2]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intPopupFixPositionXEdit
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intPopupFixPositionYEdit
@@ -10247,8 +10281,10 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnExclusionMouseListBlac
 	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnExclusionMouseListWhitelist gGuiOptionsGroupChanged hidden "
 	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strExclusionMouseList gGuiOptionsGroupChanged hidden
 	, % StrReplace(Trim(o_Settings.MenuPopup.strExclusionMouseList.IniValue), "|", "`n")
+Gui, 2:Font
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList2, % L(o_L["OptionsExclusionMouseListDetail1"]
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText)
 Gui, 2:Add, Link, y+10 x%g_intGroupItemsX% w595 hidden vf_lnkExclusionMouseList3, % L(o_L["OptionsExclusionMouseListDetail2"]
@@ -10273,7 +10309,9 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnFoldersExclusionListIn
 	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnFoldersExclusionListExclude gGuiOptionsGroupChanged hidden "
 	. (o_Settings.Execution.blnFoldersExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w340 hidden r5 vf_strFoldersExclusionList gGuiOptionsGroupChanged, % OptionsListSplit(o_Settings.Execution.strFoldersExclusionList.IniValue)
+Gui, 2:Font
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w335 hidden vf_lblFoldersExclusionList, % L(o_L["OptionsFoldersExclusionListInstructions"], strUrl)
 Gui, 2:Add, Text, y+5 hidden vf_lblFoldersExclusionListBottom ; empty control to capture position for SwitchExclusionList
 
@@ -10287,7 +10325,9 @@ Gui, 2:Add, Radio, % "y+5 x" . intGroupItemsXFiles . " vf_blnFilesExclusionListI
 	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnFilesExclusionListExclude gGuiOptionsGroupChanged hidden "
 	. (o_Settings.Execution.blnFilesExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5 x%intGroupItemsXFiles% w245 hidden r5 vf_strFilesExclusionList gGuiOptionsGroupChanged, % OptionsListSplit(o_Settings.Execution.strFilesExclusionList.IniValue)
+Gui, 2:Font
 Gui, 2:Add, Text, y+5 x%intGroupItemsXFiles% w240 hidden vf_lblFilesExclusionList, % L(o_L["OptionsFilesExclusionListInstructions"], strUrl)
 
 ; SwitchExclusionList
@@ -10301,7 +10341,9 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnSwitchExclusionListInc
 	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "" : "checked"), % o_L["OptionsMenuExclusionsExclude"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnSwitchExclusionListExclude gGuiOptionsGroupChanged hidden "
 	. (o_Settings.Execution.blnSwitchExclusionListInclude.IniValue ? "checked" : ""), % o_L["OptionsMenuExclusionsInclude"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5 x%g_intGroupItemsX% w595 hidden r5 vf_strSwitchExclusionList gGuiOptionsGroupChanged, % OptionsListSplit(o_Settings.Execution.strSwitchExclusionList.IniValue)
+Gui, 2:Font
 Gui, 2:Add, Text, y+5 x%g_intGroupItemsX% w590 hidden vf_lnkGetWinInfoSwitchExclusion, % L(o_L["OptionsSwitchExclusionListInstructions"]
 	. " " . o_L["OptionsSwitchExclusionListInstructions2"] . " " . o_L["OptionsSwitchExclusionListInstructionsList"], strUrl)
 Gui, 2:Add, DropDownList, y+5 x%g_intGroupItemsX% w595 vf_drpSwitchExclusionRunning gDropdownSwitchExclusionRunningChanged hidden
@@ -10460,13 +10502,17 @@ if StrLen(g_aaFileManagerQAPconnect.strQAPconnectFileManager)
 ; DirectoryOpusPath
 ; TotalCommanderPath
 Gui, 2:Add, Text, yp x%g_intGroupItemsTab2X% w100 vf_lblFileManagerPrompt hidden, % o_L["DialogApplicationLabel"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strFileManagerPath hidden ; gLabel after Gosub that changes the value below
+Gui, 2:Font
 Gui, 2:Add, Button, x+10 yp vf_btnFileManagerPath gButtonSelectFileManagerPath hidden, % o_L["DialogBrowseButton"]
 
 ; line 5
 ; TotalCommanderWinCmd
 Gui, 2:Add, Text, y+10 x%g_intGroupItemsTab2X% w105 vf_lblTotalCommanderWinCmdPrompt hidden, % o_L["TCWinCmdLocation"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, yp x%g_intGroupItemsTab3X% w300 h20 vf_strTotalCommanderWinCmd hidden ; gLabel after Gosub that changes the value below
+Gui, 2:Font
 Gui, 2:Add, Button, x+10 yp vf_btnTotalCommanderWinCmd gButtonSelectTotalCommanderWinCmd hidden, % o_L["DialogBrowseButton"]
 
 ; FileManagerDOpusShowLayouts
@@ -10520,7 +10566,9 @@ Gui, 2:Add, CheckBox, y+10 x%g_intGroupItemsX% w500 vf_blnSnippetDefaultFixedFon
 GuiControl, , f_blnSnippetDefaultFixedFont, % (o_Settings.Snippets.blnSnippetDefaultFixedFont.IniValue = true)
 
 ; SnippetDefaultFontSize
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x%g_intGroupItemsX% y+10 h20 w40 vf_intSnippetDefaultFontSizeEdit hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, Range6-18 h20 gGuiOptionsGroupChanged hidden vf_intSnippetDefaultFontSize, % o_Settings.Snippets.intSnippetDefaultFontSize.IniValue
 Gui, 2:Add, Text, yp x+5 hidden vf_lblSnippetDefaultFontSize, % o_L["DialogFavoriteSnippetFontSize"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intSnippetDefaultFontSizeEdit
@@ -10536,7 +10584,9 @@ Gui, 2:Add, Text, y+20 x%g_intGroupItemsX% hidden vf_lblSelectHotstringDefaultOp
 Gui, 2:Font
 Gui, 2:Add, Button, y+10 x%g_intGroupItemsX% gSelectHotstringDefaultOptions hidden vf_btnSelectHotstringDefaultOptions, % o_L["OptionsHotstringsDefaultSelect"]
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblHotstringsDefaultKeyboardDelay hidden, % o_L["OptionsHotstringsKeyboardDelay"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w50 number center vf_intHotstringsDefaultKeyboardDelay gGuiOptionsGroupChanged hidden, % o_Settings.Snippets.intHotstringsDefaultKeyboardDelay.IniValue
+Gui, 2:Font
 
 GuiControlGet, arrPos, Pos, f_btnSelectHotstringDefaultOptions
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -10551,9 +10601,11 @@ Gui, 2:Add, Link, y%intGroupItemsY% x%g_intGroupItemsX% w600 hidden vf_lnkUserVa
 	. """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w600 hidden vf_lnkUserVariablesList, % o_L["OptionsUserVariablesListInstructions"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x%g_intGroupItemsX% y+10 w600 hidden r20 vf_strUserVariablesList gGuiOptionsGroupChanged
 	, % (StrLen(o_Settings.UserVariables.strUserVariablesList.IniValue)
 	? StrReplace(Trim(o_Settings.UserVariables.strUserVariablesList.IniValue), "|", "`n") : "{MyVariable}=MyContent")
+Gui, 2:Font
 
 GuiControlGet, arrPos, Pos, f_strUserVariablesList
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
@@ -10566,19 +10618,25 @@ GuiControl, , f_blnOptionUsageDbEnable, % (o_Settings.Database.intUsageDbInterva
 
 ; UsageDbIntervalSeconds
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblUsageDbIntervalSeconds hidden, % o_L["OptionsUsageDbIntervalSeconds"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w65 number vf_intUsageDbIntervalSecondsEdit hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, Range60-7200 h20 vf_intUsageDbIntervalSeconds gGuiOptionsGroupChanged hidden, % o_Settings.Database.intUsageDbIntervalSeconds.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intUsageDbIntervalSecondsEdit
 
 ; UsageDbDaysInPopular
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+5 vf_lblUsageDbDaysInPopular hidden, % o_L["OptionsUsageDbDaysInPopular"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w65 number vf_intUsageDbDaysInPopularEdit hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, Range1-9999 h20 vf_intUsageDbDaysInPopular gGuiOptionsGroupChanged hidden, % o_Settings.Database.intUsageDbDaysInPopular.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intUsageDbDaysInPopularEdit
 
 ; UsageDbMaximumSize
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+5 vf_lblUsageDbMaximumSize hidden, % o_L["OptionsUsageDbMaximumSize"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w65 vf_fltUsageDbMaximumSize gGuiOptionsGroupChanged hidden, % o_Settings.Database.fltUsageDbMaximumSize.IniValue ; do not use number option to accept "," decimal separator
+Gui, 2:Font
 
 Gui, 2:Add, Button, x%g_intGroupItemsX% y+10 vf_btnUsageDbFlush gButtonUsageDbFlushClicked hidden, % o_L["OptionsUsageDbFlushDatabase"]
 
@@ -10608,7 +10666,9 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " w230 hidden vf_radShowQAPmen
 ; RefreshQAPMenuIntervalSec
 Gui, 2:Add, Checkbox, x%g_intGroupItemsX% y+15 vf_blnRefreshQAPMenuEnable gRefreshQAPMenuEnableClicked hidden, % o_L["OptionsRefreshQAPMenuTitle"]
 GuiControl, , f_blnRefreshQAPMenuEnable, % (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue > 0)
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x%g_intGroupItemsX% y+5 w60 h22 vf_intRefreshQAPMenuIntervalSecEdit center disabled hidden
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intRefreshQAPMenuIntervalSec Range30-86400 disabled gGuiOptionsGroupChanged hidden
 	, % (o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue ? o_Settings.MenuAdvanced.intRefreshQAPMenuIntervalSec.IniValue : 300)
 Gui, 2:Add, Text, yp x+10 vf_lblRefreshQAPMenuIntervalSec Disabled hidden, % o_L["OptionsRefreshQAPMenuIntervalSec"]
@@ -10625,12 +10685,16 @@ GuiControl, , f_blnOpenMenuOnTaskbar, % (o_Settings.MenuPopup.blnOpenMenuOnTaskb
 
 ; ClipboardMaxSize
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+20 vf_lblClipboardMaxSize hidden, % o_L["OptionsClipboardMaxSize"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w65 number vf_intClipboardMaxSize gGuiOptionsGroupChanged hidden, % o_Settings.MenuAdvanced.intClipboardMaxSize.IniValue
+Gui, 2:Font
 Gui, 2:Add, Text, x+5 yp vf_lblClipboardMaxSizeDefault hidden, % o_L["OptionsClipboardMaxSizeDefault"]
 
 ; NbLiveFolderItemsMax
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+15 vf_lblNbLiveFolderItemsMax hidden, % o_L["OptionsNbLiveFolderItemsMax"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intNbLiveFolderItemsMax gGuiOptionsGroupChanged hidden, % o_Settings.MenuAdvanced.intNbLiveFolderItemsMax.IniValue
+Gui, 2:Font
 Gui, 2:Add, Text, x+5 yp vf_lblNbLiveFolderItemsMaxDefault hidden, % o_L["OptionsNbLiveFolderItemsMaxDefault"]
 
 ; ShowAdvancedSettingsMenusItems
@@ -10649,7 +10713,9 @@ GuiControl, , f_blnNetworkDrivesSometimesOffline, % (o_Settings.MenuAdvanced.bln
 
 ; NetworkDrivesLetters
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+5 vf_lblNetworkDrivesLetters hidden, % o_L["OptionsNetworkDrivesLetters"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, yp x+5 w65 h20 vf_strNetworkDrivesLetters Uppercase hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Font
 GuiControl, 2:, f_strNetworkDrivesLetters, % o_Settings.MenuAdvanced.strNetworkDrivesLetters.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strNetworkDrivesLetters
 
@@ -10670,7 +10736,9 @@ GuiControl, , f_blnRefreshWindowsAppsListAtStartup, % (o_Settings.LaunchAdvanced
 
 ; AlternativeTrayIcon
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblAlternativeTrayIcon hidden, % o_L["OptionsAlternativeTrayIcon"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5 xs w300 h20 vf_strAlternativeTrayIcon hidden ; gLabel after GuiControl that changes the value below
+Gui, 2:Font
 Gui, 2:Add, Button, x+5 yp w75 vf_btnAlternativeTrayIcon gButtonAlternativeTrayIcon hidden, % o_L["DialogBrowseButton"]
 GuiControl, 2:, f_strAlternativeTrayIcon, % o_Settings.LaunchAdvanced.strAlternativeTrayIcon.IniValue
 GuiControl, 2:+gGuiOptionsGroupChanged, f_strAlternativeTrayIcon
@@ -10685,8 +10753,10 @@ Gui, 2:Add, Radio, % "y+10 x" . g_intGroupItemsX . " vf_blnHotkeyTriggerExclusio
 	. (o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
 Gui, 2:Add, Radio, % "yp x+10 vf_blnHotkeyTriggerExclusionListWhitelist gGuiOptionsGroupChanged hidden "
 	. (o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strHotkeyTriggerExclusionList gGuiOptionsGroupChanged hidden
 	, % OptionsListSplit(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
+Gui, 2:Font
 Gui, 2:Add, Link, x%g_intGroupItemsX% y+10 w600 hidden vf_lblHotkeyTriggerExclusionListHelp, % L(o_L["OptionsHotkeyTriggerExclusionListHelp"], strUrl)
 
 GuiControlGet, arrPos, Pos, f_lblHotkeyTriggerExclusionListHelp
@@ -10697,11 +10767,15 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 
 ; WaitDelayInDialogBox
 Gui, 2:Add, Text, x%g_intGroupItemsX% y%intGroupItemsY% vf_lblWaitDelayInDialogBox hidden, % o_L["OptionsWaitDelayInDialogBox"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w65 number center vf_intWaitDelayInDialogBox gGuiOptionsGroupChanged hidden, % o_Settings.DialogBoxes.intWaitDelayInDialogBox.IniValue
+Gui, 2:Font
 
 ; WaitClipboardFreeMaxSeconds
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 vf_lblWaitClipboardFreeMaxSeconds hidden, % o_L["OptionsWaitClipboardFreeMaxSeconds"] . ":"
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, x+10 yp h20 w40 number center vf_intWaitClipboardFreeMaxSeconds gGuiOptionsGroupChanged hidden, % o_Settings.Execution.intWaitClipboardFreeMaxSeconds.IniValue
+Gui, 2:Font
 
 ; AlwaysLaunchURLs
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnAlwaysLaunchURLs gGuiOptionsGroupChanged hidden, % o_L["OptionsAlwaysLaunchURLs"]
@@ -10731,7 +10805,9 @@ if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 		. AddUtm2Url("https://www.quickaccesspopup.com/shared-menu-catalogue/", A_ThisLabel, "Help") . """>" . o_L["GuiHelp"] . "</a>)"
 	GuiControl, , f_blnEnableExternalMenusCatalogue, % StrLen(o_Settings.SettingsFile.strExternalMenusCataloguePath.IniValue) > 0
 	Gui, 2:Add, Text, y+10 x%g_intGroupItemsX% vf_lblExternalMenusCataloguePathPrompt disabled hidden, % o_L["OptionsCataloguePath"] . ":"
+	Gui, 2:Font, , %g_blnInputFieldsFont%
 	Gui, 2:Add, Edit, yp x+5 w200 h20 vf_strExternalMenusCataloguePath disabled hidden ; gLabel after Gosub that changes the value below
+	Gui, 2:Font
 	Gui, 2:Add, Button, x+5 yp w75 vf_btnExternalMenusCataloguePath gButtonExternalMenuSelectCataloguePath disabled hidden, % o_L["DialogBrowseButton"]
 	GuiControl, 2:, f_strExternalMenusCataloguePath, % o_Settings.SettingsFile.strExternalMenusCataloguePath.IniValue
 	Gosub, EnableExternalMenusCatalogueClickedInit ; init disabled fields
@@ -10741,11 +10817,15 @@ if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 
 ; WaitDelayInSnippet
 Gui, 2:Add, Text, x%g_intGroupItemsX% y+10 hidden vf_lblWaitDelayInSnippet, % o_L["OptionsWaitDelayInSnippet"]
+Gui, 2:Font, , %g_blnInputFieldsFont%
 loop, 4
 	Gui, 2:Add, Edit, % "x+5 yp h20 w50 hidden number center gGuiOptionsGroupChanged vf_intWaitDelayInSnippet" . A_Index, % o_Settings.Snippets.arrWaitDelayInSnippet.IniValue[A_Index]
+Gui, 2:Font
 
 ; IconsManageRows
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 2:Add, Edit, % "y+10 x" . g_intGroupItemsX . " w51 h22 vf_intIconsManageRowsSettingsEdit number center hidden"
+Gui, 2:Font
 Gui, 2:Add, UpDown, vf_intIconsManageRowsSettings Range0-9999 gGuiOptionsGroupChanged hidden, % o_Settings.MenuIcons.intIconsManageRowsSettings.IniValue
 Gui, 2:Add, Text, % "yp+3 x+10 w400 hidden vf_lblIconsManageRows", % o_L["OptionsIconsManageRows"]
 GuiControl, 2:+gGuiOptionsGroupChanged, f_intIconsManageRowsSettingsEdit
@@ -12602,7 +12682,9 @@ Gui, 1:Add, Text, vf_lblMenuDropdownOrSearchLabel x+1 yp, % o_L["GuiSubmenuDropd
 Gui, 1:Font, w400 normal, Verdana ; (was Verdana 8)
 Gui, 1:Add, DropDownList, vf_drpMenusList gGuiMenusListChanged x0 y+1 ; ComboBox1
 
+Gui, 2:Font, , %g_blnInputFieldsFont%
 Gui, 1:Add, Edit, vf_strFavoritesListFilter r1 gLoadFavoritesInGui hidden ; Edit1 (EditN controls do not support tooltips)
+Gui, 2:Font
 Gui, 1:Add, Checkbox, vf_blnFavoritesListFilterExtended x+10 yp gFilterExtendedClicked hidden, % o_L["DialogExtendedSearch"] ; Button1
 g_aaToolTipsMessages["Button1"] := o_L["ControlToolTipSearchBoxExtended"]
 Gui, 1:Add, Button, vf_btnFavoritesListNoFilter gGuiGotoMenuPrev x+10 yp w20 h20 hidden, X ; Button2
