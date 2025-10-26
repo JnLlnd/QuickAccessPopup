@@ -6112,6 +6112,8 @@ if (A_IsAdmin and o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue)
 	; add [admin] tag only if running as admin because of the o_Settings.LaunchAdvanced.blnRunAsAdmin.IniValue option
 	g_strAppNameText .= " [" . o_L["OptionsRunAsAdminShort"] . "]"
 
+global o_QuickLaunchQueries := GetQuickLaunchQueriesFromIni() ; get from ini file queries for the Quick Launch dialog box, sorted reverse chronologically
+
 global g_strIconsFilesRoot := o_Settings.MenuIcons.strIconsCustomFolder.IniValue
 
 global g_strURLIconFileIndex := (StrLen(o_Settings.MenuIcons.strCustomLinksIcon.IniValue)
@@ -7040,6 +7042,8 @@ o_Settings.ReadIniOption("SettingsWindow", "blnQuickLaunchExtended", "QuickLaunc
 o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchRows", "QuickLaunchRows", 10, "SettingsWindow", "f_intQuickLaunchRowsEdit|f_intQuickLaunchRows|f_lblQuickLaunchRows")
 o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchSort", "QuickLaunchSort", 2, "SettingsWindow"
 	, "f_lblOptionsQuickLaunchSort|f_radOptionsQuickLaunchSort0|f_radOptionsQuickLaunchSort1|f_radOptionsQuickLaunchSort2") ; default 2 -> usage
+o_Settings.ReadIniOption("SettingsWindow", "intQuickLaunchDropdownRows", "QuickLaunchDropdownRows", 10, "SettingsWindow"
+	, "f_intQuickLaunchDropdownRowsEdit|f_intQuickLaunchDropdownRows|f_lblQuickLaunchDropdownRows")
 
 ; Group DisplayIcons
 o_Settings.ReadIniOption("MenuIcons", "blnDisplayIcons", "DisplayIcons", 1, "MenuIcons", "f_blnDisplayIcons") ; g_blnDisplayIcons
@@ -8017,6 +8021,7 @@ if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to creat
 	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strGui1Hwnd)
 	IniWrite, % GetScreenConfiguration(), % o_Settings.strIniFile, Global, LastScreenConfiguration
 	IniDelete, % o_Settings.strIniFile, Global, ExternalErrorMessageExclusions ; delete value created to avoid (in this session only) repetitive error messages for unfound external menus
+	IniWrite, % GetQuickLaunchQueries(false), % o_Settings.strIniFile, Global, QuickLaunchQueries
 }
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 
@@ -10112,10 +10117,18 @@ Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w300 vf_radOptionsQ
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsTab4X + 10 . " w300 vf_radOptionsQuickLaunchSort2 gGuiOptionsGroupChanged hidden "
 	. (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2 ? "Checked" : ""), % o_L["DialogMenuSortUsage"] ; 2 -> usage
 
+; QuickLaunchDropdownRowsEdit
+Gui, 2:Font, , %g_strEditControlsFontName%
+Gui, 2:Add, Edit, y+10 x%g_intGroupItemsTab4X% w51 h22 vf_intQuickLaunchDropdownRowsEdit number center hidden
+Gui, 2:Font
+Gui, 2:Add, UpDown, vf_intQuickLaunchDropdownRows Range0-99 gGuiOptionsGroupChanged hidden, % o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue
+Gui, 2:Add, Text, yp x+10 w300 hidden vf_lblQuickLaunchDropdownRows, % o_L["OptionsQuickLaunchDropdownRows"]
+GuiControl, 2:+gGuiOptionsGroupChanged, f_intQuickLaunchDropdownRowsEdit
+
 GuiControlGet, arrPos, Pos, f_blnAddAutoAtTop1 ; if col 1 is taller than col 2
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
-GuiControlGet, arrPos, Pos, f_lblOptionsQuickLaunchSort2 ; if col 2 is taller than col 1
+GuiControlGet, arrPos, Pos, f_lblQuickLaunchDropdownRows ; if col 2 is taller than col 1
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -11069,6 +11082,7 @@ else if (f_radOptionsQuickLaunchSort2)
 else ; f_radOptionsQuickLaunchSort0
 	o_Settings.SettingsWindow.intQuickLaunchSort.IniValue := 0 ; 0 or empty -> menu order
 o_Settings.SettingsWindow.intQuickLaunchSort.WriteIni("", true) ; value already updated
+o_Settings.SettingsWindow.intQuickLaunchDropdownRows.WriteIni(f_intQuickLaunchDropdownRows)
 
 blnDarkModePrev := o_Settings.SettingsWindow.blnDarkMode.IniValue
 if GetOSVersionInfo().BuildNumber >= 18362 ; (Windows 10 version 1903+)
@@ -25409,7 +25423,7 @@ WinSet, AlwaysOnTop, On
 
 Gui, Font, % "s" . o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue, % o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue
 
-Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged
+Gui, Add, % (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? "ComboBox" : "Edit"), x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged, % GetQuickLaunchQueries()
 intYp := 7 + Round(o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue * 1.6667)
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
 	. " yp+" . intYp . " Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvQuickLaunch AltSubmit gGuiQuickLaunchEvents", Col1|Sort|Index
@@ -25587,11 +25601,16 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 	
 	if (A_ThisLabel = "QuickLaunchEnter" or A_GuiEvent = "DoubleClick") ; retrieve favorite object and launch it
 	{
+		GuiControlGet, strQuickLaunchQuery, , f_strQuickLaunch
+		if !InStr(strQuickLaunchQuery, "|") ; exclude queries including pipe separator
+			o_QuickLaunchQueries[A_TickCount] := strQuickLaunchQuery
+
 		LV_GetText(g_intQuickLaunchIndex, intQuickLaunchClickedRow, 3) ;  get selected item order in oQuickLaunchResult.SA object
 		
 		Gosub, QuickLaunchGuiEscape
 		Gosub, GetAlternativeMenuModifierFromQuickLaunch
 		o_ThisFavorite := oQuickLaunchResult.SA[g_intQuickLaunchIndex]
+		
 		if StrLen(g_strAlternativeMenuModifier)
 		{
 			Gosub, OpenAlternativeFromQuickLaunch
@@ -29712,6 +29731,46 @@ EnumFontFamExProc(lpelfe, lpntme, FontType, lParam)
 	font := StrGet(lpelfe + 28)
 	Object(lParam)[font] := ""
 	Return true
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetQuickLaunchQueriesFromIni()
+;------------------------------------------------------------
+{
+	oQueries := Object()
+	
+	strQueries := o_Settings.ReadIniValue("QuickLaunchQueries", "", "Global"), | ; QuickLaunchDropdownRows starts with the most recent query
+	
+	if (strQueries <> "ERROR")
+		Loop, Parse, % strQueries, |
+			oQueries[A_Index] := A_LoopField
+	
+	return oQueries
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+GetQuickLaunchQueries(blnReverse := true)
+; Remove oldest entries until we're at the desired size and returns a string of queries seperated by |
+;------------------------------------------------------------
+{
+    while (o_QuickLaunchQueries.Count() > o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue)
+        for intTick in o_QuickLaunchQueries
+		{
+            o_QuickLaunchQueries.Delete(intTick)
+            break  ; Only delete the first one, then recheck count
+        }
+
+	for intTick, strQuery in o_QuickLaunchQueries
+		if (blnReverse)
+			strQueries := strQuery . "|" . strQueries
+		else
+			strQueries .= strQuery . "|"
+	
+	return SubStr(strQueries, 1, -1) ; remove last |
 }
 ;------------------------------------------------------------
 
@@ -35345,7 +35404,7 @@ class Container
 				Gosub, % o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand
 			}
 			; QCE COMMANDS
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|OpenFavoriteSelectedInGui"
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|OpenFavoriteSelectedInGui|OpenFavoriteFromQuickLaunch"
 				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QCE")
 			{
 				strCommand := SubStr(this.AA.strFavoriteLocation, 2, -1) ; remove first and last character
