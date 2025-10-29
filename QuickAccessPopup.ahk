@@ -21759,11 +21759,11 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	Diag(A_ThisFunc, "blnCanNavigate-1", blnCanNavigate)
 	
 	; check if the browser is an blocked app
-	if (blnCanNavigate)
+	if (blnCanNavigate) ; ###
 		and (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
 		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
 		; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
-		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp) and (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
+		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp) and (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved ###
 			
 			blnCanNavigate := true
 			
@@ -21811,7 +21811,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 
 	; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
 	if (!StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
-		and o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
+		and o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved ###
 	{
 		Diag(A_ThisFunc, "return-1", true)
 		return true
