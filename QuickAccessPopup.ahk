@@ -5731,7 +5731,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.1
+;@Ahk2Exe-SetVersion 12.0.9
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5799,8 +5799,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "12.0.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
@@ -7079,7 +7079,7 @@ o_Settings.MenuPopup.arrPopupFixPosition.IniValue := StrSplit(o_Settings.MenuPop
 o_Settings.ReadIniOption("MenuPopup", "blnExplorerContextMenus", "ExplorerContextMenus", 1, "PopupMenu", "f_blnExplorerContextMenus") ; g_blnExplorerContextMenus
 if (g_blnPortableMode)
 	o_Settings.MenuPopup.blnExplorerContextMenus.IniValue := 0 ; always disabled in portable mode, regardless of value in ini file
-o_Settings.ReadIniOption("MenuPopup", "blnExclusionMouseListWhitelist", "ExclusionMouseListWhitelist", 0, "PopupMenu", "f_blnExclusionMouseListBlacklist|f_blnExclusionMouseListWhitelist")
+o_Settings.ReadIniOption("MenuPopup", "blnExclusionMouseListWhitelist", "ExclusionMouseListWhitelist", 0, "PopupMenu", "f_blnExclusionMouseListBlacklist|f_blnExclusionMouseListWhitelist") ; default 0 Blocked
 o_Settings.ReadIniOption("MenuPopup", "strExclusionMouseList", "ExclusionMouseList", " ", "PopupMenu"
 	, "f_lnkExclusionMouseList1|f_lnkExclusionMouseList2|f_lnkExclusionMouseList3|f_strExclusionMouseList|f_btnGetWinInfoMouseExclusions") ; g_strExclusionMouseList
 o_Settings.MenuPopup.strExclusionMouseList.IniValue := (!o_Settings.MenuPopup.strExclusionMouseList.IniValue ? "" : o_Settings.MenuPopup.strExclusionMouseList.IniValue) ; in case it contains "0"
@@ -10308,9 +10308,9 @@ Gui, 2:Add, Link, y+15 x%g_intGroupItemsX% w600 hidden vf_lnkExclusionMouseList1
 	, o_PopupHotkeyNavigateOrLaunchHotkeyMouse.AA.strPopupHotkeyText) . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 Gui, 2:Font
 Gui, 2:Add, Radio, % "y+5 x" . g_intGroupItemsX . " vf_blnExclusionMouseListBlacklist gGuiOptionsGroupChanged hidden "
-	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"]
+	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "" : "checked"), % o_L["OptionsExclusionMouseList"] ; 0 Blocked
 Gui, 2:Add, Radio, % "yp x+10 vf_blnExclusionMouseListWhitelist gGuiOptionsGroupChanged hidden "
-	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"]
+	. (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "checked" : ""), % o_L["OptionsExclusionMouseListWhitelist"] ; 1 Approved
 Gui, 2:Font, , %g_strEditControlsFontName%
 Gui, 2:Add, Edit, y+5  x%g_intGroupItemsX% w595 r5 vf_strExclusionMouseList gGuiOptionsGroupChanged hidden
 	, % StrReplace(Trim(o_Settings.MenuPopup.strExclusionMouseList.IniValue), "|", "`n")
@@ -11165,7 +11165,7 @@ blnRefreshedMenusAttachedPrev := o_Settings.MenuPopup.blnRefreshedMenusAttached.
 o_Settings.MenuPopup.blnRefreshedMenusAttached.WriteIni(f_blnRefreshedMenusAttached)
 
 ; ExclusionList
-o_Settings.MenuPopup.blnExclusionMouseListWhitelist.WriteIni(f_blnExclusionMouseListWhitelist)
+o_Settings.MenuPopup.blnExclusionMouseListWhitelist.WriteIni(f_blnExclusionMouseListWhitelist) ; 0 Blocked / 1 Approved
 o_Settings.MenuPopup.strExclusionMouseList.WriteIni(OptionsListCleanup(f_strExclusionMouseList))
 o_Settings.MenuPopup.strExclusionMouseList.SplitExclusionList()
 
@@ -21741,6 +21741,14 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	; Mouse hotkey (.P_strAhkHotkey is NavigateOrLaunchHotkeyMouse value in ini file)
 	SetTargetWinInfo(strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey)
 
+	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
+	Diag(A_ThisFunc, "blnExclusionMouseListWhitelist", o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
+		. " (" . (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "Approved" : "Blocked") . ")")
+	Diag(A_ThisFunc, "strExclusionMouseListApp", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, 1, 20))
+	Diag(A_ThisFunc, "strExclusionMouseListDialog", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, 1, 20))
+	Diag(A_ThisFunc, "blnChangeFolderInDialog", o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue)
+	Diag(A_ThisFunc, "blnAlwaysLaunchURLs", o_Settings.Execution.blnAlwaysLaunchURLs.IniValue)
+	
 	blnCanNavigate := WindowIsExplorer(g_strTargetClass) or WindowIsConsole(g_strTargetClass)
 		or (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !DialogBoxParentExcluded(g_strTargetWinId))
 		or (o_FileManagers.P_intActiveFileManager = 2 and WindowIsDirectoryOpus(g_strTargetClass))
@@ -21748,14 +21756,16 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		or (o_FileManagers.P_intActiveFileManager = 4 and WindowIsQAPconnect(g_strTargetWinId))
 		or (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; will check again if window is a browser when opening the favorite link
 		or WindowIsQuickAccessPopup(g_strTargetClass)
-
+	Diag(A_ThisFunc, "blnCanNavigate-1", blnCanNavigate)
+	
 	; check if the browser is an blocked app
-	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
+	if (blnCanNavigate)
+		and (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
 		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
-		; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is true (approved) and exclusion list is empty
-		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
+		; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
+		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp) and (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
 			
-			blnCanNavigate := true ; regardless of o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
+			blnCanNavigate := true
 			
 		else
 			Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, |
@@ -21764,8 +21774,9 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 					or InStr(g_strTargetWinTitle, A_LoopField)
 					or InStr(g_strTargetProcessName, A_LoopField))
 					
-					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; true show menu, false cannot navigate
+					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can navigate show menu, 0 Blocked cannot navigate
 				
+	
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
 	if (!o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId))
 	{
@@ -21780,6 +21791,7 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	else
 		g_strTargetControlId := ""
 	
+	Diag(A_ThisFunc, "blnCanNavigate-final", blnCanNavigate)
 	return blnCanNavigate
 }
 ;------------------------------------------------------------
@@ -21790,12 +21802,20 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 ;------------------------------------------------------------
 {
 	global
+	
+	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
+	Diag(A_ThisFunc, "blnExclusionMouseListWhitelist", o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
+		. " (" . (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "Approved" : "Blocked") . ")")
+	Diag(A_ThisFunc, "strExclusionMouseListApp", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, 1, 20))
+	Diag(A_ThisFunc, "strExclusionMouseListDialog", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, 1, 20))
 
-	; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is true (approved) and exclusion list is empty
-	if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
-		
-		return true ; regardless of o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
-		
+	; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
+	if (!StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
+		and o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
+	{
+		Diag(A_ThisFunc, "return-1", true)
+		return true
+	}		
 	; else continue
 
 	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
@@ -21804,21 +21824,33 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 				and (InStr(g_strTargetClass, A_LoopField)
 				or InStr(g_strTargetWinTitle, A_LoopField)
 				or InStr(g_strTargetProcessName, A_LoopField))
-				
-				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; true show menu, false do not show
+			{
+				Diag(A_ThisFunc, "return-2", o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
+				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; 1 Approved can launch show menu, 0 Blocked do not show
+			}
 
 	if WindowIsTray(g_strTargetClass)
+	{
+		Diag(A_ThisFunc, "return-3 (taskbar)", o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue)
 		return o_Settings.MenuPopup.blnOpenMenuOnTaskbar.IniValue
+	}
 
 	if WindowIsTreeview(g_strTargetWinId)
+	{
+		Diag(A_ThisFunc, "return-4 (treeview)", false)
 		return false
+	}
 	
 	if WindowIsDialog(g_strTargetClass, g_strTargetWinId) and DialogBoxParentExcluded(g_strTargetWinId)
+	{
+		Diag(A_ThisFunc, "return-5 (dialog excluded))", false)
 		return false
+	}
 	
 	; else we can launch (or not launch if blnExclusionMouseListWhitelist)
-
-	return (!o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; blnExclusionMouseListWhitelist false cannot launch, true show menu
+	
+	Diag(A_ThisFunc, "return-6 (final))", !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
+	return (!o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
 }
 ;------------------------------------------------------------
 
@@ -29522,7 +29554,7 @@ ClipboardIsFree(strCaller, ByRef intClipboardLength)
 {
 	static blnAlreadyBusy := false
 	
-	Diag(A_ThisFunc, "Caller", strCaller)
+	; Diag(A_ThisFunc, "Caller", strCaller)
 	
 	intClipboardLength := 0 ; set to zero in case we get an error
 	intStartTime := TickCount64()
@@ -29542,19 +29574,19 @@ ClipboardIsFree(strCaller, ByRef intClipboardLength)
 		}
 		Sleep, 100
 	}
-	Diag(A_ThisFunc, "CLIPBOARD_OPEN_SUCCESS", TickCount64() - intStartTime . " ms")
+	; Diag(A_ThisFunc, "CLIPBOARD_OPEN_SUCCESS", TickCount64() - intStartTime . " ms")
 
 	; additional test (catch an error if an application - like Excel - is using the clipboard without being detected by GetOpenClipboardWindow
 	try intClipboardLength := StrLen(Clipboard) ; intTest not used
 	catch ; abort at first fail
 	{
-		Diag(A_ThisFunc, "CLIPBOARD_CANNOT_ACCESS", TickCount64() - intStartTime . " ms")
+		; Diag(A_ThisFunc, "CLIPBOARD_CANNOT_ACCESS", TickCount64() - intStartTime . " ms")
 		blnAlreadyBusy := false ; reset static variable for next call
 		return false ; QAP was not able to access the clipboard
 	}
 
-	Diag(A_ThisFunc, "CLIPBOARD_FREE", TickCount64() - intStartTime . " ms")
-	Diag(A_ThisFunc, "CLIPBOARD_LENGTH", intClipboardLength)
+	; Diag(A_ThisFunc, "CLIPBOARD_FREE", TickCount64() - intStartTime . " ms")
+	; Diag(A_ThisFunc, "CLIPBOARD_LENGTH", intClipboardLength)
 	blnAlreadyBusy := false
 	return true ; Clipboard free
 }
