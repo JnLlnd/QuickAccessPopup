@@ -5731,7 +5731,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.0.9
+;@Ahk2Exe-SetVersion 12.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5799,8 +5799,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.0.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "12.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
@@ -21759,11 +21759,11 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	Diag(A_ThisFunc, "blnCanNavigate-1", blnCanNavigate)
 	
 	; check if the browser is an blocked app
-	if (blnCanNavigate) ; ###
+	if (blnCanNavigate)
 		and (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
 		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
-		; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
-		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp) and (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved ###
+		; avoid blocking hotkey in every windows in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
+		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp) and (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
 			
 			blnCanNavigate := true
 			
@@ -21791,6 +21791,8 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	else
 		g_strTargetControlId := ""
 	
+	Diag(A_ThisFunc, "blnChangeFolderInDialogAlertRead", blnChangeFolderInDialogAlertRead)
+	Diag(A_ThisFunc, "g_blnShowChangeFolderInDialogAlert", g_blnShowChangeFolderInDialogAlert)
 	Diag(A_ThisFunc, "blnCanNavigate-final", blnCanNavigate)
 	return blnCanNavigate
 }
@@ -21809,9 +21811,9 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 	Diag(A_ThisFunc, "strExclusionMouseListApp", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, 1, 20))
 	Diag(A_ThisFunc, "strExclusionMouseListDialog", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, 1, 20))
 
-	; avoid blocking all hotkeys in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
+	; avoid blocking hotkey in every windows in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
 	if (!StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
-		and o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved ###
+		and o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
 	{
 		Diag(A_ThisFunc, "return-1", true)
 		return true
