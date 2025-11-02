@@ -698,6 +698,10 @@ lMenuAlternativeRunAs	Esegui come Amministratore
 lMenuAppData	Dati Applicazioni
 lMenuCache	Cache
 lMenuClipboard	Appunti di Windows
+lMenuClipboardCommandLower	Converti gli Appunti in minuscolo
+lMenuClipboardCommandTitle	Converti gli Appunti nel case del titolo (maiuscolo o minuscolo)
+lMenuClipboardCommandToggle	Converti gli Appunti in case cOMMUTATO (maiuscolo/minuscolo)
+lMenuClipboardCommandUpper	Converti gli Appunti in MAIUSCOLO
 lMenuClipboardDescription	Visualizza un menù dinamico con il contenuto attuale degli Appunti di Windows.`n`nSe gli Appunti contengono documenti, applicazioni o il percorso di cartelle di file, QAP mostrerà questo elenco nel menù, consentendoti di aprire un documento, eseguire un'applicazione o spostarti in una cartella trovata negli Appunti.
 lMenuClipboardEmpty	Gli Appunti sono vuoti
 lMenuClipboardNoContent	Nessun percorso o URL trovato negli Appunti
@@ -718,6 +722,8 @@ lMenuCookies	Cookies
 lMenuCopyLocation	Copia URL o Percorso del Preferito
 lMenuCurrentFolders	Cartelle Correnti
 lMenuCurrentFoldersDescription	Visualizza un menù dinamico che mostra le cartelle già aperte in Windows Explorer e Directory Opus. Questo menù viene rigenerato ogni volta che apri il menù QAP.`n`nIl "Riapri una Cartella" è utile specialmente quando sei in una casella di dialogo di file e vuoi aprire un file che si trova in una cartella già aperta in un'altra finestra.  Vedi anche "Riapri la Cartella Corrente nella Casella di Dialogo".
+lMenuCustomizeThisMenu	Personalizza questo menu (o gruppo)
+lMenuCustomizeThisMenuDescription	Aggiungi al menu la voce "Personalizza questo menu (o gruppo)" per aprire la finestra "Personalizza" pronta per modificare il menu contenente questa voce.
 lMenuDesktop	Desktop
 lMenuDiskManagement	Gestione Disco
 lMenuDownloads	Download
@@ -751,6 +757,7 @@ lMenuMenu	Menù
 lMenuMenuOrGroup	Menù o gruppo
 lMenuMyMusic	Musica
 lMenuMyQAPMenu	Strumenti di QAP
+lMenuMyQCEMenu	I Comandi dei Miei Appunti
 lMenuMySnippetsMenu	I miei Frammenti Testuali (Snippets)
 lMenuMySpecialMenu	Cartelle Speciali
 lMenuMyVideo	Video
@@ -785,6 +792,7 @@ lMenuReopenCurrentFolderDescription	Usa come cartella corrente nelle caselle di 
 lMenuReopenInNewWindow	Riapri la Cartella Corrente dalla casella di Dialogo
 lMenuReopenInNewWindowDescription	Riapri la cartella corrente in una nuova finestra di Explorer (vale anche per Directory Opus o Total Commander). Utile quando vuoi aprire la cartella che stai sfogliando in una casella di dialogo per file, in una finestra di Explorer.
 lMenuResetQAPSpecialDefaultNames	Resetta Nomi di Default delle Cartelle Speciali e Caratteristiche di QAP
+lMenuRestoreAllFonts	Ripristina tutti i font di default
 lMenuRestoreQuickLaunchWindowPosition	Ripristina la posizione della finestra "Esecuzione Veloce"
 lMenuRestoreSettingsWindowPosition	Ripristina la posizione della finestra "Personalizzare"
 lMenuRestoreSettingsWindowPositionDescription	Ripristina dimensione finestra e posizione della finestra "Personalizzare" al centro dello schermo principale.
@@ -915,6 +923,7 @@ lOptionsAddAutoAtTop	Quando aggiungi automaticamente, inserisci il preferito nel
 lOptionsAddAutoBottomOfMenu	parte inf. del menù
 lOptionsAddAutoTopOfMenu	parte sup. del menù
 lOptionsAddCloseToDynamicMenus	Aggiungi "Chiudi" ai menù
+lOptionsAddCustomizeThisMenu	Aggiungi "Personalizza questo menu (o gruppo)" a tutti i menu e gruppi editabili
 lOptionsAdvancedLaunch	Apri le Opzioni Avanzate
 lOptionsAdvancedOther	Opzioni Avanzate varie
 lOptionsAlternativeMenuFeatures	Combinazioni di tasti per il Menù Alternativo
@@ -945,6 +954,8 @@ lOptionsDatabase	Database
 lOptionsDisplayIcons	Mostra Icone nel Menù
 lOptionsDisplayMenuShortcuts	Mostra scorciatoie numeriche nei Menù
 lOptionsDisplayMenuShortcutsFromOne	Comincia le Scorciatoie Numeriche del Menù da 1 (invece di 0)
+lOptionsDoNotLaunchQCEReceiver	Non aprire mai Quick Clipboard Editor Receiver Lite con QAP
+lOptionsEditControlsFontName	Font per campi di input testuale
 lOptionsEnableExternalMenusCatalogue	Abilita il Catalogo del Menù Condiviso
 lOptionsEnableFavoriteDebugOption	Abilita debugging del preferito per segnaposto e variabili utente
 lOptionsExclusionMouseList	Bloccati
@@ -991,6 +1002,7 @@ lOptionsLabelsFontSize	Dimensione dei caratteri per le etichette
 lOptionsLanguage	Lingua
 lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian
 lOptionsLaunchAdvancedQAPTitle	Esecuzione di Quick Access Popup
+lOptionsListFontName	Font per elenchi di Preferiti
 lOptionsListFontSize	Dimensione dei caratteri per la lista di Preferiti
 lOptionsMenuActiveWindow	In alto a sinistra della finestra attiva
 lOptionsMenuAdvanced	Opzioni Avanzate Menù
@@ -1023,7 +1035,9 @@ lOptionsPopupMenu	Menù Popup
 lOptionsQAPconnectIntro	QAPconnect è un'interfaccia che offre un parziale supporto per un'elenco di circa 25 file manager.
 lOptionsQAPTempFolder	Cartella Temporanea
 lOptionsQuickAddSnippetSubmenu	Sottomenù per ~1~
+lOptionsQuickLaunchDropdownRows	Numero di righe in elenchi a discesa
 lOptionsQuickLaunchExtended	Ricerca Estesa (cerca tutte le proprietà)
+lOptionsQuickLaunchFontName	Font per elenchi a esecuzione rapida
 lOptionsQuickLaunchFontSize	Dimensione dei caratteri per la lista Esecuzione Rapida
 lOptionsQuickLaunchNavigate	Cambia cartella nel file manager e caselle di dialogo
 lOptionsQuickLaunchRecentsFrequents	Includi oggetti dei menù Recenti e Frequenti

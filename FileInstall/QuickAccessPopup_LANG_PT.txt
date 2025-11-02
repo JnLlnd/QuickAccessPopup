@@ -698,6 +698,10 @@ lMenuAlternativeRunAs	Executar como administrador
 lMenuAppData	Dados de Aplicações
 lMenuCache	Cache
 lMenuClipboard	Área de Transferência
+lMenuClipboardCommandLower	Converter a Ã¡rea de transferÃªncia para minÃºsculas
+lMenuClipboardCommandTitle	Converter a Ã¡rea de transferÃªncia para Letra de TÃ­tulo
+lMenuClipboardCommandToggle	Converter a Ã¡rea de transferÃªncia para lETRA iNVERTIDA
+lMenuClipboardCommandUpper	Converter a Ã¡rea de transferÃªncia para MAIÃšSCULAS
 lMenuClipboardDescription	Exibe um menu dinâmico com o conteúdo actual da área de transferência do Windows.`n`nSe a área de transferência contiver atalhos de documentos, aplicações ou pastas, o QAP mostra esta lista no menu, permitindo-lhe abrir um documento, carregar uma aplicação ou navegar para uma pasta encontrada na área de transferência.
 lMenuClipboardEmpty	A Área de Transferências está vazia
 lMenuClipboardNoContent	Não existem atalhos ou URLs na Área de Transferências
@@ -718,6 +722,8 @@ lMenuCookies	Cookies
 lMenuCopyLocation	Copiar um Atalho ou URL dos Favoritos
 lMenuCurrentFolders	Reabrir uma Pasta
 lMenuCurrentFoldersDescription	Exibe um menu dinâmico mostrando as pastas já abertas nas janelas do Windows Explorer e Directory Opus. Este menu é actualizado todas as vezes que abrir o menu QAP.`n`nÉ particularmente útil para reabrir uma Pasta quando estiver numa caixa de diálogo de ficheiro e quiser abrir um ficheiro numa pasta já aberta noutra janela.  Veja também "Reabrir Pasta Actual em Caixa de Diálogo".
+lMenuCustomizeThisMenu	Personalizar este menu (ou grupo)
+lMenuCustomizeThisMenuDescription	Adicionar o item do menu  "Personalizar este menu (ou grupo)" para abrir a janela "Personalizar" pronta para modicar o menu que contÃ©m este item.
 lMenuDesktop	Ambiente de Trabalho
 lMenuDiskManagement	Gestão do Disco
 lMenuDownloads	Transferências
@@ -751,6 +757,7 @@ lMenuMenu	Menu
 lMenuMenuOrGroup	Menu ou grupo
 lMenuMyMusic	A Minha Música
 lMenuMyQAPMenu	O Meu QAP Básico
+lMenuMyQCEMenu	Os meus comendos da Ã¡rea de transferÃªncia
 lMenuMySnippetsMenu	Os meus Snippets
 lMenuMySpecialMenu	As Minhas Pastas Especiais
 lMenuMyVideo	Os Meus Vídeos
@@ -785,6 +792,7 @@ lMenuReopenCurrentFolderDescription	Muda a pasta nas caixas de diálogo de fichei
 lMenuReopenInNewWindow	Reabrir pasta actual a partir da caixa de diálogo
 lMenuReopenInNewWindowDescription	Reabre a pasta actual numa nova janela do Explorer (Também no Directory Opus ou Total Commander). Útil quando desejar abrir a pasta onde navega numa caixa de diálogo de ficheiro numa janela do Explorer.
 lMenuResetQAPSpecialDefaultNames	Repor Nomes Padrão de Funções QAP e Pastas Especiais
+lMenuRestoreAllFonts	Restaurar todos os tipos de letra padrÃ£o
 lMenuRestoreQuickLaunchWindowPosition	Restaurar a posição da janela "Inicialização Rápida"
 lMenuRestoreSettingsWindowPosition	Restaurar posição da janela "Personalizar"
 lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e posição da janela "Personalizar" no centro do ecrã principal.
@@ -917,6 +925,7 @@ lOptionsAddAutoAtTop	Ao adicionar automaticamente, adicionar um favorito no...
 lOptionsAddAutoBottomOfMenu	Fim do menu
 lOptionsAddAutoTopOfMenu	Início do menu
 lOptionsAddCloseToDynamicMenus	Adicionar "Fechar" aos menus
+lOptionsAddCustomizeThisMenu	Adicionar "Personalizar este menu (ou grupo)" a todos os menus e grupos editÃ¡veis
 lOptionsAdvancedLaunch	Opções Avançadas de Carregamento
 lOptionsAdvancedOther	Opções Avançadas Diversas
 lOptionsAlternativeMenuFeatures	Teclas de Atalho do Menu Alternativo
@@ -947,6 +956,8 @@ lOptionsDatabase	Base de dados
 lOptionsDisplayIcons	Exibir Ícones do Menu
 lOptionsDisplayMenuShortcuts	Exibir Atalhos Numéricos do Menu
 lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos do Menu Numérico em 1 (em vez de 0)
+lOptionsDoNotLaunchQCEReceiver	Nunca iniciar o Quick Clipboard Editor Receiver Lite com o QAP
+lOptionsEditControlsFontName	Tipo de letra para campos de entrada de texto
 lOptionsEnableExternalMenusCatalogue	Activar Catálogo de Menus Partilhados
 lOptionsEnableFavoriteDebugOption	Activar depuração de favoritos para espaços reservados e variáveis do utilizador
 lOptionsExclusionMouseList	Bloqueado
@@ -993,6 +1004,7 @@ lOptionsLabelsFontSize	Tamanho da letra das etiquetas
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
 lOptionsLaunchAdvancedQAPTitle	Carregar o Quick Access Popup
+lOptionsListFontName	Tipo de letra para a lista de favoritos
 lOptionsListFontSize	Tamanho da letra da lista de Favoritos
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela activa
 lOptionsMenuAdvanced	Oções Avançadas de Menus
@@ -1025,7 +1037,9 @@ lOptionsPopupMenu	Menu Emergente
 lOptionsQAPconnectIntro	QAPconnect é uma interface que oferece suporte parcial para uma lista de cerca de 25 gestores de ficheiros.
 lOptionsQAPTempFolder	Pasta Temporária
 lOptionsQuickAddSnippetSubmenu	Sub-menu para ~1~
+lOptionsQuickLaunchDropdownRows	NÃºmero de linhas na lista pendente
 lOptionsQuickLaunchExtended	Procura alargada (todas as propriedades da procura)
+lOptionsQuickLaunchFontName	Tipo de letra para a lista de inÃ­cio rÃ¡pido
 lOptionsQuickLaunchFontSize	Tamanho da letra da lista de inicialização rápida
 lOptionsQuickLaunchNavigate	Alterar pasta no gestor de ficheiros e caixas de diálogo
 lOptionsQuickLaunchRecentsFrequents	Incluir itens do menu Recentes e Frequentes

@@ -258,15 +258,6 @@ lDialogFileName	Nome do arquivo
 lDialogFileSize	Tamanho do arquivo
 lDialogFolderLabel	Pasta
 lDialogForwardButton	Botão de Avançar
-lDialogFreeEditionItems	Itens no menu: atual ~1~ / permitido ~2~
-lDialogFreeEditionLabel	Gratuita
-lDialogFreeEditionLive	Máximo de ~1~ itens em pastas ativas
-lDialogFreeEditionLiveExceeded	O número de itens nas pastas ativas está excedendo o limite máximo de ~1~
-lDialogFreeEditionMessage0	Você está usando a Edição Gratuita do Quick Access Popup.
-lDialogFreeEditionMessage1	Infelizmente, os limites da Edição Gratuita do Quick Access Popup foram excedidos. Itens excedendo o limite foram desabilitados.
-lDialogFreeEditionMessage2	Por favor, abra a caixa de diálogo "~1~, ~2~" para adquirir ou salvar sua licença do QAP...
-lDialogFreeEditionMessage3	Adquira sua licença agora para tirar o máximo proveito dos recursos do QAP
-lDialogFreeEditionShared	Menus compartilhados: atual ~1~ / permitido ~2~
 lDialogGetWebPageTitle	Obter título
 lDialogGetWebPageTitleIcon	Obter título e ícone
 lDialogGetWebSiteIcon	Obter ícone do site
@@ -707,6 +698,10 @@ lMenuAlternativeRunAs	Executar como Administrador
 lMenuAppData	Dados de Aplicativos
 lMenuCache	Cache
 lMenuClipboard	Área de Transferência
+lMenuClipboardCommandLower	Converter área de transferência para minúsculas
+lMenuClipboardCommandTitle	Converter área de transferência Inicial Maiúscula
+lMenuClipboardCommandToggle	Converter área de transferência para aLTERNAR mAIÚSC./mINÚSC.
+lMenuClipboardCommandUpper	Converter área de transferência para MAIÚSCULAS
 lMenuClipboardDescription	Exibe um menu dinâmico com o conteúdo atual da Área de Transferência do Windows.`n`nSe a Área de Transferência contiver o caminho para documentos, aplicativos ou pastas, o QAP mostra esta lista no menu, permitindo a você abrir um documento, iniciar um aplicativo ou navegar até uma pasta encontrada na Área de Transferência.
 lMenuClipboardEmpty	A Área de Transferência está vazia
 lMenuClipboardNoContent	Nenhum caminho ou URL na Área de Transferência
@@ -727,6 +722,8 @@ lMenuCookies	Cookies
 lMenuCopyLocation	Copiar Caminho ou URL do Favorite
 lMenuCurrentFolders	Reabrir Pasta
 lMenuCurrentFoldersDescription	Exibe um menu dinâmico mostrando as pastas já abertas em janelas do Windows Explorer e Directory Opus. Este menu é atualizado a cada vez que você abre o menu do QAP.`n`nReabrir uma Pasta é particularmente útil quando você está em uma caixa de diálogo de arquivo e quer abrir um arquivo em uma pasta já aberta em outra janela. Veja também "Reabrir Pasta Atual na Caixa de Diálogo".
+lMenuCustomizeThisMenu	Personalizar este menu (ou grupo)
+lMenuCustomizeThisMenuDescription	Adiciona o item "Personalizar este menu (ou grupo)" ao menu para abrir a janela "Personalizar" pronta para modificar o menu contendo este item.
 lMenuDesktop	Área de Trabalho
 lMenuDiskManagement	Gerenciamento de Disco
 lMenuDownloads	Downloads
@@ -760,6 +757,7 @@ lMenuMenu	Menu
 lMenuMenuOrGroup	Menu ou grupo
 lMenuMyMusic	Minhas Músicas
 lMenuMyQAPMenu	Meus Essenciais do QAP
+lMenuMyQCEMenu	Meus Comandos da Área de Transferência
 lMenuMySnippetsMenu	Meus Recortes
 lMenuMySpecialMenu	Minhas Pastas Especiais
 lMenuMyVideo	Meus Vídeos
@@ -794,6 +792,7 @@ lMenuReopenCurrentFolderDescription	Altera a pasta em caixas de diálogo de arqui
 lMenuReopenInNewWindow	Reabrir Pasta Atual a partir da Caixa de Diálogo
 lMenuReopenInNewWindowDescription	Reabre a pasta atual em uma nova janela do Explorer (também no Directory Opus ou Total Commander). Útil quando você quer abrir a pasta em que está navegando em uma caixa de diálogo de arquivo em uma janela do Explorer.
 lMenuResetQAPSpecialDefaultNames	Redefinir Nomes Padrão de Recursos do QAP e Pastas Especiais
+lMenuRestoreAllFonts	Restaurar todas as fontes padrão
 lMenuRestoreQuickLaunchWindowPosition	Restaurar posição da janela "Iniciar rápido"
 lMenuRestoreSettingsWindowPosition	Restaurar posição da janela "Personalizar"
 lMenuRestoreSettingsWindowPositionDescription	Restaura o tamanho e a posição da janela "Personalizar" para o centro da tela principal.
@@ -926,6 +925,7 @@ lOptionsAddAutoAtTop	Ao adicionar automaticamente, adicionar um favorito no...
 lOptionsAddAutoBottomOfMenu	Final do menu
 lOptionsAddAutoTopOfMenu	Início do menu
 lOptionsAddCloseToDynamicMenus	Adicionar "Fechar" aos menus
+lOptionsAddCustomizeThisMenu	Adicionar "Personalizar este menu (ou grupo)" a todos os menus e grupos editáveis
 lOptionsAdvancedLaunch	Iniciar Opções Avançadas
 lOptionsAdvancedOther	Várias Opções Avançadas
 lOptionsAlternativeMenuFeatures	Teclas de Atalho do Menu Alternativo
@@ -956,6 +956,8 @@ lOptionsDatabase	Banco de dados
 lOptionsDisplayIcons	Exibir Ícones do Menu
 lOptionsDisplayMenuShortcuts	Exibir Atalhos Numéricos de Menu
 lOptionsDisplayMenuShortcutsFromOne	Iniciar Atalhos de Menu Numérico em 1 (ao invés de 0)
+lOptionsDoNotLaunchQCEReceiver	Nunca iniciar o Quick Clipboard Editor Receiver Lite com o QAP
+lOptionsEditControlsFontName	Fonte para campos de entrada de texto
 lOptionsEnableExternalMenusCatalogue	Habilitar o Catálogo de Menus Compartilhados
 lOptionsEnableFavoriteDebugOption	Ativar depuração de favorito para espaços reservados e variáveis do usuário
 lOptionsExclusionMouseList	Bloqueado
@@ -1002,6 +1004,7 @@ lOptionsLabelsFontSize	Tamanho da fonte dos rótulos
 lOptionsLanguage	Idioma
 lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
 lOptionsLaunchAdvancedQAPTitle	Iniciar Quick Access Popup
+lOptionsListFontName	Fonte para lista de Favoritos
 lOptionsListFontSize	Tamanho da fonte da lista de favoritos
 lOptionsMenuActiveWindow	Canto superior esquerdo da janela ativa
 lOptionsMenuAdvanced	Opções Avançadas de Menus
@@ -1034,7 +1037,9 @@ lOptionsPopupMenu	Menu Popup
 lOptionsQAPconnectIntro	O QAPconnect é uma interface que oferece suporte parcial para uma lista de cerca de 25 gerenciadores de arquivos.
 lOptionsQAPTempFolder	Pasta Temporária
 lOptionsQuickAddSnippetSubmenu	Submenu para ~1~
+lOptionsQuickLaunchDropdownRows	Número de linhas na lista suspensa
 lOptionsQuickLaunchExtended	Pesquisa estendida (pesquisar todas as propriedades)
+lOptionsQuickLaunchFontName	Fonte para lista Inicializar rápido
 lOptionsQuickLaunchFontSize	Tamanho da fonte da lista de inicialização rápida
 lOptionsQuickLaunchNavigate	Alterar pasta no gerenciador de arquivos e caixas de diálogo
 lOptionsQuickLaunchRecentsFrequents	Incluir itens do menu Recente e Frequente

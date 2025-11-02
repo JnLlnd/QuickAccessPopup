@@ -258,15 +258,6 @@ lDialogFileName	Nom du fichier
 lDialogFileSize	Taille du fichier
 lDialogFolderLabel	Dossier
 lDialogForwardButton	Bouton Avancer
-lDialogFreeEditionItems	Items dans le menu: actuel ~1~ / permis ~2~
-lDialogFreeEditionLabel	Gratuit
-lDialogFreeEditionLive	Maximum de ~1~ items dans les Dossiers actifs
-lDialogFreeEditionLiveExceeded	Le nombre d'items dans les Dossiers actifs dépasse le maximum de ~1~ items
-lDialogFreeEditionMessage0	Vous utilisez Quick Access Popup Édition gratuite.
-lDialogFreeEditionMessage1	Malheureusement, les limites de Quick Access Popup Édition gratuite ont été dépassées. Les items excédentaires seront désactivés.
-lDialogFreeEditionMessage2	Veuillez ouvrir la boîte de dialogue "~1~, ~2~" pour obtenir ou enregistrer votre licence QAP...
-lDialogFreeEditionMessage3	Obtenez votre licence maintenant pour profiter pleinement des fonctionnalités de QAP
-lDialogFreeEditionShared	Menus partagés: actuel ~1~ / permis ~2~
 lDialogGetWebPageTitle	Récupérer le titre
 lDialogGetWebPageTitleIcon	Récupérer le titre et l'icône
 lDialogGetWebSiteIcon	Récupérer l'icône du site web
@@ -699,6 +690,10 @@ lMenuAlternativeRunAs	Exécuter en tant qu'administrateur
 lMenuAppData	Application Data
 lMenuCache	Cache
 lMenuClipboard	Presse-papiers
+lMenuClipboardCommandLower	Convertir le Presse-papiers en minuscules
+lMenuClipboardCommandTitle	Convertir le Presse-papiers en Casse De Titres
+lMenuClipboardCommandToggle	Convertir le Presse-papiers en cASSE iNVERSÃ‰E
+lMenuClipboardCommandUpper	Convertir le Presse-papiers en MAJUSCULES
 lMenuClipboardDescription	Afficher un menu dynamique avec le contenu actuel du Presse-papiers de Windows.`n`nSi le Presse-Papiers contient des emplacements de documents, d'applications ou de dossiers, QAP en affiche la liste dans le menu, permettant d'ouvrir un document, une application ou un dossier trouvé dans le Presse-papiers.
 lMenuClipboardEmpty	Le Presse-papiers est vide
 lMenuClipboardNoContent	Aucun fichier ou URL dans le Presse-papiers
@@ -719,6 +714,8 @@ lMenuCookies	Cookies
 lMenuCopyLocation	Copier l'emplacement d'un favori
 lMenuCurrentFolders	Réutiliser un dossier
 lMenuCurrentFoldersDescription	Afficher un menu dynamique présentant la liste des dossiers déjà ouverts dans des fenêtres de Windows Explorer ou de Directory Opus. Ce menu est actualisé chaque fois que vous ouvrez le menu de QAP.`n`nLa commande "Réutiliser un dossier" est particulièrement utile lorsque vous êtes dans une boîte de dialogue de fichier et que vous souhaitez accéder à un dossier déjà ouvert dans une autre fenêtre. Voyez aussi "Réouvrir le dossier actif dans une boîte de dialogue".
+lMenuCustomizeThisMenu	Personnaliser ce menu (ou groupe)
+lMenuCustomizeThisMenuDescription	Ajouter le menu "Personnaliser ce menu (ou groupe)" pour ouvrir la fenÃªtre "Personnaliser" prÃªte Ã  modifier le menu contenant cet item.
 lMenuDesktop	Bureau
 lMenuDiskManagement	Gestion des disques
 lMenuDownloads	Téléchargements
@@ -752,6 +749,7 @@ lMenuMenu	Menu
 lMenuMenuOrGroup	Menu ou groupe
 lMenuMyMusic	Ma musique
 lMenuMyQAPMenu	Mes Fonctions QAP
+lMenuMyQCEMenu	Mes Commandes Presse-papiers
 lMenuMySnippetsMenu	Mes Fragments de texte
 lMenuMySpecialMenu	Mes Dossiers spéciaux
 lMenuMyVideo	Mes vidéos
@@ -784,6 +782,7 @@ lMenuReopenCurrentFolderDescription	Changer le dossier dans la boîte de dialogue
 lMenuReopenInNewWindow	Rouvrir le dossier actif à partir d'une boîte de dialogue
 lMenuReopenInNewWindowDescription	Rouvrir le dossier actuel dans une nouvelle fenêtre de Windows Explorer (ou Directory Opus, ou Total Commander). Cette commande est utile lorsque vous voulez ouvrir dans Windows Explorer le dossier que vous consultez actuellement dans une boîte de dialogue de fichier.
 lMenuResetQAPSpecialDefaultNames	Réinitialiser les nom des Fonctionnalités QAP et Dossiers spéciaux
+lMenuRestoreAllFonts	Restaurer toutes les polices par dÃ©faut
 lMenuRestoreQuickLaunchWindowPosition	Restore "Lancement rapide" window position
 lMenuRestoreSettingsWindowPosition	Restaurer la position de la fenêtre "Personnaliser"
 lMenuRestoreSettingsWindowPositionDescription	Restaurer la taille et la position par défaut (au centre de l'écran principal) de la fenêtre "Personnaliser".
@@ -915,6 +914,7 @@ lOptionsAddAutoAtTop	Lorsqu'un favori est ajouté automatiquement, l'ajouter à:
 lOptionsAddAutoBottomOfMenu	Fin du menu
 lOptionsAddAutoTopOfMenu	Début du menu
 lOptionsAddCloseToDynamicMenus	Ajouter "Fermer" aux menus
+lOptionsAddCustomizeThisMenu	Ajouter "Personnaliser ce menu (ou groupe)" Ã  tous les menus ou groupes personnalisables
 lOptionsAdvancedLaunch	Options de démarrage avancées
 lOptionsAdvancedOther	Options avancées diverses
 lOptionsAlternativeMenuFeatures	Menu Alternatif
@@ -945,6 +945,8 @@ lOptionsDatabase	Base de données
 lOptionsDisplayIcons	Afficher les icônes des menus
 lOptionsDisplayMenuShortcuts	Afficher les raccourcis numériques
 lOptionsDisplayMenuShortcutsFromOne	Commencer les raccourcis numériques à 1 (au lieu de 0)
+lOptionsDoNotLaunchQCEReceiver	Ne jamais lancer l'utiliaire Quick Clipboard Editor Receiver Lite avec QAP
+lOptionsEditControlsFontName	Police pour les zones de saisie de texte
 lOptionsEnableExternalMenusCatalogue	Activer le Catalogue des menus partagés
 lOptionsEnableFavoriteDebugOption	Activer l'option de déboguage des codes de remplacement et des variables de l'utilisateur
 lOptionsExclusionMouseList	Fenêtres exclues
@@ -991,6 +993,7 @@ lOptionsLabelsFontSize	Taille de la police des étiquettes
 lOptionsLanguage	Langue
 lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe
 lOptionsLaunchAdvancedQAPTitle	Lancement de Quick Access Popup
+lOptionsListFontName	Police pour la liste des favoris
 lOptionsListFontSize	Taille de la police de la liste des favoris
 lOptionsMenuActiveWindow	Dans la fenêtre active
 lOptionsMenuAdvanced	Options de menu avancées
@@ -1021,7 +1024,9 @@ lOptionsPopupMenu	Menu Popup
 lOptionsQAPconnectIntro	QAPconnect est une interface qui permet à QAP de fonctionner (partiellement) avec environn 25 gestionnaires de fichiers.
 lOptionsQAPTempFolder	Dossier temporaire
 lOptionsQuickAddSnippetSubmenu	Sous-menu pour ~1~
+lOptionsQuickLaunchDropdownRows	Nombre de lignes dans la liste dÃ©roulante
 lOptionsQuickLaunchExtended	Recherche étendue (chercher dans toutes les propriétés)
+lOptionsQuickLaunchFontName	Police pour la liste de Lancement rapide
 lOptionsQuickLaunchFontSize	Taille de la police de la fenêtre Lancement rapide
 lOptionsQuickLaunchNavigate	Changer de dossier dans le gestionnaire de fichiers et dans les boîtes de dialogue
 lOptionsQuickLaunchRecentsFrequents	Inclure les items des menus Récents et Fréquents

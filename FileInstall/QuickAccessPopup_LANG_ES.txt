@@ -216,15 +216,6 @@ lDialogFileLabel	Documento
 lDialogFileName	Nombre del archivo
 lDialogFileSize	Tamaño del archivo
 lDialogFolderLabel	Carpeta
-lDialogFreeEditionItems	Artículos en el menú: actual ~1~ / permitidos ~2~
-lDialogFreeEditionLabel	Gratis
-lDialogFreeEditionLive	Máximo de artículos en Carpetas Activas: ~1~
-lDialogFreeEditionLiveExceeded	La cantidad artículos en las Carpetas Activas excede el máximo de ~1~
-lDialogFreeEditionMessage0	Usted está usando la versión gratuita de Quick Access Popup.
-lDialogFreeEditionMessage1	Desafortunadamente, se han excedido los límites de la versión gratuita de Quick Access Popup. Los artículos que exceden los límites se han deshabilitado.
-lDialogFreeEditionMessage2	Por favor, abra el cuadro de diálogo "~1~, ~2~" para obtener o guardar su licencia de QAP...
-lDialogFreeEditionMessage3	Obtenga su licencia ahora para aprovechar al máximo las funciones de QAP
-lDialogFreeEditionShared	Menús compartidos: actual ~1~ / permitidos ~2~
 lDialogGetWebPageTitle	Obtener título
 lDialogGetWebPageTitleIcon	Obtener título e icono
 lDialogGetWebSiteIcon	Obtener el icono del sitio web
