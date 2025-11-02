@@ -25458,7 +25458,8 @@ WinSet, AlwaysOnTop, On
 
 Gui, Font, % "s" . o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue, % o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue
 
-Gui, Add, % (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? "ComboBox" : "Edit"), x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged, % GetQuickLaunchQueries()
+Gui, Add, % (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? "ComboBox" : "Edit"), x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged
+	, % (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? GetQuickLaunchQueries() : "")
 intYp := 7 + Round(o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue * 1.6667)
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
 	. " yp+" . intYp . " Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvQuickLaunch AltSubmit gGuiQuickLaunchEvents", Col1|Sort|Index
@@ -25638,7 +25639,7 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 	{
 		GuiControlGet, strQuickLaunchQuery, , f_strQuickLaunch
 		if !InStr(strQuickLaunchQuery, "|") ; exclude queries including pipe separator
-			o_QuickLaunchQueries[A_TickCount] := strQuickLaunchQuery
+			AddQuickLaunchQueries(strQuickLaunchQuery)
 
 		LV_GetText(g_intQuickLaunchIndex, intQuickLaunchClickedRow, 3) ;  get selected item order in oQuickLaunchResult.SA object
 		
@@ -29788,18 +29789,35 @@ GetQuickLaunchQueriesFromIni()
 
 
 ;------------------------------------------------------------
+AddQuickLaunchQueries(strNewQuery)
+;------------------------------------------------------------
+{
+	; remove new query if it exists to avoid duplicates
+	for intKey, strQuery in o_QuickLaunchQueries
+		if (strQuery = strNewQuery)
+		{
+			o_QuickLaunchQueries.Delete(intKey)
+			break ; there can be only one item with this query
+		}
+		
+	o_QuickLaunchQueries[A_TickCount] := strNewQuery ; insert new query at highest position (will be displayed first)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 GetQuickLaunchQueries(blnReverse := true)
 ; Remove oldest entries until we're at the desired size and returns a string of queries seperated by |
 ;------------------------------------------------------------
 {
     while (o_QuickLaunchQueries.Count() > o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue)
-        for intTick in o_QuickLaunchQueries
+        for intKey in o_QuickLaunchQueries
 		{
-            o_QuickLaunchQueries.Delete(intTick)
+            o_QuickLaunchQueries.Delete(intKey)
             break  ; Only delete the first one, then recheck count
         }
 
-	for intTick, strQuery in o_QuickLaunchQueries
+	for intKey, strQuery in o_QuickLaunchQueries
 		if (blnReverse)
 			strQueries := strQuery . "|" . strQueries
 		else
