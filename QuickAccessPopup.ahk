@@ -6362,7 +6362,7 @@ if !GetKeyState("Shift")
 ; ####
 ; Gosub, GuiOptionsGroupSettingsWindow
 ; Gosub, GuiAddFavoriteFromQAPFeatureQCE
-; Gosub, GuiInstallQCE
+; Gosub, GuiQuickLaunch
 
 return
 
@@ -8021,7 +8021,7 @@ if FileExist(o_Settings.strIniFile) ; in case user deleted the ini file to creat
 	SaveWindowPosition("SettingsPosition", "ahk_id " . g_strGui1Hwnd)
 	IniWrite, % GetScreenConfiguration(), % o_Settings.strIniFile, Global, LastScreenConfiguration
 	IniDelete, % o_Settings.strIniFile, Global, ExternalErrorMessageExclusions ; delete value created to avoid (in this session only) repetitive error messages for unfound external menus
-	IniWrite, % GetQuickLaunchQueries(false), % o_Settings.strIniFile, Global, QuickLaunchQueries
+	IniWrite, % GetQuickLaunchQueries(true), % o_Settings.strIniFile, Global, QuickLaunchQueries
 }
 DllCall("LockWindowUpdate", Uint, 0)  ; 0 to unlock the window
 
@@ -25458,8 +25458,13 @@ WinSet, AlwaysOnTop, On
 
 Gui, Font, % "s" . o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue, % o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue
 
-Gui, Add, % (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? "ComboBox" : "Edit"), x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged
-	, % (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? GetQuickLaunchQueries() : "")
+Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged
+if (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue)
+{
+	intButH := 6 + Round(o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue * 1.6667)
+	Gui, Add, Button, yp x+10 w20 h%intButH% vf_btnDropDown gQuickLaunchOpenDropDown, % Chr(9660)
+	Gui, Add, DropDownList, x3 y0 w%intListViewWidth% hidden vf_drpQueries gQuickLaunchDropdownChanged, % GetQuickLaunchQueries()
+}
 intYp := 7 + Round(o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue * 1.6667)
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
 	. " yp+" . intYp . " Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvQuickLaunch AltSubmit gGuiQuickLaunchEvents", Col1|Sort|Index
@@ -25487,6 +25492,7 @@ strQuickLaunchPosition := ""
 saQuickLaunchPosition := ""
 intYp := ""
 intListViewFontSize := ""
+intButH := ""
 
 return
 ;------------------------------------------------------------
@@ -25517,8 +25523,41 @@ intListViewWidth := A_GuiWidth - 6 ; (left margins 2 x 3)
 intListViewHeight := A_GuiHeight - 25 ; 
 
 GuiControl, Move, f_lvQuickLaunch, % "w" . intListViewWidth
-GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth
+GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth - (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? 20 : 0)
+if (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue)
+{
+	GuiControl, Move, f_drpQueries, % "w" . intListViewWidth
+	GuiControl, Move, f_btnDropDown, % "x" . intListViewWidth - 16
+}
 GuiControl, Move, f_lvQuickLaunch, % "h" . intListViewHeight
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+QuickLaunchOpenDropDown:
+;------------------------------------------------------------
+
+GuiControl, Show, f_drpQueries
+GuiControl, Hide, f_strQuickLaunch
+ControlFocus, ComboBox1, ahk_id %strQuickLaunchHwnd%
+ControlClick, ComboBox1, ahk_id %strQuickLaunchHwnd%
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+QuickLaunchDropdownChanged:
+;------------------------------------------------------------
+
+GuiControlGet, strDropDownItem, , f_drpQueries
+GuiControl, , f_strQuickLaunch, %strDropDownItem%
+GuiControl, Show, f_strQuickLaunch
+GuiControl, Hide, f_drpQueries
+
+strDropDownItem := ""
 
 return
 ;------------------------------------------------------------
@@ -29807,7 +29846,7 @@ AddQuickLaunchQueries(strNewQuery)
 
 
 ;------------------------------------------------------------
-GetQuickLaunchQueries(blnReverse := true)
+GetQuickLaunchQueries(blnSaveToIni := false)
 ; Remove oldest entries until we're at the desired size and returns a string of queries seperated by |
 ;------------------------------------------------------------
 {
@@ -29819,12 +29858,12 @@ GetQuickLaunchQueries(blnReverse := true)
         }
 
 	for intKey, strQuery in o_QuickLaunchQueries
-		if (blnReverse)
-			strQueries := strQuery . "|" . strQueries
-		else
+		if (blnSaveToIni) ; normal order
 			strQueries .= strQuery . "|"
+		else ; reverse order
+			strQueries := strQuery . "|" . strQueries
 	
-	return SubStr(strQueries, 1, -1) ; remove last |
+	return (blnSaveToIni ? "" : "|") . SubStr(strQueries, 1, -1) ; initial | to start with an empty row when called for the DDL and remove last |
 }
 ;------------------------------------------------------------
 
