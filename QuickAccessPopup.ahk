@@ -27040,6 +27040,7 @@ ExpandPlaceholders(strOriginal, strLocation, strCurrentLocation, strSelectedLoca
 		; process Clipboard
 		; strExpanded := StrReplace(strExpanded, "{Clipboard}", MakeClipboardAvailable(A_ThisFunc)) ; expand {Clipboard}
 		if InStr(strExpanded, "{Clipboard}") and ClipboardIsFree(A_ThisFunc, intClipboardLength) ; avoid error if Clipboard is used by another application and not released after 1 second
+			and (o_ThisFavorite.aaTemp.strOpenFavoriteLabel <> "OpenFavoriteFromQuickLaunch") ; avoid expanding "{Clipboard}" for QAP Feature {Clipboard} when called from QuickLaunch
 			strExpanded := StrReplace(strExpanded, "{Clipboard}", Clipboard) ; expand {Clipboard}
 		
 		; process SelectedText
@@ -35449,7 +35450,7 @@ class Container
 				intOpenError := this.LaunchWindowsApp() ; returns 0 if no error
 			}
 			; QAP COMMAND
-			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|OpenFavoriteSelectedInGui"
+			else if InStr("OpenFavorite|OpenFavoriteFromShortcut|OpenFavoriteFromHotstring|OpenFavoriteFromGroup|OpenFavoriteFromLastAction|OpenFavoriteSelectedInGui|OpenFavoriteFromQuickLaunch"
 				, this.aaTemp.strOpenFavoriteLabel) and (this.AA.strFavoriteType = "QAP") and StrLen(o_QAPfeatures.AA[this.AA.strFavoriteLocation].strQAPFeatureCommand)
 			{
 				Diag(A_ThisFunc, "this.AA.strFavoriteLocation", this.AA.strFavoriteLocation)
