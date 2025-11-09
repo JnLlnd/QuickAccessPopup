@@ -31,7 +31,30 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 12.1 (2025-10-##)
+Version: 12.1 (2025-11-##)
+ 
+Quick Launch
+- new option in "Options, Customize window" to remember the last queries used in the "Quick Launch" dialog box (from 0 to 99 queries, set to 0 to disable this feature)
+- capture queries when user launches an item from the search result
+- last queries are remebered when relaunching QAP
+- add a button with a dropdown list of last queries when the option is enabled
+ 
+Font options
+- in "Options, Customize window", new option to select the font used in the text fields of the "Add/Edit favorites" and "Options" dialog boxes
+- new options to select the font of the "Favorites list" and of the "Quick Launch" search result
+- select the fonts from a list of all available fonts on the system
+- add menu item "Tools, Restore all default fonts" to revert to default fonts
+ 
+Clipboard Commands
+- new option to never launch QCE Receiver lite with QAP
+- fix bug when launching a Clipboard Command from the Quick Launch dialog box
+ 
+Various
+- fix a bug with option "Open menu when clicking on taskbar" not regognizing the task bar on monitors other than the primary monitor
+- refactor the code to detect if a folder can be changed (navigate) in the target window or if the folder will be open in a new window (launch)
+- fix bug executing QAP commands from Quick Launch
+- fix bug opening the QAP Feature Clipboard menu when called from QuickLaunch
+- update German, French, Italian, Korean, Portuguese and Brazilian Portuguese language files for v12.1
 
 Version: 12.0 (2025-10-05)
  
@@ -25633,7 +25656,7 @@ intMaxWidth := intMonitorWidth - intQuickLaunchLeft + intMonitorLeft - 20 ; taki
 
 intListViewWidth := (intListViewWidth > intMaxWidth ? intMaxWidth : intListViewWidth)
 GuiControl, Move, f_lvQuickLaunch, % "w" . intListViewWidth
-GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth
+GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth - (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? 20 : 0)
 
 WinMove, ahk_id %strQuickLaunchHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
 Critical, Off
