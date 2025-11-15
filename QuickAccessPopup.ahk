@@ -34,10 +34,10 @@ HISTORY
 Version: 12.1 (2025-11-##)
  
 Quick Launch
-- new option in "Options, Customize window" to remember the last queries used in the "Quick Launch" dialog box (from 0 to 99 queries, set to 0 to disable this feature)
-- capture queries when user launches an item from the search result
+- new option in "Options, Customize window" to remember the last queries used in the "Quick Launch" dialog box (from 0 to 99 queries, default 10, set to 0 to disable this feature)
+- queries are captured when user launches an item from the search result
+- past queries are displayed when the search string is empty, starting with the most recent; double-click or press Enter to search entries for a query
 - last queries are remebered when relaunching QAP
-- add a button with a dropdown list of last queries when the option is enabled
  
 Font options
 - in "Options, Customize window", new option to select the font used in the text fields of the "Add/Edit favorites" and "Options" dialog boxes
@@ -25482,12 +25482,6 @@ WinSet, AlwaysOnTop, On
 Gui, Font, % "s" . o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue, % o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue
 
 Gui, Add, Edit, x3 y0 w%intListViewWidth% vf_strQuickLaunch gGuiQuickLaunchChanged
-if (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue)
-{
-	intButH := 6 + Round(o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue * 1.6667)
-	Gui, Add, Button, yp x+10 w20 h%intButH% vf_btnDropDown gQuickLaunchOpenDropDown, % Chr(9660)
-	Gui, Add, DropDownList, x3 y0 w%intListViewWidth% hidden vf_drpQueries gQuickLaunchDropdownChanged, % GetQuickLaunchQueries()
-}
 intYp := 7 + Round(o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue * 1.6667)
 Gui, Add, ListView, % "x3 w" . intListViewWidth . " r" . o_Settings.SettingsWindow.intQuickLaunchRows.IniValue
 	. " yp+" . intYp . " Count32 NoSortHdr LV0x10 -Hdr -Multi vf_lvQuickLaunch AltSubmit gGuiQuickLaunchEvents", Col1|Sort|Index
@@ -25510,12 +25504,13 @@ saQuickLaunchPosition := StrSplit(strQuickLaunchPosition, "|")
 Gui, QuickLaunch:Show, % "Autosize " . (saQuickLaunchPosition[1] = -1 or saQuickLaunchPosition[1] = "" or saQuickLaunchPosition[2] = "" ? "center "
 	: "x" . saQuickLaunchPosition[1] . " y" . saQuickLaunchPosition[2]) ; . " w" . intListViewWidth + 6
 
+Gosub, GuiQuickLaunchChanged ; init list with previous queries
+
 intQuickLaunchGuiMinHeight := ""
 strQuickLaunchPosition := ""
 saQuickLaunchPosition := ""
 intYp := ""
 intListViewFontSize := ""
-intButH := ""
 
 return
 ;------------------------------------------------------------
@@ -25546,26 +25541,8 @@ intListViewWidth := A_GuiWidth - 6 ; (left margins 2 x 3)
 intListViewHeight := A_GuiHeight - 25 ; 
 
 GuiControl, Move, f_lvQuickLaunch, % "w" . intListViewWidth
-GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth - (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? 20 : 0)
-if (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue)
-{
-	GuiControl, Move, f_drpQueries, % "w" . intListViewWidth
-	GuiControl, Move, f_btnDropDown, % "x" . intListViewWidth - 16
-}
+GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth
 GuiControl, Move, f_lvQuickLaunch, % "h" . intListViewHeight
-
-return
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-QuickLaunchOpenDropDown:
-;------------------------------------------------------------
-
-GuiControl, Show, f_drpQueries
-GuiControl, Hide, f_strQuickLaunch
-ControlFocus, ComboBox1, ahk_id %strQuickLaunchHwnd%
-ControlClick, ComboBox1, ahk_id %strQuickLaunchHwnd%
 
 return
 ;------------------------------------------------------------
@@ -25594,7 +25571,16 @@ Gui, QuickLaunch:Submit, NoHide
 LV_Delete()
 intListViewWidth := g_intQuickLaunchGuiMinWidth
 
-if StrLen(f_strQuickLaunch)
+if !StrLen(f_strQuickLaunch) ; populate list with previous queries
+{
+	oImageListID := IL_Create(1)
+	LV_SetImageList(oImageListID) 
+	IL_Add(oImageListID, o_JLicons.strFileLocation, 79) 
+	for intIndex, strQuery in StrSplit(GetQuickLaunchQueries(), "|")
+		if StrLen(strQuery) ; skip first emty entry
+			LV_Add("Icon1", strQuery)
+}
+else
 {
 	GuiControl, -Redraw, f_lvQuickLaunch
 	Critical, On
@@ -25644,9 +25630,12 @@ if StrLen(f_strQuickLaunch)
 	}
 }
 LV_ModifyCol() ; adjuste cols width
-LV_ModifyCol(2, 0) ; make col 2 Sort criteria invisible
-LV_ModifyCol(3, 0) ; make col 3 Index order invisible
-LV_ModifyCol(2, (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2 ? "Integer SortDesc" : "Text Sort")) ; for usage sort integer desc, else sort text asc
+if StrLen(f_strQuickLaunch)
+{
+	LV_ModifyCol(2, 0) ; make col 2 Sort criteria invisible
+	LV_ModifyCol(3, 0) ; make col 3 Index order invisible
+	LV_ModifyCol(2, (o_Settings.SettingsWindow.intQuickLaunchSort.IniValue = 2 ? "Integer SortDesc" : "Text Sort")) ; for usage sort integer desc, else sort text asc
+}
 if oQuickLaunchResult.SA.MaxIndex()
 	LV_Modify(1, "Select")
 
@@ -25656,7 +25645,7 @@ intMaxWidth := intMonitorWidth - intQuickLaunchLeft + intMonitorLeft - 20 ; taki
 
 intListViewWidth := (intListViewWidth > intMaxWidth ? intMaxWidth : intListViewWidth)
 GuiControl, Move, f_lvQuickLaunch, % "w" . intListViewWidth
-GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth - (o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue ? 20 : 0)
+GuiControl, Move, f_strQuickLaunch, % "w" . intListViewWidth
 
 WinMove, ahk_id %strQuickLaunchHwnd%, , , , % intListViewWidth + 22 ; must be exactly 22, else it resize the gui +/- at each change of edit control
 Critical, Off
@@ -25699,6 +25688,13 @@ if (A_ThisLabel = "GuiQuickLaunchEvents" or A_ThisLabel = "QuickLaunchEnter")
 	
 	if (A_ThisLabel = "QuickLaunchEnter" or A_GuiEvent = "DoubleClick") ; retrieve favorite object and launch it
 	{
+		if !StrLen(f_strQuickLaunch) ; put selected query in quick launch search control
+		{
+			LV_GetText(strQuickLaunchQuery, intQuickLaunchClickedRow, 1)
+			GuiControl, , f_strQuickLaunch, %strQuickLaunchQuery%
+			return
+		}
+		
 		GuiControlGet, strQuickLaunchQuery, , f_strQuickLaunch
 		if !InStr(strQuickLaunchQuery, "|") ; exclude queries including pipe separator
 			AddQuickLaunchQueries(strQuickLaunchQuery)
@@ -29864,6 +29860,14 @@ AddQuickLaunchQueries(strNewQuery)
 		}
 		
 	o_QuickLaunchQueries[A_TickCount] := strNewQuery ; insert new query at highest position (will be displayed first)
+
+	; remove exceeding queries
+    while (o_QuickLaunchQueries.Count() > o_Settings.SettingsWindow.intQuickLaunchDropdownRows.IniValue)
+        for intKey in o_QuickLaunchQueries
+		{
+            o_QuickLaunchQueries.Delete(intKey)
+            break ; only delete the first one, then recheck count
+        }
 }
 ;------------------------------------------------------------
 
