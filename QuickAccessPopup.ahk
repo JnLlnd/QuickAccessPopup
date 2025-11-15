@@ -54,7 +54,7 @@ Various
 - refactor the code to detect if a folder can be changed (navigate) in the target window or if the folder will be open in a new window (launch)
 - fix bug executing QAP commands from Quick Launch
 - fix bug opening the QAP Feature Clipboard menu when called from QuickLaunch
-- update German, French, Italian, Korean, Portuguese and Brazilian Portuguese language files for v12.1
+- update German, French, Italian, Korean, Portuguese, Brazilian Portuguese and Dutch language files for v12.1
 
 Version: 12.0 (2025-10-05)
  
