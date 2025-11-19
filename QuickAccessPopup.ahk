@@ -31,7 +31,7 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 12.1 (2025-11-##)
+Version: 12.1 (2025-11-19)
  
 Quick Launch
 - new option in "Options, Customize window" to remember the last queries used in the "Quick Launch" dialog box (from 0 to 99 queries, default 10, set to 0 to disable this feature)
@@ -53,7 +53,7 @@ Various
 - fix a bug with option "Open menu when clicking on taskbar" not regognizing the task bar on monitors other than the primary monitor
 - refactor the code to detect if a folder can be changed (navigate) in the target window or if the folder will be open in a new window (launch)
 - fix bug executing QAP commands from Quick Launch
-- fix bug opening the QAP Feature Clipboard menu when called from QuickLaunch
+- fix bug opening the QAP Feature Clipboard menu when called from Quick Launch
 - update German, French, Italian, Korean, Portuguese, Brazilian Portuguese and Dutch language files for v12.1
 
 Version: 12.0 (2025-10-05)
