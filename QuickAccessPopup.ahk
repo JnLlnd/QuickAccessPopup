@@ -5754,7 +5754,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.1
+;@Ahk2Exe-SetVersion 12.1.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5822,7 +5822,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -11084,6 +11084,7 @@ o_Settings.SettingsWindow.blnOpenSettingsOnActiveMonitor.WriteIni(f_blnOpenSetti
 o_Settings.SettingsWindow.blnCheckIfExistingFavoriteForSameLocation.WriteIni(f_blnCheckIfExistingFavoriteForSameLocation)
 strListFontNamePrev := o_Settings.SettingsWindow.strListFontName.IniValue
 o_Settings.SettingsWindow.strListFontName.WriteIni(f_drpListFontName)
+strEditControlsFontNamePrev := o_Settings.SettingsWindow.strEditControlsFontName.IniValue
 o_Settings.SettingsWindow.strEditControlsFontName.WriteIni(f_drpEditControlsFontName)
 g_strEditControlsFontName := o_Settings.SettingsWindow.strEditControlsFontName.IniValue
 o_Settings.SettingsWindow.blnAddAutoAtTop.WriteIni(f_blnAddAutoAtTop0)
@@ -11452,6 +11453,7 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (intListFontSizePrev <> o_Settings.SettingsWindow.intListFontSize.IniValue)
 	or (intQuickLaunchFontSizePrev <> o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue)
 	or (strListFontNamePrev <> o_Settings.SettingsWindow.strListFontName.IniValue)
+	or (strEditControlsFontNamePrev <> o_Settings.SettingsWindow.strEditControlsFontName.IniValue)
 	or (strQuickLaunchFontNamePrev <> o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
@@ -11509,6 +11511,11 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
 		strOption := o_L["OptionsListFontName"]
 		strValue := o_Settings.SettingsWindow.strListFontName.IniValue
+	}
+	else if (strEditControlsFontNamePrev <> o_Settings.SettingsWindow.strEditControlsFontName.IniValue)
+	{
+		strOption := o_L["OptionsEditControlsFontName"]
+		strValue := o_Settings.SettingsWindow.strEditControlsFontName.IniValue
 	}
 	else if (strQuickLaunchFontNamePrev <> o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue)
 	{
@@ -12825,12 +12832,12 @@ if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 		if InStr(strControl, "ListView") ; for ListView control
 		{
 			GuiControl, +Background%g_intWindowColor%, %strControl%
-			Gui, Font, c%g_intControlColor% s%intListViewFontSize%, Verdana
+			Gui, Font, c%g_intControlColor% s%intListViewFontSize%, % o_Settings.SettingsWindow.strListFontName.IniValue ; was Verdana
 			GuiControl, Font, %strControl%
 		}
 		if InStr(strControl, "Static")
 		{
-			Gui, Font, c%g_intControlColor% s%intLabelFontSize%, Arial
+			Gui, Font, c%g_intControlColor% s%intLabelFontSize%, % g_strEditControlsFontName ; was Arial
 			GuiControl, Font, %strControl%
 		}
 	}
@@ -25495,7 +25502,7 @@ if (o_Settings.SettingsWindow.blnDarkMode.IniValue and !g_blnLightMode)
 	Gui, Color, %g_intWindowColor%, %g_intControlColor%
 	GuiControl, +Background%g_intWindowColor%, SysListView321
 	intListViewFontSize := o_Settings.SettingsWindow.intQuickLaunchFontSize.IniValue
-	Gui, Font, c%g_intControlColor% s%intListViewFontSize%, Verdana
+	Gui, Font, c%g_intControlColor% s%intListViewFontSize%, % o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue
 	GuiControl, Font, SysListView321
 }
 
