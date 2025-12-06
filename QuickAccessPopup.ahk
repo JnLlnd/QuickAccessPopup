@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.1.1 (2025-12-06)
+- fix bug with custom fonts in dark mode for "Customise" and "Quick Launch" windows
+- reload QAP after changing the font for text fields
+- update Past queries label in Options
+ 
 Version: 12.1 (2025-11-19)
  
 Quick Launch
