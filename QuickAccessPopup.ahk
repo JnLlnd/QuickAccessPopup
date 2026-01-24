@@ -35649,6 +35649,10 @@ class Container
 				; APPLICATION
 				if (this.AA.strFavoriteType = "Application" or this.aaTemp.blnProcessAsApp)
 				{
+					; enclose with double-quotes to prevent bug when multiple apps have same root in a folder
+					; see: https://forum.quickaccesspopup.com/showthread.php?tid=3139
+					this.aaTemp.strFullLocation := StrReplace(this.aaTemp.strFullLocation, this.aaTemp.strLocationWithPlaceholders
+						, """" . this.aaTemp.strLocationWithPlaceholders . """")
 					intOpenError := this.LaunchApplication()
 					if (this.AA.oParentMenu.AA.strMenuType = "Group" and StrSplit(this.AA.strFavoriteGroupRestoreOptions, ";")[3]) ; group member with stop if error option
 						return intOpenError
