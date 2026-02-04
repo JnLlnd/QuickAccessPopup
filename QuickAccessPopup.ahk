@@ -12135,6 +12135,8 @@ GuiControl, Focus, f_btnChangeFolderInDialogCancel
 CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, intX, intY)
 Gui, 3:Show, AutoSize x%intX% y%intY%
 Gui, 2:+Disabled
+if WindowAlwaysOnTop(g_strGui2Hwnd)
+	WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 strGuiTitle := ""
 
@@ -13149,12 +13151,12 @@ return
 GuiAlwaysOnTop:
 ;------------------------------------------------------------
 
-g_Gui1AlwaysOnTop := !g_Gui1AlwaysOnTop
+WinSet, AlwaysOnTop, % (WindowAlwaysOnTop(g_strGui1Hwnd) ? "Off" : "On"), ahk_id %g_strGui1Hwnd% ; do not use default Toogle for safety
+sleep, 100 ; safety
 
-WinSet, AlwaysOnTop, % (g_Gui1AlwaysOnTop ? "On" : "Off"), % L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion) ; do not use default Toogle for safety
-GuiControl, % (g_Gui1AlwaysOnTop ? "Show" : "Hide"), f_picGuiAlwaysOnTopOn
-GuiControl, % (g_Gui1AlwaysOnTop ? "Hide" : "Show"), f_picGuiAlwaysOnTopOff
-Menu, menuBarTools, ToggleCheck, % aaMenuToolsL["ControlToolTipAlwaysOnTopOff"]
+GuiControl, % (WindowAlwaysOnTop(g_strGui1Hwnd) ? "Show" : "Hide"), f_picGuiAlwaysOnTopOn
+GuiControl, % (WindowAlwaysOnTop(g_strGui1Hwnd) ? "Hide" : "Show"), f_picGuiAlwaysOnTopOff
+Menu, menuBarTools, % (WindowAlwaysOnTop(g_strGui1Hwnd) ? "Check" : "Uncheck"), % aaMenuToolsL["ControlToolTipAlwaysOnTopOff"] ; do not use default ToogleCheck for safety
 
 return
 ;------------------------------------------------------------
@@ -14578,6 +14580,8 @@ SelectSortCriteria(P_intActualSortCriteria, ByRef blnEscaped)
 	Gui, Show, AutoSize x%SH_intX% y%SH_intY%
 
 	Gui, 2:+Disabled
+	if WindowAlwaysOnTop(g_strGui2Hwnd)
+		WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 	WinWaitClose,  %SC_strGuiTitle% ; waiting for Gui to close
 	
 	SC_strGuiTitle := ""
@@ -15847,6 +15851,8 @@ Gui, Add, Text, y+10
 Gui, Font
 GuiCenterButtons(g_strGuiInstallQCEHwnd, 10, 5, 20, "f_btnInstallQCEDownload", "f_btnInstallQCEHelp", "f_btnInstallQCEClose")
 Gui, Show, AutoSize Center
+if WindowAlwaysOnTop(g_strGui1Hwnd)
+	WinSet, AlwaysOnTop, On, ahk_id %g_strGuiInstallQCEHwnd%
 
 return
 ;------------------------------------------------------------
@@ -20309,6 +20315,8 @@ SelectShortcut(P_strActualShortcut, P_strFavoriteName, P_strFavoriteType, P_strF
 	GuiControl, Focus, f_btnChangeShortcutOK
 	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SS_intX, SS_intY)
 	Gui, Show, AutoSize x%SS_intX% y%SS_intY%
+	if WindowAlwaysOnTop(g_strGui2Hwnd)
+		WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 	Gui, 2:+Disabled
 	WinWaitClose, %SS_strGuiTitle% ; waiting for Gui to close
@@ -20639,6 +20647,8 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 	GuiControl, Focus, f_btnChangeHotstringOK
 	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SH_intX, SH_intY)
 	Gui, Show, AutoSize x%SH_intX% y%SH_intY%
+	if WindowAlwaysOnTop(g_strGui2Hwnd)
+		WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 	Gui, 2:+Disabled
 	WinWaitClose,  %SH_strGuiTitle% ; waiting for Gui to close
@@ -20937,6 +20947,8 @@ SelectIcon(P_strActualIcon)
 	GuiControl, Focus, f_btnChangeIconOK
 	CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, SI_intX, SI_intY)
 	Gui, Show, AutoSize x%SI_intX% y%SI_intY%
+	if WindowAlwaysOnTop(g_strGui2Hwnd)
+		WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 	Gui, 2:+Disabled
 	WinWaitClose, %SI_strGuiTitle% ; waiting for Gui to close
@@ -21317,8 +21329,8 @@ else ; KeepPosition
 	Gui, 2:Show
 
 Gui, 1:+Disabled
-if (g_Gui1AlwaysOnTop)
-	WinSet, AlwaysOnTop, Off, % L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion)
+if WindowAlwaysOnTop(g_strGui1Hwnd)
+	WinSet, AlwaysOnTop, On, ahk_id %g_strGui2Hwnd%
 
 intX := ""
 intY := ""
@@ -21479,9 +21491,6 @@ Gui, 1:-Disabled
 Gui, 2:Destroy
 if (WinExist("A") <> g_strGui1Hwnd)
 	WinActivate, ahk_id %g_strGui1Hwnd%
-
-if (g_Gui1AlwaysOnTop)
-	WinSet, AlwaysOnTop, On, % L(o_L["GuiTitle"], g_strAppNameText, g_strAppVersion)
 
 strThisTitle := ""
 blnIsAddEditCopyFavorite := ""
@@ -22856,6 +22865,8 @@ GuiCenterButtons(g_strGui3Hwnd, 20, 10, , "f_btnCloseComputerGo", "f_btnCloseCom
 
 CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
 Gui, CloseComputer:Show, AutoSize x%intX% y%intY%
+if WindowAlwaysOnTop(g_strGui1Hwnd)
+	WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 intX := ""
 intY := ""
@@ -23027,6 +23038,8 @@ GuiCenterButtons(g_strGui3Hwnd, 20, 10, , "f_btnCloseAllWindowsClose", "f_btnClo
 GuiControl, CloseAllWindows:Focus, f_lvCloseAllWindows
 CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
 Gui, CloseAllWindows:Show, AutoSize x%intX% y%intY%
+if WindowAlwaysOnTop(g_strGui1Hwnd)
+	WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 intX := ""
 intY := ""
@@ -23639,6 +23652,8 @@ GuiCenterButtons(g_strGui3Hwnd, 10, 5, 20, "f_btnCheck4UpdateDialogSkipVersion",
 GuiControl, Update:Focus, f_btnCheck4UpdateDialogRemind
 CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui1Hwnd, intX, intY)
 Gui, Update:Show, AutoSize x%intX% y%intY%
+if WindowAlwaysOnTop(g_strGui1Hwnd)
+	WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 strGuiTitle := ""
 
@@ -25959,6 +25974,8 @@ GuiControl, Focus, f_btnSearchAndReplaceConfirmFindNext
 CalculateTopGuiPosition(g_strGui3Hwnd, g_strGui2Hwnd, intX, intY)
 Gui, 3:Show, AutoSize x%intX% y%intY%
 Gui, 2:+Disabled
+if WindowAlwaysOnTop(g_strGui2Hwnd)
+	WinSet, AlwaysOnTop, On, ahk_id %g_strGui3Hwnd%
 
 intX := ""
 intY := ""
@@ -29903,6 +29920,16 @@ GetQuickLaunchQueries(blnSaveToIni := false)
 			strQueries := strQuery . "|" . strQueries
 	
 	return (blnSaveToIni ? "" : "|") . SubStr(strQueries, 1, -1) ; initial | to start with an empty row when called for the DDL and remove last |
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+WindowAlwaysOnTop(intHwnd)
+;------------------------------------------------------------
+{
+	WinGet, intWindowStyle, ExStyle, ahk_id %intHwnd%
+	return (intWindowStyle & 0x8 ? True : False) ; 0x8 is WS_EX_TOPMOST.
 }
 ;------------------------------------------------------------
 
