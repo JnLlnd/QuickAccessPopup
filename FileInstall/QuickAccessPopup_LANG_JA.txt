@@ -1,0 +1,1189 @@
+lAboutLicense	ライセンス: ~1~`n一意のシステムID (インストール数をカウントするために使用):`n~2~ (<a id="copy">~3~</a>)
+lAboutLicenseCopy	固有IDをコピー
+lAboutLicenseCopyMessage	固有の QAP システム ID がクリップボードにコピーされます。
+lAboutLicenseExpires	有効期限: ~1~
+lAboutLicenseHelp	ライセンス管理ヘルプ
+lAboutText1	~1~ ~2~ (~3~ bit)
+lAboutText2	~1~ は、Jean Lalondeによりプログラミング言語 <a href="http://ahkscript.org/">AutoHotkey</a> を使用して作成されました。
+lAboutText2a	イタリア語翻訳: Riccardo Leone`nドイツ語翻訳: Edgar "Fast Edi" Hoffmann`nフランス語翻訳: Jean Lalonde`nスペイン語翻訳: kiketrucker`nポルトガル語翻訳: Luis Neves`nオランダ語翻訳: Ric Roggeveen`nポルトガル語(ブラジル)翻訳: Igor Ruckert`n中国語(簡体字)翻訳: ilaoyao`n韓国語翻訳: Maeng Bong Kyun`nロシア語翻訳: Wylek.ru`n英語校正: (協力者募集中)
+lAboutText2b	アイコン作成: <a href="http://icons8.com">Icons8</a>`nインストーラー: jrsoftware.org による <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a>`nAutoHotkey_L v~1~
+lAboutText3	~1~ Jean Lalonde 2013-~2~`n`nQuick Access Popupはライセンス条件に基づいて提供されています。ライセンスのコピーは以下から入手できます:`n<a href="~3~">~4~</a>`n適用法で義務付けられている場合、または書面で合意されている場合を除き、本ライセンスに基づいて配布されるソフトウェアは、明示的か黙示的かを問わず、いかなる種類の保証も条件も伴わない「現状のまま」で配布されます。ライセンスに基づく具体的な権利と言い渡される制限については、ライセンスを参照してください。
+lAboutText4	サポート:  <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
+lAboutText5	謝辞と貢献者
+lAboutText6	~1~ および多くの <a href="~2~">AHK</a> 開発者の皆様、その知識とコードスニペットの提供に感謝いたします。
+lAboutTitle	クレジット - ~1~ ~2~
+lAboutUserComputerName	ユーザー名: ~1~`nコンピューター名: ~2~
+lAlternativeMenuTrayTipCopyLocation	コピーするお気に入りを選択
+lAlternativeMenuTrayTipEditFavorite	編集するお気に入りを選択
+lAlternativeMenuTrayTipNewWindow	新しいウィンドウで開くフォルダーを選択
+lAlternativeMenuTrayTipOpenContaining	開きたい親フォルダのブックマーク（ドキュメント、アプリケーション、またはフォルダー）を選択します
+lAlternativeMenuTrayTipRunAs	昇格された（管理者）権限で実行するアプリケーションを選択
+lAlternativeMenuTrayTipSelectedFile	選択したファイルまたはフォルダーを移動またはコピーする宛先フォルダーを選択します
+lContextAddFile	Quick Access Popupメニューにファイルを追加する
+lContextAddFileXpress	エクスプレスメニューにファイルを追加する
+lContextAddFolder	Quick Access Popupメニューにフォルダーを追加する
+lContextAddFolderXpress	エクスプレスメニューにフォルダーを追加する
+lContextAddShortcut	Quick Access Popup メニュー リンクをインポートする
+lContextCancelled	Windows エクスプローラーのコンテキスト メニューの有効化または無効化がユーザーによってキャンセルされました。
+lContextShowMenu	クイックアクセスポップアップメニューを表示
+lControlToolTipAlwaysOnTopOff	このウィンドウを常に手前に表示しない
+lControlToolTipAlwaysOnTopOn	このウィンドウを常に手前に表示する
+lControlToolTipColumnBreak	列区切りを挿入
+lControlToolTipLaunchSelected	カスタマイズウィンドウで選択したお気に入りを実行
+lControlToolTipLaunchSelectedOff	このオブジェクトは実行できません
+lControlToolTipMoveDown	選択したお気に入りを下に移動
+lControlToolTipMoveUp	選択したお気に入りを上に移動
+lControlToolTipNextMenu	次のメニューへ進む
+lControlToolTipOpenMenuContainingSearchItem	選択したお気に入りを含むサブメニューまたはグループを開く
+lControlToolTipParentMenu	上の階層のメニューへ移動
+lControlToolTipPreviousMenu	前のメニューに戻る
+lControlToolTipSearchBoxClear	検索ボックスをクリアしてお気に入りをすべて表示
+lControlToolTipSearchBoxExtended	現在のメニューからお気に入り名と各種プロパティを検索
+lControlToolTipSearchButton	お気に入りを検索
+lControlToolTipSeparator	メニューセパレーターを挿入
+lControlToolTipShowContainerInGui	カスタマイズウィンドウ内にお気に入りのメニューを表示
+lControlToolTipSortFavorites	すべてのお気に入り、またはリストで選択したもののみをソート
+lControlToolTipSortSearchResult	検索結果内のお気に入りをソート
+lControlToolTipTextSeparator	テキストセパレーターを挿入
+lCopyFavoritesToMenuOrGroup	メニューとグループはコピーできません。`n`nこれらを除外して続行しますか?
+lCopyLocationCopiedToClipboard	パスまたはURLをクリップボードにコピーしました
+lDiagModeCaution	~1~ は診断モードで実行されています。`n`n実行中のアプリケーション情報は次のファイルに収集されます:`n~2~`n`n同意なしに送信されることはありません。`n`n診断モードを有効なままにしますか?
+lDiagModeExit	~1~ はデバッグ情報をファイル ~2~ に収集しました。
+lDiagModeIntro	このファイルを、状況の説明を添えて support@quickaccesspopup.com へ送信してください。
+lDiagModeSee	デバッグ情報のファイルを表示しますか?
+lDialogActivateAlreadyRunning	アプリケーションが既に実行されている場合、(移動先が同じであれば)新しく起動する代わりにそのウィンドウをアクティブにします
+lDialogAdd	追加
+lDialogAddEditFavoriteTitle	~1~ お気に入り: ~4~ - ~2~ ~3~
+lDialogAddFavoriteSelectTitle	お気に入りの種類を追加 - ~1~ ~2~
+lDialogAddFavoriteTabs	基本設定|メニューオプション|ウィンドウオプション|詳細設定
+lDialogAddFavoriteTabsExternal	共有メニュー
+lDialogAddFavoriteTabsLive	ライブフォルダーオプション
+lDialogAddFileSelect	新しいドキュメントを選択:
+lDialogAddFolderManuallyPrompt	申し訳ありませんが、現在のフォルダーまたはウェブページをキャプチャできませんでした。`n`n今すぐ手動でお気に入りに追加しますか?
+lDialogAddFolderManuallyTitle	アクティブなフォルダーまたはウェブページを追加 - ~1~ ~2~
+lDialogAddFolderSelect	フォルダーの選択または新規作成:
+lDialogAddSingle	お気に入りを1つだけ追加
+lDialogAlt	Alt
+lDialogAltShort	Alt
+lDialogApplicationLabel	アプリケーション
+lDialogAppWorkingDirCurrent	このお気に入りが起動されたフォルダーでアプリケーションを実行する
+lDialogArgumentsLabel	引数
+lDialogArgumentsLabelHelp	(必要に応じて、各パラメーターをダブルクォーテーションで囲んでください)
+lDialogArgumentsPlaceholdersCheckLabel	拡張プレースホルダーを使用した現在のパラメーター
+lDialogArgumentsPlaceholdersCurrentExample	x:\親フォルダー\末尾のフォルダー
+lDialogArgumentsPlaceholdersSelectedExample	x:\親フォルダー\選択されたファイルまたはフォルダー.ext
+lDialogAscending	昇順
+lDialogBackwardButton	戻るボタン
+lDialogBrowseButton	参照
+lDialogBrowseOrSelectApplication	実行可能ファイルを検索するか、`nリストから実行中のアプリケーションを選択してください
+lDialogCancelButton	キャンセル
+lDialogCancelPrompt	変更を破棄しますか?
+lDialogCancelTitle	キャンセル - ~1~ ~2~
+lDialogChangeHotkeyAlternative	これはメニューの代替ショートカットです。`n`n"~1~" を "~2~" で操作するように設定しますか?
+lDialogChangeHotkeyAltGrHelp	注意: キーボードレイアウトに右Altの代わりにAltGrがある場合、CtrlとAltの両方のボックスをチェックして、AltGrを修飾キーとして使用してください。
+lDialogChangeHotkeyAny	任意
+lDialogChangeHotkeyLeftAnyRight	各修飾キーは、「左」のみ、「右」のみ、または「任意」(左右どちらでも)に限定することができます。
+lDialogChangeHotkeyModifierAndNone	"Alt" や "Control" などの修飾キーのみを選択することはできません。適切なセクションでマウスまたはキーボードのホットキーも選択してください。
+lDialogChangeHotkeyMouseCheckLButton	修飾キー(~1~, ~2~, ~3~ または ~4~ など)なしで「マウスの左ボタン」を割り当てることはできません。
+lDialogChangeHotkeyPopup	これはメニューのショートカットです。`n`n"~1~" を "~2~" で操作するように設定しますか?
+lDialogChangeHotkeyTitle	ショートカットの変更 - ~1~ ~2~
+lDialogChangeHotkeyTitleManual	ここにホットキーまたはキーボードスキャンコード(SCnnn)を入力してください。詳細は ~1~ を参照してください。`n`nホットキーコードを入力:
+lDialogChangeHotstringDefaultOptionsPrompt	新しく作成するホットストリングのデフォルトオプションを選択してください (<a href="~1~">ヘルプ</a>)
+lDialogChangeHotstringReload	このホットストリングのオプションを変更すると、お気に入りを保存した後に ~1~ が自動的に再起動されます。
+lDialogChangeHotstringTitle	ホットストリングの変更 - ~1~
+lDialogChangeHotstringTitleDefaultOptions	ホットストリングのデフォルトオプション - ~1~
+lDialogCloseAllWindows	すべてのウィンドウを閉じる
+lDialogCloseAllWindowsClose	選択したウィンドウを閉じる
+lDialogCloseAllWindowsDetail	ウィンドウタイトル:`n~1~`n`nプロセスパス:`n~2~`n`nこのウィンドウを閉じますか?
+lDialogCloseAllWindowsHeader	ウィンドウタイトル
+lDialogCloseAllWindowsIntro	閉じるウィンドウにチェックを入れ、「選択したウィンドウを閉じる」をクリックしてください。ダブルクリックまたはEnterキーで、ウィンドウを閉じるか詳細を確認できます。
+lDialogCloseAllWindowsSelectAll	すべて選択/解除
+lDialogCloseComputerControl	コンピューター制御センターを閉じる
+lDialogCloseComputerControlDescription	コンピューターの終了方法を完全に制御します:`n- ユーザーのログオフ、Windowsのシャットダウン、再起動、電源オフ(強制の有無を選択可能)`n- スリープまたは休止状態(即時実行の有無、ウェイクイベントの無効化を選択可能)`n- モニターの電源オフ、モニターの低電力モード、またはスクリーンセーバーの起動。
+lDialogCloseComputerDisableWakeEvents	ウェイクイベントを無効化
+lDialogCloseComputerForce	強制終了 (データが失われる可能性があります)
+lDialogCloseComputerGo	選択したアクションを実行
+lDialogCloseComputerHibernate	コンピューターを休止状態にする
+lDialogCloseComputerHibernateDescription	コンピューターを低電力モードにします。これにより、作業を素早く再開できます(スリープに似ていますが、消費電力はさらに少なくなります)。PCを再起動すると、終了した時の状態に正確に戻ります(スリープからの復帰よりは少し時間がかかります)。休止状態はラップトップ向けに設計されており、デスクトップPCでは利用できない場合があります。
+lDialogCloseComputerLogoff	ユーザーアカウントからログアウト
+lDialogCloseComputerLogoffDescription	すべてのアプリケーションを閉じ、現在のユーザーセッションを終了します。
+lDialogCloseComputerMonitorLowPower	モニターを低電力モードにする
+lDialogCloseComputerMonitorLowPowerDescription	コンピューターのモニターを低電力モードにします。このモードはラップトップ向けに設計されており、デスクトップPCでは利用できない場合があります。
+lDialogCloseComputerMonitorTurnOff	モニターの電源を切る
+lDialogCloseComputerMonitorTurnOffDescription	コンピューターのモニターの電源を切ります。
+lDialogCloseComputerPowerDown	コンピューターの電源を切る
+lDialogCloseComputerPowerDownDescription	すべてのアプリケーションを終了し、コンピューターの電源を切ります。
+lDialogCloseComputerPrompt	オプションを選択してください...
+lDialogCloseComputerRestart	コンピューターを再起動
+lDialogCloseComputerRestartDescription	すべてのアプリケーションを閉じ、ユーザーが電源を入れ直したときと同じようにコンピューターを再起動します。
+lDialogCloseComputerShutdown	コンピューターのシャットダウン
+lDialogCloseComputerShutdownDescription	コンピューターの電源を切る準備として、すべてのアプリケーションを閉じます。システムの構成によっては、そのまま電源が切れる場合があります。
+lDialogCloseComputerStartScreenSaver	スクリーンセーバーを起動
+lDialogCloseComputerStartScreenSaverDescription	オペレーティングシステムのデフォルトのスクリーンセーバーを起動します。
+lDialogCloseComputerSuspend	コンピューターのスリープ (スタンバイ)
+lDialogCloseComputerSuspendDescription	コンピューターを節電モードにします。作業を再開したいときに、すぐにフルパワーの状態に戻ることができます。スリープモードはごくわずかな電力しか消費せず、再起動が速く、中断した場所からすぐに見つけることができます。
+lDialogCloseComputerSuspendImmediately	すぐにスリープ (データが失われる可能性があります)
+lDialogContextMenu	コンテキストメニュー
+lDialogContinue	続行
+lDialogCopy	コピー
+lDialogCopyFavoritesTitle	お気に入りをコピー - ~1~ ~2~
+lDialogCtrl	Control
+lDialogCtrlLeft	左 Ctrl
+lDialogCtrlRight	右 Ctrl
+lDialogCtrlShort	Ctrl
+lDialogDescending	降順
+lDialogDialogBoxes	ダイアログボックス
+lDialogDropDown	ドロップダウン
+lDialogEdit	編集
+lDialogEditIcon	リソースアイコンを編集
+lDialogEditIconPrompt	リソースアイコンを "アイコンファイル,インデックス" の形式で編集してください (例: "shell32.dll,2"):
+lDialogElevate	アプリケーションを管理者権限で実行
+lDialogEndOfMenu	メニューの最後
+lDialogEndOfMenuSorted	自動ソートメニュー
+lDialogEnterWebSiteIcon	favicon.icoのURLを入力
+lDialogErrorMoving	お気に入りを移動できません:`n"~1~"
+lDialogExtendedSearch	拡張検索
+lDialogExternalLocation	ファイル移動先の外部メニュー設定
+lDialogExternalLocationIni	共有メニューの設定ファイルは .ini ファイルである必要があります
+lDialogExternalLocationReadOnly	既存の共有メニューの場所を変更することはできません。この共有メニューのファイル名が変更されたり移動したりした場合は、一度この共有メニューを削除してから、移動・変更後のファイルで新しく作成してください。
+lDialogExternalMenuAdd	選択した共有メニューを追加
+lDialogExternalMenuAdded	共有メニューを追加しました。
+lDialogExternalMenuAddFromCatalogue	カタログから共有メニューを追加 - ~1~ ~2~
+lDialogExternalMenuAddHeader	共有メニュー名|共有メニュー設定ファイル
+lDialogExternalMenuAddNotFromCatalogue	別の共有メニューを追加
+lDialogExternalMenuName	共有メニュー名
+lDialogExternalMenuNotExist	この共有メニューは存在しません。この場所に新しい空の共有メニューを作成しますか?`n`n~1~
+lDialogExternalMenuOpen	共有メニューファイルを開きますか?
+lDialogExternalMenusAdded	~1~ 個の共有メニューを追加しました。
+lDialogExternalMenuSelectFromCatalogue	メニューに追加する共有メニューを1つ以上選択して ~1~ をクリックしてください
+lDialogExternalSource	共有メニューが含まれているドライブ
+lDialogExternalSourceCloud	クラウドドライブ (例: Dropbox、PCのUTC時間で同期)
+lDialogExternalSourceNetwork	ネットワークドライブ (ファイルに関連付けられたタイムゾーンで同期)
+lDialogExternalStartingNumber	最初のお気に入りの番号:
+lDialogExternalTip	行をダブルクリックすると、共有メニューの情報が表示されます。
+lDialogExternalTypes	個人用 (同一ユーザーが異なるコンピューターで使用する共有メニュー)|共同作業用 (チームやグループ用の共有ドライブ上のメニュー)|集中管理用 (メニュー管理者によって管理される共有ドライブ上のメニュー)
+lDialogExternalTypesLabel	共有メニューの種類
+lDialogExternalTypesTitle	共有メニューの種類
+lDialogExternalWriteAccessMessage	共有メニューへの書き込みアクセスに関するメッセージ
+lDialogExternalWriteAccessUsers	このメニューへの書き込み権限を持つユーザー
+lDialogFavoriteAutoExec	起動時にこのお気に入りを開く
+lDialogFavoriteDebug	このお気に入りをデバッグ
+lDialogFavoriteDebugAfter	このコマンドを実行するには、お気に入りの「基本設定」タブで「お気に入りをデバッグ」オプションをオフにしてください
+lDialogFavoriteDebugBefore	プレースホルダーとユーザー変数を含むコマンドが入力されました
+lDialogFavoriteDisabled	このお気に入りを無効にする
+lDialogFavoriteDisabledGroupMember	グループ内のこのアイテムを無効にする
+lDialogFavoriteDoesNotExistEdit	このお気に入りを編集しますか?
+lDialogFavoriteDoesNotExistPrompt	お気に入り "~1~" (~2~) は存在しないか、利用できません。`n`nこのお気に入りがネットワークドライブ上にある場合は、ネットワークにログインしてからもう一度やり直してください。
+lDialogFavoriteDoesNotExistTitle	お気に入りが存在しません - ~1~
+lDialogFavoriteDropdownEmpty		リスト ~1~ からアイテムを選択してください。
+lDialogFavoriteExternalHelpWeb	詳細は <a href="~1~">外部メニューのヘルプ</a> を参照してください。
+lDialogFavoriteExternalSaveNote	注意: このタブの値は、"~1~" を押すとすぐに共有メニューに保存されます。
+lDialogFavoriteFolderLive	ライブフォルダー (サブフォルダーを含むメニュー)
+lDialogFavoriteFolderLiveColumns	1列あたりのアイテム数 (列区切りを使用しない場合は 0)
+lDialogFavoriteFolderLiveDocuments	ドキュメントを含める
+lDialogFavoriteFolderLiveExclude	除外
+lDialogFavoriteFolderLiveExcludeFolders	除外するフォルダー (最下層のみ)
+lDialogFavoriteFolderLiveExtensions	拡張子をスペース区切りで入力 (例: "bak bk")、またはワイルドカード式をスペース区切りで入力 ("*.bak "myfile??.ext" *copy*.*")
+lDialogFavoriteFolderLiveFiles	ファイル
+lDialogFavoriteFolderLiveHideExtensions	ファイルの拡張子
+lDialogFavoriteFolderLiveHideIcons	アイコン
+lDialogFavoriteFolderLiveHideInMenu	メニューに表示しない
+lDialogFavoriteFolderLiveInclude	含める
+lDialogFavoriteFolderLiveLevels	ライブフォルダーメニューに含めるサブフォルダーの階層数
+lDialogFavoriteFolderLiveRefreshManual	"~1~" コマンドが実行された時のみ、このライブフォルダーメニューを更新する
+lDialogFavoriteFolderLiveShowHidden	隠しファイル
+lDialogFavoriteFolderLiveShowItems	アイテムを表示
+lDialogFavoriteFolderLiveShowSystem	システムファイル
+lDialogFavoriteFolderLiveType	ライブフォルダー
+lDialogFavoriteHidden	このお気に入りを隠す
+lDialogFavoriteLaunchWithDoesNotExistTitle	実行するアプリケーションが存在しません - ~1~
+lDialogFavoriteLocationEmpty	移動先が空です。空ではない移動先を選択してやり直してください。
+lDialogFavoriteMenuPosition	このアイテムの前にお気に入りを挿入
+lDialogFavoriteNameEmpty	お気に入りの名前を空にすることはできません。名前を入力してください。
+lDialogFavoriteNameNoSeparator	このアイテム名に予約文字 "~1~" を含めることはできません。
+lDialogFavoriteNameNotAllowed	種類が "~1~" のお気に入りはグループ内では許可されていません。「メニューオプション」タブで別の移動先メニューを選択してください。
+lDialogFavoriteNameNotNew	名前 "~1~" はこのメニューで既に使用されています。別の名前を選択してください。
+lDialogFavoriteParentMenu	親メニューまたは親お気に入りグループ
+lDialogFavoriteParentMenuMove	お気に入りをこのメニューに移動
+lDialogFavoriteRemoveExternalPrompt	外部サブメニュー "~1~" を削除しますか?`n(「外部」設定の .ini ファイルは削除されません)
+lDialogFavoriteRemoveGroupPrompt	グループ "~1~" を削除しますか?`n(グループ内のアイテムも削除されます)
+lDialogFavoriteRemovePrompt	サブメニュー "~1~" とそのすべての内容 (フォルダーとサブメニュー) を削除しますか?
+lDialogFavoriteRemoveTitle	お気に入りを削除 - ~1~
+lDialogFavoriteSelectType	追加するお気に入りの種類を選択してください。`n`n次のウィンドウで以下を設定します:`n- 名前`n- コンテンツ (種類による)`n- 各種属性 (アイコン、ショートカットなど)`n`n新しいお気に入りの種類を選び、"~1~" をクリックしてください。
+lDialogFavoriteShortNameLabel	メニュー用短縮名
+lDialogFavoritesMenuPosition	このアイテムの前にお気に入りを挿入
+lDialogFavoriteSnippetEmpty	内容が空です。スニペットの内容を入力してください。
+lDialogFavoriteSnippetExpandEnvVars	環境変数を展開する
+lDialogFavoriteSnippetFixedFont	等幅フォント
+lDialogFavoriteSnippetFontSize	フォントサイズ
+lDialogFavoriteSnippetHelpNoProcess	行末として ``n を、タブとして ``t を入力してください。ダブルクォーテーションには `` (バッククォート2つ) を使用してください。
+lDialogFavoriteSnippetHelpProcess	Ctrl+Tabでタブを、Enterで行末を挿入します。
+lDialogFavoriteSnippetHelpWeb	ヘルプページの <a href="~1~">スニペット</a> および <a href="~2~">プレースホルダー</a> を参照してください。
+lDialogFavoriteSnippetProcessEOLTab	行末(EOL)とタブを自動的にエンコードする
+lDialogFavoriteSnippetPromptLabel	スニペットを ~1~ する前にプロンプトを表示
+lDialogFavoriteSnippetPromptLabelLaunching	実行
+lDialogFavoriteSnippetPromptLabelPasting	貼り付け
+lDialogFavoriteSnippetPromptNever	このお気に入りに対してプロンプトを表示しない
+lDialogFavoriteSnippetPromptNoPipe	スニペットのプロンプトでパイプ文字 (|) は使用できません。
+lDialogFavoriteSnippetSendMode	スニペットを現在のアプリケーションに送信する方法:
+lDialogFavoriteSnippetSendModeMacro	マクロモード
+lDialogFavoriteSnippetSendModeText	テキストモード
+lDialogFavoritesParentMenuCopy	~1~ 個のお気に入りをこのメニューにコピー
+lDialogFavoritesParentMenuMove	~1~ 個のお気に入りをこのメニューに移動
+lDialogFavoriteType	お気に入りの種類
+lDialogFavoriteTypeNoteApplication	注意: 従来の実行ファイルを使用しない新しい種類のWindowsアプリケーションがあります。これら「Windowsアプリ」は、WindowsにプリインストールされているかWindowsストアからダウンロードされたものです。これらを追加するには、新しいお気に入りの種類「Windowsアプリ」を使用してください。
+lDialogFavoriteTypeNoteWindowsApps	注意: 「Windowsアプリ」は、従来の実行ファイルを使用しない新しい種類のWindowsアプリケーションです。これらはWindowsにプリインストールされているかWindowsストアからダウンロードされます。従来の実行ファイル(.exe, .com, .bat およびその他のスクリプトファイル)を追加したい場合は、「アプリケーション」の種類を使用してください。
+lDialogFavoriteTypesHelp1	頻繁に使用する「フォルダー」へのリンクを作成します。`n`nお気に入りのメニュー名、パス、各種メニュー設定を指定します。`n`n「ライブフォルダー設定」を使用すると、フォルダーの現在の内容でメニューを更新できます。`n`n「詳細設定」では、ウィンドウの位置やファイルマネージャーの設定を選択できます。
+lDialogFavoriteTypesHelp13	「スニペット」を作成します。メニュー用のタイトル、スニペットの内容、各種オプションを指定します。`n`n詳細設定で、クリップボードのようにテキストを貼り付ける「テキストモード」か、キー入力(特殊キー含む)として送信する「マクロモード」を選択できます。
+lDialogFavoriteTypesHelp14	外部の場所に保存された設定ファイルを使用して、複数のコンピューターでお気に入りを使用するための「共有メニュー」を作成します。メニュー名、外部設定ファイルの場所、各種オプションを指定します。`n`n共有メニューは「個人用」「共同作業用」「集中管理用」として使用できます。設定の「オプション > 詳細設定」タブで共有メニューカタログを設定すると、追加が容易になります。`n`n共有メニューは通常のメニューと同様に編集できますが、「集中管理用」は特定のユーザーのみが編集可能です。詳細はWebサイトのFAQを参照してください。
+lDialogFavoriteTypesHelp15	メニューを分かりやすくするための見出しとして「テキストセパレーター」を作成します。`n`nデフォルトではアイコンはありませんが、「メニューオプション」タブで選択することも可能です。
+lDialogFavoriteTypesHelp16	「Windowsアプリ」へのショートカットを作成します。`n`nシステムにインストールされているアプリの一覧から選択してください。`n`nこの一覧はQAPの起動時に生成され、いつでも更新できます。
+lDialogFavoriteTypesHelp17	Windowsクリップボード内のテキストを変更するための「クリップボードコマンド」を実行します。`n`nQuick Clipboard Editorで利用可能なコマンド一覧から選択してください。`n`nこの一覧はQAPの起動時、および「お気に入りの追加」ダイアログで必要に応じて更新されます。
+lDialogFavoriteTypesHelp2	「ドキュメント」へのショートカットを作成します。`n`nお気に入りのメニュー名、パス、各種メニュー設定を指定します。`n`n詳細設定では、ドキュメントを開くための特定のアプリケーションの選択や、オプションの引数の追加が可能です。
+lDialogFavoriteTypesHelp3	「アプリケーション」(プログラム、バッチファイル、スクリプト)へのショートカットを作成します。`n`n実行ファイルを探すか、現在実行中のプログラムから選択します。各種メニュー設定を指定します。`n`n詳細設定では、「作業」フォルダーの選択やオプションの引数の追加が可能です。
+lDialogFavoriteTypesHelp4	Windows標準の「特殊フォルダー」(ライブラリ、ピクチャ、ゴミ箱、ダウンロードなど)へのショートカットを作成します。`n`n各種メニュー設定を指定します。詳細設定では、ウィンドウの位置やファイルマネージャーの設定を選択できます。
+lDialogFavoriteTypesHelp5	ウェブページへの「リンク」を作成します。`n`nメニュー名、ウェブページのアドレス(URL)、各種メニュー設定を指定します。`n`n詳細設定では、リンクを開くブラウザの選択やオプションの引数の追加が可能です。
+lDialogFavoriteTypesHelp6	「FTPサイト」へのショートカットを作成します。`n`nメニュー名、FTPサイトのアドレス(URL)、ログイン名、パスワード、各種メニュー設定を指定します。`n`n詳細設定では、使用するFTPプログラムの選択、引数の追加、ウィンドウ位置の指定、ログイン情報のエンコードが可能です。`n`n注意: パスワードはインターネット送信時に暗号化されません。
+lDialogFavoriteTypesHelp7	~1~, ~2~, ~3~, ~4~, ~5~ などの「Quick Access Popupの機能」をメニューの好きな場所に挿入します。`n`n詳細は各説明やヘルプリンクを参照してください。
+lDialogFavoriteTypesHelp8	関連するお気に入りを「サブメニュー」にまとめます。`n`nサブメニューに名前を付け、メニューオプションを選択します。`n`nサブメニューにお気に入りを追加してください。「お気に入りの編集」ウィンドウの「移動」ボタンまたは「メニューオプション」タブを使って、他へ移動することもできます。
+lDialogFavoriteTypesHelp9	単一のショートカットで、お気に入りの「グループ」を一斉に起動します!`n`nグループに名前を付け、各種グループオプションを選択します。`n`nグループにお気に入りを追加してください。「お気に入りの編集」ウィンドウの「編集」ボタンまたは「メニューオプション」タブを使って、他へ移動することもできます。`n`n詳細設定では、起動するアイテム間の待機時間を設定して、復元速度を調整できます。
+lDialogFavoriteTypesLabels	フォルダー|ドキュメント|アプリケーション|特殊フォルダー|リンク (URL)|FTPサイト|QAPの機能|サブメニュー|グループ||||スニペット|共有メニュー|テキストセパレーター|Windowsアプリ|クリップボードコマンド
+lDialogFavoriteTypesLocationLabels	フォルダー (パス)|ドキュメント (パスとファイル名)|アプリケーション (パスとファイル名)||リンク (URL)|FTPサイト (URL)|||||||コンテンツ|外部設定ファイル (パス)|テキストセパレーター|WindowsアプリID (AUMID)|
+lDialogFavoriteTypesShortNames	フォルダー|ドキュメント|アプリ|特殊|リンク|FTP|QAP|メニュー|グループ|セパレーター|列区切り|..|スニペット|共有|テキスト|Winアプリ|QCE
+lDialogFavoriteWorkingDirNotFoundPrompt	お気に入り "~1~" の詳細設定「作業フォルダー」が見つかりません:`n~2~
+lDialogFavoriteWorkingDirNotFoundTitle	「作業フォルダー」パラメーターが見つかりません - ~1~
+lDialogFileExtension	ファイル拡張子
+lDialogFileLabel	ドキュメント
+lDialogFileName	ファイル名
+lDialogFileSize	ファイルサイズ
+lDialogFolderLabel	フォルダー
+lDialogForwardButton	進むボタン
+lDialogGetWebPageTitle	タイトルを取得
+lDialogGetWebPageTitleIcon	タイトルとアイコンを取得
+lDialogGetWebSiteIcon	ウェブサイトのアイコンを取得
+lDialogGetWinInfo	タイトル、クラス、またはプロセス名を取得したいウィンドウを特定するには、目的のウィンドウをクリックしてからQAPメニューのショートカット [~1~] を押してください。
+lDialogGetWInInfo2Clippoard	ウィンドウタイトル:`n"~1~"`n`nクラス:`n"~2~"`n`nプロセス名:`n"~3~"`n`nこれらの情報をクリップボードにコピーしますか?
+lDialogGroupMemberOptions	グループアイテムのオプション
+lDialogGroupParentMenu	親メニューまたは親グループ
+lDialogGroupRestoreStopIfError	グループアイテム #~1~ を開く際にエラーが発生しました:`n`n~2~`n~3~`n`nグループの展開を中止しました。
+lDialogHotkey	ホットキー
+lDialogHotkeyInvisibleKeys	<a id="~1~">スペースキー</a>、<a id="~2~">Tab</a>、<a id="~3~">Enter</a>、<a id="~4~">Esc</a>、<a id="~5~">メニューキー</a> (アプリケーションキー) または <a id="~6~">直接入力</a>
+lDialogHotkeys	ショートカット
+lDialogHotkeysHelpHeader	ショートカット|アクション
+lDialogHotkeysManage	ショートカット管理
+lDialogHotkeysManageAboutHotstrings	現在 ~1~ で有効なホットストリング
+lDialogHotkeysManageAboutShortcuts	現在 ~1~ で有効なショートカット
+lDialogHotkeysManageAlternative	代替
+lDialogHotkeysManageAlternativeMenu	代替メニュー
+lDialogHotkeysManageIntro	行をダブルクリックすると、そのお気に入りの ~1~ を変更できます。
+lDialogHotkeysManageListHeader	メニュー/お気に入り名|種類|~1~|お気に入りまたはコンテンツの場所
+lDialogHotkeysManageListHeaderHotstrings	ホットストリング|オプション
+lDialogHotkeysManageListSeeAllFavorites	すべてのお気に入りを表示
+lDialogHotkeysManageListSeeShortHotkeyNames	ショートカット名とホットストリングオプションを短縮名で表示する。
+lDialogHotkeysManagePopup	ポップアップ
+lDialogHotkeysManageShortcutHotstringLower	ショートカット|ホットストリング
+lDialogHotkeysManageTitle	ショートカット管理 - ~1~ ~2~
+lDialogHotstring	ホットストリング
+lDialogHotstringCaseSensitive	大文字/小文字を区別
+lDialogHotstringExpandInsideWords	単語の途中でも展開する
+lDialogHotstringIndicator	略称
+lDialogHotstringKeepHotstring	ホットストリングをそのまま残す
+lDialogHotstringNotWaitEndingKey	終了キー(Space/Enter等)を待たずに実行
+lDialogHotstringOmitEndChar	スニペット貼り付け時に終了文字を省略する
+lDialogHotstrings	ホットストリング
+lDialogHotstringsDescription	ホットストリング（お気に入りを自動実行するための短いキー入力）の概要を表示します。ヘッダーをクリックしてソートできます。`n`n編集するにはホットストリングをダブルクリックしてください。`n`n「すべてのお気に入りを表示」にチェックを入れると、他のお気に入りにもホットストリングを割り当てられます。
+lDialogHotstringsManage	ホットストリングの管理
+lDialogHotstringTriggerAbbreviation	トリガー (略称):
+lDialogHotstringTriggerOptions	ホットストリング (トリガーとオプション)
+lDialogIcon	お気に入りアイコン
+lDialogIconsCustomFolder	カスタムフォルダー
+lDialogIconsDefaultSize	デフォルトサイズ
+lDialogIconsInheritedSize	継承サイズ
+lDialogIconsManage	アイコン管理
+lDialogIconsManageAbout	お気に入りの新しいアイコンを選択するか、種類ごとのデフォルトアイコンを割り当てます。「カスタマイズ」ウィンドウで変更を保存するのを忘れないでください。
+lDialogIconsManageCurrent	現在のアイコン
+lDialogIconsManageDefault	デフォルトアイコン
+lDialogIconsManageDescription	QAPメニューのすべてのお気に入りと、現在関連付けられているアイコンおよびデフォルトのアイコンを一覧表示します。お気に入りは、メニューに表示される順にサブメニューごとにグループ化されます。`n`nボタンをクリックして、カスタムアイコンの選択やデフォルトへのリセットを行ってください。
+lDialogIconsManageFavoriteName	お気に入り名
+lDialogIconsManageParentMenu	親メニュー
+lDialogIconsManageSetDefaultIcon	デフォルトアイコンを割り当てる
+lDialogIconsManageTitle	アイコン管理 - ~1~ ~2~
+lDialogIconsSelectPrompt	アイコンをクリックして選択するか、矢印キーとEnterキーを使用してください
+lDialogIconsSelectTitle	アイコンの選択 - ~1~ ~2~
+lDialogIconsSizeInMenu	このメニューのアイコンサイズ
+lDialogInputExample	入力例
+lDialogInputParameter	入力パラメーター - ~1~
+lDialogInvalidHotkey	現在のシステムキーボードレイアウトでは、組み合わせ "~1~" をポップアップメニューを開くために使用できませんでした (エラー: 無効なキー名)。`n`n通知領域のアイコンメニューから「カスタマイズ ~2~」を開き、「オプション」をクリックして、"~3~" に別のショートカットを選択してください。
+lDialogInvalidHotkeyFavorite	現在のシステムキーボードレイアウトでは、組み合わせ "~1~" をこのお気に入りを開くために使用できませんでした (エラー: 無効なキー名)。`n`nお気に入り "~2~" (移動先: "~3~") に別のショートカットを選択してください。
+lDialogKeyboard	キーボード
+lDialogLaunchWith	このアプリケーションで実行
+lDialogLaunchWithActiveWindow	このお気に入りをアクティブなウィンドウで開きますか?`n`n~1~
+lDialogListApplicationLabel	アプリケーションの一覧表示:
+lDialogListApplicationsDropdown	すべて表示||現在のウィンドウメニュー|実行中のアプリケーション|アプリケーションを閉じる
+lDialogListApplicationYesNo	このウィンドウを「アクティブにする」なら [はい]、「閉じる」なら [いいえ] を押してください。
+lDialogMaximized	最大化
+lDialogMenuKey	メニューキー
+lDialogMenuNotMoveUnderItself	メニュー "~1~" を自分自身の下に配置することはできません。
+lDialogMenuReopenAfterLaunchingItem	アイテムの実行後にこのメニューを再度開く
+lDialogMenuSortCreated	作成日時
+lDialogMenuSortEditMenu	このメニュー (またはグループ) を編集
+lDialogMenuSortEnable	メニューを自動的にソート
+lDialogMenuSortFavoriteName	お気に入り名
+lDialogMenuSortHeaderAutomatic	メニューを自動ソート...
+lDialogMenuSortHeaderFiltered	検索結果をソート...
+lDialogMenuSortHeaderMainMenu	メインメニューをソート...
+lDialogMenuSortHeaderManual	メニューを手動でソート...
+lDialogMenuSortHeaderSearch	検索結果をソート...
+lDialogMenuSortLastModified	更新日時
+lDialogMenuSortLastUsed	最終使用日時
+lDialogMenuSortSettingsOptions	カスタマイズウィンドウのオプション
+lDialogMenuSortUsage	使用頻度
+lDialogMinimized	最小化
+lDialogModifiedDate	更新日時
+lDialogMouse	マウス
+lDialogMouseButtonsText	左マウスボタン|中央マウスボタン|右マウスボタン|マウス第4ボタン|マウス第5ボタン|ホイール上|ホイール下|ホイール左|ホイール右|
+lDialogMouseButtonsTextShort	左ボタン|中ボタン|右ボタン|第4ボタン|第5ボタン|ホイール上|ホイール下|ホイール左|ホイール右|
+lDialogMoveFavoritesTitle	お気に入りを移動 - ~1~ ~2~
+lDialogMoveFavoriteTitle	お気に入りを移動 - ~1~ ~2~
+lDialogMoveSettingsFail	設定フォルダーのコピー中にエラーが発生しました。`n`n設定フォルダーの移動はキャンセルされました。
+lDialogMoveSettingsNotDefault	別の設定ファイルが読み込まれている間は、設定フォルダーを移動できません。`n`nデフォルトの設定ファイルを読み込み直してから、再度移動を実行してください。
+lDialogMoveSettingsReload	~1~ を再起動する必要があります...
+lDialogMoveSettingsSuccess	設定ファイルのコピーに成功しました。`n`n旧フォルダー:`n~1~`n`n新フォルダー: `n~2~`n`n旧フォルダー内のファイルは削除されていません。~3~ を終了した後、必要に応じて手動で削除してください。
+lDialogMoveSettingsUnder	設定フォルダーを自分自身の中に移動することはできません。別の移動先を選択してください。
+lDialogMultipleAdd	複数のお気に入りを追加
+lDialogMultipleAddCSV	CSVファイル (カンマ区切り値ファイル)
+lDialogMultipleAddDescription	現在開いているウィンドウ、よく使うフォルダー、最近使ったファイル/フォルダー、QAPの機能、特殊フォルダー、または他のQAP設定ファイルの一覧から、選択したサブメニューへワンクリックで複数のお気に入りを追加します。
+lDialogMultipleAddExcludeExisting	既存のお気に入りを除外する
+lDialogMultipleAddFilter	フィルター
+lDialogMultipleAddFrom	追加元
+lDialogMultipleAddHelp	各QAP機能のヘルプを表示するにはダブルクリックしてください
+lDialogMultipleAddIntro1	1) 移動先メニューを選択し、必要に応じてお気に入りをフィルターします。
+lDialogMultipleAddIntro1a	リストをソートするには列の見出しをクリックしてください
+lDialogMultipleAddIntro1f	1) 移動先メニューとソースフォルダーを選択し、必要に応じてお気に入りをフィルターします。
+lDialogMultipleAddIntro1s	1) 移動先メニューとQAP設定ファイル(.ini)またはCSVファイルを選択します。
+lDialogMultipleAddIntro1t	メインメニューとお気に入りがツリー形式で読み込まれます
+lDialogMultipleAddIntro2	2) 追加したいお気に入りにチェックを入れます。
+lDialogMultipleAddIntro2a	名前を編集するには、行を選択して F2 キーを押してください。
+lDialogMultipleAddIntro3	3) 「追加」をクリックしてお気に入りを移動先メニューに挿入し、「カスタマイズ」ウィンドウで「保存」をクリックしてください。
+lDialogMultipleAddSelectSource	追加したいお気に入りのソースを選択して「続行」をクリックしてください。
+lDialogMultipleAddSelectSourceNext	次のウィンドウで以下の操作が可能です:
+lDialogMultipleAddSettingsFileItems	QAP設定ファイル (フラット表示)
+lDialogMultipleAddSettingsFileMenus	QAP設定ファイル (ツリー表示)
+lDialogNA	n/a
+lDialogNew	新規
+lDialogNone	なし
+lDialogNormal	通常
+lDialogOff	オフ
+lDialogOK	OK
+lDialogOn	オン
+lDialogOpenSubFolderAccessed	最終アクセス日時
+lDialogOpenSubFolderCreated	作成日時
+lDialogOpenSubFolderEnable	サブフォルダーを自動的に開く
+lDialogOpenSubFolderLabel	開くフォルダーの選択条件:
+lDialogOpenSubFolderModified	更新日時
+lDialogOpenSubFolderMostAnciently	最も古いもの
+lDialogOpenSubFolderMostRecently	最も新しいもの
+lDialogOpenThisGroup	このグループを開く
+lDialogOpenThisMenu	このメニューを開く
+lDialogOptionsPathNotExist	このフォルダーは存在しません:`n`n~1~`n`n作成しますか?
+lDialogOr	または
+lDialogPlaceholders	ヘルプページの <a href="~1~">プレースホルダー</a> を参照してください。
+lDialogPlay	実行
+lDialogQAPFeatureCategoriesNames	動的メニュー機能|QAPメニューの編集|お気に入り種類の追加|ウィンドウ管理|ウィンドウ機能|コンピューター終了コマンド|各種ユーティリティ|QAP管理
+lDialogQAPFeatureCategoriesNamesAll	すべて (アルファベット順)
+lDialogQAPFeaturesHelpLink	この機能のヘルプ
+lDialogQCECommandCopyBefore	コマンド実行前に選択テキストをコピーする
+lDialogQCECommandCopyBeforeSeconds	コピー失敗までの待機秒数 (デフォルトは 1秒)
+lDialogQCECommandPasteAfter	コマンド実行後にアクティブなアプリへ貼り付ける
+lDialogQCECommandPasteAfterDetail	一部のアプリケーションでは、期待通りにテキストが貼り付けられない場合があります。<a href="~1~">QCEヘルプページ</a> を参照してください。
+lDialogReadOnly	読み取り専用
+lDialogRefresh	更新
+lDialogRemoveMultipleFavorites	本当に ~1~ 個のお気に入り/サブメニューを削除しますか?
+lDialogResetQAPSpecialDefaultNames	このコマンドは、メニュー内のすべての「特殊フォルダー」および「QAP機能」の名前を "~1~" でのデフォルト名にリセットします。`n`n続行しますか?
+lDialogRightButton	右ボタン
+lDialogSameLocartionExistsPrompt	以下のお気に入りが同じ内容を持っています:
+lDialogSameLocartionExistsQuestion	このままお気に入りを保存しますか?
+lDialogSearch	検索
+lDialogSearchAllFavorites	すべてのお気に入りを検索
+lDialogSearchAutoExec	起動時に実行されるお気に入りを検索
+lDialogSearchBrokenLinks	リンク切れのお気に入り(404)を検索
+lDialogSearchBrokenLocations	見つからないフォルダー、ドキュメント、アプリを検索
+lDialogSearchNotInDatabaseFavorites	過去 ~1~ 日間使用されていないお気に入りを検索
+lDialogSearchSpecial	特別検索
+lDialogSelectCSV	インポートするCSVファイルを選択
+lDialogSelectFolder	フォルダーを選択
+lDialogSelectIcon	アイコンを変更
+lDialogSelectIconJL	選択元:
+lDialogSelectIconNo	アイコンなし
+lDialogSelectItemOneOrMore	項目を1つ以上選択してください。
+lDialogSelectItemToEdit	編集する項目を選択してください。
+lDialogSelectItemToMove	移動する項目を選択してください。
+lDialogSelectItemToRemove	削除する項目を選択してください。
+lDialogSettingsInvalid	無効な設定ファイルです。`n`n設定ファイルにセクション ~1~ と ~2~ が含まれているか確認してください。`n`nファイル: ~3~
+lDialogSettingsNotSavedPrompt	「カスタマイズ」ウィンドウに変更が保存されていない状態で開かれています。要求された操作を実行する前に、これらの変更を保存または破棄する必要があります。`n`nどうしますか?`n- 「保存」: 変更を保存して操作を続行する`n- 「カスタマイズ」: 操作をキャンセルして「カスタマイズ」ウィンドウに戻る`n- 「キャンセル」: 操作自体をキャンセルする
+lDialogSettingsNotSavedTitle	~1~ - 保存されていない設定
+lDialogShift	Shift
+lDialogShiftLeft	左 Shift
+lDialogShiftRight	右 Shift
+lDialogShiftShort	Shift
+lDialogShortcut	ショートカット
+lDialogShortcuts	ショートカット
+lDialogShortcutsDescription	マウスまたはキーボードのショートカットの概要を表示します。ヘッダーをクリックしてソートできます。`n`n編集または削除するには、ショートカットをダブルクリックしてください。`n`n「すべてのお気に入りを表示」にチェックを入れると、他のお気に入りにもショートカットを割り当てられます。
+lDialogSortBy		ソート順:
+lDialogSortNaturalOrder	メニュー順
+lDialogSortOrder	ソート順序
+lDialogSoundLabel	お気に入りを呼び出す時にこのサウンドを再生する (<a href="~1~">~2~</a>)
+lDialogSpecialFoldersCategoriesNames	基本|エキスパート|システム管理|コンテンツ|ハードウェア
+lDialogState	ウィンドウの状態:
+lDialogSubmenuNameEmpty	サブメニュー名を空にすることはできません。名前を入力してください。
+lDialogSubmenuParentMenu	挿入先のメニューを選択
+lDialogSwitchSettings	使用する設定ファイルを選択
+lDialogTabNext	次へ
+lDialogThirdPartyDetected	システムに ~2~ がインストールされていることを検出しました。`n`n~2~ との連携を有効にしますか?
+lDialogTreeView	ツリー表示
+lDialogTriggerFor	アクティブ化の条件:
+lDialogUnavailableWithLiveFolders	(ライブフォルダーでは利用できません)
+lDialogUseDefaultWindowPosition	デフォルトのウィンドウ位置を使用
+lDialogWelcomeButton1	QAP 101 入門コース
+lDialogWelcomeButton2	QAP FAQ (ナレッジベース)
+lDialogWelcomeDetail	上のビデオで、Quick Access Popupがいかに生産性を高めるかをご覧ください。5分間の入門コース(QAP 101)を受けるか、FAQ(ナレッジベース)を検索してみてください。
+lDialogWelcomeShow	次回もウェルカムウィンドウを表示する
+lDialogWelcomeThankYou	Quick Access Popupをご利用いただきありがとうございます!
+lDialogWelcomeVideo	クリックして紹介ビデオを見る
+lDialogWin	Windowsキー
+lDialogWindowMonitor	モニター
+lDialogWindowPosition	ウィンドウ位置:
+lDialogWindowPositionDelay	遅延
+lDialogWindowPositionH	高さ
+lDialogWindowPositionLeft	左
+lDialogWindowPositionMayFail	注意: さまざまな理由により、QAPが一部のウィンドウの移動やサイズ変更に失敗することがあります。
+lDialogWindowPositionRight	右
+lDialogWindowPositionW	幅
+lDialogWindowPositionX	左端座標
+lDialogWindowPositionY	タイトルバー座標
+lDialogWindowsAppsList	システムにインストールされているアプリの一覧からWindowsアプリを選択してください
+lDialogWindowsAppsListCustom	カスタムWindowsアプリ識別子 (Application User Model ID - AUMID)
+lDialogWindowsAppsListError	Windowsアプリの一覧を更新できませんでした。PowerShellスクリプトの実行中にエラーが発生しました。
+lDialogWindowsAppsListSuccess	Windowsアプリの一覧が更新されました。
+lDialogWindowsFolderIconCreate	作成
+lDialogWindowsFolderIconNoRoot	Windowsフォルダーアイコンをドライブのルートディレクトリ (~1~) に割り当てることはできません。
+lDialogWindowsFolderIconPrompt	このコマンドはシステムファイル ~1~ を更新します:`n~2~`n`nWindowsフォルダーのアイコンに、現在このお気に入りに選択されているアイコンが割り当てられます。続行しますか?
+lDialogWindowsFolderIconPrompt2	注意: Windowsが新しいフォルダーアイコンを表示するまでに、10～15秒から1分ほどかかる場合があります。
+lDialogWindowsFolderIconRemove	Windowsフォルダーアイコンを削除
+lDialogWindowsFolderIconRemoveFile	このコマンドはシステムファイルを削除し、フォルダーをデフォルトの状態に戻すこともできます:`n~1~`n`nシステムファイルを削除しますか?
+lDialogWindowsFolderIconReset	フォルダーアイコンをデフォルトの画像にリセットします。`n`n続行しますか?
+lDialogWindowsFolderIconSet	Windowsフォルダーアイコンを設定
+lDialogWindowsFolderIconUpdate	更新
+lDialogWinShort	Win
+lDialogWorkingDirLabel	作業フォルダー
+lDonateActionChoose	オプションを選択してください。
+lDonateActionGroupQAP	~1~ 内:
+lDonateActionGroupWebsite	ウェブサイト上:
+lDonateActionManageInstallations	インストールの管理
+lDonateActionManageInstallationsConfirm	~1~ はウェブページ「購入履歴」を開きます。`n`n必要に応じて、ライセンス受信時に送付されたパスワードを使用して右側のカラムからログインしてください。`n`nログイン後、「~2~」の行にある「Manage Installations」リンクをクリックし、不要なインストールを解除してください。
+lDonateActionManageLicense	ライセンスの管理
+lDonateActionManageLicenseDescription	新しいライセンスの取得や、QAPサイトを通じた管理を行うダイアログを開きます。また、別のシステムにインストールするためにライセンスを解除する場合にも使用します。
+lDonateActionNewLicense	新しいライセンスを取得
+lDonateActionNewLicenseConfirm	ライセンスコードを受け取った後、~1~ を再起動してください。
+lDonateActionOldLicenseRemoved	ライセンスが削除されました
+lDonateActionRemoveLicense	ライセンスを削除
+lDonateActionRemoveLicenseConfirm	このPCから "~1~" のライセンスを削除しますか?`n`n「はい」を選択すると、このPCのインストール情報 (~2~) が削除され、別のPCで利用可能になります。`n`n注意: 「はい」と答えた場合、~3~ を制限なしの全機能で再開するには新しいライセンスが必要になります。
+lDonateActionRenew	ライセンスを更新
+lDonateActionRenewConfirm	ライセンスコードを更新した後、~1~ を再起動してください。
+lDonateActionSaveLicense	ライセンスコードを保存
+lDonateCheckTitle	~1~ 回目! - ~2~
+lDonateCodeExpiredMessage	~1~ のライセンス有効期限が切れました。`n`n~1~ のサイトでライセンスを更新できます。
+lDonateCodeExpiredTitle	ライセンス期限切れ - ~1~
+lDonateCodeInvalidMessage	このバージョンの ~1~ を実行するにはライセンスコードが必要です。`n`n無料ライセンスを取得するか、少額のライセンス購入でこのアプリケーションの開発を支援することができます。詳細は ~1~ のサイトをご覧ください。`n`nライセンスコードをお持ちの場合は「ライセンスを保存」を選択してください。
+lDonateCodeManageMessage	ライセンスは有効です。`n`nこのライセンスで残り ~1~/~2~ 台のインストールが可能です。
+lDonateCodeNoInstallationOops	使用していないインストール情報を削除したい場合は、"~3~, ~4~" ダイアログを開いてください。`n`nまたは ~5~ までご連絡いただければ、ライセンスのインストール台数を増やすことも可能です。
+lDonateCodeNoInstallationsMessage	残りのインストール枠がありません`n`n~2~ ライセンスで許可されているインストール回数 (~1~) をすべて使用しました。`n`nこのライセンスのインストール情報は ~2~ のサイトで管理できます。
+lDonateCodeNoInstallationsTitle	残りのインストール枠なし - ~1~
+lDonateCodeNotAvailable	オフライン時は利用できません
+lDonateEnterCode	~1~ のライセンスコードをお持ちですか?`n`nお持ちの場合はコードを入力して ~1~ を再起動してください。`n`nお持ちでない場合は ~1~ のサイトでライセンスコードを取得してください。
+lDonateInvalidLicense	無効なライセンスコードです。
+lDonateInvalidLicenseRunAsFreeEdition	有効なライセンスが保存されるまで、QAPは無料版の制限付きで実行されます。
+lDonateMenu	寄付をする
+lDonateMenuPaypalMonthly	Paypalで毎月寄付
+lDonateMenuPaypalOneTime	Paypalで一度だけ寄付
+lDonateMenuStripe	クレジットカード (Stripe) 経由
+lDonateOnline	ライセンスの確認が ~1~ 日間行われていません。`n`nインターネットに接続してライセンスを検証してください。
+lDonateTextSaveLicense	~1~ ライセンスを保存
+lDonateThankyou	~1~ 様、このプログラムへのご支援ありがとうございます!
+lDonateThankyouRestart	~1~ の開発を支援していただきありがとうございます!`n`nアプリケーションはまもなく再起動します。
+lDOpusAliasName	フォルダーエイリアス
+lDOpusLayoutsName	レイアウト
+lDOpusMenuName	Directory Opus お気に入り
+lDopusMenuNameDescription	Directory Opus (DOpus) ユーザー向けに、DOpusのお気に入りに追加されたフォルダーで構築された動的メニューを表示します。QAPのインストール時にDOpusを選択した場合、Directory Opusのお気に入りは自動的にメニューに追加されています。
+lDopusMenuNameShowAlias	メニュー ~1~ にフォルダーエイリアスを表示する
+lDopusMenuNameShowLayout	メニュー ~1~ にレイアウトを表示する
+lGuiAbout	クレジット
+lGuiAboutDescription	開発、翻訳、その他の謝辞、プログラムとエンジンのバージョン番号、ライセンス、現在のユーザー名とPC名、サポートウェブサイトへのリンクを表示します。
+lGuiAddFavorite	追加
+lGuiCancel	キャンセル
+lGuiClipboardCommandLinkHelp	<a id="1">QCEのヘルプ</a>
+lGuiClipboardCommandLinkRefresh	<a id="2">リストを更新</a>
+lGuiClose	閉じる
+lGuiCopy	コピー
+lGuiDonateCodeInput	QAPライセンスコードを入力
+lGuiDonateCodeInputDonorInvalid	無効なライセンスコードです。`n`n登録確認メールに記載されている「License Key」の値を正確にコピーしているか確認してください。
+lGuiDonateCodeInputDonorLabel	32文字のコード (License Key) をコピーして貼り付けてください。
+lGuiDonateCodeInputSponsorLabel	お名前を入力 (任意)
+lGuiDropFilesHelp	ドラッグ&ドロップ (ヒント)
+lGuiDropFilesIncentive	以下の種類のお気に入りを ~1~ ウィンドウにドラッグできます:`n`n`t- ~2~`n`t- ~3~`n`t- ~4~
+lGuiDropFilesIncentive1	「カスタマイズ」ウィンドウで現在表示されているメニュー内で、お気に入りをドラッグ&ドロップして上下に移動できます。リストをスクロールするには、マウスホイールを上下に回してください。
+lGuiDropFilesIncentive2	一度に複数のファイルをドラッグしやすくするために、ウィンドウ左側のピンアイコンをクリックして「カスタマイズ」ウィンドウを「常に手前に表示」にすることができます。
+lGuiEditFavorite	編集
+lGuiFileManagerNewTabSide	ファイルマネージャーのどちら側に新しいタブを開きますか?
+lGuiFileManagerNewTabSideActive	アクティブな側
+lGuiFileManagerNewTabSideDest	反対側 (移動先)
+lGuiGroupClosing	エクスプローラーウィンドウを閉じる
+lGuiGroupRestoreDelay	復元するお気に入り間の遅延時間:
+lGuiGroupRestoreDelayMilliseconds	ミリ秒
+lGuiGroupRestoreLaunchAndWait	実行して待機
+lGuiGroupRestoreMinimized	最小化して実行
+lGuiGroupRestoreSide	~1~ の表示側
+lGuiGroupRestoreStopIfError	エラー発生時に停止
+lGuiGroupRestoreWaitFinish	プログラムの実行終了を待機
+lGuiGroupSaveAddNewWindowsLabel	フォルダーを新しいウィンドウのタブとして追加
+lGuiGroupSaveAddWindowsLabel	フォルダーを既存のウィンドウに追加
+lGuiGroupSaveGroupInMenu	このグループをサブメニュー内にも表示する
+lGuiGroupSaveReplaceWindowsLabel	既存のウィンドウのフォルダーを置換する
+lGuiGroupSaveRestoreOption	このグループのフォルダーを復元する時:
+lGuiGroupSaveRestoreWith	フォルダーの復元方法:
+lGuiHelp	ヘルプ
+lGuiHelpDescription	QAPの簡易ヘルプウィンドウを表示します。
+lGuiHotkeysHelp	ウィンドウショートカットのカスタマイズヘルプ
+lGuiHotkeysOpenParentMenu	親メニューを開く
+lGuiHotkeysOpenSubmenuOrEditFavorite	サブメニューを開く、またはお気に入りを編集
+lGuiHotkeysSelectContiguousItems	連続したアイテムを選択
+lGuiHotkeysSelectNextItem	次/前のアイテムを選択
+lGuiHotkeysSelectNonContiguousItems	離れたアイテムを選択
+lGuiInstallQCEDownload	QCEをダウンロード
+lGuiInstallQCEGetHelp	ヘルプを表示
+lGuiInstallQCEGetMore	無料のクリップボード変換オプションをさらに探す
+lGuiInstallQCEGetMoreDetail	Quick Access Popup (QAP) メニューを強化して、面倒な手動のテキスト編集を回避しましょう!`n`n無料の Quick Clipboard Editor (QCE) は QAP と統合され、強力なクリップボードメモリと操作機能を提供します。QAP のワークフロー内から直接、クリップボードテキストを自在に操作できます。QCE は、テキストのソート、検索置換、行の挿入/削除、文字フィルタリング、段落の整形、各種フォーマットへのエンコード/デコードなどの作業を自動化します。`n`nこれにより、アプリケーションを切り替えることなく、クリップボードの内容を素早く変換できます。単純なアクションから複雑なスクリプトまで、カスタムコマンドを作成・保存し、簡単に QAP メニューに追加できます。
+lGuiInstallQCELink	<a id="1">QCE (Quick Clipboard Editor) をインストールする</a>
+lGuiInstallQCEPrompt	すべての機能を使用するには、Quick Clipboard Editor (QCE) をインストールしてください。
+lGuiInstallQCETitle	Quick Clipboard Editor (QCE) のインストール
+lGuiListApplicationsHeader	インデックス|ID|ウィンドウタイトル|プロセス名|プロセスパス|幅 & 高さ|状態|スタイル|拡張スタイル|UWP Hwnd|ユニバーサルアプリ名
+lGuiLoginName	ログイン名
+lGuiLvFavoritesHeader	名前|種類|ショートカット|場所または内容
+lGuiLvFavoritesHeaderFiltered	名前|メニュー|種類|組み合わせ|場所または内容
+lGuiLvFavoritesHeaderFilteredDates	更新日時|作成日時
+lGuiLvFavoritesHeaderFilteredStats	使用回数|最終使用日
+lGuiMove	移動
+lGuiOptions	オプション
+lGuiOptionsDescription	QAPの動作設定を行う「オプション」ダイアログを表示します。
+lGuiPassword	パスワード
+lGuiPasswordNotEncripted	注意: パスワードはインターネット送信前に暗号化されません。
+lGuiQuickAddNewSnippet	この新しいテキストスニペット
+lGuiQuickAddSnippet	テキストスニペットを追加 (クイック)
+lGuiQuickAddSnippetDescription	テキストスニペットのお気に入りと、そのホットストリング・トリガーを同じダイアログから素早く作成します。クリップボードにテキストがある場合は、それがデフォルト値として使用されます。より詳細な設定を行うには、通常の「お気に入りの編集」ダイアログを使用してください。
+lGuiQuickAddSnippetExample	テキストエディタで ~1~ と入力すると展開されます。
+lGuiQuickAddSnippetExampleName	テキストスニペットの例
+lGuiQuickAddSnippetTitle	テキストスニペットのクイック追加 - ~1~ ~2~
+lGuiQuickLaunchDescription	検索ボックスを開き、検索文字列を入力して結果からマウス(ダブルクリック)またはキーボード(Enter)でアイテムを選択して起動します。右クリックで、お気に入りの編集や場所のコピーなどができる代替メニューが開きます。
+lGuiQuickLaunchTitle	クイック起動
+lGuiRemoveFavorite	削除
+lGuiResetDefault	デフォルトのホットキーに戻す
+lGuiSave	保存
+lGuiSaveAndClose	保存して閉じる
+lGuiSaving	保存中
+lGuiSearchAndReplaceConfirm	確認
+lGuiSearchAndReplaceDescription	内容、移動先、お気に入り名、アイコンリソース、またはパラメーター内で検索・置換する値を指定します。`n`n置換を実行するお気に入りの種類を選択してください。`n`n各お気に入りについて個別に置換を確認するか、すべて一括で置換するかを選択します。
+lGuiSearchAndReplaceFindNext	次を検索
+lGuiSearchAndReplaceIdentical	検索する値と置換する値が同じです...
+lGuiSearchAndReplaceNotFound	お気に入りが見つかりませんでした...
+lGuiSearchAndReplaceReplace	置換
+lGuiSearchAndReplaceReplaceAll	すべてのお気に入りを置換
+lGuiSearchAndReplaceReplaceIconResource	アイコンリソース
+lGuiSearchAndReplaceReplaceSearchFor	検索
+lGuiSearchAndReplaceReplaceThis	このお気に入りを置換
+lGuiSearchAndReplaceReplaceTypes	置換対象の種類:
+lGuiSearchAndReplaceReplaceValues	置換対象の項目:
+lGuiSearchAndReplaceReplaceWith	置換後の文字列:
+lGuiSearchAndReplaceStart	開始
+lGuiSearchAndReplaceStop	停止
+lGuiSearchAndReplaceTitle	検索と置換
+lGuiSearchAndReplaceTopMenu	このメニューとサブメニュー内を検索・置換
+lGuiSubmenuDropdownLabel	編集するメニューまたはグループ:
+lGuiTitle	「カスタマイズ」 - ~1~ ~2~
+lGuiTreeViewPromptQAP	左側のリストからQAP機能を選択すると、説明とヘルプリンクが表示されます。すべてのQAP機能は「すべて (アルファベット順)」セクションにあります。
+lGuiTreeViewPromptQCE	左側のカテゴリからクリップボードコマンドを選択してください。
+lHelpMenuKnowledgeBase	ヘルプとサポート情報
+lHelpMenuQuickStart	クイックスタート
+lHelpMenuSupportForum	サポートフォーラム
+lHelpMenuVideosAll	すべてのビデオ
+lHelpMenuVideosFirstStep	最初のステップのビデオ
+lHelpTabAddingFavorite	お気に入りの追加
+lHelpTabGettingStarted	はじめに
+lHelpTabQAPFeatures	QAPの機能
+lHelpTabSharedMenus	共有メニュー
+lHelpTabTipsAndTricks	ヒントとコツ
+lHelpText11	QAP (Quick Access Popup) を起動すると、通知領域にアイコンが追加され、コマンドを待機します。お気に入りの「フォルダー」「ドキュメント」「アプリケーション」「ウェブサイト」「FTPサイト」「スニペット」を開きたい時は、QAPの専用キー [~1~] または [~2~] を押し、ポップアップメニューからお気に入りを選択するだけです。
+lHelpText12	Windowsエクスプローラーやファイルダイアログ*でお気に入りの「フォルダー」を選択すると、Quick Access Popupは即座に現在のウィンドウをそのフォルダーへ移動させます! *この機能は、オプションの「全般」セクションで有効にする必要があります。
+lHelpText13	フォルダーを新しいウィンドウで強制的に開くには、代替キー [~1~] または [~2~] を押します。代替メニューで「新しいウィンドウで開く」を選択し、目的のフォルダーを選んでください。代替メニューには他にも多くの機能があります。
+lHelpText14	Quick Access Popupメニューを自分好みにするには「カスタマイズ」を選択します。お気に入りの追加、移動、名前の変更、削除が可能です。また、「サブメニュー」「グループ」「共有メニュー」を追加することもできます。ドロップダウンリストから「編集するメニューまたはグループ:」を選択してください。変更を維持するには「保存」をクリックします。
+lHelpText21	お気に入りを追加するには、「カスタマイズ」ウィンドウで「追加」ボタンをクリックします。新しいお気に入りの種類を選択し、ウィンドウ右側のヒントを読みます。「続行」をクリックすると「お気に入りの追加」ダイアログが開きます。
+lHelpText22	「お気に入りの追加」ダイアログの各タブで、「基本設定」「メニューオプション」「ウィンドウオプション」「詳細設定」を入力します。「追加」をクリックしてお気に入りをメニューに挿入し、「カスタマイズ」ウィンドウで「保存」をクリックします。
+lHelpText23	アクティブなフォルダーやウェブページを追加する`n`n新しいお気に入りの「フォルダー」や「ウェブページ」を素早くメニューに追加するには:`n1) よく使うフォルダーやウェブページを開きます。`n2) QAP専用キー [~1~] または [~2~] を押し、「アクティブなフォルダーまたはウェブページを追加」をクリックします。`n3) 短い名前を付けて「追加」をクリックし、「カスタマイズ」ウィンドウで「保存」をクリックします。
+lHelpText24	QAPの起動時には「カスタマイズ」ウィンドウが自動的に開きます。メニューの内容に満足したら、起動時にはこのウィンドウを閉じ、メニューの更新が必要な時だけ開くように設定できます。設定は「オプション」の「『カスタマイズ』ウィンドウ」セクションで行えます。
+lHelpText31	「QAPツール」メニュー内:`n`n
+lHelpText32	- 「フォルダーを再度開く」または「現在のフォルダーをダイアログで再度開く」メニューを使用して、エクスプローラーですでに開いているフォルダーを再利用できます。`n- 「クリップボード」メニューから、クリップボード内のファイルやURLにアクセスできます。`n- 「ドライブ」メニューをクリックすると、ドライブの一覧と現在の空き容量を確認できます。
+lHelpText33	QAP機能メニューのカスタマイズ
+lHelpText34	「最近使った(または頻繁に使う)アイテム」や「QAPツール」の項目を、メインメニューや他のサブメニューへ自由に移動できます。「カスタマイズ」ウィンドウのドロップダウンから移動したいQAP項目を選択し、「メニューオプション」タブで新しい親メニューと位置を選択してください。
+lHelpText35	「最近使った(または頻繁に使う)アイテム」メニューで現在のコンテンツを探す:
+lHelpText36	- 「頻繁に使うフォルダー/ファイル」メニューで、よく使うコンテンツを表示します。`n- 「最近使ったフォルダー/ファイル」メニューで、最近の作業履歴を表示します。`n- 「現在のウィンドウ」メニューで、実行中の他のエクスプローラーやアプリケーションに切り替えます。
+lHelpText41	- 通知領域（Windows画面の右下）のQuick Access Popupアイコンを以下の2つの方法で利用できます:`n1) アイコンを左クリックして、QAPポップアップメニューを開く`n2) アイコンを右クリックして、QAPシステムメニューを開く。
+lHelpText42	- 通知領域のQAPアイコンを右クリックし、「Windows起動時に実行」にチェックを入れると、Windows起動時にQAPを自動実行できます。
+lHelpText43	- QAPメニューを開く条件（マウスボタンやキーボードショートカット）を設定します。「カスタマイズ」ウィンドウで「オプション > ポップアップショートカット」メニューを選択してください。
+lHelpText44	- その他「オプション」で可能なこと: 言語の選択、メニューアイコンのサイズ、ウィンドウの色、最近使ったフォルダーの表示数、メニューへの数字ショートカットの追加など。メニューを固定位置に表示したり、「カスタマイズ」ウィンドウの位置を記憶させたりもできます。
+lHelpText45	- Directory Opus ユーザー: 詳細は <a href="~1~">こちらのページ</a> を参照してください。`n- Total Commander ユーザー: 詳細は <a href="~2~">こちらのページ</a> を参照してください。`n- その他のファイルマネージャーのユーザー: QAPconnectに関する詳細は <a href="~3~">こちらのページ</a> を参照してください。
+lHelpText51	「共有メニュー」を使用すると、複数のユーザー間で、または同一ユーザーが異なるコンピューター間で、設定ファイルを介してお気に入りを管理できます。共有メニューには3つのタイプがあります:
+lHelpText52	共有メニューには、他の共有メニュー以外のあらゆる種類のお気に入りを含めることができます。設定ファイル（.ini）はネットワークドライブやクラウドフォルダー（Dropboxなど）に保存して複数のPCで使用できます。QAPは書き込みアクセスの衝突を回避し、共同作業を完全にサポートします。
+lHelpText53	共有メニューを作成または追加するには、「お気に入りの追加」ダイアログで「共有メニュー」を選択し「続行」を押します。「外部設定ファイルの場所」フィールドに、設定ファイルのパスとファイル名を入力してください。拡張子は .ini である必要があります。既存のファイルがある場合はその内容が追加され、ない場合は空のサブメニューとして新規作成されます。
+lHelpText54	「オプション」の「全般」タブで「共有メニューカタログ」を設定すると、ユーザーが共有メニューを簡単に購読できるようになります。
+lHelpTextLead	Quick Access Popupを使えば、よく使うフォルダー、ドキュメント、ウェブページへ電光石火の速さで移動できます!
+lHelpTitle	ヘルプ - ~1~ ~2~
+lHotkeyRemindersRightAlign	通知を右寄せにする
+lImpExpAborted	中断されました
+lImpExpAppend	追記
+lImpExpCompleted	完了しました
+lImpExpDestination	移動先
+lImpExpExport	エクスポート
+lImpExpFavorites	お気に入り
+lImpExpFile	~1~ ファイル
+lImpExpFileGlobal	グローバル設定およびメインメニューのキー
+lImpExpFileThemes	テーマ
+lImpExpFinalReport	~1~ の転送。`n`nソース:`n~2~`n`n移動先:`n~3~
+lImpExpHelpImportFavorites	注意: お気に入りをお使いのメニューにインポートするには、「ファイル、~1~」を選択してください。
+lImpExpImport	インポート
+lImpExpImportFavorites	お気に入りをインポート
+lImpExpInvalidDestinationFolder	無効な移動先フォルダーです:`n`n~1~
+lImpExpMenu	インポート設定
+lImpExpMenuDescription	別のPCにインストールされたQAPや、別のユーザーの設定をインポートするためのダイアログを表示します。
+lImpExpMenuExport	設定とお気に入りをエクスポート
+lImpExpMenuExportDescription	お気に入りや設定をエクスポートするためのダイアログを表示します。作成されたファイルを使用して、別の環境へ設定を移行したり、バックアップとして保存したりできます。
+lImpExpNoThemes	セクション "~2~" の値 "~1~" にテーマの一覧が見つかりません。`n`nソースファイル:`n~3~
+lImpExpOptionAlternative	代替メニューのキーと修飾キー
+lImpExpOptionFavorites	お気に入り
+lImpExpOrIdentical	(または同一内容)
+lImpExpReplaceAll	すべて置換
+lImpExpReplaceFavorites	移動先ファイルにお気に入りが既に存在します。どうしますか?`n`n~1~
+lImpExpReplaceSection	既存ファイルのセクション ~2~ を置換（上書き）しますか?`n`n~1~`n`n[~2~]`n~3~
+lImpExpRestartApp	今すぐ新しい設定を読み込んで ~1~ を再起動しますか?
+lImpExpSectionNotFound	ファイル内にコンテンツが見つかりません:`n`n~1~`n`nセクション: [~2~]`n説明: ~3~
+lImpExpSelectFile	~1~ ファイルを選択してください。
+lImpExpSource	ソース
+lImpExpTitle	インポート / エクスポート設定 - ~1~
+lImpExpUnsavedSettings	「カスタマイズ」ウィンドウが開いており、変更が保存されていません。`n`nインポートまたはエクスポートを行う前に、設定ウィンドウを閉じてください。
+lImportFavoritesDescription	「~1~」ダイアログの「~2~」オプションを開き、QAP設定ファイルから選択したお気に入りを指定のサブメニューにインポートします。
+lMainMenuName	メイン
+lMenuAbout	クレジット
+lMenuAddFavorite	お気に入りを追加
+lMenuAddFavoriteDescription	追加するお気に入りの種類を選択するリストを表示します。`n`n次のウィンドウで以下を入力します:`n- 名前`n- コンテンツ`n- アイコン、ショートカット、ホットストリング、引数などの各種設定`n`n選択した種類に応じて、コンテンツはフォルダー、ドキュメント、プログラムのパス、ウェブリンク、テキストスニペット、サブメニュー名などになります。
+lMenuAddFavoriteOfTypeDescription	種類「~1~」のお気に入りを追加します。`n`n「お気に入りの追加」ダイアログで以下を入力してください:`n- 名前`n- コンテンツ (種類による)`n- アイコン、ショートカット、ホットストリング、引数などの各種設定
+lMenuAddThisFolder	アクティブなフォルダーまたはウェブページを追加
+lMenuAddThisFolderDescription	現在開いているフォルダーやウェブページを素早くメニューに追加します。`n`nWindowsエクスプローラーやファイルダイアログ、および主要なウェブブラウザでこの機能を使用できます。`n`n「お気に入りの追加」ダイアログで名前を確認し、アイコンやショートカットなどの各種設定を行ってください。`n`nデフォルトでは、この機能はメインメニューに含まれています。
+lMenuAddThisFolderXpress	アクティブなフォルダーまたはウェブページを即座に追加
+lMenuAddThisFolderXpressDescription	「アクティブなフォルダーまたはウェブページを追加」と似ていますが、新しいお気に入りがメインメニューの先頭に確認なしで自動的に追加されます。`n`n設定を変更したい場合は「編集」ボタンをクリックして、名前、位置、各種設定を変更できます。`n`n「オプション」から、新しいアイテムをデフォルトでメインメニューの最後に追加するように変更することも可能です。
+lMenuAlternativeCopySelectedFile	選択したファイルまたはフォルダーをお気に入りフォルダーにコピー
+lMenuAlternativeEditFavorite	お気に入りを編集
+lMenuAlternativeMoveSelectedFile	選択したファイルまたはフォルダーをお気に入りフォルダーに移動
+lMenuAlternativeNewWindow	新しいウィンドウで開く
+lMenuAlternativeOpenContainingCurrent	親フォルダーを現在のウィンドウで開く
+lMenuAlternativeOpenContainingNew	親フォルダーを新しいウィンドウで開く
+lMenuAlternativeRunAs	管理者として実行
+lMenuAppData	AppData (ユーザー)
+lMenuCache	キャッシュ
+lMenuClipboard	Windows クリップボード
+lMenuClipboardCommandLower	クリップボードを小文字に変換
+lMenuClipboardCommandTitle	クリップボードをタイトルケース(単語の先頭を大文字)に変換
+lMenuClipboardCommandToggle	クリップボードの大文字小文字を反転
+lMenuClipboardCommandUpper	クリップボードを大文字に変換
+lMenuClipboardDescription	Windowsクリップボードの現在の内容を動的メニューとして表示します。`n`nクリップボードにドキュメント、アプリケーション、またはフォルダーのパスが含まれている場合、それらをリスト表示し、直接開いたり実行したりできます。
+lMenuClipboardEmpty	クリップボードは空です
+lMenuClipboardNoContent	クリップボードにパスやURLが見つかりません
+lMenuClipboardTooLarge	クリップボードの内容が大きすぎて処理できません (最大 ~1~ 文字)
+lMenuCloseAllWindows	すべてのウィンドウを閉じる
+lMenuCloseAllWindowsDescription	現在開いているウィンドウの一覧を表示します。残したいウィンドウのチェックを外し、「選択したウィンドウを閉じる」をクリックして他を閉じます。ダブルクリックまたはEnterでウィンドウを閉じるか、詳細を確認できます。
+lMenuCloseThisMenu	このメニューを閉じる
+lMenuCloseThisMenuDescription	メニューの外をクリックしたりEscキーを押したりしてもメニューが閉じない場合に、強制的にQAPメニューを閉じます。`n`nこれはWindowsに起因する稀な不具合によりメニューが正常に閉じられなくなった際のための機能です。
+lMenuColumnBreak	列の区切り
+lMenuCommonAppData	ProgramData (共有)
+lMenuCommonDesktop	パブリック デスクトップ
+lMenuCommonStartMenu	スタートメニュー (共有)
+lMenuCommonStartupMenu	スタートアップ (共有)
+lMenuComputerManagement	コンピューターの管理
+lMenuContainerInGui	カスタマイズウィンドウ内のお気に入り
+lMenuContainerInGuiDescription	「カスタマイズ」ウィンドウに表示されているお気に入り（検索結果を含む）をメニューとして表示します。検索結果の場合、重複するメニュー名には一意にするために「[!]」が付与されます。
+lMenuCookies	Cookies
+lMenuCopyLocation	お気に入りのパスまたはURLをコピー
+lMenuCurrentFolders	現在のフォルダー
+lMenuCurrentFoldersDescription	WindowsエクスプローラーやDirectory Opusですでに開いているフォルダーを動的メニューとして表示します。このメニューはQAPメニューを開くたびに再生成されます。`n`n「フォルダーを再度開く」機能は、ファイルダイアログで別のウィンドウで開いているフォルダーへ素早く移動したい時に特に便利です。
+lMenuCustomizeThisMenu	このメニュー (またはグループ) をカスタマイズ
+lMenuCustomizeThisMenuDescription	この項目をクリックすると、この項目が含まれているメニューを直接編集できる状態で「カスタマイズ」ウィンドウを開きます。
+lMenuDesktop	デスクトップ
+lMenuDiskManagement	ディスクの管理
+lMenuDownloads	ダウンロード
+lMenuDrives	ドライブ
+lMenuDrivesDescription	PCにマウントされているドライブを、ラベル、空き容量、合計容量、およびドライブの種類に応じたアイコンと共に動的メニューとして表示します。`n`nこのメニューはQAPメニューを開くたびに再生成されます。
+lMenuDrivesSpace	(~1~ GB 空き / ~2~ GB)
+lMenuDynamicMenus	最近使った (または頻繁に使う) アイテム
+lMenuEditIniFile	~1~ を編集
+lMenuEditIniFileDescription	Quick Access Popup (QAP) の現在有効な設定ファイル (.ini) を編集します。
+lMenuEventViewer	イベント ビューアー
+lMenuEvironmentVariables	環境変数
+lMenuExitApp	~1~ を終了
+lMenuExitAppDescription	Quick Access Popupを終了し、お気に入りに割り当てられたすべてのマウス・キーボードのショートカットやトリガーを解除します。
+lMenuExternalCatalogue	カタログから共有お気に入りメニューを追加
+lMenuExternalCatalogueDescription	共有メニューカタログ（管理者やグループメンバーによって管理されている設定ファイルのリポジトリ）から、共有メニューを追加します。`n`nリポジトリから共有メニューファイルを選択するか、カタログにない共有メニューを追加、または新規作成できます。
+lMenuFavorite	お気に入り
+lMenuFile	ファイル
+lMenuFonts	フォント
+lMenuGetWinInfo	ウィンドウ情報を取得
+lMenuGetWinInfoDescription	QAPメニューのマウスボタンによるトリガーから除外したいウィンドウを特定するのに役立ちます。`n`nこの機能を実行後、対象のウィンドウをQAPメニュー用ボタン（デフォルトは中クリック）でクリックすると、ウィンドウのタイトルとクラス名がクリップボードにコピーされます。`n`n詳細は「オプション」の「詳細」タブ内にある「除外リスト」を参照してください。
+lMenuHelp	ヘルプ
+lMenuHistory	履歴
+lMenuLastAction	最後のアクションを繰り返す
+lMenuLastActionDescription	メニューに「最後のアクションを繰り返す」アイテムを追加します。メニューからこれを選択すると、最後に開いたお気に入りを再度開きます。`n`nこの項目のラベルは常に「最後のアクションを繰り返す」となります（QAPの制限による）。最後にどのアクションを実行したか覚えておく必要があります。
+lMenuLastActions	最後のアクションを繰り返す（履歴）
+lMenuLastActionsDescription	最近呼び出した10個のお気に入りを動的メニューとして表示します。`n`n表示するアイテム数は「オプション」の「メニュー」タブで設定可能です。`n`nアイテムは最近使った順に並び、アイテムを再度開くとリストの最上部へ移動します。
+lMenuLaunchAllItems	すべてのアイテムを実行
+lMenuListApplications	実行中のアプリ一覧
+lMenuListApplicationsDescription	実行中のウィンドウのタイトル、プロセスパス、その他のプロパティを表示します。ウィンドウをダブルクリックするとダイアログが表示され、ウィンドウの切り替えや終了が可能です。
+lMenuMenu	メニュー
+lMenuMenuOrGroup	メニューまたはグループ
+lMenuMyMusic	ミュージック
+lMenuMyQAPMenu	QAPツール
+lMenuMyQCEMenu	クリップボードコマンド
+lMenuMySnippetsMenu	マイ スニペット
+lMenuMySpecialMenu	特殊フォルダー
+lMenuMyVideo	ビデオ
+lMenuMyWindowsAppsMenu	マイ Windows アプリ
+lMenuNetworkDrive	ネットワークドライブ
+lMenuNoCurrentFolder	現在開いているフォルダーはありません...
+lMenuOpenBackupDirectory	QAP設定のバックアップフォルダーを開く
+lMenuOpenWorkingDirectory	QAP設定フォルダーを開く
+lMenuOptions	オプション
+lMenuPictures	ピクチャ
+lMenuPopularFiles	頻繁に使うファイル
+lMenuPopularFolders	頻繁に使うフォルダー
+lMenuPopularMenusDescription	Windowsの統計に基づき、QAPで使用された頻度の高い ~1~ を動的メニューとして表示します。このメニューはQAPメニューを開くたびに更新されます。
+lMenuPopularMenusFiles	頻繁に使うファイル
+lMenuPopularMenusFolders	頻繁に使うフォルダー
+lMenuPopularMenusWillImprove	このメニューは ~1~ を使い続けることで精度が向上します...
+lMenuProgramFiles	Program Files
+lMenuProgramsFolderStartMenu	プログラム (スタートメニュー)
+lMenuPublicLibraries	パブリック ライブラリ
+lMenuQuickLaunch	クイック起動
+lMenuRecentFiles	最近使ったファイル
+lMenuRecentFilesDescription	Windowsの仮想フォルダー「最近使った項目」に基づき、最近使った10個のドキュメントを動的メニューとして表示します。表示数は「オプション」の「メニュー」タブで設定可能です。`n`nアイテムはWindowsが記録した最新の順に並びます。
+lMenuRecentFolders	最近使ったフォルダー
+lMenuRecentFoldersDescription	Windowsの仮想フォルダー「最近使った項目」に基づき、最近開いた10個のフォルダーを動的メニューとして表示します。表示数は「オプション」の「メニュー」タブで設定可能です。`n`nアイテムはWindowsが記録した最新の順に並びます。
+lMenuRecentItems	最近使った項目
+lMenuRefreshMenu	ライブフォルダーと共有メニューを更新
+lMenuRefreshMenuDescription	「ライブフォルダー」を手動で再生成します。この操作は、「オプション」の「メニュー」タブにある「QAPメニューの自動更新間隔」に秒数を入力することで、定期的に実行させることも可能です。`n`n再生成中のわずかな間（ライブフォルダーや共有メニューの数に依存）、QAPメニューは利用できません。
+lMenuReload	~1~ を再起動
+lMenuReloadDescription	Quick Access Popupを再起動します。`n`n再起動前に「カスタマイズ」ウィンドウの変更を保存したか確認してください。
+lMenuReopenCurrentFolder	現在のフォルダーをダイアログで再度開く
+lMenuReopenCurrentFolderDescription	ファイルダイアログにおいて、現在Windowsエクスプローラーで開いているフォルダーを現在のフォルダーとして使用します。`n`nこの機能を使用するには、「オプション」の「全般」タブで「ファイルダイアログでフォルダーを変更する...」を有効にする必要があります。
+lMenuReopenInNewWindow	現在のフォルダーを新しいウィンドウで開く
+lMenuReopenInNewWindowDescription	現在開いているフォルダーを、新しいエクスプローラー（またはDirectory Opus、Total Commander）のウィンドウで開き直します。ファイルダイアログで閲覧中の場所を、通常のエクスプローラーで開きたい時に便利です。
+lMenuResetQAPSpecialDefaultNames	特殊フォルダーとQAP機能の名前をデフォルトにリセット
+lMenuRestoreAllFonts	すべてのフォントをデフォルトに戻す
+lMenuRestoreQuickLaunchWindowPosition	「クイック起動」ウィンドウの位置をリセット
+lMenuRestoreSettingsWindowPosition	「カスタマイズ」ウィンドウの位置をリセット
+lMenuRestoreSettingsWindowPositionDescription	「カスタマイズ」ウィンドウのサイズと位置を、メインモニターの中央にリセットします。
+lMenuRunAtStartup	Windows起動時に実行
+lMenuSearchOrder	元の検索順序
+lMenuSelectAll	すべてのアイテムを選択
+lMenuSendTo	送る (SendTo)
+lMenuSettings	カスタマイズ
+lMenuSettingsDescription	QAPメニューのカスタマイズ、お気に入りの管理、各種オプション設定を行う「カスタマイズ」ウィンドウを表示します。`n`nデフォルトでは、この機能はメインメニューに含まれています。
+lMenuShareQAP	QAPを友達にすすめる
+lMenuShowAlternativeMenuDescription	メインメニューに「代替メニュー」を関連付け、「新しいウィンドウで開く」「お気に入りを編集」「管理者として実行」「親フォルダーを開く」などのコマンドを使用できるようにします。
+lMenuStartMenu	スタートメニュー
+lMenuStartup	スタートアップ
+lMenuSuspendHotkeys	ショートカットを一時停止
+lMenuSwitchApp	実行中のアプリ
+lMenuSwitchAppDescription	システムで現在実行中のアプリケーションを動的メニューとして表示します（最近アクティブになったウィンドウ順）。`n`nアイテムを選択すると、そのウィンドウが最前面に表示されます。このメニューはQAPメニューを開くたびに更新されます。
+lMenuSwitchFolder	実行中のフォルダー
+lMenuSwitchFolderDescription	WindowsエクスプローラーやDirectory Opusですでに開いているフォルダーを動的メニューとして表示します。`n`nアイテムを選択すると、そのウィンドウが最前面に表示されます（別のウィンドウで開くには「~1~」も参照してください）。このメニューはQAPメニューを開くたびに更新されます。
+lMenuSwitchFolderOrApp	実行中のウィンドウ
+lMenuSwitchFolderOrAppDescription	2つのパートからなる動的メニューを表示します:`n1) エクスプローラーやDirectory Opusで開いているフォルダー`n2) システムで実行中のアプリケーション（最近アクティブになった順）。`n`nアイテムを選択すると、そのウィンドウが最前面に表示されます。このメニューはQAPメニューを開くたびに再生成されます。
+lMenuSwitchSettings	設定ファイルを切り替える
+lMenuSwitchSettingsDefault	デフォルトの設定ファイルに切り替える
+lMenuSwitchSettingsDefaultDescription	デフォルトの場所にある設定ファイルを使用してQuick Access Popupを再起動します。`n`n通常インストールの場合、デフォルトの場所はユーザーフォルダー（例: "C:\Users\User\AppData\Roaming\Quick Access Popup"）です。`n`nポータブル版の場合は、実行ファイル QuickAccessPopup.exe と同じ場所です。
+lMenuSwitchSettingsDescription	別のQAP設定ファイルを選択し、その設定（お気に入りやオプションを含む）でQAPを再起動します。`n`n再起動前に「カスタマイズ」ウィンドウの変更を保存したか確認してください。
+lMenuSystem32	System32
+lMenuSystemCertificates	システム証明書
+lMenuTaskManager	タスク マネージャー
+lMenuTemplates	テンプレート
+lMenuTemporaryFiles	一時ファイル
+lMenuTools	ツール
+lMenuUpdate	アップデートを確認
+lMenuUpdateDescription	Quick Access Popupのウェブサイトで新しいバージョンが利用可能か確認します。
+lMenuUserFolder	ユーザーフォルダー
+lMenuUserPinned	ユーザーのピン留め
+lMenuWindowAlwaysonTop	ウィンドウを常に手前に表示
+lMenuWindowAlwaysonTopDescription	現在のウィンドウを「常に手前に表示」に設定します（オン/オフ切り替え）
+lMessengerCloseQAPSettings	~1~ で設定ウィンドウが開かれており、保存されていない変更がある可能性があります。`n`nコンテキストメニューを使用する前に、設定ウィンドウを閉じることをお勧めします。
+lMessengerDoNotRun	~1~ を直接実行しないでください。代わりに以下の操作が可能です:`n`n- エクスプローラーでファイル/フォルダーを右クリックしてメニューに追加`n- エクスプローラーの背景を右クリックしてそのフォルダーを追加`n- デスクトップの背景を右クリックしてポップアップメニューを表示`n`nコンテキストメニューを使用する前に ~2~ が実行中であることを確認してください。「オプション」ウィンドウの「コンテキストメニュー」設定を確認してください。
+lMessengerError	エラーが発生しました。`n`nコンテキストメニューを使用する前に ~1~ が実行中であることを確認してください。
+lMessengerHelp	ヘルプについては www.QuickAccessPopup.com で "Messenger" を検索してください。
+lNavigateFileError	フォルダーを開く際にエラーが発生しました:`n~1~
+lNavigateSpecialError	特殊フォルダー #~1~ を開く際にエラーが発生しました。
+lOopsAccessDenied	アクセスが拒否されました
+lOopsAddThisFolderTip	「アクティブなフォルダーまたはウェブページを追加」を正しく動作させるには:`n`n1) 追加したいフォルダーやリンクを含むウィンドウ ~1~ をアクティブにします。`n2) ~2~ を使ってポップアップメニューを開きます。`n3) 「アクティブなフォルダーまたはウェブページを追加」を選択して保存します。
+lOopsAlternativeMenuModifiersDuplicates	代替メニューの修飾キー "~1~" が重複して使用されています。`n`n各修飾キーは一度だけ使用するように設定してください。
+lOopsAlternativeNotSupported	代替メニューコマンド "~1~" は、お気に入りの種類 "~2~" ではサポートされていません。
+lOopsAmpersandInName	アンパサンド "&" はWindowsメニューでショートカットキーを割り当てるための予約文字です。メニュー名にアンパサンドを表示させたい場合は "&&" と入力してください。`n`n詳細はQAPウェブサイトのFAQで "ampersand" を検索してください。
+lOopsCannotCopyFavorite	種類 "~1~" のお気に入りはコピーできません。
+lOopsCannotMoveToSelf	お気に入りを現在の位置に移動することはできません。別の移動先を選択してください。
+lOopsChangeFolderInDialogAlert	このダイアログでフォルダーを変更しますか？ ダイアログ内でのナビゲーションを有効にするには、設定の「全般」グループにあるオプションを有効にする必要があります。`n`nオプションウィンドウを開きますか？
+lOopsContainerInGui	動的メニュー "~1~" は、メニュー ~2~ 内にのみ挿入できます。
+lOopsCouldNotOpenSpecialFolder	~1~ は特殊フォルダー "~2~" を開くことができませんでした。
+lOopsEmpty	空
+lOopsErrorCopyOrMoveFolderOrFile	ソースファイルまたはフォルダーを宛先フォルダーに移動またはコピー中にエラーが発生しました。`n`nソース: ~1~`n宛先: ~2~
+lOopsErrorCopyOrMoveFolderOrFileSelect	ファイルまたはフォルダーが選択されていません。`n`n代替メニューを開く前に、エクスプローラーで1つ以上のファイルまたはフォルダーを選択してください。
+lOopsErrorIniFileDisplayErrorMessage	この共有メニューに関して、再度このエラーメッセージを表示しますか？
+lOopsErrorIniFileDuplicateNames	メニュー「~2~」内のお気に入り「~1~」の名前が重複しているため、一時的に「~3~」にリマインドされました。`n`n一意の名前になるよう編集してください。
+lOopsErrorIniFileModified	この共有メニューは開かれた後に変更されました。メニューは最新の状態に更新されますが、保存されていない変更は失われます。
+lOopsErrorIniFileReadOnly	この共有メニュー設定ファイル、または保存場所は「読み取り専用」です。
+lOopsErrorIniFileRetry	設定ファイルがネットワークドライブ上にある場合は、ドライブが利用可能になった時、または ~1~ を再起動した時に再度試してください。
+lOopsErrorIniFileUnavailable	この外部メニュー設定ファイルは利用できません。
+lOopsErrorReadingIniFile	設定ファイルの読み込み中にエラーが発生しました:
+lOopsExternalFileWriteError	共有メニュー設定ファイルへの書き込み中にエラーが発生しました:`n~1~`n`nファイル（またはフォルダー）が読み取り専用になっていないか確認してください。
+lOopsExternalFileWriteErrorCollaborative	この共有メニューの内容を変更する権限がありません。アクセスが必要な場合は、システム管理者に連絡してください。
+lOopsExternalNotAllowedUnderExternal	共有メニューの中に別の共有メニューを含めることはできません。「メニュー設定」タブで別の親メニューを選択してください。
+lOopsExternalReadOnlyAlert	「集中管理型」の共有メニューは、フィールド「~1~」に登録されたユーザーのみが編集可能です（またはテキストエディタで直接iniファイルを編集する必要があります）。`n`n現在のユーザー名: 「~2~」`n現在のコンピューター名: 「~3~」
+lOopsExternalReadOnlyAlertUsernameAdded	あなたのユーザー名が「書き込みアクセス権を持つユーザー」リストに自動的に追加されました。
+lOopsExternalSelectType	「共有メニュー」タブで共有メニューの種類を選択してください。
+lOopsExternalUnderExternalError	以下の共有メニューには、別の共有メニューが含まれています:`n~1~`n`n共有メニューに共有サブメニューを含めることはできません。対象のメニューを編集して、含まれているサブメニューを外に出す必要があります。
+lOopsFavoritesCopied	~1~ 個のお気に入りをコピーしました。
+lOopsFavoritesUsageUpdated	~1~ で設定ウィンドウが開かれており、保存されていない変更がある可能性があります。`n`nこのコンテキストメニューを使用する前に、設定ウィンドウを閉じることをお勧めします。
+lOopsFileAlreadyExists	ファイルが既に存在します
+lOopsFileExpandedFrom	展開元
+lOopsFileNotFound	移動先が存在しません
+lOopsFileNotFoundSaveAnyway	このままこのお気に入りを保存しますか？
+lOopsFirstEnterUrl	まずフィールド「~1~」にアドレスを入力してください。
+lOopsFolderLiveAndAutomatic	オプション「~1~」と「~2~」を同時に有効にすることはできません。`n`nどちらか一方を無効にしてください。
+lOopsFtpLocationProtocol	FTPサイトのアドレスは「ftp://」で始まる必要があります。
+lOopsHotkeyAlreadyUsed	キーの組み合わせ「~1~」は、既に ~2~ で使用されています。`n`n~3~ には別の組み合わせを選択する必要があります。
+lOopsHotkeyObjectNotFound	~1~ は、~2~「~3~」に関連付けられたお気に入りを見つけることができませんでした。`n`nこれは一時的な状態である可能性があります。~1~ を再起動してみてください。
+lOopsHotstringTriggerTooLong	ホットストリング・トリガーが長すぎます。40文字以内で入力してください。
+lOopsHttpLocationTransformed	HTTP宛先（URL形式）は、Windowsとの互換性のためにネットワークパス（UNC形式）に変換されました:`n`n~1~`n~2~
+lOopsIconDocumentsNotFound	デフォルトのドキュメントアイコンが見つからないか、無効です:`n`n~1~
+lOopsInvalidDocumentIcon	「オプション > メニューアイコン」のデフォルトドキュメントアイコンの指定が無効です。
+lOopsInvalidIcon	アイコン画像は正方形で、16x16から64x64ピクセルの間である必要があります。`n`nファイル: ~1~`n画像サイズ: ~2~ x ~3~ ピクセル
+lOopsInvalidIconDownload	このウェブサイトのアイコンは利用できないか、無効です:`n`n~1~
+lOopsInvalidWinCmdIni	Total Commanderの設定ファイル「wincmd.ini」が見つかりません。`n`n「オプション > ファイルマネージャー」で選択してください。
+lOopsInvalidWindowPosition	ウィンドウ位置の値が無効です。
+lOopsItemCannotBeEdited	このアイテムは編集できません。
+lOopsJLiconsError	通知領域用のQAPアイコンが見つかりません。~1~ 内の JLicons.dll が最新であることを確認してください。
+lOopsJLiconsOutdated	以下のファイルを更新する必要があります:`n`n~1~`n`n最新のZIP（ポータブル版）から JLicons.dll バージョン ~2~ をコピーして置き換え、~3~ を再起動してください。
+lOopsLastSaveIncomplete	前回お気に入りを設定ファイルに保存する際、何かが ~1~ を中断させました:`n`n~2~`n`nこのファイル内の以前のお気に入りが復元されました。
+lOopsLaunchWithNotFound	「このアプリケーションで実行」に指定されたアプリが見つかりません:`n`n~1~`n`nお気に入りの詳細設定を確認してください。
+lOopsMaxLiveFolder	ライブフォルダーの最大アイテム数（~1~）を超えました。ライブフォルダーの階層レベルを下げてください。`n`n制限を増やすことも可能ですが、数が多すぎると予期せぬ動作を引き起こす可能性があります。「設定 > メニューの詳細オプション」で値を編集してください。
+lOopsMenuExternalCentralized	集中管理型共有メニュー
+lOopsMenuExternalCollaborative	共同作業型共有メニュー
+lOopsMenuExternalPersonalChangedBy	この個人用共有メニューは、現在コンピューター「~1~」で編集中、または保存されていない変更があります。`n`nここで変更を保存すると、もう一方のコンピューターでの未保存の変更は失われます。
+lOopsMenuExternalReservedBy	この ~1~ はユーザー「~2~」によって予約されています。`n`nそのユーザーがメニューを解放するまで待つか、システム管理者に連絡してください。
+lOopsMenuNameCannotBeChanged	申し訳ありませんが、QAP機能「~1~」のメニュー名は変更できません。
+lOopsMenuNotFound	メニュー「~1~」は存在しません。
+lOopsMenuSorted	このメニューは自動ソートされる設定のため、このコマンドは実行できません。
+lOopsMultipleContainersError	メニュー、グループ、および共有メニューは個別にしかコピーや移動ができません。これらのアイテムはスキップされます。
+lOopsNoIconInFile	ファイル内にアイコンが含まれていません:`n`n~1~
+lOopsNotAdmin	~1~ を管理者として実行できませんでした。`n`nそのため、通常モードで実行しています。
+lOopsNowCalculationInvalid	「現在時刻」の計算が無効です。
+lOopsNowPlaceholderInvalid	「現在時刻」プレースホルダーの形式が無効です。
+lOopsOptionsPathNotExist	~1~ が存在しません:`n~2~`n`n有効なパスを選択してください。
+lOopsOptionsPathTrayIcon	通知領域アイコンファイル
+lOopsOSVerrsionError	~1~ には Windows 7 以降が必要です。Windows Vista または XP ユーザーの方は、互換性のある「Folders Popup」をご利用ください。`n`nFolders Popup のウェブサイトを表示しますか？
+lOopsQCECommandErrorCopying	Quick Clipboard Editor コマンドのテキストコピー中にエラーが発生しました。コマンドを呼び出す前にテキストが選択されているか確認してください。
+lOopsQCECommandErrorExecuting	Quick Clipboard Editor コマンドの実行中にエラーが発生しました。`n`nコマンド: ~1~
+lOopsQCECommandErrorPasting	Quick Clipboard Editor コマンドの結果の貼り付け中にエラーが発生しました。
+lOopsQCECommandErrorSending	Quick Clipboard Editor へのコマンド送信中にエラーが発生しました。
+lOopsQCEReceiverError	Quick Clipboard Editor コマンドの読み込み中にエラーが発生しました。
+lOopsQCEReceiverHelp	クリップボードコマンドを追加または実行する前に、~1~ または ~2~ が実行中であることを確認してください。`n`nヘルプについては www.QuickAccessPopup.com で「QCE Receiver」を検索してください。
+lOopsRunCommandTooLong	実行コマンドが長すぎます（現在 ~1~ 文字 / 最大 ~2~ 文字）。
+lOopsSelectedItemDialogBoxes	選択されたアイテムをダイアログボックス内で特定できません。
+lOopsSelectedItemTotalCommander	選択されたアイテムを Total Commander ウィンドウ内で特定できません。
+lOopsSortOnHiddenColumns	「カスタマイズ」ウィンドウで現在表示されていない列をソート基準に選択しました。`n`n「オプション > ウィンドウのカスタマイズ」で「~1~」を有効にし、「オプション > データベース」でQAPデータベースを有効にする必要があります。
+lOopsSortUpToSeparator	最初のセパレーターまでのソートを実行しました。
+lOopsTitle	~1~ (~2~)
+lOopsUnknownTargetAppName	お気に入りを開こうとしてエラーが発生しました。もう一度試してください。
+lOopsUsageDbSQLiteMissing	SQLiteリソースファイルが見つかりません:`n`n~1~`n頻繁に使うファイル/フォルダーのメニューを構築できませんでした。
+lOopsWorkingFolderDisabled	コマンドラインで「/Working:」パラメーターが使用されている場合、設定フォルダーを変更することはできません。
+lOopsWriteProtectedError	~1~ が書き込み禁止フォルダーから実行されているようです（設定ファイル「~1~.ini」を作成できません）。`n`n~1~.EXE ファイルを書き込み可能な任意のフォルダーに移動してから再実行してください。`n`n~1~ を終了します。
+lOopsWrongThirdPartyPath	~1~ のファイル名またはパスが正しくありません:`n~2~`n`n「オプション」の「~3~」タブで選択された実行ファイルを確認してください。
+lOopsWrongThirdPartyPathQAPconnect	QAPconnectアプリケーション ~1~ のパスまたはファイル名が正しくありません:`n~2~`n`n~3~ 内の [~1~] の値を確認してください。「オプション」の「~5~」タブで「~4~」をクリックしてください。
+lOopsZipFileError	~1~ が .ZIP アーカイブ内から直接実行されているようです。`n`n実行する前に、まず .ZIP から任意のフォルダーへ ~1~.EXE を解凍してください。`n`n~1~ を終了します。
+lOptionsAddAutoAtTop	自動追加時の挿入位置
+lOptionsAddAutoBottomOfMenu	メニューの下部
+lOptionsAddAutoTopOfMenu	メニューの上部
+lOptionsAddCloseToDynamicMenus	動的メニューに「閉じる」を追加
+lOptionsAddCustomizeThisMenu	編集可能なすべてのメニューとグループに「このメニュー(またはグループ)をカスタマイズ」を追加
+lOptionsAdvancedLaunch	詳細オプションを開く
+lOptionsAdvancedOther	その他の詳細オプション
+lOptionsAlternativeMenuFeatures	代替メニュー機能のキー組み合わせ
+lOptionsAlternativeMenuFeaturesIntro	代替メニュー機能を起動するショートカットを管理します。
+lOptionsAlternativeMenuResetModifiers	修飾キーをリセット（デフォルト値へ）
+lOptionsAlternativeMenuResetModifiersSaved	保存された修飾キーをリセット
+lOptionsAlternativeMenuShowNotification	代替メニューの使用中に通知を表示する
+lOptionsAlternativeModifiers	修飾キー
+lOptionsAlternativeTrayIcon	QAP通知領域アイコンの変更 (ファイル, インデックス)
+lOptionsAlwaysLaunchURLs	常にリンクを新しいタブまたはウィンドウで開く
+lOptionsBackupFolder	メイン設定ファイルのバックアップフォルダー
+lOptionsCataloguePath	カタログのルートフォルダー
+lOptionsChangeFolderInDialog	メインホットキー（マウス・キーボード）を使ってダイアログ内でフォルダーを変更する
+lOptionsChangeFolderInDialogCheckbox	「ファイル」ダイアログ以外でフォルダー変更機能を使用することによる影響を理解した上で「OK」をクリックしてください。
+lOptionsChangeFolderInDialogText	このオプションを有効にすると、ダイアログ（開く、名前を付けて保存など）でのフォルダー移動が可能になりますが、以下の警告を読んでください。`n`nこの機能は「ファイル」ダイアログでのみ使用してください。設定ダイアログなどの他の種類のダイアログで使用すると、フォルダーを変更しようとした際に、警告なしにダイアログ内の値が書き換えられたり保存されたりする可能性があります。
+lOptionsChangeHotkey	変更
+lOptionsCheck4Update	アップデートを確認
+lOptionsCheck4UpdateNow	今すぐ確認
+lOptionsClipboardMaxSize	クリップボードのサイズが次を超える場合は「クリップボード」メニューを更新しない:
+lOptionsClipboardMaxSizeDefault	(デフォルト値: 10000 バイト)
+lOptionsControlDoublePressed	Ctrl + Ctrl (Ctrlキーを2回押す) でメインメニューを開く
+lOptionsControlDoublePressedLeft	左Ctrlキーを有効にする
+lOptionsControlDoublePressedRight	右Ctrlキーを有効にする
+lOptionsCustomLinksIcon	カスタムリンク・リソース用アイコン "file,index" (空欄にするとブラウザのデフォルトアイコンを使用)
+lOptionsDarkMode	ダークモードのサポート
+lOptionsDarkModeMenus	メニューのダークモード対応
+lOptionsDatabase	データベース
+lOptionsDisplayIcons	メニューにアイコンを表示する
+lOptionsDisplayMenuShortcuts	メニューに数字ショートカットを表示する
+lOptionsDisplayMenuShortcutsFromOne	メニューの数字ショートカットを 1 から開始する (0 ではなく)
+lOptionsDoNotLaunchQCEReceiver	QAP起動時に Quick Clipboard Editor Receiver Lite を開かない
+lOptionsEditControlsFontName	テキスト入力フィールドのフォント
+lOptionsEnableExternalMenusCatalogue	共有メニューカタログを有効にする
+lOptionsEnableFavoriteDebugOption	プレースホルダーとユーザー変数のデバッグを有効にする
+lOptionsExclusionMouseList	ブロックリスト
+lOptionsExclusionMouseListDescription	マウス・トリガー [~1~] のブロックまたは許可
+lOptionsExclusionMouseListDetail1	マウスボタンによるメニュー表示を、特定の例外（ブロック）を除いてすべてのアプリで許可するか、特定のアプリ（許可リスト）でのみ許可するかを選択します。アプリを追加するには、ウィンドウタイトルの任意の一部を入力してください（Windowsエクスプローラーは除外できないことに注意してください）。1行に1つずつ、複数のアプリを入力できます。例：ChromeとWordを追加する場合:`n`nGoogle Chrome`nMicrosoft Word
+lOptionsExclusionMouseListDetail2	特定のアプリケーション（ウィンドウ）でマウス・トリガーが無効になっている場合、クリック [~1~] はQAPが実行されていないかのようにターゲットウィンドウに送られます。クラス名やプロセス名（EXEファイル名）を使ってアプリを追加することも可能です。タイトルやクラスの前に * (アスタリスク) を付けると、そのアプリのダイアログボックスも除外（ブロック）対象になります。詳細は <a href="~2~">ヘルプ</a> を参照してください。
+lOptionsExclusionMouseListWhitelist	許可リスト
+lOptionsExplorerContextMenus	Windows エクスプローラーのコンテキストメニューを有効にする
+lOptionsFileManagerNavigateCurrent	現在の ~1~ ウィンドウ
+lOptionsFileManagerNavigateCurrentTab	現在の ~1~ タブ
+lOptionsFileManagerNavigateIntro	~1~ 以外の場所からQAPメニューを開いた際、フォルダーを開く場所:
+lOptionsFileManagerNavigateNew	新しい ~1~ ウィンドウ
+lOptionsFileManagerNavigateNewTab	新しい ~1~ タブ
+lOptionsFileManagers	ファイルマネージャー
+lOptionsFilesExclusionList	除外/含めるファイル
+lOptionsFilesExclusionListInstructions	「最近使ったファイル」や「頻繁に使うファイル」から除外（または特定のファイルのみ含める）するには、拡張子（例: "mp3"）を入力するか、ワイルドカード * や ?（例: "xyz*.mp?"）を1行に1つずつ入力してください。
+lOptionsFoldersExclusionList	除外/含めるフォルダー
+lOptionsFoldersExclusionListInstructions	「最近使った/頻繁に使うフォルダー・ファイル」メニューから除外（または特定の場所のみ含める）するには、パスを1行に1つずつ入力してください。必要に応じて、ワイルドカード * や ? の後にバックスラッシュを続けて使用できます（例: "c:\hide*\"）。サブフォルダーにも適用されます。
+lOptionsFtpEncoding	FTPのユーザー名とパスワードをエンコードする (推奨)
+lOptionsFtpEncodingTC	FTPのユーザー名とパスワードをエンコードする (Total Commander では非推奨)
+lOptionsGeneral	全般
+lOptionsGuiTitle	オプション - ~1~ ~2~
+lOptionsHotkeyRemindersFull	フルテキストを表示
+lOptionsHotkeyRemindersNo	表示しない
+lOptionsHotkeyRemindersPrompt	メニュー内のショートカットキーとホットストリングのヒント
+lOptionsHotkeyRemindersPromptHotstrings	メニュー内のホットストリングのヒント
+lOptionsHotkeyRemindersPromptShortcuts	メニュー内のショートカットのヒント
+lOptionsHotkeyRemindersShort	略称を表示
+lOptionsHotkeyTriggerExclusionListHelp	キーボードショートカットを、特定の例外（禁止）を除いてすべてのアプリで許可するか、特定のアプリ（許可）でのみ許可するかを選択します。アプリを追加するには、ウィンドウタイトルの任意の一部を入力してください。1行に1つずつ、複数のアプリを入力できます。例：ChromeとWordを追加する場合:`n`nGoogle Chrome`nMicrosoft Word`n`n特定のアプリでショートカットが許可されていない場合、そのキー入力はQAPが実行されていないかのようにターゲットウィンドウに直接送られます。クラス名やプロセス名（EXEファイル名）でも指定可能です。詳細は <a href="~1~">ヘルプ</a> を参照してください。
+lOptionsHotkeyTriggerExclusionListTitle	キーボードショートカット
+lOptionsHotstringsDefault	ホットストリングのデフォルトオプション
+lOptionsHotstringsDefaultSelect	オプションを選択
+lOptionsHotstringsKeyboardDelay	ホットストリング・トリガー消去時のキーボード遅延 (ms)
+lOptionsIconDocumentsList	ドキュメントのデフォルトアイコンの書き換え
+lOptionsIconDocumentsListInstructions	ドキュメントのデフォルトアイコンは通常Windowsで設定されています。これを上書きするには、以下に新しい設定を入力してください。各行はファイル拡張子（複数ある場合は "xlsx+xlsm" のように "+" で連結）で始め、続けて等号 "=" と "file,index" またはアイコン画像ファイルを指定します。
+lOptionsIconListsInstructions	"file,index" はアイコンを含むファイル (.ico, .dll, .exe) のパスと、そのファイル内でのアイコンのインデックス番号です（例: "C:\Icons\MyFile.dll,1"）。また、16x16から64x64ピクセルの正方形の画像ファイル (.png, .bmp, .gif, .jpg) も使用可能です。
+lOptionsIconReplacementList	QAP代替アイコン
+lOptionsIconReplacementListInstructions	QAPの代替アイコンを1行に1つずつ入力します。各行はQAPのアイコン名（例: "iconaCartellaLive"）で始め、続けて等号 "=" と "file,index" または代替画像ファイルを指定します（上記参照）。
+lOptionsIconsCustomFolder	カスタムアイコンフォルダー
+lOptionsIconSize	メニューアイコンのデフォルトサイズ
+lOptionsIconsManageRows	アイコン管理ウィンドウの行数 (0 ですべてのスペースを使用)
+lOptionsKeepExtensionInShortName	お気に入りの略称にファイル拡張子を保持する
+lOptionsLabelsFontSize	ラベルのフォントサイズ
+lOptionsLanguage	言語
+lOptionsLanguageLabels	英語|フランス語|ドイツ語|スペイン語|ポルトガル語 (ブラジル)|イタリア語|ポルトガル語|オランダ語|韓国語|中国語 (簡体字)|ロシア語|日本語
+lOptionsLaunchAdvancedQAPTitle	Quick Access Popup の実行設定
+lOptionsListFontName	お気に入り一覧のフォント
+lOptionsListFontSize	お気に入り一覧のフォントサイズ
+lOptionsMenuActiveWindow	アクティブウィンドウの左上
+lOptionsMenuAdvanced	メニューの詳細オプション
+lOptionsMenuAppearance	メニューの外観
+lOptionsMenuExclusions	メニューの除外/含める設定
+lOptionsMenuExclusionsExclude	除外する
+lOptionsMenuExclusionsInclude	これらのみ含める
+lOptionsMenuFixPosition	固定位置
+lOptionsMenuIcons	メニューアイコン
+lOptionsMenuNearMouse	マウスポインターの近く
+lOptionsMenuPositionPrompt	ポップアップメニューを開く位置:
+lOptionsMouseAndKeyboard	ショートカットメニュー
+lOptionsMoveWorkingFolderTitle	設定フォルダーの場所を変更
+lOptionsMoveWorkingFolderType	現在の設定をこの新しい場所にコピーしますか:`n`n~1~`n`n「コピー」を選択すると、現在の設定が新しい場所にコピーされた状態で ~2~ が再起動します。`n`n「新規」を選択すると、その新しい場所に既にある（または新しく作成される）設定で ~2~ が再起動します。
+lOptionsNbLiveFolderItemsMax	ライブフォルダーの最大項目数:
+lOptionsNbLiveFolderItemsMaxDefault	(デフォルト値: 500 項目)
+lOptionsNetworkDrivesLetters	ネットワークドライブとして使用するドライブレター
+lOptionsNetworkDrivesSometimesOffline	ネットワークドライブ ("\\" またはドライブレター) がオフラインになる可能性がある
+lOptionsOpenFavoritesOnActiveMonitor	マルチモニター環境で、常にアクティブなモニターでエクスプローラーを開く
+lOptionsOpenMenuOnTaskbar	タスクバーをクリックしてメニューを開く
+lOptionsOpenSettingsOnActiveMonitor	アクティブなモニターで「カスタマイズ」ウィンドウを開く
+lOptionsOtherOptions	全般設定
+lOptionsPopupFixPositionX	位置 X:
+lOptionsPopupFixPositionY	Y:
+lOptionsPopupHotkeys	ポップアップのキー組み合わせ
+lOptionsPopupHotkeysAlternative	代替メニューのキー組み合わせ
+lOptionsPopupHotkeyTitles	QAP マウスボタン|QAP キーボードショートカット|代替メニュー マウスボタン|代替メニュー キーボードショートカット
+lOptionsPopupHotkeyTitlesSub	このマウスボタンは（<a>除外アプリ</a>を除き）どこでもポップアップメニューを表示し、選択したお気に入りやフォルダーを直接開きます。|このキーボードショートカットはどこでもメニューを開き、選択したお気に入りやフォルダーを直接開きます。|このマウスボタンは、各種機能を含む「代替メニュー」を開きます。このメニューは除外設定に関わらずどこでも開くことができます。|このキーボードショートカットは、各種機能を含む「代替メニュー」を開きます。どこでも開くことができます。
+lOptionsPopupMenu	ポップアップメニュー
+lOptionsQAPconnectIntro	QAPconnectは、約25種類のファイルマネージャーを部分的にサポートするためのインターフェースです。
+lOptionsQAPTempFolder	一時フォルダー
+lOptionsQuickAddSnippetSubmenu	~1~ 用のサブメニュー
+lOptionsQuickLaunchDropdownRows	ドロップダウンリストの表示行数
+lOptionsQuickLaunchExtended	拡張検索 (すべてのプロパティを検索)
+lOptionsQuickLaunchFontName	クイック起動リストのフォント
+lOptionsQuickLaunchFontSize	クイック起動リストのフォントサイズ
+lOptionsQuickLaunchNavigate	ファイルマネージャーとダイアログでフォルダーを変更する
+lOptionsQuickLaunchRecentsFrequents	「最近使った項目」および「頻繁に使う項目」を含める
+lOptionsQuickLaunchRows	検索結果の表示行数
+lOptionsQuickLaunchTitle	クイック起動オプション
+lOptionsRecentFolders	メニューの項目数
+lOptionsRecentFoldersPrompt	「最近使った項目」および「頻繁に使う項目」:
+lOptionsRecentPopularLevelsMax	最近/頻繁メニューの最大階層深度`n(超過分は先頭から切り捨てられます。0 でフルパスを保持)
+lOptionsRefreshedMenusAttached	すべての動的メニューをQAPメインメニューに付加する
+lOptionsRefreshedMenusAttachedInfo	このオプションを有効にすると、ポップアップメニューを表示するたびに（システム構成によっては）わずかな更新遅延が発生する場合があります。`n`n遅延の長さは、Windowsがメニュー構築に必要な最新情報（最近使った項目リストやディスクの空き容量など）を取得するのにかかる時間に依存します。この遅延時間は状況によって変動することがあります。`n`n無効にした場合、「~1~」「~2~」「~3~」「~4~」「~5~」の各メニューは要求された時のみ更新され、メインメニューとは別に表示されます。
+lOptionsRefreshQAPconnectList	アプリケーションリストを更新
+lOptionsRefreshQAPMenuDebugBeep	メニュー更新の前後でビープ音を鳴らす (デバッグ用)
+lOptionsRefreshQAPMenuIntervalSec	メニューの更新間隔（秒）: (300秒以上を推奨)
+lOptionsRefreshQAPMenuTitle	QAPメニューの定期的な自動更新を有効にする
+lOptionsRefreshWindowsAppsListAtStartup	起動時に毎回 Windows アプリのリストを更新する
+lOptionsRememberSettingsPosition	「カスタマイズ」ウィンドウの位置を記憶する
+lOptionsRunAsAdmin	管理者として実行
+lOptionsRunAsAdminAlert	警告: ~1~ を管理者モードで実行すると、悪意のあるコードに感染したプログラムを実行した際に予期せぬ結果を招く恐れがあります。悪意のあるプログラムが管理者権限を継承し、コンピューターを感染させたり制御を奪ったりする可能性があります。~1~ を管理者モードで実行する際は注意してください。
+lOptionsRunAsAdminChanged	「管理者として実行」の設定が保存されました。新しい設定を有効にするには、~1~ を一度完全に終了してから開き直してください（単なる再起動ではなく）。
+lOptionsRunAsAdminShort	管理者
+lOptionsRunAtStartup	スタートアップ時に実行
+lOptionsSearchFrom	検索範囲
+lOptionsSearchFromCurrent	現在のメニューまたはグループ内から検索
+lOptionsSearchFromMain	常にメインメニューから検索
+lOptionsSearchResults	検索結果ウィンドウのカスタマイズ
+lOptionsSearchWithLocale	ローカル言語設定を使用して検索 (例: "é" を "e" として扱う)
+lOptionsSearchWithStats	検索結果に更新日時と統計情報を表示する
+lOptionsSelectBackupFolder	メイン設定ファイルのバックアップフォルダーを選択
+lOptionsSelectCatalogueRoot	共有メニューカタログのルートフォルダーを選択
+lOptionsSelectIconsCustomFolder	カスタムアイコンフォルダーを選択
+lOptionsSelectQAPTempFolder	一時フォルダーの作成先:
+lOptionsSelectWorkingFolder	設定ファイルの保存先フォルダーを選択
+lOptionsSendToConsoleWithAlt	コマンドプロンプト(CMD)でのフォルダー変更にASCIIコード(ALT+0nnn)を使用する
+lOptionsSettingsCheckIfSameLocation	お気に入りの保存時に、既存のアイテムと保存先や内容が重複していないか確認する
+lOptionsSettingsSearchResults	検索結果
+lOptionsSettingsStartup	起動時に「カスタマイズ」ウィンドウを開く
+lOptionsSettingsWindow	「カスタマイズ」ウィンドウ
+lOptionsShowAdvancedSettingsMenusItems	「ファイル」メニューの下にファイルメニュー項目の詳細設定を表示する
+lOptionsShowQAPmenu	QAPメニュー (ファイル、お気に入り等) の表示場所:
+lOptionsShowQAPmenuBoth	両方の場所
+lOptionsShowQAPmenuCustomize	カスタマイズウィンドウの上部
+lOptionsShowQAPmenuSystem	システムメニュー (通知領域)
+lOptionsSnippets	テキストスニペットとホットストリング
+lOptionsSnippetsHelp	スニペットのデフォルト設定 (<a href="~1~">~2~</a>)
+lOptionsSwitchExclusionList	現在のウィンドウの除外/含める設定
+lOptionsSwitchExclusionListInstructions	「実行中のウィンドウ」メニューから除外（または特定のアプリのみ含める）したいアプリのウィンドウタイトルの一部を1行に1つずつ入力してください。
+lOptionsSwitchExclusionListInstructions2	クラス名やプロセス名（EXEファイル名）でも指定可能です。「ウィンドウ情報を取得」機能を活用してください。
+lOptionsSwitchExclusionListInstructionsList	または、実行中のアプリリストから選択して追加してください。
+lOptionsTabFileManagersIntro	フォルダーを新しいウィンドウで開く際に使用するファイルマネージャーを選択します。
+lOptionsTabFileManagersPreferences	ファイルマネージャーの設定
+lOptionsTabFileManagersPreferred	優先するファイルマネージャー
+lOptionsTabMouseAndKeyboardIntro	~1~ のメインメニューを開くマウスボタンとキーの組み合わせを割り当てます。
+lOptionsTCWinCmd	Total Commander の設定ファイル ~1~ が見つかりません。
+lOptionsTheme	テーマ
+lOptionsThirdParty	外部ファイルマネージャー
+lOptionsThirdPartyDetail	~1~ との統合を有効にするため、~1~ の実行ファイル (.exe) を選択してください。
+lOptionsThirdPartyDetailQAPconnect	使用するファイルマネージャーを選択してください（リストにない場合は ~1~ を編集して追加できます。詳細はヘルプを参照）。
+lOptionsThirdPartyFileNotFound	~1~ のアプリケーションファイル「~2~」が見つかりません。
+lOptionsThirdPartyQAPconnect	QAPconnect
+lOptionsThirdPartyQAPconnectDetail	(25種類以上のファイルマネージャーを部分サポート)
+lOptionsThirdPartySelectedHelp	選択中のファイルマネージャー: ~1~ (<a href="~2~">~3~</a>)
+lOptionsThirdPartySelectFile	「参照」ボタンから ~1~ のアプリケーションファイルを選択できます。
+lOptionsThirdPartyUseTabs	新しいウィンドウの代わりにタブで開く
+lOptionsTrayTip	起動時に通知領域からポップアップを表示する
+lOptionsUsageDbDaysInPopular	「頻繁に使う項目」メニューに反映させる日教:
+lOptionsUsageDbDisabling	データベース設定の変更は、~1~ を再起動した後に有効になります。
+lOptionsUsageDbEnable	~1~ データベースを有効にする
+lOptionsUsageDbFlushDatabase	データベースから「頻繁に使う項目」のデータを削除
+lOptionsUsageDbFlushDatabaseConfirm	データベース内の「頻繁に使う項目」のデータを消去しますか？
+lOptionsUsageDbFlushDatabaseDone	データベースの内容を消去しました。
+lOptionsUsageDbIntervalSeconds	収集および更新の間隔 (秒):
+lOptionsUsageDbMaximumSize	データベースの最大サイズ (MB):
+lOptionsUsageDbMaximumSizeInvalid	最大サイズに有効な数値を入力してください: ~1~
+lOptionsUsageDbShowPopularityIndex	「カスタマイズ」ウィンドウとメニューに頻度指数を表示する
+lOptionsUsageDbStatement	~1~ データベース内のデータは、動的メニューの構築とパフォーマンス向上の目的で、ローカルにのみ収集・保存されます。このデータはあなたのコンピューター内にのみ存在し、~1~ から外部サーバーに送信されることは一切ありません。
+lOptionsUsageDbStatementTitle	プライバシーに関する声明
+lOptionsUserVariables	ユーザー変数
+lOptionsUserVariablesList	ユーザー変数リスト
+lOptionsUserVariablesListInstructions	ユーザー変数を1行に1つずつ入力してください。各行は波括弧で囲まれた変数名（例: "{MyVar}"）で始め、続けて等号 "=" とその内容（例: "{MyVar}=内容"）を入力します。`n`n例えば、"{SharedFolder}=S:\MyData" と入力した場合、お気に入りのパスやスニペット内の {SharedFolder} というプレースホルダーは "S:\MyData" に置換されます。
+lOptionsWaitClipboardFreeMaxSeconds	クリップボードが応答しない場合の最大待機時間（秒）
+lOptionsWaitDelayInDialogBox	ダイアログでのフォルダー変更時の遅延 (ms):
+lOptionsWaitDelayInSnippet	スニペット実行中の遅延 (ms)
+lOptionsWorkingFolder	設定フォルダー
+lPickIconNoLocation	アイコンを選択する前にお気に入りを選択してください。
+lReloadPrompt	~1~ が ~2~ に変更されました。今すぐ ~3~ をオプション ~2~ で再起動しますか？ メニューの未保存の変更は失われます。
+lSponsoredName	このプログラムは ~1~ 様の寛大なご支援によって開発されています。
+lSponsoredNone	このプログラムのライセンスを取得するにはここをクリックしてください。
+lStartupTipsDays	起動時の「ヒントとコツ」を再表示するまでの日数`n(0 に設定すると QAP 起動のたびに表示されます)
+lStartupTipsLater	後で読む
+lStartupTipsShow	起動時に「ヒントとコツ」を表示する
+lStartupTipsTitle	QAP 起動時のヒントとコツ
+lTCMenuName	TC フォルダーホットリスト
+lTCMenuNameDescription	Total Commander (TC) ユーザー向け。TCのディレクトリホットリスト（wincdm.iniに保存）に登録されたお気に入りを動的メニューとして表示します。`n`nwincdm.ini の場所は「オプション > ファイルマネージャー」タブで設定してください。QAPインストール時にTCを選択していた場合、このリストは自動的にメニューに追加されています。
+lTCWinCmdLocation	WinCmd.ini の場所
+lTipAddDragAndDropDetails	ドラッグ＆ドロップ（要素を掴んで放す）操作は、WindowsエクスプローラーからQAPメニューにお気に入りを追加する最も効率的な方法です。`n`n<a>このヒント</a>を参考に、キーボードを使わずにフォルダー、ドキュメント、アプリケーションをメニューに追加する方法を確認してください！
+lTipAddDragAndDropTitle	ドラッグ＆ドロップでお気に入りフォルダーやファイルを追加
+lTipCreateSubmenuDetails	お気に入りを種類、プロジェクト、目的ごとにサブメニューへグループ化することで、メニューの使い勝手を向上させましょう。`n`n<a>サブメニューの追加方法はこちら</a>。
+lTipCreateSubmenuTitle	QAPメニューが長くなりすぎたら、整理して管理！
+lTipCustomIconsDetails	QAPのデフォルトアイコンを、お好みの画像に<a>変更して</a>メニューをカスタマイズしましょう。このヒントでは、画像ファイルをアイコンファイル（.ico）に変換する方法を説明しています。`n`nまた、<a>すべてのメニューアイコンを一画面で管理</a>する方法も確認してください。
+lTipCustomIconsTitle	お好みのアイコンでメニューを華やかに
+lTipCustomizeStartupDetails	デフォルトでは、Quick Access Popup の起動時に「カスタマイズ」ウィンドウ（メニュー編集画面）が表示されます。`n`n必要な時だけ開きたい場合は、<a>オプション > カスタマイズウィンドウ</a> の「起動時にカスタマイズウィンドウを開く」のチェックを外してください。`n`n詳細は <a>FAQ (ナレッジベース)</a> をご覧ください。
+lTipCustomizeStartupTitle	起動時にいつもカスタマイズウィンドウを表示しますか？
+lTipDefaultHotkeysDetails	インストール時、QAPはマウスの中ボタンと以下のキー組み合わせを制御します: Windows+W, Shift+Windows+W, Control+Shift+A, Control+Shift+C, Control+Shift+F, Control+Shift+U。`n`nこれらは <a>ツール > ショートカット</a> からいつでも変更または削除できます。`n`n詳細は <a>FAQ (ナレッジベース)</a> をご覧ください。
+lTipDefaultHotkeysTitle	QAPに割り当てられるショートカットキーを設定する
+lTipFavoriteFolderTempDetails	<a>QAPウェブサイトのこのヒント</a>では、一時的な作業フォルダーへ簡単にアクセスするためのお気に入りの作成手順を説明しています:`n- フォルダーのお気に入りを作成`n- 識別しやすいアイコンを割り当て`n- 直接アクセスするためのショートカットキーを設定`n`nまた、このカスタムアイコンをWindowsのフォルダーアイコンと同期させる方法も紹介しています。
+lTipFavoriteFolderTempTitle	よく使うフォルダーのお気に入りを作成する
+lTipFolderDialogBoxDetails	「名前を付けて保存」や「開く」ダイアログ内で瞬時にフォルダーを移動できる機能は、QAPが提供する最も生産的な機能の一つです。`n`nこの機能は <a>オプション > 全般</a> で有効にできます。`n`n詳細は <a>FAQ (ナレッジベース)</a> をご覧ください。
+lTipFolderDialogBoxTitle	ダイアログ内でのフォルダー変更
+lTipInTheWorksDetails	「最近使った（または頻繁に使う）」メニューには、最近使用したアイテムやよく使うアイテムが表示されます。`n`n<a>「最近使った（または頻繁に使う）」メニューとは何か</a>、および「頻繁」「最近」「実行中のウィンドウ」メニューがどのように構築されるかを確認してください。
+lTipInTheWorksTitle	「最近使った（または頻繁に使う）」メニューとは何ですか？
+lTipMenuTriggersDetails	Quick Access Popup のメニューは、さまざまなキーボードショートカットやマウスボタンで開くことができます。`n`n「オプション > ポップアップのキー組み合わせ」で起動方法を設定してください。また、Windows エクスプローラーのコンテキストメニューから開くことも可能です。`n`n詳細は <a>FAQ (ナレッジベース)</a> や、<a>QAPメニューを起動する12の方法</a> を紹介した動画をご覧ください。
+lTipMenuTriggersTitle	お気に入りメニューを起動するさまざまな方法
+lTipSearchFavoritesDetails	メニューの項目が増えてきたら、<a>サブメニュー内のお気に入りを簡単に検索</a>する方法を確認しましょう。`n`nこのツールを使えば、お気に入りの編集が楽になるだけでなく、全体像を把握したり、不要な重複を削除したり、メニューをより良く整理したりすることができます。
+lTipSearchFavoritesTitle	メニュー内のお気に入りを検索する
+lToolTipAlwaysOnTop	ウィンドウの「常に手前に表示」を解除しました:`n~1~
+lToolTipAlwaysOnTopFailed	ウィンドウの「常に手前に表示」設定に失敗しました:`n~1~
+lToolTipAlwaysOnTopOn	ウィンドウを「常に手前に表示」に設定しました:`n~1~
+lToolTipBrokenLinksChecking	チェック中...
+lToolTipBrokenLinksIntro	お気に入りのリンクをスキャン中
+lToolTipBrokenLinksList	リンク切れまたはプライベートなリンク
+lToolTipBrokenLinksWarnings	注意`n- 存在しないリンクの一部は、応答までに時間がかかる場合があります。`n- パスワード保護されたリンクは、誤ってリンク切れとして報告されることがあります。`n- {...} のようなプレースホルダーを含むリンクは解析されません。
+lToolTipBuilding	メニューを構築しています...
+lToolTipLoading	お気に入りを読み込んでいます...
+lToolTipRetrievingWebPageIcon	ウェブページのアイコンを取得しています...
+lToolTipRetrievingWebPageTitle	ウェブページのタイトルを取得しています...
+lToolTipSaving	お気に入りを保存しています...
+lTooltipSnippetKeyWait	続行するには {~1~} を押してください...
+lTooltipSnippetWaitEnter	Enter
+lTooltipSnippetWaitEscape	Esc
+lTooltipSnippetWaitMacro	マクロを実行するには「~1~」または「~2~」を押してください（~3~ 秒待機中、または ~4~ でキャンセル）
+lTooltipSnippetWaitSpace	スペース
+lTooltipSnippetWaitText	挿入ポイントを選択し、「~1~」または「~2~」を押してスニペットを貼り付けてください（~3~ 秒待機中、または ~4~ でキャンセル）
+lTrayTipInstalledDetail	お気に入りを開くには ~1~ を使用してください
+lTrayTipInstalledTitle	~1~ ~2~ の準備ができました！
+lUpdateButtonChangeLog	変更履歴を見る
+lUpdateButtonDownloadPortable	ポータブル版 (.zip) をダウンロード
+lUpdateButtonDownloadSetup	セットアップ版 (.exe) をダウンロード
+lUpdateButtonRemind	後で通知する
+lUpdateButtonSkipVersion	このバージョンをスキップ
+lUpdateButtonVisit	QAP ウェブサイトへ
+lUpdateError	最新バージョンの確認中にエラーが発生しました。アップデートの確認を中止します。
+lUpdatePrompt	~1~ を v~2~ から v~3~ へアップデートしますか？
+lUpdatePromptBetaContinue	今後もベータ版の通知を受け取りますか？
+lUpdateTitle	~1~ をアップデートしますか？
+lUpdateYouHaveLatest	最新バージョン (~1~) を使用しています。`n`nウェブサイト ~2~ を表示しますか？
+lWindowIsTreeviewText	申し訳ありません。Windows の制限により、この形式のダイアログ（ツリービュー形式）は現在 ~1~ ではサポートされていません。
+lWindowIsTreeviewTitle	サポートされていないツリービュー形式のダイアログ
