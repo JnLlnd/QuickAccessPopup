@@ -706,7 +706,7 @@ lOptionsIconReplacementListInstructions	Introducir reemplazos de iconos QAP, uno
 lOptionsIconSize	Tamaño predeterminado de los iconos del menú
 lOptionsIconsManageRows	Gestión de filas Iconos de la ventana`n(0 para máximo disponible) 
 lOptionsLanguage	Idioma
-lOptionsLanguageLabels	Inglés|Francés|Alemán|Español|Portugués brasileño|Italiano|Portugués|Holandés|Korean|Simplified Chinese|Russian
+lOptionsLanguageLabels	Inglés|Francés|Alemán|Español|Portugués brasileño|Italiano|Portugués|Holandés|Korean|Simplified Chinese|Russian|Japanese
 lOptionsMenuActiveWindow	En la ventana activa
 lOptionsMenuAdvanced	Opciones Avanzadas para Menús
 lOptionsMenuAppearance	Apariencia de los Menús

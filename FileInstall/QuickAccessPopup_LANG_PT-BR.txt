@@ -1002,7 +1002,7 @@ lOptionsIconsManageRows	Linhas da janela 'Gerenciar Ícones' (0 para espaço máxim
 lOptionsKeepExtensionInShortName	Manter extensão do arquivo nos nomes curtos dos favoritos
 lOptionsLabelsFontSize	Tamanho da fonte dos rótulos
 lOptionsLanguage	Idioma
-lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
+lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Português (Brasil)|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian|Japanese
 lOptionsLaunchAdvancedQAPTitle	Iniciar Quick Access Popup
 lOptionsListFontName	Fonte para lista de Favoritos
 lOptionsListFontSize	Tamanho da fonte da lista de favoritos

@@ -1002,7 +1002,7 @@ lOptionsIconsManageRows	Gerir linhas da janela de ícones (0 máx. espaço disponív
 lOptionsKeepExtensionInShortName	Manter extensão do ficheiro nas abreviaturas dos favoritos
 lOptionsLabelsFontSize	Tamanho da letra das etiquetas
 lOptionsLanguage	Idioma
-lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian
+lOptionsLanguageLabels	Inglês|Francês|Alemão|Espanhol|Brasileiro|Italiano|Português|Holandês|Korean|Simplified Chinese|Russian|Japanese
 lOptionsLaunchAdvancedQAPTitle	Carregar o Quick Access Popup
 lOptionsListFontName	Tipo de letra para a lista de favoritos
 lOptionsListFontSize	Tamanho da letra da lista de Favoritos

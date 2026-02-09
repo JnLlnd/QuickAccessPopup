@@ -1000,7 +1000,7 @@ lOptionsIconsManageRows	Righe della finestra Gestione Icone (0 per usare tutto l
 lOptionsKeepExtensionInShortName	Mantieni l'estensione del file nelle abbreviazioni dei preferiti
 lOptionsLabelsFontSize	Dimensione dei caratteri per le etichette
 lOptionsLanguage	Lingua
-lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian
+lOptionsLanguageLabels	Inglese|Francese|Tedesco|Spagnolo|Portoghese (BR)|Italiano|Portoghese|Olandese|Korean|Simplified Chinese|Russian|Japanese
 lOptionsLaunchAdvancedQAPTitle	Esecuzione di Quick Access Popup
 lOptionsListFontName	Font per elenchi di Preferiti
 lOptionsListFontSize	Dimensione dei caratteri per la lista di Preferiti

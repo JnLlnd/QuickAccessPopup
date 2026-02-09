@@ -991,7 +991,7 @@ lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 po
 lOptionsKeepExtensionInShortName	Conserver l'extension des noms de fichiers dans les Noms courts pour les menus
 lOptionsLabelsFontSize	Taille de la police des étiquettes
 lOptionsLanguage	Langue
-lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe
+lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe|Japonnais
 lOptionsLaunchAdvancedQAPTitle	Lancement de Quick Access Popup
 lOptionsListFontName	Police pour la liste des favoris
 lOptionsListFontSize	Taille de la police de la liste des favoris
