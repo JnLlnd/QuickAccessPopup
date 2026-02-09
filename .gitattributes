@@ -1,7 +1,8 @@
-QuickAccessPopup_LANG_DE.txt diff working-tree-encoding=UTF-16LE
-QuickAccessPopup_LANG_KO.txt diff working-tree-encoding=UTF-16LE
-QuickAccessPopup_LANG_NL.txt diff working-tree-encoding=UTF-16LE
-QuickAccessPopup_LANG_RU.txt diff working-tree-encoding=UTF-16LE
-QuickAccessPopup_LANG_ZH-CN.txt diff working-tree-encoding=UTF-16LE
-QuickAccessPopup_LANG_JA.txt diff working-tree-encoding=UTF-16
+# removed because UTF-16 is not supported unless I use UTF-16 as working-tree-encoding. Not sure what imacct it has.
+# QuickAccessPopup_LANG_DE.txt diff working-tree-encoding=UTF-16LE
+# QuickAccessPopup_LANG_KO.txt diff working-tree-encoding=UTF-16LE
+# QuickAccessPopup_LANG_NL.txt diff working-tree-encoding=UTF-16LE
+# QuickAccessPopup_LANG_RU.txt diff working-tree-encoding=UTF-16LE
+# QuickAccessPopup_LANG_ZH-CN.txt diff working-tree-encoding=UTF-16LE
+# QuickAccessPopup_LANG_JA.txt diff working-tree-encoding=UTF-16
 
