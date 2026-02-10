@@ -6421,6 +6421,25 @@ return
 ;------------------------------------------------------------
 
 
+~RButton:: ; double right click to show QAP menu (based on Xavier code in https://forum.quickaccesspopup.com/showthread.php?tid=3057)
+
+if (false)
+	return
+else if (A_PriorHotkey != "~RButton" or A_TimeSincePriorHotkey > 300)
+{
+    ; KeyWait, rbutton, u ; Too much time between presses, so this isn't a double-press.
+    Return
+}
+else
+{
+    sleep 40
+    SendInput, {alt down}{alt up}
+    sleep 20
+	Gosub, LaunchFromMsg
+}
+
+return
+
 ;========================================================================================================================
 !_012_GUI_HOTKEYS:
 ;========================================================================================================================
