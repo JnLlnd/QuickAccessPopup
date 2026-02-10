@@ -5915,6 +5915,7 @@ global g_strGroupIndicatorPrefix := Chr(171) ; group item indicator, not allolow
 global g_strGroupIndicatorSuffix := Chr(187) ; displayed in Settings with g_strGroupIndicatorPrefix, and with number of items in menus, allowed in item names
 global g_intListW := "" ; Gui width captured by GuiSize and used to adjust columns in fav list
 global g_strEscapePipe := "Ð¡þ€" ; used to escape pipe in ini file, should not be in item names or location but not checked
+global g_strEscapeLabel := "Ðouble" ; characters (with Icelandic D, looks like D with stroke) used to escape %...% and {...} in menu labels with %%...% and {{...}
 global g_strAmpersandPlaceholder := "$?%" ; used as temporary marker for numeric shortcuts in menu item names
 global g_strEllipse := "…" ; "..."
 global g_strUniqueSuffix := "[!]"
@@ -27613,6 +27614,30 @@ ExpandUserVariables(str)
 
 
 ;------------------------------------------------------------
+EscapeVarNames(str)
+; escape user variables {{...} and environment variables %%...%
+;------------------------------------------------------------
+{
+	str := StrReplace(str, "%%", g_strEscapeLabel . "Percent")
+	str := StrReplace(str, "{{", g_strEscapeLabel . "CurlyBracket")
+	return str
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+UnEscapeVarNames(str)
+; unescape user variables {...} and environment variables %...%
+;------------------------------------------------------------
+{
+	str := StrReplace(str, g_strEscapeLabel . "Percent", "%")
+	str := StrReplace(str, g_strEscapeLabel . "CurlyBracket", "{")
+	return str
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 AppIsRunning(strAppPath, blnDesiredElevated, ByRef strAppID)
 ; Based on Drugoy (https://github.com/Drugoy/Autohotkey-scripts-.ahk/blob/master/DevTools/showPerWindowInfoOfAllWindows.ahk)
 ; Return true only if running app has the desired UAC level
@@ -34045,7 +34070,8 @@ class Container
 				and (SubStr(this.AA.strMenuPath, 1, StrLen(o_L["MainMenuName"])) = o_L["MainMenuName"]
 					or this.AA.strMenuPath = o_L["MenuContainerInGui"]))
 			{
-				strMenuItemLabel := EnvVars(ExpandPlaceholders(strMenuItemLabel, aaThisFavorite.strFavoriteLocation, "", ""))
+				; execution order: EscapeVarNames(), ExpandPlaceholders), EnvVars() and UnEscapeVarNames()
+				strMenuItemLabel := UnEscapeVarNames(EnvVars(ExpandPlaceholders(EscapeVarNames(strMenuItemLabel), aaThisFavorite.strFavoriteLocation, "", "")))
 				while !this.FavoriteNameIsUnique(strMenuItemLabel, true) ; true to check strExpandedMenuItemLabel
 					strMenuItemLabel := AddUniqueSuffix(strMenuItemLabel)
 				aaThisFavorite.strExpandedMenuItemLabel := strMenuItemLabel ; allowing to check unique name for next items
