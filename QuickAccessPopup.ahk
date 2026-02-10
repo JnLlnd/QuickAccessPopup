@@ -6338,7 +6338,7 @@ Hotkey, If
 ;---------------------------------
 ; Init collect QCE commands
 
-if InStr(A_ScriptName, ".ahk") ; read test file instead of launching QCE Receiver Lite
+if InStr(A_ScriptName, ".ahk") and FileExist(A_ScriptDir . "\QCE SendMessage-Fake.txt") ; read test file instead of launching QCE Receiver Lite
 {
 	FileRead, strQCECommands, %A_ScriptDir%\QCE SendMessage-Fake.txt ; this file is updated automatically each time the complied version is used to add a QCE command
 	if !StrLen(strQCECommands)
