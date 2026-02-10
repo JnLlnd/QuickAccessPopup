@@ -6713,6 +6713,7 @@ FileInstall, FileInstall\QuickAccessPopup_LANG_ZH-CN.txt, %g_strTempDir%\QuickAc
 FileInstall, FileInstall\QuickAccessPopup_LANG_NL.txt, %g_strTempDir%\QuickAccessPopup_LANG_NL.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_KO.txt, %g_strTempDir%\QuickAccessPopup_LANG_KO.txt, 1
 FileInstall, FileInstall\QuickAccessPopup_LANG_RU.txt, %g_strTempDir%\QuickAccessPopup_LANG_RU.txt, 1
+FileInstall, FileInstall\QuickAccessPopup_LANG_JA.txt, %g_strTempDir%\QuickAccessPopup_LANG_JA.txt, 1
 
 FileInstall, FileInstall\default_browser_icon.html, %g_strTempDir%\default_browser_icon.html, 1 ; fall back if default browser is not found in registry
 
@@ -6797,7 +6798,7 @@ InitLanguageArrays:
 
 ; ----------------------
 ; OPTIONS
-g_objOptionsLanguageCodes := StrSplit("EN|FR|DE|ES|PT-BR|IT|PT|NL|KO|ZH-CN|RU", "|") ;  g_arrOptionsLanguageCodes
+g_objOptionsLanguageCodes := StrSplit("EN|FR|DE|ES|PT-BR|IT|PT|NL|KO|ZH-CN|RU|JA", "|") ;  g_arrOptionsLanguageCodes
 g_objOptionsLanguageLabels := StrSplit(o_L["OptionsLanguageLabels"], "|") ; g_arrOptionsLanguageLabels
 loop, % g_objOptionsLanguageCodes.Length()
 	if (g_objOptionsLanguageCodes[A_Index] = o_Settings.Launch.strLanguageCode.IniValue)
