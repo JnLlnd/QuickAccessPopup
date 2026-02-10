@@ -6339,7 +6339,7 @@ Hotkey, If
 
 if InStr(A_ScriptName, ".ahk") ; read test file instead of launching QCE Receiver Lite
 {
-	FileRead, strQCECommands, %A_ScriptDir%\QCE SendMessage-Fake.txt ; this file is updated automatically ech time the complied version is used to add a QCE command
+	FileRead, strQCECommands, %A_ScriptDir%\QCE SendMessage-Fake.txt ; this file is updated automatically each time the complied version is used to add a QCE command
 	if !StrLen(strQCECommands)
 		Oops(0, "QCE COMMANDS FILEREAD ERROR")
 	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
@@ -30184,7 +30184,12 @@ RECEIVE_MESSENGER(wParam, lParam)
 	else if (saData[1] = "QuickLaunch")
 	{
 		Gosub, GuiQuickLaunch
-		GuiControl,  QuickLaunch:, f_strQuickLaunch, % saData[2]
+		GuiControl, QuickLaunch:, f_strQuickLaunch, % saData[2]
+	}
+	else if (saData[1] = "Customize")
+	{
+		o_MenuInGui := o_Containers.AA[saData[2]]
+		Gosub, GuiShowFromGuiOutside
 	}
 	else
 	{
