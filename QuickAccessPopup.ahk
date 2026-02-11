@@ -5996,6 +5996,9 @@ global g_intControlColor := 0xFFFFFF
 
 global g_strEditControlsFontName ; font used in Edit controls (default "Segoe UI", alternative "Consolas" or any other)
 
+global g_aaPressCount := Object() ; used when monitoring double-press of left control key, right control key of right mouse button
+g_aaPressCount["~LCtrl"] := g_aaPressCount["~RCtrl"] := g_aaPressCount["~RButton"] := 0 ; init counters
+
 ;---------------------------------
 ; Used in SelectIcon()
 global SI_intPickIconCols := 10 ; 20
@@ -6420,25 +6423,6 @@ return
 #If
 ;------------------------------------------------------------
 
-
-~RButton:: ; double right click to show QAP menu (based on Xavier code in https://forum.quickaccesspopup.com/showthread.php?tid=3057)
-
-if (false)
-	return
-else if (A_PriorHotkey != "~RButton" or A_TimeSincePriorHotkey > 300)
-{
-    ; KeyWait, rbutton, u ; Too much time between presses, so this isn't a double-press.
-    Return
-}
-else
-{
-    sleep 40
-    SendInput, {alt down}{alt up}
-    sleep 20
-	Gosub, LaunchFromMsg
-}
-
-return
 
 ;========================================================================================================================
 !_012_GUI_HOTKEYS:
@@ -7154,6 +7138,7 @@ o_Settings.Execution.strSwitchExclusionList.IniValue := (!o_Settings.Execution.s
 ; Group PopupHotkeys
 o_Settings.ReadIniOption("MenuPopup", "blnLeftControlDoublePressed", "LeftControlDoublePressed", 0, "PopupHotkeys", "f_lblChangeShortcutTitle|f_lblControlDoublePressedTitle|f_blnLeftControlDoublePressed") ; g_blnLeftControlDoublePressed
 o_Settings.ReadIniOption("MenuPopup", "blnRightControlDoublePressed", "RightControlDoublePressed", 0, "PopupHotkeys", "f_blnRightControlDoublePressed") ; g_blnRightControlDoublePressed
+o_Settings.ReadIniOption("MenuPopup", "blnRightButtonDoublePressed", "RightButtonDoublePressed", 0, "PopupHotkeys", "f_blnRightButtonDoublePressed")
 
 ; Group PopupHotkeysAlternative
 o_Settings.ReadIniOption("MenuPopup", "blnAlternativeMenuShowNotification", "AlternativeMenuShowNotification", 1, "PopupHotkeysAlternative"
@@ -10461,13 +10446,15 @@ Gui, 2:Add, Text, y+15 x%g_intGroupItemsX% hidden vf_lblControlDoublePressedTitl
 Gui, 2:Font
 Gui, 2:Add, CheckBox, y+5 x%g_intGroupItemsX% vf_blnLeftControlDoublePressed gGuiOptionsGroupChanged hidden, % o_L["OptionsControlDoublePressedLeft"]
 Gui, 2:Add, CheckBox, yp x+5 vf_blnRightControlDoublePressed gGuiOptionsGroupChanged hidden, % o_L["OptionsControlDoublePressedRight"]
+Gui, 2:Add, CheckBox, yp x+5 vf_blnRightButtonDoublePressed gGuiOptionsGroupChanged hidden, % o_L["OptionsControlDoublePressedRightButton"]
 GuiControl, , f_blnLeftControlDoublePressed, % (o_Settings.MenuPopup.blnLeftControlDoublePressed.IniValue = true)
 GuiControl, , f_blnRightControlDoublePressed, % (o_Settings.MenuPopup.blnRightControlDoublePressed.IniValue = true)
+GuiControl, , f_blnRightButtonDoublePressed, % (o_Settings.MenuPopup.blnRightButtonDoublePressed.IniValue = true)
 
 intThisIndex := ""
 objThisPopupHotkey := ""
 
-GuiControlGet, arrPos, Pos, f_blnRightControlDoublePressed
+GuiControlGet, arrPos, Pos, f_blnRightButtonDoublePressed
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
@@ -11235,10 +11222,11 @@ o_Settings.Execution.blnSwitchExclusionListInclude.WriteIni(StrLen(o_Settings.Ex
 
 for intThisIndex, objThisPopupHotkey in o_PopupHotkeys.SA
 	o_Settings.MenuPopup["str" . objThisPopupHotkey.AA.strPopupHotkeyInternalName].WriteIni(objThisPopupHotkey.P_strAhkHotkey)
+intThisIndex := ""
 o_PopupHotkeys.EnablePopupHotkeys()
 o_Settings.MenuPopup.blnLeftControlDoublePressed.WriteIni(f_blnLeftControlDoublePressed)
 o_Settings.MenuPopup.blnRightControlDoublePressed.WriteIni(f_blnRightControlDoublePressed)
-intThisIndex := ""
+o_Settings.MenuPopup.blnRightButtonDoublePressed.WriteIni(f_blnRightButtonDoublePressed)
 
 ; === PopupHotkeysAlternative ===
 
@@ -21579,32 +21567,66 @@ return
 ;========================================================================================================================
 
 ;------------------------------------------------------------
-~LCtrl:: ; use ~ to allow detecting double keypress
-~RCtrl:: ; use ~ to allow detecting double keypress
+~LCtrl::
+~RCtrl::
+~RButton::
+; detect double press of left control, right control or mouse right button click to show QAP menu
+; based on code in https://forum.quickaccesspopup.com/showthread.php?tid=3057
 ;------------------------------------------------------------
 
-strKeyPressed := A_ThisLabel
-
 ; detect AltGr (like pressing Left Ctrl + Alt, see https://forum.quickaccesspopup.com/showthread.php?tid=2747)
-sleep, 10 ; necessary before GetKeyState
-blnAltKeyIsDown := GetKeyState("Alt", "P") ; "P" required, 
+if (A_ThisLabel = "~LCtrl")
+{
+	Sleep, 10 ; necessary before GetKeyState
+	blnAltKeyIsDown := GetKeyState("Alt", "P") ; "P" required, 
+}
 
-if ((strKeyPressed = "~LCtrl") and !(o_Settings.MenuPopup.blnLeftControlDoublePressed.IniValue) or blnAltKeyIsDown) ; exclude if AltGr pressed
-	or ((strKeyPressed = "~RCtrl") and !(o_Settings.MenuPopup.blnRightControlDoublePressed.IniValue))
+if ((A_ThisLabel = "~LCtrl") and !(o_Settings.MenuPopup.blnLeftControlDoublePressed.IniValue) or blnAltKeyIsDown) ; exclude if AltGr pressed
+	or ((A_ThisLabel = "~RCtrl") and !(o_Settings.MenuPopup.blnRightControlDoublePressed.IniValue))
+	or ((A_ThisLabel = "~RButton") and !(o_Settings.MenuPopup.blnRightButtonDoublePressed.IniValue))
 	return
 
-if (A_PriorHotKey = strKeyPressed and A_TimeSincePriorHotkey < 400) ; ms maximum delay between Ctrl presses
-{
-	if CanNavigate(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.P_strAhkHotkey) ; fake pressing main QAP keyboard trigger (Windows + W or custom)
-		Gosub, NavigateHotkeyKeyboard
-	else if CanLaunch(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.P_strAhkHotkey) ; fake pressing main QAP keyboard trigger (Windows + W or custom)
-		Gosub, LaunchHotkeyKeyboard
-	; else do nothing
-}
-StringTrimLeft, strKeyPressed, strKeyPressed, 1
-KeyWait, %strKeyPressed%
+; from here, we have a valid Ctrl press or Right button click
+; count this hotkey press/click and wait for another press/click of the same hotkey within 400 ms
+g_aaPressCount[A_ThisLabel]++
+SetTimer, % "DoublePress" . A_ThisLabel, -400
 
-strKeyPressed := ""
+blnAltKeyIsDown := ""
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+DoublePress~LCtrl:
+DoublePress~RCtrl:
+DoublePress~RButton:
+; based on code in https://forum.quickaccesspopup.com/showthread.php?tid=3057
+;------------------------------------------------------------
+
+strHotkey := StrReplace(A_ThisLabel, "DoublePress")
+
+if (g_aaPressCount[strHotkey] >= 2) ; this hotkey was pressed/clicked more than once within 400 ms
+	if (strHotkey = "~RButton") ; this is a mouse right-click
+	{
+		Send, {Alt} ; close the context menu open by the first right-click
+		if CanNavigate(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; fake pressing main QAP mouse trigger (Middle mouse button or custom)
+			Gosub, NavigateHotkeyMouse
+		else if CanLaunch(o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; fake pressing main QAP mouse trigger (Middle mouse button or custom)
+			Gosub, LaunchHotkeyMouse
+		; else do nothing
+	}
+	else ; this is a left or right Ctrl press
+	{
+		if CanNavigate(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.P_strAhkHotkey) ; fake pressing main QAP keyboard trigger (Windows + W or custom)
+			Gosub, NavigateHotkeyKeyboard
+		else if CanLaunch(o_PopupHotkeyNavigateOrLaunchHotkeyKeyboard.P_strAhkHotkey) ; fake pressing main QAP keyboard trigger (Windows + W or custom)
+			Gosub, LaunchHotkeyKeyboard
+		; else do nothing
+	}
+
+g_aaPressCount[strHotkey] := 0 ; in any case, reset this counter and wait for next press/click
+strHotkey := ""
 
 return
 ;------------------------------------------------------------
