@@ -31,6 +31,19 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.2 (2026-02-##)
+ 
+New features
+- addition of Japanese language in "Options, General"
+- add an option under "Options, Popup Hotkeys" to enable double right-click to open the main menu (Note: double right-click is supported on any window except windows excluded in "Options, Popup menu" and the QAP Customize window)
+- in QAPmessenger, support the command "Customize" to open the QAP "Customize" window in the Main menu (by default) or in a specific submenu or group, for example "QAPMessenger.exe Customize" to open the Main menu or "QAPMessenger.exe Customize|Main > My Snippets" to open the "My Snippets" submenu
+- in favorite "Short name for menu", escape double {{ and %% to keep the user variable names or environment variable banes displayed as-is, for example "{{Dropbox}" to display "{Dropbox}" and "%%appdata%" to display "%appdata%
+ 
+Bug fixes
+- when multiple applications in the same folder have the same root name (for example "this name.exe" and "this other.exe"), make sure application favorites location launch the correct executable (see: https://forum.quickaccesspopup.com/showthread.php?tid=3139)
+- make sure secondary windows like "Options", "Add Favorite", "Select Shortcut", etc. are not hidden by the "Customize" when it is set "always on top" by other means than the "Pin" button in the Customize window's left column
+- fix encoding issues in some lines of the French language file
+
 Version: 12.1.1 (2025-12-06)
 - fix bug with custom fonts in dark mode for "Customise" and "Quick Launch" windows
 - reload QAP after changing the font for text fields
@@ -5759,7 +5772,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.1.1
+;@Ahk2Exe-SetVersion 12.2
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5827,7 +5840,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.1.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
