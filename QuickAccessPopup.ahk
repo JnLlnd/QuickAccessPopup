@@ -31,17 +31,18 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 12.2 (2026-02-##)
+Version: 12.2 (2026-02-16)
  
 New features
-- addition of Japanese language in "Options, General"
-- add an option under "Options, Popup Hotkeys" to enable double right-click to open the main menu (Note: double right-click is supported on any window except windows excluded in "Options, Popup menu" and the QAP Customize window)
+- add an option under "Options, Popup Hotkeys" to enable double right-click to open the main menu (Note: double right-click is supported on any window except windows excluded in "Options, Popup menu" and the QAP "Customize" window)
 - in QAPmessenger, support the command "Customize" to open the QAP "Customize" window in the Main menu (by default) or in a specific submenu or group, for example "QAPMessenger.exe Customize" to open the Main menu or "QAPMessenger.exe Customize|Main > My Snippets" to open the "My Snippets" submenu
 - in favorite "Short name for menu", escape double {{ and %% to keep the user variable names or environment variable banes displayed as-is, for example "{{Dropbox}" to display "{Dropbox}" and "%%appdata%" to display "%appdata%
+- addition of Japanese language in "Options, General"
  
 Bug fixes
-- when multiple applications in the same folder have the same root name (for example "this name.exe" and "this other.exe"), make sure application favorites location launch the correct executable (see: https://forum.quickaccesspopup.com/showthread.php?tid=3139)
+- when multiple applications in a folder have the same root name (for example "this name.exe" and "this other.exe"), make sure QAP launche the correct executable (see: https://forum.quickaccesspopup.com/showthread.php?tid=3139)
 - make sure secondary windows like "Options", "Add Favorite", "Select Shortcut", etc. are not hidden by the "Customize" when it is set "always on top" by other means than the "Pin" button in the Customize window's left column
+- fix bug when using the QAPmessenger command "LaunchFavorite" to launch a group
 - fix encoding issues in some lines of the French language file
 
 Version: 12.1.1 (2025-12-06)
@@ -6408,6 +6409,7 @@ if !GetKeyState("Shift")
 ; Gosub, GuiOptionsGroupSettingsWindow
 ; Gosub, GuiAddFavoriteFromQAPFeatureQCE
 ; Gosub, GuiQuickLaunch
+; RECEIVE_MESSENGER(x, x)
 
 return
 
@@ -22783,6 +22785,9 @@ GetFavoriteObjectFromNameInMenu(strFavoriteMenuName)
 		: "") ; if in Main menu
 	
 	saMenu := o_Containers.AA[strMenuPath].SA
+	if !IsObject(saMenu) ; path not found, add the suffix «» to check if the favorite is in a group
+		saMenu := o_Containers.AA[strMenuPath . " «»"].SA
+		
 	Diag(A_ThisFunc, "strFavoriteMenuName", "!" . strFavoriteMenuName . "!")
 	Diag(A_ThisFunc, "strMenuPath", "!" . strMenuPath . "!")
 	Diag(A_ThisFunc, "strFavoriteName", "!" . strFavoriteName . "!")
@@ -30257,7 +30262,7 @@ RECEIVE_MESSENGER(wParam, lParam)
 	}
 	else if (saData[1] = "LaunchFavorite")
 	{
-		g_strOpenFavoriteFromMsg := saData[2] ; used in OpenFavoriteFromMsg
+		g_strOpenFavoriteFromMsg := saData[2] ; used in OpenFavoriteFromMsg, o_L["MainMenuName"] is added in GetFavoriteObjectFromNameInMenu() called by OpenFavoriteFromMsg
 		Gosub, OpenFavoriteFromMsg
 	}
 	else if (saData[1] = "QuickLaunch")
@@ -30267,7 +30272,10 @@ RECEIVE_MESSENGER(wParam, lParam)
 	}
 	else if (saData[1] = "Customize")
 	{
-		o_MenuInGui := o_Containers.AA[saData[2]]
+		strMenuPath := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
+		o_MenuInGui := o_Containers.AA[strMenuPath]
+		if !IsObject(o_MenuInGui) ; path not found, add the suffix «» to check if it is a group
+			o_MenuInGui := o_Containers.AA[strMenuPath . " «»"]
 		Gosub, GuiShowFromGuiOutside
 	}
 	else
