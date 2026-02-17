@@ -31,6 +31,9 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.2.1 (2026-02-17)
+- fix a bug when the Ctrl+Ctrl option was enabled and the Ctrl key was held down long enough to trigger a repetition generating multiple presses over a short period
+ 
 Version: 12.2 (2026-02-16)
  
 New features
@@ -5773,7 +5776,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.2
+;@Ahk2Exe-SetVersion 12.2.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5841,7 +5844,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -21621,7 +21624,7 @@ DoublePress~RButton:
 
 strHotkey := StrReplace(A_ThisLabel, "DoublePress")
 
-if (g_aaPressCount[strHotkey] >= 2) ; this hotkey was pressed/clicked more than once within 400 ms
+if (g_aaPressCount[strHotkey] = 2) ; this hotkey was pressed/clicked more than once within 400 ms
 	if (strHotkey = "~RButton") ; this is a mouse right-click
 	{
 		Send, {Alt} ; close the context menu open by the first right-click
