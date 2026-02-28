@@ -31,6 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.3 (2026-##-##)
+ 
+Alternative menu features
+- separate Options for "Alternative menu hotkeys" and "Alternative Menu Modifiers"
+
 Version: 12.2.1 (2026-02-17)
 - fix a bug when the Ctrl+Ctrl option was enabled and the Ctrl key was held down long enough to trigger a repetition generating multiple presses over a short period
  
@@ -5776,7 +5781,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.2.1
+;@Ahk2Exe-SetVersion 12.2.9
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5844,7 +5849,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.2.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.2.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -13793,13 +13798,15 @@ return
 
 
 ;------------------------------------------------------------
-GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
+GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false, blnFirstOrNewCmdWindow := false)
 ; return ByRef parameters for g_strTargetWinId and g_strTargetClass (or current file manager ID and class if called to reopen current location)
 ; called when g_strTargetWinId and g_strTargetClass are not updated when invoking the popup menu
-; with blnActivate true when add folder from QAP tray icon or (starting with 11.5.7.9.5) when called from RECEIVE_MESSENGER
-; with blnExcludeDialogBox true when reopen file manager current location in dialog box
+; with blnActivate true, activate the window (when add folder from QAP tray icon or when called from RECEIVE_MESSENGER)
+; with blnExcludeDialogBox true, exclude dialog boxes (when called to reopen the file manager in the current location of a dialog box)
+; with blnFirstOrNewCmdWindow true, return only CMD window values, else return empty window ID (when opening a CMD from RECEIVE_MESSENGER)
 ;------------------------------------------------------------
 {
+	strThisId := ""
 	DetectHiddenWindows, Off
 	WinGet, strIDs, list
 	DetectHiddenWindows, On ; revert to app default
@@ -13811,7 +13818,17 @@ GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false
 	{
 		intThisIDIndex := A_Index
 		WinGetClass, strThisClass, % "ahk_id " . strIDs%intThisIDIndex%
-		if WindowIsExplorer(strThisClass)
+		if (blnFirstOrNewCmdWindow)
+		{
+			if WindowIsConsole(strThisClass)
+			{
+				strThisId := strIDs%intThisIDIndex%
+				break
+			}
+			else
+				continue
+		}
+		else if WindowIsExplorer(strThisClass)
 			or (WindowIsDirectoryOpus(strThisClass) and o_FileManagers.P_intActiveFileManager = 2)
 			or (WindowIsTotalCommander(strThisClass) and o_FileManagers.P_intActiveFileManager = 3)
 			or (WindowIsDialog(strThisClass, strIDs%intThisIDIndex%) and !blnExcludeDialogBox)
@@ -22435,6 +22452,7 @@ OpenWorkingDirectory:
 OpenBackupDirectory:
 OpenSwitchFolderOrApp:
 OpenFavoriteFromMsg:
+OpenFavoriteInCmdFromMsg:
 OpenFavoriteFromQuickLaunch:
 OpenAlternativeFromQuickLaunch:
 OpenFavoriteSelectedInGui:
@@ -22708,9 +22726,22 @@ else if (g_strOpenFavoriteLabel = "OpenFavoriteFromMsg")
 	o_ThisFavorite := GetFavoriteObjectFromNameInMenu(g_strOpenFavoriteFromMsg)
 	Diag(A_ThisLabel, "o_ThisFavorite Name", o_ThisFavorite.AA.strFavoriteName)
 
-	; GetTargetWinIdAndClass(ByRef strThisId, ByRef strThisClass, blnActivate := false, blnExcludeDialogBox := false, blnIncludeBrowsers := false)
 	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass) ; returns current or latest file manager window ID and Window class
 	g_strHotkeyTypeDetected := "Launch"
+}
+else if (g_strOpenFavoriteLabel = "OpenFavoriteInCmdFromMsg")
+{
+	o_ThisFavorite := GetFavoriteObjectFromNameInMenu(g_strOpenFavoriteFromMsg)
+	GetTargetWinIdAndClass(g_strTargetWinId, g_strTargetClass, true, , , true) ; returns active or last used CMD window ID and class (activate it if required), return empty ID if no CMD window
+	if !(g_strTargetWinId) ; open a new Cmd window
+	{
+		Run, %comspec% /k, , , strPID
+		WinWait, ahk_pid %strPID%
+		WinWaitActive, ahk_pid %strPID%
+		g_strTargetWinId := WinExist("A")
+		WinGetClass, g_strTargetClass, % "ahk_id " . g_strTargetWinId
+	}
+	g_strHotkeyTypeDetected := "Navigate" ; the CMD window is now active, navigate it to the target folder
 }
 else if (g_strOpenFavoriteLabel = "OpenFavoriteSelectedInGui")
 {
@@ -22736,6 +22767,7 @@ strReopenWindowsID := ""
 strReopenWindowClass := ""
 strCurrentLocation := ""
 intFavoritesSelectedIndex := ""
+strPID := ""
 
 return
 ;------------------------------------------------------------
@@ -30204,7 +30236,7 @@ REPLY_QAPISRUNNING(wParam, lParam)
 ;------------------------------------------------------------
 RECEIVE_MESSENGER(wParam, lParam) 
 ; Adapted from AHK documentation (https://autohotkey.com/docs/commands/OnMessage.htm)
-; Commands: ShowMenuLaunch, ShowMenuNavigate, ShowMenuAlternative, ShowMenuDynamic, LaunchFavorite, AddFolder, AddFolderXpress, AddFile and AddFileXpress
+; Commands: ShowMenuLaunch, ShowMenuNavigate, ShowMenuAlternative, ShowMenuDynamic, LaunchFavorite, AddFolder, AddFolderXpress, AddFile, AddFileXpress, OpenFavoriteInCmd
 ;------------------------------------------------------------
 {
 	global g_strNewLocation
@@ -30230,6 +30262,7 @@ RECEIVE_MESSENGER(wParam, lParam)
 	}
 	; else continue
 	
+	; strCopyOfData := "OpenFavoriteInCmd|> TestFolder"
 	saData := StrSplit(strCopyOfData, "|") ; separartor for QAPmessenger
 	
 	Diag(A_ThisFunc, "g_strTargetWinId before", g_strTargetWinId)
@@ -30306,6 +30339,11 @@ RECEIVE_MESSENGER(wParam, lParam)
 	{
 		g_strOpenFavoriteFromMsg := saData[2] ; used in OpenFavoriteFromMsg, o_L["MainMenuName"] is added in GetFavoriteObjectFromNameInMenu() called by OpenFavoriteFromMsg
 		Gosub, OpenFavoriteFromMsg
+	}
+	else if (saData[1] = "OpenFavoriteInCmd")
+	{
+		g_strOpenFavoriteFromMsg := saData[2] ; used in OpenFavoriteInCmdFromMsg, o_L["MainMenuName"] is added in GetFavoriteObjectFromNameInMenu() called by OpenFavoriteInCmdFromMsg
+		Gosub, OpenFavoriteInCmdFromMsg
 	}
 	else if (saData[1] = "QuickLaunch")
 	{
