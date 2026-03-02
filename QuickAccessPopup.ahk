@@ -6409,7 +6409,7 @@ if !GetKeyState("Shift")
 	o_MainMenu.LaunchAutoExec()
 
 ; ####
-; Gosub, GuiOptionsGroupAlternativeMenuModifiers
+; Gosub, GuiOptionsGroupAlternativeMenuHotkeys
 ; Gosub, GuiAddFavoriteFromQAPFeatureQCE
 ; Gosub, GuiQuickLaunch
 ; RECEIVE_MESSENGER(x, x)
@@ -7160,7 +7160,7 @@ o_Settings.ReadIniOption("MenuPopup", "blnRightButtonDoublePressed", "RightButto
 
 ; Group AlternativeMenuHotkeys and AlternativeMenuModifiers
 o_Settings.ReadIniOption("MenuPopup", "blnAlternativeMenuShowNotification", "AlternativeMenuShowNotification", 1, "AlternativeMenuHotkeys"
-	, "f_lblAlternativeMenu|f_blnAlternativeMenuShowNotification|f_btnAlternativeMenuHotkeysHelp") ; g_blnAlternativeMenuShowNotification
+	, "f_lblAlternativeMenuHotkeys|f_blnAlternativeMenuShowNotification|f_btnAlternativeMenuHotkeysHelp") ; g_blnAlternativeMenuShowNotification
 ; see also LoadIniAlternativeMenuFeaturesHotkeysAndModifiers:
 
 ; Group Filemanagers
@@ -7885,7 +7885,7 @@ for intModifierOrder, strModifierCode in o_QAPfeatures.saQAPFeaturesAlternativeM
 		continue
 	strAlternativeCode := o_Settings.ReadIniOption("MenuPopup", strModifierCode, strModifierCode
 		, o_QAPfeatures.aaQAPfeaturesModifierCodesDefaultAlternativeCode[strModifierCode], "AlternativeMenuModifiers"
-		, "f_lblAlternativeModifier" . strModifierCode . "|f_strAlternativeModifier" . strModifierCode
+		, "f_lblAlternativeMenuModifiers|f_lblAlternativeModifier" . strModifierCode . "|f_strAlternativeModifier" . strModifierCode
 		. "|f_btnAlternativeMenuResetModifiersDefault|f_btnAlternativeMenuResetModifiersSaved|f_btnAlternativeMenuModifiersHelp"
 		, "AlternativeMenuModifiers")
 	if (strAlternativeCode <> "ERROR")
@@ -10481,7 +10481,7 @@ GuiControlGet, arrPos, Pos, f_blnRightButtonDoublePressed
 if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 	g_intOptionsFooterY := arrPosY + arrPosH
 
-; === AlternativeMenuHotkeys and  and AlternativeMenuModifiers ===
+; === AlternativeMenuHotkeys ===
 
 ; {Alternative Menu QAP Feature Codes}
 o_QAPfeatures.aaQAPFeaturesNewShortcuts := Object() ; re-init
@@ -10490,27 +10490,15 @@ for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeBy
 		; o_QAPfeatures.aaQAPFeaturesNewShortcuts will be saved to ini file and o_QAPfeatures.AA will be used to turn off previous hotkeys
 		o_QAPfeatures.aaQAPFeaturesNewShortcuts[strAlternativeCode] := o_QAPfeatures.AA[strAlternativeCode].strCurrentHotkey
 		
-Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w590 center hidden vf_lblAlternativeMenu, % o_L["OptionsAlternativeMenuFeaturesIntro"]
+Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w590 center hidden vf_lblAlternativeMenuHotkeys, % o_L["OptionsAlternativeMenuFeaturesIntro"]
 
 for intOrder, strAlternativeCode in o_QAPfeatures.saQAPFeaturesAlternativeCodeByOrder
 {
-	if Mod(A_Index, 2) ; right column, use A_Index, not intOrder
-		intHotkeysAlternativeX := g_intGroupItemsX
-	else
-		intHotkeysAlternativeX := g_intGroupItemsTab6X
-	
-	Gui, 2:Font, s8 w700
-	Gui, 2:Add, Text, % "section x" . intHotkeysAlternativeX . " y" . (A_Index = 1 ? "+10" : (Mod(A_Index, 2) ? "+20" : "s")) . " w240 hidden vf_lblAlternativeHotkeyName" . intOrder
+	Gui, 2:Add, Text, % "x" . g_intGroupItemsX . " y" . (A_Index = 1 ? "+15" : "+10") . " w250 right hidden vf_lblAlternativeHotkeyName" . intOrder
 		, % o_QAPfeatures.AA[strAlternativeCode].strLocalizedName ; .strLocalizedName OK because Alternative
 	Gui, 2:Font
-	Gui, 2:Add, Text, xs y+5 vf_lblAlternativeHotkeyLabel%intOrder% hidden, % o_L["DialogHotkey"] . ":"
-	if (A_Index = 1)
-	{
-		GuiControlGet, arrPos, Pos, f_lblAlternativeHotkeyLabel1
-		intTextWidth := 280 - arrPosW
-	}
 	Gui, 2:Font, s8 w500, Courier New
-	Gui, 2:Add, Text, x+5 yp w%intTextWidth% h20 center 0x1000 vf_lblAlternativeHotkeyText%intOrder% gButtonOptionsChangeAlternativeHotkey hidden
+	Gui, 2:Add, Text, x+5 yp w330 h20 center 0x1000 vf_lblAlternativeHotkeyText%intOrder% gButtonOptionsChangeAlternativeHotkey hidden
 		, % new Triggers.HotkeyParts(o_QAPfeatures.AA[strAlternativeCode].strCurrentHotkey).Hotkey2Text(true)
 	Gui, 2:Font
 }
@@ -10533,9 +10521,11 @@ if ((arrPosY + arrPosH) > g_intOptionsFooterY)
 
 ; === AlternativeMenuModifiers ===
 
+Gui, 2:Add, Text, y%intGroupItemsY% x%g_intGroupItemsX% w590 center hidden vf_lblAlternativeMenuModifiers, % o_L["OptionsAlternativeMenuFeaturesModifiersIntro"]
+
 for intModifierOrder, strModifierCode in o_QAPfeatures.saQAPFeaturesAlternativeMenuModifiersCodes
 {
-	Gui, 2:Add, Text, % "x" . g_intGroupItemsX . " " . (A_Index = 1 ? "y" . intGroupItemsY : "yp+30")  . " w125 hidden vf_lblAlternativeModifier" 
+	Gui, 2:Add, Text, % "x" . g_intGroupItemsX . " yp+30" . " w125 hidden vf_lblAlternativeModifier" 
 		. strModifierCode, % o_QAPfeatures.aaQAPFeaturesAlternativeMenuModifiersNamesByCodes[strModifierCode]
 
 	strList := o_QAPfeatures.GetAlternativeMenuModifiersDropdownList(o_QAPfeatures.aaQAPfeaturesAlternativeCodeByModifierCodes[strModifierCode])
@@ -19107,6 +19097,7 @@ return
 ;------------------------------------------------------------
 GuiRemoveFavorite:
 GuiRemoveOneFavorite:
+GuiRemoveFromAlternativeMenu:
 ;------------------------------------------------------------
 
 if !(g_blnMenuReady)
@@ -19135,6 +19126,17 @@ if (A_ThisLabel = "GuiRemoveFavorite")
 		o_MenuOfRemovedItem := o_MenuInGui
 		o_EditedFavorite := o_MenuOfRemovedItem.SA[intItemToRemove] ; for UpdateFavoriteObjectSaveShortcut
 	}
+}
+else if (A_ThisLabel = "GuiRemoveFromAlternativeMenu")
+{
+	o_MenuOfRemovedItem := o_EditedFavorite.AA.oParentMenu
+	intItemToRemove := 	o_EditedFavorite.AA.intCurrentMenuPosition
+}
+
+if (o_MenuOfRemovedItem.AA.blnIsDynamicMenu)
+{
+	Oops(0, o_L["OopsCannotDeleteInDynamicMenu"], o_MenuOfRemovedItem.AA.strMenuPath)
+	return
 }
 
 if o_MenuOfRemovedItem.FavoriteIsUnderExternalMenu(oExternalMenu) and !oExternalMenu.ExternalMenuAvailableForLock(true) ; blnLockItForMe
@@ -19172,7 +19174,7 @@ Gosub, UpdateFavoriteObjectSaveShortcut
 
 o_MenuOfRemovedItem.SA.RemoveAt(intItemToRemove)
 
-if !SearchIsVisible()
+if !SearchIsVisible() and !(A_ThisLabel = "GuiRemoveFromAlternativeMenu")
 {
 	LV_Delete(intItemToRemove)
 	if (A_ThisLabel = "GuiRemoveFavorite")
@@ -19187,8 +19189,9 @@ if !SearchIsVisible()
 	if (A_ThisLabel = "GuiRemoveOneFavorite")
 		g_intRemovedItems++ ; for FindItemInMenuInGui() when not in search result
 }
-else if (A_ThisLabel = "GuiRemoveFavorite")
-	Gosub, LoadFavoritesInGui ; refresh search result 
+else if InStr("GuiRemoveFavorite|GuiRemoveFromAlternativeMenu|", A_ThisLabel . "|")
+	Gosub, LoadFavoritesInGui ; refresh search result
+; else do nothing (search or alternative menu)
 
 ; refresh menu dropdpown in gui
 if (blnItemIsMenu)
@@ -22380,6 +22383,8 @@ else if (g_strAlternativeMenu = o_L["MenuAlternativeOpenContainingCurrent"]) or 
 	strMessage := o_L["AlternativeMenuTrayTipOpenContaining"]
 else if (g_strAlternativeMenu = o_L["MenuAlternativeMoveSelectedFile"]) or (g_strAlternativeMenu = o_L["MenuAlternativeCopySelectedFile"])
 	strMessage := o_L["AlternativeMenuTrayTipSelectedFile"]
+else if (g_strAlternativeMenu = o_L["MenuAlternativeRemoveFavorite"])
+	strMessage := o_L["AlternativeMenuTrayTipRemoveFavorite"]
 else
 	strMessage := ""
 
@@ -22809,6 +22814,7 @@ GetFavoriteObjectFromMenuPosition(ByRef intMenuItemPos)
 ;------------------------------------------------------------
 {
 	intMenuItemPos := A_ThisMenuItemPos + o_Containers.AA[A_ThisMenu].GetNumberOfHiddenItemsBeforeThisItem(A_ThisMenuItemPos)
+	o_Containers.AA[A_ThisMenu].SA[intMenuItemPos].AA.intCurrentMenuPosition := intMenuItemPos ; used only when deleting favorite from alternative menu feature
 	
 	return o_Containers.AA[A_ThisMenu].SA[intMenuItemPos]
 }
@@ -25327,8 +25333,11 @@ SettingsNotSavedReturn()
 	SetTimer, SettingsNotSavedChangeButtonNames, 50
 	Gui, 1:+OwnDialogs
 	MsgBox, 3, % L(o_L["DialogSettingsNotSavedTitle"], g_strAppNameText), % o_L["DialogSettingsNotSavedPrompt"]
-	IfMsgBox, No ; Settings
+	IfMsgBox, No ; Customize window
 	{
+		WinGet, intStyle, Style, %g_strGuiFullTitle%
+		if !(intStyle & 0x10000000) ; WS_VISIBLE
+			WinShow, %g_strGuiFullTitle%
 		WinActivate, %g_strGuiFullTitle%
 		return true
 	}
@@ -32286,18 +32295,20 @@ class QAPfeatures
 			, "", 1, "iconFolder", "ShiftLeft", "")
 		this.AddQAPFeatureObject("Edit Favorite",			o_L["MenuAlternativeEditFavorite"],			"", "", ""
 			, "", 3, "iconEditFavorite", "ShiftLeftCtrlLeft", "", "", false, true)
+		this.AddQAPFeatureObject("Delete Favorite",		o_L["MenuAlternativeRemoveFavorite"],				"", "", ""
+			, "", 4, "iconRecycleBin", "None", "", "", false, true) ; None is an internal code, not localized
 		this.AddQAPFeatureObject("Copy Favorite Location",	o_L["MenuCopyLocation"],						"", "", ""
-			, "", 5, "iconClipboard", "CtrlLeft", "", "", false, true)
+			, "", 6, "iconClipboard", "CtrlLeft", "", "", false, true)
 		this.AddQAPFeatureObject("Run As Administrator",	o_L["MenuAlternativeRunAs"],					"", "", ""
-			, "", 7, "iconUAClogo", "ShiftRightCtrlRight", "", "", false, true)
+			, "", 8, "iconUAClogo", "ShiftRightCtrlRight", "", "", false, true)
 		this.AddQAPFeatureObject("Open Containing Current",	o_L["MenuAlternativeOpenContainingCurrent"],	"", "", ""
-			, "", 9, "iconSpecialFolders", "ShiftRight", "")
+			, "", 10, "iconSpecialFolders", "ShiftRight", "")
 		this.AddQAPFeatureObject("Open Containing New",		o_L["MenuAlternativeOpenContainingNew"],		"", "", ""
-			, "", 10, "iconSpecialFolders", "CtrlRight", "", "", false, true)
+			, "", 11, "iconSpecialFolders", "CtrlRight", "", "", false, true)
 		this.AddQAPFeatureObject("Move Selected File",		o_L["MenuAlternativeMoveSelectedFile"],			"", "", ""
-			, "", 12, "iconFolder", "None", "") ; None is an internal code, not localized
-		this.AddQAPFeatureObject("Copy Selected File",		o_L["MenuAlternativeCopySelectedFile"],			"", "", ""
 			, "", 13, "iconFolder", "None", "") ; None is an internal code, not localized
+		this.AddQAPFeatureObject("Copy Selected File",		o_L["MenuAlternativeCopySelectedFile"],			"", "", ""
+			, "", 14, "iconFolder", "None", "") ; None is an internal code, not localized
 		
 		;-----------------------
 		; QAP Features categories
@@ -32442,7 +32453,7 @@ class QAPfeatures
 	;---------------------------------------------------------
 	{
 		for strQAPFeatureCode in this.aaQAPFeaturesDynamicMenus
-			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, , "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands)
+			new Container("Menu", this.AA[strQAPFeatureCode].strLocalizedName, , "", "init", this.AA[strQAPFeatureCode].blnDoubleAmpersands, , , true) ; last true for .blnIsDynamicMenu
 		
 		if (g_aaFileManagerDirectoryOpus.blnFileManagerDirectoryOpusShowLayouts and FileExist(o_FileManagers.SA[2].AA.strDirectoryOpusLayoutsFile))
 			new Container("Menu", o_L["DOpusLayoutsName"]) ; init DOpus Layouts sub menu of DOpus Favorites menu
@@ -33383,7 +33394,8 @@ class Container
 	;---------------------------------------------------------
 
 	;---------------------------------------------------------
-	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false, blnCheckDuplicates := false, blnMenuEditable := false)
+	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false
+		, blnCheckDuplicates := false, blnMenuEditable := false, blnIsDynamicMenu := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
@@ -33393,6 +33405,7 @@ class Container
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
 		this.AA.blnMenuEditable := blnMenuEditable ; add edit this menu and increment items counter
+		this.AA.blnIsDynamicMenu := blnIsDynamicMenu ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		this.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		
 		if (oParentMenu)
@@ -34693,7 +34706,8 @@ class Container
 				oExternalMenu := oContainer ; return the top level external menu object
 				return true
 			}
-			else if (oContainer.AA.strMenuPath = o_L["MainMenuName"])
+			else if (oContainer.AA.strMenuPath = o_L["MainMenuName"]) ; top menu
+					or !StrLen(oContainer.AA.strMenuPath) ; no parent in case it is called from a dynamic menus
 				return false ; up to Main menu, no External menu
 			else
 				oContainer := oContainer.AA.oParentMenu ; up one level and loop
@@ -35605,6 +35619,11 @@ class Container
 					else
 						this.AlternativeEditFavorite() ; no error code returned
 				}	
+				else if (g_strAlternativeMenu = o_L["MenuAlternativeRemoveFavorite"])
+				{
+					o_EditedFavorite := this
+					Gosub, GuiRemoveFromAlternativeMenu
+				}	
 				else if (g_strAlternativeMenu = o_L["MenuCopyLocation"]) ; EnvVars expanded
 				{
 					if InStr("Group|QAP|Text", this.AA.strFavoriteType)
@@ -35894,7 +35913,7 @@ class Container
 		
 		;---------------------------------------------------------
 		AlternativeEditFavorite()
-		; we get here via Alternative menu, Edit a favorite or with Ctrl+Shift+click on a favorite
+		; we get here via Alternative menu, Edit a favorite or with Ctrl+Shift+click (if default) on a favorite
 		;---------------------------------------------------------
 		{
 			if (this.AA.oParentMenu.AA.blnIsLiveMenu)
