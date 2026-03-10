@@ -8401,7 +8401,7 @@ saMenuItemsTable.Push(["SpecialSearchBrokenLocations", aaL["DialogSearchBrokenLo
 saMenuItemsTable.Push(["SpecialSearchBrokenLinks", aaL["DialogSearchBrokenLinks"], "", "iconNoIcon"])
 saMenuItemsTable.Push(["SpecialSearchAutoExec", aaL["DialogSearchAutoExec"], "", "iconNoIcon"])
 o_Containers.AA["menuBarSpecialSearch"].LoadFavoritesFromTable(saMenuItemsTable)
-o_Containers.AA["menuBarSpecialSearch"].BuildMenu(false, true) ; true for numeric shortcut already inserted
+o_Containers.AA["menuBarSpecialSearch"].BuildMenu(true) ; true for numeric shortcut already inserted
 
 aaMenuToolsL := o_L.InsertAmpersand(true, "ControlToolTipSearchButton", "DialogExtendedSearch", "DialogSearchSpecial", "GuiQuickLaunchTitle", "MenuRestoreQuickLaunchWindowPosition"
 	, "GuiSearchAndReplaceTitle", "DialogHotkeysManage", "DialogHotstringsManage", "DialogIconsManage", "MenuRefreshMenu", "MenuResetQAPSpecialDefaultNames", "MenuSuspendHotkeys"
