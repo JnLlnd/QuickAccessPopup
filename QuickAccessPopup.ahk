@@ -31,6 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
+- major refactor of Options Alternative menu modifiers; separate Alternative menus hotkeys and modifiers in two sections of Options; in options, split the Alternative menus options in two sections: shortcuts and modifiers; 
+- add QAPmessenger command OpenFavoriteInCmd to open the specified folder in an existing or new CMD window; implement new alternative menu feature to delete the selected favorite; prevent trying to use the new feature to remove an item from a dynamic menu; 
+- when checking if settings need to be saved, and clicking Customize button, show the window if it is hidden; 
+- prevent inifinite loop when checking if a favorite is under an external menu and is in a dynamic menu;
+- fix invisible error with ampersands when building special search menu
+
 Version: 12.3 (2026-##-##)
  
 Alternative menu features
