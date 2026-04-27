@@ -6027,6 +6027,9 @@ global g_strEditControlsFontName ; font used in Edit controls (default "Segoe UI
 global g_aaPressCount := Object() ; used when monitoring double-press of left control key, right control key of right mouse button
 g_aaPressCount["~LCtrl"] := g_aaPressCount["~RCtrl"] := g_aaPressCount["~RButton"] := 0 ; init counters
 
+global g_intTickCountCheckboxPrev := 0 ; used to monitor double click on listview checkbox 
+global g_intFavoriteDisabledPrev := "" ; used to monitor double click on listview checkbox 
+
 ;---------------------------------
 ; Used in SelectIcon()
 global SI_intPickIconCols := 10 ; 20
@@ -7234,6 +7237,7 @@ o_Settings.ReadIniOption("Execution", "blnEnableFavoriteDebugOption", "EnableFav
 o_Settings.ReadIniOption("Execution", "blnKeepExtensionInShortName", "KeepExtensionInShortName", 0, "AdvancedOther", "f_blnKeepExtensionInShortName") ; keep file extension when gettig short name from a document or application location
 o_Settings.ReadIniOption("Execution", "blnSendToConsoleWithAlt", "SendToConsoleWithAlt", 1, "AdvancedOther", "f_blnSendToConsoleWithAlt") ; default true, send ANSI values to CMD with ALT+0nnn ASCII codes ; g_blnSendToConsoleWithAlt
 o_Settings.ReadIniOption("Execution", "blnDoNotLaunchQCEReceiver", "DoNotLaunchQCEReceiver", 0, "AdvancedOther", "f_blnDoNotLaunchQCEReceiver") ; default false
+o_Settings.ReadIniOption("Execution", "blnCustomizeCheckboxes", "blnCustomizeCheckboxes", 0, "AdvancedOther", "f_blnCustomizeCheckboxes") ; default false
 o_Settings.ReadIniOption("SettingsFile", "strExternalMenusCataloguePath", "ExternalMenusCataloguePath", " ", "AdvancedOther"
 	, "f_blnEnableExternalMenusCatalogue|f_lnkEnableExternalMenusCatalogue|f_lblExternalMenusCataloguePathPrompt|f_strExternalMenusCataloguePath|f_btnExternalMenusCataloguePath") ; g_strExternalMenusCataloguePath
 o_Settings.ReadIniOption("Snippets", "arrWaitDelayInSnippet", "WaitDelayInSnippet", "40|80|180|150", "AdvancedOther"
@@ -10906,6 +10910,10 @@ GuiControl, , f_blnSendToConsoleWithAlt, % (o_Settings.Execution.blnSendToConsol
 Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnDoNotLaunchQCEReceiver gGuiOptionsGroupChanged hidden, % o_L["OptionsDoNotLaunchQCEReceiver"]
 GuiControl, , f_blnDoNotLaunchQCEReceiver, % (o_Settings.Execution.blnDoNotLaunchQCEReceiver.IniValue = true)
 
+; CustomizeCheckboxes
+Gui, 2:Add, CheckBox, x%g_intGroupItemsX% y+10 w500 vf_blnCustomizeCheckboxes gGuiOptionsGroupChanged hidden, % o_L["OptionsCustomizeCheckboxes"]
+GuiControl, , f_blnCustomizeCheckboxes, % (o_Settings.Execution.blnCustomizeCheckboxes.IniValue = true)
+
 ; ExternalMenusCataloguePath
 if !(o_Settings.SettingsFile.blnExternalMenusCataloguePathReadOnly.IniValue)
 {
@@ -11446,6 +11454,8 @@ o_Settings.Execution.blnEnableFavoriteDebugOption.WriteIni(f_blnEnableFavoriteDe
 o_Settings.Execution.blnKeepExtensionInShortName.WriteIni(f_blnKeepExtensionInShortName)
 o_Settings.Execution.blnSendToConsoleWithAlt.WriteIni(f_blnSendToConsoleWithAlt)
 o_Settings.Execution.blnDoNotLaunchQCEReceiver.WriteIni(f_blnDoNotLaunchQCEReceiver)
+blnCustomizeCheckboxesPrev := o_Settings.Execution.blnCustomizeCheckboxes.IniValue
+o_Settings.Execution.blnCustomizeCheckboxes.WriteIni(f_blnCustomizeCheckboxes)
 o_Settings.SettingsFile.strExternalMenusCataloguePath.WriteIni(f_strExternalMenusCataloguePath)
 o_Settings.Snippets.arrWaitDelayInSnippet.WriteIni(f_intWaitDelayInSnippet1 . "|" . f_intWaitDelayInSnippet2 . "|" . f_intWaitDelayInSnippet3 . "|" . f_intWaitDelayInSnippet4)
 o_Settings.Snippets.arrWaitDelayInSnippet.IniValue := StrSplit(o_Settings.Snippets.arrWaitDelayInSnippet.IniValue, "|")
@@ -11523,6 +11533,7 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	or (strListFontNamePrev <> o_Settings.SettingsWindow.strListFontName.IniValue)
 	or (strEditControlsFontNamePrev <> o_Settings.SettingsWindow.strEditControlsFontName.IniValue)
 	or (strQuickLaunchFontNamePrev <> o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue)
+	or (blnCustomizeCheckboxesPrev <> o_Settings.Execution.blnCustomizeCheckboxes.IniValue)
 {
 	if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
@@ -11589,6 +11600,11 @@ if (strShowQAPmenuPrev <> o_Settings.MenuAdvanced.intShowQAPmenu .IniValue)
 	{
 		strOption := o_L["OptionsQuickLaunchFontName"]
 		strValue := o_Settings.SettingsWindow.strQuickLaunchFontName.IniValue
+	}
+	else if (blnCustomizeCheckboxesPrev <> o_Settings.Execution.blnCustomizeCheckboxes.IniValue)
+	{
+		strOption := o_L["OptionsCustomizeCheckboxes"]
+		strValue := (o_Settings.Execution.blnCustomizeCheckboxes.IniValue ? o_L["DialogOn"] : o_L["DialogOff"])
 	}
 
 	MsgBox, 52, %g_strAppNameText%, % L(o_L["ReloadPrompt"], strOption, """" . strValue . """", g_strAppNameText)
@@ -12843,6 +12859,7 @@ Gui, 1:Font, s%intListViewFontSize%, % o_Settings.SettingsWindow.strListFontName
 Gui, 1:Add, ListView
 	, % "vf_lvFavoritesList +Hwndg_strFavoritesListHwnd Count32 AltSubmit NoSortHdr LV0x10 LV0x10000 "
 		. (g_blnUseColors ? "c" . g_strGuiListviewTextColor . " Background" . g_strGuiListviewBackgroundColor : "") . " gGuiFavoritesListEvents x+1 yp"
+		. (o_Settings.Execution.blnCustomizeCheckboxes.IniValue ? " Checked" : "")
 	, % o_L["GuiLvFavoritesHeader"] . (o_Settings.SettingsWindow.blnSearchWithStats.IniValue ? "|" . o_L["GuiLvFavoritesHeaderFilteredDates"]
 	. (g_blnUsageDbEnabled ? "|" . o_L["GuiLvFavoritesHeaderFilteredStats"] : "") : "") ; SysHeader321 / SysListView321
 if (o_Settings.SettingsWindow.blnSearchWithStats.IniValue and g_blnUsageDbEnabled)
@@ -13247,11 +13264,29 @@ if (A_GuiEvent = "DoubleClick" or A_GuiEvent = "I")
     Gui, 1:ListView, %A_GuiControl% ; safety
 
 if (A_GuiEvent = "DoubleClick")
-
+{
+	if ((A_TickCount - g_intTickCountCheckboxPrev) < 300) ; last C event occurred less than 300 ms ago, restore previous Disabled value
+	{
+		o_MenuInGui.SA[A_EventInfo].AA.intFavoriteDisabled := g_intFavoriteDisabledPrev
+		LV_Modify(intCheckedItem, , , o_MenuInGui.SA[A_EventInfo].GetItemTypeLabelForList()) ; update type label
+	}
 	gosub, HotkeyEnterMenuOrFavorite
-
+}
 else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls or change button labels
 {
+	if InStr(ErrorLevel, "C") ; checkbox checked "C" or unchecked "c"
+	{
+		intCheckedItem := A_EventInfo
+		g_intTickCountCheckboxPrev := A_TickCount ; save it in case there is a double click later
+		g_intFavoriteDisabledPrev := o_MenuInGui.SA[intCheckedItem].AA.intFavoriteDisabled ; save it in case there is a double click later
+		
+		blnCheck := InStr(ErrorLevel, "C", true) ; "c" lowercase for unchecked
+		o_MenuInGui.SA[intCheckedItem].AA.intFavoriteDisabled := blnCheck ; 0 or 1, never -1 (hidden) here
+		LV_Modify(intCheckedItem, , , o_MenuInGui.SA[A_EventInfo].GetItemTypeLabelForList()) ; update type label
+		
+		gosub, EnableSaveAndCancel
+	}
+	
 	intFavoritesSelectedCount := LV_GetCount("Selected")
 	if (intFavoritesSelectedCount > 1)
 	{
@@ -15806,7 +15841,7 @@ if (A_GuiEvent = "S") ; if user double-click the "S" event has been triggered ju
 	blnIsCategory := !g_aaTreeViewItemsByIDs[A_EventInfo].intParentID
 	blnCategoryHasChild := (blnIsCategory and g_aaTreeViewItemsChildIDs[A_EventInfo])
 	
-	strType := StrReplace(StrReplace(strType, "TreeView"), "Changed")
+	strType := StrMultipleReplace(strType, "TreeView|Changed")
 	
 	if (blnIsCategory)
 		strItemSelectedName := ""
@@ -27423,7 +27458,7 @@ ExpandPlaceholderMenu(str)
 	{
 		saItem := StrSplit(strItem, "~")
 		if InStr(strItem, "~")
-			strLabel := StrReplace(StrReplace(saItem[1], "``n"), "``t") ; remove line breaks and tabs in labels
+			strLabel := StrMultipleReplace(saItem[1], "``n|``t") ; remove line breaks and tabs in labels
 		g_saPlaceholderMenuItems[intItem] := (InStr(strItem, "~") ? saItem[2] : strItem)
 		Menu, menuPlaceholder, Add, % (InStr(strItem, "~") ? strLabel : strItem), PlaceholderMenuResult
 		if (intItem = 1) and InStr(strItem, "~") and !StrLen(saItem[2]) ; first item with label and empty content is processed as title and made bold
@@ -30104,6 +30139,20 @@ WindowAlwaysOnTop(intHwnd)
 {
 	WinGet, intWindowStyle, ExStyle, ahk_id %intHwnd%
 	return (intWindowStyle & 0x8 ? True : False) ; 0x8 is WS_EX_TOPMOST.
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+StrMultipleReplace(strOriginal, strReplace, strWith := "")
+; replace in strOriginal all strings in strReplace (pipe delimited) with the unique string strWith
+;------------------------------------------------------------
+{
+	strOut := strOriginal
+	loop, Parse, strReplace, |
+		strOut := StrReplace(strOut, A_LoopField, strWith)
+	
+	return strOut
 }
 ;------------------------------------------------------------
 
@@ -37586,7 +37635,10 @@ class Container
 			else
 				intRow := LV_Add(strOptions)
 			for intKey, strValue in saValues
-				LV_Modify(intRow, "Col" . intKey, strValue)
+				if (intKey = 5) ; intFavoriteDisabled
+					LV_Modify(intRow,  (strValue = "1" ? "Check" : ""))
+				else
+					LV_Modify(intRow, "Col" . intKey, strValue)
 		}
 		;------------------------------------------------------------
 		
@@ -37645,6 +37697,8 @@ class Container
 				saValues[4] :=StringLeftDotDotDot(this.AA.strFavoriteLocation, 100)
 			else ; this is a Folder, Special (except with CLSID), Document, URL, Application or Windows App
 				saValues[4] := this.AA.strFavoriteLocation
+			
+			saValues[5] := this.AA.intFavoriteDisabled
 			
 			if (strMenuType = "Search")
 			; #| + Name|Menu|Type|Hotkey|Location or content + |Last Modified|Created + |Last Used|Usage
