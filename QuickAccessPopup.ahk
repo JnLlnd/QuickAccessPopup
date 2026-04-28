@@ -13277,14 +13277,15 @@ else if (A_GuiEvent = "I") ; Item(s) selected changed, enable/disable controls o
 	if InStr(ErrorLevel, "C") ; checkbox checked "C" or unchecked "c"
 	{
 		intCheckedItem := A_EventInfo
-		g_intTickCountCheckboxPrev := A_TickCount ; save it in case there is a double click later
+		g_intTickCountCheckboxPrev := A_TickCount ; save it in case there is a double click later, and to check if we need to enable the Save button
 		g_intFavoriteDisabledPrev := o_MenuInGui.SA[intCheckedItem].AA.intFavoriteDisabled ; save it in case there is a double click later
 		
 		blnCheck := InStr(ErrorLevel, "C", true) ; "c" lowercase for unchecked
 		o_MenuInGui.SA[intCheckedItem].AA.intFavoriteDisabled := blnCheck ; 0 or 1, never -1 (hidden) here
 		LV_Modify(intCheckedItem, , , o_MenuInGui.SA[A_EventInfo].GetItemTypeLabelForList()) ; update type label
 		
-		gosub, EnableSaveAndCancel
+		if (g_intFavoriteDisabledPrev <> o_MenuInGui.SA[intCheckedItem].AA.intFavoriteDisabled) ; required because GuiFavoritesListEvents called when saving favorites would reenable the Save button
+			gosub, EnableSaveAndCancel
 	}
 	
 	intFavoritesSelectedCount := LV_GetCount("Selected")
