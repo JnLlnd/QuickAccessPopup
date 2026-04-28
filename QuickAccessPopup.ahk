@@ -33824,7 +33824,7 @@ class Container
 				or (strSearchString = "{BrokenLinks}" and oItem.LinkBroken())
 				or (strSearchString = "{AutoExec}" and oItem.AA.blnFavoriteAutoExec))
 			{
-				oItem.AA.intSearchItemPositionInOriginalMenu := intKey ; used in search result to locate the original favorite object in the container
+				oItem.AA.intSearchItemPositionInOriginalMenu := intKey ; used in Customize and Quick Launch search results to locate the original favorite object in the container
 				Container.s_intOriginalPositionInResult++
 				oItem.AA.intSearchItemOriginalPositionInResult := Container.s_intOriginalPositionInResult ; used to reorder items in the original search result order
 				oSearchResultContainer.SA.Push(oItem)
@@ -35715,6 +35715,9 @@ class Container
 				else if (g_strAlternativeMenu = o_L["MenuAlternativeRemoveFavorite"])
 				{
 					o_EditedFavorite := this
+					if (o_EditedFavorite.aaTemp.strOpenFavoriteLabel = "OpenAlternativeFromQuickLaunch") ; if alternative menu selected from Quick Launch
+						; update original position with position captured when searching in Quick Launch
+						o_EditedFavorite.AA.intCurrentMenuPosition := o_EditedFavorite.AA.intSearchItemPositionInOriginalMenu
 					Gosub, GuiRemoveFromAlternativeMenu
 				}	
 				else if (g_strAlternativeMenu = o_L["MenuCopyLocation"]) ; EnvVars expanded
