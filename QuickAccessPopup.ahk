@@ -31,16 +31,18 @@ limitations under the License.
 HISTORY
 =======
 
-- major refactor of Options Alternative menu modifiers; separate Alternative menus hotkeys and modifiers in two sections of Options; in options, split the Alternative menus options in two sections: shortcuts and modifiers; 
-- add QAPmessenger command OpenFavoriteInCmd to open the specified folder in an existing or new CMD window; implement new alternative menu feature to delete the selected favorite; prevent trying to use the new feature to remove an item from a dynamic menu; 
-- when checking if settings need to be saved, and clicking Customize button, show the window if it is hidden; 
-- prevent inifinite loop when checking if a favorite is under an external menu and is in a dynamic menu;
-- fix invisible error with ampersands when building special search menu
-
-Version: 12.3 (2026-##-##)
+Version: 12.3 (2026-05-12)
  
-Alternative menu features
-- separate Options for "Alternative menu hotkeys" and "Alternative Menu Modifiers"
+Enabling/Disabling favorites
+- new option under "Various Advanded Options" to "Show checkboxes in favorites list to enable or disable favorites" directly from the "Customize" window (no need to edit the favorite)
+ 
+Alternative Menu Features
+- new Alternative Menu feature "Delete a Favorite" (see: https://www.quickaccesspopup.com/what-are-the-power-menu-features/)
+- redesign of "Options, Alternative Menu Hotkeys" dialog box to extract keyboard modifiers options into a new section "Options, Alternative Menus Modifiers" (see: https://www.quickaccesspopup.com/can-i-launch-alternative-menu-features-directly-from-the-regular-popup-menu/)
+ 
+Various
+- add QAPmessenger command "OpenFavoriteInCmd" to open the specified folder in an existing or in a new Command-line window (see: https://www.quickaccesspopup.com/can-i-display-the-qap-menu-from-the-command-line-or-from-a-batch-file/)
+- fix various small internal bugs
 
 Version: 12.2.1 (2026-02-17)
 - fix a bug when the Ctrl+Ctrl option was enabled and the Ctrl key was held down long enough to trigger a repetition generating multiple presses over a short period
@@ -5787,7 +5789,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.2.9
+;@Ahk2Exe-SetVersion 12.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5855,7 +5857,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.2.9" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
