@@ -21963,24 +21963,13 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		or WindowIsQuickAccessPopup(g_strTargetClass)
 	Diag(A_ThisFunc, "blnCanNavigate-1", blnCanNavigate)
 	
-	; check if the browser is an blocked app
+	; check if the browser is a blocked app (only when option blnAlwaysLaunchURLs is false - meaning URL can navigate in browser)
 	if (blnCanNavigate)
 		and (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
 		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
-		; avoid blocking hotkey in every windows in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
-		if !StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp) and (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
-			
-			blnCanNavigate := true
-			
-		else
-			Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, |
-				if StrLen(A_Loopfield)
-					and (InStr(g_strTargetClass, A_LoopField)
-					or InStr(g_strTargetWinTitle, A_LoopField)
-					or InStr(g_strTargetProcessName, A_LoopField))
-					
-					blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can navigate show menu, 0 Blocked cannot navigate
-				
+		
+		; 1 Approved can navigate show menu, 0 Blocked cannot navigate
+		blnCanNavigate := BlockOrApprove(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
 	
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
 	if (!o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId))
@@ -22015,26 +22004,12 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 		. " (" . (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ? "Approved" : "Blocked") . ")")
 	Diag(A_ThisFunc, "strExclusionMouseListApp", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, 1, 20))
 	Diag(A_ThisFunc, "strExclusionMouseListDialog", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, 1, 20))
-
-	; avoid blocking hotkey in every windows in case blnExclusionMouseListWhitelist is 1 (Approved) and exclusion list is empty
-	if (!StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
-		and o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue = 1) ; 1 Approved
-	{
-		Diag(A_ThisFunc, "return-1", true)
-		return true
-	}		
-	; else continue
-
+	
 	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
-		Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, |
-			if StrLen(A_Loopfield)
-				and (InStr(g_strTargetClass, A_LoopField)
-				or InStr(g_strTargetWinTitle, A_LoopField)
-				or InStr(g_strTargetProcessName, A_LoopField))
-			{
-				Diag(A_ThisFunc, "return-2", o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
-				return (o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue) ; 1 Approved can launch show menu, 0 Blocked do not show
-			}
+		; 1 Approved can launch show menu, 0 Blocked do not show
+		blnResult := BlockOrApprove(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
+		return blnResult
+	; else continue
 
 	if WindowIsTray(g_strTargetClass)
 	{
@@ -22094,38 +22069,33 @@ CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
-	Diag(A_ThisFunc, "A_ThisHotkey", A_ThisHotkey)
-	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
-	Diag(A_ThisFunc, "g_strTargetWinId", g_strTargetWinId)
-	Diag(A_ThisFunc, "g_strTargetControl", g_strTargetControl)
-	Diag(A_ThisFunc, "g_strTargetWinTitle", g_strTargetWinTitle)
-	Diag(A_ThisFunc, "strHotkeyTriggerExclusionList", o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
-	Diag(A_ThisFunc, "ExclusionListWhitelist", o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
-	Diag(A_ThisFunc, "ExclusionList?", (StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ? "Yes" : "No"))
 	
-	; avoid blocking all hotkeys in case strHotkeyTriggerExclusionList is true (approved) and exclusion list is empty
-	; moved before SetTargetWinInfo to avoid issue calling hotkey when active window is elevated
-	if !StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
+	return BlockOrApprove(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue, o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+BlockOrApprove(strExclusionList, blnBlockOrApprove)
+; returns the value of blnBlockOrApprove (1 Approved, 0 Blocked) if a match is found in strExclusionList
+;------------------------------------------------------------
+{
+	; avoid blocking in every windows in case exclusion list is empty
+	if !StrLen(strExclusionList)
 		
-		return true ; regardless of o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
-
-	; else continue
-	
-	Loop, Parse, % o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue, |
-	{
-		if StrLen(A_Loopfield)
-			and (InStr(g_strTargetClass, A_LoopField)
-			or InStr(g_strTargetWinTitle, A_LoopField)
-			or InStr(g_strTargetProcessName, A_LoopField))
-		{
-			Diag(A_ThisFunc, "Found", A_LoopField)
-			return o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return true or false according to blnHotkeyTriggerExclusionListWhitelist
-		}
-
-	}
-
-	Diag(A_ThisFunc, "Not Found in", o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
-	return !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; return false or true according to blnHotkeyTriggerExclusionListWhitelist
+		return true ; Aproved
+		
+	else
+		Loop, Parse, strExclusionList, |
+			if StrLen(A_Loopfield)
+				and (InStr(g_strTargetClass, A_LoopField)
+				or InStr(g_strTargetWinTitle, A_LoopField)
+				or InStr(g_strTargetProcessName, A_LoopField))
+				
+				return blnBlockOrApprove ; 1 Approved, 0 Blocked
+				
+	; else
+	return !blnBlockOrApprove
 }
 ;------------------------------------------------------------
 
