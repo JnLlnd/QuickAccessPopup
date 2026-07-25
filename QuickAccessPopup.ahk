@@ -22088,12 +22088,29 @@ BlockOrApprove(strExclusionList, blnBlockOrApprove)
 	else
 		Loop, Parse, strExclusionList, |
 			if StrLen(A_Loopfield)
-				and (InStr(g_strTargetClass, A_LoopField)
-				or InStr(g_strTargetWinTitle, A_LoopField)
-				or InStr(g_strTargetProcessName, A_LoopField))
-				
-				return blnBlockOrApprove ; 1 Approved, 0 Blocked
-				
+				if !(StrStartsWith(A_Loopfield, "class:") or StrStartsWith(A_Loopfield, "title:") or StrStartsWith(A_Loopfield, "process:"))
+				; no specific criteria, check both class, title and process
+				{
+					if (InStr(g_strTargetClass, A_LoopField)
+						or InStr(g_strTargetWinTitle, A_LoopField)
+						or InStr(g_strTargetProcessName, A_LoopField))
+						
+						; loopfield matches one of the criteria
+						return blnBlockOrApprove ; 1 Approved, 0 Blocked
+				}
+				else
+				{
+					intColonPos := InStr(A_LoopField, ":")
+					strCriteria := SubStr(A_LoopField, 1, intColonPos)
+					strLoopField := SubStr(A_LoopField, intColonPos + 1)
+					if ((strCriteria = "class:" and InStr(g_strTargetClass, strLoopField))
+						or (strCriteria = "title:" and InStr(g_strTargetWinTitle, strLoopField))
+						or (strCriteria = "process:" and InStr(g_strTargetProcessName, strLoopField)))
+						
+						; loopfield matches its specific criteria
+						return blnBlockOrApprove ; 1 Approved, 0 Blocked
+				}
+		
 	; else
 	return !blnBlockOrApprove
 }
@@ -27081,6 +27098,18 @@ NumDecode(str)
 	
 	return str
 } 
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+StrStartsWith(strHaystack, strNeedle, blnCaseSensitive := false)
+; return true if strNeedle is found at the beginning of strHaystack
+;------------------------------------------------------------
+{
+	strStart := SubStr(strHaystack, 1, StrLen(strNeedle))
+	
+	return (blnCaseSensitive ? (strStart == strNeedle) : (strStart = strNeedle)) ; == case-sensitive equal
+}
 ;------------------------------------------------------------
 
 
