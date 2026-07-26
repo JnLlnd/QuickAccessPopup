@@ -14173,7 +14173,7 @@ if InStr("GuiEditFavorite|GuiCopyFavorite|GuiEditMenuFromGui", strGuiFavoriteLab
 		; 4 boolean: display group in a submenu
 		; 5 boolean: open folders in tabs of a new window
 		saFavoriteGroupSettings := StrSplit(o_EditedFavorite.AA.strFavoriteGroupSettings, ",")
-	else if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
+	else if InStr("Menu|External|", o_EditedFavorite.AA.strFavoriteType . "|")
 		saFavoriteGroupSettings := "" ; value not used if not a group
 }
 else ; add favorite
@@ -14584,11 +14584,13 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 }
 
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
-; menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
+; adaptative menu and menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
 {
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnAdpatativeMenu " . (o_EditedFavorite.AA.strFavoriteLaunchWith ? "checked" : ""), % o_L["DialogMenuAdaptativeMenu"]
+	Gui, 2:Add, Link, x+1 yp gMenuAdaptativeMenuHelp, % "(<a>" . o_L["GuiHelp"] . "</a>)"
 	if !StrLen(g_intNewSortCriteria)
 		g_intNewSortCriteria := (StrLen(o_EditedFavorite.AA.strFavoriteGroupSettings) ? o_EditedFavorite.AA.strFavoriteGroupSettings : 0)
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (g_intNewSortCriteria ? "checked" : "")
+	Gui, 2:Add, Checkbox, % "x20 y+15 vf_blnMenuAutoSortEnable gMenuAutoSortClicked " . (g_intNewSortCriteria ? "checked" : "")
 		, % o_L["DialogMenuSortEnable"]
 	Gui, 2:Add, Button, x+10 yp vf_lblMenuAutoSortButton gGuiFavoriteTabBasicSort, % o_L["OptionsChangeHotkey"]
 	Gui, 2:Add, Text, x+20 yp vf_lblMenuAutoSortBy, % o_L["DialogSortBy"] . ":"
@@ -15352,6 +15354,16 @@ GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFold
 GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolder1
 GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolder2
 GuiControl, % (f_blnOpenSubFolder ? "Enable" : "Disable"), f_intRadioOpenSubFolder3
+
+return
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+MenuAdaptativeMenuHelp:
+;------------------------------------------------------------
+
+Run, https://www.quickaccesspopup.com/what-are-adaptative-menus/
 
 return
 ;------------------------------------------------------------
@@ -18415,6 +18427,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.intQCECommandCopyBeforeSeconds := f_intQCECommandCopyBeforeSeconds
 		o_EditedFavorite.AA.blnQCECommandPasteAfter := f_blnQCECommandPasteAfter
 	}
+	else if InStr("|Menu|External|", "|" . o_EditedFavorite.AA.strFavoriteType, true)
+		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnAdpatativeMenu ; contains the Adaptative menu boolean value	
 	else
 	{
 		if (o_EditedFavorite.AA.strFavoriteType = "Application" and o_EditedFavorite.AA.strFavoriteLaunchWith = "1" and StrLen(o_EditedFavorite.AA.strFavoriteArguments))
@@ -18606,6 +18620,7 @@ f_picIcon := ""
 f_strFavoriteAppWorkingDir := ""
 f_strFavoriteArguments := ""
 f_strFavoriteLaunchWith := ""
+f_blnAdpatativeMenu := ""
 f_strFavoriteLocation := ""
 f_strFavoriteLoginName := ""
 f_strFavoritePassword := ""
@@ -35531,7 +35546,7 @@ class Container
 			this.InsertItemValue("strFavoriteArguments", StrReplace(saFavorite[5], g_strEscapePipe, "|")) ; application arguments
 			this.InsertItemValue("strFavoriteAppWorkingDir", saFavorite[6]) ; application working directory
 			this.InsertItemValue("strFavoriteWindowPosition", saFavorite[7]) ; Boolean,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (will be split when open favorite)
-			this.InsertItemValue("strFavoriteLaunchWith", saFavorite[8]) ; launch favorite with this executable, or various options for types Application, Snippet and QCE
+			this.InsertItemValue("strFavoriteLaunchWith", saFavorite[8]) ; launch favorite with this executable, or various options for types Application, Snippet, QCE, Menu and External
 			if (this.AA.strFavoriteType = "Snippet" and this.AA.HasKey("strFavoriteLaunchWith"))
 			{
 				saTemp := StrSplit(this.AA.strFavoriteLaunchWith, ";") ; was arrFavoriteSnippetOptions
@@ -37191,7 +37206,7 @@ class Container
 					}
 					; else URL or QAP (no need to expand or make absolute), keep this.aaTemp.strFullLocation as in this.AA.strFavoriteLocation
 				
-				if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QCE", this.AA.strFavoriteType) ; ignore for Application, Snippet or QCE favorites
+				if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QCE|Menu|External", this.AA.strFavoriteType) ; ignore for Application, Snippet or QCE favorites
 					this.aaTemp.strFullLocation := this.aaTemp.strExpandedLaunchWith . " """ . this.aaTemp.strFullLocation . """" ; enclose document path in double-quotes
 				
 				if StrLen(this.AA.strFavoriteArguments) and !this.IsContainer() ; not for menu (containing menu icons size in arguments)
