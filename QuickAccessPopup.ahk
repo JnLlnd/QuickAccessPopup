@@ -21976,6 +21976,8 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 ;------------------------------------------------------------
 {
 	global ; sets g_strTargetWinId, g_strTargetControl, g_strTargetClass
+	; CoordMode, Tooltip, Screen
+	; ToolTip, , , 20
 	
 	; Mouse hotkey (.P_strAhkHotkey is NavigateOrLaunchHotkeyMouse value in ini file)
 	SetTargetWinInfo(strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey)
@@ -22002,8 +22004,21 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 		and (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
 		and (!o_Settings.Execution.blnAlwaysLaunchURLs.IniValue and WindowIsBrowser(g_strTargetWinId)) ; and navigating in a browser
 		
-		; 1 Approved can navigate show menu, 0 Blocked cannot navigate
-		blnCanNavigate := BlockOrApprove(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
+		if StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
+			if MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
+			{
+				blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can navigate show menu, 0 Blocked cannot navigate 
+				; Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+					; . """ return blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10 , 20
+			}
+			else
+			{
+				blnCanNavigate := !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
+				; Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+					; . """ return NOT blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10, 20
+			}
+		else ; no exclusion
+			blnCanNavigate := true
 	
 	; check if we will show the "change folder alert" before opening the selected favorite, if the favorite is a folder
 	if (!o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId))
@@ -22032,6 +22047,8 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 ;------------------------------------------------------------
 {
 	global
+	; CoordMode, Tooltip, Screen
+	; ToolTip, , , 20
 	
 	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
 	Diag(A_ThisFunc, "blnExclusionMouseListWhitelist", o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
@@ -22040,10 +22057,26 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 	Diag(A_ThisFunc, "strExclusionMouseListDialog", SubStr(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, 1, 20))
 	
 	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
-		; 1 Approved can launch show menu, 0 Blocked do not show
-		blnResult := BlockOrApprove(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
-		return blnResult
-	; else continue
+	{
+		if StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
+			if MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
+			{
+				blnCanLaunch := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can launch show menu, 0 Blocked do not show
+				; Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+					; . """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10 , 20
+			}
+			else
+			{
+				blnCanLaunch := !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
+				; Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+					; . """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10, 20
+			}
+		else ; no exclusion
+			blnCanLaunch := true
+		if !(blnCanLaunch) ; stop if cannot launch
+			return false
+	}
+	; else continue if trigger is keyboard or if blnCanLaunch is true
 
 	if WindowIsTray(g_strTargetClass)
 	{
@@ -22058,6 +22091,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 	}
 	
 	if WindowIsDialog(g_strTargetClass, g_strTargetWinId) and DialogBoxParentExcluded(g_strTargetWinId)
+	; code executed only for keyboard trigger (for mouse trigger, it was processed above)
 	{
 		Diag(A_ThisFunc, "return-5 (dialog excluded))", false)
 		return false
@@ -22066,7 +22100,10 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 	; else we can launch (or not launch if blnExclusionMouseListWhitelist)
 	
 	Diag(A_ThisFunc, "return-6 (final))", !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
-	return (!o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
+	if (strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey) ; if hotkey is mouse
+		return true ; conditions checked above four mouse trigger, no exclusion, return true
+	else
+		return CanHotkeyTrigger() ; check if keyboard trigger is allowed
 }
 ;------------------------------------------------------------
 
@@ -22102,9 +22139,25 @@ DialogBoxParentExcluded(strTargetWinId)
 CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
+	; CoordMode, Tooltip, Screen
+	; ToolTip, , , 20
+	
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
 	
-	return BlockOrApprove(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue, o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue)
+	if StrLen(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue)
+	{
+		if MeetConditions(o_Settings.LaunchAdvanced.strHotkeyTriggerExclusionList.IniValue) ; returns true if a match is found in strHotkeyTriggerExclusionList
+			blnCanTrigger := o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue ; 1 Can trigger, 0 Blocked
+		else
+			blnCanTrigger := !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
+		
+		; Tooltip, % "blnCanTrigger: " . blnCanTrigger . " / Condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+			; . """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10, 20
+		return blnCanTrigger
+	}
+	else ; no condition, hotkey can trigger
+		return true
+		
 }
 ;------------------------------------------------------------
 
@@ -22151,6 +22204,47 @@ BlockOrApprove(strExclusionList, blnBlockOrApprove)
 	; else
 	; ###_V(A_ThisFunc, "*Return NOT", blnBlockOrApprove, "*strExclusionList", strExclusionList)
 	return !blnBlockOrApprove
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+MeetConditions(strConditions)
+; returns true if a match is found in strConditions (must not be empty)
+;------------------------------------------------------------
+{
+	; ###_V(A_ThisFunc, "*strConditions", strConditions)
+	Loop, Parse, strConditions, |
+		if StrLen(A_Loopfield)
+			if !(StrStartsWith(A_Loopfield, "class:") or StrStartsWith(A_Loopfield, "title:") or StrStartsWith(A_Loopfield, "process:"))
+			; no specific value type, check both class, title and process
+			{
+				if (InStr(g_strTargetClass, A_LoopField) or InStr(g_strTargetWinTitle, A_LoopField) or InStr(g_strTargetProcessName, A_LoopField))
+				{
+					; Loopfield matches one of the value types
+					; ###_V(A_ThisFunc, "*Match one of the values", "*A_Loopfield", A_Loopfield, "*strConditions", strConditions)
+					return true
+				}
+				; else continue
+			}
+			else
+			{
+				intColonPos := InStr(A_LoopField, ":")
+				strType := SubStr(A_LoopField, 1, intColonPos)
+				strLoopField := SubStr(A_LoopField, intColonPos + 1)
+				if ((strType = "class:" and InStr(g_strTargetClass, strLoopField))
+					or (strType = "title:" and InStr(g_strTargetWinTitle, strLoopField))
+					or (strType = "process:" and InStr(g_strTargetProcessName, strLoopField)))
+				{
+					; Loopfield matches its specific type
+					; ###_V(A_ThisFunc, "*Match", strType, "*A_Loopfield", A_Loopfield, "*strConditions", strConditions)
+					return true
+				}
+				; else continue
+			}
+	; no match, return false
+	; ###_V(A_ThisFunc, "*NO match for strConditions", strConditions)
+	return false
 }
 ;------------------------------------------------------------
 
@@ -34132,11 +34226,12 @@ class Container
 			
 			; favorite enabled and visible (0), disabled+hidden (1), enabled but hidden in menu and shortcut/hotstring active (-1)
 			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden
-				continue
+				continue ; skip the rest of the loop
 				
-			; BlockOrApprove(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp, o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue)
-			if (aaThisFavorite.oParentMenu.AA.blnAdaptativeMenu and BlockOrApprove(aaThisFavorite.strAdaptativeMenuConditions, 0))
+			if (aaThisFavorite.oParentMenu.AA.blnAdaptativeMenu
+				and !MeetConditions(aaThisFavorite.strAdaptativeMenuConditions)) ; conditions not met, skip this favorite
 				continue
+			; else not an adaptative menu or condition met, continue including this favorite
 				
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
@@ -35211,7 +35306,7 @@ class Container
 				or this.SA[A_Index].AA.intFavoriteDisabled = -1) ; or hidden (-1)
 				; (do not use <> 0 because null <> 0 -> infinite loop)
 				intHiddenItems++
-			else if (this.AA.blnAdaptativeMenu and BlockOrApprove(this.SA[A_Index].AA.strAdaptativeMenuConditions, 1))
+			else if (this.AA.blnAdaptativeMenu and !MeetConditions(this.SA[A_Index].AA.strAdaptativeMenuConditions)) ; favorite rejected in adaptative menu
 				intHiddenItems++
 			
 			; ###_V(A_ThisFunc . " - " . A_Index, intHiddenItems, this.SA[A_Index].AA.strFavoriteName, this.SA[A_Index].AA.intFavoriteDisabled, ""
