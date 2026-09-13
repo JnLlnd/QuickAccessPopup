@@ -21983,7 +21983,7 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 ;------------------------------------------------------------
 {
 	global ; sets g_strTargetWinId, g_strTargetControl, g_strTargetClass
-	if (g_blnDiagMode)
+	if (o_Settings.Launch.blnDiagMode.IniValue)
 	{
 		CoordMode, Tooltip, Screen
 		ToolTip, , , 20
@@ -22018,14 +22018,14 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 			if MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
 			{
 				blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can navigate show menu, 0 Blocked cannot navigate 
-				if (g_blnDiagMode)
+				if (o_Settings.Launch.blnDiagMode.IniValue)
 					Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
 						. """ return blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10 , 20
 			}
 			else
 			{
 				blnCanNavigate := !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
-				if (g_blnDiagMode)
+				if (o_Settings.Launch.blnDiagMode.IniValue)
 					Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
 						. """ return NOT blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10, 20
 			}
@@ -22059,7 +22059,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 ;------------------------------------------------------------
 {
 	global
-	if (g_blnDiagMode)
+	if (o_Settings.Launch.blnDiagMode.IniValue)
 	{
 		CoordMode, Tooltip, Screen
 		ToolTip, , , 20
@@ -22077,14 +22077,14 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 			if MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
 			{
 				blnCanLaunch := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can launch show menu, 0 Blocked do not show
-				if (g_blnDiagMode)
+				if (o_Settings.Launch.blnDiagMode.IniValue)
 					Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
 						. """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10 , 20
 			}
 			else
 			{
 				blnCanLaunch := !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
-				if (g_blnDiagMode)
+				if (o_Settings.Launch.blnDiagMode.IniValue)
 					Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
 						. """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10, 20
 			}
@@ -22156,7 +22156,8 @@ DialogBoxParentExcluded(strTargetWinId)
 CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
-	if (g_blnDiagMode)
+	###_D(o_Settings.Launch.blnDiagMode.IniValue)
+	if (o_Settings.Launch.blnDiagMode.IniValue)
 	{
 		CoordMode, Tooltip, Screen
 		ToolTip, , , 20
@@ -22171,7 +22172,7 @@ CanHotkeyTrigger()
 		else
 			blnCanTrigger := !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
 		
-		if (g_blnDiagMode)
+		if (o_Settings.Launch.blnDiagMode.IniValue)
 			Tooltip, % A_Now . " Window: " . g_strTargetClass .  " blnCanTrigger: " . blnCanTrigger . " Condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
 				. """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10, 20
 		return blnCanTrigger
