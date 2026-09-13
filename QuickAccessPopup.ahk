@@ -35043,7 +35043,7 @@ class Container
 					strIniLine .= oItem.AA.strFavoriteIconResource . "|" ; 4
 			}
 			strIniLine .= StrReplace(oItem.AA.strFavoriteArguments, "|", g_strEscapePipe) . "|" ; 5
-			strIniLine .= oItem.AA.strFavoriteAppWorkingDir . "|" ; 6
+			strIniLine .= StrReplace(oItem.AA.strFavoriteAppWorkingDir, "|", g_strEscapePipe) . "|" ; 6 (encode in case used with placeholders including fallback value separated by |)
 			strIniLine .= oItem.AA.strFavoriteWindowPosition . "|" ; 7
 			strIniLine .= oItem.AA.strFavoriteLaunchWith . "|" ; 8
 			strIniLine .= StrReplace(oItem.AA.strFavoriteLoginName, "|", g_strEscapePipe) . "|" ; 9
@@ -35652,7 +35652,7 @@ class Container
 			this.InsertItemValue("strFavoriteLocation", StrReplace(saFavorite[3], g_strEscapePipe, "|")) ; path, URL or menu path (without "Main") for this menu item
 			this.InsertItemValue("strFavoriteIconResource", saFavorite[4]) ; icon resource in format "iconfile,iconindex" or JLicons index "iconXYZ"
 			this.InsertItemValue("strFavoriteArguments", StrReplace(saFavorite[5], g_strEscapePipe, "|")) ; application arguments
-			this.InsertItemValue("strFavoriteAppWorkingDir", saFavorite[6]) ; application working directory
+			this.InsertItemValue("strFavoriteAppWorkingDir", StrReplace(saFavorite[6], g_strEscapePipe, "|")) ; application working directory (decode in case used with placeholders including fallback value separated by |)
 			this.InsertItemValue("strFavoriteWindowPosition", saFavorite[7]) ; Boolean,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (will be split when open favorite)
 			this.InsertItemValue("strFavoriteLaunchWith", saFavorite[8]) ; launch favorite with this executable, or various options for types Application, Snippet, QCE, Menu and External
 			if this.AA.HasKey("strFavoriteLaunchWith")
