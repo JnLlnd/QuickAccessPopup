@@ -5789,7 +5789,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.3
+;@Ahk2Exe-SetVersion 12.3.9.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5857,8 +5857,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "12.3.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
@@ -9685,7 +9685,7 @@ RefreshAdaptativeMenusFromShortcut:
 ;------------------------------------------------------------
 
 for strMenuName, oContainer in o_Containers.AA
-	if (oContainer.AA.blnAdaptativeMenu)
+	if (oContainer.AA.blnIsAdaptativeMenu)
 		o_Containers.AA[strMenuName].BuildMenu()
 
 return
@@ -14599,7 +14599,7 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
 ; adaptative menu and menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
 {
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnAdaptativeMenu " . (o_EditedFavorite.AA.strFavoriteLaunchWith ? "checked" : ""), % o_L["DialogMenuAdaptativeMenu"]
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnIsAdaptativeMenu " . (o_EditedFavorite.AA.strFavoriteLaunchWith ? "checked" : ""), % o_L["DialogMenuAdaptativeMenu"]
 	strUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-are-adaptative-menus/", A_ThisLabel, "Help")
 	Gui, 2:Add, Link, x+1 yp, % " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 	if !StrLen(g_intNewSortCriteria)
@@ -14998,16 +14998,18 @@ else
 		Gui, 2:Add, Text, x20 y+5 w300 h46 0x1000 vf_strHotstringOptions gButtonChangeFavoriteHotstring, % GetHotstringOptionsLong(g_strNewFavoriteHotstringOptionsShort)
 	}
 
-	if (o_EditedFavorite.AA.oParentMenu.AA.blnAdaptativeMenu)
-	{
-		strUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-are-adaptative-menus/", A_ThisLabel, "Help")
-		Gui, 2:Add, Link, x20 y+15 w300, % o_L["DialogAdaptativeMenuConditionsTitle"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)" 
-		Gui, 2:Font, , %g_strEditControlsFontName%
-		Gui, 2:Add, Edit, x20 y+5 w500 r2 vf_strAdaptativeMenuConditions, % StrReplace(Trim(o_EditedFavorite.AA.strAdaptativeMenuConditions), "|", "`n")
-		Gui, 2:Font
-		strUrl := ""
-	}
+	GuiControlGet, strParentMenu, , f_drpParentMenu ; get current submenuin dropdown list.
+	blnConditionsVisible := (o_Containers.AA[strParentMenu].AA.blnIsAdaptativeMenu)
+	strUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-are-adaptative-menus/", A_ThisLabel, "Help")
+	Gui, 2:Add, Link, % "x20 y+15 w300 vf_lnkAdaptativeMenuTitle" . (blnConditionsVisible ? "" : " hidden"), % o_L["DialogAdaptativeMenuConditionsTitle"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)" 
+	Gui, 2:Font, , %g_strEditControlsFontName%
+	Gui, 2:Add, Edit, % "x20 y+5 w500 r2 vf_strAdaptativeMenuConditions" . (blnConditionsVisible ? "" : " hidden"), % StrReplace(Trim(o_EditedFavorite.AA.strAdaptativeMenuConditions), "|", "`n")
+	Gui, 2:Font
 }
+
+strParentMenu := ""
+strUrl := ""
+blnConditionsVisible := ""
 
 return
 ;------------------------------------------------------------
@@ -15645,6 +15647,10 @@ Gui, 2:Submit, NoHide
 
 oThisMenu := o_Containers.AA[f_drpParentMenu]
 
+strCommand := (oThisMenu.AA.blnIsAdaptativeMenu ? "Show" : "Hide")
+GuiControl, %strCommand%, f_lnkAdaptativeMenuTitle
+GuiControl, %strCommand%, f_strAdaptativeMenuConditions
+
 if (oThisMenu.AA.intMenuAutoSort)
 	strDropdownParentMenuItems := "|" . g_strGuiDoubleLine . " " . o_L["DialogEndOfMenuSorted"] . " " . g_strGuiDoubleLine
 else
@@ -15679,6 +15685,7 @@ g_intNewItemPos := "" ; if new item position g_intNewItemPos is set, reset it an
 strDropdownParentMenuItems := ""
 oThisMenu := ""
 oItem := ""
+strCommand := ""
 
 return
 ;------------------------------------------------------------
@@ -18443,7 +18450,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.blnQCECommandPasteAfter := f_blnQCECommandPasteAfter
 	}
 	else if InStr("|Menu|External|", "|" . o_EditedFavorite.AA.strFavoriteType, true)
-		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnAdaptativeMenu ; contains the Adaptative menu boolean value
+		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnIsAdaptativeMenu ; contains the Adaptative menu boolean value
 	else
 	{
 		if (o_EditedFavorite.AA.strFavoriteType = "Application" and o_EditedFavorite.AA.strFavoriteLaunchWith = "1" and StrLen(o_EditedFavorite.AA.strFavoriteArguments))
@@ -18463,7 +18470,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 			o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0
 	}
 	
-	if (o_EditedFavoriteMenu.AA.blnAdaptativeMenu)
+	if (o_EditedFavoriteMenu.AA.blnIsAdaptativeMenu)
 		o_EditedFavorite.AA.strAdaptativeMenuConditions := OptionsListCleanup(f_strAdaptativeMenuConditions)
 		
 	o_EditedFavorite.AA.strFavoriteGroupRestoreOptions := (o_EditedFavorite.AA.oParentMenu.AA.strMenuType = "Group"
@@ -18638,7 +18645,7 @@ f_picIcon := ""
 f_strFavoriteAppWorkingDir := ""
 f_strFavoriteArguments := ""
 f_strFavoriteLaunchWith := ""
-f_blnAdaptativeMenu := ""
+f_blnIsAdaptativeMenu := ""
 f_strFavoriteLocation := ""
 f_strFavoriteLoginName := ""
 f_strFavoritePassword := ""
@@ -21976,8 +21983,11 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 ;------------------------------------------------------------
 {
 	global ; sets g_strTargetWinId, g_strTargetControl, g_strTargetClass
-	; CoordMode, Tooltip, Screen
-	; ToolTip, , , 20
+	if (g_blnDiagMode)
+	{
+		CoordMode, Tooltip, Screen
+		ToolTip, , , 20
+	}
 	
 	; Mouse hotkey (.P_strAhkHotkey is NavigateOrLaunchHotkeyMouse value in ini file)
 	SetTargetWinInfo(strMouseOrKeyboard = o_PopupHotkeyNavigateOrLaunchHotkeyMouse.P_strAhkHotkey)
@@ -22008,14 +22018,16 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 			if MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
 			{
 				blnCanNavigate := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can navigate show menu, 0 Blocked cannot navigate 
-				; Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
-					; . """ return blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10 , 20
+				if (g_blnDiagMode)
+					Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+						. """ return blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10 , 20
 			}
 			else
 			{
 				blnCanNavigate := !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
-				; Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
-					; . """ return NOT blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10, 20
+				if (g_blnDiagMode)
+					Tooltip, % "blnCanNavigate: " . blnCanNavigate . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+						. """ return NOT blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10, 20
 			}
 		else ; no exclusion
 			blnCanNavigate := true
@@ -22047,8 +22059,11 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 ;------------------------------------------------------------
 {
 	global
-	; CoordMode, Tooltip, Screen
-	; ToolTip, , , 20
+	if (g_blnDiagMode)
+	{
+		CoordMode, Tooltip, Screen
+		ToolTip, , , 20
+	}
 	
 	Diag(A_ThisFunc, "g_strTargetClass", g_strTargetClass)
 	Diag(A_ThisFunc, "blnExclusionMouseListWhitelist", o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
@@ -22062,14 +22077,16 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 			if MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp)
 			{
 				blnCanLaunch := o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue ; 1 Approved can launch show menu, 0 Blocked do not show
-				; Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
-					; . """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10 , 20
+				if (g_blnDiagMode)
+					Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+						. """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10 , 20
 			}
 			else
 			{
 				blnCanLaunch := !o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue
-				; Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
-					; . """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10, 20
+				if (g_blnDiagMode)
+					Tooltip, % "blnCanLaunch: " . blnCanLaunch . " / NOT Meet condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+						. """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10, 20
 			}
 		else ; no exclusion
 			blnCanLaunch := true
@@ -22139,8 +22156,11 @@ DialogBoxParentExcluded(strTargetWinId)
 CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
-	; CoordMode, Tooltip, Screen
-	; ToolTip, , , 20
+	if (g_blnDiagMode)
+	{
+		CoordMode, Tooltip, Screen
+		ToolTip, , , 20
+	}
 	
 	SetTargetWinInfo(false) ; refresh g_strTargetClass, g_strTargetWinId, g_strTargetControl and g_strTargetWinTitle
 	
@@ -22151,59 +22171,14 @@ CanHotkeyTrigger()
 		else
 			blnCanTrigger := !o_Settings.LaunchAdvanced.blnHotkeyTriggerExclusionListWhitelist.IniValue
 		
-		; Tooltip, % "blnCanTrigger: " . blnCanTrigger . " / Condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
-			; . """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, 10, 10, 20
+		if (g_blnDiagMode)
+			Tooltip, % A_Now . " Window: " . g_strTargetClass .  " blnCanTrigger: " . blnCanTrigger . " Condition """ . o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListApp 
+				. """ blnExclusionMouseListWhitelist : " . o_Settings.MenuPopup.blnExclusionMouseListWhitelist.IniValue, -600, 10, 20
 		return blnCanTrigger
 	}
 	else ; no condition, hotkey can trigger
 		return true
 		
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-BlockOrApprove(strExclusionList, blnBlockOrApprove)
-; returns the value of blnBlockOrApprove (1 Approved, 0 Blocked) if a match is found in strExclusionList
-;------------------------------------------------------------
-{
-	; ###_V(A_ThisFunc, "*blnBlockOrApprove", blnBlockOrApprove, "*strExclusionList", strExclusionList)
-	; avoid blocking in every windows in case exclusion list is empty
-	if !StrLen(strExclusionList)
-		
-		return true ; Aproved
-		
-	else
-		Loop, Parse, strExclusionList, |
-			if StrLen(A_Loopfield)
-				if !(StrStartsWith(A_Loopfield, "class:") or StrStartsWith(A_Loopfield, "title:") or StrStartsWith(A_Loopfield, "process:"))
-				; no specific criteria, check both class, title and process
-				{
-					if (InStr(g_strTargetClass, A_LoopField)
-						or InStr(g_strTargetWinTitle, A_LoopField)
-						or InStr(g_strTargetProcessName, A_LoopField))
-						
-						; loopfield matches one of the criteria
-						; ###_V(A_ThisFunc, "*Return", blnBlockOrApprove, "*A_Loopfield", A_Loopfield, "*strExclusionList", strExclusionList)
-						return blnBlockOrApprove ; 1 Approved, 0 Blocked
-				}
-				else
-				{
-					intColonPos := InStr(A_LoopField, ":")
-					strCriteria := SubStr(A_LoopField, 1, intColonPos)
-					strLoopField := SubStr(A_LoopField, intColonPos + 1)
-					if ((strCriteria = "class:" and InStr(g_strTargetClass, strLoopField))
-						or (strCriteria = "title:" and InStr(g_strTargetWinTitle, strLoopField))
-						or (strCriteria = "process:" and InStr(g_strTargetProcessName, strLoopField)))
-						
-						; loopfield matches its specific criteria
-						; ###_V(A_ThisFunc, "*Return", blnBlockOrApprove, "*A_Loopfield", A_Loopfield, "*strExclusionList", strExclusionList)
-						return blnBlockOrApprove ; 1 Approved, 0 Blocked
-				}
-		
-	; else
-	; ###_V(A_ThisFunc, "*Return NOT", blnBlockOrApprove, "*strExclusionList", strExclusionList)
-	return !blnBlockOrApprove
 }
 ;------------------------------------------------------------
 
@@ -33622,7 +33597,7 @@ class Container
 
 	;---------------------------------------------------------
 	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false
-		, blnCheckDuplicates := false, blnMenuEditable := false, blnIsDynamicMenu := false, blnAdaptativeMenu := false)
+		, blnCheckDuplicates := false, blnMenuEditable := false, blnIsDynamicMenu := false, blnIsAdaptativeMenu := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
@@ -33632,7 +33607,7 @@ class Container
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
 		this.AA.blnMenuEditable := blnMenuEditable ; add edit this menu and increment items counter
-		this.AA.blnAdaptativeMenu := blnAdaptativeMenu ; conditions may apply
+		this.AA.blnIsAdaptativeMenu := blnIsAdaptativeMenu ; conditions may apply
 		this.AA.blnIsDynamicMenu := blnIsDynamicMenu ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		this.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		
@@ -33867,7 +33842,7 @@ class Container
 				}
 				
 				; load the submenu
-				; Container(strType, strContainerName, intAutoSort, oParentMenu, strAction, blnDoubleAmpersands, blnCheckDuplicates, blnMenuEditable, blnIsDynamicMenu, blnAdaptativeMenu)
+				; Container(strType, strContainerName, intAutoSort, oParentMenu, strAction, blnDoubleAmpersands, blnCheckDuplicates, blnMenuEditable, blnIsDynamicMenu, blnIsAdaptativeMenu)
 				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], (saThisFavorite[1] = "Group" ? "" : saThisFavorite[11]), this, , , true, true, false, saThisFavorite[8])
 				
 				if (oNewSubMenu.AA.strMenuType = "Group")
@@ -34228,7 +34203,7 @@ class Container
 			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden
 				continue ; skip the rest of the loop
 				
-			if (aaThisFavorite.oParentMenu.AA.blnAdaptativeMenu
+			if (aaThisFavorite.oParentMenu.AA.blnIsAdaptativeMenu
 				and !MeetConditions(aaThisFavorite.strAdaptativeMenuConditions)) ; conditions not met, skip this favorite
 				continue
 			; else not an adaptative menu or condition met, continue including this favorite
@@ -35306,15 +35281,15 @@ class Container
 				or this.SA[A_Index].AA.intFavoriteDisabled = -1) ; or hidden (-1)
 				; (do not use <> 0 because null <> 0 -> infinite loop)
 				intHiddenItems++
-			else if (this.AA.blnAdaptativeMenu and !MeetConditions(this.SA[A_Index].AA.strAdaptativeMenuConditions)) ; favorite rejected in adaptative menu
+			else if (this.AA.blnIsAdaptativeMenu and !MeetConditions(this.SA[A_Index].AA.strAdaptativeMenuConditions)) ; favorite rejected in adaptative menu
 				intHiddenItems++
 			
 			; ###_V(A_ThisFunc . " - " . A_Index, intHiddenItems, this.SA[A_Index].AA.strFavoriteName, this.SA[A_Index].AA.intFavoriteDisabled, ""
-				; , this.AA.blnAdaptativeMenu, this.SA[A_Index].AA.strAdaptativeMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptativeMenuConditions, 1))
+				; , this.AA.blnIsAdaptativeMenu, this.SA[A_Index].AA.strAdaptativeMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptativeMenuConditions, 1))
 		}
 		
 		; ###_V(A_ThisFunc . " - RETURN", intHiddenItems, this.SA[A_Index].AA.strFavoriteName, this.SA[A_Index].AA.intFavoriteDisabled, ""
-			; , this.AA.blnAdaptativeMenu, this.SA[A_Index].AA.strAdaptativeMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptativeMenuConditions, 1))
+			; , this.AA.blnIsAdaptativeMenu, this.SA[A_Index].AA.strAdaptativeMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptativeMenuConditions, 1))
 		return intHiddenItems
 	}
 	;---------------------------------------------------------
