@@ -22156,7 +22156,6 @@ DialogBoxParentExcluded(strTargetWinId)
 CanHotkeyTrigger()
 ;------------------------------------------------------------
 {
-	###_D(o_Settings.Launch.blnDiagMode.IniValue)
 	if (o_Settings.Launch.blnDiagMode.IniValue)
 	{
 		CoordMode, Tooltip, Screen
@@ -25302,7 +25301,7 @@ return
 ;========================================================================================================================
 
 ;------------------------------------------------------------
-GetCurrentLocation(strClass, strWinID)
+GetCurrentLocation(strClass, strWinID, blnNoBrowser := false)
 ; return current location in in Explorer, Directory Opus, Total Commander or file dialog box window identified by class and windows ID
 ;------------------------------------------------------------
 {
@@ -25424,6 +25423,8 @@ GetCurrentLocation(strClass, strWinID)
 	}
 	else if WindowIsDesktop(strClass)
 		strLocation := A_Desktop
+	else if (blnNoBrowser) ; return empty location for browsers
+		strLocation := ""
 	else if InStr(g_strModernBrowsers, strClass)
 		strLocation := GetCurrentUrlAcc(strClass)
 	else if InStr(g_strLegacyBrowsers, strClass) ; LegacyBrowsers (as of https://autohotkey.com/boards/viewtopic.php?p=116752#p116752)
@@ -37396,7 +37397,7 @@ class Container
 				if StrLen(this.AA.strFavoriteAppWorkingDir) and (this.AA.strFavoriteType = "Application")
 				{
 					this.aaTemp.strAppWorkingDirWithPlaceholders := ExpandPlaceholders(this.AA.strFavoriteAppWorkingDir, this.aaTemp.strLocationWithPlaceholders
-						, (InStr(this.AA.strFavoriteAppWorkingDir, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1)
+						, (InStr(this.AA.strFavoriteAppWorkingDir, "{CUR_") ? GetCurrentLocation(g_strTargetClass, this.aaTemp.strTargetWinId, true) : -1)
 						, (InStr(this.AA.strFavoriteAppWorkingDir, "{SEL_") ? GetSelectedLocation(g_strTargetClass, this.aaTemp.strTargetWinId) : -1))
 					Diag(A_ThisFunc, "this.aaTemp.strAppWorkingDirWithPlaceholders", this.aaTemp.strAppWorkingDirWithPlaceholders)
 
