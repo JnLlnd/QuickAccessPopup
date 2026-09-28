@@ -5789,7 +5789,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.3
+;@Ahk2Exe-SetVersion 12.3.0.1
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5857,7 +5857,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.3.0.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -6076,9 +6076,6 @@ global g_blnAlternativeMenuFromQuickLaunch
 global g_intQuickLaunchGuiMinWidth
 global g_intRunCommandMax := 8191
 
-;---------------------------------
-; Quick Clipboard Editor (QCE) related variables
-global g_aaQCEAppTitle := {"Receiver" : "ahk_exe QuickClipboardEditor-Receiver.exe", "ReceiverLite" : "ahk_exe QuickClipboardEditor-ReceiverLite.exe"}
 ; see https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 global g_strGroupSeparator := Chr(29)
 global g_strRecordSeparator := Chr(30)
@@ -6134,10 +6131,6 @@ global o_Favorites := new Favorites
 ;---------------------------------
 ; Init class for QAP Features
 global o_QAPfeatures := new QAPfeatures
-
-;---------------------------------
-; Init class for QAP Features
-global o_QCEcommands := new QCEcommands
 
 ;---------------------------------
 ; Init class for Special Folders
@@ -6203,6 +6196,10 @@ if (o_Settings.SettingsWindow.blnDarkMode.IniValue)
 	DllCall(SetPreferredAppMode, "int", 1) ; Dark
 	DllCall(FlushMenuThemes)
 }
+
+;---------------------------------
+; Init class for QCE Commands
+global o_QCEcommands := new QCEcommands
 
 ; Menu global variables
 global g_intMenuItemsMax := g_intMaximumValue
@@ -6370,24 +6367,6 @@ HotKey, If, WinActive(o_L["GuiQuickLaunchTitle"]) ; Quick Launch
 	Hotkey, Up, QuickLaunchUp
 
 Hotkey, If
-
-;---------------------------------
-; Init collect QCE commands
-
-if InStr(A_ScriptName, ".ahk") and FileExist(A_ScriptDir . "\QCE SendMessage-Fake.txt") ; read test file instead of launching QCE Receiver Lite
-{
-	FileRead, strQCECommands, %A_ScriptDir%\QCE SendMessage-Fake.txt ; this file is updated automatically each time the complied version is used to add a QCE command
-	if !StrLen(strQCECommands)
-		Oops(0, "QCE COMMANDS FILEREAD ERROR")
-	o_QCECommands.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
-	strQCECommands := ""
-}
-else if (!WinExist("ahk_exe QuickClipboardEditor-Receiver.exe") ; launch QCE Receiver Lite if QCE is not running
-	and !o_Settings.Execution.blnDoNotLaunchQCEReceiver.IniValue)
-{
-	Run, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe /FromQAP
-	Process, Wait, %A_ScriptDir%\QuickClipboardEditor-ReceiverLite.exe, 2 ; wait up to 2 seconds
-}
 
 ;---------------------------------
 ; Start task collecting recent items
@@ -8122,9 +8101,12 @@ if IsObject(o_UsageDb) ; use IsObject instead of g_blnUsageDbEnabled in case it 
 		FileCopy, %g_strUsageDbFile%, % StrReplace(g_strUsageDbFile, ".DB", ".DB-BK"), 1
 }
 
-; send message to receiver to exit app in QCE ReceiverLite
+; send message to shutdown QCE ReceiverLite
 if !InStr(A_ScriptName, ".ahk") ; avoid closing prod receiver when closing main in dev
-	intResult := Send_WM_COPYDATA("Shutdown", "ahk_exe QuickClipboardEditor-ReceiverLite.exe")
+{
+	Diag(A_ThisLabel, "Send_WM_COPYDATA Shutdown", "ahk_exe " . o_QCEcommands.aaQCEReceiverExe["ReceiverLite"])
+	intResult := Send_WM_COPYDATA("Shutdown", "ahk_exe " . o_QCEcommands.aaQCEReceiverExe["ReceiverLite"])
+}
 
 ExitApp
 ;-----------------------------------------------------------
@@ -30312,9 +30294,12 @@ RECEIVE_MESSENGER(wParam, lParam)
 	
 	intStringAddress := NumGet(lParam + 2*A_PtrSize) ; Retrieves the CopyDataStruct's lpData member.
 	strCopyOfData := StrGet(intStringAddress) ; Copy the string out of the structure.
-	Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
 	Diag(A_ThisFunc, "StrSplit(strCopyOfData, g_strUnitSeparator)[1]", StrSplit(strCopyOfData, g_strUnitSeparator)[1])
 	Diag(A_ThisFunc, "= QCEcommands", StrSplit(strCopyOfData, g_strUnitSeparator)[1] = "QCEcommands")
+	if (StrSplit(strCopyOfData, g_strUnitSeparator)[1] = "QCEcommands")
+		Diag(A_ThisFunc, "strCopyOfData", "QCEcommands...")
+	else
+		Diag(A_ThisFunc, "strCopyOfData", strCopyOfData)
 	
 	if FileExist("C:\Dropbox\AutoHotkey\QuickAccessPopup\QuickAccessPopup-HOME.ini") ; only on dev machine, update test file for next use with .ahk source file
 	{
@@ -30432,45 +30417,6 @@ RECEIVE_MESSENGER(wParam, lParam)
 	}
 
 	return 1
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-QCERisRunning(strReceiverType)
-;------------------------------------------------------------
-{
-    strPrevDetectHiddenWindows := A_DetectHiddenWindows
-    intPrevTitleMatchMode := A_TitleMatchMode
-    DetectHiddenWindows, On
-    SetTitleMatchMode, 2
-	
-	strQCEAppTitle := g_aaQCEAppTitle[strReceiverType]
-	SendMessage, 0x2225, , , , %strQCEAppTitle% ; QuickClipboardEditor-Receiver.exe or QuickClipboardEditor-ReceiverLite.exe
-	intErrorLevel := ErrorLevel
-	; Diag("strQCEAppTitle", strQCEAppTitle, "")
-	; Diag("QCERisRunning:ErrorLevel (1=OK)", intErrorLevel, "")
-	if (intErrorLevel <> 1) ; try again with 64-bit
-	{
-		strQCEAppTitle := StrReplace(strQCEAppTitle, "-" . strReceiverType, "-64-bit-" . strReceiverType)
-		SendMessage, 0x2225, , , , %strQCEAppTitle% ; 64-bit
-		intErrorLevel := ErrorLevel
-		; Diag("strQCEAppTitle", strQCEAppTitle, "")
-		; Diag("QCERisRunning:ErrorLevel (1=OK)", intErrorLevel, "")
-	}
-	if (intErrorLevel <> 1) ; try again with 32-bit
-	{
-		strQCEAppTitle := StrReplace(strQCEAppTitle, "-64-", "-32-")
-		SendMessage, 0x2225, , , , %strQCEAppTitle% ; 32-bit
-		intErrorLevel := ErrorLevel
-		; Diag("strQCEAppTitle", strQCEAppTitle, "")
-		; Diag("QCERisRunning:ErrorLevel (1=OK)", intErrorLevel, "")
-	}
-    DetectHiddenWindows, %strPrevDetectHiddenWindows%
-    SetTitleMatchMode, %intPrevTitleMatchMode%
-	Sleep, -1 ; prevent the cursor to turn to WAIT image for 5 seconds (did not search why) when showing menu from Desktop background
-	
-    return (intErrorLevel = 1) ; QCER reply 1 if it runs, else SendMessage returns "FAIL".
 }
 ;------------------------------------------------------------
 
@@ -32566,6 +32512,7 @@ class QCEcommands
 ;-------------------------------------------------------------
 {
 	AA := Object() ; simple array of QCE commands retreived from QCE Receiver or ReceiverLite
+	aaQCEReceiverExe := Object()
 	saQCECommandsCategories := Object() ; simple array of ordered categories containing associative arrays with .strCategoryName and .strCategoryLabel
 	aaQCECommandsCategoriesLabelsByCodes := Object() ; associative array of category labels by codes
 	
@@ -32585,6 +32532,68 @@ class QCEcommands
 	__New()
 	;---------------------------------------------------------
 	{
+		if (g_blnPortableMode)
+		{
+			this.aaQCEReceiverExe["ReceiverLite"] := "QuickClipboardEditor-ReceiverLite.exe"
+			loop, Parse, % "64|32", |
+				if WinExist("ahk_exe QuickClipboardEditor-" . A_LoopField . "-bit-Receiver.exe")
+				{
+					this.aaQCEReceiverExe["Receiver"] := "QuickClipboardEditor-" . A_LoopField . "-bit-Receiver.exe"
+					break ; keep the first running of 64-bit or 32-bit
+				}
+			if !StrLen(this.aaQCEReceiverExe["Receiver"]) ; if none is running, set as same build as QAP (64-bit or 32-bit) in case it runs later
+				this.aaQCEReceiverExe["Receiver"] := "QuickClipboardEditor-" . (A_PtrSize * 8) . "-bit-Receiver.exe"
+		}
+		else ; setup
+			this.aaQCEReceiverExe := {"Receiver" : "QuickClipboardEditor-Receiver.exe", "ReceiverLite" : "QuickClipboardEditor-ReceiverLite.exe"}
+		Diag("Class QCEcommands " . A_ThisFunc, "this.aaQCEReceiverExe", this.aaQCEReceiverExe["Receiver"] . " / Lite: " . this.aaQCEReceiverExe["ReceiverLite"])
+
+		if InStr(A_ScriptName, ".ahk") and FileExist(A_ScriptDir . "\QCE SendMessage-Fake.txt") ; read test file instead of launching QCE Receiver Lite
+		{
+			FileRead, strQCECommands, %A_ScriptDir%\QCE SendMessage-Fake.txt ; this file is updated automatically each time the complied version is used to add a QCE command
+			if !StrLen(strQCECommands)
+				Oops(0, "QCE COMMANDS FILEREAD ERROR")
+			this.ReceiveQCEcommands(strQCECommands) ; for dev only, get data from text file ####
+			strQCECommands := ""
+		}
+		else if WinExist("ahk_exe " . this.aaQCEReceiverExe["Receiver"]) ; QCE Receiver is running
+			Diag("Class QCEcommands " . A_ThisFunc, "QCE Receiver running", this.aaQCEReceiverExe["Receiver"])
+		else ; Receiver not running
+		{
+			Diag("Class QCEcommands " . A_ThisFunc, "QCE Receiver NOT running", this.aaQCEReceiverExe["Receiver"])
+			if (o_Settings.Execution.blnDoNotLaunchQCEReceiver.IniValue) ; launch ReceiverLite except if user don't want it
+				Diag("Class QCEcommands " . A_ThisFunc, "Launch", "Not launching QCE Receiver because blnDoNotLaunchQCEReceiver")
+			else
+			{
+				Diag("Class QCEcommands " . A_ThisFunc, "Launch", A_ScriptDir . "\" . this.aaQCEReceiverExe["ReceiverLite"] . " /FromQAP")
+				Run, % A_ScriptDir . "\" . this.aaQCEReceiverExe["ReceiverLite"] . " /FromQAP"
+				Process, Wait, % A_ScriptDir . "\" . this.aaQCEReceiverExe["ReceiverLite"], 2 ; wait up to 2 seconds
+			}
+		}
+	}
+	;---------------------------------------------------------
+
+	;---------------------------------------------------------
+	QCERisRunning(strReceiverType)
+	; strReceiverType = "Receiver" or "ReceiverLite"
+	;---------------------------------------------------------
+	{
+		strPrevDetectHiddenWindows := A_DetectHiddenWindows
+		intPrevTitleMatchMode := A_TitleMatchMode
+		DetectHiddenWindows, On
+		SetTitleMatchMode, 2
+
+		strQCEAppTitle := "ahk_exe " . this.aaQCEReceiverExe[strReceiverType]
+		SendMessage, 0x2225, , , , %strQCEAppTitle% ; QuickClipboardEditor-Receiver.exe or QuickClipboardEditor-ReceiverLite.exe
+		intErrorLevel := ErrorLevel
+		Diag(A_ThisFunc, "strQCEAppTitle", strQCEAppTitle)
+		Diag(A_ThisFunc, "ErrorLevel (1=OK)", intErrorLevel)
+
+		DetectHiddenWindows, %strPrevDetectHiddenWindows%
+		SetTitleMatchMode, %intPrevTitleMatchMode%
+		Sleep, -1 ; prevent the cursor to turn to WAIT image for 5 seconds (did not search why) when showing menu from Desktop background
+		
+		return (intErrorLevel = 1) ; QCER reply 1 if it runs, else SendMessage returns "FAIL".
 	}
 	;---------------------------------------------------------
 
@@ -32593,21 +32602,23 @@ class QCEcommands
 	;---------------------------------------------------------
 	{
 		loop, Parse, % "Receiver|ReceiverLite", |
-			if QCERisRunning(A_LoopField)
+			if this.QCERisRunning(A_LoopField)
 			{
-				; try to send message to request "List" from compiled QCER with A_ScriptName as return address
-				strArgs := "List|" . "ahk_exe " . A_ScriptName . " ahk_class JeanLalonde.ca"
-				Diag("Send_WM_COPYDATA:Param", strArgs, "")
-				Diag("Send_WM_COPYDATA:g_aaQCEAppTitle[A_LoopField]", g_aaQCEAppTitle[A_LoopField], "")
-				intResult := Send_WM_COPYDATA(strArgs, g_aaQCEAppTitle[A_LoopField])
+				; try to send message to request "List" from compiled QCE Receiver with A_ScriptName as return address
+				strArgs := "List|" . "ahk_exe " . A_ScriptName . " ahk_class JeanLalonde.ca" ; QAP return address
+				Diag(A_ThisFunc, "Send_WM_COPYDATA:strArgs", strArgs)
+				
+				strQCEAppTitle := "ahk_exe " . this.aaQCEReceiverExe[A_LoopField]
+				Diag(A_ThisFunc, "Send_WM_COPYDATA:strQCEAppTitle", strQCEAppTitle)
+				intResult := Send_WM_COPYDATA(strArgs, strQCEAppTitle)
 				; returns FAIL or 0 if an error occurred, or 1 if success
-				; Diag("Send_WM_COPYDATA (1=OK)", intResult, "")
+				Diag(A_ThisFunc, "Send_WM_COPYDATA:intResult (1=OK)", intResult)
 				if (intResult = 1) ; success
 					break
 			}
 			else
 				if (A_Index = 2) ; after trying for both Receiver and ReceiverLite
-					Oops(0, o_L["OopsQCEReceiverError"] . "`n`n" . o_L["OopsQCEReceiverHelp"], "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+					Oops(0, o_L["OopsQCEReceiverError"] . "`n`n" . o_L["OopsQCEReceiverHelp"], this.aaQCEReceiverExe["Receiver"], this.aaQCEReceiverExe["ReceiverLite"])
 		
 	}
 	;---------------------------------------------------------
@@ -35508,8 +35519,6 @@ class Container
 				if !StrLen(saFavorite[2]) ; if Special Folder is unknown
 					saFavorite[2] := "* Unknown Special Folder * " . RandomBetween() . " *"
 			}
-			else if (saFavorite[1] = "QCE" and !IsObject(o_QCEcommands)) ; to exclude "QCE" favorites if running a version before QCE type
-				saFavorite[14] := 1 ; condider intFavoriteDisabled disabled+hidden (1)
 			
 			; this is a regular favorite, add it to the current menu
 			this.InsertItemValue("strFavoriteType", saFavorite[1]) ; see Favorite Types
@@ -35826,32 +35835,44 @@ class Container
 				; else continue
 				
 				loop, Parse, % "Receiver|ReceiverLite", |
-					if QCERisRunning(A_LoopField)
+					if o_QCEcommands.QCERisRunning(A_LoopField)
 					{
 						intReceiverResult := 1
+						
+						strQCEAppTitle := "ahk_exe " . o_QCEcommands.aaQCEReceiverExe[A_LoopField]
+						Diag(A_ThisFunc, "Send_WM_COPYDATA:strQCEAppTitle", strQCEAppTitle)
 						
 						if (this.AA.blnQCECommandCopyBefore)
 						; if intQCECommandCopyBeforeSeconds > 0 wait for n seconds and skip the QCE command if failing
 						; if intQCECommandCopyBeforeSeconds = 0 seconds will wait for 0.5 seconds (AHK default) but do not skip the QCE command
 						{
-							intCopyResult := Send_WM_COPYDATA("Copy|" . this.AA.intQCECommandCopyBeforeSeconds, g_aaQCEAppTitle[A_LoopField]) ; returns 1 if OK
+							strArgs := "Copy|" . this.AA.intQCECommandCopyBeforeSeconds
+							Diag(A_ThisFunc, "Send_WM_COPYDATA:strArgs", strArgs)
+							intCopyResult := Send_WM_COPYDATA(strArgs, strQCEAppTitle) ; returns 1 if OK
 							Sleep, 200
+							Diag(A_ThisFunc, "intCopyResult", intCopyResult)
 						}
 						else
 							intCopyResult := 1 ; OK if not executed
 						
+						Diag(A_ThisFunc, "Send_WM_COPYDATA:strQCECommand", strQCECommand)
 						if (intReceiverResult = 1 and intCopyResult = 1)
-							intCommandResult := Send_WM_COPYDATA(strQCECommand, g_aaQCEAppTitle[A_LoopField]) ; 1 is OK
+							intCommandResult := Send_WM_COPYDATA(strQCECommand, strQCEAppTitle) ; 1 is OK
 						else
 							intCommandResult := 0
+						Diag(A_ThisFunc, "intCommandResult", intCommandResult)
 						
 						if (intCommandResult = 1 and this.AA.blnQCECommandPasteAfter)
 						{
+							strArgs := "Paste"
+							Diag(A_ThisFunc, "Send_WM_COPYDATA:strArgs", strArgs)
 							Sleep, 200
-							intPasteResult := Send_WM_COPYDATA("Paste", g_aaQCEAppTitle[A_LoopField]) ; 1 is OK
+							intPasteResult := Send_WM_COPYDATA(strArgs, strQCEAppTitle) ; 1 is OK
+							Diag(A_ThisFunc, "intPasteResult", intPasteResult)
 						}
 						else
 							intPasteResult := 1 ; OK if not executed
+						Diag(A_ThisFunc, "Final intReceiverResult", intReceiverResult)
 						
 						if (intReceiverResult) ; QCE Receiver replied
 							break
@@ -35859,7 +35880,7 @@ class Container
 				if !(intReceiverResult and intCopyResult and intCommandResult and intPasteResult) ; an error occurred
 				{
 					if !(intReceiverResult)
-						Oops(0, o_L["OopsQCECommandErrorSending"] . "`n`n" . o_L["OopsQCEReceiverHelp"], "QuickClipboardEditor-Receiver.exe", "QuickClipboardEditor-ReceiverLite.exe")
+						Oops(0, o_L["OopsQCECommandErrorSending"] . "`n`n" . o_L["OopsQCEReceiverHelp"], o_QCEcommands.aaQCEReceiverExe["Receiver"], o_QCEcommands.aaQCEReceiverExe["ReceiverLite"])
 					else if !(intCopyResult)
 						Oops(0, o_L["OopsQCECommandErrorCopying"])
 					else if !(intCommandResult)
