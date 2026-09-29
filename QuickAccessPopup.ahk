@@ -31,6 +31,28 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.4 (2026-09-29)
+ 
+Adaptive Menus
+- in the Favorite dialog box, for favorites of type "Submenu" or "Shared menu", add an "Adaptive menu" checkbox with a help link
+- when adding or editing a favorite inside an Adaptive menu, the "Menu Options" tab now includes an "Adaptive menu conditions" text box; use it to set the conditions under which this favorite is shown in the menu
+- in "Adaptive menu conditions", enter the windows where the favorite should be shown, one per line; each line is matched against the title, class or process name of the active window
+- you can also target a specific criteria with the "title:", "class:" or "process:" prefixes; for example, to match a Microsoft Word window, use "title:Word", "class:OpusApp" or "process:WINWORD.EXE"
+ 
+Window filtering
+- the "title:", "class:" and "process:" prefixes can now also be used when selecting active windows in these options:
+  - "Options, Popup Menu, Mouse trigger Blocked/Approved"
+  - "Options, Menu Inclusions/Exclusions, Current Window"
+  - "Options, Launch Advanced Options, Keyboard Shortcuts Blocked/Approved"
+- for example, to match a Chrome window, use "title:Google Chrome", "class:Chrome_WidgetWin_1" or "process:chrome.exe"
+ 
+Various additions and bug fixes
+- fix Clipboard Commands (using Quick Clipboard Editor) not working correctly when QAP runs in portable mode
+- fix a bug that could disable the Clipboard Commands favorites when loading favorites in certain circumstances
+- stop showing an error message when QAP checks whether a "Start In" folder exists and the active window is a browser
+- fix a bug when saving a favorite to the QAP ini file if its "Start In" folder includes a placeholder with a fallback value
+- the QAP main menu keyboard shortcut (default Win + W) now respects the exclusion list in "Options, Launch Advanced Options, Keyboard Shortcuts Blocked/Approved"
+
 Version: 12.3 (2026-05-12)
  
 Enabling/Disabling favorites
@@ -5789,7 +5811,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.3.9.1
+;@Ahk2Exe-SetVersion 12.4
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5857,8 +5879,8 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.3.9.1" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
-global g_strCurrentBranch := "beta" ; "prod", "beta" or "alpha", always lowercase for filename
+global g_strCurrentVersion := "12.4" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
 
