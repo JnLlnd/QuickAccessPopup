@@ -9684,12 +9684,12 @@ return
 
 
 ;------------------------------------------------------------
-RefreshAdaptativeMenus:
-RefreshAdaptativeMenusFromShortcut:
+RefreshAdaptiveMenus:
+RefreshAdaptiveMenusFromShortcut:
 ;------------------------------------------------------------
 
 for strMenuName, oContainer in o_Containers.AA
-	if (oContainer.AA.blnIsAdaptativeMenu)
+	if (oContainer.AA.blnIsAdaptiveMenu)
 		o_Containers.AA[strMenuName].BuildMenu()
 
 return
@@ -14601,10 +14601,10 @@ if (o_EditedFavorite.AA.strFavoriteType = "External")
 }
 
 if InStr("Menu|External", o_EditedFavorite.AA.strFavoriteType)
-; adaptative menu and menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
+; adaptive menu and menu auto sort order (0 manual, 1 name, 2 created date, 3 modified date, 4 last used date, 5 usage, reverse order if negative)
 {
-	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnIsAdaptativeMenu " . (o_EditedFavorite.AA.strFavoriteLaunchWith ? "checked" : ""), % o_L["DialogMenuAdaptativeMenu"]
-	strUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-are-adaptative-menus/", A_ThisLabel, "Help")
+	Gui, 2:Add, Checkbox, % "x20 y+20 vf_blnIsAdaptiveMenu " . (o_EditedFavorite.AA.strFavoriteLaunchWith ? "checked" : ""), % o_L["DialogMenuAdaptiveMenu"]
+	strUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-are-adaptive-menus/", A_ThisLabel, "Help")
 	Gui, 2:Add, Link, x+1 yp, % " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)"
 	if !StrLen(g_intNewSortCriteria)
 		g_intNewSortCriteria := (StrLen(o_EditedFavorite.AA.strFavoriteGroupSettings) ? o_EditedFavorite.AA.strFavoriteGroupSettings : 0)
@@ -15003,11 +15003,11 @@ else
 	}
 
 	GuiControlGet, strParentMenu, , f_drpParentMenu ; get current submenuin dropdown list.
-	blnConditionsVisible := (o_Containers.AA[strParentMenu].AA.blnIsAdaptativeMenu)
-	strUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-are-adaptative-menus/", A_ThisLabel, "Help")
-	Gui, 2:Add, Link, % "x20 y+15 w300 vf_lnkAdaptativeMenuTitle" . (blnConditionsVisible ? "" : " hidden"), % o_L["DialogAdaptativeMenuConditionsTitle"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)" 
+	blnConditionsVisible := (o_Containers.AA[strParentMenu].AA.blnIsAdaptiveMenu)
+	strUrl := AddUtm2Url("https://www.quickaccesspopup.com/what-are-adaptive-menus/", A_ThisLabel, "Help")
+	Gui, 2:Add, Link, % "x20 y+15 w300 vf_lnkAdaptiveMenuTitle" . (blnConditionsVisible ? "" : " hidden"), % o_L["DialogAdaptiveMenuConditionsTitle"] . " (<a href=""" . strUrl . """>" . o_L["GuiHelp"] . "</a>)" 
 	Gui, 2:Font, , %g_strEditControlsFontName%
-	Gui, 2:Add, Edit, % "x20 y+5 w500 r2 vf_strAdaptativeMenuConditions" . (blnConditionsVisible ? "" : " hidden"), % StrReplace(Trim(o_EditedFavorite.AA.strAdaptativeMenuConditions), "|", "`n")
+	Gui, 2:Add, Edit, % "x20 y+5 w500 r2 vf_strAdaptiveMenuConditions" . (blnConditionsVisible ? "" : " hidden"), % StrReplace(Trim(o_EditedFavorite.AA.strAdaptiveMenuConditions), "|", "`n")
 	Gui, 2:Font
 }
 
@@ -15651,9 +15651,9 @@ Gui, 2:Submit, NoHide
 
 oThisMenu := o_Containers.AA[f_drpParentMenu]
 
-strCommand := (oThisMenu.AA.blnIsAdaptativeMenu ? "Show" : "Hide")
-GuiControl, %strCommand%, f_lnkAdaptativeMenuTitle
-GuiControl, %strCommand%, f_strAdaptativeMenuConditions
+strCommand := (oThisMenu.AA.blnIsAdaptiveMenu ? "Show" : "Hide")
+GuiControl, %strCommand%, f_lnkAdaptiveMenuTitle
+GuiControl, %strCommand%, f_strAdaptiveMenuConditions
 
 if (oThisMenu.AA.intMenuAutoSort)
 	strDropdownParentMenuItems := "|" . g_strGuiDoubleLine . " " . o_L["DialogEndOfMenuSorted"] . " " . g_strGuiDoubleLine
@@ -18454,7 +18454,7 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 		o_EditedFavorite.AA.blnQCECommandPasteAfter := f_blnQCECommandPasteAfter
 	}
 	else if InStr("|Menu|External|", "|" . o_EditedFavorite.AA.strFavoriteType, true)
-		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnIsAdaptativeMenu ; contains the Adaptative menu boolean value
+		o_EditedFavorite.AA.strFavoriteLaunchWith := f_blnIsAdaptiveMenu ; contains the Adaptive menu boolean value
 	else
 	{
 		if (o_EditedFavorite.AA.strFavoriteType = "Application" and o_EditedFavorite.AA.strFavoriteLaunchWith = "1" and StrLen(o_EditedFavorite.AA.strFavoriteArguments))
@@ -18474,8 +18474,8 @@ if !InStr("|GuiMoveOneFavoriteSave|GuiCopyOneFavoriteSave|", "|" . strThisLabel 
 			o_EditedFavorite.AA.intFavoriteOpenSubFolder := 0
 	}
 	
-	if (o_EditedFavoriteMenu.AA.blnIsAdaptativeMenu)
-		o_EditedFavorite.AA.strAdaptativeMenuConditions := OptionsListCleanup(f_strAdaptativeMenuConditions)
+	if (o_EditedFavoriteMenu.AA.blnIsAdaptiveMenu)
+		o_EditedFavorite.AA.strAdaptiveMenuConditions := OptionsListCleanup(f_strAdaptiveMenuConditions)
 		
 	o_EditedFavorite.AA.strFavoriteGroupRestoreOptions := (o_EditedFavorite.AA.oParentMenu.AA.strMenuType = "Group"
 		? f_intGroupRestoreDelayAfter . ";" . f_blnGroupRestoreWaitFinish . ";" . f_blnGroupRestoreStopIfError . ";" . f_blnGroupRestoreMinimized
@@ -18649,7 +18649,7 @@ f_picIcon := ""
 f_strFavoriteAppWorkingDir := ""
 f_strFavoriteArguments := ""
 f_strFavoriteLaunchWith := ""
-f_blnIsAdaptativeMenu := ""
+f_blnIsAdaptiveMenu := ""
 f_strFavoriteLocation := ""
 f_strFavoriteLoginName := ""
 f_strFavoritePassword := ""
@@ -21910,7 +21910,7 @@ Gosub, RefreshTotalCommanderHotlist
 Gosub, RefreshDirectoryOpusFavorites
 Gosub, RefreshLastActionsMenu
 Gosub, RefreshContainerInGui
-Gosub, RefreshAdaptativeMenus
+Gosub, RefreshAdaptiveMenus
 
 if (o_Settings.MenuPopup.blnRefreshedMenusAttached.IniValue)
 {
@@ -33632,7 +33632,7 @@ class Container
 
 	;---------------------------------------------------------
 	__New(strType, strContainerName, intAutoSort := 0, oParentMenu := "", strAction := "init", blnDoubleAmpersands := false
-		, blnCheckDuplicates := false, blnMenuEditable := false, blnIsDynamicMenu := false, blnIsAdaptativeMenu := false)
+		, blnCheckDuplicates := false, blnMenuEditable := false, blnIsDynamicMenu := false, blnIsAdaptiveMenu := false)
 	;---------------------------------------------------------
 	{
 		; strType: "Menu", "Group", "External" or "Search"
@@ -33642,7 +33642,7 @@ class Container
 		this.AA.blnDoubleAmpersands := blnDoubleAmpersands ; when building menu, replace "&" with "&&" in some dynamic menus
 		this.AA.blnCheckDuplicates := blnCheckDuplicates ; check duplicate favorite names when loadin menu from ini file
 		this.AA.blnMenuEditable := blnMenuEditable ; add edit this menu and increment items counter
-		this.AA.blnIsAdaptativeMenu := blnIsAdaptativeMenu ; conditions may apply
+		this.AA.blnIsAdaptiveMenu := blnIsAdaptiveMenu ; conditions may apply
 		this.AA.blnIsDynamicMenu := blnIsDynamicMenu ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		this.AA.intMenuIconsSize := o_Settings.MenuIcons.intIconSize.IniValue ; default size from Options, for menus under Main the value will be updated according to strFavoriteArguments when building menu
 		
@@ -33739,7 +33739,7 @@ class Container
 			; 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons, 28 intFavoriteFolderLiveShowHiddenSystem,
 			; 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder, 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions
 			; 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders, 35 blnFavoriteDebug, 36 blnFavoriteAutoExec
-			; 37 blnReopenAfterLaunchingItem, 38 strAdaptativeMenuConditions
+			; 37 blnReopenAfterLaunchingItem, 38 strAdaptiveMenuConditions
 
 	;---------------------------------------------------------
 	{
@@ -33877,7 +33877,7 @@ class Container
 				}
 				
 				; load the submenu
-				; Container(strType, strContainerName, intAutoSort, oParentMenu, strAction, blnDoubleAmpersands, blnCheckDuplicates, blnMenuEditable, blnIsDynamicMenu, blnIsAdaptativeMenu)
+				; Container(strType, strContainerName, intAutoSort, oParentMenu, strAction, blnDoubleAmpersands, blnCheckDuplicates, blnMenuEditable, blnIsDynamicMenu, blnIsAdaptiveMenu)
 				oNewSubMenu := new Container(saThisFavorite[1], saThisFavorite[2], (saThisFavorite[1] = "Group" ? "" : saThisFavorite[11]), this, , , true, true, false, saThisFavorite[8])
 				
 				if (oNewSubMenu.AA.strMenuType = "Group")
@@ -34238,10 +34238,10 @@ class Container
 			if (aaThisFavorite.intFavoriteDisabled = 1) ; continue if hidden
 				continue ; skip the rest of the loop
 				
-			if (aaThisFavorite.oParentMenu.AA.blnIsAdaptativeMenu
-				and !MeetConditions(aaThisFavorite.strAdaptativeMenuConditions)) ; conditions not met, skip this favorite
+			if (aaThisFavorite.oParentMenu.AA.blnIsAdaptiveMenu
+				and !MeetConditions(aaThisFavorite.strAdaptiveMenuConditions)) ; conditions not met, skip this favorite
 				continue
-			; else not an adaptative menu or condition met, continue including this favorite
+			; else not an adaptive menu or condition met, continue including this favorite
 				
 			strMenuItemAction := ""
 			intMenuItemStatus := 1 ; by default
@@ -35110,7 +35110,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
 			strIniLine .= oItem.AA.blnFavoriteAutoExec . "|" ; 36
 			strIniLine .= oItem.AA.blnReopenAfterLaunchingItem . "|" ; 37
-			strIniLine .= StrReplace(oItem.AA.strAdaptativeMenuConditions, "|", g_strEscapePipe) . "|" ; 38
+			strIniLine .= StrReplace(oItem.AA.strAdaptiveMenuConditions, "|", g_strEscapePipe) . "|" ; 38
 			
 			Diag(A_ThisFunc, s_intIniLineSave . " " . oItem.AA.strFavoriteType, "ELAPSED")
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave
@@ -35316,15 +35316,15 @@ class Container
 				or this.SA[A_Index].AA.intFavoriteDisabled = -1) ; or hidden (-1)
 				; (do not use <> 0 because null <> 0 -> infinite loop)
 				intHiddenItems++
-			else if (this.AA.blnIsAdaptativeMenu and !MeetConditions(this.SA[A_Index].AA.strAdaptativeMenuConditions)) ; favorite rejected in adaptative menu
+			else if (this.AA.blnIsAdaptiveMenu and !MeetConditions(this.SA[A_Index].AA.strAdaptiveMenuConditions)) ; favorite rejected in adaptive menu
 				intHiddenItems++
 			
 			; ###_V(A_ThisFunc . " - " . A_Index, intHiddenItems, this.SA[A_Index].AA.strFavoriteName, this.SA[A_Index].AA.intFavoriteDisabled, ""
-				; , this.AA.blnIsAdaptativeMenu, this.SA[A_Index].AA.strAdaptativeMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptativeMenuConditions, 1))
+				; , this.AA.blnIsAdaptiveMenu, this.SA[A_Index].AA.strAdaptiveMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptiveMenuConditions, 1))
 		}
 		
 		; ###_V(A_ThisFunc . " - RETURN", intHiddenItems, this.SA[A_Index].AA.strFavoriteName, this.SA[A_Index].AA.intFavoriteDisabled, ""
-			; , this.AA.blnIsAdaptativeMenu, this.SA[A_Index].AA.strAdaptativeMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptativeMenuConditions, 1))
+			; , this.AA.blnIsAdaptiveMenu, this.SA[A_Index].AA.strAdaptiveMenuConditions, BlockOrApprove(this.SA[A_Index].AA.strAdaptiveMenuConditions, 1))
 		return intHiddenItems
 	}
 	;---------------------------------------------------------
@@ -35632,7 +35632,7 @@ class Container
 			; 24 strFavoriteDateCreated, 25 strFavoriteDateModified, 26 intFavoriteUsageDb, 27 blnFavoriteFolderLiveHideIcons,
 			; 28 intFavoriteFolderLiveShowHiddenSystem, 29 blnFavoriteFolderLiveHideExtensions, 30 intFavoriteOpenSubFolder,
 			; 31 blnFavoriteFolderLiveRefreshManual, 32 strFavoriteGroupRestoreOptions, 33 intFavoriteFolderLiveIconsSize, 34 blnFavoriteFolderLiveExcludeFolders
-			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec, 37 blnReopenAfterLaunchingItem, 38 strAdaptativeMenuConditions
+			; 35 blnFavoriteDebug, 36 blnFavoriteAutoExec, 37 blnReopenAfterLaunchingItem, 38 strAdaptiveMenuConditions
 			
 			this.AA.oParentMenu := oParentMenu
 			
@@ -35735,7 +35735,7 @@ class Container
 			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, enable favorite debugging
 			this.InsertItemValue("blnFavoriteAutoExec", saFavorite[36]) ; boolean, launch favorite or group at startup
 			this.InsertItemValue("blnReopenAfterLaunchingItem", saFavorite[37]) ; boolean, reopen this menu after launching items
-			this.InsertItemValue("strAdaptativeMenuConditions", StrReplace(saFavorite[38], g_strEscapePipe, "|")) ; string, list of conditions for an adaptative menu
+			this.InsertItemValue("strAdaptiveMenuConditions", StrReplace(saFavorite[38], g_strEscapePipe, "|")) ; string, list of conditions for an adaptive menu
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
