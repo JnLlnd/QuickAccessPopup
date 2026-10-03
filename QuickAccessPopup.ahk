@@ -31,13 +31,14 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 12.4 (2026-09-29)
+Version: 12.4 (2026-10-03)
  
 Adaptive Menus
-- in the Favorite dialog box, for favorites of type "Submenu" or "Shared menu", add an "Adaptive menu" checkbox with a help link
+- in the Favorite dialog box, the favorites of type "Submenu" or "Shared menu" now have an "Adaptive menu" checkbox with a help link
 - when adding or editing a favorite inside an Adaptive menu, the "Menu Options" tab now includes an "Adaptive menu conditions" text box; use it to set the conditions under which this favorite is shown in the menu
 - in "Adaptive menu conditions", enter the windows where the favorite should be shown, one per line; each line is matched against the title, class or process name of the active window
 - you can also target a specific criteria with the "title:", "class:" or "process:" prefixes; for example, to match a Microsoft Word window, use "title:Word", "class:OpusApp" or "process:WINWORD.EXE"
+- see: https://www.quickaccesspopup.com/what-are-adaptive-menus/
  
 Window filtering
 - the "title:", "class:" and "process:" prefixes can now also be used when selecting active windows in these options:
@@ -45,9 +46,13 @@ Window filtering
   - "Options, Menu Inclusions/Exclusions, Current Window"
   - "Options, Launch Advanced Options, Keyboard Shortcuts Blocked/Approved"
 - for example, to match a Chrome window, use "title:Google Chrome", "class:Chrome_WidgetWin_1" or "process:chrome.exe"
+- Note 1: The basic way of specifying windows, for example "chrome" works the same; the keywords will be checked in both the window title, class or process name; and the "*" prefix to check also application's file dialog boxes also works the same; for example, when blocking the Main menu mouse trigger with the condition "*photoshop", the mouse button wil be blocked both in Photoshop window and in its file dialog boxes
+- see for Main menu mouse trigger: https://www.quickaccesspopup.com/can-i-block-the-qap-menu-hotkeys-if-they-interfere-with-one-of-my-other-apps/
+- see for favorites keyboard shortcuts: https://www.quickaccesspopup.com/can-i-block-the-qap-keyboard-shortcuts-if-they-interfere-with-one-of-my-apps/
  
 Various additions and bug fixes
 - fix Clipboard Commands (using Quick Clipboard Editor) not working correctly when QAP runs in portable mode
+  see: https://www.quickaccesspopup.com/qce/#qap-qce
 - fix a bug that could disable the Clipboard Commands favorites when loading favorites in certain circumstances
 - stop showing an error message when QAP checks whether a "Start In" folder exists and the active window is a browser
 - fix a bug when saving a favorite to the QAP ini file if its "Start In" folder includes a placeholder with a fallback value
@@ -22005,7 +22010,8 @@ CanNavigate(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Express
 	Diag(A_ThisFunc, "blnAlwaysLaunchURLs", o_Settings.Execution.blnAlwaysLaunchURLs.IniValue)
 	
 	blnCanNavigate := WindowIsExplorer(g_strTargetClass) or WindowIsConsole(g_strTargetClass)
-		or (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId) and !DialogBoxParentExcluded(g_strTargetWinId))
+		or (o_Settings.MenuPopup.blnChangeFolderInDialog.IniValue and WindowIsDialog(g_strTargetClass, g_strTargetWinId)
+			and (!StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog) or !MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, g_strTargetWinId)))
 		or (o_FileManagers.P_intActiveFileManager = 2 and WindowIsDirectoryOpus(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 3 and WindowIsTotalCommander(g_strTargetClass))
 		or (o_FileManagers.P_intActiveFileManager = 4 and WindowIsQAPconnect(g_strTargetWinId))
@@ -22094,6 +22100,7 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 			}
 		else ; no exclusion
 			blnCanLaunch := true
+		
 		if !(blnCanLaunch) ; stop if cannot launch
 			return false
 	}
@@ -22111,7 +22118,9 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 		return false
 	}
 	
-	if WindowIsDialog(g_strTargetClass, g_strTargetWinId) and DialogBoxParentExcluded(g_strTargetWinId)
+	if WindowIsDialog(g_strTargetClass, g_strTargetWinId) ; known issue: this code is not executed when blnExclusionMouseListWhitelist=1 (Approved) - bug never reported.
+		and StrLen(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog)
+		and MeetConditions(o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, g_strTargetWinId)
 	; code executed only for keyboard trigger (for mouse trigger, it was processed above)
 	{
 		Diag(A_ThisFunc, "return-5 (dialog excluded))", false)
@@ -22125,33 +22134,6 @@ CanLaunch(strMouseOrKeyboard) ; SEE HotkeyIfWin.ahk to use Hotkey, If, Expressio
 		return true ; conditions checked above four mouse trigger, no exclusion, return true
 	else
 		return CanHotkeyTrigger() ; check if keyboard trigger is allowed
-}
-;------------------------------------------------------------
-
-
-;------------------------------------------------------------
-DialogBoxParentExcluded(strTargetWinId)
-;------------------------------------------------------------
-{
-	; get specified window's parent ID
-	; from SKAN https://autohotkey.com/board/topic/27295-getting-id-or-class-for-parent-window/#entry175515
-	strParentTargetWinId := DllCall("GetParent", UInt,strTargetWinId)
-	strParentTargetWinId := (!strParentTargetWinId ? strTargetWinId : strParentTargetWinId)
-	
-	; get parent window's class and title
-	WinGetClass, strParentClass, ahk_id %strParentTargetWinId%
-	WinGetTitle, strParentTitle, ahk_id %strParentTargetWinId%
-	WinGet, strProcessName, ProcessName, ahk_id %strParentTargetWinId%
-
-	; check for class or title in dialog's parent exclusion list
-	Loop, Parse, % o_Settings.MenuPopup.strExclusionMouseList.strExclusionMouseListDialog, |
-		if StrLen(A_Loopfield)
-			and (InStr(strParentClass, A_LoopField)
-			or InStr(strParentTitle, A_LoopField)
-			or InStr(strProcessName, A_LoopField))
-			return true
-
-	return false
 }
 ;------------------------------------------------------------
 
@@ -22188,17 +22170,37 @@ CanHotkeyTrigger()
 
 
 ;------------------------------------------------------------
-MeetConditions(strConditions)
+MeetConditions(strConditions, strTargetDialogBoxId := "")
 ; returns true if a match is found in strConditions (must not be empty)
+; if strTargetDialogBoxId is provided, check with dialog box's parent names
 ;------------------------------------------------------------
 {
 	; ###_V(A_ThisFunc, "*strConditions", strConditions)
 	Loop, Parse, strConditions, |
+	{
+		; default names
+		strTargetWinTitle := g_strTargetWinTitle
+		strTargetClass := g_strTargetClass
+		strTargetProcessName := g_strTargetProcessName
+		
+		if StrLen(strTargetDialogBoxId) ; this is a dialog box and we check for parent window's names
+		{
+			; get specified window's parent ID
+			; from SKAN https://autohotkey.com/board/topic/27295-getting-id-or-class-for-parent-window/#entry175515
+			strParentTargetWinId := DllCall("GetParent", UInt,strTargetDialogBoxId)
+			strParentTargetWinId := (!strParentTargetWinId ? strTargetDialogBoxId : strParentTargetWinId)
+			
+			; get parent window's class and title
+			WinGetTitle, strTargetWinTitle, ahk_id %strParentTargetWinId%
+			WinGetClass, strTargetClass, ahk_id %strParentTargetWinId%
+			WinGet, strTargetProcessName, ProcessName, ahk_id %strParentTargetWinId%
+		}
+		
 		if StrLen(A_Loopfield)
 			if !(StrStartsWith(A_Loopfield, "class:") or StrStartsWith(A_Loopfield, "title:") or StrStartsWith(A_Loopfield, "process:"))
 			; no specific value type, check both class, title and process
 			{
-				if (InStr(g_strTargetClass, A_LoopField) or InStr(g_strTargetWinTitle, A_LoopField) or InStr(g_strTargetProcessName, A_LoopField))
+				if (InStr(strTargetWinTitle, A_LoopField) or InStr(strTargetClass, A_LoopField) or InStr(strTargetProcessName, A_LoopField))
 				{
 					; Loopfield matches one of the value types
 					; ###_V(A_ThisFunc, "*Match one of the values", "*A_Loopfield", A_Loopfield, "*strConditions", strConditions)
@@ -22211,9 +22213,9 @@ MeetConditions(strConditions)
 				intColonPos := InStr(A_LoopField, ":")
 				strType := SubStr(A_LoopField, 1, intColonPos)
 				strLoopField := SubStr(A_LoopField, intColonPos + 1)
-				if ((strType = "class:" and InStr(g_strTargetClass, strLoopField))
-					or (strType = "title:" and InStr(g_strTargetWinTitle, strLoopField))
-					or (strType = "process:" and InStr(g_strTargetProcessName, strLoopField)))
+				if ((strType = "class:" and InStr(strTargetClass, strLoopField))
+					or (strType = "title:" and InStr(strTargetWinTitle, strLoopField))
+					or (strType = "process:" and InStr(strTargetProcessName, strLoopField)))
 				{
 					; Loopfield matches its specific type
 					; ###_V(A_ThisFunc, "*Match", strType, "*A_Loopfield", A_Loopfield, "*strConditions", strConditions)
@@ -22221,6 +22223,7 @@ MeetConditions(strConditions)
 				}
 				; else continue
 			}
+	}	
 	; no match, return false
 	; ###_V(A_ThisFunc, "*NO match for strConditions", strConditions)
 	return false
@@ -33364,6 +33367,7 @@ TODO
 
 		;-----------------------------------------------------
 		SplitExclusionList()
+		; split strList in two lists, one for all apps, the second with only apps with the "*" prefix
 		;-----------------------------------------------------
 		{
 			strExclusionMouseListDialogIndicator := "*"
@@ -34239,7 +34243,9 @@ class Container
 				continue ; skip the rest of the loop
 				
 			if (aaThisFavorite.oParentMenu.AA.blnIsAdaptiveMenu
-				and !MeetConditions(aaThisFavorite.strAdaptiveMenuConditions)) ; conditions not met, skip this favorite
+				and (StrLen(aaThisFavorite.strAdaptiveMenuConditions)
+					and (!MeetConditions(aaThisFavorite.strAdaptiveMenuConditions) ; conditions not met for apps, skip this favorite
+						and !MeetConditions(aaThisFavorite.strAdaptiveMenuConditions, g_strTargetWinId)))) ; check again for dialog boxes
 				continue
 			; else not an adaptive menu or condition met, continue including this favorite
 				
@@ -35316,7 +35322,10 @@ class Container
 				or this.SA[A_Index].AA.intFavoriteDisabled = -1) ; or hidden (-1)
 				; (do not use <> 0 because null <> 0 -> infinite loop)
 				intHiddenItems++
-			else if (this.AA.blnIsAdaptiveMenu and !MeetConditions(this.SA[A_Index].AA.strAdaptiveMenuConditions)) ; favorite rejected in adaptive menu
+			else if (this.AA.blnIsAdaptiveMenu
+				and StrLen(this.SA[A_Index].AA.strAdaptiveMenuConditions)
+				and !MeetConditions(this.SA[A_Index].AA.strAdaptiveMenuConditions) ; favorite rejected in adaptive menu
+				and !MeetConditions(this.SA[A_Index].AA.strAdaptiveMenuConditions, g_strTargetWinId)) ; favorite rejected in adaptive menu
 				intHiddenItems++
 			
 			; ###_V(A_ThisFunc . " - " . A_Index, intHiddenItems, this.SA[A_Index].AA.strFavoriteName, this.SA[A_Index].AA.intFavoriteDisabled, ""
@@ -35824,7 +35833,7 @@ class Container
 			Diag(A_ThisFunc, "this.aaTemp.strLocationWithPlaceholders", this.aaTemp.strLocationWithPlaceholders)
 			
 			; LAUNCH WITH
-			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|QCE|WindowsApp|", this.AA.strFavoriteType . "|")
+			if (StrLen(this.AA.strFavoriteLaunchWith) and this.AA.strFavoriteLaunchWith <> "0") and !InStr("Application|Snippet|QAP|QCE|WindowsApp|Menu|External|", this.AA.strFavoriteType . "|")
 			; this.AA.strFavoriteLaunchWith <> "0" for legacy of old ini file
 			; ignore for Application, Snippet, QAP, QCE and WindowsApp favorites because strFavoriteLaunchWith contains data for other options
 			{
