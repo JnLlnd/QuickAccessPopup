@@ -32,7 +32,7 @@ HISTORY
 =======
 
 Version: 12.4 (2026-10-03)
- 
+  
 Adaptive Menus
 - in the Favorite dialog box, the favorites of type "Submenu" or "Shared menu" now have an "Adaptive menu" checkbox with a help link
 - when adding or editing a favorite inside an Adaptive menu, the "Menu Options" tab now includes an "Adaptive menu conditions" text box; use it to set the conditions under which this favorite is shown in the menu
