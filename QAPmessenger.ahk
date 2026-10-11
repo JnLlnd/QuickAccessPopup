@@ -220,6 +220,13 @@ else if (g_strLanguageCode = "PT-BR")
 	lMessengerError := "Ocorreu um erro.`n`nCerifique-se de que o ~1~ está em execução antes de usar seus menus de contexto."
 	lMessengerHelp := "Pesquise por ""Messenger"" em www.QuickAccessPopup.com para ajuda."
 }
+if (g_strLanguageCode = "PL")
+{
+	lMessengerCloseQAPSettings := "Okno ustawień jest otwarte w ~1~, prawdopodobnie z niezapisanymi zmianami.`n`nZamknij okno ustawień przed użyciem tego menu kontekstowego."
+	lMessengerDoNotRun := "Nie uruchamiaj ~1~ bezpośrednio. Możesz:`n`n- dodać plik lub folder do menu, klikając prawym przyciskiem myszy w Eksploratorze`n- kliknąć prawym przyciskiem myszy w tle okna Eksploratora, aby dodać bieżący folder`n- kliknąć prawym przyciskiem myszy w tle pulpitu, aby wyświetlić menu.`n`nUpewnij się, że ~2~ jest uruchomiony przed użyciem jego menu kontekstowego. Zobacz pole wyboru ""Menu kontekstowe"" w oknie ""Opcje"" ~2~."
+	lMessengerError := "Wystąpił błąd.`n`nUpewnij się, że ~1~ jest uruchomiony przed użyciem jego menu kontekstowego."
+	lMessengerHelp := "Wyszukaj ""Messenger"" na stronie www.QuickAccessPopup.com, aby uzyskać pomoc."
+}
 else ; if (g_strLanguageCode = "EN")
 {
 	lMessengerCloseQAPSettings := "A settings window is open in ~1~, possibly with unsaved changes.`n`nPlease, close the settings windows before using this context menu."
