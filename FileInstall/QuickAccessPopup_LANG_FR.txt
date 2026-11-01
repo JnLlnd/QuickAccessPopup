@@ -923,7 +923,7 @@ lOptionsAlternativeMenuFeatures	Menu Alternatif
 lOptionsAlternativeMenuFeaturesIntro	Choisisez les raccourcis des fonctionnalités du menu Alternatif.
 lOptionsAlternativeMenuFeaturesModifiersIntro	Gérer les touches modificatrices qui vont lancer des fonctionnalités du menu Alternatif.
 lOptionsAlternativeMenuHotkeys	Raccourcis du menu Alternatif
-lOptionsAlternativeMenuModifiers	Modificatrices du menu Alternatif
+lOptionsAlternativeMenuModifiers	Touches modificatrices du menu Alternatif
 lOptionsAlternativeMenuResetModifiers	Réinitialiser les touches spéciales par défaut
 lOptionsAlternativeMenuResetModifiersSaved	Réinitialiser les touches spéciales enregistrées
 lOptionsAlternativeMenuShowNotification	Afficher la notification lorsque le Menu Alternatif est utilisé
