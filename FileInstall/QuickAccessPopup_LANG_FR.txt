@@ -5,7 +5,7 @@ lAboutLicenseExpires	Expiration: ~1~
 lAboutLicenseHelp	Aide pour la gestion de la license
 lAboutText1	~1~ ~2~ (~3~ bits)
 lAboutText2	~1~ est développé par Jean Lalonde sur la plateforme <a href="http://ahkscript.org/">AutoHotkey</a>.
-lAboutText2a	Traduction française: Jean Lalonde`nTraduction allemande: Edgar "Fast Edi" Hoffmann`nTraduction suédoise: Åke Engelbrektson`nTraduction italienne: Riccardo Leone`nTraduction espagnole: kiketrucker`nTraduction en portugais brésilien: Igor Ruckert`nTraduction en chinois simplifié: ilaoyao`nTraduction en portuguais: Luis Neves`nTraduction en néerlandais: Ric Roggeveen`nTraduction en coréen: Maeng Bong Kyun`nTraduction russe: Wylek.ru`nTraduction japonaise: coolvitto`nRévision anglaise: (aide bienvenue)
+lAboutText2a	Traduction française: Jean Lalonde`nTraduction allemande: Edgar "Fast Edi" Hoffmann`nTraduction suédoise: Åke Engelbrektson`nTraduction italienne: Riccardo Leone`nTraduction espagnole: kiketrucker`nTraduction en portugais brésilien: Igor Ruckert`nTraduction en chinois simplifié: ilaoyao`nTraduction en portuguais: Luis Neves`nTraduction en néerlandais: Ric Roggeveen`nTraduction en coréen: Maeng Bong Kyun`nTraduction russe: Wylek.ru`nTraduction japonaise: coolvitto`nTraduction polonaise: DariuszKu
 lAboutText2b	Icônes par: <a href="https://icons8.com/">Icons8</a>`nInstallateur: <a href="http://www.jrsoftware.org/isinfo.php">Inno Setup</a> par jrsoftware.org`nSources AutoHotkey_L v~1~
 lAboutText3	~1~ Jean Lalonde 2013-~2~`n`nQuick Access Popup is supplied under License conditions. You may obtain a copy of the License at:`n<a href="~3~">~4~</a>`nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing permissions and limitations under the License.
 lAboutText4	Soutien en ligne: <a href="http://www.quickaccesspopup.com">www.quickaccesspopup.com</a>
@@ -17,6 +17,7 @@ lAlternativeMenuTrayTipCopyLocation	Choisissez le favori à copier
 lAlternativeMenuTrayTipEditFavorite	Choisissez le favori à modifier
 lAlternativeMenuTrayTipNewWindow	Choisissez le dossier à ouvrir dans une nouvelle fenêtre
 lAlternativeMenuTrayTipOpenContaining	Choisissez le document, l'application ou le dossier favori dont vous voulez ouvrir le dossier parent
+lAlternativeMenuTrayTipRemoveFavorite	Choisissez le favori à supprimer
 lAlternativeMenuTrayTipRunAs	Sélectionnez l'application à exécuter en tant qu'administrateur
 lAlternativeMenuTrayTipSelectedFile	Choisissez le DOSSIER où déplacer ou copier le(s) fichier(s) ou dossier(s) que vous avez sélectionné(s)
 lContextAddFile	Ajouter ce fichier au menu Quick Access Popup
@@ -52,6 +53,7 @@ lDiagModeExit	~1~ a colligé des renseignements à des fins de diagnostique dans l
 lDiagModeIntro	Envoyez ce fichier à support@quickaccesspopup.com avec une description de la situation nécessitant un diasnostique.
 lDiagModeSee	Voulez-vous consulter le fichier de diagnostique?
 lDialogActivateAlreadyRunning	Si l'application est déjà lancée, l'activer au lieu de la relancer`n(l'application doit avoir exactement le même emplacement)
+lDialogAdaptiveMenuConditionsTitle	Conditions du Menu adaptatif
 lDialogAdd	Ajouter
 lDialogAddEditFavoriteTitle	~1~ un favori: ~4~ - ~2~ ~3~
 lDialogAddFavoriteSelectTitle	Ajouter un favori - ~1~
@@ -321,6 +323,7 @@ lDialogListApplicationLabel	Liste des applications pour:
 lDialogListApplicationsDropdown	Tout||Menu Fenêtres ouvertes|Applications actives|Fermer des fenêtres
 lDialogListApplicationYesNo	[Oui] pour Activer ou [Non] pour fermer cette fenêtre?
 lDialogMaximized	Maximisée
+lDialogMenuAdaptiveMenu	Menu adaptif
 lDialogMenuKey	Touche Menu
 lDialogMenuNotMoveUnderItself	Le menu "~1~" ne peut être déplacé sous lui-même.
 lDialogMenuReopenAfterLaunchingItem	Rouvrir ce menu après avoir lancé un item
@@ -486,7 +489,6 @@ lDonateActionRemoveLicenseConfirm	Voulez-vous retirer votre licence pour "~1~" d
 lDonateActionRenew	Renouveler votre licence
 lDonateActionRenewConfirm	Veuillez relancer ~1~ après avoir renouvelé votre licence
 lDonateActionSaveLicense	Enregistrer votre code de licence
-lDonateCheckTitle	~1~ fois! - ~2~
 lDonateCodeExpiredMessage	Votre licence ~1~ est échue.`n`nVous pouvez la renouveler sur le site web de ~1~.
 lDonateCodeExpiredTitle	Licence échue - ~1~
 lDonateCodeInvalidMessage	Vous avez besoin d'un code de licence pour utiliser cette version de ~1~.`n`nVous pouvez obtenir une licence gratuite ou contribuer au développement de cette application en vous procurant une licence pour un coût modique. Pour plus de renseignements, visitez le site web de ~1~.`n`nSi vous avez reçu votre code de licence, veuillez sélectionner "Enregistrer votre licence".
@@ -668,7 +670,6 @@ lImpExpRestartApp	Voulez-vous relancer ~1~ et charger la nouvelle configuration 
 lImpExpSectionNotFound	Contenu introuvable dans le fichier:`n`n~1~`n`nSection: [~2~]`nDescription: ~3~
 lImpExpSelectFile	Sélectionnez le fichier ~1~
 lImpExpSource	Source
-lImpExpTitle	Importer / exporter la configuration - ~1~
 lImpExpUnsavedSettings	Une fenêtre de configuration est ouverte, peut-être avec des changements non sauvegardés.`n`nVeuillez fermer les fenêtres de configuration avant de changer de fichier, d'importer ou d'exporter la configuration.
 lImportFavoritesDescription	Ouvrir la boîte de dialogue "~1~" avec les options "~2~" afin d'importer dans un menu de votre choix les favoris sélectionnés dans un fichier de configuration QAP.
 lMainMenuName	Principal
@@ -686,6 +687,7 @@ lMenuAlternativeMoveSelectedFile	Déplacer le ou les fichiers sélectionnés dans u
 lMenuAlternativeNewWindow	Ouvrir dans une nouvelle fenêtre
 lMenuAlternativeOpenContainingCurrent	Ouvrir le dossier parent dans la fenêtre actuelle
 lMenuAlternativeOpenContainingNew	Ouvrir le dossier parent dans une nouvelle fenêtre
+lMenuAlternativeRemoveFavorite	Supprimer un favori
 lMenuAlternativeRunAs	Exécuter en tant qu'administrateur
 lMenuAppData	Application Data
 lMenuCache	Cache
@@ -827,10 +829,11 @@ lNavigateFileError	Une erreur s'est produite lors de l'ouverture du dossier:`n~1
 lNavigateSpecialError	Une erreur s'est produite lors de l'ouverture du dossier spécial #~1~.
 lOopsAccessDenied	accès refusé
 lOopsAddThisFolderTip	Pour de meilleurs résultats avec la commande "Ajouter le dossier actif ou la page web active":`n`n1) Activez la fenêtre ~1~ contenant le dossier ou la page à ajouter au menu.`n2) Ouvrez le menu popup avec ~2~.`n3) Choisissez "Ajouter le dossier actif ou la page web active" et enregistrez votre nouveau favori.
-lOopsAlternativeMenuModifiersDuplicates	La touche ou la combinaison de touches "~1~" est utilisée deux fois.`n`nVeuillez vous assurer que chaque combinaison n'est utilisée qu'une seule fois.
+lOopsAlternativeMenuModifiersDuplicates	La fonctionnalité du menu Alternatif "~1~" est assignée deux fois.`n`nVeuillez vous assurer que chaque touche est assignée à un fonctionnalité différente.
 lOopsAlternativeNotSupported	La commande du menu Alternatif "~1~" n'est pas disponible pour le type de favori "~2~".
 lOopsAmpersandInName	L'esperluette "&" dans les noms de menus de Windows est utilisée pour définir des raccourcis clavier. Pour afficher une esperluette dans un nom de menu, entrez "&&". `n`nPour plus d'informations, recherchez "ampersand" dans la FAQ du site Web de QAP.
 lOopsCannotCopyFavorite	Les favoris de type "~1~" ne peuvent pas être copiés.
+lOopsCannotDeleteInDynamicMenu	Vous ne pouvez pas supprimer un item dans un menu dynamique comme "~1~".
 lOopsCannotMoveToSelf	Vous ne pouvez pas déplacer un favori dans son menu d'origine. Veuillez choisir un menu de destination.
 lOopsChangeFolderInDialogAlert	Vouliez-vous changer de dossier dans cette boîte de dialogue? Afin de pouvoir naviguer à l'intérieur d'une boîte de dialogue, vous devez activer une option dans la section "Général" des "Options".`n`nVoulez-vous ouvrir la fenêtre "Options"?
 lOopsContainerInGui	Le menu dynamique "~1~" ne peut être inséré que dans le menu: ~2~
@@ -901,7 +904,6 @@ lOopsRunCommandTooLong	Commande trop longue (~1~ vs un maximum de ~2~)
 lOopsSelectedItemDialogBoxes	L'item sélectionné ne peut pas être détecté dans une boîte de dialogue.
 lOopsSelectedItemTotalCommander	L'item sélectionné ne peut pas être détecté dans Total Commander.
 lOopsSortOnHiddenColumns	Vous avez sélectionné un critère de tri pour une colonne qui n'est pas affichée dans la fenêtre "Personnaliser".`n`nVous devriez activer l'option "~1~" dans "Options, Fenêtre Personnaliser" et activer la base de données de QAP dans "Options, Base de données".
-lOopsSortUpToSeparator	Tri effectué jusqu'au premier séparateur.
 lOopsTitle	~1~ (~2~)
 lOopsUnknownTargetAppName	Une erreur s'est produite pendant l'ouverture de ce favori. Veuillez essayer à nouveau...
 lOopsUsageDbSQLiteMissing	Fichier ressource SQLite absent:`n`n~1~`nImpossible de construire les menus des items fréquemment utilisés.
@@ -919,6 +921,9 @@ lOptionsAdvancedLaunch	Options de démarrage avancées
 lOptionsAdvancedOther	Options avancées diverses
 lOptionsAlternativeMenuFeatures	Menu Alternatif
 lOptionsAlternativeMenuFeaturesIntro	Choisisez les raccourcis des fonctionnalités du menu Alternatif.
+lOptionsAlternativeMenuFeaturesModifiersIntro	Gérer les touches modificatrices qui vont lancer des fonctionnalités du menu Alternatif.
+lOptionsAlternativeMenuHotkeys	Raccourcis du menu Alternatif
+lOptionsAlternativeMenuModifiers	Modificatrices du menu Alternatif
 lOptionsAlternativeMenuResetModifiers	Réinitialiser les touches spéciales par défaut
 lOptionsAlternativeMenuResetModifiersSaved	Réinitialiser les touches spéciales enregistrées
 lOptionsAlternativeMenuShowNotification	Afficher la notification lorsque le Menu Alternatif est utilisé
@@ -935,12 +940,13 @@ lOptionsCheck4Update	Vérifier la mise à jour
 lOptionsCheck4UpdateNow	vérifier maintenant
 lOptionsClipboardMaxSize	Ne pas actualiser le menu "Presse-papiers" si sa taille est plus grande que:
 lOptionsClipboardMaxSizeDefault	(10 000 octets par défaut)
-lOptionsControlDoublePressed	Ouvrir le menu principal avec Ctrl + Ctrl (Contrôle pressé à deux reprises)
-lOptionsControlDoublePressedLeft	Avec la touche Contrôle de gauche
-lOptionsControlDoublePressedRight	Avec la touche Contrôle de droite
+lOptionsControlDoublePressed	Ouvrir le menu principal en appuyant à deux reprises sur
+lOptionsControlDoublePressedLeft	la touche Contrôle de gauche
+lOptionsControlDoublePressedRight	la touche Contrôle de droite
+lOptionsControlDoublePressedRightButton	le bouton droit de la souris
+lOptionsCustomizeCheckboxes	Afficher des cases à cocher dans la liste des favoris pour activer ou désactiver des favoris
 lOptionsCustomLinksIcon	Icône personalisé (format "fichier,index") pour les favoris de type Lien (laisser vide pour afficher l'icône de votre navigateur par défaut)
 lOptionsDarkMode	Compatibilité avec l'affichage foncé Windows
-lOptionsDarkModeMenus	Compatibilité avec l'affichage foncé Windows pour les menus
 lOptionsDatabase	Base de données
 lOptionsDisplayIcons	Afficher les icônes des menus
 lOptionsDisplayMenuShortcuts	Afficher les raccourcis numériques
@@ -971,7 +977,6 @@ lOptionsGeneral	Général
 lOptionsGuiTitle	Options - ~1~ ~2~
 lOptionsHotkeyRemindersFull	Afficher le texte complet
 lOptionsHotkeyRemindersNo	Ne pas afficher
-lOptionsHotkeyRemindersPrompt	Rappels des raccourcis et des chaînes de substitution dans les menus:
 lOptionsHotkeyRemindersPromptHotstrings	Rappels des chaînes de substitution dans les menus:
 lOptionsHotkeyRemindersPromptShortcuts	Rappels des raccourcis dans les menus:
 lOptionsHotkeyRemindersShort	Afficher les rappels abrégés
@@ -991,7 +996,7 @@ lOptionsIconsManageRows	Nombre de rangées de la fenêtre "Gérer les icônes" (0 po
 lOptionsKeepExtensionInShortName	Conserver l'extension des noms de fichiers dans les Noms courts pour les menus
 lOptionsLabelsFontSize	Taille de la police des étiquettes
 lOptionsLanguage	Langue
-lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe|Japonnais
+lOptionsLanguageLabels	Anglais|Français|Allemand|Espagnol|Portugais brésilien|Italien|Portuguais|Néerlandais|Coréen|Chinois simplifié|Russe|Japonnais|Polonais
 lOptionsLaunchAdvancedQAPTitle	Lancement de Quick Access Popup
 lOptionsListFontName	Police pour la liste des favoris
 lOptionsListFontSize	Taille de la police de la liste des favoris
@@ -1017,14 +1022,13 @@ lOptionsOtherOptions	Général
 lOptionsPopupFixPositionX	Position X:
 lOptionsPopupFixPositionY	Y:
 lOptionsPopupHotkeys	Déclencheurs du menu
-lOptionsPopupHotkeysAlternative	Déclencheurs du menu alternatif
 lOptionsPopupHotkeyTitles	Bouton de souris du menu Quick Access Popup|Raccourci clavier du menu Quick Access Popup|Bouton de souris du menu Alternatif|Raccourci clavier du menu Alternatif
 lOptionsPopupHotkeyTitlesSub	Ce bouton de la souris affiche le menu n'importe où  (sauf dans les  <a>applications exclues</a>) et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce raccourci clavier affiche le menu n'importe où  et ouvre votre favori ou change le dossier dans la fenêtre active.|Ce bouton de la souris affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où (sans exception).|Ce raccourci clavier affiche le menu Alternatif qui propose diverses fonctions. Ce menu s'affiche n'importe où.
 lOptionsPopupMenu	Menu Popup
 lOptionsQAPconnectIntro	QAPconnect est une interface qui permet à QAP de fonctionner (partiellement) avec environn 25 gestionnaires de fichiers.
 lOptionsQAPTempFolder	Dossier temporaire
 lOptionsQuickAddSnippetSubmenu	Sous-menu pour ~1~
-lOptionsQuickLaunchDropdownRows	Nombre de lignes dans la liste déroulante
+lOptionsQuickLaunchDropdownRows	Nombre de requêtes passées
 lOptionsQuickLaunchExtended	Recherche étendue (chercher dans toutes les propriétés)
 lOptionsQuickLaunchFontName	Police pour la liste de Lancement rapide
 lOptionsQuickLaunchFontSize	Taille de la police de la fenêtre Lancement rapide
