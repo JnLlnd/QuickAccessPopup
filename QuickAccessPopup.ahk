@@ -31,6 +31,10 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.4.2 (2026-11-###)
+- fix a bug when building a live folder menu with wildcards or regex expression
+- ##### file language updates for 
+ 
 Version: 12.4.1 (2026-11-01)
 - addition of Polish translation, thanks to DariuszKu
 - file language updates for German, Japanese, Korean, Brazilian Portuguese and French
@@ -5832,6 +5836,7 @@ arrVar	refactror pseudo-array to simple array
 !_011_INITIALIZATION:
 ;========================================================================================================================
 
+#Requires AutoHotkey v1.0
 #NoEnv
 #SingleInstance force
 #KeyHistory 0
@@ -9792,9 +9797,10 @@ LiveFolderHasContent(o_LiveFolder)
 	{
 		Loop, Files, %strExpandedLocation%\*.*, F ; files
 		{
-			if !StrLen(o_LiveFolder.AA.strFavoriteFolderLiveExtensions) ; include all
-				or (o_LiveFolder.AA.blnFavoriteFolderLiveIncludeExclude and StrLen(A_LoopFileExt) and InStr(o_LiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileExt)) ; include 
-				or (!o_LiveFolder.AA.blnFavoriteFolderLiveIncludeExclude and !InStr(o_LiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileExt)) ; exclude 
+			if o_LiveFolder.AA.oParentMenu.LiveFolderFileIncluded(o_LiveFolder.AA.blnFavoriteFolderLiveIncludeExclude
+				, o_LiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileName, A_LoopFileExt)
+				and !(InStr(A_LoopFileAttrib, "H") and !o_LiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if file is hidden and include hidden items is false
+				and !(InStr(A_LoopFileAttrib, "S") and !o_LiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if file is system and include system items is false
 			{
 			;	###_V("YES DOCUMENT", A_LoopFileFullPath)
 				return true
