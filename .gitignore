@@ -44,3 +44,4 @@ Distribution-files/Old/
 *.session
 toto.ahk
 *.csv
+.vscode/
