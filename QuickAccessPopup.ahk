@@ -31,9 +31,12 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 12.4.2 (2026-11-19)
+Version: 12.4.3 (2026-11-21)
 - fix a bug when building a live folder menu with wildcards or regex expression
 - italian language file update
+ 
+Version: 12.4.2 (2026-11-19)
+- THIS VERSION HAS AN ENCODING PROBLEM THAT MAY AFFECT DATA INTEGRITY - PLEASE UPDATE TO VERSION 12.4.3 NOW!
  
 Version: 12.4.1 (2026-11-01)
 - addition of Polish translation, thanks to DariuszKu
@@ -1299,7 +1302,7 @@ Customize window
 Retrieve icon automatically for favorite links
 - a new button to retrieve the web site icon (favicon) and assign it to the added or edited favorite (replacing the existing icon if it has one)
 - website icon images are saved in the folder "icons" under the QAP working directory (it is created the first time if it did not exist)
-- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon" and retrieveï¿½both
+- when adding or editing a favorite of type "Link", rename the button "Get title" to "Get title and icon" and retrieve both
 - retrieve website icon and webpage title using asynchronous HTTP requests with a timeout after 10 seconds (each) avoiding hanging QAP if the website does not respond
  
 Various
@@ -1956,7 +1959,7 @@ Search
 - allow to move multiple favorites from search result (multiple copy was already possible)
 - show all favorites in the search result when selecting the new menu item "Search All Favorites" under the "Tool" menu of the "Customize" window or when setting the search filter to "{All}"
 - in "Extended search", also search based on the favorite's menu path
-- when searching favorites in the "Customize" window, use the locale settings making (e.g. "ï¿½" considered as "e")
+- when searching favorites in the "Customize" window, use the locale settings making (e.g. "é" considered as "e")
 - when favorite names include an ampersand (&) as a keyboard shortcut, search names wtih or without the ampersand
  
 New Options for Search tool
@@ -1988,7 +1991,7 @@ Language
 - update of language files for German, French, Italian, Korean, Portuguese, Brazilian Portuguese, Dutch language and Simplified Chinese languages (still looking for new a Spanish translator)
 
 Version BETA: 10.3.9.11 (2020-03-29)
-- when searching favorites in the "Customize" window, use the locale settings making (e.g. "ï¿½" considered as "e")
+- when searching favorites in the "Customize" window, use the locale settings making (e.g. "é" considered as "e")
 - add an option in section "Customize Window" to make the use locale settings optional when searching favorites (default enabled)
 - add Russian language file
 
@@ -2205,7 +2208,7 @@ Version: 10.2.2 (2019-11-11)
 
 Version: 10.2.1 (2019-11-04)
 - fix bug in sponsor name code verification on system with some int'l Windows configuration (new sponsor codes will require this version v10.2.1 or more recent)
-- sort Live folders menus, Clipboard menus and Edit Favorite treeviews using user's locale setting to sort correctly int'l characters (for example sorting "ï¿½" or "ï¿½" with "e")
+- sort Live folders menus, Clipboard menus and Edit Favorite treeviews using user's locale setting to sort correctly int'l characters (for example sorting "é" or "É" with "e")
 - when a folder is launched from a menu open with QAPmessenger (new feature in v10.2), disable features for Explorer requiring to set window position that do not work in this situation
 - fix bug hotstrings default options being lost after saving options
 - fix bug to update file manager configuration after a new selection is saved in Options
@@ -4137,7 +4140,7 @@ Add this Link
  
 Copy multiple favorites
 - support copy multiple favorites (still excluding menus and groups)
-- multiple copy stops when an existing favorite in the destination menu has the same name as the copï¿½ed favorite (as for multiple move in previous versions)
+- multiple copy stops when an existing favorite in the destination menu has the same name as the copîed favorite (as for multiple move in previous versions)
 - an error message is displayed when user ask to move or copy multiple favorites to their actual location
  
 Text Separators
@@ -5824,7 +5827,7 @@ arrVar	refactror pseudo-array to simple array
 ; Doc: http://fincs.ahk4.net/Ahk2ExeDirectives.htm
 ; Note: prefix comma with `
 
-;@Ahk2Exe-SetVersion 12.4.2
+;@Ahk2Exe-SetVersion 12.4.3
 ;@Ahk2Exe-SetName Quick Access Popup
 ;@Ahk2Exe-SetDescription Quick Access Popup (Windows launcher)
 ;@Ahk2Exe-SetOrigFilename QuickAccessPopup.exe
@@ -5893,7 +5896,7 @@ OnExit, CleanUpBeforeExit ; must be positioned before InitFileInstall to ensure 
 ;---------------------------------
 ; Version global variables
 
-global g_strCurrentVersion := "12.4.2" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
+global g_strCurrentVersion := "12.4.3" ; "major.minor.bugs" or "major.minor.beta.release", currently support up to 5 levels (1.2.3.4.5)
 global g_strCurrentBranch := "prod" ; "prod", "beta" or "alpha", always lowercase for filename
 global g_strAppVersion := "v" . g_strCurrentVersion . (g_strCurrentBranch <> "prod" ? " " . g_strCurrentBranch : "")
 global g_strJLiconsVersion := "1.6.5"
@@ -5980,10 +5983,10 @@ global g_strGuiDoubleLine := "===" ;  double-line displayed in column break and 
 global g_strGroupIndicatorPrefix := Chr(171) ; group item indicator, not allolowed in any item name
 global g_strGroupIndicatorSuffix := Chr(187) ; displayed in Settings with g_strGroupIndicatorPrefix, and with number of items in menus, allowed in item names
 global g_intListW := "" ; Gui width captured by GuiSize and used to adjust columns in fav list
-global g_strEscapePipe := "Ð¡ï¿½ï¿½" ; used to escape pipe in ini file, should not be in item names or location but not checked
-global g_strEscapeLabel := "ï¿½ouble" ; characters (with Icelandic D, looks like D with stroke) used to escape %...% and {...} in menu labels with %%...% and {{...}
+global g_strEscapePipe := "Ð¡þ€" ; used to escape pipe in ini file, should not be in item names or location but not checked
+global g_strEscapeLabel := "Ðouble" ; characters (with Icelandic D, looks like D with stroke) used to escape %...% and {...} in menu labels with %%...% and {{...}
 global g_strAmpersandPlaceholder := "$?%" ; used as temporary marker for numeric shortcuts in menu item names
-global g_strEllipse := "ï¿½" ; "..."
+global g_strEllipse := "…" ; "..."
 global g_strUniqueSuffix := "[!]"
 
 global g_strSnippetCommandStart := "{&" ; start of command in macro snippets
@@ -9797,10 +9800,10 @@ LiveFolderHasContent(o_LiveFolder)
 	{
 		Loop, Files, %strExpandedLocation%\*.*, F ; files
 		{
-			if o_LiveFolder.AA.oParentMenu.LiveFolderFileIncluded(o_LiveFolder.AA.blnFavoriteFolderLiveIncludeExclude
-				, o_LiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileName, A_LoopFileExt)
-				and !(InStr(A_LoopFileAttrib, "H") and !o_LiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if file is hidden and include hidden items is false
-				and !(InStr(A_LoopFileAttrib, "S") and !o_LiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if file is system and include system items is false
+            if o_LiveFolder.AA.oParentMenu.LiveFolderFileIncluded(o_LiveFolder.AA.blnFavoriteFolderLiveIncludeExclude
+                , o_LiveFolder.AA.strFavoriteFolderLiveExtensions, A_LoopFileName, A_LoopFileExt)
+                and !(InStr(A_LoopFileAttrib, "H") and !o_LiveFolder.AA.blnFavoriteFolderLiveShowHidden) ; exclude if file is hidden and include hidden items is false
+                and !(InStr(A_LoopFileAttrib, "S") and !o_LiveFolder.AA.blnFavoriteFolderLiveShowSystem) ; exclude if file is system and include system items is false
 			{
 			;	###_V("YES DOCUMENT", A_LoopFileFullPath)
 				return true
@@ -13783,7 +13786,7 @@ if !InStr(A_ThisLabel, "Msg") ; exclude AddThisFolderFromMsg, AddThisFileFromMsg
 g_strNewLocationSpecialName := ""
 if o_SpecialFolders.aaClassIdOrPathByDefaultName.HasKey(g_strNewLocation)
 {
-	; we have a known special folder (some special folders like "Bibliothï¿½ques\Images" or "Libraries\Pictures" are not known yet)
+	; we have a known special folder (some special folders like "Bibliothèques\Images" or "Libraries\Pictures" are not known yet)
 	g_strNewLocationSpecialName := g_strNewLocation
 	g_strNewLocation := o_SpecialFolders.aaClassIdOrPathByDefaultName[g_strNewLocation]
 }
@@ -20852,7 +20855,7 @@ SelectHotstring(P_strActualHotstring, P_strFavoriteName, P_strFavoriteType, P_st
 		if StrLen(SH_strNewHotstring)
 			SH_strNewHotstring := HotstringValidate(P_strActualHotstring, SH_strNewHotstring)
 	}
-	; ###_V("SH_strNewHotstring aprï¿½s Validate", SH_strNewHotstring)
+	; ###_V("SH_strNewHotstring après Validate", SH_strNewHotstring)
 	
 	; Clean-up function global variables
 	SH_strGuiTitle := ""
@@ -23021,8 +23024,8 @@ GetFavoriteObjectFromNameInMenu(strFavoriteMenuName)
 		: "") ; if in Main menu
 	
 	saMenu := o_Containers.AA[strMenuPath].SA
-	if !IsObject(saMenu) ; path not found, add the suffix ï¿½ï¿½ to check if the favorite is in a group
-		saMenu := o_Containers.AA[strMenuPath . " ï¿½ï¿½"].SA
+	if !IsObject(saMenu) ; path not found, add the suffix «» to check if the favorite is in a group
+		saMenu := o_Containers.AA[strMenuPath . " «»"].SA
 		
 	Diag(A_ThisFunc, "strFavoriteMenuName", "!" . strFavoriteMenuName . "!")
 	Diag(A_ThisFunc, "strMenuPath", "!" . strMenuPath . "!")
@@ -23838,7 +23841,7 @@ return
 ;------------------------------------------------------------
 ProposeUpdate(strVersionNew, strVersionRunning, strVersionSkipped)
 	; si (version_nouveau_beta > version_installe_beta) / il y a une nouvelle version
-		; et (version_nouveau_beta <= version_sautee_beta / et elle n'a pas ï¿½tï¿½ sautï¿½e
+		; et (version_nouveau_beta <= version_sautee_beta / et elle n'a pas été sautée
 ;------------------------------------------------------------
 {
 	; ###_V(A_ThisFunc, strVersionNew, strVersionRunning, strVersionSkipped
@@ -27018,7 +27021,7 @@ Process only:
 `t = tab (the more typical horizontal variety)
 
 No need to process:
-- | (pipe) used as separator in favorites lines in ini file are already replaced with the escape sequence "Ð¡ï¿½ï¿½"
+- | (pipe) used as separator in favorites lines in ini file are already replaced with the escape sequence "Ð¡þ€"
 */
 {
 	strSnippet := StrReplace(strSnippet, "``", "````") ;  replace backticks with double-backticks
@@ -27168,7 +27171,7 @@ ProcessLocationURL(str)
 UriDecode(str)
 ; by polyethene
 ; http://www.autohotkey.com/board/topic/17367-url-encoding-and-decoding-of-special-characters/?p=112822
-; Note JL: this function only decodes one byte characters (e.g. "%40"->"@" but not utf-8 char "%C3%A9"->"ï¿½")
+; Note JL: this function only decodes one byte characters (e.g. "%40"->"@" but not utf-8 char "%C3%A9"->"é")
 ;------------------------------------------------
 {
 	Loop
@@ -27212,7 +27215,7 @@ UriEncode(str)
 ;------------------------------------------------------------
 NumDecode(str)
 ; Extracted from Dec_XML() https://autohotkey.com/board/topic/29866-encoding-and-decoding-functions-v11/
-; converts "&#233;" or "&#xE9;" to "ï¿½"
+; converts "&#233;" or "&#xE9;" to "é"
 ;------------------------------------------------------------
 {
 	Loop
@@ -27278,7 +27281,7 @@ InStrEx(strHaystack, strNeedle)
 ;------------------------------------------------------------
 CompareStringEx(strToCompare1, strToCompare2, intFlags)
 ; from Alguimist https://www.autohotkey.com/boards/viewtopic.php?f=76&t=73799
-; MsgBox % CompareStringEx("HEllOï¿½", "hï¿½LLoc", 0x21)
+; MsgBox % CompareStringEx("HEllOÇ", "hÉLLoc", 0x21)
 ; String Flags.
 ; 	NORM_IGNORECASE            0x00000001  // ignore case
 ; 	NORM_IGNORENONSPACE        0x00000002  // ignore nonspacing chars
@@ -29368,7 +29371,7 @@ ChooseFolder(Owner, StartingFolder := "", CustomPlaces := "", Options := 0)
     local IFileOpenDialog := ComObjCreate("{DC1C5A9C-E88A-4DDE-A5A1-60F82A20AEF7}", "{D57C7288-D4AD-4768-BE02-9D969532D960}")
         ,           Title := IsObject(Owner) ? Owner[2] . "" : ""
         ,           Flags := 0x20 | Options    ; FILEOPENDIALOGOPTIONS enumeration (https://msdn.microsoft.com/en-us/library/windows/desktop/dn457282(v=vs.85).aspx)
-        ,      IShellItem := PIDL := 0         ; PIDL recibe la direcciï¿½n de memoria a la estructura ITEMIDLIST que debe ser liberada con la funciï¿½n CoTaskMemFree
+        ,      IShellItem := PIDL := 0         ; PIDL recibe la dirección de memoria a la estructura ITEMIDLIST que debe ser liberada con la función CoTaskMemFree
         ,             Obj := {}, foo := bar := ""
     Owner := IsObject(Owner) ? Owner[1] : (WinExist("ahk_id" . Owner) ? Owner : 0)
     CustomPlaces := IsObject(CustomPlaces) || CustomPlaces == "" ? CustomPlaces : [CustomPlaces]
@@ -29379,7 +29382,7 @@ ChooseFolder(Owner, StartingFolder := "", CustomPlaces := "", Options := 0)
     {
         DllCall("Shell32.dll\SHParseDisplayName", "UPtr", &StartingFolder, "Ptr", 0, "UPtrP", PIDL, "UInt", 0, "UInt", 0)
         DllCall("Shell32.dll\SHCreateShellItem", "Ptr", 0, "Ptr", 0, "UPtr", PIDL, "UPtrP", IShellItem)
-        ObjRawSet(Obj, IShellItem, PIDL)    ; guardamos la interfaz ï¿½IShellItemï¿½ y la estructura ï¿½PIDLï¿½ para liberarlas al final
+        ObjRawSet(Obj, IShellItem, PIDL)    ; guardamos la interfaz «IShellItem» y la estructura «PIDL» para liberarlas al final
         ; IFileDialog::SetFolder method
         ; https://msdn.microsoft.com/en-us/library/windows/desktop/bb761828(v=vs.85).aspx
         DllCall(NumGet(NumGet(IFileOpenDialog+0)+12*A_PtrSize), "Ptr", IFileOpenDialog, "UPtr", IShellItem)
@@ -30550,8 +30553,8 @@ RECEIVE_MESSENGER(wParam, lParam)
 	{
 		strMenuPath := o_L["MainMenuName"] . (StrLen(saData[2]) ? " " . Trim(saData[2]) : "")
 		o_MenuInGui := o_Containers.AA[strMenuPath]
-		if !IsObject(o_MenuInGui) ; path not found, add the suffix ï¿½ï¿½ to check if it is a group
-			o_MenuInGui := o_Containers.AA[strMenuPath . " ï¿½ï¿½"]
+		if !IsObject(o_MenuInGui) ; path not found, add the suffix «» to check if it is a group
+			o_MenuInGui := o_Containers.AA[strMenuPath . " «»"]
 		Gosub, GuiShowFromGuiOutside
 	}
 	else
@@ -31821,7 +31824,7 @@ class SpecialFolders
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "2-Power User")
 		this.AddSpecialFolderObject("{D20EA4E1-3957-11d2-A40B-0C5020524153}", "Common Administrative Tools", -1, "", "commonadmintools", ""
-			, "Administrative Tools", "" ; Outils dï¿½administration
+			, "Administrative Tools", "" ; Outils d’administration
 			, "CLS", "CLS", "NEW", "NEW", "DOA", "NEW", "NEW"
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("{20D04FE0-3AEA-1069-A2D8-08002B30309D}", "MyComputerFolder", 17, "", "mycomputer", 2122
@@ -31843,20 +31846,20 @@ class SpecialFolders
 			, "SCT", "SCT", "NEW", "NEW", "NEW", "CLS", "NEW"
 			, "4-Contents")
 		this.AddSpecialFolderObject("{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}", "HomeGroupFolder", -1, "", "", ""
-			, "HomeGroup", "" ; Groupe rï¿½sidentiel
+			, "HomeGroup", "" ; Groupe résidentiel
 			, "SCT", "SCT", "SCT", "NEW", "CLS", "CLS", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{031E4825-7B94-4dc3-B131-E946B44C8DD5}", "Libraries", -1, "", "libraries", ""
-			, "Libraries", "" ; Bibliothï¿½que
+			, "Libraries", "" ; Bibliothèque
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "CLS", "NEW"
 			, "2-Power User~4-Contents")
 		this.AddSpecialFolderObject("{7007ACC7-3202-11D1-AAD2-00805FC1270E}", "ConnectionsFolder", -1, "", "", ""
-			, "Network Connections", "" ; Connexions rï¿½seau
+			, "Network Connections", "" ; Connexions réseau
 			, "SCT", "SCT", "NEW", "NEW", "CLS", "CLS", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", "NetworkPlacesFolder", 18, "", "network", 2125 ; 18 ssfNETWORK or 19 ssfNETHOOD?
 		; OK but empty lister in DOpus
-			, "Network", "" ; Rï¿½seau
+			, "Network", "" ; Réseau
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "TCC", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{2227A280-3AEA-1069-A2DE-08002B30309D}", "PrintersFolder", 4, "", "printers", 2126
@@ -31872,7 +31875,7 @@ class SpecialFolders
 			, "SCT", "SCT", "SCT", "NEW", "DOA", "CLS", "NEW"
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("{1f3427c8-5c10-4210-aa03-2ee45287d668}", "User Pinned", -1, "", "", ""
-			, o_L["MenuUserPinned"], "" ; Epinglï¿½ par l'utilisateur
+			, o_L["MenuUserPinned"], "" ; Epinglé par l'utilisateur
 			, "SCT", "SCT", "SCT", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User")
 		this.AddSpecialFolderObject("{BD84B380-8CA2-1069-AB1D-08000948534}", "Fonts", 20, "", "fonts", 2124
@@ -31889,7 +31892,7 @@ class SpecialFolders
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "3-Sysadmin")
 		this.AddSpecialFolderObject("{ED7BA470-8E54-465E-825C-99712043E01C}", "", -1, "", "", ""
-			, "Control Panel (All Tasks)", "" ; Toutes les tï¿½ches
+			, "Control Panel (All Tasks)", "" ; Toutes les tâches
 			, "CLS", "CLS", "NEW", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User~5-Hardware")
 		this.AddSpecialFolderObject("{323CA680-C24D-4099-B94D-446DD2D7249E}", "", 6, "", "favorites", ""
@@ -31917,7 +31920,7 @@ class SpecialFolders
 			, "CLS", "CLS", "NEW", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User~5-Hardware")
 		this.AddSpecialFolderObject("{22877a6d-37a1-461a-91b0-dbda5aaebc99}", "", -1, "", "", ""
-			, "Recent Places", "" ; Emplacements rï¿½cents
+			, "Recent Places", "" ; Emplacements récents
 			, "CLS", "CLS", "NEW", "NEW", "CLS", "NEW", "NEW"
 			, "2-Power User~4-Contents")
 		this.AddSpecialFolderObject("{3080F90D-D7AD-11D9-BD98-0000947B0257}", "", -1, "", "", ""
@@ -31926,7 +31929,7 @@ class SpecialFolders
 			, "2-Power User")
 		this.AddSpecialFolderObject("{BB06C0E4-D293-4f75-8A90-CB05B6477EEE}", "", -1, "", "", ""
 		; OK DOpus opens external window
-			, "System", "" ; Systï¿½me
+			, "System", "" ; Système
 			, "CLS", "CLS", "NEW", "NEW", "NEW", "NEW", "NEW"
 			, "3-Sysadmin~5-Hardware")
 		this.AddSpecialFolderObject("{05d7b0f4-2121-4eff-bf6b-ed3f69b894d9}", "", -1, "", "", ""
@@ -36388,7 +36391,7 @@ class Container
 						; using ALT+0nnn ASCII codes for console with international keyboard input language
 						{
 							loop, parse, strCommandLine
-								; ANSI characters (like "ï¿½") are supported by preceeding the ASCII code with 0, but Unicode characters are not supported
+								; ANSI characters (like "é") are supported by preceeding the ASCII code with 0, but Unicode characters are not supported
 								; see https://autohotkey.com/docs/commands/Send.htm#asc
 								strSendToConsoleAscCodes .= "{ASC 0" . Asc(A_LoopField) . "}"
 							SendInput, %strSendToConsoleAscCodes%
