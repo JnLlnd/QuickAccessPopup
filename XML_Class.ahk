@@ -1,4 +1,4 @@
-Class XML{
+﻿Class XML{
 	keep:=[]
 	__Get(x=""){
 		return this.XML.xml
