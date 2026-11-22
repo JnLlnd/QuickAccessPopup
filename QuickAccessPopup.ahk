@@ -31,6 +31,8 @@ limitations under the License.
 HISTORY
 =======
 
+Version: 12.4.4 (2026-11-##)
+ 
 Version: 12.4.3 (2026-11-21)
 - fix a bug when building a live folder menu with wildcards or regex expression
 - italian language file update
