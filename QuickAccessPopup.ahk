@@ -31,9 +31,11 @@ limitations under the License.
 HISTORY
 =======
 
-Version: 12.4.4 (2026-11-##)
-- 
-
+Version: 12.4.4 (2026-11-23)
+- refactor pipe character replacements to improve encoding integrity of QAP .ini files
+- replace strings in ini file damaged by wrong encoding in v12.4.2
+- convert all script files to encoding UTF-8 with BOM
+ 
 Version: 12.4.3 (2026-11-21)
 - fix a bug when building a live folder menu with wildcards or regex expression
 - italian language file update
