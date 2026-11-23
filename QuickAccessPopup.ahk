@@ -32,7 +32,8 @@ HISTORY
 =======
 
 Version: 12.4.4 (2026-11-##)
- 
+- 
+
 Version: 12.4.3 (2026-11-21)
 - fix a bug when building a live folder menu with wildcards or regex expression
 - italian language file update
@@ -17713,7 +17714,7 @@ for intIndex, oItem in oCSV
 
 	strFavoriteLine := 
 	loop, 21
-		strFavoriteLine .= StrReplace(oFavorite[A_Index], "|", g_strEscapePipe) . "|"
+		strFavoriteLine .= EscapePipes(oFavorite[A_Index]) . "|"
 	strFavoriteSection .= "Favorite" . intFavorite . "=" . strFavoriteLine . "`r`n"
 	intFavorite++
 }
@@ -27931,6 +27932,30 @@ ExpandUserVariables(str)
 
 
 ;------------------------------------------------------------
+EscapePipes(str)
+; escape pipe | characters
+;------------------------------------------------------------
+{
+	str := StrReplace(str, "|", g_strEscapePipe)
+	return str
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
+UnEscapePipes(str)
+; unescape pipe | characters
+;------------------------------------------------------------
+{
+	if InStr(str, "Ð¡ï¿½ï¿½")
+		str := StrReplace(str, "Ð¡ï¿½ï¿½", g_strEscapePipe) ; fix an encoding code in v12.4.2
+	str := StrReplace(str, g_strEscapePipe, "|")
+	return str
+}
+;------------------------------------------------------------
+
+
+;------------------------------------------------------------
 EscapeVarNames(str)
 ; escape user variables {{...} and environment variables %%...%
 ;------------------------------------------------------------
@@ -27947,6 +27972,8 @@ UnEscapeVarNames(str)
 ; unescape user variables {...} and environment variables %...%
 ;------------------------------------------------------------
 {
+	if InStr(str, "ï¿½")
+		str := StrReplace(str, "ï¿½", "Ð") ; fix an encoding code in v12.4.2
 	str := StrReplace(str, g_strEscapeLabel . "Percent", "%")
 	str := StrReplace(str, g_strEscapeLabel . "CurlyBracket", "{")
 	return str
@@ -35087,8 +35114,8 @@ class Container
 				or (oItem.AA.strFavoriteType = "Special" and oItem.AA.strFavoriteName = o_SpecialFolders.AA[oItem.AA.strFavoriteLocation].strDefaultName)
 				strIniLine .= "|" ; 2
 			else
-				strIniLine .= StrReplace(oItem.AA.strFavoriteName, "|", g_strEscapePipe) . "|" ; 2
-			strIniLine .= StrReplace(oItem.AA.strFavoriteLocation, "|", g_strEscapePipe) . "|" ; 3
+				strIniLine .= EscapePipes(oItem.AA.strFavoriteName) . "|" ; 2
+			strIniLine .= EscapePipes(oItem.AA.strFavoriteLocation) . "|" ; 3
 			if StrLen(o_JLicons.AA[oItem.AA.strFavoriteIconResource]) ; save index of o_JLicons.AA
 				strIniLine .= oItem.AA.strFavoriteIconResource . "|" ; 4
 			else
@@ -35099,12 +35126,12 @@ class Container
 				else ; use icongroup as is
 					strIniLine .= oItem.AA.strFavoriteIconResource . "|" ; 4
 			}
-			strIniLine .= StrReplace(oItem.AA.strFavoriteArguments, "|", g_strEscapePipe) . "|" ; 5
-			strIniLine .= StrReplace(oItem.AA.strFavoriteAppWorkingDir, "|", g_strEscapePipe) . "|" ; 6 (encode in case used with placeholders including fallback value separated by |)
+			strIniLine .= EscapePipes(oItem.AA.strFavoriteArguments) . "|" ; 5
+			strIniLine .= EscapePipes(oItem.AA.strFavoriteAppWorkingDir) . "|" ; 6 (encode in case used with placeholders including fallback value separated by |)
 			strIniLine .= oItem.AA.strFavoriteWindowPosition . "|" ; 7
 			strIniLine .= oItem.AA.strFavoriteLaunchWith . "|" ; 8
-			strIniLine .= StrReplace(oItem.AA.strFavoriteLoginName, "|", g_strEscapePipe) . "|" ; 9
-			strIniLine .= StrReplace(oItem.AA.strFavoritePassword, "|", g_strEscapePipe) . "|" ; 10
+			strIniLine .= EscapePipes(oItem.AA.strFavoriteLoginName) . "|" ; 9
+			strIniLine .= EscapePipes(oItem.AA.strFavoritePassword) . "|" ; 10
 			strIniLine .= oItem.AA.strFavoriteGroupSettings . "|" ; 11
 			strIniLine .= oItem.AA.blnFavoriteFtpEncoding . "|" ; 12
 			strIniLine .= oItem.AA.blnFavoriteElevate . "|" ; 13
@@ -35115,9 +35142,9 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteFolderLiveIncludeExclude . "|" ; 18
 			strIniLine .= oItem.AA.strFavoriteFolderLiveExtensions . "|" ; 19
 			strIniLine .= oItem.AA.strFavoriteShortcut . "|" ; 20
-			strIniLine .= StrReplace(oItem.AA.strFavoriteHotstring, "|", g_strEscapePipe) . "|" ; 21
+			strIniLine .= EscapePipes(oItem.AA.strFavoriteHotstring) . "|" ; 21
 			strIniLine .= oItem.AA.strFavoriteFolderLiveSort . "|" ; 22
-			strIniLine .= StrReplace(oItem.AA.strFavoriteSoundLocation, "|", g_strEscapePipe) . "|" ; 23
+			strIniLine .= EscapePipes(oItem.AA.strFavoriteSoundLocation) . "|" ; 23
 			strIniLine .= oItem.AA.strFavoriteDateCreated . "|" ; 24
 			strIniLine .= oItem.AA.strFavoriteDateModified . "|" ; 25
 			strIniLine .= oItem.AA.intFavoriteUsageDb . "|" ; 26
@@ -35132,7 +35159,7 @@ class Container
 			strIniLine .= oItem.AA.blnFavoriteDebug . "|" ; 35
 			strIniLine .= oItem.AA.blnFavoriteAutoExec . "|" ; 36
 			strIniLine .= oItem.AA.blnReopenAfterLaunchingItem . "|" ; 37
-			strIniLine .= StrReplace(oItem.AA.strAdaptiveMenuConditions, "|", g_strEscapePipe) . "|" ; 38
+			strIniLine .= EscapePipes(oItem.AA.strAdaptiveMenuConditions) . "|" ; 38
 			
 			Diag(A_ThisFunc, s_intIniLineSave . " " . oItem.AA.strFavoriteType, "ELAPSED")
 			IniWrite, %strIniLine%, %s_strIniFile%, Favorites-New, % "Favorite" . s_intIniLineSave
@@ -35450,7 +35477,7 @@ class Container
 			while StrLen(strCriteria) < 14
 				strCriteria := "0" . strCriteria
 			
-		return StrReplace(strCriteria . " " . strFavoriteName, "|", g_strEscapePipe)
+		return EscapePipes(strCriteria . " " . strFavoriteName)
 	}
 	;------------------------------------------------------------
 
@@ -35693,7 +35720,7 @@ class Container
 			
 			; this is a regular favorite, add it to the current menu
 			this.InsertItemValue("strFavoriteType", saFavorite[1]) ; see Favorite Types
-			this.InsertItemValue("strFavoriteName", StrReplace(saFavorite[2], g_strEscapePipe, "|")) ; display name of this menu item
+			this.InsertItemValue("strFavoriteName", UnEscapePipes(saFavorite[2])) ; display name of this menu item
 			if (this.AA.oParentMenu.AA.blnCheckDuplicates and StrLen(this.AA.oParentMenu.AA.strMenuPath) and StrLen(this.AA.strFavoriteName))
 			; if this menu needs to be checked, if parent menu exists and if favorite name is not empty, check that favorite name is unique in this menu
 			{
@@ -35707,10 +35734,10 @@ class Container
 			}
 			if (saFavorite[1] = "Folder") ; strip ending backslash if folder location (for items saved before v10.5.3)
 				saFavorite[3] := StripFolderEndingBackslash(saFavorite[3])
-			this.InsertItemValue("strFavoriteLocation", StrReplace(saFavorite[3], g_strEscapePipe, "|")) ; path, URL or menu path (without "Main") for this menu item
+			this.InsertItemValue("strFavoriteLocation", UnEscapePipes(saFavorite[3])) ; path, URL or menu path (without "Main") for this menu item
 			this.InsertItemValue("strFavoriteIconResource", saFavorite[4]) ; icon resource in format "iconfile,iconindex" or JLicons index "iconXYZ"
-			this.InsertItemValue("strFavoriteArguments", StrReplace(saFavorite[5], g_strEscapePipe, "|")) ; application arguments
-			this.InsertItemValue("strFavoriteAppWorkingDir", StrReplace(saFavorite[6], g_strEscapePipe, "|")) ; application working directory (decode in case used with placeholders including fallback value separated by |)
+			this.InsertItemValue("strFavoriteArguments", UnEscapePipes(saFavorite[5])) ; application arguments
+			this.InsertItemValue("strFavoriteAppWorkingDir", UnEscapePipes(saFavorite[6])) ; application working directory (decode in case used with placeholders including fallback value separated by |)
 			this.InsertItemValue("strFavoriteWindowPosition", saFavorite[7]) ; Boolean,Left,Top,Width,Height,Delay,RestoreSide/Monitor (comma delimited) (will be split when open favorite)
 			this.InsertItemValue("strFavoriteLaunchWith", saFavorite[8]) ; launch favorite with this executable, or various options for types Application, Snippet, QCE, Menu and External
 			if this.AA.HasKey("strFavoriteLaunchWith")
@@ -35729,8 +35756,8 @@ class Container
 					this.AA.blnQCECommandPasteAfter := saTemp[2]
 					this.AA.intQCECommandCopyBeforeSeconds := saTemp[3]
 				}
-			this.InsertItemValue("strFavoriteLoginName", StrReplace(saFavorite[9], g_strEscapePipe, "|")) ; login name for FTP favorite
-			this.InsertItemValue("strFavoritePassword", StrReplace(saFavorite[10], g_strEscapePipe, "|")) ; password for FTP favorite
+			this.InsertItemValue("strFavoriteLoginName", UnEscapePipes(saFavorite[9])) ; login name for FTP favorite
+			this.InsertItemValue("strFavoritePassword", UnEscapePipes(saFavorite[10])) ; password for FTP favorite
 			this.InsertItemValue("strFavoriteGroupSettings", saFavorite[11]) ; coma separated values for group restore settings or external menu starting line or Menu and External auto sort order 
 			this.InsertItemValue("blnFavoriteFtpEncoding", saFavorite[12]) ; encoding of FTP username and password, 0 do not encode, 1 encode
 			this.InsertItemValue("blnFavoriteElevate", saFavorite[13]) ; elevate application, 0 do not elevate, 1 elevate
@@ -35741,9 +35768,9 @@ class Container
 			this.InsertItemValue("blnFavoriteFolderLiveIncludeExclude", saFavorite[18]) ; if true include extensions in FavoriteFolderLiveExtensions, if false exclude them
 			this.InsertItemValue("strFavoriteFolderLiveExtensions", saFavorite[19]) ; extensions of files to include or exclude in live folder
 			this.InsertItemValue("strFavoriteShortcut", saFavorite[20]) ; (new in v8.7.1.93) shortcut (mouse or keyboard hotkey) to launch this favorite
-			this.InsertItemValue("strFavoriteHotstring", StrReplace(saFavorite[21], g_strEscapePipe, "|")) ; (changed in v8.7.1.96) hotstring to launch this favorite (AHK format: ":option:trigger")
+			this.InsertItemValue("strFavoriteHotstring", UnEscapePipes(saFavorite[21])) ; (changed in v8.7.1.96) hotstring to launch this favorite (AHK format: ":option:trigger")
 			this.InsertItemValue("strFavoriteFolderLiveSort", saFavorite[22]) ; two chars: sort order A or D and sort criteria 1 file name, 2 extension, 3 size or 4 modified date
-			this.InsertItemValue("strFavoriteSoundLocation", StrReplace(saFavorite[23], g_strEscapePipe, "|")) ; path and file of sound to play when launching the favorite
+			this.InsertItemValue("strFavoriteSoundLocation", UnEscapePipes(saFavorite[23])) ; path and file of sound to play when launching the favorite
 			this.InsertItemValue("strFavoriteDateCreated", (StrLen(saFavorite[24]) ? saFavorite[24] : A_NowUTC)) ; UTC date of creation of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
 			this.InsertItemValue("strFavoriteDateModified", (StrLen(saFavorite[25]) ? saFavorite[25] : A_NowUTC)) ; UTC date of last modification of the favorite in QAP, in YYYYMMDDHH24MISS format (added in v9.1.x)
 			if (g_blnUsageDbEnabled)
@@ -35760,7 +35787,7 @@ class Container
 			this.InsertItemValue("blnFavoriteDebug", saFavorite[35]) ; boolean, enable favorite debugging
 			this.InsertItemValue("blnFavoriteAutoExec", saFavorite[36]) ; boolean, launch favorite or group at startup
 			this.InsertItemValue("blnReopenAfterLaunchingItem", saFavorite[37]) ; boolean, reopen this menu after launching items
-			this.InsertItemValue("strAdaptiveMenuConditions", StrReplace(saFavorite[38], g_strEscapePipe, "|")) ; string, list of conditions for an adaptive menu
+			this.InsertItemValue("strAdaptiveMenuConditions", UnEscapePipes(saFavorite[38])) ; string, list of conditions for an adaptive menu
 			
 			if (!StrLen(this.AA.strFavoriteIconResource) or this.AA.strFavoriteIconResource = "iconUnknown")
 			; get icon if not in ini file (occurs at first run wen loading default menu - or if error occured earlier)
