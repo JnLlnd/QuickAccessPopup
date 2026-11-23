@@ -34702,7 +34702,7 @@ class Container
 		{
 			; Regular expression from teadrinker https://www.autohotkey.com/boards/viewtopic.php?p=422922#p422922
 			saGroups := Object()
-			while RegExMatch(strFilter, "O)[^""]+(?=""( |$))|[\w*.?]+", aaMatch, aaMatch ? aaMatch.Pos + aaMatch.Len : 1)
+			while RegExMatch(strFilter, "O)[^""]+(?=""( |$))|[^\s""]+", aaMatch, aaMatch ? aaMatch.Pos + aaMatch.Len : 1)
 				saGroups.Push(StrReplace(aaMatch[0], g_strEscapePipe, """"))
 			
 			for intKey, strWildcards in saGroups
